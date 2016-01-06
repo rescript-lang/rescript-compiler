@@ -1,3 +1,0 @@
-#!/bin/sh
-set -e 
-./ocaml_pack type_util.ml type_util.mli  alpha_pass.ml alpha_pass.mli alias_pass.ml gen_util.ml lambda_util.mli alias_pass.mli gen_util.mli b64.ml  b64.mli j.mli lets_pass.ml  j_helper.ml collect_pass.ml collect_pass.mli lets_pass.mli exits_pass.ml exits_pass.mli compile_defs.ml j_helper.mli  compile_defs.mli jident.ml pp.ml compile_lambda.ml jident.mli pp.mli compile_lambda.mli jlist.ml pp_js.ml compile_of_env.ml jlist.mli pp_js.mli compile_of_env.mli js_pp_util.ml source_map.ml compile_primitive.ml js_pp_util.mli source_map.mli compile_primitive.mli json.ml util.ml  json.mli util.mli jstring.ml vlq64.ml jstring.mli vlq64.mli lambda_util.ml > _build/px.ml
