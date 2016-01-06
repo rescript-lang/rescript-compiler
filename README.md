@@ -129,18 +129,19 @@ This project reused and adapted part of [js_of_ocaml](https://github.com/ocsigen
 * Some small printing utilties in [pretty printer](./jscomp/js_dump.ml).
 * Part of the [Javascript runtime](./jscomp/runtime) support
 
-It adapted two modules [jscomp/lam_pass_exits.ml] and
-[jscomp/lam_pass_lets_dce] from OCaml's [bytecomp/simplif], the main
+It adapted two modules [Lam_pass_exits](jscomp/lam_pass_exits.ml) and
+[Lam_pass_lets_dce](jscomp/lam_pass_lets_dce.ml) from OCaml's
+(Simplif)[ocaml/bytecomp/simplif] module, the main
 reasons are those optimizations are not optimal for Javascript
 backend.
 
-[jscomp/js_main.ml] is adapted from [driver/main], it is not actually
+[Js_main](jscomp/js_main.ml) is adapted from [driver/main](ocaml/driver/main.ml), it is not actually
 used, since currently we make this JS backend as a plugin instead, but
 it shows that it is easy to assemble a whole compler using OCaml
 compiler libraries and upon that we can add more compilation flags for
 JS backend.
 
-[jscomp/stdlib] is copied from [ocaml/stdlib] to have it compiled with
+[stdlib](jscomp/stdlib) is copied from ocaml's [stdlib](ocaml/stdlib) to have it compiled with
 the new JS compiler.
 
 Since our work is derivative work, we choose the GPL v2 license to
