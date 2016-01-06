@@ -1,0 +1,23 @@
+export var filter_map: (f : any, xs : any) => any ;
+export var same_length: (xs : any, ys : any) => any ;
+export var filter_mapi: (f : any, xs : any) => any ;
+export var filter_map2: (f : any, xs : any, ys : any) => any ;
+export var filter_map2i: (f : any, xs : any, ys : any) => any ;
+export var rev_map_append: (f : any, l1 : any, l2 : any) => any ;
+export var flat_map2: (f : any, lx : any, ly : any) => any ;
+export var flat_map: (f : any, lx : any) => any ;
+export var map2_last: (f : any, l1 : any, l2 : any) => any ;
+export var map_last: (f : any, l1 : any) => any ;
+export var flat_map2_last: (f : any, lx : any, ly : any) => any ;
+export var init: (n : any, f : any) => any ;
+export var take: (n : any, l : any) => any ;
+export var exclude_tail: (x : any) => any ;
+export var group: (cmp : any, lst : any) => any ;
+export var aux: (cmp : any, x : any, xss : any) => any ;
+export var stable_group: (cmp : any, lst : any) => any ;
+export var drop: (n : any, h : any) => any ;
+export var for_all_ret: (p : any, param : any) => any ;
+export var for_all_opt: (p : any, param : any) => any ;
+export var fold: (f : any, l : any, init : any) => any ;
+export var rev_map_acc: (acc : any, f : any, l : any) => any ;
+

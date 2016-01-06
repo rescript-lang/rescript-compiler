@@ -1,0 +1,7 @@
+# true: use_ocamlcommon
+# true: use_ocamlbytecomp
+true: nocmx
+true: warn(-40)
+true: debug
+true: -traverse
+<node_modules>: -traverse

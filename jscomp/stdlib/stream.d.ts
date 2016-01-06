@@ -1,0 +1,24 @@
+export var Failure: any ;
+export var $$Error: any ;
+export var from: (f : any) => any ;
+export var of_list: (l : any) => any ;
+export var of_string: (s : any) => any ;
+export var of_bytes: (s : any) => any ;
+export var of_channel: (ic : any) => any ;
+export var iter: (f : any, strm : any) => any ;
+export var next: (s : any) => any ;
+export var empty: (s : any) => any ;
+export var peek: (s : any) => any ;
+export var junk: (s : any) => any ;
+export var count: any ;
+export var npeek: (n : any, s : any) => any ;
+export var iapp: (i : any, s : any) => any ;
+export var icons: (i : any, s : any) => any ;
+export var ising: (i : any) => any ;
+export var lapp: (f : any, s : any) => any ;
+export var lcons: (f : any, s : any) => any ;
+export var lsing: (f : any) => any ;
+export var sempty: any ;
+export var slazy: (f : any) => any ;
+export var dump: (f : any, s : any) => any ;
+

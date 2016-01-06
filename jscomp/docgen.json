@@ -1,0 +1,8 @@
+[
+    "trigger", ".", {
+        "name": "docgen",
+        "expression": ["pcre", "(\\.(ml|mlp|mll|mly|mli|sh|mk|sh|mllib)$|Makefile|ocamlscript)"],
+        "command": ["./docgen.sh"],
+        "append_files" : true
+    }
+]

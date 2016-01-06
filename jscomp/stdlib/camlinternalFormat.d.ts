@@ -1,0 +1,24 @@
+export var is_in_char_set: (char_set : any, c : any) => any ;
+export var rev_char_set: (char_set : any) => any ;
+export var create_char_set: (param : any) => any ;
+export var add_in_char_set: (char_set : any, c : any) => any ;
+export var freeze_char_set: (char_set : any) => any ;
+export var param_format_of_ignored_format: (ign : any, fmt : any) => any ;
+export var make_printf: (k : any, o : any, acc : any, fmt : any) => any ;
+export var output_acc: (o : any, acc : any) => any ;
+export var bufput_acc: (b : any, acc : any) => any ;
+export var strput_acc: (b : any, acc : any) => any ;
+export var type_format: (fmt : any, fmtty : any) => any ;
+export var fmt_ebb_of_string: (legacy_behavior : any, str : any) => any ;
+export var format_of_string_fmtty: (str : any, fmtty : any) => any ;
+export var format_of_string_format: (str : any, param : any) => any ;
+export var char_of_iconv: (iconv : any) => any ;
+export var string_of_formatting_lit: (formatting_lit : any) => any ;
+export var string_of_formatting_gen: (formatting_gen : any) => any ;
+export var string_of_fmtty: (fmtty : any) => any ;
+export var string_of_fmt: (fmt : any) => any ;
+export var open_box_of_string: (str : any) => any ;
+export var symm: (param : any) => any ;
+export var trans: (ty1 : any, ty2 : any) => any ;
+export var recast: (fmt : any, fmtty : any) => any ;
+

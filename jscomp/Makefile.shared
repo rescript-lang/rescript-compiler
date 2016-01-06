@@ -1,0 +1,9 @@
+
+CAMLDEP=ocamldep.opt
+CAMLLEX=ocamllex.opt
+CAMLOPT=ocamlopt.opt
+
+
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+
+print-%  : ; @echo $* = $($*)

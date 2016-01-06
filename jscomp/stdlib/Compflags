@@ -1,0 +1,28 @@
+#!/bin/sh
+#########################################################################
+#                                                                       #
+#                                OCaml                                  #
+#                                                                       #
+#            Xavier Leroy, projet Cristal, INRIA Rocquencourt           #
+#                                                                       #
+#   Copyright 2004 Institut National de Recherche en Informatique et    #
+#   en Automatique.  All rights reserved.  This file is distributed     #
+#   under the terms of the GNU Library General Public License, with     #
+#   the special exception on linking described in file ../LICENSE.      #
+#                                                                       #
+#########################################################################
+
+case $1 in
+  pervasives.cm[iox]|pervasives.p.cmx) echo ' -nopervasives';;
+  camlinternalOO.cmi) echo ' -nopervasives';;
+  camlinternalOO.cmx|camlinternalOO.p.cmx) echo ' -inline 0';;
+  buffer.cmx|buffer.p.cmx) echo ' -inline 3';;
+                           # make sure add_char is inlined (PR#5872)
+  buffer.cm[io]) echo ' -w A';;
+  camlinternalFormat.cm[io]) echo ' -w Ae';;
+  camlinternalFormatBasics*.cm[iox]) echo ' -nopervasives';;
+  printf.cm[io]|format.cm[io]|scanf.cm[io]) echo ' -w Ae';;
+  scanf.cmx|scanf.p.cmx) echo ' -inline 9';;
+  *Labels.cm[ox]|*Labels.p.cmx) echo ' -nolabels -no-alias-deps';;
+  *) echo ' ';;
+esac

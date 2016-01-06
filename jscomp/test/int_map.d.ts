@@ -1,0 +1,25 @@
+export var empty: any ;
+export var is_empty: (param : any) => any ;
+export var mem: (x : any, param : any) => any ;
+export var add: (x : any, data : any, param : any) => any ;
+export var singleton: (x : any, d : any) => any ;
+export var remove: (x : any, param : any) => any ;
+export var merge: (f : any, s1 : any, s2 : any) => any ;
+export var compare: (cmp : any, m1 : any, m2 : any) => any ;
+export var equal: (cmp : any, m1 : any, m2 : any) => any ;
+export var iter: (f : any, param : any) => any ;
+export var fold: (f : any, m : any, accu : any) => any ;
+export var for_all: (p : any, param : any) => any ;
+export var exists: (p : any, param : any) => any ;
+export var filter: (p : any, param : any) => any ;
+export var partition: (p : any, param : any) => any ;
+export var cardinal: (param : any) => any ;
+export var bindings: (s : any) => any ;
+export var min_binding: (param : any) => any ;
+export var max_binding: (param : any) => any ;
+export var choose: (param : any) => any ;
+export var split: (x : any, param : any) => any ;
+export var find: (x : any, param : any) => any ;
+export var map: (f : any, param : any) => any ;
+export var mapi: (f : any, param : any) => any ;
+

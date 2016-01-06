@@ -1,0 +1,7 @@
+# -*-mode:yaml-*-
+
+rules:
+  no-unused-vars: 0
+env:
+  node: true
+extends: 'eslint:recommended'
