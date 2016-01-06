@@ -1,0 +1,10 @@
+*.ml
+*.mli
+*.odoc
+*.depends
+*.where
+_log
+_digests
+*.
+*.odocl
+myocamlbuild

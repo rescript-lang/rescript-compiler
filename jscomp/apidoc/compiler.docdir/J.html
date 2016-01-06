@@ -1,0 +1,651 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="../style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Int_map.html">
+<link rel="next" href="J_helper.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Config_util" rel="Chapter" href="Config_util.html">
+<link title="Ext_filename" rel="Chapter" href="Ext_filename.html">
+<link title="Ext_format" rel="Chapter" href="Ext_format.html">
+<link title="Ext_ident" rel="Chapter" href="Ext_ident.html">
+<link title="Ext_list" rel="Chapter" href="Ext_list.html">
+<link title="Ext_log" rel="Chapter" href="Ext_log.html">
+<link title="Ext_marshal" rel="Chapter" href="Ext_marshal.html">
+<link title="Ext_option" rel="Chapter" href="Ext_option.html">
+<link title="Ext_pervasives" rel="Chapter" href="Ext_pervasives.html">
+<link title="Ext_pp" rel="Chapter" href="Ext_pp.html">
+<link title="Ext_pp_scope" rel="Chapter" href="Ext_pp_scope.html">
+<link title="Ext_string" rel="Chapter" href="Ext_string.html">
+<link title="Hash_set" rel="Chapter" href="Hash_set.html">
+<link title="Ident_map" rel="Chapter" href="Ident_map.html">
+<link title="Ident_set" rel="Chapter" href="Ident_set.html">
+<link title="Ident_util" rel="Chapter" href="Ident_util.html">
+<link title="Idents_analysis" rel="Chapter" href="Idents_analysis.html">
+<link title="Int_map" rel="Chapter" href="Int_map.html">
+<link title="J" rel="Chapter" href="J.html">
+<link title="J_helper" rel="Chapter" href="J_helper.html">
+<link title="Js_analyzer" rel="Chapter" href="Js_analyzer.html">
+<link title="Js_call_info" rel="Chapter" href="Js_call_info.html">
+<link title="Js_closure" rel="Chapter" href="Js_closure.html">
+<link title="Js_cmj_format" rel="Chapter" href="Js_cmj_format.html">
+<link title="Js_dump" rel="Chapter" href="Js_dump.html">
+<link title="Js_fold" rel="Chapter" href="Js_fold.html">
+<link title="Js_fold_basic" rel="Chapter" href="Js_fold_basic.html">
+<link title="Js_fun_env" rel="Chapter" href="Js_fun_env.html">
+<link title="Js_implementation" rel="Chapter" href="Js_implementation.html">
+<link title="Js_inline_and_eliminate" rel="Chapter" href="Js_inline_and_eliminate.html">
+<link title="Js_map" rel="Chapter" href="Js_map.html">
+<link title="Js_of_lam_array" rel="Chapter" href="Js_of_lam_array.html">
+<link title="Js_of_lam_block" rel="Chapter" href="Js_of_lam_block.html">
+<link title="Js_of_lam_string" rel="Chapter" href="Js_of_lam_string.html">
+<link title="Js_of_lam_tuple" rel="Chapter" href="Js_of_lam_tuple.html">
+<link title="Js_op" rel="Chapter" href="Js_op.html">
+<link title="Js_op_util" rel="Chapter" href="Js_op_util.html">
+<link title="Js_output" rel="Chapter" href="Js_output.html">
+<link title="Js_pass_flatten" rel="Chapter" href="Js_pass_flatten.html">
+<link title="Js_pass_flatten_and_mark_dead" rel="Chapter" href="Js_pass_flatten_and_mark_dead.html">
+<link title="Js_pass_scope" rel="Chapter" href="Js_pass_scope.html">
+<link title="Js_program_loader" rel="Chapter" href="Js_program_loader.html">
+<link title="Js_shake" rel="Chapter" href="Js_shake.html">
+<link title="Lam_compile" rel="Chapter" href="Lam_compile.html">
+<link title="Lam_compile_const" rel="Chapter" href="Lam_compile_const.html">
+<link title="Lam_compile_defs" rel="Chapter" href="Lam_compile_defs.html">
+<link title="Lam_compile_env" rel="Chapter" href="Lam_compile_env.html">
+<link title="Lam_compile_external_call" rel="Chapter" href="Lam_compile_external_call.html">
+<link title="Lam_compile_global" rel="Chapter" href="Lam_compile_global.html">
+<link title="Lam_compile_group" rel="Chapter" href="Lam_compile_group.html">
+<link title="Lam_compile_primitive" rel="Chapter" href="Lam_compile_primitive.html">
+<link title="Lam_compile_util" rel="Chapter" href="Lam_compile_util.html">
+<link title="Lam_dce" rel="Chapter" href="Lam_dce.html">
+<link title="Lam_dispatch_primitive" rel="Chapter" href="Lam_dispatch_primitive.html">
+<link title="Lam_fold" rel="Chapter" href="Lam_fold.html">
+<link title="Lam_inline_util" rel="Chapter" href="Lam_inline_util.html">
+<link title="Lam_map" rel="Chapter" href="Lam_map.html">
+<link title="Lam_module_ident" rel="Chapter" href="Lam_module_ident.html">
+<link title="Lam_pass_alpha_conversion" rel="Chapter" href="Lam_pass_alpha_conversion.html">
+<link title="Lam_pass_alpha_with_arity" rel="Chapter" href="Lam_pass_alpha_with_arity.html">
+<link title="Lam_pass_collect" rel="Chapter" href="Lam_pass_collect.html">
+<link title="Lam_pass_eliminate_ref" rel="Chapter" href="Lam_pass_eliminate_ref.html">
+<link title="Lam_pass_exits" rel="Chapter" href="Lam_pass_exits.html">
+<link title="Lam_pass_lets_dce" rel="Chapter" href="Lam_pass_lets_dce.html">
+<link title="Lam_pass_remove_alias" rel="Chapter" href="Lam_pass_remove_alias.html">
+<link title="Lam_pass_unused_params" rel="Chapter" href="Lam_pass_unused_params.html">
+<link title="Lam_runtime" rel="Chapter" href="Lam_runtime.html">
+<link title="Lam_stats" rel="Chapter" href="Lam_stats.html">
+<link title="Lam_stats_util" rel="Chapter" href="Lam_stats_util.html">
+<link title="Lam_util" rel="Chapter" href="Lam_util.html">
+<link title="Parsetree_util" rel="Chapter" href="Parsetree_util.html">
+<link title="String_map" rel="Chapter" href="String_map.html">
+<link title="String_set" rel="Chapter" href="String_set.html">
+<link title="Type_util" rel="Chapter" href="Type_util.html"><title>J</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Int_map.html" title="Int_map">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="J_helper.html" title="J_helper">Next</a>
+</div>
+<h1>Module <a href="type_J.html">J</a></h1>
+
+<pre><span class="keyword">module</span> J: <code class="code">sig</code> <a href="J.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Javascript IR
+<p>
+
+    It's a subset of Javascript AST specialized for OCaml lambda backend
+<p>
+
+    Note it's not exactly the same as Javascript, the AST itself follows lexical
+    convention and <code class="code">Block</code> is just a sequence of statements, which means it does 
+    not introduce new scope<br>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPElabel"><span class="keyword">type</span> <code class="type"></code>label</span> = <code class="type">string</code> </pre>
+
+
+<pre><span id="TYPEbinop"><span class="keyword">type</span> <code class="type"></code>binop</span> = <code class="type"><a href="Js_op.html#TYPEbinop">Js_op.binop</a></code> </pre>
+
+
+<pre><span id="TYPEkind"><span class="keyword">type</span> <code class="type"></code>kind</span> = <code class="type"><a href="Js_op.html#TYPEkind">Js_op.kind</a></code> </pre>
+
+
+<pre><span id="TYPEproperty"><span class="keyword">type</span> <code class="type"></code>property</span> = <code class="type"><a href="Js_op.html#TYPEproperty">Js_op.property</a></code> </pre>
+
+
+<pre><span id="TYPEnumber"><span class="keyword">type</span> <code class="type"></code>number</span> = <code class="type"><a href="Js_op.html#TYPEnumber">Js_op.number</a></code> </pre>
+
+
+<pre><span id="TYPEmutable_flag"><span class="keyword">type</span> <code class="type"></code>mutable_flag</span> = <code class="type"><a href="Js_op.html#TYPEmutable_flag">Js_op.mutable_flag</a></code> </pre>
+
+
+<pre><span id="TYPEident_info"><span class="keyword">type</span> <code class="type"></code>ident_info</span> = <code class="type"><a href="Js_op.html#TYPEident_info">Js_op.ident_info</a></code> </pre>
+
+
+<pre><span id="TYPEexports"><span class="keyword">type</span> <code class="type"></code>exports</span> = <code class="type"><a href="Js_op.html#TYPEexports">Js_op.exports</a></code> </pre>
+
+
+<pre><span id="TYPErequired_modules"><span class="keyword">type</span> <code class="type"></code>required_modules</span> = <code class="type"><a href="Js_op.html#TYPErequired_modules">Js_op.required_modules</a></code> </pre>
+
+
+<pre><span id="TYPEproperty_name"><span class="keyword">type</span> <code class="type"></code>property_name</span> = <code class="type">string</code> </pre>
+<div class="info ">
+object literal, if key is ident, in this case, it might be renamed by 
+    Google Closure  optimizer,
+    currently we always use quote<br>
+</div>
+
+
+<pre><span id="TYPEident"><span class="keyword">type</span> <code class="type"></code>ident</span> = <code class="type">Ident.t</code> </pre>
+
+
+<pre><code><span id="TYPEvident"><span class="keyword">type</span> <code class="type"></code>vident</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvident.Id"><span class="constructor">Id</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEident">ident</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvident.Qualified"><span class="constructor">Qualified</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEident">ident</a> * <a href="J.html#TYPEkind">kind</a> * string option</code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEexception_ident"><span class="keyword">type</span> <code class="type"></code>exception_ident</span> = <code class="type"><a href="J.html#TYPEident">ident</a></code> </pre>
+
+
+<pre><span id="TYPEfor_ident"><span class="keyword">type</span> <code class="type"></code>for_ident</span> = <code class="type"><a href="J.html#TYPEident">ident</a></code> </pre>
+
+
+<pre><span id="TYPEfor_direction"><span class="keyword">type</span> <code class="type"></code>for_direction</span> = <code class="type">Asttypes.direction_flag</code> </pre>
+
+
+<pre><span id="TYPEproperty_map"><span class="keyword">type</span> <code class="type"></code>property_map</span> = <code class="type">(<a href="J.html#TYPEproperty_name">property_name</a> * <a href="J.html#TYPEexpression">expression</a>) list</code> </pre>
+
+
+<pre><code><span id="TYPEexpression_desc"><span class="keyword">type</span> <code class="type"></code>expression_desc</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Math"><span class="constructor">Math</span></span> <span class="keyword">of</span> <code class="type">string * <a href="J.html#TYPEexpression">expression</a> list</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Array_length"><span class="constructor">Array_length</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.String_length"><span class="constructor">String_length</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Bytes_length"><span class="constructor">Bytes_length</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Function_length"><span class="constructor">Function_length</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Char_of_int"><span class="constructor">Char_of_int</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Char_to_int"><span class="constructor">Char_to_int</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Array_of_size"><span class="constructor">Array_of_size</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Array_append"><span class="constructor">Array_append</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a> list</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Tag_ml_obj"><span class="constructor">Tag_ml_obj</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.String_append"><span class="constructor">String_append</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Int_of_boolean"><span class="constructor">Int_of_boolean</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Is_type_number"><span class="constructor">Is_type_number</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Not"><span class="constructor">Not</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.String_of_small_int_array"><span class="constructor">String_of_small_int_array</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Dump"><span class="constructor">Dump</span></span> <span class="keyword">of</span> <code class="type"><a href="Js_op.html#TYPElevel">Js_op.level</a> * <a href="J.html#TYPEexpression">expression</a> list</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Seq"><span class="constructor">Seq</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Cond"><span class="constructor">Cond</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Bin"><span class="constructor">Bin</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEbinop">binop</a> * <a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.FlatCall"><span class="constructor">FlatCall</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Call"><span class="constructor">Call</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a> list * <a href="Js_call_info.html#TYPEt">Js_call_info.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.String_access"><span class="constructor">String_access</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Access"><span class="constructor">Access</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Dot"><span class="constructor">Dot</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * string * bool</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.New"><span class="constructor">New</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEexpression">expression</a> list option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Var"><span class="constructor">Var</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEvident">vident</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Fun"><span class="constructor">Fun</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEident">ident</a> list * <a href="J.html#TYPEblock">block</a> * <a href="Js_fun_env.html#TYPEt">Js_fun_env.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Str"><span class="constructor">Str</span></span> <span class="keyword">of</span> <code class="type">bool * string</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Array"><span class="constructor">Array</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> list * <a href="J.html#TYPEmutable_flag">mutable_flag</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Number"><span class="constructor">Number</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEnumber">number</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression_desc.Object"><span class="constructor">Object</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEproperty_map">property_map</a></code></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEfor_ident_expression"><span class="keyword">type</span> <code class="type"></code>for_ident_expression</span> = <code class="type"><a href="J.html#TYPEexpression">expression</a></code> </pre>
+
+
+<pre><span id="TYPEfinish_ident_expression"><span class="keyword">type</span> <code class="type"></code>finish_ident_expression</span> = <code class="type"><a href="J.html#TYPEexpression">expression</a></code> </pre>
+
+
+<pre><code><span id="TYPEstatement_desc"><span class="keyword">type</span> <code class="type"></code>statement_desc</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Block"><span class="constructor">Block</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEblock">block</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Variable"><span class="constructor">Variable</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEvariable_declaration">variable_declaration</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Exp"><span class="constructor">Exp</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.If"><span class="constructor">If</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEblock">block</a> * <a href="J.html#TYPEblock">block</a> option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.While"><span class="constructor">While</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPElabel">label</a> option * <a href="J.html#TYPEexpression">expression</a> * <a href="J.html#TYPEblock">block</a> * <a href="Js_closure.html#TYPEt">Js_closure.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.ForRange"><span class="constructor">ForRange</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEfor_ident_expression">for_ident_expression</a> option * <a href="J.html#TYPEfinish_ident_expression">finish_ident_expression</a> * <a href="J.html#TYPEfor_ident">for_ident</a><br>        * <a href="J.html#TYPEfor_direction">for_direction</a> * <a href="J.html#TYPEblock">block</a> * <a href="Js_closure.html#TYPEt">Js_closure.t</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Continue"><span class="constructor">Continue</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPElabel">label</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Break"><span class="constructor">Break</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Return"><span class="constructor">Return</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEreturn_expression">return_expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Int_switch"><span class="constructor">Int_switch</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * int <a href="J.html#TYPEcase_clause">case_clause</a> list * <a href="J.html#TYPEblock">block</a> option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.String_switch"><span class="constructor">String_switch</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a> * string <a href="J.html#TYPEcase_clause">case_clause</a> list * <a href="J.html#TYPEblock">block</a> option</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Throw"><span class="constructor">Throw</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEexpression">expression</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement_desc.Try"><span class="constructor">Try</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEblock">block</a> * (<a href="J.html#TYPEexception_ident">exception_ident</a> * <a href="J.html#TYPEblock">block</a>) option * <a href="J.html#TYPEblock">block</a> option</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEreturn_expression"><span class="keyword">type</span> <code class="type"></code>return_expression</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTreturn_expression.return_value">return_value</span>&nbsp;: <code class="type"><a href="J.html#TYPEexpression">expression</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEexpression"><span class="keyword">type</span> <code class="type"></code>expression</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression.expression_desc">expression_desc</span>&nbsp;: <code class="type"><a href="J.html#TYPEexpression_desc">expression_desc</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTexpression.comment">comment</span>&nbsp;: <code class="type">string option</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEstatement"><span class="keyword">type</span> <code class="type"></code>statement</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement.statement_desc">statement_desc</span>&nbsp;: <code class="type"><a href="J.html#TYPEstatement_desc">statement_desc</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstatement.comment">comment</span>&nbsp;: <code class="type">string option</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEvariable_declaration"><span class="keyword">type</span> <code class="type"></code>variable_declaration</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvariable_declaration.ident">ident</span>&nbsp;: <code class="type"><a href="J.html#TYPEident">ident</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvariable_declaration.value">value</span>&nbsp;: <code class="type"><a href="J.html#TYPEexpression">expression</a> option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvariable_declaration.property">property</span>&nbsp;: <code class="type"><a href="J.html#TYPEproperty">property</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTvariable_declaration.ident_info">ident_info</span>&nbsp;: <code class="type"><a href="J.html#TYPEident_info">ident_info</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEcase_clause"><span class="keyword">type</span> <code class="type">'a</code> case_clause</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcase_clause.case">case</span>&nbsp;: <code class="type">'a</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTcase_clause.body">body</span>&nbsp;: <code class="type"><a href="J.html#TYPEblock">block</a> * bool</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><span id="TYPEblock"><span class="keyword">type</span> <code class="type"></code>block</span> = <code class="type"><a href="J.html#TYPEstatement">statement</a> list</code> </pre>
+
+
+<pre><code><span id="TYPEprogram"><span class="keyword">type</span> <code class="type"></code>program</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.name">name</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.modules">modules</span>&nbsp;: <code class="type"><a href="J.html#TYPErequired_modules">required_modules</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.block">block</span>&nbsp;: <code class="type"><a href="J.html#TYPEblock">block</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.exports">exports</span>&nbsp;: <code class="type"><a href="J.html#TYPEexports">exports</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.export_set">export_set</span>&nbsp;: <code class="type">Ident_set.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTprogram.side_effect">side_effect</span>&nbsp;: <code class="type">string option</code>;</code></td>
+
+</tr></table>
+}
+
+
+</body></html>

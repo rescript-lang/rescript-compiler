@@ -1,0 +1,398 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="../style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Lam_runtime.html">
+<link rel="next" href="Lam_stats_util.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Config_util" rel="Chapter" href="Config_util.html">
+<link title="Ext_filename" rel="Chapter" href="Ext_filename.html">
+<link title="Ext_format" rel="Chapter" href="Ext_format.html">
+<link title="Ext_ident" rel="Chapter" href="Ext_ident.html">
+<link title="Ext_list" rel="Chapter" href="Ext_list.html">
+<link title="Ext_log" rel="Chapter" href="Ext_log.html">
+<link title="Ext_marshal" rel="Chapter" href="Ext_marshal.html">
+<link title="Ext_option" rel="Chapter" href="Ext_option.html">
+<link title="Ext_pervasives" rel="Chapter" href="Ext_pervasives.html">
+<link title="Ext_pp" rel="Chapter" href="Ext_pp.html">
+<link title="Ext_pp_scope" rel="Chapter" href="Ext_pp_scope.html">
+<link title="Ext_string" rel="Chapter" href="Ext_string.html">
+<link title="Hash_set" rel="Chapter" href="Hash_set.html">
+<link title="Ident_map" rel="Chapter" href="Ident_map.html">
+<link title="Ident_set" rel="Chapter" href="Ident_set.html">
+<link title="Ident_util" rel="Chapter" href="Ident_util.html">
+<link title="Idents_analysis" rel="Chapter" href="Idents_analysis.html">
+<link title="Int_map" rel="Chapter" href="Int_map.html">
+<link title="J" rel="Chapter" href="J.html">
+<link title="J_helper" rel="Chapter" href="J_helper.html">
+<link title="Js_analyzer" rel="Chapter" href="Js_analyzer.html">
+<link title="Js_call_info" rel="Chapter" href="Js_call_info.html">
+<link title="Js_closure" rel="Chapter" href="Js_closure.html">
+<link title="Js_cmj_format" rel="Chapter" href="Js_cmj_format.html">
+<link title="Js_dump" rel="Chapter" href="Js_dump.html">
+<link title="Js_fold" rel="Chapter" href="Js_fold.html">
+<link title="Js_fold_basic" rel="Chapter" href="Js_fold_basic.html">
+<link title="Js_fun_env" rel="Chapter" href="Js_fun_env.html">
+<link title="Js_implementation" rel="Chapter" href="Js_implementation.html">
+<link title="Js_inline_and_eliminate" rel="Chapter" href="Js_inline_and_eliminate.html">
+<link title="Js_map" rel="Chapter" href="Js_map.html">
+<link title="Js_of_lam_array" rel="Chapter" href="Js_of_lam_array.html">
+<link title="Js_of_lam_block" rel="Chapter" href="Js_of_lam_block.html">
+<link title="Js_of_lam_string" rel="Chapter" href="Js_of_lam_string.html">
+<link title="Js_of_lam_tuple" rel="Chapter" href="Js_of_lam_tuple.html">
+<link title="Js_op" rel="Chapter" href="Js_op.html">
+<link title="Js_op_util" rel="Chapter" href="Js_op_util.html">
+<link title="Js_output" rel="Chapter" href="Js_output.html">
+<link title="Js_pass_flatten" rel="Chapter" href="Js_pass_flatten.html">
+<link title="Js_pass_flatten_and_mark_dead" rel="Chapter" href="Js_pass_flatten_and_mark_dead.html">
+<link title="Js_pass_scope" rel="Chapter" href="Js_pass_scope.html">
+<link title="Js_program_loader" rel="Chapter" href="Js_program_loader.html">
+<link title="Js_shake" rel="Chapter" href="Js_shake.html">
+<link title="Lam_compile" rel="Chapter" href="Lam_compile.html">
+<link title="Lam_compile_const" rel="Chapter" href="Lam_compile_const.html">
+<link title="Lam_compile_defs" rel="Chapter" href="Lam_compile_defs.html">
+<link title="Lam_compile_env" rel="Chapter" href="Lam_compile_env.html">
+<link title="Lam_compile_external_call" rel="Chapter" href="Lam_compile_external_call.html">
+<link title="Lam_compile_global" rel="Chapter" href="Lam_compile_global.html">
+<link title="Lam_compile_group" rel="Chapter" href="Lam_compile_group.html">
+<link title="Lam_compile_primitive" rel="Chapter" href="Lam_compile_primitive.html">
+<link title="Lam_compile_util" rel="Chapter" href="Lam_compile_util.html">
+<link title="Lam_dce" rel="Chapter" href="Lam_dce.html">
+<link title="Lam_dispatch_primitive" rel="Chapter" href="Lam_dispatch_primitive.html">
+<link title="Lam_fold" rel="Chapter" href="Lam_fold.html">
+<link title="Lam_inline_util" rel="Chapter" href="Lam_inline_util.html">
+<link title="Lam_map" rel="Chapter" href="Lam_map.html">
+<link title="Lam_module_ident" rel="Chapter" href="Lam_module_ident.html">
+<link title="Lam_pass_alpha_conversion" rel="Chapter" href="Lam_pass_alpha_conversion.html">
+<link title="Lam_pass_alpha_with_arity" rel="Chapter" href="Lam_pass_alpha_with_arity.html">
+<link title="Lam_pass_collect" rel="Chapter" href="Lam_pass_collect.html">
+<link title="Lam_pass_eliminate_ref" rel="Chapter" href="Lam_pass_eliminate_ref.html">
+<link title="Lam_pass_exits" rel="Chapter" href="Lam_pass_exits.html">
+<link title="Lam_pass_lets_dce" rel="Chapter" href="Lam_pass_lets_dce.html">
+<link title="Lam_pass_remove_alias" rel="Chapter" href="Lam_pass_remove_alias.html">
+<link title="Lam_pass_unused_params" rel="Chapter" href="Lam_pass_unused_params.html">
+<link title="Lam_runtime" rel="Chapter" href="Lam_runtime.html">
+<link title="Lam_stats" rel="Chapter" href="Lam_stats.html">
+<link title="Lam_stats_util" rel="Chapter" href="Lam_stats_util.html">
+<link title="Lam_util" rel="Chapter" href="Lam_util.html">
+<link title="Parsetree_util" rel="Chapter" href="Parsetree_util.html">
+<link title="String_map" rel="Chapter" href="String_map.html">
+<link title="String_set" rel="Chapter" href="String_set.html">
+<link title="Type_util" rel="Chapter" href="Type_util.html"><title>Lam_stats</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Lam_runtime.html" title="Lam_runtime">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Lam_stats_util.html" title="Lam_stats_util">Next</a>
+</div>
+<h1>Module <a href="type_Lam_stats.html">Lam_stats</a></h1>
+
+<pre><span class="keyword">module</span> Lam_stats: <code class="code">sig</code> <a href="Lam_stats.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Types defined for lambda analysis<br>
+</div>
+<hr width="100%">
+
+<pre><code><span id="TYPEfunction_arities"><span class="keyword">type</span> <code class="type"></code>function_arities</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_arities.Determin"><span class="constructor">Determin</span></span> <span class="keyword">of</span> <code class="type">bool * (int * Ident.t list) list * bool</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+when the first argument is true, it is for sure 
+      approximation sound but not complete 
+<p>
+
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_arities.NA"><span class="constructor">NA</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><span id="TYPEalias_tbl"><span class="keyword">type</span> <code class="type"></code>alias_tbl</span> = <code class="type">(Ident.t, Ident.t) Hashtbl.t</code> </pre>
+<div class="info ">
+Keep track of which identifiers are aliased<br>
+</div>
+
+
+<pre><code><span id="TYPEstate"><span class="keyword">type</span> <code class="type"></code>state</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstate.Live"><span class="constructor">Live</span></span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Globals are always live<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstate.Dead"><span class="constructor">Dead</span></span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+removed after elimination<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTstate.NA"><span class="constructor">NA</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEfunction_kind"><span class="keyword">type</span> <code class="type"></code>function_kind</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_kind.Functor"><span class="constructor">Functor</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_kind.Function"><span class="constructor">Function</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_kind.NA"><span class="constructor">NA</span></span></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEfunction_id"><span class="keyword">type</span> <code class="type"></code>function_id</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_id.kind">kind</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEfunction_kind">function_kind</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTfunction_id.arity">arity</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEfunction_arities">function_arities</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTfunction_id.lambda">lambda</span>&nbsp;: <code class="type">Lambda.lambda</code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEelement"><span class="keyword">type</span> <code class="type"></code>element</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTelement.NA"><span class="constructor">NA</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTelement.SimpleForm"><span class="constructor">SimpleForm</span></span> <span class="keyword">of</span> <code class="type">Lambda.lambda</code></code></td>
+
+</tr></table>
+
+
+
+<pre><code><span id="TYPEkind"><span class="keyword">type</span> <code class="type"></code>kind</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.ImmutableBlock"><span class="constructor">ImmutableBlock</span></span> <span class="keyword">of</span> <code class="type"><a href="Lam_stats.html#TYPEelement">element</a> array</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.MutableBlock"><span class="constructor">MutableBlock</span></span> <span class="keyword">of</span> <code class="type"><a href="Lam_stats.html#TYPEelement">element</a> array</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Constant"><span class="constructor">Constant</span></span> <span class="keyword">of</span> <code class="type">Lambda.structured_constant</code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Module"><span class="constructor">Module</span></span> <span class="keyword">of</span> <code class="type">Ident.t</code></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+TODO: static module vs first class module<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Function"><span class="constructor">Function</span></span> <span class="keyword">of</span> <code class="type"><a href="Lam_stats.html#TYPEfunction_id">function_id</a></code></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Exception"><span class="constructor">Exception</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.Parameter"><span class="constructor">Parameter</span></span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+For this case, it can help us determine whether it should be inlined or not<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkind.NA"><span class="constructor">NA</span></span></code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider <code class="code">Lassign</code><br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+
+
+
+<pre><span id="TYPEident_tbl"><span class="keyword">type</span> <code class="type"></code>ident_tbl</span> = <code class="type">(Ident.t, <a href="Lam_stats.html#TYPEkind">kind</a>) Hashtbl.t</code> </pre>
+
+
+<pre><code><span id="TYPEident_info"><span class="keyword">type</span> <code class="type"></code>ident_info</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTident_info.kind">kind</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEkind">kind</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTident_info.state">state</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEstate">state</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+
+<pre><code><span id="TYPEmeta"><span class="keyword">type</span> <code class="type"></code>meta</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.env">env</span>&nbsp;: <code class="type">Env.t</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.filename">filename</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTmeta.export_idents">export_idents</span>&nbsp;: <code class="type">Ident.t list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.alias_tbl">alias_tbl</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEalias_tbl">alias_tbl</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.exit_codes">exit_codes</span>&nbsp;: <code class="type">int <a href="Hash_set.html#TYPEhashset">Hash_set.hashset</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTmeta.unused_exit_code">unused_exit_code</span>&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.ident_tbl">ident_tbl</span>&nbsp;: <code class="type"><a href="Lam_stats.html#TYPEident_tbl">ident_tbl</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
+we don't need count arities for all identifiers, for identifiers
+        for sure it's not a function, there is no need to count them<br>
+</div>
+</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTmeta.exports">exports</span>&nbsp;: <code class="type">Ident.t list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span><span id="TYPEELTmeta.required_modules">required_modules</span>&nbsp;: <code class="type"><a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> list</code>;</code></td>
+
+</tr></table>
+}
+
+
+</body></html>

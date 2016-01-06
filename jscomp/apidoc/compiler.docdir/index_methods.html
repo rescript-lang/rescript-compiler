@@ -1,0 +1,366 @@
+<html>
+<head>
+<link rel="stylesheet" href="../style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Config_util" rel="Chapter" href="Config_util.html">
+<link title="Ext_filename" rel="Chapter" href="Ext_filename.html">
+<link title="Ext_format" rel="Chapter" href="Ext_format.html">
+<link title="Ext_ident" rel="Chapter" href="Ext_ident.html">
+<link title="Ext_list" rel="Chapter" href="Ext_list.html">
+<link title="Ext_log" rel="Chapter" href="Ext_log.html">
+<link title="Ext_marshal" rel="Chapter" href="Ext_marshal.html">
+<link title="Ext_option" rel="Chapter" href="Ext_option.html">
+<link title="Ext_pervasives" rel="Chapter" href="Ext_pervasives.html">
+<link title="Ext_pp" rel="Chapter" href="Ext_pp.html">
+<link title="Ext_pp_scope" rel="Chapter" href="Ext_pp_scope.html">
+<link title="Ext_string" rel="Chapter" href="Ext_string.html">
+<link title="Hash_set" rel="Chapter" href="Hash_set.html">
+<link title="Ident_map" rel="Chapter" href="Ident_map.html">
+<link title="Ident_set" rel="Chapter" href="Ident_set.html">
+<link title="Ident_util" rel="Chapter" href="Ident_util.html">
+<link title="Idents_analysis" rel="Chapter" href="Idents_analysis.html">
+<link title="Int_map" rel="Chapter" href="Int_map.html">
+<link title="J" rel="Chapter" href="J.html">
+<link title="J_helper" rel="Chapter" href="J_helper.html">
+<link title="Js_analyzer" rel="Chapter" href="Js_analyzer.html">
+<link title="Js_call_info" rel="Chapter" href="Js_call_info.html">
+<link title="Js_closure" rel="Chapter" href="Js_closure.html">
+<link title="Js_cmj_format" rel="Chapter" href="Js_cmj_format.html">
+<link title="Js_dump" rel="Chapter" href="Js_dump.html">
+<link title="Js_fold" rel="Chapter" href="Js_fold.html">
+<link title="Js_fold_basic" rel="Chapter" href="Js_fold_basic.html">
+<link title="Js_fun_env" rel="Chapter" href="Js_fun_env.html">
+<link title="Js_implementation" rel="Chapter" href="Js_implementation.html">
+<link title="Js_inline_and_eliminate" rel="Chapter" href="Js_inline_and_eliminate.html">
+<link title="Js_map" rel="Chapter" href="Js_map.html">
+<link title="Js_of_lam_array" rel="Chapter" href="Js_of_lam_array.html">
+<link title="Js_of_lam_block" rel="Chapter" href="Js_of_lam_block.html">
+<link title="Js_of_lam_string" rel="Chapter" href="Js_of_lam_string.html">
+<link title="Js_of_lam_tuple" rel="Chapter" href="Js_of_lam_tuple.html">
+<link title="Js_op" rel="Chapter" href="Js_op.html">
+<link title="Js_op_util" rel="Chapter" href="Js_op_util.html">
+<link title="Js_output" rel="Chapter" href="Js_output.html">
+<link title="Js_pass_flatten" rel="Chapter" href="Js_pass_flatten.html">
+<link title="Js_pass_flatten_and_mark_dead" rel="Chapter" href="Js_pass_flatten_and_mark_dead.html">
+<link title="Js_pass_scope" rel="Chapter" href="Js_pass_scope.html">
+<link title="Js_program_loader" rel="Chapter" href="Js_program_loader.html">
+<link title="Js_shake" rel="Chapter" href="Js_shake.html">
+<link title="Lam_compile" rel="Chapter" href="Lam_compile.html">
+<link title="Lam_compile_const" rel="Chapter" href="Lam_compile_const.html">
+<link title="Lam_compile_defs" rel="Chapter" href="Lam_compile_defs.html">
+<link title="Lam_compile_env" rel="Chapter" href="Lam_compile_env.html">
+<link title="Lam_compile_external_call" rel="Chapter" href="Lam_compile_external_call.html">
+<link title="Lam_compile_global" rel="Chapter" href="Lam_compile_global.html">
+<link title="Lam_compile_group" rel="Chapter" href="Lam_compile_group.html">
+<link title="Lam_compile_primitive" rel="Chapter" href="Lam_compile_primitive.html">
+<link title="Lam_compile_util" rel="Chapter" href="Lam_compile_util.html">
+<link title="Lam_dce" rel="Chapter" href="Lam_dce.html">
+<link title="Lam_dispatch_primitive" rel="Chapter" href="Lam_dispatch_primitive.html">
+<link title="Lam_fold" rel="Chapter" href="Lam_fold.html">
+<link title="Lam_inline_util" rel="Chapter" href="Lam_inline_util.html">
+<link title="Lam_map" rel="Chapter" href="Lam_map.html">
+<link title="Lam_module_ident" rel="Chapter" href="Lam_module_ident.html">
+<link title="Lam_pass_alpha_conversion" rel="Chapter" href="Lam_pass_alpha_conversion.html">
+<link title="Lam_pass_alpha_with_arity" rel="Chapter" href="Lam_pass_alpha_with_arity.html">
+<link title="Lam_pass_collect" rel="Chapter" href="Lam_pass_collect.html">
+<link title="Lam_pass_eliminate_ref" rel="Chapter" href="Lam_pass_eliminate_ref.html">
+<link title="Lam_pass_exits" rel="Chapter" href="Lam_pass_exits.html">
+<link title="Lam_pass_lets_dce" rel="Chapter" href="Lam_pass_lets_dce.html">
+<link title="Lam_pass_remove_alias" rel="Chapter" href="Lam_pass_remove_alias.html">
+<link title="Lam_pass_unused_params" rel="Chapter" href="Lam_pass_unused_params.html">
+<link title="Lam_runtime" rel="Chapter" href="Lam_runtime.html">
+<link title="Lam_stats" rel="Chapter" href="Lam_stats.html">
+<link title="Lam_stats_util" rel="Chapter" href="Lam_stats_util.html">
+<link title="Lam_util" rel="Chapter" href="Lam_util.html">
+<link title="Parsetree_util" rel="Chapter" href="Parsetree_util.html">
+<link title="String_map" rel="Chapter" href="String_map.html">
+<link title="String_set" rel="Chapter" href="String_set.html">
+<link title="Type_util" rel="Chapter" href="Type_util.html"><title>Index of class methods</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of class methods</h1>
+<table>
+<tr><td align="left"><br>A</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODapply_info">apply_info</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODapply_info">apply_info</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODapply_status">apply_status</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODapply_status">apply_status</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODarray_kind">array_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODarray_kind">array_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>B</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODbigarray_kind">bigarray_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODbigarray_kind">bigarray_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODbigarray_layout">bigarray_layout</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODbigarray_layout">bigarray_layout</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODbinop">binop</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODbinop">binop</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODblock">block</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODblock">block</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODbool">bool</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODbool">bool</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODbool">bool</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODbool">bool</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODboxed_integer">boxed_integer</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODboxed_integer">boxed_integer</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>C</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODcase_clause">case_clause</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODcase_clause">case_clause</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODcomparison">comparison</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODcomparison">comparison</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODcompile_time_constant">compile_time_constant</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODcompile_time_constant">compile_time_constant</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>E</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODexception_ident">exception_ident</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODexception_ident">exception_ident</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODexports">exports</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODexports">exports</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODexpression">expression</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODexpression">expression</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODexpression_desc">expression_desc</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODexpression_desc">expression_desc</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>F</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODfinish_ident_expression">finish_ident_expression</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODfinish_ident_expression">finish_ident_expression</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODfor_direction">for_direction</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODfor_direction">for_direction</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODfor_ident">for_ident</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODfor_ident">for_ident</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODfor_ident_expression">for_ident_expression</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODfor_ident_expression">for_ident_expression</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODfunction_kind">function_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODfunction_kind">function_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>I</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODident">ident</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODident">ident</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODident">ident</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODident">ident</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODident_info">ident_info</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODident_info">ident_info</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODint">int</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODint">int</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODint">int</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODint">int</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>K</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODkind">kind</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODkind">kind</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>L</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODlabel">label</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODlabel">label</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlambda">lambda</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlambda">lambda</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlambda_event">lambda_event</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlambda_event">lambda_event</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlambda_event_kind">lambda_event_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlambda_event_kind">lambda_event_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlambda_switch">lambda_switch</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlambda_switch">lambda_switch</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlet_kind">let_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlet_kind">let_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODlist">list</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODlist">list</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODlist">list</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODlist">list</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODloc_kind">loc_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODloc_kind">loc_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODmeth_kind">meth_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODmeth_kind">meth_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODmutable_flag">mutable_flag</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODmutable_flag">mutable_flag</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>N</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODnumber">number</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODnumber">number</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>O</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODoption">option</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODoption">option</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODoption">option</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODoption">option</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>P</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODpointer_info">pointer_info</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODpointer_info">pointer_info</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODprimitive">primitive</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODprimitive">primitive</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODprogram">program</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODprogram">program</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODproperty">property</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODproperty">property</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODproperty_map">property_map</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODproperty_map">property_map</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODproperty_name">property_name</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODproperty_name">property_name</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODpublic_info">public_info</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODpublic_info">public_info</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>R</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODraise_kind">raise_kind</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODraise_kind">raise_kind</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODref">ref</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODref">ref</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODrequired_modules">required_modules</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODrequired_modules">required_modules</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODreturn_expression">return_expression</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODreturn_expression">return_expression</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>S</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODshared_code">shared_code</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODshared_code">shared_code</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODstatement">statement</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODstatement">statement</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODstatement_desc">statement_desc</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODstatement_desc">statement_desc</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODstring">string</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODstring">string</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODstring">string</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODstring">string</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODstructured_constant">structured_constant</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODstructured_constant">structured_constant</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>T</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODtag_info">tag_info</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODtag_info">tag_info</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>U</td></tr>
+<tr><td><a href="Lam_map.map-c.html#METHODunknown">unknown</a> [<a href="Lam_map.map-c.html">Lam_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_fold.fold-c.html#METHODunknown">unknown</a> [<a href="Lam_fold.fold-c.html">Lam_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODunknown">unknown</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODunknown">unknown</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>V</td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODvariable_declaration">variable_declaration</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODvariable_declaration">variable_declaration</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_map.map-c.html#METHODvident">vident</a> [<a href="Js_map.map-c.html">Js_map.map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold.fold-c.html#METHODvident">vident</a> [<a href="Js_fold.fold-c.html">Js_fold.fold</a>]</td>
+<td></td></tr>
+</table>
+</body>
+</html>

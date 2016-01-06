@@ -1,0 +1,392 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="../style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Config_util" rel="Chapter" href="Config_util.html">
+<link title="Ext_filename" rel="Chapter" href="Ext_filename.html">
+<link title="Ext_format" rel="Chapter" href="Ext_format.html">
+<link title="Ext_ident" rel="Chapter" href="Ext_ident.html">
+<link title="Ext_list" rel="Chapter" href="Ext_list.html">
+<link title="Ext_log" rel="Chapter" href="Ext_log.html">
+<link title="Ext_marshal" rel="Chapter" href="Ext_marshal.html">
+<link title="Ext_option" rel="Chapter" href="Ext_option.html">
+<link title="Ext_pervasives" rel="Chapter" href="Ext_pervasives.html">
+<link title="Ext_pp" rel="Chapter" href="Ext_pp.html">
+<link title="Ext_pp_scope" rel="Chapter" href="Ext_pp_scope.html">
+<link title="Ext_string" rel="Chapter" href="Ext_string.html">
+<link title="Hash_set" rel="Chapter" href="Hash_set.html">
+<link title="Ident_map" rel="Chapter" href="Ident_map.html">
+<link title="Ident_set" rel="Chapter" href="Ident_set.html">
+<link title="Ident_util" rel="Chapter" href="Ident_util.html">
+<link title="Idents_analysis" rel="Chapter" href="Idents_analysis.html">
+<link title="Int_map" rel="Chapter" href="Int_map.html">
+<link title="J" rel="Chapter" href="J.html">
+<link title="J_helper" rel="Chapter" href="J_helper.html">
+<link title="Js_analyzer" rel="Chapter" href="Js_analyzer.html">
+<link title="Js_call_info" rel="Chapter" href="Js_call_info.html">
+<link title="Js_closure" rel="Chapter" href="Js_closure.html">
+<link title="Js_cmj_format" rel="Chapter" href="Js_cmj_format.html">
+<link title="Js_dump" rel="Chapter" href="Js_dump.html">
+<link title="Js_fold" rel="Chapter" href="Js_fold.html">
+<link title="Js_fold_basic" rel="Chapter" href="Js_fold_basic.html">
+<link title="Js_fun_env" rel="Chapter" href="Js_fun_env.html">
+<link title="Js_implementation" rel="Chapter" href="Js_implementation.html">
+<link title="Js_inline_and_eliminate" rel="Chapter" href="Js_inline_and_eliminate.html">
+<link title="Js_map" rel="Chapter" href="Js_map.html">
+<link title="Js_of_lam_array" rel="Chapter" href="Js_of_lam_array.html">
+<link title="Js_of_lam_block" rel="Chapter" href="Js_of_lam_block.html">
+<link title="Js_of_lam_string" rel="Chapter" href="Js_of_lam_string.html">
+<link title="Js_of_lam_tuple" rel="Chapter" href="Js_of_lam_tuple.html">
+<link title="Js_op" rel="Chapter" href="Js_op.html">
+<link title="Js_op_util" rel="Chapter" href="Js_op_util.html">
+<link title="Js_output" rel="Chapter" href="Js_output.html">
+<link title="Js_pass_flatten" rel="Chapter" href="Js_pass_flatten.html">
+<link title="Js_pass_flatten_and_mark_dead" rel="Chapter" href="Js_pass_flatten_and_mark_dead.html">
+<link title="Js_pass_scope" rel="Chapter" href="Js_pass_scope.html">
+<link title="Js_program_loader" rel="Chapter" href="Js_program_loader.html">
+<link title="Js_shake" rel="Chapter" href="Js_shake.html">
+<link title="Lam_compile" rel="Chapter" href="Lam_compile.html">
+<link title="Lam_compile_const" rel="Chapter" href="Lam_compile_const.html">
+<link title="Lam_compile_defs" rel="Chapter" href="Lam_compile_defs.html">
+<link title="Lam_compile_env" rel="Chapter" href="Lam_compile_env.html">
+<link title="Lam_compile_external_call" rel="Chapter" href="Lam_compile_external_call.html">
+<link title="Lam_compile_global" rel="Chapter" href="Lam_compile_global.html">
+<link title="Lam_compile_group" rel="Chapter" href="Lam_compile_group.html">
+<link title="Lam_compile_primitive" rel="Chapter" href="Lam_compile_primitive.html">
+<link title="Lam_compile_util" rel="Chapter" href="Lam_compile_util.html">
+<link title="Lam_dce" rel="Chapter" href="Lam_dce.html">
+<link title="Lam_dispatch_primitive" rel="Chapter" href="Lam_dispatch_primitive.html">
+<link title="Lam_fold" rel="Chapter" href="Lam_fold.html">
+<link title="Lam_inline_util" rel="Chapter" href="Lam_inline_util.html">
+<link title="Lam_map" rel="Chapter" href="Lam_map.html">
+<link title="Lam_module_ident" rel="Chapter" href="Lam_module_ident.html">
+<link title="Lam_pass_alpha_conversion" rel="Chapter" href="Lam_pass_alpha_conversion.html">
+<link title="Lam_pass_alpha_with_arity" rel="Chapter" href="Lam_pass_alpha_with_arity.html">
+<link title="Lam_pass_collect" rel="Chapter" href="Lam_pass_collect.html">
+<link title="Lam_pass_eliminate_ref" rel="Chapter" href="Lam_pass_eliminate_ref.html">
+<link title="Lam_pass_exits" rel="Chapter" href="Lam_pass_exits.html">
+<link title="Lam_pass_lets_dce" rel="Chapter" href="Lam_pass_lets_dce.html">
+<link title="Lam_pass_remove_alias" rel="Chapter" href="Lam_pass_remove_alias.html">
+<link title="Lam_pass_unused_params" rel="Chapter" href="Lam_pass_unused_params.html">
+<link title="Lam_runtime" rel="Chapter" href="Lam_runtime.html">
+<link title="Lam_stats" rel="Chapter" href="Lam_stats.html">
+<link title="Lam_stats_util" rel="Chapter" href="Lam_stats_util.html">
+<link title="Lam_util" rel="Chapter" href="Lam_util.html">
+<link title="Parsetree_util" rel="Chapter" href="Parsetree_util.html">
+<link title="String_map" rel="Chapter" href="String_map.html">
+<link title="String_set" rel="Chapter" href="String_set.html">
+<link title="Type_util" rel="Chapter" href="Type_util.html"><title></title>
+</head>
+<body>
+<h1></h1>
+<ul class="indexlist">
+<li><a href="index_types.html">Index of types</a></li>
+<li><a href="index_values.html">Index of values</a></li>
+<li><a href="index_methods.html">Index of class methods</a></li>
+<li><a href="index_classes.html">Index of classes</a></li>
+<li><a href="index_modules.html">Index of modules</a></li>
+</ul>
+<br/><br>
+<table class="indextable">
+<tr><td class="module"><a href="Config_util.html">Config_util</a></td><td><div class="info">
+A simple wrapper around <code class="code">Config</code> module in compiler-libs, so that the search path
+    is the same
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_filename.html">Ext_filename</a></td><td><div class="info">
+An extension module to calculate relative path follow node/npm style.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_format.html">Ext_format</a></td><td><div class="info">
+Simplified wrapper module for the standard library <code class="code">Format</code> module.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_ident.html">Ext_ident</a></td><td><div class="info">
+A wrapper around <code class="code">Ident</code> module in compiler-libs
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_list.html">Ext_list</a></td><td><div class="info">
+Extension to the standard library <code class="code">List</code> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_log.html">Ext_log</a></td><td><div class="info">
+A Poor man's logging utility
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_marshal.html">Ext_marshal</a></td><td><div class="info">
+Extension to the standard library <code class="code">Marshall</code> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_option.html">Ext_option</a></td><td><div class="info">
+Utilities for <code class="code">option</code> type
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_pervasives.html">Ext_pervasives</a></td><td><div class="info">
+Extension to standard library <code class="code">Pervavives</code> module, safe to open
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_pp.html">Ext_pp</a></td><td><div class="info">
+A simple pretty printer
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_pp_scope.html">Ext_pp_scope</a></td><td><div class="info">
+Scope type to improve identifier name printing
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ext_string.html">Ext_string</a></td><td><div class="info">
+Extension to the standard library <code class="code">String</code> module.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Hash_set.html">Hash_set</a></td><td><div class="info">
+A naive hashset implementation on top of <code class="code">hashtbl</code>, the value is <code class="code">unit</code>
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ident_map.html">Ident_map</a></td><td><div class="info">
+Map with key specialized as <code class="code">Ident</code> type, enhanced with some utilities
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ident_set.html">Ident_set</a></td><td><div class="info">
+Set with key specialized as <code class="code">Ident.t</code> type
+</div>
+</td></tr>
+<tr><td class="module"><a href="Ident_util.html">Ident_util</a></td><td><div class="info">
+Utilities for <code class="code">ident</code> type
+</div>
+</td></tr>
+<tr><td class="module"><a href="Idents_analysis.html">Idents_analysis</a></td><td><div class="info">
+A simple algorithm to calcuate <code class="code">used</code> idents given its dependencies and 
+    initial list.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Int_map.html">Int_map</a></td><td></td></tr>
+<tr><td class="module"><a href="J.html">J</a></td><td><div class="info">
+Javascript IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="J_helper.html">J_helper</a></td><td><div class="info">
+Creator utilities for the <code class="code">J</code> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_analyzer.html">Js_analyzer</a></td><td><div class="info">
+Analyzing utilities for <code class="code">J</code> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_call_info.html">Js_call_info</a></td><td><div class="info">
+Type for collecting call site information, used in JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_closure.html">Js_closure</a></td><td><div class="info">
+Define a type used in JS IR to help convert lexical scope to JS <code class="code">var</code> 
+    based scope convention
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_cmj_format.html">Js_cmj_format</a></td><td><div class="info">
+Define intemediate format to be serialized for cross module optimization
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_dump.html">Js_dump</a></td><td><div class="info">
+Print JS IR to vanilla Javascript code
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_fold.html">Js_fold</a></td><td><div class="info">
+GENERATED CODE for fold visitor patten of JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_fold_basic.html">Js_fold_basic</a></td><td><div class="info">
+A module to calculate hard dependency based on JS IR in module <code class="code">J</code>
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_fun_env.html">Js_fun_env</a></td><td><div class="info">
+Define type t used in JS IR to collect some meta data for a function, like its closures, etc
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_implementation.html">Js_implementation</a></td><td><div class="info">
+High level compilation module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_inline_and_eliminate.html">Js_inline_and_eliminate</a></td><td><div class="info">
+Inline and remove unused code in JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_map.html">Js_map</a></td><td><div class="info">
+GENERATED CODE, map visitor for JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_of_lam_array.html">Js_of_lam_array</a></td><td><div class="info">
+Utilities for creating Array of JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_of_lam_block.html">Js_of_lam_block</a></td><td><div class="info">
+Utilities for creating block of lambda expression in JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_of_lam_string.html">Js_of_lam_string</a></td><td><div class="info">
+Utilities to wrap <code class="code">string</code> and <code class="code">bytes</code> compilation, 
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_of_lam_tuple.html">Js_of_lam_tuple</a></td><td><div class="info">
+Utilities for compiling lambda tuple into JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_op.html">Js_op</a></td><td><div class="info">
+Define some basic types used in JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_op_util.html">Js_op_util</a></td><td><div class="info">
+Some basic utilties around <a href="Js_op.html"><code class="code">Js_op</code></a> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_output.html">Js_output</a></td><td><div class="info">
+The intemediate output when compiling lambda into JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_pass_flatten.html">Js_pass_flatten</a></td><td><div class="info">
+A pass converting nested js statement into a flatten visual appearance
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_pass_flatten_and_mark_dead.html">Js_pass_flatten_and_mark_dead</a></td><td><div class="info">
+A pass to mark some declarations in JS IR as dead code
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_pass_scope.html">Js_pass_scope</a></td><td><div class="info">
+A module to do scope analysis over JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_program_loader.html">Js_program_loader</a></td><td><div class="info">
+A module to create the whole JS program IR with <code class="code">requires</code> and <code class="code">exports</code>
+</div>
+</td></tr>
+<tr><td class="module"><a href="Js_shake.html">Js_shake</a></td><td><div class="info">
+A module to shake JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile.html">Lam_compile</a></td><td><div class="info">
+Compile single lambda IR to JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_const.html">Lam_compile_const</a></td><td><div class="info">
+Compile lambda constant to JS
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_defs.html">Lam_compile_defs</a></td><td><div class="info">
+some types defined in this module to 
+    help avoiding generating unnecessary symbols 
+    (generating too many symbols will make the output code unreadable)
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_env.html">Lam_compile_env</a></td><td><div class="info">
+the boolean is expand or not
+        when it's passed as module, it should be expanded, 
+        otherwise for alias, <code class="code">include Array</code>, it's okay to return an identifier
+        TODO: be more clear about its concept
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_external_call.html">Lam_compile_external_call</a></td><td><div class="info">
+Compile ocaml external  function call to JS IR, this module define how FFI via `external` works with attributes, note it will route to <a href="Lam_compile_global.html"><code class="code">Lam_compile_global</code></a> for compiling normal functions without attributes.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_global.html">Lam_compile_global</a></td><td><div class="info">
+Compile ocaml external module call , e.g <code class="code">List.length</code> to  JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_group.html">Lam_compile_group</a></td><td><div class="info">
+The entry point: compile and register the hook of function to compile  a lambda to 
+    JS IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_primitive.html">Lam_compile_primitive</a></td><td><div class="info">
+The entry point of compile primitives
+    Note it will call <a href="Lam_compile_external_call.html#VALtranslate"><code class="code">Lam_compile_external_call.translate</code></a> for c stubs compilation
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_compile_util.html">Lam_compile_util</a></td><td><div class="info">
+Some utilities for lambda compilation
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_dce.html">Lam_dce</a></td><td><div class="info">
+Dead code eliminatiion on the lambda layer
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_dispatch_primitive.html">Lam_dispatch_primitive</a></td><td><div class="info">
+Compile lambda primitives (note this is different external c calls)
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_fold.html">Lam_fold</a></td><td></td></tr>
+<tr><td class="module"><a href="Lam_inline_util.html">Lam_inline_util</a></td><td><div class="info">
+Utilities for lambda inlining
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_map.html">Lam_map</a></td><td></td></tr>
+<tr><td class="module"><a href="Lam_module_ident.html">Lam_module_ident</a></td><td><div class="info">
+A type for qualified identifiers in Lambda IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_alpha_conversion.html">Lam_pass_alpha_conversion</a></td><td><div class="info">
+alpha conversion based on arity
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_alpha_with_arity.html">Lam_pass_alpha_with_arity</a></td><td><div class="info">
+Beta reduction of lambda IR
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_collect.html">Lam_pass_collect</a></td><td><div class="info">
+This pass is used to collect meta data information.
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_eliminate_ref.html">Lam_pass_eliminate_ref</a></td><td></td></tr>
+<tr><td class="module"><a href="Lam_pass_exits.html">Lam_pass_exits</a></td><td><div class="info">
+A pass used to optimize the exit code compilation, adaped from the compiler's
+    <code class="code">simplif</code> module
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_lets_dce.html">Lam_pass_lets_dce</a></td><td><div class="info">
+This pass would do beta reduction, and dead code elimination (adapted from compiler's built-in <code class="code">Simplif</code> module )
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_remove_alias.html">Lam_pass_remove_alias</a></td><td><div class="info">
+One way:  guarantee that all global aliases *would be removed* ,
+    it will not be aliased 
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_pass_unused_params.html">Lam_pass_unused_params</a></td><td><div class="info">
+A pass to mark all unused params
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_runtime.html">Lam_runtime</a></td><td><div class="info">
+Pre-define some constants
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_stats.html">Lam_stats</a></td><td><div class="info">
+Types defined for lambda analysis
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_stats_util.html">Lam_stats_util</a></td><td><div class="info">
+Utilities for lambda analysis
+</div>
+</td></tr>
+<tr><td class="module"><a href="Lam_util.html">Lam_util</a></td><td><div class="info">
+No side effect, but it might depend on data store
+</div>
+</td></tr>
+<tr><td class="module"><a href="Parsetree_util.html">Parsetree_util</a></td><td><div class="info">
+A utility module used when destructuring parsetree attributes, used for 
+    compiling FFI code
+</div>
+</td></tr>
+<tr><td class="module"><a href="String_map.html">String_map</a></td><td></td></tr>
+<tr><td class="module"><a href="String_set.html">String_set</a></td><td></td></tr>
+<tr><td class="module"><a href="Type_util.html">Type_util</a></td><td><div class="info">
+Utilities for quering typing inforaation from <code class="code">Env.t</code>, this part relies
+    on compiler API
+</div>
+</td></tr>
+</table>
+</body>
+</html>

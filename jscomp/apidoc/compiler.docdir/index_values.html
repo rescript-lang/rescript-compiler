@@ -1,0 +1,925 @@
+<html>
+<head>
+<link rel="stylesheet" href="../style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of class methods" rel=Appendix href="index_methods.html">
+<link title="Index of classes" rel=Appendix href="index_classes.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Config_util" rel="Chapter" href="Config_util.html">
+<link title="Ext_filename" rel="Chapter" href="Ext_filename.html">
+<link title="Ext_format" rel="Chapter" href="Ext_format.html">
+<link title="Ext_ident" rel="Chapter" href="Ext_ident.html">
+<link title="Ext_list" rel="Chapter" href="Ext_list.html">
+<link title="Ext_log" rel="Chapter" href="Ext_log.html">
+<link title="Ext_marshal" rel="Chapter" href="Ext_marshal.html">
+<link title="Ext_option" rel="Chapter" href="Ext_option.html">
+<link title="Ext_pervasives" rel="Chapter" href="Ext_pervasives.html">
+<link title="Ext_pp" rel="Chapter" href="Ext_pp.html">
+<link title="Ext_pp_scope" rel="Chapter" href="Ext_pp_scope.html">
+<link title="Ext_string" rel="Chapter" href="Ext_string.html">
+<link title="Hash_set" rel="Chapter" href="Hash_set.html">
+<link title="Ident_map" rel="Chapter" href="Ident_map.html">
+<link title="Ident_set" rel="Chapter" href="Ident_set.html">
+<link title="Ident_util" rel="Chapter" href="Ident_util.html">
+<link title="Idents_analysis" rel="Chapter" href="Idents_analysis.html">
+<link title="Int_map" rel="Chapter" href="Int_map.html">
+<link title="J" rel="Chapter" href="J.html">
+<link title="J_helper" rel="Chapter" href="J_helper.html">
+<link title="Js_analyzer" rel="Chapter" href="Js_analyzer.html">
+<link title="Js_call_info" rel="Chapter" href="Js_call_info.html">
+<link title="Js_closure" rel="Chapter" href="Js_closure.html">
+<link title="Js_cmj_format" rel="Chapter" href="Js_cmj_format.html">
+<link title="Js_dump" rel="Chapter" href="Js_dump.html">
+<link title="Js_fold" rel="Chapter" href="Js_fold.html">
+<link title="Js_fold_basic" rel="Chapter" href="Js_fold_basic.html">
+<link title="Js_fun_env" rel="Chapter" href="Js_fun_env.html">
+<link title="Js_implementation" rel="Chapter" href="Js_implementation.html">
+<link title="Js_inline_and_eliminate" rel="Chapter" href="Js_inline_and_eliminate.html">
+<link title="Js_map" rel="Chapter" href="Js_map.html">
+<link title="Js_of_lam_array" rel="Chapter" href="Js_of_lam_array.html">
+<link title="Js_of_lam_block" rel="Chapter" href="Js_of_lam_block.html">
+<link title="Js_of_lam_string" rel="Chapter" href="Js_of_lam_string.html">
+<link title="Js_of_lam_tuple" rel="Chapter" href="Js_of_lam_tuple.html">
+<link title="Js_op" rel="Chapter" href="Js_op.html">
+<link title="Js_op_util" rel="Chapter" href="Js_op_util.html">
+<link title="Js_output" rel="Chapter" href="Js_output.html">
+<link title="Js_pass_flatten" rel="Chapter" href="Js_pass_flatten.html">
+<link title="Js_pass_flatten_and_mark_dead" rel="Chapter" href="Js_pass_flatten_and_mark_dead.html">
+<link title="Js_pass_scope" rel="Chapter" href="Js_pass_scope.html">
+<link title="Js_program_loader" rel="Chapter" href="Js_program_loader.html">
+<link title="Js_shake" rel="Chapter" href="Js_shake.html">
+<link title="Lam_compile" rel="Chapter" href="Lam_compile.html">
+<link title="Lam_compile_const" rel="Chapter" href="Lam_compile_const.html">
+<link title="Lam_compile_defs" rel="Chapter" href="Lam_compile_defs.html">
+<link title="Lam_compile_env" rel="Chapter" href="Lam_compile_env.html">
+<link title="Lam_compile_external_call" rel="Chapter" href="Lam_compile_external_call.html">
+<link title="Lam_compile_global" rel="Chapter" href="Lam_compile_global.html">
+<link title="Lam_compile_group" rel="Chapter" href="Lam_compile_group.html">
+<link title="Lam_compile_primitive" rel="Chapter" href="Lam_compile_primitive.html">
+<link title="Lam_compile_util" rel="Chapter" href="Lam_compile_util.html">
+<link title="Lam_dce" rel="Chapter" href="Lam_dce.html">
+<link title="Lam_dispatch_primitive" rel="Chapter" href="Lam_dispatch_primitive.html">
+<link title="Lam_fold" rel="Chapter" href="Lam_fold.html">
+<link title="Lam_inline_util" rel="Chapter" href="Lam_inline_util.html">
+<link title="Lam_map" rel="Chapter" href="Lam_map.html">
+<link title="Lam_module_ident" rel="Chapter" href="Lam_module_ident.html">
+<link title="Lam_pass_alpha_conversion" rel="Chapter" href="Lam_pass_alpha_conversion.html">
+<link title="Lam_pass_alpha_with_arity" rel="Chapter" href="Lam_pass_alpha_with_arity.html">
+<link title="Lam_pass_collect" rel="Chapter" href="Lam_pass_collect.html">
+<link title="Lam_pass_eliminate_ref" rel="Chapter" href="Lam_pass_eliminate_ref.html">
+<link title="Lam_pass_exits" rel="Chapter" href="Lam_pass_exits.html">
+<link title="Lam_pass_lets_dce" rel="Chapter" href="Lam_pass_lets_dce.html">
+<link title="Lam_pass_remove_alias" rel="Chapter" href="Lam_pass_remove_alias.html">
+<link title="Lam_pass_unused_params" rel="Chapter" href="Lam_pass_unused_params.html">
+<link title="Lam_runtime" rel="Chapter" href="Lam_runtime.html">
+<link title="Lam_stats" rel="Chapter" href="Lam_stats.html">
+<link title="Lam_stats_util" rel="Chapter" href="Lam_stats_util.html">
+<link title="Lam_util" rel="Chapter" href="Lam_util.html">
+<link title="Parsetree_util" rel="Chapter" href="Parsetree_util.html">
+<link title="String_map" rel="Chapter" href="String_map.html">
+<link title="String_set" rel="Chapter" href="String_set.html">
+<link title="Type_util" rel="Chapter" href="Type_util.html"><title>Index of values</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Index of values</h1>
+<table>
+<tr><td align="left"><br></td></tr>
+<tr><td><a href="Js_output.Ops.html#VAL(++)">(++)</a> [<a href="Js_output.Ops.html">Js_output.Ops</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>A</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALaccess">access</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALadd">add</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALadd">add</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp_scope.html#VALadd_ident">add_ident</a> [<a href="Ext_pp_scope.html">Ext_pp_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ident_map.html#VALadd_if_not_exist">add_if_not_exist</a> [<a href="Ident_map.html">Ident_map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_env.html#VALadd_js_module">add_js_module</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td><div class="info">
+add third party dependency
+</div>
+</td></tr>
+<tr><td><a href="Lam_util.html#VALadd_required_module">add_required_module</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALadd_required_modules">add_required_modules</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALalias">alias</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_alpha_conversion.html#VALalpha_conversion">alpha_conversion</a> [<a href="Lam_pass_alpha_conversion.html">Lam_pass_alpha_conversion</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALand_">and_</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALarr">arr</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALarray">array</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALarray_append">array_append</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALarray_length">array_length</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALassign">assign</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALassign">assign</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALassign_unit">assign_unit</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>B</td></tr>
+<tr><td><a href="Lam_util.html#VALbeta_reduce">beta_reduce</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALbin">bin</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_option.html#VALbind">bind</a> [<a href="Ext_option.html">Ext_option</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALblock">block</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALbool">bool</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALbrace">brace</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALbrace_group">brace_group</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALbrace_group">brace_group</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALbrace_vgroup">brace_vgroup</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALbrace_vgroup">brace_vgroup</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALbracket_group">bracket_group</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALbracket_group">bracket_group</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALbracket_vgroup">bracket_vgroup</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALbreak">break</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALbreak">break</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALbreak1">break1</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_runtime.html#VALbuiltin_modules">builtin_modules</a> [<a href="Lam_runtime.html">Lam_runtime</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALbytes_length">bytes_length</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALbytes_of_string">bytes_of_string</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALbytes_to_string">bytes_to_string</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>C</td></tr>
+<tr><td><a href="Js_fold_basic.html#VALcalculate_hard_dependencies">calculate_hard_dependencies</a> [<a href="Js_fold_basic.html">Js_fold_basic</a>]</td>
+<td></td></tr>
+<tr><td><a href="Idents_analysis.html#VALcalculate_used_idents">calculate_used_idents</a> [<a href="Idents_analysis.html">Idents_analysis</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALcall">call</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALcaml_char_of_int">caml_char_of_int</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALcaml_char_to_int">caml_char_to_int</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALchar_of_int">char_of_int</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALchar_to_int">char_to_int</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALclear">clear</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_collect.html#VALcollect_helper">collect_helper</a> [<a href="Lam_pass_collect.html">Lam_pass_collect</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_util.html#VALcomment_of_pointer_info">comment_of_pointer_info</a> [<a href="Lam_compile_util.html">Lam_compile_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_util.html#VALcomment_of_tag_info">comment_of_tag_info</a> [<a href="Lam_compile_util.html">Lam_compile_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_group.html#VALcompile">compile</a> [<a href="Lam_compile_group.html">Lam_compile_group</a>]</td>
+<td><div class="info">
+For toplevel, <code class="code">filename</code> is <code class="code">""</code> which is the same as
+    <code class="code">Env.get_unit_name ()</code>
+</div>
+</td></tr>
+<tr><td><a href="Lam_compile.html#VALcompile_lambda">compile_lambda</a> [<a href="Lam_compile.html">Lam_compile</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile.html#VALcompile_let">compile_let</a> [<a href="Lam_compile.html">Lam_compile</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile.html#VALcompile_recursive_lets">compile_recursive_lets</a> [<a href="Lam_compile.html">Lam_compile</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALconcat">concat</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALconst_char">const_char</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALconst_variable">const_variable</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALcontinue">continue</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALconvert">convert</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALcopy">copy</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_collect.html#VALcount_alias_globals">count_alias_globals</a> [<a href="Lam_pass_collect.html">Lam_pass_collect</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_exits.html#VALcount_helper">count_helper</a> [<a href="Lam_pass_exits.html">Lam_pass_exits</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALcreate">create</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALcreate">create</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALcreate_js">create_js</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALcreate_js_module">create_js_module</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>D</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALdec">dec</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALdeclare_unit">declare_unit</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALdeclare_variable">declare_variable</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALdeep_flatten">deep_flatten</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td><div class="info">
+Tricky to be complete
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALdefine">define</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fold_basic.html#VALdepends_j">depends_j</a> [<a href="Js_fold_basic.html">Js_fold_basic</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALdiv">div</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALdot">dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALdrop">drop</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALdummy">dummy</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_cmj_format.html#VALdummy">dummy</a> [<a href="Js_cmj_format.html">Js_cmj_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_call_info.html#VALdummy">dummy</a> [<a href="Js_call_info.html">Js_call_info</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALdump">dump</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALdump">dump</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_dump.html#VALdump_program">dump_program</a> [<a href="Js_dump.html">Js_dump</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>E</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALecond">econd</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALefun">efun</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALelements">elements</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALempty">empty</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_closure.html#VALempty">empty</a> [<a href="Js_closure.html">Js_closure</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALempty">empty</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp_scope.html#VALempty">empty</a> [<a href="Ext_pp_scope.html">Ext_pp_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_defs.html#VALempty_handler_map">empty_handler_map</a> [<a href="Lam_compile_defs.html">Lam_compile_defs</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_string.html#VALends_with">ends_with</a> [<a href="Ext_string.html">Ext_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_analyzer.html#VALeq_expression">eq_expression</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALeq_lambda">eq_lambda</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td><div class="info">
+a conservative version of comparing two lambdas, mostly 
+    for looking for similar cases in switch
+</div>
+</td></tr>
+<tr><td><a href="Js_analyzer.html#VALeq_statement">eq_statement</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_log.html#VALerr">err</a> [<a href="Ext_log.html">Ext_log</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALexceptions">exceptions</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALexclude_tail">exclude_tail</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALexp">exp</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_stats_util.html#VALexport_to_cmj">export_to_cmj</a> [<a href="Lam_stats_util.html">Lam_stats_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALexternal_var_dot">external_var_dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALextract_non_pure">extract_non_pure</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>F</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALfalse_">false_</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_block.html#VALfield">field</a> [<a href="Js_of_lam_block.html">Js_of_lam_block</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfilter_map">filter_map</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfilter_map2">filter_map2</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfilter_map2i">filter_map2i</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfilter_mapi">filter_mapi</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Type_util.html#VALfilter_serializable_signatures">filter_serializable_signatures</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pervasives.html#VALfinally">finally</a> [<a href="Ext_pervasives.html">Ext_pervasives</a>]</td>
+<td></td></tr>
+<tr><td><a href="Config_util.html#VALfind">find</a> [<a href="Config_util.html">Config_util</a>]</td>
+<td><div class="info">
+<code class="code">find filename</code> Input is a file name, output is absolute path
+</div>
+</td></tr>
+<tr><td><a href="Lam_compile_env.html#VALfind_and_add_if_not_exist">find_and_add_if_not_exist</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Type_util.html#VALfind_serializable_signatures_by_path">find_serializable_signatures_by_path</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_stats_util.html#VALfind_unused_exit_code">find_unused_exit_code</a> [<a href="Lam_stats_util.html">Lam_stats_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALflat_call">flat_call</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALflat_map">flat_map</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALflat_map2">flat_map2</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALflat_map2_last">flat_map2_last</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALflatten">flatten</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALfloat">float</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALfloat">float</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALfloat_minus">float_minus</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALfloat_plus">float_plus</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALflush">flush</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALflush">flush</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfold">fold</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td><div class="info">
+same as <code class="code">List.fold_left</code>.
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALfor_">for_</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALfor_all_opt">for_all_opt</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td><div class="info">
+<code class="code">for_all_opt f l</code> returns <code class="code">None</code> if all return <code class="code">None</code>,  
+    otherwise returns the first one.
+</div>
+</td></tr>
+<tr><td><a href="Ext_list.html#VALfor_all_ret">for_all_ret</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALforce_newline">force_newline</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td><div class="info">
+<code class="code">force_newline</code> Always print a newline
+</div>
+</td></tr>
+<tr><td><a href="J_helper.html#VALformat">format</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_analyzer.html#VALfree_variables_of_expression">free_variables_of_expression</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_analyzer.html#VALfree_variables_of_statement">free_variables_of_statement</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_marshal.html#VALfrom_file">from_file</a> [<a href="Ext_marshal.html">Ext_marshal</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALfunction_length">function_length</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>G</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALge">ge</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALgen_js">gen_js</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALgenerate_label">generate_label</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALget">get</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_stats_util.html#VALget_arity">get_arity</a> [<a href="Lam_stats_util.html">Lam_stats_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALget_bound">get_bound</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_block.html#VALget_double_feild">get_double_feild</a> [<a href="Js_of_lam_block.html">Js_of_lam_block</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_global.html#VALget_exp">get_exp</a> [<a href="Lam_compile_global.html">Lam_compile_global</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_global.html#VALget_exp_with_args">get_exp_with_args</a> [<a href="Lam_compile_global.html">Lam_compile_global</a>]</td>
+<td><div class="info">
+</div>
+</td></tr>
+<tr><td><a href="Js_fun_env.html#VALget_length">get_length</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALget_lexical_scope">get_lexical_scope</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_closure.html#VALget_lexical_scope">get_lexical_scope</a> [<a href="Js_closure.html">Js_closure</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALget_mutable_params">get_mutable_params</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Type_util.html#VALget_name">get_name</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_env.html#VALget_requried_modules">get_requried_modules</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td><div class="info">
+The second argument is mostly from <code class="code">runtime</code> modules 
+    will change the input <code class="code">hard_dependencies</code>
+</div>
+</td></tr>
+<tr><td><a href="Js_fun_env.html#VALget_unused">get_unused</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALgroup">group</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td><div class="info">
+<code class="code">group</code> will record current indentation 
+    and indent futher
+</div>
+</td></tr>
+<tr><td><a href="Ext_format.html#VALgroup">group</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td><div class="info">
+<code class="code">group</code> will record current indentation 
+    and indent futher
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALgt">gt</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>H</td></tr>
+<tr><td><a href="Js_output.html#VALhandle_block_return">handle_block_return</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALhandle_name_tail">handle_name_tail</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>I</td></tr>
+<tr><td><a href="Lam_module_ident.html#VALid">id</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_log.html#VALierr">ierr</a> [<a href="Ext_log.html">Ext_log</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALif_">if_</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_implementation.html#VALimplementation">implementation</a> [<a href="Js_implementation.html">Js_implementation</a>]</td>
+<td><div class="info">
+<code class="code">implementation ppf sourcefile outprefix</code> compiles to JS directly
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALinc">inc</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALindent_length">indent_length</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALindex">index</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_log.html#VALinfo">info</a> [<a href="Ext_log.html">Ext_log</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALinit">init</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_inline_and_eliminate.html#VALinline_and_shake">inline_and_shake</a> [<a href="Js_inline_and_eliminate.html">Js_inline_and_eliminate</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALint">int</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALint_minus">int_minus</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALint_plus">int_plus</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALint_switch">int_switch</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALintcomp">intcomp</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALio">io</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALis_constant">is_constant</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td><div class="info">
+check if a javascript ast is constant 
+</div>
+</td></tr>
+<tr><td><a href="Js_fun_env.html#VALis_empty">is_empty</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALis_js">is_js</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALis_js_object">is_js_object</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_env.html#VALis_pure">is_pure</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Parsetree_util.html#VALis_single_string">is_single_string</a> [<a href="Parsetree_util.html">Parsetree_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Parsetree_util.html#VALis_string_or_strings">is_string_or_strings</a> [<a href="Parsetree_util.html">Parsetree_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALis_tailcalled">is_tailcalled</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALis_type_number">is_type_number</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALis_unused_ident">is_unused_ident</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALiter">iter</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>J</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALjs_global">js_global</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALjs_global_dot">js_global_dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALjs_var">js_var</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_util.html#VALjsop_of_comp">jsop_of_comp</a> [<a href="Lam_compile_util.html">Lam_compile_util</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>K</td></tr>
+<tr><td><a href="Ident_map.html#VALkeys">keys</a> [<a href="Ident_map.html">Ident_map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALkind_of_lambda_block">kind_of_lambda_block</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>L</td></tr>
+<tr><td><a href="Type_util.html#VALlabel_name">label_name</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_group.html#VALlambda_as_module">lambda_as_module</a> [<a href="Lam_compile_group.html">Lam_compile_group</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALlambda_of_groups">lambda_of_groups</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALle">le</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALlex_parse">lex_parse</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Type_util.html#VALlist_of_arrow">list_of_arrow</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALlt">lt</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>M</td></tr>
+<tr><td><a href="Js_output.html#VALmake">make</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_tuple.html#VALmake">make</a> [<a href="Js_of_lam_tuple.html">Js_of_lam_tuple</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_array.html#VALmake_array">make_array</a> [<a href="Js_of_lam_array.html">Js_of_lam_array</a>]</td>
+<td><div class="info">
+create an array
+</div>
+</td></tr>
+<tr><td><a href="Js_of_lam_block.html#VALmake_block">make_block</a> [<a href="Js_of_lam_block.html">Js_of_lam_block</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALmake_js_object">make_js_object</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_program_loader.html#VALmake_program">make_program</a> [<a href="Js_program_loader.html">Js_program_loader</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALmake_unused">make_unused</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALmap_last">map_last</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALmark_unused">mark_unused</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALmath">math</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td><div class="info">
+<code class="code">math "abs"</code> --&gt; Math<code class="code">"abs"</code>
+</div>
+</td></tr>
+<tr><td><a href="Lam_inline_util.html#VALmaybe_functor">maybe_functor</a> [<a href="Lam_inline_util.html">Lam_inline_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALmem">mem</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp_scope.html#VALmerge">merge</a> [<a href="Ext_pp_scope.html">Ext_pp_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ident_map.html#VALmerge_disjoint">merge_disjoint</a> [<a href="Ident_map.html">Ident_map</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALminus">minus</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_module_ident.html#VALmk">mk</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALmk">mk</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALmk">mk</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALml_var">ml_var</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALml_var_dot">ml_var_dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALmul">mul</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>N</td></tr>
+<tr><td><a href="Lam_module_ident.html#VALname">name</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Type_util.html#VALname_of_signature_item">name_of_signature_item</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALnew_">new_</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALnewline">newline</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALnewline">newline</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALno_side_effect">no_side_effect</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_analyzer.html#VALno_side_effect_expression">no_side_effect_expression</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td><div class="info">
+<code class="code">no_side_effect</code> means this expression has no side effect, 
+    but it might *depend on value store*, so you can not just move it around,
+</div>
+</td></tr>
+<tr><td><a href="Js_analyzer.html#VALno_side_effect_statement">no_side_effect_statement</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td><div class="info">
+here we say 
+    <pre class="codepre"><code class="code"> var x = no_side_effect_expression </code></pre>
+    is <code class="code">no side effect</code>, but it is actually side effect, 
+    since  we are defining a variable, however, if it is not exported or used, 
+    then it's fine, so we delay this check later
+</div>
+</td></tr>
+<tr><td><a href="Lam_util.html#VALno_side_effects">no_side_effects</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td><div class="info">
+No side effect, but it might depend on data store
+</div>
+</td></tr>
+<tr><td><a href="Ext_filename.html#VALnode_relative_path">node_relative_path</a> [<a href="Ext_filename.html">Ext_filename</a>]</td>
+<td><div class="info">
+TODO Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention.
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALnot">not</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALnull">null</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>O</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALobj">obj</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALobj_runtime">obj_runtime</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALof_block">of_block</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALof_block">of_block</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_module_ident.html#VALof_external">of_external</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ident_map.html#VALof_list">of_list</a> [<a href="Ident_map.html">Ident_map</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_module_ident.html#VALof_ml">of_ml</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_module_ident.html#VALof_runtime">of_runtime</a> [<a href="Lam_module_ident.html">Lam_module_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALof_stmt">of_stmt</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_op_util.html#VALop_prec">op_prec</a> [<a href="Js_op_util.html">Js_op_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_op_util.html#VALop_str">op_str</a> [<a href="Js_op_util.html">Js_op_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALor_">or_</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>P</td></tr>
+<tr><td><a href="Ext_pp.html#VALparen">paren</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALparen">paren</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALparen_group">paren_group</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALparen_group">paren_group</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALparen_vgroup">paren_vgroup</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_stats_util.html#VALpp_alias_tbl">pp_alias_tbl</a> [<a href="Lam_stats_util.html">Lam_stats_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALpp_group">pp_group</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALprefix_dec">prefix_dec</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALprefix_inc">prefix_inc</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALprim">prim</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ident_set.html#VALprint">print</a> [<a href="Ident_set.html">Ident_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ident_util.html#VALprint_identset">print_identset</a> [<a href="Ident_util.html">Ident_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_pass_scope.html#VALprogram">program</a> [<a href="Js_pass_scope.html">Js_pass_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_pass_flatten_and_mark_dead.html#VALprogram">program</a> [<a href="Js_pass_flatten_and_mark_dead.html">Js_pass_flatten_and_mark_dead</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_pass_flatten.html#VALprogram">program</a> [<a href="Js_pass_flatten.html">Js_pass_flatten</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_alpha_with_arity.html#VALpropogate_beta_reduce">propogate_beta_reduce</a> [<a href="Lam_pass_alpha_with_arity.html">Lam_pass_alpha_with_arity</a>]</td>
+<td><div class="info">
+refresh all the identifiers, 
+   otherwise the identifier property can not be preserved, 
+   the obvious example is parameter
+</div>
+</td></tr>
+<tr><td align="left"><br>Q</td></tr>
+<tr><td><a href="Type_util.html#VALquery">query</a> [<a href="Type_util.html">Type_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_dispatch_primitive.html#VALquery">query</a> [<a href="Lam_dispatch_primitive.html">Lam_dispatch_primitive</a>]</td>
+<td><div class="info">
+</div>
+</td></tr>
+<tr><td><a href="Lam_compile_env.html#VALquery_and_add_if_not_exist">query_and_add_if_not_exist</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_global.html#VALquery_lambda">query_lambda</a> [<a href="Lam_compile_global.html">Lam_compile_global</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>R</td></tr>
+<tr><td><a href="Js_of_lam_array.html#VALref_array">ref_array</a> [<a href="Js_of_lam_array.html">Js_of_lam_array</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALref_byte">ref_byte</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALref_string">ref_string</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALrefine_let">refine_let</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_dce.html#VALremove">remove</a> [<a href="Lam_dce.html">Lam_dce</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_env.html#VALreset">reset</a> [<a href="Lam_compile_env.html">Lam_compile_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Hash_set.html#VALreset">reset</a> [<a href="Hash_set.html">Hash_set</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_ident.html#VALreset">reset</a> [<a href="Ext_ident.html">Ext_ident</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALreturn">return</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALreturn_unit">return_unit</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td><div class="info">
+for ocaml function which returns unit 
+      it will be compiled into <code class="code">return 0</code> in js
+</div>
+</td></tr>
+<tr><td><a href="Js_analyzer.html#VALrev_flatten_seq">rev_flatten_seq</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALrev_map_acc">rev_map_acc</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALrev_map_append">rev_map_append</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_analyzer.html#VALrev_toplevel_flatten">rev_toplevel_flatten</a> [<a href="Js_analyzer.html">Js_analyzer</a>]</td>
+<td><div class="info">
+return the block in reverse order
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALruntime_call">runtime_call</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALruntime_ref">runtime_ref</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALruntime_var_dot">runtime_var_dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALruntime_var_vid">runtime_var_vid</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>S</td></tr>
+<tr><td><a href="Ext_list.html#VALsame_length">same_length</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_op_util.html#VALsame_vident">same_vident</a> [<a href="Js_op_util.html">Js_op_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALseq">seq</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_array.html#VALset_array">set_array</a> [<a href="Js_of_lam_array.html">Js_of_lam_array</a>]</td>
+<td><div class="info">
+Here we don't care about <code class="code">array_kind</code>,  
+    In the future, we might used TypedArray for FloatArray
+</div>
+</td></tr>
+<tr><td><a href="Js_fun_env.html#VALset_bound">set_bound</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_string.html#VALset_byte">set_byte</a> [<a href="Js_of_lam_string.html">Js_of_lam_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_block.html#VALset_double_field">set_double_field</a> [<a href="Js_of_lam_block.html">Js_of_lam_block</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_of_lam_block.html#VALset_field">set_field</a> [<a href="Js_of_lam_block.html">Js_of_lam_block</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALset_lexical_scope">set_lexical_scope</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_closure.html#VALset_lexical_scope">set_lexical_scope</a> [<a href="Js_closure.html">Js_closure</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_shake.html#VALshake_program">shake_program</a> [<a href="Js_shake.html">Js_shake</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_remove_alias.html#VALsimplify_alias">simplify_alias</a> [<a href="Lam_pass_remove_alias.html">Lam_pass_remove_alias</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_exits.html#VALsimplify_exits">simplify_exits</a> [<a href="Lam_pass_exits.html">Lam_pass_exits</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_lets_dce.html#VALsimplify_lets">simplify_lets</a> [<a href="Lam_pass_lets_dce.html">Lam_pass_lets_dce</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALsize">size</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALsort_dag_args">sort_dag_args</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td><div class="info">
+if <code class="code">a</code> depends on <code class="code">b</code> a is ahead of <code class="code">b</code> as <code class="code">a::b</code>
+</div>
+</td></tr>
+<tr><td><a href="Ext_pp.html#VALspace">space</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALspace">space</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_string.html#VALsplit">split</a> [<a href="Ext_string.html">Ext_string</a>]</td>
+<td><div class="info">
+default is false
+</div>
+</td></tr>
+<tr><td><a href="Ext_string.html#VALsplit_by">split_by</a> [<a href="Ext_string.html">Ext_string</a>]</td>
+<td><div class="info">
+default is false
+</div>
+</td></tr>
+<tr><td><a href="Ext_list.html#VALstable_group">stable_group</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_string.html#VALstarts_with">starts_with</a> [<a href="Ext_string.html">Ext_string</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstr">str</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_op_util.html#VALstr_of_used_stats">str_of_used_stats</a> [<a href="Js_op_util.html">Js_op_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALstring">string</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALstring">string</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALstring">string</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstring_access">string_access</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstring_append">string_append</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td><div class="info">
+When in ES6 mode, we can use Symbol to guarantee its uniquess,
+     we can not tag <code class="code">js</code> object, since it can be frozen
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstring_length">string_length</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp_scope.html#VALstring_of_id">string_of_id</a> [<a href="Ext_pp_scope.html">Ext_pp_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALstring_of_lambda">string_of_lambda</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_util.html#VALstring_of_primitive">string_of_primitive</a> [<a href="Lam_util.html">Lam_util</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstring_of_small_int_array">string_of_small_int_array</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALstring_switch">string_switch</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALstringcomp">stringcomp</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp_scope.html#VALsub_scope">sub_scope</a> [<a href="Ext_pp_scope.html">Ext_pp_scope</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_exits.html#VALsubst_helper">subst_helper</a> [<a href="Lam_pass_exits.html">Lam_pass_exits</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.html#VALsys">sys</a> [<a href="J_helper.html">J_helper</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>T</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALtag">tag</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALtag_ml_obj">tag_ml_obj</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_list.html#VALtake">take</a> [<a href="Ext_list.html">Ext_list</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALthrow">throw</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALto_block">to_block</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_output.html#VALto_break_block">to_break_block</a> [<a href="Js_output.html">Js_output</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_marshal.html#VALto_file">to_file</a> [<a href="Ext_marshal.html">Ext_marshal</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALto_ocaml_boolean">to_ocaml_boolean</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALto_out_channel">to_out_channel</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALto_out_channel">to_out_channel</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_fun_env.html#VALto_string">to_string</a> [<a href="Js_fun_env.html">Js_fun_env</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_primitive.html#VALtranslate">translate</a> [<a href="Lam_compile_primitive.html">Lam_compile_primitive</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_compile_external_call.html#VALtranslate">translate</a> [<a href="Lam_compile_external_call.html">Lam_compile_external_call</a>]</td>
+<td><div class="info">
+TODO: document supported attributes
+    Attributes starting with `js` are reserved
+    examples: "js.splice"
+</div>
+</td></tr>
+<tr><td><a href="Lam_compile_const.html#VALtranslate">translate</a> [<a href="Lam_compile_const.html">Lam_compile_const</a>]</td>
+<td></td></tr>
+<tr><td><a href="Lam_pass_unused_params.html#VALtranslate_unsed_params">translate_unsed_params</a> [<a href="Lam_pass_unused_params.html">Lam_pass_unused_params</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALtriple_equal">triple_equal</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALtrue_">true_</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALtry_">try_</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>U</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALundefined">undefined</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALuninitialized_array">uninitialized_array</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALunit">unit</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td><div class="info">
+<code class="code">unit</code> in ocaml will be compiled into <code class="code">0</code>  in js
+</div>
+</td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALunknown_lambda">unknown_lambda</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALunknown_lambda">unknown_lambda</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALunknown_primitive">unknown_primitive</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Js_op_util.html#VALupdate_used_stats">update_used_stats</a> [<a href="Js_op_util.html">Js_op_util</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>V</td></tr>
+<tr><td><a href="J_helper.Exp.html#VALvar">var</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Exp.html#VALvar_dot">var_dot</a> [<a href="J_helper.Exp.html">J_helper.Exp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pp.html#VALvgroup">vgroup</a> [<a href="Ext_pp.html">Ext_pp</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_format.html#VALvgroup">vgroup</a> [<a href="Ext_format.html">Ext_format</a>]</td>
+<td></td></tr>
+<tr><td align="left"><br>W</td></tr>
+<tr><td><a href="Ext_log.html#VALwarn">warn</a> [<a href="Ext_log.html">Ext_log</a>]</td>
+<td></td></tr>
+<tr><td><a href="J_helper.Stmt.html#VALwhile_">while_</a> [<a href="J_helper.Stmt.html">J_helper.Stmt</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pervasives.html#VALwith_file_as_chan">with_file_as_chan</a> [<a href="Ext_pervasives.html">Ext_pervasives</a>]</td>
+<td></td></tr>
+<tr><td><a href="Ext_pervasives.html#VALwith_file_as_pp">with_file_as_pp</a> [<a href="Ext_pervasives.html">Ext_pervasives</a>]</td>
+<td></td></tr>
+</table>
+</body>
+</html>
