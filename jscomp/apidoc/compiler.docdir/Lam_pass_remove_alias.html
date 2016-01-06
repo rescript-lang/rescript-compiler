@@ -95,16 +95,7 @@
 <h1>Module <a href="type_Lam_pass_remove_alias.html">Lam_pass_remove_alias</a></h1>
 
 <pre><span class="keyword">module</span> Lam_pass_remove_alias: <code class="code">sig</code> <a href="Lam_pass_remove_alias.html">..</a> <code class="code">end</code></pre><div class="info module top">
-One way:  guarantee that all global aliases *would be removed* ,
-    it will not be aliased 
-<p>
-
-    So the only remaining place for globals is either 
-    just  Pgetglobal in functor application or 
-    `Lprim (Pfield( i ), <code class="code">Pgetglobal</code>)`
-<p>
-
-    This pass does not change meta  data<br>
+Keep track of the global module Aliases<br>
 </div>
 <hr width="100%">
 

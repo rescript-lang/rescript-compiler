@@ -325,22 +325,17 @@ Compile lambda constant to JS
 </td></tr>
 <tr><td><a href="Lam_compile_defs.html">Lam_compile_defs</a> </td>
 <td><div class="info">
-some types defined in this module to 
-    help avoiding generating unnecessary symbols 
-    (generating too many symbols will make the output code unreadable)
+Type defintion to keep track of compilation state
 </div>
 </td></tr>
 <tr><td><a href="Lam_compile_env.html">Lam_compile_env</a> </td>
 <td><div class="info">
-the boolean is expand or not
-        when it's passed as module, it should be expanded, 
-        otherwise for alias, <code class="code">include Array</code>, it's okay to return an identifier
-        TODO: be more clear about its concept
+Helper for global Ocaml module index into meaningful names
 </div>
 </td></tr>
 <tr><td><a href="Lam_compile_external_call.html">Lam_compile_external_call</a> </td>
 <td><div class="info">
-Compile ocaml external  function call to JS IR, this module define how FFI via `external` works with attributes, note it will route to <a href="Lam_compile_global.html"><code class="code">Lam_compile_global</code></a> for compiling normal functions without attributes.
+Compile ocaml external function call to JS IR.
 </div>
 </td></tr>
 <tr><td><a href="Lam_compile_global.html">Lam_compile_global</a> </td>
@@ -350,14 +345,12 @@ Compile ocaml external module call , e.g <code class="code">List.length</code> t
 </td></tr>
 <tr><td><a href="Lam_compile_group.html">Lam_compile_group</a> </td>
 <td><div class="info">
-The entry point: compile and register the hook of function to compile  a lambda to 
-    JS IR
+OCamlscript entry point in the OCaml compiler
 </div>
 </td></tr>
 <tr><td><a href="Lam_compile_primitive.html">Lam_compile_primitive</a> </td>
 <td><div class="info">
-The entry point of compile primitives
-    Note it will call <a href="Lam_compile_external_call.html#VALtranslate"><code class="code">Lam_compile_external_call.translate</code></a> for c stubs compilation
+Primitive compilation
 </div>
 </td></tr>
 <tr><td><a href="Lam_compile_util.html">Lam_compile_util</a> </td>
@@ -419,8 +412,7 @@ This pass would do beta reduction, and dead code elimination (adapted from compi
 </td></tr>
 <tr><td><a href="Lam_pass_remove_alias.html">Lam_pass_remove_alias</a> </td>
 <td><div class="info">
-One way:  guarantee that all global aliases *would be removed* ,
-    it will not be aliased 
+Keep track of the global module Aliases
 </div>
 </td></tr>
 <tr><td><a href="Lam_pass_unused_params.html">Lam_pass_unused_params</a> </td>
@@ -430,7 +422,7 @@ A pass to mark all unused params
 </td></tr>
 <tr><td><a href="Lam_runtime.html">Lam_runtime</a> </td>
 <td><div class="info">
-Pre-define some constants
+Pre-defined runtime function name
 </div>
 </td></tr>
 <tr><td><a href="Lam_stats.html">Lam_stats</a> </td>
@@ -453,11 +445,7 @@ No side effect, but it might depend on data store
 <td></td></tr>
 <tr><td align="left"><br>P</td></tr>
 <tr><td><a href="Parsetree_util.html">Parsetree_util</a> </td>
-<td><div class="info">
-A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI code
-</div>
-</td></tr>
+<td></td></tr>
 <tr><td align="left"><br>S</td></tr>
 <tr><td><a href="J_helper.Stmt.html">Stmt</a> [<a href="J_helper.html">J_helper</a>]</td>
 <td></td></tr>

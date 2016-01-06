@@ -95,13 +95,8 @@
 <h1>Module <a href="type_Lam_compile_external_call.html">Lam_compile_external_call</a></h1>
 
 <pre><span class="keyword">module</span> Lam_compile_external_call: <code class="code">sig</code> <a href="Lam_compile_external_call.html">..</a> <code class="code">end</code></pre><div class="info module top">
-Compile ocaml external  function call to JS IR, this module define how FFI via `external` works with attributes, note it will route to <a href="Lam_compile_global.html"><code class="code">Lam_compile_global</code></a> for compiling normal functions without attributes.<br>
+Compile ocaml external function call to JS IR.<br>
 </div>
 <hr width="100%">
 
-<pre><span id="VALtranslate"><span class="keyword">val</span> translate</span> : <code class="type"><a href="Lam_compile_defs.html#TYPEcxt">Lam_compile_defs.cxt</a> -><br>       Types.type_expr option Primitive.description -><br>       <a href="J.html#TYPEexpression">J.expression</a> list -> <a href="J.html#TYPEexpression">J.expression</a></code></pre><div class="info ">
-TODO: document supported attributes
-    Attributes starting with `js` are reserved
-    examples: "js.splice"<br>
-</div>
-</body></html>
+<pre><span id="VALtranslate"><span class="keyword">val</span> translate</span> : <code class="type"><a href="Lam_compile_defs.html#TYPEcxt">Lam_compile_defs.cxt</a> -><br>       Types.type_expr option Primitive.description -><br>       <a href="J.html#TYPEexpression">J.expression</a> list -> <a href="J.html#TYPEexpression">J.expression</a></code></pre></body></html>

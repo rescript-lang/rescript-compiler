@@ -95,9 +95,7 @@
 <h1>Module <a href="type_Lam_compile_defs.html">Lam_compile_defs</a></h1>
 
 <pre><span class="keyword">module</span> Lam_compile_defs: <code class="code">sig</code> <a href="Lam_compile_defs.html">..</a> <code class="code">end</code></pre><div class="info module top">
-some types defined in this module to 
-    help avoiding generating unnecessary symbols 
-    (generating too many symbols will make the output code unreadable)<br>
+Type defintion to keep track of compilation state<br>
 </div>
 <hr width="100%">
 
@@ -156,7 +154,7 @@ some types defined in this module to
 <code><span id="TYPEELTst.Assign"><span class="constructor">Assign</span></span> <span class="keyword">of</span> <code class="type"><a href="J.html#TYPEident">J.ident</a></code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
 when use <code class="code">Assign</code>, var is not needed, since it's already declared 
-      make sure all <code class="code">Assigs</code> are declared first, otherwise you are creating global variables<br>
+      make sure all <code class="code">Assign</code> are declared first, otherwise you are creating global variables<br>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr></table>

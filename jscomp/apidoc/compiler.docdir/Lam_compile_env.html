@@ -95,10 +95,7 @@
 <h1>Module <a href="type_Lam_compile_env.html">Lam_compile_env</a></h1>
 
 <pre><span class="keyword">module</span> Lam_compile_env: <code class="code">sig</code> <a href="Lam_compile_env.html">..</a> <code class="code">end</code></pre><div class="info module top">
-the boolean is expand or not
-        when it's passed as module, it should be expanded, 
-        otherwise for alias, <code class="code">include Array</code>, it's okay to return an identifier
-        TODO: be more clear about its concept<br>
+Helper for global Ocaml module index into meaningful names<br>
 </div>
 <hr width="100%">
 
@@ -120,9 +117,9 @@ the boolean is expand or not
 <code><span id="TYPEELTkey.QueryGlobal"><span class="constructor">QueryGlobal</span></span> <span class="keyword">of</span> <code class="type">Ident.t * Env.t * bool</code></code></td>
 <td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" ><div class="info ">
 the boolean is expand or not
-        when it's passed as module, it should be expanded, 
-        otherwise for alias, <code class="code">include Array</code>, it's okay to return an identifier
-        TODO: be more clear about its concept<br>
+      when it's passed as module, it should be expanded, 
+      otherwise for alias, <code class="code">include Array</code>, it's okay to return an identifier
+      TODO: be more clear about its concept<br>
 </div>
 </td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
 </tr>
@@ -203,8 +200,4 @@ add third party dependency<br>
 
 <pre><span id="VALreset"><span class="keyword">val</span> reset</span> : <code class="type">unit -> unit</code></pre>
 <pre><span id="VALis_pure"><span class="keyword">val</span> is_pure</span> : <code class="type"><a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> -> Env.t -> bool</code></pre>
-<pre><span id="VALget_requried_modules"><span class="keyword">val</span> get_requried_modules</span> : <code class="type">Env.t -><br>       <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> list -><br>       <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> <a href="Hash_set.html#TYPEhashset">Hash_set.hashset</a> -> <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> list</code></pre><div class="info ">
-The second argument is mostly from <code class="code">runtime</code> modules 
-    will change the input <code class="code">hard_dependencies</code><br>
-</div>
-</body></html>
+<pre><span id="VALget_requried_modules"><span class="keyword">val</span> get_requried_modules</span> : <code class="type">Env.t -><br>       <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> list -><br>       <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> <a href="Hash_set.html#TYPEhashset">Hash_set.hashset</a> -> <a href="Lam_module_ident.html#TYPEt">Lam_module_ident.t</a> list</code></pre></body></html>
