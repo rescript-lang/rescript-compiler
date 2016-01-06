@@ -132,7 +132,7 @@ This project reused and adapted part of [js_of_ocaml](https://github.com/ocsigen
 
 It adapted two modules [Lam_pass_exits](jscomp/lam_pass_exits.ml) and
 [Lam_pass_lets_dce](jscomp/lam_pass_lets_dce.ml) from OCaml's
-(Simplif)[ocaml/bytecomp/simplif] module, the main
+[Simplif](ocaml/bytecomp/simplif.ml) module, the main
 reasons are those optimizations are not optimal for Javascript
 backend.
 
