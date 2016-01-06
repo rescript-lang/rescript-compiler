@@ -50,13 +50,13 @@ it is in an *very early* stage and not production ready
 for your own projects *yet*.
 
 
-## Build
+# Build
 
 Note that you have to clone this project with `--recursive` option, we can only distribute
 the patch of OCaml due to License restrictions.
 
 
-### Linux and Mac OS 
+## Linux and Mac OS 
 
 
 1. Apply the patch to OCaml compiler and build
@@ -115,8 +115,9 @@ the patch of OCaml due to License restrictions.
   ```
   If everything goes well, you will see `hello world` on your screen.
 
+## Windows support
 
-
+We plan to provide a Windows Installer in the near future.
 
 # Licensing 
 
