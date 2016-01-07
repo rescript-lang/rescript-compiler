@@ -183,8 +183,10 @@ let scope_pass  =
         let lexical_scopes = Ident_set.(inter closured_idents' self#get_loop_mutable_values) in
         Js_fun_env.set_lexical_scope env lexical_scopes;
         (* tailcall , note that these varibles are used in another pass *)
-        {< used_idents = Ident_set.(union used_idents closured_idents') ;
-           closured_idents = Ident_set.(union closured_idents closured_idents')
+        {< used_idents = 
+             Ident_set.union used_idents closured_idents' ;
+           (* There is a bug in ocaml -dsource*)           
+           closured_idents = Ident_set.union closured_idents closured_idents'
         >}
       | _ -> super#expression x 
             (* TODO: most variables are immutable *)
@@ -266,13 +268,18 @@ let scope_pass  =
           let lexical_scope =  Ident_set.(inter (diff closured_idents' defined_idents') self#get_loop_mutable_values) in
           let () = Js_closure.set_lexical_scope a_env lexical_scope in
           (* set scope *)
-          {< used_idents = Ident_set.(union used_idents used_idents');
-             defined_idents = Ident_set.(union defined_idents defined_idents');
+          {< used_idents = Ident_set.union used_idents used_idents';
+             (* walk around ocaml -dsource bug 
+                {[ 
+                  Ident_set.(union used_idents used_idents)                  
+                ]}                
+             *)             
+             defined_idents = Ident_set.union defined_idents defined_idents';
              (* TODO: if we our generated code also follow lexical scope,
                 this is not necessary ;
                 [varaibles] are mutable or not is known at definition
               *)
-             closured_idents = Ident_set.(union closured_idents lexical_scope)
+             closured_idents = Ident_set.union closured_idents lexical_scope
              >}
 
       | While (_label,pred,body, _env) ->  

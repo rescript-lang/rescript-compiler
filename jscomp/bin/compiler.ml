@@ -1880,8 +1880,6 @@ include
              | x::xs -> aux (x :: acc) xs : J.block) in
           aux [] block
       end 
-    module String_set : sig include (Set.S with type  elt =  string) end =
-      struct include Set.Make(String) end 
     module Ext_string :
       sig
         [@@@ocaml.text
@@ -1893,6 +1891,7 @@ include
         [@@ocaml.doc " default is false "]
         val starts_with : string -> string -> bool
         val ends_with : string -> string -> bool
+        val escaped : string -> string
       end =
       struct
         let split_by ?(keep_empty= false)  is_delim str =
@@ -1934,7 +1933,23 @@ include
                  then aux (j - 1) (k - 1)
                  else false in
              aux s_finish s_beg)
+        let escaped s =
+          let rec needs_escape i =
+            if i >= (String.length s)
+            then false
+            else
+              (match String.unsafe_get s i with
+               | '"'|'\\'|'\n'|'\t'|'\r'|'\b' -> true
+               | ' '..'~' -> needs_escape (i + 1)
+               | _ -> true) in
+          if needs_escape 0
+          then
+            Bytes.unsafe_to_string (Bytes.escaped (Bytes.unsafe_of_string s))
+          else s[@@ocaml.doc
+                  "  In OCaml 4.02.3, {!String.escaped} is locale senstive, \n     this version try to make it not locale senstive, this bug is fixed\n     in the compiler trunk     \n"]
       end 
+    module String_set : sig include (Set.S with type  elt =  string) end =
+      struct include Set.Make(String) end 
     module Ext_ident :
       sig
         [@@@ocaml.text " A wrapper around [Ident] module in compiler-libs"]
@@ -2493,7 +2508,8 @@ include
               (match v.expression_desc with
                | Str (_,x) ->
                    (assert ((String.length x) = 1);
-                    int ~comment:(Printf.sprintf "%S" x) (Char.code (x.[0])))
+                    int ~comment:("\"" ^ ((Ext_string.escaped x) ^ "\""))
+                      (Char.code (x.[0])))
                | Char_of_int v -> v
                | _ -> { comment; expression_desc = (Char_to_int v) } : 
               t)
@@ -4229,8 +4245,10 @@ include
         module B =
           struct
             let const_char (i : char) =
-              E.int ~comment:(Printf.sprintf "%S" (String.make 1 i)) ~c:i
-                (Char.code i)
+              E.int
+                ~comment:("\"" ^
+                            ((Ext_string.escaped (String.make 1 i)) ^ "\""))
+                ~c:i (Char.code i)
             let caml_char_of_int ?comment  (v : J.expression) = v
             let caml_char_to_int ?comment  v = v
             let ref_string e e1 = E.char_to_int (E.string_access e e1)
@@ -6879,13 +6897,9 @@ include
                          inter closured_idents' self#get_loop_mutable_values in
                      Js_fun_env.set_lexical_scope env lexical_scopes;
                      {<used_idents =
-                         let open Ident_set in
-                           union used_idents closured_idents';closured_idents
-                                                                =
-                                                                let open Ident_set in
-                                                                  union
-                                                                    closured_idents
-                                                                    closured_idents'>})))
+                         Ident_set.union used_idents closured_idents';
+                       closured_idents =
+                         Ident_set.union closured_idents closured_idents'>})))
               | _ -> super#expression x
             method! variable_declaration x =
               match x with
@@ -6926,16 +6940,11 @@ include
                       inter (diff closured_idents' defined_idents')
                         self#get_loop_mutable_values in
                   let () = Js_closure.set_lexical_scope a_env lexical_scope in
-                  {<used_idents =
-                      let open Ident_set in union used_idents used_idents';
+                  {<used_idents = Ident_set.union used_idents used_idents';
                     defined_idents =
-                      let open Ident_set in
-                        union defined_idents defined_idents';closured_idents
-                                                               =
-                                                               let open Ident_set in
-                                                                 union
-                                                                   closured_idents
-                                                                   lexical_scope>}
+                      Ident_set.union defined_idents defined_idents';
+                    closured_idents =
+                      Ident_set.union closured_idents lexical_scope>}
               | While (_label,pred,body,_env) ->
                   (((self#expression pred)#with_in_loop true)#block body)#with_in_loop
                     self#get_in_loop
@@ -10050,5 +10059,31 @@ include
           let _export_set = program.export_set in
           (program |> (subst _export_set _stats)#program) |>
             pass_beta#program
+      end 
+    module Ext_char : sig val escaped : char -> string end =
+      struct
+        external string_unsafe_set :
+          string -> int -> char -> unit = "%string_unsafe_set"
+        external string_create : int -> string = "caml_create_string"
+        external unsafe_chr : int -> char = "%identity"
+        let escaped =
+          function
+          | '\'' -> "\\'"
+          | '\\' -> "\\\\"
+          | '\n' -> "\\n"
+          | '\t' -> "\\t"
+          | '\r' -> "\\r"
+          | '\b' -> "\\b"
+          | ' '..'~' as c ->
+              let s = string_create 1 in (string_unsafe_set s 0 c; s)
+          | c ->
+              let n = Char.code c in
+              let s = string_create 4 in
+              (string_unsafe_set s 0 '\\';
+               string_unsafe_set s 1 (unsafe_chr (48 + (n / 100)));
+               string_unsafe_set s 2 (unsafe_chr (48 + ((n / 10) mod 10)));
+               string_unsafe_set s 3 (unsafe_chr (48 + (n mod 10)));
+               s)[@@ocaml.doc
+                   " {!Char.escaped} is locale sensitive in 4.02.3, fixed in the trunk,\n    backport it here\n "]
       end 
   end
