@@ -1,3 +1,3 @@
 [submodule "ocaml"]
 	path = ocaml
-	url = ./ocaml
+	url = https://github.com/ocaml/ocaml
