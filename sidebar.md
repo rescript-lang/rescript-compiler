@@ -12,6 +12,6 @@
 1. [Reference](#docs/reference)
 
 ## Others
-- [Source](https://bbgithub.dev.bloomberg.com/OCamlCoreDevTeam/ocamlscript)
-- [Feedback](https://bbgithub.dev.bloomberg.com/OCamlCoreDevTeam/ocamlscript/issues)
+- [Source](https://github.com/bloomberg/ocamlscript)
+- [Feedback](https://github.com/bloomberg/ocamlscript/issues)
 - [API Docs](./jscomp/apidoc/compiler.docdir)
