@@ -34,7 +34,7 @@ function sum(n) {
 As you can see, there is no name mangling in the generated code, so if this module is called `M`,
 `M.sum()` is directly callable from other JavaScript code.
 
-You can learn more by exploring the online [in-browser compiler](http://zhanghongbo.me/js-demo).
+You can learn more by exploring the online [in-browser compiler](http://http://bloomberg.github.io/ocamlscript/js-demo/).
 
   
 ## Disclaimer
