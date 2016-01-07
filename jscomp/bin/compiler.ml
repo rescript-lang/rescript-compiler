@@ -1880,6 +1880,67 @@ include
              | x::xs -> aux (x :: acc) xs : J.block) in
           aux [] block
       end 
+    module Ext_bytes :
+      sig
+        [@@@ocaml.text
+          " Port the {!Bytes.escaped} to make it not locale sensitive "]
+        val escaped : bytes -> bytes
+      end =
+      struct
+        external char_code : char -> int = "%identity"
+        external char_chr : int -> char = "%identity"
+        let escaped s =
+          let n = ref 0 in
+          for i = 0 to (Bytes.length s) - 1 do
+            n :=
+              ((!n) +
+                 ((match Bytes.unsafe_get s i with
+                   | '"'|'\\'|'\n'|'\t'|'\r'|'\b' -> 2
+                   | ' '..'~' -> 1
+                   | _ -> 4)))
+          done;
+          if (!n) = (Bytes.length s)
+          then Bytes.copy s
+          else
+            (let s' = Bytes.create (!n) in
+             n := 0;
+             for i = 0 to (Bytes.length s) - 1 do
+               ((match Bytes.unsafe_get s i with
+                 | '"'|'\\' as c ->
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) c)
+                 | '\n' ->
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) 'n')
+                 | '\t' ->
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) 't')
+                 | '\r' ->
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) 'r')
+                 | '\b' ->
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) 'b')
+                 | ' '..'~' as c -> Bytes.unsafe_set s' (!n) c
+                 | c ->
+                     let a = char_code c in
+                     (Bytes.unsafe_set s' (!n) '\\';
+                      incr n;
+                      Bytes.unsafe_set s' (!n) (char_chr (48 + (a / 100)));
+                      incr n;
+                      Bytes.unsafe_set s' (!n)
+                        (char_chr (48 + ((a / 10) mod 10)));
+                      incr n;
+                      Bytes.unsafe_set s' (!n) (char_chr (48 + (a mod 10)))));
+                incr n)
+             done;
+             s')
+      end 
     module Ext_string :
       sig
         [@@@ocaml.text
@@ -1944,7 +2005,8 @@ include
                | _ -> true) in
           if needs_escape 0
           then
-            Bytes.unsafe_to_string (Bytes.escaped (Bytes.unsafe_of_string s))
+            Bytes.unsafe_to_string
+              (Ext_bytes.escaped (Bytes.unsafe_of_string s))
           else s[@@ocaml.doc
                   "  In OCaml 4.02.3, {!String.escaped} is locale senstive, \n     this version try to make it not locale senstive, this bug is fixed\n     in the compiler trunk     \n"]
       end 
