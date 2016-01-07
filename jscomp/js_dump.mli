@@ -24,4 +24,7 @@
 
 (** Print JS IR to vanilla Javascript code *)
 
+
+val pp_program : J.program -> Ext_pp.t -> unit
+
 val dump_program : J.program -> out_channel -> unit

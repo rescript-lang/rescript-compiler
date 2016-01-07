@@ -20,7 +20,7 @@
 
 
 
-(** Extension to the standard library [String] module. *) 
+(** Extension to the standard library [String] module, avoid locale sensitivity *) 
 
 val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 (** default is false *)
@@ -33,3 +33,5 @@ val starts_with : string -> string -> bool
 val ends_with : string -> string -> bool
 
 val escaped : string -> string
+
+val for_all : (char -> bool) -> string -> bool

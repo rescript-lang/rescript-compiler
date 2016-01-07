@@ -18,4 +18,6 @@
 
 (* Author: Hongbo Zhang  *)
 
+(** Extension to Standard char module, avoid locale sensitivity *)
+
 val escaped : char -> string

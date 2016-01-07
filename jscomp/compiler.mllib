@@ -78,5 +78,7 @@ js_analyzer
 js_shake
 js_inline_and_eliminate
 js_pass_flatten
+js_number
 j_helper
+
 # js_main

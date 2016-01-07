@@ -84,35 +84,6 @@ let return_indent = (String.length L.return / Ext_pp.indent_length)
 
 let throw_indent = (String.length L.throw / Ext_pp.indent_length) 
 
-let string_of_number v =
-  if v = infinity
-  then "Infinity"
-  else if v = neg_infinity
-  then "-Infinity"
-  else if v <> v
-  then "NaN"
-  else
-    let vint = int_of_float v in
-    (* compiler 1000 into 1e3 *)
-    if float_of_int vint = v
-    then
-      let rec div n i =
-        if n <> 0 && n mod 10 = 0
-        then div (n/10) (succ i)
-        else
-        if i > 2
-        then Printf.sprintf "%de%d" n i
-        else string_of_int vint in
-      div vint 0
-    else
-      let s1 = Printf.sprintf "%.12g" v in
-      if v = float_of_string s1
-      then s1
-      else
-        let s2 = Printf.sprintf "%.15g" v in
-        if v = float_of_string s2
-        then s2
-        else  Printf.sprintf "%.18g" v
 
 let semi f = P.string f L.semi
 
@@ -504,7 +475,7 @@ and
     let s = 
       match v with 
       | Float v -> 
-        string_of_number v (* attach string here for float constant folding?*)
+        Js_number.to_string v (* attach string here for float constant folding?*)
       | Int { i = v; _} 
         -> string_of_int v (* check , js convention with ocaml lexical convention *)in
     let need_paren =
@@ -1365,11 +1336,7 @@ let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.prog
     P.string f ")";
 ;;
 
-let dump_program 
-    (program : J.program)
-    (oc : out_channel) = 
-
-  let f  = P.to_out_channel oc  in
+let pp_program (program : J.program) (f : Ext_pp.t) = 
   let () = 
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
@@ -1385,4 +1352,9 @@ let dump_program
     | None -> "/* No side effect */"
     | Some v -> Printf.sprintf "/* %s fail the pure module */" v );
   P.newline f;
-  P.flush f ();
+  P.flush f ()
+
+let dump_program 
+    (program : J.program)
+    (oc : out_channel) = 
+  pp_program program (P.from_channel oc)

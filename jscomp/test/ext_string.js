@@ -128,9 +128,18 @@ function escaped(s) {
   return needs_escape(0) ? Bytes.unsafe_to_string(Ext_bytes.escaped(Bytes.unsafe_of_string(s))) : s;
 }
 
+function for_all(p, s) {
+  var len = s.length;
+  var aux = function (i) {
+    return i >= len ? /* true */1 : +(p(s.charCodeAt(i)) && aux(i + 1));
+  };
+  return aux(0);
+}
+
 exports.split_by = split_by;
 exports.split = split;
 exports.starts_with = starts_with;
 exports.ends_with = ends_with;
 exports.escaped = escaped;
+exports.for_all = for_all;
 /* No side effect */

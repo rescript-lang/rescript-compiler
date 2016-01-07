@@ -1,0 +1,75 @@
+(* OCamlScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(* Author: Hongbo Zhang  *)
+
+type t = float 
+
+
+(* http://www.ecma-international.org/ecma-262/5.1/#sec-7.8.3 
+   http://caml.inria.fr/pub/docs/manual-ocaml/lex.html
+   {[
+     float-literal ::= [-](0...9){0...9|_}[.{0...9|_}][(e|E)][(e|E)[+|-](0...9){0...9|_}]     
+   ]}   
+   In ocaml, the interpretation of floating-point literals that
+   fall outside the range of representable floating-point values is undefined.
+   Also, (_) are accepted   
+
+   see https://github.com/ocaml/ocaml/pull/268 that ocaml will have HEXADECIMAL notation 
+   support in 4.3
+
+   The Hex part is quite different   
+ *)
+
+
+
+let to_string v =
+  if v = infinity
+  then "Infinity"
+  else if v = neg_infinity
+  then "-Infinity"
+  else if v <> v
+  then "NaN"
+  else
+    let vint = (int_of_float v)
+    (* TODO: check if 32-bits will loose some precision *)               
+    in
+    if float_of_int  vint = v
+    then
+      string_of_int vint
+    else
+      let s1 = Printf.sprintf "%.12g" v in
+      if v = float_of_string s1
+      then s1
+      else
+        let s2 = Printf.sprintf "%.15g" v in
+        if v = float_of_string s2
+        then s2
+        else  Printf.sprintf "%.18g" v
+
+
+
+let caml_float_literal_to_js_string v = 
+  if String.length v >= 2 && v.[0] = '0' && (v.[1] = 'x' || v.[1] = 'X') then  
+    assert false (*TODO: catchup when upgraded to 4.3 *)    
+  else    
+    if Ext_string.for_all (fun s -> s != '_') v then v
+    else    
+      let buf = Buffer.create (String.length v) in    
+      String.iter (fun x -> if x != '_' then Buffer.add_char buf x ) v ;
+      Buffer.contents buf      

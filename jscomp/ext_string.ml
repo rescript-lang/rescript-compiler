@@ -81,3 +81,11 @@ let escaped s =
     Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
   else
     s
+
+
+let for_all (p : char -> bool) s = 
+  let len = String.length s in
+  let rec aux i = 
+    if i >= len then true 
+    else  p (String.unsafe_get s i) && aux (i + 1)
+  in aux 0 

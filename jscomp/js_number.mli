@@ -19,6 +19,10 @@
 (* Author: Hongbo Zhang  *)
 
 
-(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+type t  = float 
 
-val escaped : bytes -> bytes
+
+val to_string : t -> string
+
+
+val caml_float_literal_to_js_string : string -> string

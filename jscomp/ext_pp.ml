@@ -28,15 +28,28 @@ end
 let indent_length = String.length L.indent_str 
 
 type t = {
-  chan : out_channel ; 
+  output_string : string -> unit;
+  output_char : char -> unit; 
+  flush : unit -> unit;
   mutable indent_level : int;
   mutable last_new_line : bool; 
   (* only when we print newline, we print the indent *)
 }
 
-let to_out_channel chan = { 
-  chan ; 
+let from_channel chan = { 
+  output_string = (fun  s -> output_string chan s); 
+  output_char = (fun c -> output_char chan c);
+  flush = (fun _ -> flush chan);
   indent_level = 0 ;
+  last_new_line = false;
+}
+
+
+let from_buffer buf = {
+  output_string = (fun s -> Buffer.add_string buf s);
+  output_char = (fun  c -> Buffer.add_char buf c);
+  flush = (fun _ -> ());
+  indent_level = 0;
   last_new_line = false;
 }
 
@@ -45,23 +58,23 @@ let to_out_channel chan = {
    in the future, we can detect this in [s]
  *)
 let string t s = 
-  output_string t.chan s ;
+  t.output_string  s ;
   t.last_new_line <- false
 
 let newline t = 
   if not t.last_new_line then 
     begin
-      output_char t.chan '\n';
+      t.output_char  '\n';
       for i = 0 to t.indent_level - 1 do 
-        output_string t.chan L.indent_str;
+        t.output_string  L.indent_str;
       done;
       t.last_new_line <- true
     end
 
 let force_newline t = 
-  output_char t.chan '\n';
+  t.output_char  '\n';
   for i = 0 to t.indent_level - 1 do 
-    output_string t.chan L.indent_str;
+    t.output_string  L.indent_str;
   done
 
 let space t  = 
@@ -138,4 +151,4 @@ let brace_group st n action =
 let indent t n = 
   t.indent_level <- t.indent_level + n 
 
-let flush t () = flush t.chan 
+let flush t () = t.flush ()
