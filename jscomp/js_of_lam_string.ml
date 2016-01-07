@@ -26,7 +26,6 @@ module E = J_helper.Exp
 module A = struct 
 
   let const_char (i : char) = 
-    (* E.int  ~comment:(Char.escaped i) (Char.code i) *)
     E.str (String.make 1 i)
 
   let caml_char_of_int ?comment (v : J.expression)  =  
@@ -82,7 +81,7 @@ end
 module B = struct 
 
   let const_char (i : char) = 
-    E.int  ~comment:(Printf.sprintf "%S" (String.make 1 i)) 
+    E.int  ~comment:("\"" ^ Ext_string.escaped (String.make 1 i) ^ "\"") 
       ~c:i (Char.code i)
 
   let caml_char_of_int ?comment (v : J.expression)  =  v

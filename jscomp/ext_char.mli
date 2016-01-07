@@ -18,18 +18,4 @@
 
 (* Author: Hongbo Zhang  *)
 
-
-
-(** Extension to the standard library [String] module. *) 
-
-val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
-(** default is false *)
-
-val split : ?keep_empty:bool -> string -> char -> string list
-(** default is false *)
-
-val starts_with : string -> string -> bool
-
-val ends_with : string -> string -> bool
-
-val escaped : string -> string
+val escaped : char -> string

@@ -64,8 +64,8 @@ ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
     ../stdlib/filename.cmx ext_string.cmx
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
-ext_string.cmo : ../stdlib/string.cmi
-ext_string.cmx : ../stdlib/string.cmx
+ext_string.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
+ext_string.cmx : ../stdlib/string.cmx ../stdlib/bytes.cmx
 fib.cmo :
 fib.cmx :
 for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
@@ -390,8 +390,8 @@ ext_filename.cmo : ../stdlib/sys.cmo ../stdlib/string.cmo ../stdlib/list.cmo \
     ../stdlib/filename.cmo ext_string.cmo
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmo : ../stdlib/list.cmo ../stdlib/array.cmo
-ext_string.cmo : ../stdlib/string.cmi
-ext_string.cmo : ../stdlib/string.cmo
+ext_string.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
+ext_string.cmo : ../stdlib/string.cmo ../stdlib/bytes.cmo
 fib.cmo :
 fib.cmo :
 for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi

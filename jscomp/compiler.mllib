@@ -16,6 +16,7 @@ ext_pp
 ext_option
 ext_list
 ext_string
+ext_char
 ext_format
 ext_filename
 ext_marshal

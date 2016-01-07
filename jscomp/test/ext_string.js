@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+var Bytes = require("../stdlib/bytes");
 var $$String = require("../stdlib/string");
 
 function split_by($staropt$star, is_delim, str) {
@@ -89,8 +90,46 @@ function ends_with(s, beg) {
   }
 }
 
+function escaped(s) {
+  var needs_escape = function (_i) {
+    while(/* true */1) {
+      var i = _i;
+      if (i >= s.length) {
+        return /* false */0;
+      }
+      else {
+        var match = s.charCodeAt(i);
+        if (match >= 32) {
+          var switcher = -34 + match;
+          if (!(58 < (switcher >>> 0))) {
+            if (56 < (-1 + switcher >>> 0)) {
+              return /* true */1;
+            }
+            else {
+              _i = i + 1;
+            }
+          }
+          else {
+            if (switcher >= 93) {
+              return /* true */1;
+            }
+            else {
+              _i = i + 1;
+            }
+          }
+        }
+        else {
+          return match >= 11 ? (match !== 13, /* true */1) : (match >= 8, /* true */1);
+        }
+      }
+    };
+  };
+  return needs_escape(0) ? Bytes.unsafe_to_string(Bytes.escaped(Bytes.unsafe_of_string(s))) : s;
+}
+
 exports.split_by = split_by;
 exports.split = split;
 exports.starts_with = starts_with;
 exports.ends_with = ends_with;
+exports.escaped = escaped;
 /* No side effect */
