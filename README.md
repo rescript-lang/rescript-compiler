@@ -1,4 +1,4 @@
-# OCamlScript
+# [OCamlScript](http://bloomberg.github.io/ocamlscript/)
 
 ## Introduction
 OCamlScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). Users of OCamlScript can write type-safe, high performance OCaml code, and deploy the generated JavaScript in any platform with a JavaScript execution engine.
