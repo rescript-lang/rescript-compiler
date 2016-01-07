@@ -23,6 +23,8 @@ ext_marshal
 ext_pervasives
 ext_pp_scope
 
+ext_bytes
+
 lam_compile_env
 lam_dispatch_primitive
 lam_stats

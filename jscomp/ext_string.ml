@@ -78,6 +78,6 @@ let escaped s =
       | _ -> true
   in
   if needs_escape 0 then
-    Bytes.unsafe_to_string (Bytes.escaped (Bytes.unsafe_of_string s))
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
   else
     s

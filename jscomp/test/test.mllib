@@ -102,6 +102,7 @@ boolean_test
 equal_exception_test
 lazy_test
 ext_string
+ext_bytes
 a_string_test
 ext_filename
 a_filename_test

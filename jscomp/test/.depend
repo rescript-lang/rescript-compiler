@@ -58,14 +58,16 @@ demo.cmo :
 demo.cmx :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx
+ext_bytes.cmo : ../stdlib/bytes.cmi
+ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
     ../stdlib/filename.cmi ext_string.cmo
 ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
     ../stdlib/filename.cmx ext_string.cmx
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
-ext_string.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
-ext_string.cmx : ../stdlib/string.cmx ../stdlib/bytes.cmx
+ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
+ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/bytes.cmx
 fib.cmo :
 fib.cmx :
 for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
@@ -384,14 +386,16 @@ demo.cmo :
 demo.cmo :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmo : ../stdlib/string.cmo mt.cmo ../stdlib/bytes.cmo
+ext_bytes.cmo : ../stdlib/bytes.cmi
+ext_bytes.cmo : ../stdlib/bytes.cmo
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
     ../stdlib/filename.cmi ext_string.cmo
 ext_filename.cmo : ../stdlib/sys.cmo ../stdlib/string.cmo ../stdlib/list.cmo \
     ../stdlib/filename.cmo ext_string.cmo
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmo : ../stdlib/list.cmo ../stdlib/array.cmo
-ext_string.cmo : ../stdlib/string.cmi ../stdlib/bytes.cmi
-ext_string.cmo : ../stdlib/string.cmo ../stdlib/bytes.cmo
+ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
+ext_string.cmo : ../stdlib/string.cmo ext_bytes.cmo ../stdlib/bytes.cmo
 fib.cmo :
 fib.cmo :
 for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi

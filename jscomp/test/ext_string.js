@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 var Bytes = require("../stdlib/bytes");
+var Ext_bytes = require("./ext_bytes");
 var $$String = require("../stdlib/string");
 
 function split_by($staropt$star, is_delim, str) {
@@ -124,7 +125,7 @@ function escaped(s) {
       }
     };
   };
-  return needs_escape(0) ? Bytes.unsafe_to_string(Bytes.escaped(Bytes.unsafe_of_string(s))) : s;
+  return needs_escape(0) ? Bytes.unsafe_to_string(Ext_bytes.escaped(Bytes.unsafe_of_string(s))) : s;
 }
 
 exports.split_by = split_by;
