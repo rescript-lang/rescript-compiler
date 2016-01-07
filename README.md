@@ -7,7 +7,7 @@ which aims to provide a better language for the Javascript platform.
 One OCaml module is mapped to one JS module, and no name mangling happens
 so that:
 
-1. The stacktrace is preserved, the generated code is debuggable.
+1. The stacktrace is preserved, the generated code is debuggable with or without sourcemap.
 2. You can call `List.length` (List is a module in OCaml standard library)
    in a plain Javascript file.
 
@@ -23,7 +23,7 @@ let sum n =
     !v
 ```
 
-Generated code under is as below:
+Generated code is as below:
 
 ``` js
 function sum(n) {
@@ -36,13 +36,13 @@ function sum(n) {
 ```
 
 As you can see, there is no name mangling in the generated code, so suppose the
-module is called `M`, you can call `M.fib` in vanilla Javascript
+module is called `M`, you can call `M.sub` in vanilla Javascript
 
-You can play the online [in-browser compiler](http://zhanghongbo.me/js-demo).
+You can learn more by playing the online [in-browser compiler](http://zhanghongbo.me/js-demo).
 
 
   
-# Disclaimer
+## Disclaimer
 
 This project is currently released to exchange ideas outside
 Bloomberg and collect some early feedback from OCaml and Javascript community,
@@ -50,13 +50,13 @@ it is in an *very early* stage and not production ready
 for your own projects *yet*.
 
 
-# Build
+## Build
 
 Note that you have to clone this project with `--recursive` option, we can only distribute
 the patch of OCaml due to License restrictions.
 
 
-## Linux and Mac OS 
+### Linux and Mac OS 
 
 
 1. Apply the patch to OCaml compiler and build
@@ -70,7 +70,7 @@ the patch of OCaml due to License restrictions.
   make world.opt
   make install
   ```
-2. Build OcamlScript Compiler
+2. Build OCamlScript Compiler
 
   Assume that you have ocamlopt.opt in the PATH
   ```
@@ -79,7 +79,7 @@ the patch of OCaml due to License restrictions.
   ocamlopt.opt -g -linkall -o bin/ocamlscript -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
   ```
   Now you have a binary called `ocamlscript` under `jscomp` directory,
-  put it in your `PATH`
+  put it in your `PATH`.
   
 3. Build the runtime with `ocamlscript`
 
@@ -139,13 +139,13 @@ backend.
 [Js_main](jscomp/js_main.ml) is adapted from [driver/main](ocaml/driver/main.ml), it is not actually
 used, since currently we make this JS backend as a plugin instead, but
 it shows that it is easy to assemble a whole compler using OCaml
-compiler libraries and upon that we can add more compilation flags for
+compiler libraries and based upon that we can add more compilation flags for
 JS backend.
 
 [stdlib](jscomp/stdlib) is copied from ocaml's [stdlib](ocaml/stdlib) to have it compiled with
 the new JS compiler.
 
-Since our work is derivative work, we choose the GPL v2 license to
+Since our work is derivative work, we choose the GPL V2 license to
 make it compatible with
 [js_of_ocaml](http://ocsigen.org/js_of_ocaml/).
 
@@ -168,9 +168,9 @@ our changes to the compiler as a patch instead.
    can play more optimizations and pipe it to Google Closure Compiler
    for production mode.
 
-4. Smaller code than hand written JS code, compatible with Google Closure Compiler
+4. Smaller code than hand written JS code, aggressive dead code elimination.
 
-5. Support NodeJs, Web Browser and various Javascript target platform.
+5. Support NodeJs, web browser and various Javascript target platform.
 
 6. Compatible with OCaml semantics modulo c-bindings and Obj, Marshal module
 
