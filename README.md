@@ -34,7 +34,7 @@ function sum(n) {
 As you can see, there is no name mangling in the generated code, so if this module is called `M`,
 `M.sum()` is directly callable from other JavaScript code.
 
-You can learn more by exploring the online [in-browser compiler](http://bloomberg.github.io/ocamlscript/js-demo).
+You can learn more by exploring the online [in-browser compiler](http://bloomberg.github.io/ocamlscript/js-demo) ( an old version, will be synced up soon).
 
   
 ## Disclaimer
@@ -114,7 +114,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
 
 We plan to provide a Windows nstaller in the near future.
 
-# Licensing 
+## Licensing 
 
 The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). Refer to its copyright and license notices for information about its licensing.
 
