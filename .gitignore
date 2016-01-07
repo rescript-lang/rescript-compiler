@@ -37,8 +37,6 @@ ocaml/*.js
 ocaml/*/*/*.js
 ocaml/*.js
 
-jscomp/stdlib/.depend
-jscomp/test_cases/.depend
 test.sh
 test.json
 ocaml/bin
