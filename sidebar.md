@@ -15,3 +15,4 @@
 - [Source](https://bbgithub.dev.bloomberg.com/OCamlCoreDevTeam/ocamlscript)
 - [Feedback](https://bbgithub.dev.bloomberg.com/OCamlCoreDevTeam/ocamlscript/issues)
 - [API Docs](./jscomp/apidoc/compiler.docdir)
+- [In browser demo](./js-demo/)
