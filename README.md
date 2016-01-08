@@ -70,7 +70,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
   ocamlopt.opt -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
   ocamlopt.opt -g -linkall -o bin/ocamlscript -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
   ```
-  Now you have a binary called `ocamlscript` under `jscomp` directory,
+  Now you have a binary called `ocamlscript` under `jscomp/bin` directory,
   put it in your `PATH`.
   
 3. Build the runtime with `ocamlscript`
