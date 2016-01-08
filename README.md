@@ -99,7 +99,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
   
   Then compile it with `ocamlscript`
   ```sh
-  OCAML_RAW_JS=1 ocamlscript -I . -I ../ -c hello.ml
+  OCAML_RAW_JS=1 ocamlscript -I . -I ../ -I ../stdlib -c hello.ml
   ```
   
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js
