@@ -20,7 +20,7 @@ make -r bin/ocamlscript
 
 echo "Making runtime" >> build.compile
 
-cd ./runtime; gmake all 2>> ../build.compile ; gmake depend;  cd ..
+cd ./runtime; make all 2>> ../build.compile ; make depend;  cd ..
 echo "Making runtime Finished" >> build.compile
 
 echo "Remaking standard library" >> build.compile
@@ -34,11 +34,11 @@ TARGET=a
 echo ">>EACH FILE TESTING" >> build.compile
 cd ./test/
 # ./build.sh 2>> ../build.compile
-gmake $TARGET.cmo 2>> ../build.compile
+make $TARGET.cmo 2>> ../build.compile
 
 cat $TARGET.js >> ../build.compile
-gmake -j30 all 2>>../build.compile
-gmake depend 2>>../build.compile
+make -j30 all 2>>../build.compile
+make depend 2>>../build.compile
 echo "<<Test finished" >> ../build.compile
 cd ..
 
