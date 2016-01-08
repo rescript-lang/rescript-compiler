@@ -1,7 +1,7 @@
 # Interaction with Javascript/Typescript
 
 Note this section is still in design space, it's subject to change in
-the future, we need further document how it works in general.
+the future, we need to further document how it works in general.
 
 ## Call OCaml functions from Javascript/Typescript
 
@@ -48,7 +48,7 @@ For example, if we want to provide bindings to the
 external describe : string -> (unit -> unit) -> unit = "" [@@js.call "describe"]
 external it : string -> (unit -> unit) -> unit = "" [@@js.call "it"]
 ```
-Since, `mochajs` is a test framework, we also need some assertion
+Since `mochajs` is a test framework, we also need some assertion
 test, we can also describe the bindings to `assert.deepEqual` from
 nodejs `assert` library:
 
