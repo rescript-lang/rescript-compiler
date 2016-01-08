@@ -2,7 +2,7 @@
 
 ## Hello world
 
-Currently, `ocamlscript` shares the same command line options as `ocamlc`
+Currently, `ocamlscript` shares the same command line options as the `ocamlc`
 bytecode compiler.
 
 Create a file called `hello.ml` as below
@@ -21,13 +21,13 @@ If everything goes well, you should have
 console.log('hello world')
 ```
 
-## Compilaton model
+## Compilation model
 
-However, the compilation/link model is like ocaml native compiler
-instead of bytecode compiler, suppose you
-have module `A`, `B`, `C`, module `C` depends on module `B`,
+However, the compilation/link model is like the OCaml native compiler
+instead of bytecode compiler, suppose you have modules `A`, `B`, `C`,
+module `C` depends on module `B`.
 
-Then you need compile `B` first before compiling `C`
+Then you need to compile `B` first before compiling `C`
 
 ```sh
 OCAML_RAW_JS=1 ocamlscript -c a.ml b.ml
