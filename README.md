@@ -112,7 +112,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
 
 ## Windows support
 
-We plan to provide a Windows nstaller in the near future.
+We plan to provide a Windows installer in the near future.
 
 # Licensing 
 
@@ -121,7 +121,7 @@ The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). 
 The `ocamlscript` backend relies on a patch [(js.diff)](./js.diff) to the OCaml compiler.
 
 This project reused and adapted parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
-* Some small printing utilties in [pretty printer](./jscomp/js_dump.ml).
+* Some small printing utilities in [pretty printer](./jscomp/js_dump.ml).
 * Part of the [Javascript runtime](./jscomp/runtime) support
 
 It adapted two modules [Lam_pass_exits](jscomp/lam_pass_exits.ml) and
@@ -219,7 +219,7 @@ Code Size:
 
 ## Status
 
-While most of the OCaml language is covered, because this project is still young there is plenmty of work left to be done.
+While most of the OCaml language is covered, because this project is still young there is plenty of work left to be done.
 
 Some known issues are listed as below:
 
