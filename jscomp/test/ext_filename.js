@@ -128,4 +128,4 @@ exports.chop_extension = chop_extension;
 exports.try_chop_extension = try_chop_extension;
 exports.relative_path = relative_path;
 exports.node_relative_path = node_relative_path;
-/* Filename fail the pure module */
+/* Filename Not a pure module */

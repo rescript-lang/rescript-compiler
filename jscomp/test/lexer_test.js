@@ -258,4 +258,4 @@ exports.get_tokens = get_tokens;
 exports.f = f;
 exports.from_tokens = from_tokens;
 exports.lexer_suites = lexer_suites;
-/*  fail the pure module */
+/*  Not a pure module */

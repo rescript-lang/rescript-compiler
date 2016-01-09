@@ -20,4 +20,4 @@ var suites = [
 Mt.from_suites("a_filename_test.ml", suites);
 
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

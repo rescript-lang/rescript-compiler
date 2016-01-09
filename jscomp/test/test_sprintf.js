@@ -18,4 +18,4 @@ console.error(Printf.sprintf([
             "%d%s"
           ])(32, "ss"));
 
-/*  fail the pure module */
+/*  Not a pure module */

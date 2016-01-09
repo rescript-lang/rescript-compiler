@@ -29,4 +29,4 @@ Mt.from_suites("Closure", [
       /* [] */0
     ]);
 
-/*  fail the pure module */
+/*  Not a pure module */

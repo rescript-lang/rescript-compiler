@@ -463,4 +463,4 @@ var int_map_suites = [
 
 Mt.from_suites("map_test", int_map_suites);
 
-/*  fail the pure module */
+/*  Not a pure module */

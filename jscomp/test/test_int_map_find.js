@@ -136,4 +136,4 @@ List.fold_left(function (acc, param) {
       ]
     ]);
 
-/*  fail the pure module */
+/*  Not a pure module */

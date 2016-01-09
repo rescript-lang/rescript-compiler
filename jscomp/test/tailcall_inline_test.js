@@ -91,4 +91,4 @@ Mt.from_pair_suites("tailcall_inline_test.ml", suites);
 
 exports.f = f;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

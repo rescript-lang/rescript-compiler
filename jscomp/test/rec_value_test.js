@@ -456,4 +456,4 @@ exports.fake_z2 = fake_z2;
 exports.fake_y2 = fake_y2;
 exports.v = v$1;
 exports.suites = suites;
-/* xs fail the pure module */
+/* xs Not a pure module */

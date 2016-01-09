@@ -151,4 +151,4 @@ var list_suites = [
 Mt.from_suites("List_suites", list_suites);
 
 exports.list_suites = list_suites;
-/*  fail the pure module */
+/*  Not a pure module */

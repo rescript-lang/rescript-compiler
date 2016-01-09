@@ -7,4 +7,4 @@ var b = 2;
 
 exports.a = a;
 exports.b = b;
-/* match fail the pure module */
+/* match Not a pure module */

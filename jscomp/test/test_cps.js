@@ -43,4 +43,4 @@ f(10, function () {
 
 exports.f = f;
 exports.test_closure = test_closure;
-/*  fail the pure module */
+/*  Not a pure module */

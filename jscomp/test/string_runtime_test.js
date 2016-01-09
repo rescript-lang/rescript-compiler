@@ -106,4 +106,4 @@ var S = 0;
 
 exports.S = S;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

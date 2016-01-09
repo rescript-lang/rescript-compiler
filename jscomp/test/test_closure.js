@@ -45,4 +45,4 @@ if (v[1] !== 45) {
 
 exports.v = v;
 exports.f = f;
-/* u fail the pure module */
+/* u Not a pure module */

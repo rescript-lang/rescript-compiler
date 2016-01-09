@@ -839,4 +839,4 @@ function make_lexer(keywords) {
 }
 
 exports.make_lexer = make_lexer;
-/* Hashtbl fail the pure module */
+/* Hashtbl Not a pure module */

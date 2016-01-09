@@ -132,4 +132,4 @@ var suites = [
 Mt.from_pair_suites("a_list_test.ml", suites);
 
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

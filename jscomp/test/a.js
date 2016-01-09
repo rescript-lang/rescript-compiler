@@ -7,4 +7,4 @@ function add(x, y) {
 
 add(1, 2);
 
-/*  fail the pure module */
+/*  Not a pure module */

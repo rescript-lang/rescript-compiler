@@ -56,6 +56,8 @@ cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmx : mt.cmx ../stdlib/array.cmx
 demo.cmo :
 demo.cmx :
+demo_page.cmo :
+demo_page.cmx :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx
 ext_bytes.cmo : ../stdlib/bytes.cmi
@@ -384,6 +386,8 @@ cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmo : mt.cmo ../stdlib/array.cmo
 demo.cmo :
 demo.cmo :
+demo_page.cmo :
+demo_page.cmo :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmo : ../stdlib/string.cmo mt.cmo ../stdlib/bytes.cmo
 ext_bytes.cmo : ../stdlib/bytes.cmi

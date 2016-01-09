@@ -313,4 +313,4 @@ function assert_test() {
 }
 
 exports.assert_test = assert_test;
-/* m fail the pure module */
+/* m Not a pure module */

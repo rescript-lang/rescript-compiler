@@ -15,4 +15,4 @@ function unuse_v() {
 var h = unuse_v;
 
 exports.h = h;
-/*  fail the pure module */
+/*  Not a pure module */

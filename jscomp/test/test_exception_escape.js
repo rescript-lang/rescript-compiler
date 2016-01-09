@@ -27,4 +27,4 @@ var N = [
 ];
 
 exports.N = N;
-/* f fail the pure module */
+/* f Not a pure module */

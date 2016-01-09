@@ -8,4 +8,4 @@ var u = 0;
 var v = 0;
 
 exports.v = v;
-/* v fail the pure module */
+/* v Not a pure module */

@@ -777,7 +777,7 @@ and
     if l > 2 then P.paren_vgroup f 1 action else action ()
 
   | Object lst ->
-    P.brace_group f 1 @@ fun _ -> 
+    P.brace_vgroup f 1 @@ fun _ -> 
       property_name_and_value_list cxt f lst
 
 and property_name cxt f (s : J.property_name) : Ext_pp_scope.t =
@@ -1350,7 +1350,7 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
   P.string f (
     match program.side_effect with
     | None -> "/* No side effect */"
-    | Some v -> Printf.sprintf "/* %s fail the pure module */" v );
+    | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
   P.newline f;
   P.flush f ()
 

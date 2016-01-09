@@ -86,4 +86,4 @@ exports.length = length;
 exports.map = map;
 exports.f = f;
 exports.fib3 = fib3;
-/*  fail the pure module */
+/*  Not a pure module */

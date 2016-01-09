@@ -66,4 +66,4 @@ exports.__ocaml_lex_tables = __ocaml_lex_tables;
 exports.translate = translate;
 exports.__ocaml_lex_translate_rec = __ocaml_lex_translate_rec;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

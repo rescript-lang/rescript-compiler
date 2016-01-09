@@ -6,4 +6,4 @@ var List = require("../stdlib/list");
 var v = List.length;
 
 exports.v = v;
-/* Test_global_print fail the pure module */
+/* Test_global_print Not a pure module */

@@ -161,4 +161,4 @@ function assertions() {
 }
 
 exports.assertions = assertions;
-/* m fail the pure module */
+/* m Not a pure module */

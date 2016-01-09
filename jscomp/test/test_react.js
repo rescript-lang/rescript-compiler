@@ -10,12 +10,16 @@ doc.getElementById("haha");
 
 var v = console.log(32);
 
-ReactDom.render(React.createClass({"render": function () {
-            return React.DOM.div({"alt": "pic"}, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"), React.DOM.h3(null, "type safe!"));
-          }}), document.getElementById("hi"));
+ReactDom.render(React.createClass({
+          "render": function () {
+            return React.DOM.div({
+                        "alt": "pic"
+                      }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"), React.DOM.h3(null, "type safe!"));
+          }
+        }), document.getElementById("hi"));
 
 var u = 33;
 
 exports.v = v;
 exports.u = u;
-/*  fail the pure module */
+/*  Not a pure module */

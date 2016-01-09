@@ -1371,4 +1371,4 @@ exports.predict_file = predict_file;
 exports.print_tree = print_tree;
 exports.read_tree = read_tree;
 exports.load_model = load_model;
-/* split_white_re fail the pure module */
+/* split_white_re Not a pure module */

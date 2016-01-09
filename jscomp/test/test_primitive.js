@@ -123,4 +123,4 @@ exports.gg = gg;
 exports.f = f;
 exports.is_lazy_force = is_lazy_force;
 exports.fib = fib;
-/*  fail the pure module */
+/*  Not a pure module */

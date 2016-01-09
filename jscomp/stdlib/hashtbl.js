@@ -794,4 +794,4 @@ exports.hash = hash;
 exports.seeded_hash = seeded_hash;
 exports.hash_param = hash_param;
 exports.seeded_hash_param = seeded_hash_param;
-/* randomized_default fail the pure module */
+/* randomized_default Not a pure module */

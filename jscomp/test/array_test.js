@@ -278,4 +278,4 @@ var array_suites = [
 
 Mt.from_pair_suites("array_test.ml", array_suites);
 
-/*  fail the pure module */
+/*  Not a pure module */

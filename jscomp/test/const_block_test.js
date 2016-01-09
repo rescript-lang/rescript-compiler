@@ -107,4 +107,4 @@ exports.c = c;
 exports.v = v;
 exports.f = f;
 exports.h = h;
-/*  fail the pure module */
+/*  Not a pure module */

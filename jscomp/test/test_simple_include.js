@@ -119,4 +119,4 @@ exports.N = N;
 exports.NN = NN;
 exports.a = a;
 exports.v = v;
-/*  fail the pure module */
+/*  Not a pure module */

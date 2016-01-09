@@ -19,4 +19,4 @@ var non_terminate = g(x);
 
 exports.loop = loop;
 exports.non_terminate = non_terminate;
-/* loop fail the pure module */
+/* loop Not a pure module */

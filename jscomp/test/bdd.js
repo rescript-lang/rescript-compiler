@@ -427,4 +427,4 @@ exports.random_vars = random_vars;
 exports.bool_equal = bool_equal;
 exports.test_hwb = test_hwb;
 exports.main = main;
-/*  fail the pure module */
+/*  Not a pure module */

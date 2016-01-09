@@ -33,4 +33,4 @@ while(function () {
 exports.v = v;
 exports.fib = fib;
 exports.x = x;
-/*  fail the pure module */
+/*  Not a pure module */

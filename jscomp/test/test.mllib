@@ -141,3 +141,4 @@ string_runtime_test
 of_string_test
 tailcall_inline_test
 obj_test
+demo_page
