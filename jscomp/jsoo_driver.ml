@@ -50,7 +50,10 @@ let implementation ppf str  =
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
-      let () = Js_output.(pp_output (Lam_compile.compile  !finalenv !types_signature lam) (Pp.to_buffer buffer)  ) in
+      let () = Js_dump.(pp_program 
+                          (Lam_compile_group.compile ~filename:""
+                             !finalenv !types_signature lam)
+                          (Ext_pp.from_buffer buffer)) in
       let v = Buffer.contents buffer in 
       Format.fprintf ppf {| { "js_code" : %S }|} v )
   with 

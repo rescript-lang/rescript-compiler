@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 var Filename = require("../stdlib/filename");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 var Pervasives = require("../stdlib/pervasives");
 var Ext_string = require("./ext_string");
 var $$String = require("../stdlib/string");
@@ -33,6 +34,21 @@ function absolute_path(s) {
     };
   };
   return aux(s$1);
+}
+
+function chop_extension($staropt$star, name) {
+  var loc = $staropt$star ? $staropt$star[1] : "";
+  try {
+    return Filename.chop_extension(name);
+  }
+  catch (exn){
+    if (exn[1] === Caml_exceptions.Invalid_argument) {
+      return Pervasives.invalid_arg("Filename.chop_extension (" + (loc + (":" + (name + ")"))));
+    }
+    else {
+      throw exn;
+    }
+  }
 }
 
 function try_chop_extension(s) {
@@ -108,6 +124,7 @@ exports.node_sep = node_sep;
 exports.node_parent = node_parent;
 exports.node_current = node_current;
 exports.absolute_path = absolute_path;
+exports.chop_extension = chop_extension;
 exports.try_chop_extension = try_chop_extension;
 exports.relative_path = relative_path;
 exports.node_relative_path = node_relative_path;

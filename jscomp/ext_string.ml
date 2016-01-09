@@ -89,3 +89,5 @@ let for_all (p : char -> bool) s =
     if i >= len then true 
     else  p (String.unsafe_get s i) && aux (i + 1)
   in aux 0 
+
+let is_empty s = String.length s = 0

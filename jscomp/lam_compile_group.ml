@@ -203,12 +203,13 @@ let compile ~filename env sigs lam  : J.program  =
               meta.export_idents lambda_exports ([],[])in
           let () = meta.export_idents <- new_exports in
           let rest = List.rev_append rest coercion_groups in
-          let () = 
-            if filename != "" 
+          let () =
+            if not @@ Ext_string.is_empty filename 
             then
-              let f = Filename.chop_extension filename ^ ".lambda" in
-              Ext_pervasives.with_file_as_pp f @@ fun fmt -> 
-              Format.pp_print_list ~pp_sep:Format.pp_print_newline 
+              let f = 
+                Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+              Ext_pervasives.with_file_as_pp f @@ fun fmt ->
+              Format.pp_print_list ~pp_sep:Format.pp_print_newline
                 (Lam_util.pp_group env) fmt rest ;
           in
           (* Invariant: The last one is always [exports]
@@ -266,13 +267,15 @@ let compile ~filename env sigs lam  : J.program  =
           let v = 
             Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
               lambda_exports  in
-          Ext_marshal.to_file (Filename.chop_extension filename ^ ".cmj") v ;
+          (if not @@ Ext_string.is_empty filename then
+            Ext_marshal.to_file 
+              (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
           let js = 
             Js_program_loader.make_program filename v.pure meta.export_idents
               external_module_ids body 
           in
           (* The file is not big at all compared with [cmo] *)
-          (* Ext_marshal.to_file (Filename.chop_extension filename ^ ".mj")  js; *)
+          (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
 
           js 
           (* |> Js_inline_and_eliminate.inline_and_shake *)
@@ -297,7 +300,7 @@ let lambda_as_module
 
   let () = current_file_name :=  Some filename in
   Ext_pervasives.with_file_as_chan 
-    (Filename.chop_extension filename ^  ".js")
+    (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
     (fun chan -> Js_dump.dump_program (compile ~filename env sigs lam) chan)
 
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
@@ -306,6 +309,3 @@ let lambda_as_module
 
     However, use filename instead of {!Env.current_unit} is more honest, since node-js module system is coupled with the file name 
 *)
-let () = 
-  Printlambda.serialize_raw_js := lambda_as_module true;
-;;

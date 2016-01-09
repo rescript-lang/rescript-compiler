@@ -52,7 +52,7 @@ lam_dce
 lam_pass_eliminate_ref
 lam_map
 lam_fold
-
+lam_register
 
 j
 js_program_loader
