@@ -249,6 +249,10 @@ Some known issues are listed as below:
 
    Bigarray, Unix, Num, Int64
 
+3. String is immutable, user is expected to compile with flags `-safe-string` for all modules:
+
+   Note that this flag should be applied to all your modules.
+
 ## Question, Comments and Feedback
 
 If you have questions, comments, suggestions for improvement or any other inquiries
