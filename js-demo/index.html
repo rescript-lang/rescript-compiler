@@ -58,18 +58,18 @@ external attrs:
           unit -> attrs = "" [@@js.obj]
 external str : string -> component = "%identity"
 external h1 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h1"] [@@js.scope "react" "DOM"] [@@js.splice] (** splice the last argument *)
+    [@@js.call "h1"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice] (** splice the last argument *)
 external h2 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h2"] [@@js.scope "react" "DOM"] [@@js.splice]
+    [@@js.call "h2"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice]
 external div : ?attrs:attrs -> component array ->  component = ""
-    [@@js.call "div"] [@@js.scope "react" "DOM"]  [@@js.splice]
+    [@@js.call "div"] [@@js.scope "DOM"] [@@js.module "react"]  [@@js.splice]
 external createClass :
       config -> component_class = "createClass"
         [@@js.call "createClass"]
-        [@@js.scope "react"]
+        [@@js.module "react"]
 external render : component_class -> element -> unit = ""
     [@@js.call "render"]
-    [@@js.scope "react-dom"]
+    [@@js.module "react-dom"]
 ;;
 (** Do the rendering *)
 render (
@@ -81,41 +81,62 @@ render (
               [|
                 h1 [| str "hello react"|];
                 h2 [| str "type safe!" |];
-              |]
+  |]
                )
         ()))) (getElementById (document ()) "hi")
+
 </textarea>
     </div>
     <div style="width: 50%;float:right">
         <textarea id="jscode#1" style="background-color: #008803">
-var ReactDom=require("react-dom");
-var React=require("react");
+// Generated CODE, PLEASE EDIT WITH CARE
+"use strict";
+var React = require("react");
+var ReactDom = require("react-dom");
 
+function fib(n) {
+  return 1 < (-1 + n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+}
 
-var fib=function(n){return 1<-1+n>>>0?fib(n-1)+fib(n-2):1};
+function sum(n) {
+  var v = 0;
+  for(var i = 0; i<= n; ++i){
+    v += i;
+  }
+  return v;
+}
 
-var sum=function(n){var v=0;for(var i=0;i<=n;i++){v=v+i;}return v};
+function map(f, param) {
+  return param ? [
+            /* Cons */0,
+            f(param[1]),
+            map(f, param[2])
+          ] : /* Nil */0;
+}
 
-var
- map=
-  function(f,param)
-   {return param?/* Cons */[0,f(param[1]),map(f,param[2])]:/* Nil */0};
+function test_curry(x, y) {
+  return x + y;
+}
 
-var test_curry=function(x,y){return x+y};
+function f(param) {
+  return test_curry(32, param);
+}
 
-var f=function(param){return test_curry(32,param)};
+ReactDom.render(React.createClass({
+          "render": function () {
+            return React.DOM.div({
+                        "alt": "pic"
+                      }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"));
+          }
+        }), document.getElementById("hi"));
 
-ReactDom["render"]
- (React["createClass"]
-   ({"render":
-     function(param)
-      {return React["DOM"]["div"]
-               ({"alt":"pic"},
-                React["DOM"]["h1"](null,"hello react"),
-                React["DOM"]["h2"](null,"type safe!"))}}),
-  document["getElementById"]("hi"));
-module["exports"]=
-{"fib":fib,"sum":sum,"map":map,"test_curry":test_curry,"f":f};
+exports.fib = fib;
+exports.sum = sum;
+exports.map = map;
+exports.test_curry = test_curry;
+exports.f = f;
+/*  Not a pure module */
+
 </textarea>
     </div>
 </div>
