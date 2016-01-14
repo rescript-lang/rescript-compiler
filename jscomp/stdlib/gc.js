@@ -4,25 +4,6 @@ var Sys = require("./sys");
 var Printf = require("./printf");
 
 function print_stat(c) {
-  var st = /* caml_gc_stat */[
-    /* stat-record */0,
-    /* minor_words */0,
-    /* promoted_words */0,
-    /* major_words */0,
-    /* minor_collections */0,
-    /* major_collections */0,
-    /* heap_words */0,
-    /* heap_chunks */0,
-    /* live_words */0,
-    /* live_blocks */0,
-    /* free_words */0,
-    /* free_blocks */0,
-    /* larget_blocks */0,
-    /* fragments */0,
-    /* compactions */0,
-    /* top_heap_words */0,
-    /* stack_size */0
-  ];
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -44,7 +25,7 @@ function print_stat(c) {
             ]
           ],
           "minor_words: %.0f\n"
-        ])(st[1]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -66,7 +47,7 @@ function print_stat(c) {
             ]
           ],
           "promoted_words: %.0f\n"
-        ])(st[2]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -88,7 +69,7 @@ function print_stat(c) {
             ]
           ],
           "major_words: %.0f\n"
-        ])(st[3]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -107,7 +88,7 @@ function print_stat(c) {
             ]
           ],
           "minor_collections: %d\n"
-        ])(st[4]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -126,7 +107,7 @@ function print_stat(c) {
             ]
           ],
           "major_collections: %d\n"
-        ])(st[5]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -145,7 +126,7 @@ function print_stat(c) {
             ]
           ],
           "heap_words: %d\n"
-        ])(st[6]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -164,7 +145,7 @@ function print_stat(c) {
             ]
           ],
           "heap_chunks: %d\n"
-        ])(st[7]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -183,7 +164,7 @@ function print_stat(c) {
             ]
           ],
           "top_heap_words: %d\n"
-        ])(st[15]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -202,7 +183,7 @@ function print_stat(c) {
             ]
           ],
           "live_words: %d\n"
-        ])(st[8]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -221,7 +202,7 @@ function print_stat(c) {
             ]
           ],
           "live_blocks: %d\n"
-        ])(st[9]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -240,7 +221,7 @@ function print_stat(c) {
             ]
           ],
           "free_words: %d\n"
-        ])(st[10]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -259,7 +240,7 @@ function print_stat(c) {
             ]
           ],
           "free_blocks: %d\n"
-        ])(st[11]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -278,7 +259,7 @@ function print_stat(c) {
             ]
           ],
           "largest_free: %d\n"
-        ])(st[12]);
+        ])(0);
   Printf.fprintf(c, [
           /* Format */0,
           [
@@ -297,7 +278,7 @@ function print_stat(c) {
             ]
           ],
           "fragments: %d\n"
-        ])(st[13]);
+        ])(0);
   return Printf.fprintf(c, [
                 /* Format */0,
                 [
@@ -316,17 +297,11 @@ function print_stat(c) {
                   ]
                 ],
                 "compactions: %d\n"
-              ])(st[14]);
+              ])(0);
 }
 
 function allocated_bytes() {
-  var match = [
-    0,
-    0,
-    0,
-    0
-  ];
-  return (match[1] + match[3] - match[2]) * (Sys.word_size / 8 | 0);
+  return (0 + 0 - 0) * (Sys.word_size / 8 | 0);
 }
 
 function create_alarm(f) {

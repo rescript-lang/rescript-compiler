@@ -29,10 +29,26 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
       | Const_int i -> E.int i
       | Const_char i ->
         Js_of_lam_string.const_char i
-      | Const_int32 i -> E.float (Int32.to_float i)
-      | Const_int64 i -> E.float (Int64.to_float i)
-      | Const_nativeint i -> E.float (Nativeint.to_float i)
-      | Const_float f -> E.float (float_of_string f) (* TODO: preserve float *)
+      | Const_int32 i -> 
+          E.float (Int32.to_string i)
+      | Const_int64 i -> 
+          (*
+            TODO:
+            {[
+            Int64.to_string 0x7FFFFFFFFFFFFFFFL;;
+            - : string = "9223372036854775807"
+            ]}
+            {[
+            Int64.(to_float max_int);;
+            - : float = 9.22337203685477581e+18
+            ]}
+            Note we should compile it to Int64 as JS's 
+            speical representation -- 
+            it is not representatble in JS number
+           *)
+          E.float (Int64.to_string i)
+      | Const_nativeint i -> E.float (Nativeint.to_string i)
+      | Const_float f -> E.float f (* TODO: preserve float *)
       | Const_string (i,_) (*TODO: here inline js*) -> 
         E.str i
     end
@@ -56,7 +72,7 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
     *)
     (* TODO-- *)
     E.arr Mutable ~comment:"float array"
-      (List.map (fun x ->  (E.float (float_of_string x)) ) ars)
+      (List.map (fun x ->  E.float  x ) ars)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)

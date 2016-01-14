@@ -97,7 +97,9 @@ module Exp : sig
 
   val int : ?comment:string -> ?c:char ->  int -> t 
 
-  val float : ?comment:string -> float -> t
+  val float : ?comment:string -> string -> t
+
+  val zero_float_lit : t 
 
   val dot : ?comment:string -> t -> string -> t
 

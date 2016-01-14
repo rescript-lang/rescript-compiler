@@ -212,7 +212,9 @@ let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr
     | { desc = Tconstr(p,_,_) }, _ when Path.same p Predef.path_bool -> 
       begin 
         match arg.expression_desc with 
-        | Number (Int {i = 0; _} | Float 0.) ->  [E.false_]
+        | Number (Int {i = 0; _} 
+        (* | Float {f = "0."} This should not happen *)
+       ) ->  [E.false_]
         | Number _ -> [E.true_]
         | _ -> [E.econd arg E.true_ E.false_]
       end
@@ -257,7 +259,7 @@ let translate
                 | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool -> 
                   begin 
                     match arg.expression_desc with 
-                    | Number (Float 0.| Int { i = 0;_}) ->  Some (label ,E.false_)
+                    | Number ((* Float { f = "0."}| *) Int { i = 0;_}) ->  Some (label ,E.false_)
                     | Number _ -> Some (label,E.true_)
                     | _ -> Some ( label, (E.econd arg E.true_ E.false_))
                   end

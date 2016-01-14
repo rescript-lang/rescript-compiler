@@ -50,13 +50,13 @@ var max_int = (-1 >>> 1);
 
 var min_int = max_int + 1;
 
-var infinity = Caml_float.caml_int64_float_of_bits(9.21886843722740531e+18);
+var infinity = Caml_float.caml_int64_float_of_bits(9218868437227405312);
 
 var neg_infinity = Caml_float.caml_int64_float_of_bits(-4503599627370496);
 
-var nan = Caml_float.caml_int64_float_of_bits(9.21886843722740531e+18);
+var nan = Caml_float.caml_int64_float_of_bits(9218868437227405313);
 
-var max_float = Caml_float.caml_int64_float_of_bits(9.21886843722740531e+18);
+var max_float = Caml_float.caml_int64_float_of_bits(9218868437227405311);
 
 var min_float = Caml_float.caml_int64_float_of_bits(4503599627370496);
 

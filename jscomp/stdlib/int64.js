@@ -32,9 +32,9 @@ var one = 1;
 
 var minus_one = -1;
 
-var max_int = 9.22337203685477581e+18;
+var max_int = 9223372036854775807;
 
-var min_int = -9.22337203685477581e+18;
+var min_int = -9223372036854775808;
 
 exports.zero = zero;
 exports.one = one;

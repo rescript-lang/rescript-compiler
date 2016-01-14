@@ -3710,7 +3710,7 @@ function convert_float(fconv, prec, x) {
                   is_valid(0) ? str : str + "."
                 )
             ) : (
-              x < 0 ? "neg_infinity" : "infinity"
+              x < 0.0 ? "neg_infinity" : "infinity"
             );
   }
 }

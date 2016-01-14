@@ -2,8 +2,8 @@
 "use strict";
 
 var one = /* float array */[
-  1,
-  0
+  1.0,
+  0.0
 ];
 
 function add(x, y) {
@@ -71,21 +71,21 @@ function norm2(x) {
 function norm(x) {
   var r = Math.abs(x[1]);
   var i = Math.abs(x[2]);
-  if (r === 0) {
+  if (r === 0.0) {
     return i;
   }
   else {
-    if (i === 0) {
+    if (i === 0.0) {
       return r;
     }
     else {
       if (r >= i) {
         var q = i / r;
-        return r * Math.sqrt(1 + q * q);
+        return r * Math.sqrt(1.0 + q * q);
       }
       else {
         var q$1 = r / i;
-        return i * Math.sqrt(1 + q$1 * q$1);
+        return i * Math.sqrt(1.0 + q$1 * q$1);
       }
     }
   }
@@ -103,10 +103,10 @@ function polar(n, a) {
 }
 
 function sqrt(x) {
-  if (x[1] === 0 && x[2] === 0) {
+  if (x[1] === 0.0 && x[2] === 0.0) {
     return /* float array */[
-            0,
-            0
+            0.0,
+            0.0
           ];
   }
   else {
@@ -115,18 +115,18 @@ function sqrt(x) {
     var w;
     if (r >= i) {
       var q = i / r;
-      w = Math.sqrt(r) * Math.sqrt(0.5 * (1 + Math.sqrt(1 + q * q)));
+      w = Math.sqrt(r) * Math.sqrt(0.5 * (1.0 + Math.sqrt(1.0 + q * q)));
     }
     else {
       var q$1 = r / i;
-      w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1 + q$1 * q$1)));
+      w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
     }
-    return x[1] >= 0 ? /* array */[
+    return x[1] >= 0.0 ? /* array */[
               w,
               0.5 * x[2] / w
             ] : /* array */[
               0.5 * i / w,
-              x[2] >= 0 ? w : -w
+              x[2] >= 0.0 ? w : -w
             ];
   }
 }
@@ -151,13 +151,13 @@ function pow(x, y) {
 }
 
 var zero = /* float array */[
-  0,
-  0
+  0.0,
+  0.0
 ];
 
 var i = /* float array */[
-  0,
-  1
+  0.0,
+  1.0
 ];
 
 exports.zero = zero;
