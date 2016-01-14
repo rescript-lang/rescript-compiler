@@ -22,7 +22,7 @@ ext_filename
 ext_marshal
 ext_pervasives
 ext_pp_scope
-
+ext_array
 ext_bytes
 
 lam_compile_env
@@ -80,5 +80,5 @@ js_inline_and_eliminate
 js_pass_flatten
 js_number
 j_helper
-
+js_cmj_datasets
 # js_main

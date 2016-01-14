@@ -266,7 +266,7 @@ let compile ~filename env sigs lam  : J.program  =
           let v = 
             Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
               lambda_exports  in
-          Ext_marshal.to_file (Filename.chop_extension filename ^ ".cmj") v ;
+          Js_cmj_format.to_file (Filename.chop_extension filename ^ ".cmj") v ;
           let js = 
             Js_program_loader.make_program filename v.pure meta.export_idents
               external_module_ids body 

@@ -57,3 +57,8 @@ type cmj_table = {
 }
 
 val dummy : ?pure:string option -> unit -> cmj_table
+
+val from_file : string -> cmj_table
+val from_string : string -> cmj_table
+
+val to_file : string -> cmj_table -> unit

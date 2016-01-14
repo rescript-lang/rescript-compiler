@@ -18,27 +18,12 @@
 
 (* Author: Hongbo Zhang  *)
 
+(** Some utilities for {!Array} operations *)
+
+val reverse_in_place : 'a array -> unit
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
 
 
-(* TODO: add a magic number *)
-type cmj_value = {
-  arity : Lam_stats.function_arities ;
-  closed_lambda : Lambda.lambda option ; 
-  (** Either constant or closed functor *)
-}
-
-type effect = string option
-
-type cmj_table = {
-  values : cmj_value String_map.t;
-  pure : effect;
-}
-
-let dummy ?(pure=Some "dummy") () = 
-  { values = String_map.empty ; pure }
-
-let from_file name : cmj_table = Ext_marshal.from_file name
-
-let from_string s : cmj_table = Marshal.from_string s 0
-
-let to_file name v = Ext_marshal.to_file name v

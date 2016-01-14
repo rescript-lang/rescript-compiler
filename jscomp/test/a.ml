@@ -20,6 +20,7 @@ module X = Make(String)
 module U = Make(Test_order)
 
 include N
-
+(* let v = "xhg" *)
+(* let () = v.[0] <- 'a' *)
 
 end : sig end)

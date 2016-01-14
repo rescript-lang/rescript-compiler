@@ -96,7 +96,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
             Ext_log.warn __LOC__ "@[%s not found @]@." file ;
             Js_cmj_format.dummy  (); (* FIXME *)
           | f -> 
-            Ext_marshal.from_file f 
+            Js_cmj_format.from_file f             
         end in
       begin match
           Type_util.find_serializable_signatures_by_path
@@ -166,7 +166,7 @@ let query_and_add_if_not_exist (oid : Lam_module_ident.t) env ~not_found ~found 
               (* TODO: add an logger module *)
               Ext_log.warn __LOC__ "@[%s not found@]@." file ;
               Js_cmj_format.dummy  ()
-            | f -> Ext_marshal.from_file f
+            | f -> Js_cmj_format.from_file f
           end 
         in
         begin 
