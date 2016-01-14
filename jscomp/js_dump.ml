@@ -474,8 +474,9 @@ and
   | Number v ->
     let s = 
       match v with 
-      | Float v -> 
-        Js_number.to_string v (* attach string here for float constant folding?*)
+      | Float {f = v} -> 
+        Js_number.caml_float_literal_to_js_string v 
+       (* attach string here for float constant folding?*)
       | Int { i = v; _} 
         -> string_of_int v (* check , js convention with ocaml lexical convention *)in
     let need_paren =
@@ -634,7 +635,13 @@ and
         expression 13 cxt  f delta
     end
 
-  | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float 0.)}, e) 
+  | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float {f = "0."})}, e) 
+      (* TODO:
+         Handle multiple cases like
+         {[ 0. - x ]}
+         {[ 0.00 - x ]}
+         {[ 0.000 - x ]}
+       *)
     ->
     let action () = 
       P.string f "-" ;

@@ -8,17 +8,17 @@ var data = /* array */[
   [
     /* record */0,
     "GOOG",
-    700
+    700.0
   ],
   [
     /* record */0,
     "AAPL",
-    500
+    500.0
   ],
   [
     /* record */0,
     "MSFT",
-    300
+    300.0
   ]
 ];
 

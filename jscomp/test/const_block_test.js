@@ -24,7 +24,7 @@ var c = /* array */[
 ];
 
 function f() {
-  a[0] = 3;
+  a[0] = 3.0;
   b[0] = 3;
   return /* () */0;
 }
@@ -44,7 +44,7 @@ function g() {
           ],
           [
             /* tuple */0,
-            3,
+            3.0,
             3
           ]
         ];

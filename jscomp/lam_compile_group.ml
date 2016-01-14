@@ -97,14 +97,14 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
   (** Special handling for values in [Sys] *)
   | Single(_, ({name="max_array_length";_} as id) ,_ ),  "sys.ml" ->
     (* See [js_knowledge] Array size section, can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float 4_294_967_295.) 
+    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float "4_294_967_295.") 
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;) can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float 9007199254740991.) 
+    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float "9007199254740991.") 
 
   | Single(_, ({name="min_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, -. (2. ** 53. -. 1.);; can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float (-.9007199254740991.)) 
+    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float ("-9007199254740991.")) 
 
   | Single (kind, id, lam), _ -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)

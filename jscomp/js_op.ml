@@ -93,11 +93,13 @@ type int_or_char =
     { i :  int;
       c : char option
     }
- (* literal char *)
 
+ (* literal char *)
+type float_lit = { f :  string }
 type number = 
-  | Float of float 
+  | Float of float_lit 
   | Int of int_or_char
+
 
 type mutable_flag = 
   | Mutable

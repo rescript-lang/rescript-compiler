@@ -5,7 +5,7 @@ var u = 0;
 
 ++ u;
 
-var v = 0;
+var v = /* () */0;
 
 exports.v = v;
 /* v Not a pure module */
