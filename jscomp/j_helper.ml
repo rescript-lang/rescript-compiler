@@ -171,7 +171,7 @@ module Exp = struct
 
   let rec econd ?comment (b : t) (t : t) (f : t) : t = 
     match b.expression_desc , t.expression_desc, f.expression_desc with
-    | Number ((Int { i = 0; _}) | Float 0.), _, _ 
+    | Number ((Int { i = 0; _}) ), _, _ 
       -> f  (* TODO: constant folding: could be refined *)
     | (Number _ | Array _), _, _ 
       -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
@@ -358,8 +358,11 @@ module Exp = struct
 
   (* Dot .....................**)        
     
-  let float ?comment i : t = 
-    {expression_desc = Number (Float i); comment}
+  let float ?comment f : t = 
+    {expression_desc = Number (Float {f}); comment}
+
+  let zero_float_lit : t = 
+    {expression_desc = Number (Float {f = "0." }); comment = None}
 
   (* let eqeq ?comment e0 e1 : t = {expression_desc = Bin(EqEq, e0,e1); comment} *)
 
@@ -799,7 +802,7 @@ module Stmt = struct
            *)
           aux ?comment e ys xs (y::acc)
 
-      |  Number (Float 0.| Int { i = 0; _}) , _,  _
+      |  Number ( Int { i = 0; _}) , _,  _
         ->  
           begin match else_ with 
           | [] -> acc 
@@ -864,14 +867,14 @@ module Stmt = struct
     }
   let assign_unit ?comment  id :  t = 
     {
-      statement_desc = J.Exp(Exp.bin Eq (Exp.var id) (Exp.float 0.));
+      statement_desc = J.Exp(Exp.bin Eq (Exp.var id) (Exp.unit ()));
       comment
     }
   let declare_unit ?comment  id :  t = 
     {
       statement_desc = 
       J.Variable { ident =  id; 
-                   value = Some (Exp.float 0.) ;
+                   value = Some (Exp.unit ()) ;
                    property = Mutable;
                    ident_info = {used_stats = NA}
                  };

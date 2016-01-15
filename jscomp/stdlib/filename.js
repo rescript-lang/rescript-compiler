@@ -376,4 +376,4 @@ exports.get_temp_dir_name = get_temp_dir_name;
 exports.set_temp_dir_name = set_temp_dir_name;
 exports.temp_dir_name = temp_dir_name$2;
 exports.quote = quote$1;
-/* match fail the pure module */
+/* match Not a pure module */

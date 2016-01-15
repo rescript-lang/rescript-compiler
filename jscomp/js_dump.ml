@@ -474,8 +474,9 @@ and
   | Number v ->
     let s = 
       match v with 
-      | Float v -> 
-        Js_number.to_string v (* attach string here for float constant folding?*)
+      | Float {f = v} -> 
+        Js_number.caml_float_literal_to_js_string v 
+       (* attach string here for float constant folding?*)
       | Int { i = v; _} 
         -> string_of_int v (* check , js convention with ocaml lexical convention *)in
     let need_paren =
@@ -634,7 +635,13 @@ and
         expression 13 cxt  f delta
     end
 
-  | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float 0.)}, e) 
+  | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float {f = "0."})}, e) 
+      (* TODO:
+         Handle multiple cases like
+         {[ 0. - x ]}
+         {[ 0.00 - x ]}
+         {[ 0.000 - x ]}
+       *)
     ->
     let action () = 
       P.string f "-" ;
@@ -777,7 +784,7 @@ and
     if l > 2 then P.paren_vgroup f 1 action else action ()
 
   | Object lst ->
-    P.brace_group f 1 @@ fun _ -> 
+    P.brace_vgroup f 1 @@ fun _ -> 
       property_name_and_value_list cxt f lst
 
 and property_name cxt f (s : J.property_name) : Ext_pp_scope.t =
@@ -1350,7 +1357,7 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
   P.string f (
     match program.side_effect with
     | None -> "/* No side effect */"
-    | Some v -> Printf.sprintf "/* %s fail the pure module */" v );
+    | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
   P.newline f;
   P.flush f ()
 

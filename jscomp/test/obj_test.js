@@ -403,4 +403,4 @@ exports.uu = uu;
 exports.uuu = uuu;
 exports.vvvv = vvvv;
 exports.suites = suites;
-/* class fail the pure module */
+/* class Not a pure module */

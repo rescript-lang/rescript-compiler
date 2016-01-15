@@ -47,31 +47,27 @@ let query (prim : Lam_compile_env.primitive_description)
             all fields are either [float ]
             It even does not make sense to have GC module 
          *)
-        (E.arr NA ~comment:prim.prim_name
-           [E.int ~comment:"stat-record" 0; 
+          Js_of_lam_record.make Immutable E.[ 
+          "minor_words" , zero_float_lit;
+          "promoted_words", zero_float_lit;
+          "major_words", zero_float_lit;
+          "minor_collections" , int 0;
+          "major_collections" , int 0;
+          "heap_words", int 0;
+          "heap_chunks", int 0;
+          "live_words", int 0;
+          "live_blocks", int 0 ;
+          "free_words", int 0; 
+          "free_blocks", int 0;
+          "largest_free", int 0;
+          "fragments", int 0;
+          "compactions", int 0;
+          "top_heap_words", int 0;
+          "stack_size" , int 0;
+          ]
 
-            E.float ~comment:"minor_words" 0.;
-            E.float ~comment:"promoted_words" 0.;
-            E.float ~comment:"major_words" 0.;
-
-            E.int ~comment:"minor_collections" 0;
-            E.int ~comment:"major_collections" 0;
-            
-            E.int ~comment:"heap_words" 0;
-            E.int ~comment:"heap_chunks" 0;
-            
-            E.int ~comment:"live_words" 0;
-            E.int ~comment:"live_blocks" 0;
-            
-            E.int ~comment:"free_words" 0;
-            E.int ~comment:"free_blocks" 0;
-            
-            E.int ~comment:"larget_blocks" 0;
-            E.int ~comment:"fragments" 0;
-            E.int ~comment:"compactions" 0;
-            E.int ~comment:"top_heap_words" 0;
-            E.int ~comment:"stack_size" 0;
-          ])
+        
+        
     | "caml_abs_float" -> 
         E.math "abs" args 
     | "caml_acos_float" -> 
@@ -389,7 +385,7 @@ let query (prim : Lam_compile_env.primitive_description)
                 major_slice : int -> int 
               *)
     |"caml_gc_counters" ->
-        E.arr  NA [E.int 0; E.float 0.; E.float 0.; E.float 0.]
+        Js_of_lam_tuple.make E.[ zero_float_lit; zero_float_lit; zero_float_lit]
           (* unit -> (float * float * float) *)
 
     |  "caml_gc_get" ->  

@@ -56,4 +56,4 @@ exports.v = v;
 exports.count = count;
 exports.arr = arr;
 exports.f = f;
-/*  fail the pure module */
+/*  Not a pure module */

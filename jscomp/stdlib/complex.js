@@ -2,60 +2,60 @@
 "use strict";
 
 var one = /* float array */[
-  1,
-  0
+  1.0,
+  0.0
 ];
 
 function add(x, y) {
   return /* array */[
-          x[1] + y[1],
-          x[2] + y[2]
+          x[0] + y[0],
+          x[1] + y[1]
         ];
 }
 
 function sub(x, y) {
   return /* array */[
-          x[1] - y[1],
-          x[2] - y[2]
+          x[0] - y[0],
+          x[1] - y[1]
         ];
 }
 
 function neg(x) {
   return /* array */[
-          -x[1],
-          -x[2]
+          -x[0],
+          -x[1]
         ];
 }
 
 function conj(x) {
   return /* array */[
-          x[1],
-          -x[2]
+          x[0],
+          -x[1]
         ];
 }
 
 function mul(x, y) {
   return /* array */[
-          x[1] * y[1] - x[2] * y[2],
-          x[1] * y[2] + x[2] * y[1]
+          x[0] * y[0] - x[1] * y[1],
+          x[0] * y[1] + x[1] * y[0]
         ];
 }
 
 function div(x, y) {
-  if (Math.abs(y[1]) >= Math.abs(y[2])) {
-    var r = y[2] / y[1];
-    var d = y[1] + r * y[2];
+  if (Math.abs(y[0]) >= Math.abs(y[1])) {
+    var r = y[1] / y[0];
+    var d = y[0] + r * y[1];
     return /* array */[
-            (x[1] + r * x[2]) / d,
-            (x[2] - r * x[1]) / d
+            (x[0] + r * x[1]) / d,
+            (x[1] - r * x[0]) / d
           ];
   }
   else {
-    var r$1 = y[1] / y[2];
-    var d$1 = y[2] + r$1 * y[1];
+    var r$1 = y[0] / y[1];
+    var d$1 = y[1] + r$1 * y[0];
     return /* array */[
-            (r$1 * x[1] + x[2]) / d$1,
-            (r$1 * x[2] - x[1]) / d$1
+            (r$1 * x[0] + x[1]) / d$1,
+            (r$1 * x[1] - x[0]) / d$1
           ];
   }
 }
@@ -65,34 +65,34 @@ function inv(x) {
 }
 
 function norm2(x) {
-  return x[1] * x[1] + x[2] * x[2];
+  return x[0] * x[0] + x[1] * x[1];
 }
 
 function norm(x) {
-  var r = Math.abs(x[1]);
-  var i = Math.abs(x[2]);
-  if (r === 0) {
+  var r = Math.abs(x[0]);
+  var i = Math.abs(x[1]);
+  if (r === 0.0) {
     return i;
   }
   else {
-    if (i === 0) {
+    if (i === 0.0) {
       return r;
     }
     else {
       if (r >= i) {
         var q = i / r;
-        return r * Math.sqrt(1 + q * q);
+        return r * Math.sqrt(1.0 + q * q);
       }
       else {
         var q$1 = r / i;
-        return i * Math.sqrt(1 + q$1 * q$1);
+        return i * Math.sqrt(1.0 + q$1 * q$1);
       }
     }
   }
 }
 
 function arg(x) {
-  return Math.atan2(x[2], x[1]);
+  return Math.atan2(x[1], x[0]);
 }
 
 function polar(n, a) {
@@ -103,46 +103,46 @@ function polar(n, a) {
 }
 
 function sqrt(x) {
-  if (x[1] === 0 && x[2] === 0) {
+  if (x[0] === 0.0 && x[1] === 0.0) {
     return /* float array */[
-            0,
-            0
+            0.0,
+            0.0
           ];
   }
   else {
-    var r = Math.abs(x[1]);
-    var i = Math.abs(x[2]);
+    var r = Math.abs(x[0]);
+    var i = Math.abs(x[1]);
     var w;
     if (r >= i) {
       var q = i / r;
-      w = Math.sqrt(r) * Math.sqrt(0.5 * (1 + Math.sqrt(1 + q * q)));
+      w = Math.sqrt(r) * Math.sqrt(0.5 * (1.0 + Math.sqrt(1.0 + q * q)));
     }
     else {
       var q$1 = r / i;
-      w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1 + q$1 * q$1)));
+      w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
     }
-    return x[1] >= 0 ? /* array */[
+    return x[0] >= 0.0 ? /* array */[
               w,
-              0.5 * x[2] / w
+              0.5 * x[1] / w
             ] : /* array */[
               0.5 * i / w,
-              x[2] >= 0 ? w : -w
+              x[1] >= 0.0 ? w : -w
             ];
   }
 }
 
 function exp(x) {
-  var e = Math.exp(x[1]);
+  var e = Math.exp(x[0]);
   return /* array */[
-          e * Math.cos(x[2]),
-          e * Math.sin(x[2])
+          e * Math.cos(x[1]),
+          e * Math.sin(x[1])
         ];
 }
 
 function log(x) {
   return /* array */[
           Math.log(norm(x)),
-          Math.atan2(x[2], x[1])
+          Math.atan2(x[1], x[0])
         ];
 }
 
@@ -151,13 +151,13 @@ function pow(x, y) {
 }
 
 var zero = /* float array */[
-  0,
-  0
+  0.0,
+  0.0
 ];
 
 var i = /* float array */[
-  0,
-  1
+  0.0,
+  1.0
 ];
 
 exports.zero = zero;

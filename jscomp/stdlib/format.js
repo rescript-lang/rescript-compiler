@@ -1928,4 +1928,4 @@ exports.set_all_formatter_output_functions = set_all_formatter_output_functions;
 exports.get_all_formatter_output_functions = get_all_formatter_output_functions;
 exports.pp_set_all_formatter_output_functions = pp_set_all_formatter_output_functions;
 exports.pp_get_all_formatter_output_functions = pp_get_all_formatter_output_functions;
-/* q_elem fail the pure module */
+/* q_elem Not a pure module */

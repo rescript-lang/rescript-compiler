@@ -36,11 +36,11 @@ function a6(prim) {
 
 var test_float = 3;
 
-var test_abs = Math.abs(3);
+var test_abs = Math.abs(3.0);
 
 var v = /* array */[
-  1,
-  2
+  1.0,
+  2.0
 ];
 
 var xxx = "a";
@@ -55,7 +55,7 @@ function f2(h, b, _) {
   return h(b ? 32 : 7);
 }
 
-v[1] = 3;
+v[1] = 3.0;
 
 var unboxed_x = /* array */[
   0,
@@ -63,7 +63,7 @@ var unboxed_x = /* array */[
 ];
 
 function gg(x) {
-  x[1] = 0;
+  x[0] = 0;
   return /* () */0;
 }
 
@@ -123,4 +123,4 @@ exports.gg = gg;
 exports.f = f;
 exports.is_lazy_force = is_lazy_force;
 exports.fib = fib;
-/*  fail the pure module */
+/*  Not a pure module */

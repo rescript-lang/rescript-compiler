@@ -4,4 +4,4 @@ var Pervasives = require("./pervasives");
 
 Pervasives.do_at_exit(/* () */0);
 
-/*  fail the pure module */
+/*  Not a pure module */

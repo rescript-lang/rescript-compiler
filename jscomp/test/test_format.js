@@ -14,4 +14,4 @@ Format.fprintf(Format.std_formatter, [
         "%d"
       ])(3);
 
-/*  fail the pure module */
+/*  Not a pure module */

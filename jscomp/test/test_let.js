@@ -7,4 +7,4 @@ Pervasives.print_int(3);
 var b = 3;
 
 exports.b = b;
-/*  fail the pure module */
+/*  Not a pure module */

@@ -184,4 +184,4 @@ exports.stable_sort = stable_sort;
 exports.fast_sort = fast_sort;
 exports.sort_uniq = sort_uniq;
 exports.merge = merge;
-/* g fail the pure module */
+/* g Not a pure module */

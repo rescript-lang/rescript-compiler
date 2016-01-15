@@ -97,4 +97,4 @@ Mt.from_suites("buffer", suites);
 exports.v = v;
 exports.bytes_equal = bytes_equal;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

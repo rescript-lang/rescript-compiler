@@ -9,4 +9,4 @@ var v = List.length;
 
 exports.u = u;
 exports.v = v;
-/* Filename fail the pure module */
+/* Filename Not a pure module */

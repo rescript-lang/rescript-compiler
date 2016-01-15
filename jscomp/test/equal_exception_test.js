@@ -165,4 +165,4 @@ exports.is_exception = is_exception;
 exports.is_normal_exception = is_normal_exception;
 exports.is_arbitrary_exception = is_arbitrary_exception;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

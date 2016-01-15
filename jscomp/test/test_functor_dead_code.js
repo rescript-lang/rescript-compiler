@@ -8,4 +8,4 @@ function is_empty(param) {
 var v = is_empty(/* Empty */0);
 
 exports.v = v;
-/* v fail the pure module */
+/* v Not a pure module */

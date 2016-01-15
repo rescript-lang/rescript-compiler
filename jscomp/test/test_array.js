@@ -51,4 +51,4 @@ exports.h = h;
 exports.hh = hh;
 exports.hhh = hhh;
 exports.u = u;
-/*  fail the pure module */
+/*  Not a pure module */

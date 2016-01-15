@@ -136,10 +136,15 @@ function for_all(p, s) {
   return aux(0);
 }
 
+function is_empty(s) {
+  return +(s.length === 0);
+}
+
 exports.split_by = split_by;
 exports.split = split;
 exports.starts_with = starts_with;
 exports.ends_with = ends_with;
 exports.escaped = escaped;
 exports.for_all = for_all;
+exports.is_empty = is_empty;
 /* No side effect */

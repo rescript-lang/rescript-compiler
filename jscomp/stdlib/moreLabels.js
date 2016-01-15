@@ -13,4 +13,4 @@ var $$Set$1 = $$Set;
 exports.Hashtbl = Hashtbl$1;
 exports.$$Map = $$Map$1;
 exports.$$Set = $$Set$1;
-/* Hashtbl fail the pure module */
+/* Hashtbl Not a pure module */

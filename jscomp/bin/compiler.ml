@@ -9102,7 +9102,7 @@ include
           P.string f
             (match program.side_effect with
              | None  -> "/* No side effect */"
-             | Some v -> Printf.sprintf "/* %s fail the pure module */" v);
+             | Some v -> Printf.sprintf "/* %s Not a pure module */" v);
           P.newline f;
           P.flush f ()
         let dump_program (program : J.program) (oc : out_channel) =

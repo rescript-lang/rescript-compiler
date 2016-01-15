@@ -115,4 +115,4 @@ Mt.from_suites("cps_test.ml", [
 exports.test = test;
 exports.test_closure = test_closure;
 exports.test_closure2 = test_closure2;
-/*  fail the pure module */
+/*  Not a pure module */

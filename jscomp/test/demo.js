@@ -8,17 +8,17 @@ var data = /* array */[
   [
     /* record */0,
     "GOOG",
-    700
+    700.0
   ],
   [
     /* record */0,
     "AAPL",
-    500
+    500.0
   ],
   [
     /* record */0,
     "MSFT",
-    300
+    300.0
   ]
 ];
 
@@ -50,9 +50,15 @@ function ui_layout(compile, lookup, appContext) {
   stackPanel.addChild(inputCode);
   stackPanel.addChild(button);
   var mk_titleRow = function (text) {
-    return {"label": {"text": text}};
+    return {
+            "label": {
+              "text": text
+            }
+          };
   };
-  var u = {"width": 200};
+  var u = {
+    "width": 200
+  };
   grid.minHeight = 300;
   grid.titleRows = /* array */[
     mk_titleRow("Ticker"),
@@ -92,8 +98,10 @@ function ui_layout(compile, lookup, appContext) {
                     var price = param[2];
                     var bid = price + 20 * Math.random();
                     var ask = price + 20 * Math.random();
-                    var result = computeFunction[1]({"bid": bid,
-                          "ask": ask});
+                    var result = computeFunction[1]({
+                          "bid": bid,
+                          "ask": ask
+                        });
                     return /* array */[
                             mk_titleRow(param[1]),
                             mk_titleRow(fmt(bid)),
@@ -107,4 +115,4 @@ function ui_layout(compile, lookup, appContext) {
 
 exports.data = data;
 exports.ui_layout = ui_layout;
-/* @blp/ui fail the pure module */
+/* @blp/ui Not a pure module */

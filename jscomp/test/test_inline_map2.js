@@ -317,4 +317,4 @@ function assertions2() {
 
 exports.assertions1 = assertions1;
 exports.assertions2 = assertions2;
-/* m fail the pure module */
+/* m Not a pure module */

@@ -133,4 +133,4 @@ Mt.from_pair_suites("string_test.ml", [
 
 exports.ff = ff;
 exports.gg = gg;
-/*  fail the pure module */
+/*  Not a pure module */

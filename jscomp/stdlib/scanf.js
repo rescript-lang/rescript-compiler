@@ -2145,4 +2145,4 @@ exports.bscanf_format = bscanf_format;
 exports.sscanf_format = sscanf_format;
 exports.format_from_string = format_from_string;
 exports.unescaped = unescaped;
-/* stdin fail the pure module */
+/* stdin Not a pure module */

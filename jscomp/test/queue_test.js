@@ -51,4 +51,4 @@ Mt.from_pair_suites("queue_test.ml", suites);
 exports.to_array = to_array;
 exports.queue_1 = queue_1;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

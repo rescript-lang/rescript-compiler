@@ -65,11 +65,29 @@ let to_string v =
 
 
 let caml_float_literal_to_js_string v = 
-  if String.length v >= 2 && v.[0] = '0' && (v.[1] = 'x' || v.[1] = 'X') then  
-    assert false (*TODO: catchup when upgraded to 4.3 *)    
+  let len = String.length v in
+  if len >= 2 && 
+    v.[0] = '0' &&
+    (v.[1] = 'x' || v.[1] = 'X') then  
+    assert false 
+   (* TODO: catchup when upgraded to 4.3 
+      it does not make sense too much since js dos not 
+      support it natively
+    *)    
   else    
-    if Ext_string.for_all (fun s -> s != '_') v then v
-    else    
-      let buf = Buffer.create (String.length v) in    
-      String.iter (fun x -> if x != '_' then Buffer.add_char buf x ) v ;
-      Buffer.contents buf      
+
+    let rec aux buf i = 
+      if i >= len then buf
+      else 
+        let x = v.[i] in
+        if x = '_' then
+          aux buf (i + 1)
+        else if   x  = '.' && i = len - 1  then
+          buf
+        else 
+          begin
+            Buffer.add_char buf x ;
+            aux buf ( i + 1) 
+          end in
+    Buffer.contents (aux  (Buffer.create len) 0)
+

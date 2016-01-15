@@ -8,4 +8,4 @@ var const_v = $$Array.append(/* array */[
     ], /* array */[3]);
 
 exports.const_v = const_v;
-/* const_v fail the pure module */
+/* const_v Not a pure module */

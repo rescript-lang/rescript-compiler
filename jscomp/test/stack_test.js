@@ -59,4 +59,4 @@ Mt.from_pair_suites("stack_test.ml", suites);
 exports.to_list = to_list;
 exports.v = v;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

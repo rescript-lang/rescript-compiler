@@ -206,4 +206,4 @@ exports.uu = uu;
 exports.uuu = uuu;
 exports.v = v;
 exports.test = test;
-/* class fail the pure module */
+/* class Not a pure module */

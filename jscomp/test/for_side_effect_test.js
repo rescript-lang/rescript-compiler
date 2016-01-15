@@ -38,4 +38,4 @@ Mt.from_suites("for_side_effect_test.ml", suites);
 exports.tst = tst;
 exports.test2 = test2;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

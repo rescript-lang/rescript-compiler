@@ -299,7 +299,7 @@ let translate
   | Psetfloatfield i -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
       begin 
         match args with 
-        | [e;e0] -> decorate_side_effect cxt (Js_of_lam_block.set_double_field e i e0 ) 
+        | [e;e0] -> decorate_side_effect cxt (Js_of_lam_float_record.set_double_field e i e0 ) 
         | _ -> E.unknown_primitive prim
       end
 
@@ -307,7 +307,7 @@ let translate
   | Pfloatfield i -> (** RUNTIME *)
       begin 
         match args with 
-        | [e] -> Js_of_lam_block.get_double_feild e i 
+        | [e] -> Js_of_lam_float_record.get_double_feild e i 
         | _ -> E.unknown_primitive prim 
       end
   | Parrayrefu _kind

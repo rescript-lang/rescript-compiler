@@ -6,4 +6,4 @@ var xx = document();
 alert("hehha");
 
 exports.xx = xx;
-/* xx fail the pure module */
+/* xx Not a pure module */

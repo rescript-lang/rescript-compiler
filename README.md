@@ -1,4 +1,4 @@
-# OCamlScript
+# [OCamlScript](http://bloomberg.github.io/ocamlscript/)
 
 ## Introduction
 OCamlScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). Users of OCamlScript can write type-safe, high performance OCaml code, and deploy the generated JavaScript in any platform with a JavaScript execution engine.
@@ -34,7 +34,7 @@ function sum(n) {
 As you can see, there is no name mangling in the generated code, so if this module is called `M`,
 `M.sum()` is directly callable from other JavaScript code.
 
-You can learn more by exploring the online [in-browser compiler](https://bloomberg.github.io/ocamlscript/js-demo/) ( an old version, will be synced up soon).
+You can learn more by exploring the online [in-browser compiler](https://bloomberg.github.io/ocamlscript/js-demo/).
 
   
 ## Disclaimer
@@ -70,7 +70,8 @@ Note that you have to clone this project with `--recursive` option, as the core 
   ocamlopt.opt -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
   ocamlopt.opt -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
   ```
-  Now you have a binary called `osc` under `jscomp` directory,
+
+  Now you have a binary called `osc` under `jscomp/bin` directory,
   put it in your `PATH`.
 
 
@@ -118,7 +119,7 @@ these steps.
 
 ## Windows support
 
-We plan to provide a Windows nstaller in the near future.
+We plan to provide a Windows installer in the near future.
 
 # Licensing 
 
@@ -127,7 +128,7 @@ The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). 
 The `ocamlscript` backend relies on a patch [(js.diff)](./js.diff) to the OCaml compiler.
 
 This project reused and adapted parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
-* Some small printing utilties in [pretty printer](./jscomp/js_dump.ml).
+* Some small printing utilities in [pretty printer](./jscomp/js_dump.ml).
 * Part of the [Javascript runtime](./jscomp/runtime) support
 
 It adapted two modules [Lam_pass_exits](jscomp/lam_pass_exits.ml) and
@@ -225,7 +226,7 @@ Code Size:
 
 ## Status
 
-While most of the OCaml language is covered, because this project is still young there is plenmty of work left to be done.
+While most of the OCaml language is covered, because this project is still young there is plenty of work left to be done.
 
 Some known issues are listed as below:
 
@@ -254,6 +255,10 @@ Some known issues are listed as below:
    penalty.
 
    Bigarray, Unix, Num, Int64
+
+3. String is immutable, user is expected to compile with flags `-safe-string` for all modules:
+
+   Note that this flag should be applied to all your modules.
 
 ## Question, Comments and Feedback
 

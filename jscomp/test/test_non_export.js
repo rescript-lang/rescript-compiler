@@ -19,4 +19,4 @@ pack([
       $$String.compare
     ]);
 
-/*  fail the pure module */
+/*  Not a pure module */

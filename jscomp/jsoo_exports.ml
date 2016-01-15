@@ -29,12 +29,6 @@ let export (field : string) v =
 
 let () = JsooTop.initialize()
 
-(*
-let _ =
-  export "ocaml" jsobject
-    method compile code  = Js.string (Driver.compile (Js.to_string code))
-  end
-*)
 
 let _ =
   export "ocaml"
@@ -43,7 +37,7 @@ let _ =
              inject @@ 
              Js.wrap_meth_callback
                 (fun _ code ->
-                  Js.string (Driver.compile (Js.to_string code)))
+                  Js.string (Jsoo_driver.compile (Js.to_string code)))
              |]))
 (* local variables: *)
 (* compile-command: "ocamlbuild -cflags -dsource -use-ocamlfind -no-hygiene  -pkgs js_of_ocaml,js_of_ocaml.toplevel exports.cmo" *)

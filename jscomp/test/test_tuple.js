@@ -18,4 +18,4 @@ for(var k = 1; k<= 10; ++k){
   }
 }
 
-/*  fail the pure module */
+/*  Not a pure module */

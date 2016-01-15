@@ -34,3 +34,4 @@ val node_relative_path : string -> string -> string
     library but rather specific to JS Module name convention. 
   *)
 
+val chop_extension : ?loc:string -> string -> string

@@ -107,4 +107,4 @@ exports.to_list = to_list;
 exports.f = f;
 exports.g = g;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

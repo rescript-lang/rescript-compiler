@@ -35,3 +35,5 @@ val ends_with : string -> string -> bool
 val escaped : string -> string
 
 val for_all : (char -> bool) -> string -> bool
+
+val is_empty : string -> bool

@@ -192,7 +192,7 @@ and all_lambdas meta (xs : Lambda.lambda list) =
 let dump_exports_arities (meta : Lam_stats.meta ) = 
   let fmt = 
     if meta.filename != "" then 
-      let cmj_file = Filename.chop_extension meta.filename ^ ".cmj" in
+      let cmj_file = Ext_filename.chop_extension meta.filename ^ ".cmj" in
       let out = open_out cmj_file in   
       Format.formatter_of_out_channel out
     else 
@@ -261,20 +261,23 @@ let export_to_cmj
       String_map.empty
       meta.exports lambda_exports 
   in
-  let tds_chan = open_out (Filename.chop_extension meta.filename ^ ".d.ts") in
-
-  let fmt = Format.formatter_of_out_channel tds_chan in
 
   let rec dump fmt ids = 
+    (* TODO: also use {[Ext_pp]} module instead *)
     match ids with 
     | [] -> ()
     | x::xs -> 
       dump_ident fmt x (get_arity meta (Lvar x)) ; 
       Format.pp_print_space fmt ();
       dump fmt xs in
-  let () = 
-    pp fmt "@[<v>%a@]@." dump meta.exports  in
 
+  let () =
+    if not @@ Ext_string.is_empty meta.filename then
+      Ext_pervasives.with_file_as_pp 
+        (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
+      @@ fun fmt -> 
+        pp fmt "@[<v>%a@]@." dump meta.exports
+  in
   let pure = 
     match maybe_pure with
     | None ->  

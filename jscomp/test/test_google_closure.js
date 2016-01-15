@@ -39,4 +39,4 @@ exports.f2 = f2;
 exports.a = a;
 exports.b = b;
 exports.c = c;
-/* match fail the pure module */
+/* match Not a pure module */

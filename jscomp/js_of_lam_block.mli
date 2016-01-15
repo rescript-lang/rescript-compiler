@@ -28,6 +28,3 @@ val field : J.expression -> int -> J.expression
 
 val set_field : J.expression -> int -> J.expression -> J.expression
 
-val set_double_field : J.expression -> int -> J.expression -> J.expression
-
-val get_double_feild : J.expression -> int -> J.expression

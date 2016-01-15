@@ -38,6 +38,11 @@ let absolute_path s =
   in
   aux s
 
+let chop_extension ?(loc="") name =
+  try Filename.chop_extension name 
+  with Invalid_argument _ -> 
+    invalid_arg ("Filename.chop_extension (" ^ loc ^ ":" ^ name ^ ")")
+
 let try_chop_extension s = try Filename.chop_extension s with _ -> s 
 
 (** example

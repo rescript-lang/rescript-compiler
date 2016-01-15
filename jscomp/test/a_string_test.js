@@ -134,4 +134,4 @@ Mt.from_suites("a_string_test.ml", suites);
 exports.split = split;
 exports.split_by = split_by;
 exports.suites = suites;
-/*  fail the pure module */
+/*  Not a pure module */

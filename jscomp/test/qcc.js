@@ -2345,4 +2345,4 @@ exports.elfhdr = elfhdr;
 exports.elfphdr = elfphdr;
 exports.elfgen = elfgen;
 exports.main = main;
-/* match fail the pure module */
+/* match Not a pure module */

@@ -67,4 +67,4 @@ exports.g = g;
 exports.g1 = g1;
 exports.x = x;
 exports.v = v;
-/* x fail the pure module */
+/* x Not a pure module */

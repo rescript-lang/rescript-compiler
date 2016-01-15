@@ -831,7 +831,7 @@ let dump  env filename   pred lam =
   if pred 
   then 
     Printlambda.seriaize env 
-      (Filename.chop_extension filename ^ 
+      (Ext_filename.chop_extension ~loc:__LOC__ filename ^ 
        (Printf.sprintf ".%02d.lam" !log_counter)
       ) lam;
   lam

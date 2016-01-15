@@ -30,4 +30,4 @@ function from_pair_suites(name, suites) {
 exports.assert_equal = assert_equal;
 exports.from_suites = from_suites;
 exports.from_pair_suites = from_pair_suites;
-/* assert fail the pure module */
+/* assert Not a pure module */

@@ -19,4 +19,4 @@ var V = 0;
 exports.X = X;
 exports.Hashtbl = Hashtbl$1;
 exports.V = V;
-/* Hashtbl fail the pure module */
+/* Hashtbl Not a pure module */

@@ -128,7 +128,7 @@ var nativeint = Nativeint.size === 32 ? function (s, bound) {
   };
 
 function rawfloat(s) {
-  var scale = 1073741824;
+  var scale = 1073741824.0;
   var r1 = bits(s);
   var r2 = bits(s);
   return (r1 / scale + r2) / scale;

@@ -45,4 +45,4 @@ var s = u([
 exports.v = v;
 exports.u = u;
 exports.s = s;
-/* s fail the pure module */
+/* s Not a pure module */
