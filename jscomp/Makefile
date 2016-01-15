@@ -33,7 +33,12 @@ release:snapshot
 	@echo "Make release compiler"
 	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
 	$(NATIVE) -g -linkall -o bin/ocamlscript -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
+	@echo "Collecting cmj files"
+	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 js_pack.native --
 # Note: this target also built bin/ocamlscript which is used in release mode
+
+# TODO: should be done after we do the build
+# Carefully check the stored data if it is platform independent
 
 snapshot:
 	@echo "Snapshot"

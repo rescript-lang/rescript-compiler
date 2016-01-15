@@ -22,4 +22,14 @@
 
 
 (* ATTENTION: lazy to wait [Config.load_path] populated *)
-let find x =  Misc.find_in_path_uncap !Config.load_path x 
+let find file =  Misc.find_in_path_uncap !Config.load_path file 
+
+
+let find_cmj file = 
+  match find file with
+  | exception Not_found -> 
+    (* TODO: add an logger module *)
+    Ext_log.warn __LOC__ "@[%s not found @]@." file ;
+    Js_cmj_format.dummy  (); (* FIXME *)
+  | f -> 
+    Js_cmj_format.from_file f             
