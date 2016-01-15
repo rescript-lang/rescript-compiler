@@ -18,8 +18,12 @@
 
 (* Author: Hongbo Zhang  *)
 
+(** Some utilities for {!Array} operations *)
+
+val reverse_in_place : 'a array -> unit
+
+val filter : ('a -> bool) -> 'a array -> 'a array
+
+val filter_map : ('a -> 'b option) -> 'a array -> 'b array
 
 
-include Map.S with type key = string 
-
-val of_list : (key * 'a) list -> 'a t

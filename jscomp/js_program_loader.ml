@@ -35,6 +35,11 @@ let string_of_module_id (x : module_id) : string =
     let file = Printf.sprintf "%s.js" id.name in
     if Ext_string.starts_with id.name "Caml_" then 
       let path = 
+        (* For the runtime, only [JS] files are needed, and 
+           unlike the stdlib, [osc] have some pre-built knowledge 
+           about where it is, since in general, [runtime] 
+           is *transparent* to the user
+        *)        
         match Sys.getenv "OCAML_JS_RUNTIME_PATH" with 
         | exception Not_found -> 
             Filename.concat 

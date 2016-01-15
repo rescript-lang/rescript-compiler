@@ -68,26 +68,14 @@ Note that you have to clone this project with `--recursive` option, as the core 
   ```sh
   cd ../jscomp
   ocamlopt.opt -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-  ocamlopt.opt -g -linkall -o bin/ocamlscript -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
+  ocamlopt.opt -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
   ```
-  Now you have a binary called `ocamlscript` under `jscomp/bin` directory,
+
+  Now you have a binary called `osc` under `jscomp/bin` directory,
   put it in your `PATH`.
-  
-3. Build the runtime with `ocamlscript`
 
-  ```sh
-  cd runtime
-  make all
-  ```
 
-4. Build the standard library with `ocamlscript`
-
-  ```sh
-  cd ../stdlib
-  make all 
-  ```
-
-5. Test 
+3. Test 
 
   Create a file called `hello.ml`:
 
@@ -97,9 +85,9 @@ Note that you have to clone this project with `--recursive` option, as the core 
   echo 'print_endline "hello world";;' >hello.ml
   ```
   
-  Then compile it with `ocamlscript`
+  Then compile it with `osc`
   ```sh
-  OCAML_RAW_JS=1 ocamlscript -I . -I ../ -c hello.ml
+  OCAML_RAW_JS=1 osc -I . -I ../ -c hello.ml
   ```
   
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js
@@ -109,6 +97,25 @@ Note that you have to clone this project with `--recursive` option, as the core 
   ```
   
   If everything goes well, you will see `hello world` on your screen.
+
+Note that the following steps  are optional, it is used to build the
+runtime and standard library to verify if it works, you don't need run
+these steps.
+
+
+4. Build the runtime with `osc`
+
+  ```sh
+  cd runtime
+  make all
+  ```
+
+5. Build the standard library with `osc`
+
+  ```sh
+  cd ../stdlib
+  make all 
+  ```
 
 ## Windows support
 
@@ -225,7 +232,7 @@ Some known issues are listed as below:
 
 1. Language features:
 
-   Recursive modules, have not looked into it yet.
+   Recursive modules, Lazy modules, have not looked into it yet.
    
    Better Currying support. Currently, we have an inference engine for
    function currying and we do cross module inference, however, there

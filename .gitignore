@@ -48,3 +48,4 @@ ocaml/man
 jscomp/bench/*.js
 *.bak
 .vscode
+osc

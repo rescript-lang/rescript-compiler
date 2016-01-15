@@ -36,3 +36,9 @@ type cmj_table = {
 
 let dummy ?(pure=Some "dummy") () = 
   { values = String_map.empty ; pure }
+
+let from_file name : cmj_table = Ext_marshal.from_file name
+
+let from_string s : cmj_table = Marshal.from_string s 0
+
+let to_file name v = Ext_marshal.to_file name v

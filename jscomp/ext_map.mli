@@ -18,8 +18,10 @@
 
 (* Author: Hongbo Zhang  *)
 
+module Make(Ord : Map.OrderedType) :  
+sig
+  include Map.S with type key = Ord.t
+  val of_list : (key * 'a) list -> 'a t
+end
 
 
-include Map.S with type key = string 
-
-val of_list : (key * 'a) list -> 'a t

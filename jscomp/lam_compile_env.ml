@@ -88,16 +88,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
   begin match find_cached_tbl oid with 
     | exception Not_found -> 
-      let cmj_table = 
-        let file = (id.name ^ ".cmj") in
-        begin match Misc.find_in_path_uncap !Config.load_path file with 
-          | exception Not_found -> 
-            (* TODO: add an logger module *)
-            Ext_log.warn __LOC__ "@[%s not found @]@." file ;
-            Js_cmj_format.dummy  (); (* FIXME *)
-          | f -> 
-            Ext_marshal.from_file f 
-        end in
+      let cmj_table = Config_util.find_cmj (id.name ^ ".cmj") in
       begin match
           Type_util.find_serializable_signatures_by_path
             (Pident id) env with 
@@ -159,16 +150,7 @@ let query_and_add_if_not_exist (oid : Lam_module_ident.t) env ~not_found ~found 
       | Ml 
         -> 
         let cmj_table = 
-          let file = (Lam_module_ident.name oid ^ ".cmj") in
-          begin 
-            match Config_util.find file with 
-            | exception Not_found -> 
-              (* TODO: add an logger module *)
-              Ext_log.warn __LOC__ "@[%s not found@]@." file ;
-              Js_cmj_format.dummy  ()
-            | f -> Ext_marshal.from_file f
-          end 
-        in
+          Config_util.find_cmj (Lam_module_ident.name oid ^ ".cmj") in           
         begin 
           match Type_util.find_serializable_signatures_by_path (Pident oid.id) env with 
           | None -> not_found () (* actually when [not_found] in the call site, we throw... *)

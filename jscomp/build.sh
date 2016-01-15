@@ -7,9 +7,9 @@ set -e
 make js_map.ml js_fold.ml lam_map.ml lam_fold.ml >> build.compile
 ## Disable it when make a release 
 
-ocamlbuild  -no-hygiene -cflags -g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs  compiler.cmxa > build.compile
+ocamlbuild  -cflags $OCAMLBUILD_CFLAGS compiler.cmxa > build.compile
 
-make -r bin/ocamlscript
+make -r bin/osc
 # TODO: this quick test is buggy, 
 # since a.ml maybe depend on another module 
 # we can not just comment it, it will also produce jslambda
