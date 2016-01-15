@@ -30,9 +30,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 # continuing, in this case the user may occationally want bytecode/nativecode backend
 
 release:snapshot 
-	@echo "Make release compiler"
-	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
+	make releasebuild
 # Note: this target also built bin/ocamlscript which is used in release mode
 
 # TODO: should be done after we do the build
@@ -46,6 +44,12 @@ snapshot:snapshotcmj
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 js_pack.native --
+
+
+releasebuild:
+	@echo "Make release compiler"
+	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
+	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
 
 stdlib:
 	cd stdlib && ./build.sh
