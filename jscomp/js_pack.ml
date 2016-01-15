@@ -19,10 +19,14 @@
 (* Author: Hongbo Zhang  *)
 
 let get_files dir = 
-  Sys.readdir dir 
-  |> Ext_array.filter_map 
-    (fun  x -> if Ext_string.ends_with x ".cmj" then Some (Filename.concat dir x) else None )
-  |> Array.to_list
+  let arr = 
+    Sys.readdir dir 
+    |> Ext_array.filter_map 
+        (fun  x -> if Ext_string.ends_with x ".cmj" then Some (Filename.concat dir x) else None )
+  in
+  (* Sort to guarantee it works the same across OSes *)
+  Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
+  Array.to_list arr
 
 let from_cmj files output_file = 
   let raw_to_str f str = 

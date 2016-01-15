@@ -20,7 +20,7 @@ make -r bin/osc
 
 echo "Making runtime" >> build.compile
 
-cd ./runtime; gmake all 2>> ../build.compile ; gmake depend;  cd ..
+cd ./runtime; make all 2>> ../build.compile ; make depend;  cd ..
 echo "Making runtime Finished" >> build.compile
 
 echo "Remaking standard library" >> build.compile
