@@ -18,13 +18,8 @@
 
 (* Author: Hongbo Zhang  *)
 
+module E = J_helper.Exp 
 
+let get_double_feild e i = E.index e i 
 
-(** Utilities for creating block of lambda expression in JS IR *)
-
-val make_block : Js_op.mutable_flag -> Lambda.tag_info -> int -> J.expression list -> J.expression
-
-val field : J.expression -> int -> J.expression
-
-val set_field : J.expression -> int -> J.expression -> J.expression
-
+let set_double_field e  i e0 =  E.assign (E.index e i)  e0

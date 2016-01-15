@@ -2,8 +2,8 @@
 "use strict";
 
 function f(point) {
-  var y = point[2];
-  var x = point[1];
+  var y = point[1];
+  var x = point[0];
   return Math.pow(x * x + y * y, 2);
 }
 

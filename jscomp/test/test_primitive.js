@@ -63,7 +63,7 @@ var unboxed_x = /* array */[
 ];
 
 function gg(x) {
-  x[1] = 0;
+  x[0] = 0;
   return /* () */0;
 }
 

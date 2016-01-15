@@ -41,6 +41,6 @@ let field e i = E.index e (i + 1)
 
 let set_field e i e0 = (E.assign (E.index e (i+1))  e0)
 
-let set_double_field e  i e0 =  (E.assign (E.index e (i+1))  e0)
 
-let get_double_feild e i = E.index e (i + 1)
+
+
