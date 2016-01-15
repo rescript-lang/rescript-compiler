@@ -18,13 +18,10 @@
 
 (* Author: Hongbo Zhang  *)
 
+(** Compile a special representation in OCaml when all fields are of type [float] 
+    check the invariant in {!Js_of_lam_array.make_array}
+*)
 
+val set_double_field : J.expression -> int -> J.expression -> J.expression
 
-(** Utilities for creating block of lambda expression in JS IR *)
-
-val make_block : Js_op.mutable_flag -> Lambda.tag_info -> int -> J.expression list -> J.expression
-
-val field : J.expression -> int -> J.expression
-
-val set_field : J.expression -> int -> J.expression -> J.expression
-
+val get_double_feild : J.expression -> int -> J.expression

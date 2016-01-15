@@ -142,3 +142,4 @@ of_string_test
 tailcall_inline_test
 obj_test
 demo_page
+complex_test

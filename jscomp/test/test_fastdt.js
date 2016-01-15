@@ -146,7 +146,7 @@ function predict(dt, x) {
       var param = _param;
       if (param[0]) {
         var p = param[1];
-        return p[1] / (p[1] + p[2]);
+        return p[0] / (p[0] + p[1]);
       }
       else {
         var n = param[1];
@@ -165,7 +165,7 @@ function compute_tree_error(tree) {
       if (param[0]) {
         var p = param[1];
         return acc + (
-                p[1] >= p[2] ? p[2] : p[1]
+                p[0] >= p[1] ? p[1] : p[0]
               );
       }
       else {
@@ -320,11 +320,11 @@ function trim_tree_same(dt) {
         var p1 = t[1];
         if (f[0]) {
           var p2 = f[1];
-          var tp = p1[1] / (p1[1] + p1[2]);
-          var fp = p2[1] / (p2[1] + p2[2]);
+          var tp = p1[0] / (p1[0] + p1[1]);
+          var fp = p2[0] / (p2[0] + p2[1]);
           return Math.abs(tp - fp) < 1e-6 ? [
                     /* Leaf */1,
-                    mkfp(p1[1] + p2[1], p1[2] + p2[2])
+                    mkfp(p1[0] + p2[0], p1[1] + p2[1])
                   ] : [
                     /* Node */0,
                     [
@@ -938,7 +938,7 @@ function print_tree(out, dt) {
                         ]
                       ],
                       "L %g %g\n"
-                    ])(p[1], p[2]);
+                    ])(p[0], p[1]);
       }
       else {
         var n = param[1];
