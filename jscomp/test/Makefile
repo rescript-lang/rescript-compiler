@@ -1,6 +1,6 @@
 CAMLDEP=ocamldep.opt
 CAMLLEX=ocamllex.opt
-CAMLC=../bin/ocamlscript
+CAMLC=../bin/osc
 
 CAMLOPT=
 INCLUDES= -I ../stdlib -I ../runtime
