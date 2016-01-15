@@ -24,9 +24,6 @@
 (* ATTENTION: lazy to wait [Config.load_path] populated *)
 let find file =  Misc.find_in_path_uncap !Config.load_path file 
 
-module Cmj_data_set_map 
-  =  Ext_map.Make(String)
-
 
 
 (* strategy:
