@@ -18,8 +18,3 @@
 
 (* Author: Hongbo Zhang  *)
 
-
-
-include Map.S with type key = string 
-
-val of_list : (key * 'a) list -> 'a t

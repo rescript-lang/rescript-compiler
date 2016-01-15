@@ -1,3 +1,23 @@
+(* OCamlScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(* Author: Hongbo Zhang  *)
+
 let get_files dir = 
   Sys.readdir dir 
   |> Ext_array.filter_map 
@@ -18,15 +38,19 @@ let from_cmj files output_file =
         let len = in_channel_length in_chan in
         let str = really_input_string in_chan len in
         begin
-          Ext_pp.string f "(";
-          raw_to_str f file ;
-          Ext_pp.string f ",";
-          prerr_endline 
+          prerr_endline (* can not embed corrupted data *)
             (Printf.sprintf "Begin Verifying %s" file);
           let _  = Js_cmj_format.from_string str in          
           prerr_endline "End";
-          raw_to_str f str;         
-          Ext_pp.string f ")";
+
+          Ext_pp.paren_group f 1 (fun _ ->
+          raw_to_str f (Filename.basename file) ;
+          Ext_pp.string f ",";
+          Ext_pp.string f "lazy";
+          Ext_pp.space f ;
+          Ext_pp.paren_group f 1 (fun _ ->
+              Ext_pp.string f "Js_cmj_format.from_string " ;
+              raw_to_str f str));
           Ext_pp.string f  ";";
           Ext_pp.newline f ;          
           close_in in_chan;        
@@ -34,7 +58,7 @@ let from_cmj files output_file =
       in
       Ext_pp.string f "(* -*-mode:fundamental-*- *)"  ;
       Ext_pp.newline f ;
-      Ext_pp.string f "let cmj_data_sets = "    ;
+      Ext_pp.string f "let cmj_data_sets = String_map.of_list "    ;
       Ext_pp.bracket_vgroup f 1 (fun _ -> List.iter aux files))
     close_out      
 

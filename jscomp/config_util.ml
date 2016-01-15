@@ -24,12 +24,30 @@
 (* ATTENTION: lazy to wait [Config.load_path] populated *)
 let find file =  Misc.find_in_path_uncap !Config.load_path file 
 
+module Cmj_data_set_map 
+  =  Ext_map.Make(String)
 
+
+
+(* strategy:
+   If not installed, use the distributed [cmj] files, 
+   make sure that the distributed files are platform independent
+*)
 let find_cmj file = 
-  match find file with
+  begin match find file with
+  | f
+    -> 
+    Js_cmj_format.from_file f             
   | exception Not_found -> 
     (* TODO: add an logger module *)
-    Ext_log.warn __LOC__ "@[%s not found @]@." file ;
-    Js_cmj_format.dummy  (); (* FIXME *)
-  | f -> 
-    Js_cmj_format.from_file f             
+    begin match 
+        String_map.find (String.uncapitalize (Filename.basename file)) 
+          Js_cmj_datasets.cmj_data_sets with 
+    | v
+      -> Lazy.force v 
+    | exception Not_found 
+      ->     
+      Ext_log.warn __LOC__ "@[%s not found @]@." file ;
+      Js_cmj_format.dummy  (); (* FIXME *)
+    end
+  end

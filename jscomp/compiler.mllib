@@ -24,6 +24,7 @@ ext_pervasives
 ext_pp_scope
 ext_array
 ext_bytes
+ext_map
 
 lam_compile_env
 lam_dispatch_primitive

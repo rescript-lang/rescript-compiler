@@ -20,7 +20,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/ocamlscript: _build/compiler.cmxa
+./bin/osc: _build/compiler.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa $^ main.cmx 2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
@@ -29,28 +29,29 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 # Another solution to save compilation time is have a flag like '-i' to stop the compiler
 # continuing, in this case the user may occationally want bytecode/nativecode backend
 
-release:snapshot
+release:snapshot 
 	@echo "Make release compiler"
 	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-	$(NATIVE) -g -linkall -o bin/ocamlscript -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
-	@echo "Collecting cmj files"
-	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 js_pack.native --
+	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
 # Note: this target also built bin/ocamlscript which is used in release mode
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-snapshot:
+snapshot:snapshotcmj
 	@echo "Snapshot"
 	cd tools && ./pack.sh && cd ..
 	./tools/ocaml_pack compiler.mllib > bin/compiler.ml
 
+snapshotcmj:
+	@echo "Collecting cmj files"
+	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 js_pack.native --
 
 stdlib:
 	cd stdlib && ./build.sh
 
 .PHONY: stdlib
-.PHONY: test  quicktest release snapshot
+.PHONY: test  quicktest release snapshot snapshotcmj
 
 
 
