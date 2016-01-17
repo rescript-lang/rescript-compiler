@@ -69,3 +69,5 @@ type cxt = {
 }
 
 val empty_handler_map : value HandlerMap.t 
+
+val add_jmps : (jbl_label * value) list -> value HandlerMap.t -> value HandlerMap.t

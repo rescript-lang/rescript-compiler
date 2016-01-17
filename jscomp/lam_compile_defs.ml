@@ -68,3 +68,8 @@ type cxt = {
 }
 
 let empty_handler_map = HandlerMap.empty
+
+
+let add_jmps (ls : (jbl_label * value) list)   
+    (m : value HandlerMap.t) : value HandlerMap.t = 
+  List.fold_left (fun acc (l,s)   -> HandlerMap.add l s acc) m ls

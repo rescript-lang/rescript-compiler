@@ -28,9 +28,6 @@ module S = J_helper.Stmt
 
 let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
-let add_jmps (ls : (Lam_compile_defs.jbl_label * Lam_compile_defs.value) list)   
-    (m : Lam_compile_defs.value Lam_compile_defs.HandlerMap.t) : Lam_compile_defs.value Lam_compile_defs.HandlerMap.t = 
-  List.fold_left (fun acc (l,s)   -> Lam_compile_defs.HandlerMap.add l s acc) m ls
 
 (* assume outer is [Lstaticcatch] *)
 let rec flat_catches acc (x : Lambda.lambda)
@@ -696,7 +693,7 @@ and
       end
 
     | Lstaticraise(i, largs) ->  (* TODO handlding *largs*)
-      (* [i] is the jump table, largs is the arguments passed to [Lstaticcatch]*)
+      (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
       begin
         match Lam_compile_defs.HandlerMap.find i cxt.jmp_table  with 
         | {exit_id; args } -> 
@@ -750,19 +747,18 @@ and
            (catch (catch (catch ..))
       *)
       (* TODO: handle NeedValue *)
-      let jmp_table =  add_jmps code_jmps jmp_table in
+      let jmp_table =  Lam_compile_defs.add_jmps code_jmps jmp_table in
       (* Declaration First, body and handler have the same value *)
-      (
-        (* There is a bug in google closure compiler:
+      (* There is a bug in google closure compiler:
             https://github.com/google/closure-compiler/issues/1234#issuecomment-151976340 
             TODO: wait for a bug fix
         *)
-        let declares = 
-          S.define ~kind:Variable exit_id ~comment:"initialize"
-            (E.int (cxt.meta.unused_exit_code)) :: 
-          List.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
+      let declares = 
+        S.define ~kind:Variable exit_id ~comment:"initialize"
+          (E.int (cxt.meta.unused_exit_code)) :: 
+        List.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
 
-        (match  st with 
+      begin match  st with 
          (* could be optimized when cases are less than 3 *)
          | NeedValue -> 
            let v = Ext_ident.gen_js (* ~name:"exit_value" *) () in 
@@ -803,8 +799,8 @@ and
                              {cxt with jmp_table = jmp_table}
                              exit_expr
                              handlers
-                             NonComplete)))
-
+                             NonComplete)
+      end
     | Lwhile(p,body) ->  
       (* Note that ``J.While(expression * statement )``
             idealy if ocaml expression does not need fresh variables, we can generate
