@@ -434,7 +434,7 @@ function split(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height(s2)) {
@@ -445,18 +445,18 @@ function merge$1(f, s1, s2) {
                     ], match[2]), merge$1(f, s1[4], match[3]));
     }
     else {
-      exit = 20;
+      exit = 1;
     }
   }
   else {
     if (s2) {
-      exit = 20;
+      exit = 1;
     }
     else {
       return /* Empty */0;
     }
   }
-  if (exit === 20) {
+  if (exit === 1) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split(v2, s1);
@@ -1042,7 +1042,7 @@ function split$1(x, param) {
 }
 
 function merge$3(f, s1, s2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height$1(s2)) {
@@ -1053,18 +1053,18 @@ function merge$3(f, s1, s2) {
                     ], match[2]), merge$3(f, s1[4], match[3]));
     }
     else {
-      exit = 20;
+      exit = 1;
     }
   }
   else {
     if (s2) {
-      exit = 20;
+      exit = 1;
     }
     else {
       return /* Empty */0;
     }
   }
-  if (exit === 20) {
+  if (exit === 1) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$1(v2, s1);
@@ -1650,7 +1650,7 @@ function split$2(x, param) {
 }
 
 function merge$5(f, s1, s2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height$2(s2)) {
@@ -1661,18 +1661,18 @@ function merge$5(f, s1, s2) {
                     ], match[2]), merge$5(f, s1[4], match[3]));
     }
     else {
-      exit = 20;
+      exit = 1;
     }
   }
   else {
     if (s2) {
-      exit = 20;
+      exit = 1;
     }
     else {
       return /* Empty */0;
     }
   }
-  if (exit === 20) {
+  if (exit === 1) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$2(v2, s1);

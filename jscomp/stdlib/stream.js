@@ -233,9 +233,9 @@ function peek(s) {
 function junk(s) {
   while(/* true */1) {
     var match = s[2];
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (typeof match === "number") {
-      exit = 24;
+      exit = 1;
     }
     else {
       switch (match[0]) {
@@ -251,7 +251,7 @@ function junk(s) {
               return /* () */0;
             }
             else {
-              exit = 24;
+              exit = 1;
             }
             break;
         case 4 : 
@@ -260,10 +260,10 @@ function junk(s) {
             ++ b[4];
             return /* () */0;
         default:
-          exit = 24;
+          exit = 1;
       }
     }
-    if (exit === 24) {
+    if (exit === 1) {
       var match$2 = peek(s);
       if (!match$2) {
         return /* () */0;

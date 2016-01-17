@@ -25,17 +25,17 @@ function subbytes(b, ofs, len) {
 
 function file(filename) {
   var ic = Pervasives.open_in_bin(filename);
-  /* initialize */var exit = 0;
+  var exit = 0;
   var d;
   try {
     d = Caml_primitive.caml_md5_chan(ic, -1);
-    exit = -1;
+    exit = 1;
   }
   catch (e){
     Pervasives.close_in(ic);
     throw e;
   }
-  if (exit === -1) {
+  if (exit === 1) {
     Pervasives.close_in(ic);
     return d;
   }
@@ -75,11 +75,11 @@ function from_hex(s) {
         ];
   }
   var digit = function (c) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (c >= 65) {
       if (c >= 97) {
         if (c >= 103) {
-          exit = 6;
+          exit = 1;
         }
         else {
           return c - /* "a" */97 + 10;
@@ -87,7 +87,7 @@ function from_hex(s) {
       }
       else {
         if (c >= 71) {
-          exit = 6;
+          exit = 1;
         }
         else {
           return c - /* "A" */65 + 10;
@@ -96,13 +96,13 @@ function from_hex(s) {
     }
     else {
       if (9 < (-48 + c >>> 0)) {
-        exit = 6;
+        exit = 1;
       }
       else {
         return c - /* "0" */48;
       }
     }
-    if (exit === 6) {
+    if (exit === 1) {
       throw [
             0,
             Caml_exceptions.Invalid_argument,

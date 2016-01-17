@@ -502,9 +502,9 @@ function Make(funarg) {
   };
   var of_sorted_list = function (l) {
     var sub = function (n, l) {
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (3 < (n >>> 0)) {
-        exit = 6;
+        exit = 1;
       }
       else {
         switch (n) {
@@ -529,7 +529,7 @@ function Make(funarg) {
                       ];
               }
               else {
-                exit = 6;
+                exit = 1;
               }
               break;
           case 2 : 
@@ -555,11 +555,11 @@ function Make(funarg) {
                         ];
                 }
                 else {
-                  exit = 6;
+                  exit = 1;
                 }
               }
               else {
-                exit = 6;
+                exit = 1;
               }
               break;
           case 3 : 
@@ -593,21 +593,21 @@ function Make(funarg) {
                           ];
                   }
                   else {
-                    exit = 6;
+                    exit = 1;
                   }
                 }
                 else {
-                  exit = 6;
+                  exit = 1;
                 }
               }
               else {
-                exit = 6;
+                exit = 1;
               }
               break;
           
         }
       }
-      if (exit === 6) {
+      if (exit === 1) {
         var nl = n / 2 | 0;
         var match$3 = sub(nl, l);
         var l$1 = match$3[2];

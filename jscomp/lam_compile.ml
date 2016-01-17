@@ -709,7 +709,7 @@ and
               ) largs (args : Ident.t list)) 
           in
           args_code ++ (* Declared in [Lstaticraise ]*)
-          Js_output.make [S.assign exit_id (E.int i)]
+          Js_output.make [S.assign exit_id (E.int order_id)]
             ~value:(E.undefined ())
         | exception Not_found ->
           Js_output.make [S.unknown_lambda ~comment:"error" lam]
@@ -743,6 +743,18 @@ and
          - another common scenario is that we have nested catch
            (catch (catch (catch ..))
       *)
+      (*
+        checkout example {!Digest.file}, you can not inline handler there, 
+        we can spot such patten and use finally there?
+        {[
+        let file filename =
+           let ic = open_in_bin filename in
+           match channel ic (-1) with
+           | d -> close_in ic; d
+           | exception e -> close_in ic; raise e
+
+        ]}
+       *)
       (* TODO: handle NeedValue *)
       let jmp_table, handlers =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
 
@@ -752,8 +764,9 @@ and
             TODO: wait for a bug fix
         *)
       let declares = 
-        S.define ~kind:Variable exit_id ~comment:"initialize"
-          (E.int (cxt.meta.unused_exit_code)) :: 
+        S.define ~kind:Variable exit_id
+          (E.int 0) :: 
+        (* we should always make it zero here, since [zero] is reserved in our mapping*)
         List.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
 
       begin match  st with 

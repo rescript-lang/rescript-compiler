@@ -362,14 +362,14 @@ function bprint_char_set(buf, char_set) {
   };
   var print_first = function (set, i) {
     var match = Pervasives.char_of_int(i);
-    /* initialize */var exit = 0;
+    var exit = 0;
     var switcher = -45 + match;
     if (!(48 < (switcher >>> 0))) {
       if (46 < (-1 + switcher >>> 0)) {
         return print_out(set, i + 1);
       }
       else {
-        exit = 375;
+        exit = 1;
       }
     }
     else {
@@ -377,10 +377,10 @@ function bprint_char_set(buf, char_set) {
         return print_char(buf, 255);
       }
       else {
-        exit = 375;
+        exit = 1;
       }
     }
-    if (exit === 375) {
+    if (exit === 1) {
       return print_second(set, i + 1);
     }
     
@@ -388,7 +388,7 @@ function bprint_char_set(buf, char_set) {
   var print_second = function (set, i) {
     if (is_in_char_set(set, Pervasives.char_of_int(i))) {
       var match = Pervasives.char_of_int(i);
-      /* initialize */var exit = 0;
+      var exit = 0;
       var switcher = -45 + match;
       if (!(48 < (switcher >>> 0))) {
         if (46 < (-1 + switcher >>> 0)) {
@@ -397,11 +397,11 @@ function bprint_char_set(buf, char_set) {
             return print_out(set, i + 1);
           }
           else {
-            exit = 376;
+            exit = 1;
           }
         }
         else {
-          exit = 376;
+          exit = 1;
         }
       }
       else {
@@ -410,10 +410,10 @@ function bprint_char_set(buf, char_set) {
           return print_char(buf, 255);
         }
         else {
-          exit = 376;
+          exit = 1;
         }
       }
-      if (exit === 376) {
+      if (exit === 1) {
         return !is_in_char_set(set, Pervasives.char_of_int(i + 1)) ? (print_char(buf, i - 1), print_char(buf, i), print_out(set, i + 2)) : print_in(set, i - 1, i + 2);
       }
       
@@ -485,7 +485,7 @@ function bprint_precision(buf, prec) {
 }
 
 function bprint_iconv_flag(buf, iconv) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   switch (iconv) {
     case 1 : 
     case 4 : 
@@ -496,7 +496,7 @@ function bprint_iconv_flag(buf, iconv) {
     case 7 : 
     case 9 : 
     case 11 : 
-        exit = 364;
+        exit = 1;
         break;
     case 0 : 
     case 3 : 
@@ -507,7 +507,7 @@ function bprint_iconv_flag(buf, iconv) {
         return /* () */0;
     
   }
-  if (exit === 364) {
+  if (exit === 1) {
     return buffer_add_char(buf, /* "#" */35);
   }
   
@@ -533,21 +533,21 @@ function bprint_altint_fmt(buf, ign_flag, iconv, pad, prec, c) {
 }
 
 function bprint_fconv_flag(buf, fconv) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   switch (fconv) {
     case 1 : 
     case 4 : 
     case 7 : 
     case 10 : 
     case 13 : 
-        exit = 356;
+        exit = 1;
         break;
     case 2 : 
     case 5 : 
     case 8 : 
     case 11 : 
     case 14 : 
-        exit = 357;
+        exit = 2;
         break;
     case 0 : 
     case 3 : 
@@ -559,9 +559,9 @@ function bprint_fconv_flag(buf, fconv) {
     
   }
   switch (exit) {
-    case 356 : 
+    case 1 : 
         return buffer_add_char(buf, /* "+" */43);
-    case 357 : 
+    case 2 : 
         return buffer_add_char(buf, /* " " */32);
     
   }
@@ -1295,7 +1295,7 @@ function fmtty_rel_det(param) {
 }
 
 function trans(ty1, ty2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (typeof ty1 === "number") {
     if (typeof ty2 === "number") {
       if (ty2) {
@@ -1317,25 +1317,25 @@ function trans(ty1, ty2) {
     else {
       switch (ty2[0]) {
         case 8 : 
-            exit = 335;
+            exit = 6;
             break;
         case 9 : 
-            exit = 333;
+            exit = 7;
             break;
         case 10 : 
-            exit = 345;
+            exit = 1;
             break;
         case 11 : 
-            exit = 343;
+            exit = 2;
             break;
         case 12 : 
-            exit = 341;
+            exit = 3;
             break;
         case 13 : 
-            exit = 339;
+            exit = 4;
             break;
         case 14 : 
-            exit = 337;
+            exit = 5;
             break;
         default:
           throw [
@@ -1355,7 +1355,7 @@ function trans(ty1, ty2) {
     switch (ty1[0]) {
       case 0 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1365,25 +1365,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1391,7 +1391,7 @@ function trans(ty1, ty2) {
           break;
       case 1 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1401,25 +1401,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1427,7 +1427,7 @@ function trans(ty1, ty2) {
           break;
       case 2 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1437,25 +1437,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1463,7 +1463,7 @@ function trans(ty1, ty2) {
           break;
       case 3 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1473,25 +1473,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1499,7 +1499,7 @@ function trans(ty1, ty2) {
           break;
       case 4 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1509,25 +1509,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1535,7 +1535,7 @@ function trans(ty1, ty2) {
           break;
       case 5 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1545,25 +1545,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1571,7 +1571,7 @@ function trans(ty1, ty2) {
           break;
       case 6 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1581,25 +1581,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1607,7 +1607,7 @@ function trans(ty1, ty2) {
           break;
       case 7 : 
           if (typeof ty2 === "number") {
-            exit = 331;
+            exit = 8;
           }
           else {
             switch (ty2[0]) {
@@ -1617,25 +1617,25 @@ function trans(ty1, ty2) {
                           trans(ty1[1], ty2[1])
                         ];
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
-                  exit = 333;
+                  exit = 7;
                   break;
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               
             }
@@ -1663,19 +1663,19 @@ function trans(ty1, ty2) {
                           trans(ty1[2], ty2[2])
                         ];
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               default:
                 throw [
@@ -1707,7 +1707,7 @@ function trans(ty1, ty2) {
           else {
             switch (ty2[0]) {
               case 8 : 
-                  exit = 335;
+                  exit = 6;
                   break;
               case 9 : 
                   var ty = trans(symm(ty1[2]), ty2[1]);
@@ -1721,19 +1721,19 @@ function trans(ty1, ty2) {
                           trans(ty1[3], ty2[3])
                         ];
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
-                  exit = 337;
+                  exit = 5;
                   break;
               default:
                 throw [
@@ -1799,7 +1799,7 @@ function trans(ty1, ty2) {
           else {
             switch (ty2[0]) {
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
                   return [
@@ -1836,10 +1836,10 @@ function trans(ty1, ty2) {
           else {
             switch (ty2[0]) {
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
                   return [
@@ -1876,13 +1876,13 @@ function trans(ty1, ty2) {
           else {
             switch (ty2[0]) {
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
                   return [
@@ -1919,16 +1919,16 @@ function trans(ty1, ty2) {
           else {
             switch (ty2[0]) {
               case 10 : 
-                  exit = 345;
+                  exit = 1;
                   break;
               case 11 : 
-                  exit = 343;
+                  exit = 2;
                   break;
               case 12 : 
-                  exit = 341;
+                  exit = 3;
                   break;
               case 13 : 
-                  exit = 339;
+                  exit = 4;
                   break;
               case 14 : 
                   return [
@@ -1953,7 +1953,7 @@ function trans(ty1, ty2) {
     }
   }
   switch (exit) {
-    case 345 : 
+    case 1 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -1964,7 +1964,7 @@ function trans(ty1, ty2) {
                 21
               ]
             ];
-    case 343 : 
+    case 2 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -1975,7 +1975,7 @@ function trans(ty1, ty2) {
                 21
               ]
             ];
-    case 341 : 
+    case 3 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -1986,7 +1986,7 @@ function trans(ty1, ty2) {
                 19
               ]
             ];
-    case 339 : 
+    case 4 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -1997,7 +1997,7 @@ function trans(ty1, ty2) {
                 22
               ]
             ];
-    case 337 : 
+    case 5 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -2008,7 +2008,7 @@ function trans(ty1, ty2) {
                 30
               ]
             ];
-    case 335 : 
+    case 6 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -2019,7 +2019,7 @@ function trans(ty1, ty2) {
                 26
               ]
             ];
-    case 333 : 
+    case 7 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -2030,7 +2030,7 @@ function trans(ty1, ty2) {
                 28
               ]
             ];
-    case 331 : 
+    case 8 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -2334,7 +2334,7 @@ function type_format(fmt, fmtty) {
 }
 
 function type_format_gen(fmt, fmtty) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (typeof fmt === "number") {
     return [
             /* Fmt_fmtty_EBB */0,
@@ -2346,11 +2346,11 @@ function type_format_gen(fmt, fmtty) {
     switch (fmt[0]) {
       case 0 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0]) {
-              exit = 293;
+              exit = 1;
             }
             else {
               var match = type_format_gen(fmt[1], fmtty[1]);
@@ -2367,11 +2367,11 @@ function type_format_gen(fmt, fmtty) {
           break;
       case 1 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0]) {
-              exit = 293;
+              exit = 1;
             }
             else {
               var match$1 = type_format_gen(fmt[1], fmtty[1]);
@@ -2566,7 +2566,7 @@ function type_format_gen(fmt, fmtty) {
           break;
       case 9 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 7) {
@@ -2581,7 +2581,7 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
@@ -2619,7 +2619,7 @@ function type_format_gen(fmt, fmtty) {
                 ];
       case 13 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 8) {
@@ -2646,13 +2646,13 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
       case 14 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 9) {
@@ -2679,13 +2679,13 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
       case 15 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 10) {
@@ -2700,13 +2700,13 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
       case 16 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 11) {
@@ -2721,7 +2721,7 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
@@ -2740,7 +2740,7 @@ function type_format_gen(fmt, fmtty) {
           return type_formatting_gen(fmt[1], fmt[2], fmtty);
       case 19 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 13) {
@@ -2755,13 +2755,13 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
       case 20 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 1) {
@@ -2778,13 +2778,13 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
       case 21 : 
           if (typeof fmtty === "number") {
-            exit = 293;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 2) {
@@ -2800,7 +2800,7 @@ function type_format_gen(fmt, fmtty) {
                     ];
             }
             else {
-              exit = 293;
+              exit = 1;
             }
           }
           break;
@@ -2808,12 +2808,12 @@ function type_format_gen(fmt, fmtty) {
           return type_ignored_param(fmt[1], fmt[2], fmtty);
       case 22 : 
       case 24 : 
-          exit = 293;
+          exit = 1;
           break;
       
     }
   }
-  if (exit === 293) {
+  if (exit === 1) {
     throw Type_mismatch;
   }
   
@@ -2950,7 +2950,7 @@ function type_ignored_param_one(ign, fmt, fmtty) {
 }
 
 function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (typeof sub_fmtty === "number") {
     return [
             /* Fmtty_fmt_EBB */0,
@@ -2962,11 +2962,11 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
     switch (sub_fmtty[0]) {
       case 0 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0]) {
-              exit = 297;
+              exit = 1;
             }
             else {
               var match = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
@@ -2983,7 +2983,7 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           break;
       case 1 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 1) {
@@ -2998,13 +2998,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 2 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 2) {
@@ -3019,13 +3019,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 3 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 3) {
@@ -3040,13 +3040,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 4 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 4) {
@@ -3061,13 +3061,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 5 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 5) {
@@ -3082,13 +3082,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 6 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 6) {
@@ -3103,13 +3103,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 7 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 7) {
@@ -3124,13 +3124,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 8 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 8) {
@@ -3156,13 +3156,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 9 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 9) {
@@ -3203,13 +3203,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 10 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 10) {
@@ -3224,13 +3224,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 11 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 11) {
@@ -3245,16 +3245,16 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 12 : 
-          exit = 297;
+          exit = 1;
           break;
       case 13 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 13) {
@@ -3269,13 +3269,13 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       case 14 : 
           if (typeof fmtty === "number") {
-            exit = 297;
+            exit = 1;
           }
           else {
             if (fmtty[0] === 14) {
@@ -3290,14 +3290,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
                     ];
             }
             else {
-              exit = 297;
+              exit = 1;
             }
           }
           break;
       
     }
   }
-  if (exit === 297) {
+  if (exit === 1) {
     throw Type_mismatch;
   }
   
@@ -3350,19 +3350,19 @@ function fix_int_precision(prec, str) {
   var prec$1 = Pervasives.abs(prec);
   var len = str.length;
   var c = str.charCodeAt(0);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (c >= 58) {
     if (c >= 71) {
       if (5 < (-97 + c >>> 0)) {
         return str;
       }
       else {
-        exit = 276;
+        exit = 2;
       }
     }
     else {
       if (c >= 65) {
-        exit = 276;
+        exit = 2;
       }
       else {
         return str;
@@ -3375,7 +3375,7 @@ function fix_int_precision(prec, str) {
         switch (-43 + c) {
           case 0 : 
           case 2 : 
-              exit = 275;
+              exit = 1;
               break;
           case 1 : 
           case 3 : 
@@ -3389,7 +3389,7 @@ function fix_int_precision(prec, str) {
                 return Bytes.unsafe_to_string(res);
               }
               else {
-                exit = 276;
+                exit = 2;
               }
               break;
           case 6 : 
@@ -3401,7 +3401,7 @@ function fix_int_precision(prec, str) {
           case 12 : 
           case 13 : 
           case 14 : 
-              exit = 276;
+              exit = 2;
               break;
           
         }
@@ -3411,11 +3411,11 @@ function fix_int_precision(prec, str) {
       }
     }
     else {
-      exit = 275;
+      exit = 1;
     }
   }
   switch (exit) {
-    case 275 : 
+    case 1 : 
         if (prec$1 + 1 > len) {
           var res$1 = Bytes.make(prec$1 + 1, /* "0" */48);
           res$1[0] = c;
@@ -3426,7 +3426,7 @@ function fix_int_precision(prec, str) {
           return str;
         }
         break;
-    case 276 : 
+    case 2 : 
         if (prec$1 > len) {
           var res$2 = Bytes.make(prec$1, /* "0" */48);
           $$String.blit(str, 0, res$2, prec$1 - len, len);
@@ -4374,7 +4374,7 @@ function make_custom(k, o, acc, rest, arity, f) {
 function output_acc(o, _acc) {
   while(/* true */1) {
     var acc = _acc;
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (typeof acc === "number") {
       return /* () */0;
     }
@@ -4399,11 +4399,11 @@ function output_acc(o, _acc) {
             break;
         case 2 : 
         case 4 : 
-            exit = 215;
+            exit = 1;
             break;
         case 3 : 
         case 5 : 
-            exit = 216;
+            exit = 2;
             break;
         case 6 : 
             output_acc(o, acc[1]);
@@ -4418,10 +4418,10 @@ function output_acc(o, _acc) {
       }
     }
     switch (exit) {
-      case 215 : 
+      case 1 : 
           output_acc(o, acc[1]);
           return Pervasives.output_string(o, acc[2]);
-      case 216 : 
+      case 2 : 
           output_acc(o, acc[1]);
           return Pervasives.output_char(o, acc[2]);
       
@@ -4432,7 +4432,7 @@ function output_acc(o, _acc) {
 function bufput_acc(b, _acc) {
   while(/* true */1) {
     var acc = _acc;
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (typeof acc === "number") {
       return /* () */0;
     }
@@ -4457,11 +4457,11 @@ function bufput_acc(b, _acc) {
             break;
         case 2 : 
         case 4 : 
-            exit = 210;
+            exit = 1;
             break;
         case 3 : 
         case 5 : 
-            exit = 211;
+            exit = 2;
             break;
         case 6 : 
             bufput_acc(b, acc[1]);
@@ -4476,10 +4476,10 @@ function bufput_acc(b, _acc) {
       }
     }
     switch (exit) {
-      case 210 : 
+      case 1 : 
           bufput_acc(b, acc[1]);
           return Buffer.add_string(b, acc[2]);
-      case 211 : 
+      case 2 : 
           bufput_acc(b, acc[1]);
           return Buffer.add_char(b, acc[2]);
       
@@ -4490,7 +4490,7 @@ function bufput_acc(b, _acc) {
 function strput_acc(b, _acc) {
   while(/* true */1) {
     var acc = _acc;
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (typeof acc === "number") {
       return /* () */0;
     }
@@ -4515,11 +4515,11 @@ function strput_acc(b, _acc) {
             break;
         case 2 : 
         case 4 : 
-            exit = 205;
+            exit = 1;
             break;
         case 3 : 
         case 5 : 
-            exit = 206;
+            exit = 2;
             break;
         case 6 : 
             strput_acc(b, acc[1]);
@@ -4534,10 +4534,10 @@ function strput_acc(b, _acc) {
       }
     }
     switch (exit) {
-      case 205 : 
+      case 1 : 
           strput_acc(b, acc[1]);
           return Buffer.add_string(b, acc[2]);
-      case 206 : 
+      case 2 : 
           strput_acc(b, acc[1]);
           return Buffer.add_char(b, acc[2]);
       
@@ -4626,13 +4626,13 @@ function open_box_of_string(str) {
         }
         else {
           var match = str.charCodeAt(j);
-          /* initialize */var exit = 0;
+          var exit = 0;
           if (match >= 48) {
             if (match >= 58) {
               return j;
             }
             else {
-              exit = 194;
+              exit = 1;
             }
           }
           else {
@@ -4640,10 +4640,10 @@ function open_box_of_string(str) {
               return j;
             }
             else {
-              exit = 194;
+              exit = 1;
             }
           }
-          if (exit === 194) {
+          if (exit === 1) {
             _j = j + 1;
           }
           
@@ -5004,10 +5004,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           unexpected_end_of_format(end_ind);
         }
         var match = str.charCodeAt(str_ind);
-        /* initialize */var exit = 0;
+        var exit = 0;
         var switcher = -32 + match;
         if (16 < (switcher >>> 0)) {
-          exit = 7;
+          exit = 1;
         }
         else {
           switch (switcher) {
@@ -5039,7 +5039,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             case 12 : 
             case 14 : 
             case 15 : 
-                exit = 7;
+                exit = 1;
                 break;
             case 16 : 
                 set_flag(str_ind, zero);
@@ -5048,7 +5048,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             
           }
         }
-        if (exit === 7) {
+        if (exit === 1) {
           return parse_padding(pct_ind, str_ind, end_ind, zero[1], minus[1], plus[1], sharp[1], space[1], ign);
         }
         
@@ -5068,10 +5068,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         minus !== 0 ? /* Left */0 : /* Right */1
       );
     var match = str.charCodeAt(str_ind);
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (match >= 48) {
       if (match >= 58) {
-        exit = 16;
+        exit = 1;
       }
       else {
         var match$1 = parse_positive(str_ind, end_ind, 0);
@@ -5084,7 +5084,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     else {
       if (match !== 42) {
-        exit = 16;
+        exit = 1;
       }
       else {
         return parse_after_padding(pct_ind, str_ind + 1, end_ind, minus, plus, sharp, space, ign, [
@@ -5093,7 +5093,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   ]);
       }
     }
-    if (exit === 16) {
+    if (exit === 1) {
       switch (padty) {
         case 0 : 
             if (!legacy_behavior$1) {
@@ -5132,10 +5132,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 ]);
     };
     var symb = str.charCodeAt(str_ind);
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (symb >= 48) {
       if (symb >= 58) {
-        exit = 19;
+        exit = 2;
       }
       else {
         return parse_literal(minus, str_ind);
@@ -5148,30 +5148,30 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               return parse_after_precision(pct_ind, str_ind + 1, end_ind, minus, plus, sharp, space, ign, pad, /* Arg_precision */1);
           case 1 : 
           case 3 : 
-              exit = 21;
+              exit = 1;
               break;
           case 2 : 
           case 4 : 
           case 5 : 
-              exit = 19;
+              exit = 2;
               break;
           
         }
       }
       else {
-        exit = 19;
+        exit = 2;
       }
     }
     switch (exit) {
-      case 21 : 
+      case 1 : 
           if (legacy_behavior$1) {
             return parse_literal(+(minus || symb === /* "-" */45), str_ind + 1);
           }
           else {
-            exit = 19;
+            exit = 2;
           }
           break;
-      case 19 : 
+      case 2 : 
           return legacy_behavior$1 ? parse_after_precision(pct_ind, str_ind, end_ind, minus, plus, sharp, space, ign, pad, [
                         /* Lit_precision */0,
                         0
@@ -5187,19 +5187,19 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return parse_conversion(pct_ind, str_ind + 1, end_ind, plus, sharp, space, ign, pad, prec, padprec, str.charCodeAt(str_ind));
     };
     if (typeof pad === "number") {
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (typeof prec === "number") {
         if (prec !== 0) {
-          exit = 24;
+          exit = 1;
         }
         else {
           return parse_conv(/* No_padding */0);
         }
       }
       else {
-        exit = 24;
+        exit = 1;
       }
-      if (exit === 24) {
+      if (exit === 1) {
         return minus !== 0 ? (
                   typeof prec === "number" ? parse_conv([
                           /* Arg_padding */1,
@@ -5345,9 +5345,9 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               ];
     };
     var fmt_result;
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (symb >= 124) {
-      exit = 63;
+      exit = 7;
     }
     else {
       switch (symb) {
@@ -5400,7 +5400,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             break;
         case 37 : 
         case 64 : 
-            exit = 68;
+            exit = 5;
             break;
         case 67 : 
             var match$3 = parse(str_ind, end_ind);
@@ -5518,7 +5518,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 43 : 
         case 45 : 
         case 95 : 
-            exit = 69;
+            exit = 6;
             break;
         case 97 : 
             var match$9 = parse(str_ind, end_ind);
@@ -5532,7 +5532,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             break;
         case 66 : 
         case 98 : 
-            exit = 67;
+            exit = 4;
             break;
         case 99 : 
             var char_format = function (fmt_rest) {
@@ -5582,12 +5582,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 101 : 
         case 102 : 
         case 103 : 
-            exit = 66;
+            exit = 3;
             break;
         case 76 : 
         case 108 : 
         case 110 : 
-            exit = 65;
+            exit = 2;
             break;
         case 114 : 
             var match$12 = parse(str_ind, end_ind);
@@ -5654,7 +5654,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 111 : 
         case 117 : 
         case 120 : 
-            exit = 64;
+            exit = 1;
             break;
         case 0 : 
         case 1 : 
@@ -5743,7 +5743,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 119 : 
         case 121 : 
         case 122 : 
-            exit = 63;
+            exit = 7;
             break;
         case 123 : 
             var sub_end$1 = search_subformat_end(str_ind, end_ind, /* "}" */125);
@@ -5783,7 +5783,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
     }
     switch (exit) {
-      case 64 : 
+      case 1 : 
           var iconv = compute_int_conv(pct_ind, str_ind, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), symb);
           var match$18 = parse(str_ind, end_ind);
           var fmt_rest$9 = match$18[1];
@@ -5807,11 +5807,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             var match$19 = get_pad(/* () */0);
             var match$20 = get_prec(/* () */0);
             var pad$3;
-            /* initialize */var exit$1 = 0;
+            var exit$1 = 0;
             typeof match$20 === "number" ? (
-                match$20 !== 0 ? (exit$1 = 36) : (pad$3 = match$19)
-              ) : (exit$1 = 36);
-            if (exit$1 === 36) {
+                match$20 !== 0 ? (exit$1 = 9) : (pad$3 = match$19)
+              ) : (exit$1 = 9);
+            if (exit$1 === 9) {
               pad$3 = typeof match$19 === "number" ? /* No_padding */0 : (
                   match$19[0] ? (
                       match$19[1] >= 2 ? (
@@ -5844,7 +5844,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             ];
           }
           break;
-      case 65 : 
+      case 2 : 
           if (str_ind === end_ind || !is_int_base(str.charCodeAt(str_ind))) {
             var match$22 = parse(str_ind, end_ind);
             var fmt_rest$10 = match$22[1];
@@ -5875,10 +5875,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
           else {
-            exit = 63;
+            exit = 7;
           }
           break;
-      case 66 : 
+      case 3 : 
           var fconv = compute_float_conv(pct_ind, str_ind, get_plus(/* () */0), get_space(/* () */0), symb);
           var match$23 = parse(str_ind, end_ind);
           var fmt_rest$11 = match$23[1];
@@ -5913,7 +5913,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             ];
           }
           break;
-      case 67 : 
+      case 4 : 
           var match$25 = parse(str_ind, end_ind);
           var fmt_rest$12 = match$25[1];
           fmt_result = get_ign(/* () */0) ? [
@@ -5931,7 +5931,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               ]
             ];
           break;
-      case 68 : 
+      case 5 : 
           var match$26 = parse(str_ind, end_ind);
           fmt_result = [
             /* Fmt_EBB */0,
@@ -5942,7 +5942,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             ]
           ];
           break;
-      case 69 : 
+      case 6 : 
           fmt_result = failwith_message([
                   /* Format */0,
                   [
@@ -5986,10 +5986,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   "invalid format %S: at character number %d, flag %C is only allowed after the '%%', before padding and precision"
                 ])(str, pct_ind, symb);
           break;
-      case 63 : 
+      case 7 : 
           if (symb >= 108) {
             if (symb >= 111) {
-              exit = 62;
+              exit = 8;
             }
             else {
               switch (-108 + symb) {
@@ -6028,7 +6028,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     }
                     break;
                 case 1 : 
-                    exit = 62;
+                    exit = 8;
                     break;
                 case 2 : 
                     var iconv$2 = compute_int_conv(pct_ind, str_ind + 1, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), str.charCodeAt(str_ind));
@@ -6070,7 +6070,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           }
           else {
             if (symb !== 76) {
-              exit = 62;
+              exit = 8;
             }
             else {
               var iconv$3 = compute_int_conv(pct_ind, str_ind + 1, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), str.charCodeAt(str_ind));
@@ -6108,7 +6108,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
           break;
-      case 62 : 
+      case 8 : 
           fmt_result = failwith_message([
                   /* Format */0,
                   [
@@ -6184,23 +6184,23 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       
     }
     if (!ign_used[1] && ign) {
-      /* initialize */var exit$2 = 0;
+      var exit$2 = 0;
       exit$2 = symb >= 38 ? (
           symb !== 44 ? (
-              symb !== 64 ? 27 : 28
-            ) : 28
+              symb !== 64 ? 2 : 1
+            ) : 1
         ) : (
           symb !== 33 ? (
-              symb >= 37 ? 28 : 27
-            ) : 28
+              symb >= 37 ? 1 : 2
+            ) : 1
         );
       switch (exit$2) {
-        case 28 : 
+        case 1 : 
             if (!legacy_behavior$1) {
-              exit$2 = 27;
+              exit$2 = 2;
             }
             break;
-        case 27 : 
+        case 2 : 
             incompatible_flag(pct_ind, str_ind, symb, "'_'");
             break;
         
@@ -6221,19 +6221,19 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     else {
       var c = str.charCodeAt(str_ind);
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (c >= 65) {
         if (c >= 94) {
           var switcher = -123 + c;
           if (2 < (switcher >>> 0)) {
-            exit = 91;
+            exit = 1;
           }
           else {
             switch (switcher) {
               case 0 : 
                   return parse_tag(/* true */1, str_ind + 1, end_ind);
               case 1 : 
-                  exit = 91;
+                  exit = 1;
                   break;
               case 2 : 
                   var match = parse(str_ind + 1, end_ind);
@@ -6255,7 +6255,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               case 0 : 
                   return parse_tag(/* false */0, str_ind + 1, end_ind);
               case 1 : 
-                  exit = 91;
+                  exit = 1;
                   break;
               case 2 : 
                   var match$1 = parse(str_ind + 1, end_ind);
@@ -6271,7 +6271,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
           else {
-            exit = 91;
+            exit = 1;
           }
         }
       }
@@ -6372,7 +6372,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               case 26 : 
               case 29 : 
               case 30 : 
-                  exit = 91;
+                  exit = 1;
                   break;
               case 31 : 
                   var match$7 = parse(str_ind + 1, end_ind);
@@ -6398,7 +6398,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
           else {
-            exit = 91;
+            exit = 1;
           }
         }
         else {
@@ -6413,7 +6413,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 ];
         }
       }
-      if (exit === 91) {
+      if (exit === 1) {
         var match$10 = parse(str_ind + 1, end_ind);
         return [
                 /* Fmt_EBB */0,
@@ -6535,13 +6535,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       var str_ind_1 = parse_spaces(str_ind + 1, end_ind);
       var match$1 = str.charCodeAt(str_ind_1);
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (match$1 >= 48) {
         if (match$1 >= 58) {
           throw Caml_exceptions.Not_found;
         }
         else {
-          exit = 113;
+          exit = 1;
         }
       }
       else {
@@ -6549,10 +6549,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           throw Caml_exceptions.Not_found;
         }
         else {
-          exit = 113;
+          exit = 1;
         }
       }
-      if (exit === 113) {
+      if (exit === 1) {
         var match$2 = parse_integer(str_ind_1, end_ind);
         var width = match$2[2];
         var str_ind_3 = parse_spaces(match$2[1], end_ind);
@@ -6648,13 +6648,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     try {
       var str_ind_1 = parse_spaces(str_ind, end_ind);
       var match$1 = str.charCodeAt(str_ind_1);
-      /* initialize */var exit = 0;
+      var exit = 0;
       match$1 >= 48 ? (
-          match$1 >= 58 ? (match = /* None */0) : (exit = 123)
+          match$1 >= 58 ? (match = /* None */0) : (exit = 1)
         ) : (
-          match$1 !== 45 ? (match = /* None */0) : (exit = 123)
+          match$1 !== 45 ? (match = /* None */0) : (exit = 1)
         );
-      if (exit === 123) {
+      if (exit === 1) {
         var match$2 = parse_integer(str_ind_1, end_ind);
         var str_ind_3 = parse_spaces(match$2[1], end_ind);
         if (str.charCodeAt(str_ind_3) !== /* ">" */62) {
@@ -6810,11 +6810,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           unexpected_end_of_format(end_ind);
         }
         var c$prime = str.charCodeAt(str_ind);
-        /* initialize */var exit = 0;
+        var exit = 0;
         if (c$prime >= 46) {
           if (c$prime !== 64) {
             if (c$prime !== 93) {
-              exit = 132;
+              exit = 2;
             }
             else {
               add_char(c);
@@ -6822,7 +6822,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
           else {
-            exit = 133;
+            exit = 1;
           }
         }
         else {
@@ -6831,24 +6831,24 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               return parse_char_set_after_minus(str_ind + 1, end_ind, c);
             }
             else {
-              exit = 132;
+              exit = 2;
             }
           }
           else {
-            exit = 133;
+            exit = 1;
           }
         }
         switch (exit) {
-          case 133 : 
+          case 1 : 
               if (c === /* "%" */37) {
                 add_char(c$prime);
                 return parse_char_set_content(str_ind + 1, end_ind);
               }
               else {
-                exit = 132;
+                exit = 2;
               }
               break;
-          case 132 : 
+          case 2 : 
               if (c === /* "%" */37) {
                 fail_single_percent(str_ind);
               }
@@ -6873,19 +6873,19 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           unexpected_end_of_format(end_ind);
         }
         var c$prime$1 = str.charCodeAt(str_ind + 1);
-        /* initialize */var exit = 0;
+        var exit = 0;
         if (c$prime$1 !== 37) {
           if (c$prime$1 !== 64) {
             return fail_single_percent(str_ind);
           }
           else {
-            exit = 134;
+            exit = 1;
           }
         }
         else {
-          exit = 134;
+          exit = 1;
         }
-        if (exit === 134) {
+        if (exit === 1) {
           add_range(c, c$prime$1);
           return parse_char_set_content(str_ind + 2, end_ind);
         }
@@ -7115,11 +7115,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         }
         else {
           var match$1 = str.charCodeAt(str_ind + 1);
-          /* initialize */var exit = 0;
+          var exit = 0;
           if (match$1 >= 95) {
             if (match$1 >= 123) {
               if (match$1 >= 126) {
-                exit = 155;
+                exit = 1;
               }
               else {
                 switch (-123 + match$1) {
@@ -7128,7 +7128,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       _str_ind = sub_end + 2;
                       break;
                   case 1 : 
-                      exit = 155;
+                      exit = 1;
                       break;
                   case 2 : 
                       return expected_character(str_ind + 1, "character ')'", /* "}" */125);
@@ -7138,7 +7138,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
             else {
               if (match$1 >= 96) {
-                exit = 155;
+                exit = 1;
               }
               else {
                 if (str_ind + 2 === end_ind) {
@@ -7164,7 +7164,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           else {
             if (match$1 !== 40) {
               if (match$1 !== 41) {
-                exit = 155;
+                exit = 1;
               }
               else {
                 return expected_character(str_ind + 1, "character '}'", /* ")" */41);
@@ -7175,7 +7175,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               _str_ind = sub_end$3 + 2;
             }
           }
-          if (exit === 155) {
+          if (exit === 1) {
             _str_ind = str_ind + 2;
           }
           
@@ -7230,17 +7230,17 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
   };
   var counter_of_char = function (symb) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (symb >= 108) {
       if (symb >= 111) {
-        exit = 159;
+        exit = 1;
       }
       else {
         switch (-108 + symb) {
           case 0 : 
               return /* Line_counter */0;
           case 1 : 
-              exit = 159;
+              exit = 1;
               break;
           case 2 : 
               return /* Char_counter */1;
@@ -7250,13 +7250,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     else {
       if (symb !== 76) {
-        exit = 159;
+        exit = 1;
       }
       else {
         return /* Token_counter */2;
       }
     }
-    if (exit === 159) {
+    if (exit === 1) {
       throw [
             0,
             Caml_exceptions.Assert_failure,
@@ -7275,19 +7275,19 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       var space = _space;
       var sharp = _sharp;
       var plus = _plus;
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (plus !== 0) {
         if (sharp !== 0) {
-          exit = 161;
+          exit = 1;
         }
         else {
           if (space !== 0) {
-            exit = 160;
+            exit = 2;
           }
           else {
             if (symb !== 100) {
               if (symb !== 105) {
-                exit = 160;
+                exit = 2;
               }
               else {
                 return /* Int_pi */4;
@@ -7302,13 +7302,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       else {
         if (sharp !== 0) {
           if (space !== 0) {
-            exit = 161;
+            exit = 1;
           }
           else {
             if (symb !== 88) {
               if (symb !== 111) {
                 if (symb !== 120) {
-                  exit = 161;
+                  exit = 1;
                 }
                 else {
                   return /* Int_Cx */7;
@@ -7327,7 +7327,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           if (space !== 0) {
             if (symb !== 100) {
               if (symb !== 105) {
-                exit = 160;
+                exit = 2;
               }
               else {
                 return /* Int_si */5;
@@ -7340,7 +7340,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           else {
             var switcher = -88 + symb;
             if (32 < (switcher >>> 0)) {
-              exit = 160;
+              exit = 2;
             }
             else {
               switch (switcher) {
@@ -7381,7 +7381,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 case 28 : 
                 case 30 : 
                 case 31 : 
-                    exit = 160;
+                    exit = 2;
                     break;
                 case 32 : 
                     return /* Int_x */6;
@@ -7392,11 +7392,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         }
       }
       switch (exit) {
-        case 161 : 
-            /* initialize */var exit$1 = 0;
+        case 1 : 
+            var exit$1 = 0;
             var switcher$1 = -88 + symb;
             if (32 < (switcher$1 >>> 0)) {
-              exit = 160;
+              exit = 2;
             }
             else {
               switch (switcher$1) {
@@ -7405,7 +7405,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       return /* Int_CX */9;
                     }
                     else {
-                      exit = 160;
+                      exit = 2;
                     }
                     break;
                 case 23 : 
@@ -7413,13 +7413,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       return /* Int_Co */11;
                     }
                     else {
-                      exit = 160;
+                      exit = 2;
                     }
                     break;
                 case 12 : 
                 case 17 : 
                 case 29 : 
-                    exit$1 = 163;
+                    exit$1 = 3;
                     break;
                 case 1 : 
                 case 2 : 
@@ -7448,20 +7448,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 case 28 : 
                 case 30 : 
                 case 31 : 
-                    exit = 160;
+                    exit = 2;
                     break;
                 case 32 : 
                     if (legacy_behavior$1) {
                       return /* Int_Cx */7;
                     }
                     else {
-                      exit = 160;
+                      exit = 2;
                     }
                     break;
                 
               }
             }
-            if (exit$1 === 163) {
+            if (exit$1 === 3) {
               if (legacy_behavior$1) {
                 _sharp = /* false */0;
               }
@@ -7470,7 +7470,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
             }
             break;
-        case 160 : 
+        case 2 : 
             if (plus !== 0) {
               if (space !== 0) {
                 if (legacy_behavior$1) {
@@ -7530,11 +7530,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           }
         }
         else {
-          /* initialize */var exit = 0;
+          var exit = 0;
           if (symb >= 72) {
             var switcher = -101 + symb;
             if (2 < (switcher >>> 0)) {
-              exit = 164;
+              exit = 1;
             }
             else {
               switch (switcher) {
@@ -7554,7 +7554,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 case 0 : 
                     return /* Float_pE */7;
                 case 1 : 
-                    exit = 164;
+                    exit = 1;
                     break;
                 case 2 : 
                     return /* Float_pG */13;
@@ -7562,10 +7562,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
             }
             else {
-              exit = 164;
+              exit = 1;
             }
           }
-          if (exit === 164) {
+          if (exit === 1) {
             if (legacy_behavior$1) {
               _plus = /* false */0;
             }
@@ -7578,11 +7578,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       else {
         if (space !== 0) {
-          /* initialize */var exit$1 = 0;
+          var exit$1 = 0;
           if (symb >= 72) {
             var switcher$1 = -101 + symb;
             if (2 < (switcher$1 >>> 0)) {
-              exit$1 = 165;
+              exit$1 = 1;
             }
             else {
               switch (switcher$1) {
@@ -7602,7 +7602,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 case 0 : 
                     return /* Float_sE */8;
                 case 1 : 
-                    exit$1 = 165;
+                    exit$1 = 1;
                     break;
                 case 2 : 
                     return /* Float_sG */14;
@@ -7610,10 +7610,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
             }
             else {
-              exit$1 = 165;
+              exit$1 = 1;
             }
           }
-          if (exit$1 === 165) {
+          if (exit$1 === 1) {
             if (legacy_behavior$1) {
               _space = /* false */0;
             }

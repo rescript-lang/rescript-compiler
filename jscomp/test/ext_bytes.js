@@ -33,10 +33,10 @@ function escaped(s) {
     n = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c = s[i$1];
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (c >= 35) {
         c !== 92 ? (
-            c >= 127 ? (exit = 4) : (s$prime[n] = c)
+            c >= 127 ? (exit = 1) : (s$prime[n] = c)
           ) : (exit = 2);
       }
       else {
@@ -45,7 +45,7 @@ function escaped(s) {
         }
         else {
           if (c >= 14) {
-            exit = 4;
+            exit = 1;
           }
           else {
             switch (c) {
@@ -74,7 +74,7 @@ function escaped(s) {
               case 7 : 
               case 11 : 
               case 12 : 
-                  exit = 4;
+                  exit = 1;
                   break;
               case 13 : 
                   s$prime[n] = /* "\\" */92;
@@ -87,7 +87,7 @@ function escaped(s) {
         }
       }
       switch (exit) {
-        case 4 : 
+        case 1 : 
             s$prime[n] = /* "\\" */92;
             ++ n;
             s$prime[n] = 48 + (c / 100 | 0);

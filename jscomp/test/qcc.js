@@ -248,7 +248,7 @@ function cconst() {
 function skip(_param) {
   while(/* true */1) {
     var ch = getch(/* () */0);
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (ch >= 14) {
       if (ch !== 32) {
         return ch !== 47 ? ch : (
@@ -256,13 +256,13 @@ function skip(_param) {
                 );
       }
       else {
-        exit = 116;
+        exit = 1;
       }
     }
     else {
       if (ch >= 11) {
         if (ch >= 13) {
-          exit = 116;
+          exit = 1;
         }
         else {
           return ch;
@@ -270,14 +270,14 @@ function skip(_param) {
       }
       else {
         if (ch >= 9) {
-          exit = 116;
+          exit = 1;
         }
         else {
           return ch;
         }
       }
     }
-    if (exit === 116) {
+    if (exit === 1) {
       _param = /* () */0;
     }
     
@@ -319,11 +319,11 @@ function next() {
   }
   if (match) {
     var c = match[1];
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (c !== 34) {
       if (c >= 48) {
         if (c >= 58) {
-          exit = 115;
+          exit = 1;
         }
         else {
           return ilit(c - 48);
@@ -331,7 +331,7 @@ function next() {
       }
       else {
         if (c !== 39) {
-          exit = 115;
+          exit = 1;
         }
         else {
           return cconst(/* () */0);
@@ -341,7 +341,7 @@ function next() {
     else {
       return slit(gpos[1], gpos[1]);
     }
-    if (exit === 115) {
+    if (exit === 1) {
       return isid(c) ? id(0, c) : op(c, [
                     /* :: */0,
                     "++",
@@ -1244,7 +1244,7 @@ function postfix(stk) {
   }
   else {
     var op = t[1];
-    /* initialize */var exit = 0;
+    var exit = 0;
     switch (op) {
       case "(" : 
           var emitargs = function (_l, _rl) {
@@ -1311,12 +1311,12 @@ function postfix(stk) {
           return align[1] % 2 !== 0 ? out(1216594952) : 0;
       case "++" : 
       case "--" : 
-          exit = 77;
+          exit = 1;
           break;
       default:
         return unnext(t);
     }
-    if (exit === 77) {
+    if (exit === 1) {
       patchlval(/* () */0);
       out(4753857);
       read(lval[1][2]);
@@ -1556,7 +1556,7 @@ function stmt(brk, stk) {
     return next$1(/* () */0);
   };
   var t = next$1(/* () */0);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (Caml_primitive.caml_equal(t, tokif)) {
     pexpr(stk);
     var loc = test(0, 0);
@@ -1684,7 +1684,7 @@ function stmt(brk, stk) {
         }
         else {
           if (t[0]) {
-            exit = 50;
+            exit = 1;
           }
           else {
             switch (t[1]) {
@@ -1693,14 +1693,14 @@ function stmt(brk, stk) {
               case "{" : 
                   return block(brk, stk);
               default:
-                exit = 50;
+                exit = 1;
             }
           }
         }
       }
     }
   }
-  if (exit === 50) {
+  if (exit === 1) {
     unnext(t);
     expr(stk);
     return next$1(/* () */0);
@@ -1751,19 +1751,19 @@ function top(_param) {
               var n = _n;
               var regs = _regs;
               var match = next$1(/* () */0);
-              /* initialize */var exit = 0;
+              var exit = 0;
               switch (match[0]) {
                 case 0 : 
                     if (match[1] === ")") {
                       return stk;
                     }
                     else {
-                      exit = 33;
+                      exit = 1;
                     }
                     break;
                 case 1 : 
                 case 2 : 
-                    exit = 33;
+                    exit = 1;
                     break;
                 case 3 : 
                     var r = List.hd(regs);
@@ -1790,7 +1790,7 @@ function top(_param) {
                     break;
                 
               }
-              if (exit === 33) {
+              if (exit === 1) {
                 return Pervasives.failwith("[var] or ) expected");
               }
               

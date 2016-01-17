@@ -404,7 +404,7 @@ function set_size(state, ty) {
       return clear_scan_stack(state);
     }
     else {
-      /* initialize */var exit = 0;
+      var exit = 0;
       var $js = queue_elem[2];
       if (typeof $js === "number") {
         return /* () */0;
@@ -413,7 +413,7 @@ function set_size(state, ty) {
         switch ($js[0]) {
           case 1 : 
           case 2 : 
-              exit = 193;
+              exit = 1;
               break;
           case 3 : 
               return !ty ? (queue_elem[1] = state[13] + size, state[1] = t, /* () */0) : 0;
@@ -421,7 +421,7 @@ function set_size(state, ty) {
             return /* () */0;
         }
       }
-      if (exit === 193) {
+      if (exit === 1) {
         return ty ? (queue_elem[1] = state[13] + size, state[1] = t, /* () */0) : 0;
       }
       
@@ -1316,7 +1316,7 @@ function output_formatting_lit(ppf, fmting_lit) {
 }
 
 function output_acc(ppf, acc) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   var p;
   var size;
   var s;
@@ -1349,138 +1349,138 @@ function output_acc(ppf, acc) {
           break;
       case 2 : 
           var p$5 = acc[1];
-          /* initialize */var exit$1 = 0;
+          var exit$1 = 0;
           if (typeof p$5 === "number") {
-            exit$1 = 36;
+            exit$1 = 5;
           }
           else {
             if (p$5[0]) {
-              exit$1 = 36;
+              exit$1 = 5;
             }
             else {
               var match$2 = p$5[2];
               if (typeof match$2 === "number") {
-                exit$1 = 36;
+                exit$1 = 5;
               }
               else {
                 if (match$2[0] === 1) {
                   p = p$5[1];
                   size = match$2[2];
                   s = acc[2];
-                  exit = 32;
+                  exit = 1;
                 }
                 else {
-                  exit$1 = 36;
+                  exit$1 = 5;
                 }
               }
             }
           }
-          if (exit$1 === 36) {
+          if (exit$1 === 5) {
             p$2 = p$5;
             s$1 = acc[2];
-            exit = 34;
+            exit = 3;
           }
           break;
       case 3 : 
           var p$6 = acc[1];
-          /* initialize */var exit$2 = 0;
+          var exit$2 = 0;
           if (typeof p$6 === "number") {
-            exit$2 = 38;
+            exit$2 = 5;
           }
           else {
             if (p$6[0]) {
-              exit$2 = 38;
+              exit$2 = 5;
             }
             else {
               var match$3 = p$6[2];
               if (typeof match$3 === "number") {
-                exit$2 = 38;
+                exit$2 = 5;
               }
               else {
                 if (match$3[0] === 1) {
                   p$1 = p$6[1];
                   size$1 = match$3[2];
                   c = acc[2];
-                  exit = 33;
+                  exit = 2;
                 }
                 else {
-                  exit$2 = 38;
+                  exit$2 = 5;
                 }
               }
             }
           }
-          if (exit$2 === 38) {
+          if (exit$2 === 5) {
             p$3 = p$6;
             c$1 = acc[2];
-            exit = 35;
+            exit = 4;
           }
           break;
       case 4 : 
           var p$7 = acc[1];
-          /* initialize */var exit$3 = 0;
+          var exit$3 = 0;
           if (typeof p$7 === "number") {
-            exit$3 = 37;
+            exit$3 = 5;
           }
           else {
             if (p$7[0]) {
-              exit$3 = 37;
+              exit$3 = 5;
             }
             else {
               var match$4 = p$7[2];
               if (typeof match$4 === "number") {
-                exit$3 = 37;
+                exit$3 = 5;
               }
               else {
                 if (match$4[0] === 1) {
                   p = p$7[1];
                   size = match$4[2];
                   s = acc[2];
-                  exit = 32;
+                  exit = 1;
                 }
                 else {
-                  exit$3 = 37;
+                  exit$3 = 5;
                 }
               }
             }
           }
-          if (exit$3 === 37) {
+          if (exit$3 === 5) {
             p$2 = p$7;
             s$1 = acc[2];
-            exit = 34;
+            exit = 3;
           }
           break;
       case 5 : 
           var p$8 = acc[1];
-          /* initialize */var exit$4 = 0;
+          var exit$4 = 0;
           if (typeof p$8 === "number") {
-            exit$4 = 39;
+            exit$4 = 5;
           }
           else {
             if (p$8[0]) {
-              exit$4 = 39;
+              exit$4 = 5;
             }
             else {
               var match$5 = p$8[2];
               if (typeof match$5 === "number") {
-                exit$4 = 39;
+                exit$4 = 5;
               }
               else {
                 if (match$5[0] === 1) {
                   p$1 = p$8[1];
                   size$1 = match$5[2];
                   c = acc[2];
-                  exit = 33;
+                  exit = 2;
                 }
                 else {
-                  exit$4 = 39;
+                  exit$4 = 5;
                 }
               }
             }
           }
-          if (exit$4 === 39) {
+          if (exit$4 === 5) {
             p$3 = p$8;
             c$1 = acc[2];
-            exit = 35;
+            exit = 4;
           }
           break;
       case 6 : 
@@ -1496,16 +1496,16 @@ function output_acc(ppf, acc) {
     }
   }
   switch (exit) {
-    case 32 : 
+    case 1 : 
         output_acc(ppf, p);
         return pp_print_as_size(ppf, size, s);
-    case 33 : 
+    case 2 : 
         output_acc(ppf, p$1);
         return pp_print_as_size(ppf, size$1, $$String.make(1, c));
-    case 34 : 
+    case 3 : 
         output_acc(ppf, p$2);
         return pp_print_string(ppf, s$1);
-    case 35 : 
+    case 4 : 
         output_acc(ppf, p$3);
         return pp_print_char(ppf, c$1);
     
@@ -1513,7 +1513,7 @@ function output_acc(ppf, acc) {
 }
 
 function strput_acc(ppf, acc) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   var p;
   var size;
   var s;
@@ -1546,154 +1546,154 @@ function strput_acc(ppf, acc) {
           break;
       case 2 : 
           var p$5 = acc[1];
-          /* initialize */var exit$1 = 0;
+          var exit$1 = 0;
           if (typeof p$5 === "number") {
-            exit$1 = 26;
+            exit$1 = 5;
           }
           else {
             if (p$5[0]) {
-              exit$1 = 26;
+              exit$1 = 5;
             }
             else {
               var match$2 = p$5[2];
               if (typeof match$2 === "number") {
-                exit$1 = 26;
+                exit$1 = 5;
               }
               else {
                 if (match$2[0] === 1) {
                   p = p$5[1];
                   size = match$2[2];
                   s = acc[2];
-                  exit = 21;
+                  exit = 1;
                 }
                 else {
-                  exit$1 = 26;
+                  exit$1 = 5;
                 }
               }
             }
           }
-          if (exit$1 === 26) {
+          if (exit$1 === 5) {
             p$2 = p$5;
             s$1 = acc[2];
-            exit = 23;
+            exit = 3;
           }
           break;
       case 3 : 
           var p$6 = acc[1];
-          /* initialize */var exit$2 = 0;
+          var exit$2 = 0;
           if (typeof p$6 === "number") {
-            exit$2 = 28;
+            exit$2 = 5;
           }
           else {
             if (p$6[0]) {
-              exit$2 = 28;
+              exit$2 = 5;
             }
             else {
               var match$3 = p$6[2];
               if (typeof match$3 === "number") {
-                exit$2 = 28;
+                exit$2 = 5;
               }
               else {
                 if (match$3[0] === 1) {
                   p$1 = p$6[1];
                   size$1 = match$3[2];
                   c = acc[2];
-                  exit = 22;
+                  exit = 2;
                 }
                 else {
-                  exit$2 = 28;
+                  exit$2 = 5;
                 }
               }
             }
           }
-          if (exit$2 === 28) {
+          if (exit$2 === 5) {
             p$3 = p$6;
             c$1 = acc[2];
-            exit = 24;
+            exit = 4;
           }
           break;
       case 4 : 
           var p$7 = acc[1];
-          /* initialize */var exit$3 = 0;
+          var exit$3 = 0;
           if (typeof p$7 === "number") {
-            exit$3 = 27;
+            exit$3 = 5;
           }
           else {
             if (p$7[0]) {
-              exit$3 = 27;
+              exit$3 = 5;
             }
             else {
               var match$4 = p$7[2];
               if (typeof match$4 === "number") {
-                exit$3 = 27;
+                exit$3 = 5;
               }
               else {
                 if (match$4[0] === 1) {
                   p = p$7[1];
                   size = match$4[2];
                   s = acc[2];
-                  exit = 21;
+                  exit = 1;
                 }
                 else {
-                  exit$3 = 27;
+                  exit$3 = 5;
                 }
               }
             }
           }
-          if (exit$3 === 27) {
+          if (exit$3 === 5) {
             p$2 = p$7;
             s$1 = acc[2];
-            exit = 23;
+            exit = 3;
           }
           break;
       case 5 : 
           var p$8 = acc[1];
-          /* initialize */var exit$4 = 0;
+          var exit$4 = 0;
           if (typeof p$8 === "number") {
-            exit$4 = 29;
+            exit$4 = 5;
           }
           else {
             if (p$8[0]) {
-              exit$4 = 29;
+              exit$4 = 5;
             }
             else {
               var match$5 = p$8[2];
               if (typeof match$5 === "number") {
-                exit$4 = 29;
+                exit$4 = 5;
               }
               else {
                 if (match$5[0] === 1) {
                   p$1 = p$8[1];
                   size$1 = match$5[2];
                   c = acc[2];
-                  exit = 22;
+                  exit = 2;
                 }
                 else {
-                  exit$4 = 29;
+                  exit$4 = 5;
                 }
               }
             }
           }
-          if (exit$4 === 29) {
+          if (exit$4 === 5) {
             p$3 = p$8;
             c$1 = acc[2];
-            exit = 24;
+            exit = 4;
           }
           break;
       case 6 : 
           var p$9 = acc[1];
-          /* initialize */var exit$5 = 0;
+          var exit$5 = 0;
           if (typeof p$9 === "number") {
-            exit$5 = 25;
+            exit$5 = 5;
           }
           else {
             if (p$9[0]) {
-              exit$5 = 25;
+              exit$5 = 5;
             }
             else {
               var match$6 = p$9[2];
               if (typeof match$6 === "number") {
-                exit$5 = 25;
+                exit$5 = 5;
               }
               else {
                 if (match$6[0] === 1) {
@@ -1701,12 +1701,12 @@ function strput_acc(ppf, acc) {
                   return pp_print_as_size(ppf, match$6[2], acc[2](/* () */0));
                 }
                 else {
-                  exit$5 = 25;
+                  exit$5 = 5;
                 }
               }
             }
           }
-          if (exit$5 === 25) {
+          if (exit$5 === 5) {
             strput_acc(ppf, p$9);
             return pp_print_string(ppf, acc[2](/* () */0));
           }
@@ -1721,16 +1721,16 @@ function strput_acc(ppf, acc) {
     }
   }
   switch (exit) {
-    case 21 : 
+    case 1 : 
         strput_acc(ppf, p);
         return pp_print_as_size(ppf, size, s);
-    case 22 : 
+    case 2 : 
         strput_acc(ppf, p$1);
         return pp_print_as_size(ppf, size$1, $$String.make(1, c));
-    case 23 : 
+    case 3 : 
         strput_acc(ppf, p$2);
         return pp_print_string(ppf, s$1);
-    case 24 : 
+    case 4 : 
         strput_acc(ppf, p$3);
         return pp_print_char(ppf, c$1);
     

@@ -67,7 +67,7 @@ function relative_path(file1, file2) {
     while(/* true */1) {
       var dir2 = _dir2;
       var dir1 = _dir1;
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (dir1) {
         if (dir2) {
           if (dir1[1] === dir2[1]) {
@@ -75,17 +75,17 @@ function relative_path(file1, file2) {
             _dir1 = dir1[2];
           }
           else {
-            exit = 3;
+            exit = 1;
           }
         }
         else {
-          exit = 3;
+          exit = 1;
         }
       }
       else {
-        exit = 3;
+        exit = 1;
       }
-      if (exit === 3) {
+      if (exit === 1) {
         return Pervasives.$at(List.map(function () {
                         return node_parent;
                       }, dir2), dir1);
@@ -94,19 +94,19 @@ function relative_path(file1, file2) {
     };
   };
   var ys = go(dir1, dir2);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (ys) {
     if (ys[1] === node_parent) {
       return $$String.concat(node_sep, ys);
     }
     else {
-      exit = 2;
+      exit = 1;
     }
   }
   else {
-    exit = 2;
+    exit = 1;
   }
-  if (exit === 2) {
+  if (exit === 1) {
     return $$String.concat(node_sep, [
                 /* :: */0,
                 node_current,
