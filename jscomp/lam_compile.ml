@@ -696,7 +696,7 @@ and
       (* [i] is the jump table, [largs] is the arguments passed to [Lstaticcatch]*)
       begin
         match Lam_compile_defs.HandlerMap.find i cxt.jmp_table  with 
-        | {exit_id; args } -> 
+        | {exit_id; args ; order_id} -> 
           let args_code  =
             (Js_output.concat @@ List.map2 (
                 fun (x : Lambda.lambda) (arg : Ident.t) ->
@@ -729,11 +729,11 @@ and
 
       let exit_id =   Ext_ident.gen_js ~name:"exit" () in
       let exit_expr = E.var exit_id in
-      let code_jmps = 
-        List.map (fun (i,_,bindings) -> 
-          (i, exit_id,  bindings ) ) code_table in
+      (* let code_jmps =  *)
+      (*   List.map (fun (i,_,bindings) ->  *)
+      (*     (i, exit_id,  bindings ) ) code_table in *)
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
-      let handlers = List.map (fun (i,lam,_) -> (i,lam) ) code_table in
+
       (* compile_list name l false (\*\) *)
       (* if exit_code_id == code 
          handler -- ids are not useful, since 
@@ -747,7 +747,8 @@ and
            (catch (catch (catch ..))
       *)
       (* TODO: handle NeedValue *)
-      let jmp_table =  Lam_compile_defs.add_jmps code_jmps jmp_table in
+      let jmp_table =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
+      let handlers = List.map (fun (i,lam,_) -> (i,lam) ) code_table in
       (* Declaration First, body and handler have the same value *)
       (* There is a bug in google closure compiler:
             https://github.com/google/closure-compiler/issues/1234#issuecomment-151976340 

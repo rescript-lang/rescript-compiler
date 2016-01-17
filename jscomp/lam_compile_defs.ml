@@ -74,10 +74,10 @@ type cxt = {
 let empty_handler_map = HandlerMap.empty
 
 
-let add_jmps (ls : (jbl_label * Ident.t * Ident.t list) list)   
+let add_jmps (exit_id, code_table)   
     (m : value HandlerMap.t) : value HandlerMap.t = 
   let i = HandlerMap.cardinal m in
   fst @@ List.fold_left 
-           (fun (acc,order_id) (l,exit_id, args)   -> 
+           (fun (acc,order_id) (l,_, args)   -> 
              (HandlerMap.add l {exit_id ; args; order_id} acc, order_id + 1))
-           (m,i) ls
+           (m,i) code_table
