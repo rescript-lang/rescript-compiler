@@ -729,9 +729,6 @@ and
 
       let exit_id =   Ext_ident.gen_js ~name:"exit" () in
       let exit_expr = E.var exit_id in
-      (* let code_jmps =  *)
-      (*   List.map (fun (i,_,bindings) ->  *)
-      (*     (i, exit_id,  bindings ) ) code_table in *)
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
 
       (* compile_list name l false (\*\) *)
@@ -747,8 +744,8 @@ and
            (catch (catch (catch ..))
       *)
       (* TODO: handle NeedValue *)
-      let jmp_table =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
-      let handlers = List.map (fun (i,lam,_) -> (i,lam) ) code_table in
+      let jmp_table, handlers =  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
+
       (* Declaration First, body and handler have the same value *)
       (* There is a bug in google closure compiler:
             https://github.com/google/closure-compiler/issues/1234#issuecomment-151976340 

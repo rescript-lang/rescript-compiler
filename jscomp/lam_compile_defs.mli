@@ -78,5 +78,5 @@ val empty_handler_map : value HandlerMap.t
 
 val add_jmps :
     Ident.t * (HandlerMap.key * 'a * Ident.t list) list ->
-    value HandlerMap.t -> value HandlerMap.t
+    value HandlerMap.t -> value HandlerMap.t * (int * 'a) list
 

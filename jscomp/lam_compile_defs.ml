@@ -75,9 +75,15 @@ let empty_handler_map = HandlerMap.empty
 
 
 let add_jmps (exit_id, code_table)   
-    (m : value HandlerMap.t) : value HandlerMap.t = 
+    (m : value HandlerMap.t) = 
   let i = HandlerMap.cardinal m in
-  fst @@ List.fold_left 
-           (fun (acc,order_id) (l,_, args)   -> 
-             (HandlerMap.add l {exit_id ; args; order_id} acc, order_id + 1))
-           (m,i) code_table
+  let map, _, handlers = 
+    List.fold_left 
+           (fun (acc,order_id, handlers)
+               (l,lam, args)   -> 
+                 (HandlerMap.add l {exit_id ; args; order_id} acc, 
+                  order_id + 1,
+                  (l,lam) :: handlers
+                 ))
+      (m,i, []) code_table in
+  map, List.rev handlers
