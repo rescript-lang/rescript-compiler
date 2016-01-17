@@ -731,7 +731,7 @@ and
       let exit_expr = E.var exit_id in
       let code_jmps = 
         List.map (fun (i,_,bindings) -> 
-            (i, ({exit_id; args = bindings} : Lam_compile_defs.value) )) code_table in
+          (i, exit_id,  bindings ) ) code_table in
       let bindings = Ext_list.flat_map (fun (_,_,bindings) -> bindings) code_table in
       let handlers = List.map (fun (i,lam,_) -> (i,lam) ) code_table in
       (* compile_list name l false (\*\) *)

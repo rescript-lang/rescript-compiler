@@ -27,7 +27,11 @@ module HandlerMap = Map.Make(struct
   let compare x y= compare (x:t) y 
 end )
 
-type value = { exit_id : Ident.t ; args : Ident.t list }
+type value = {
+    exit_id : Ident.t ;
+    args : Ident.t list ;
+    order_id : int
+  }
 
 (* delegate to the callee to generate expression 
       Invariant: [output] should return a trailing expression
@@ -70,6 +74,10 @@ type cxt = {
 let empty_handler_map = HandlerMap.empty
 
 
-let add_jmps (ls : (jbl_label * value) list)   
+let add_jmps (ls : (jbl_label * Ident.t * Ident.t list) list)   
     (m : value HandlerMap.t) : value HandlerMap.t = 
-  List.fold_left (fun acc (l,s)   -> HandlerMap.add l s acc) m ls
+  let i = HandlerMap.cardinal m in
+  fst @@ List.fold_left 
+           (fun (acc,order_id) (l,exit_id, args)   -> 
+             (HandlerMap.add l {exit_id ; args; order_id} acc, order_id + 1))
+           (m,i) ls

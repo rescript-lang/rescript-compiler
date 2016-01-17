@@ -29,9 +29,13 @@
 
 type jbl_label = int 
 
-module HandlerMap : Map.S with type key = jbl_label
 
-type value = { exit_id : Ident.t ; args : Ident.t list }
+
+type value = {
+    exit_id : Ident.t ; 
+    args : Ident.t list ;
+    order_id : int
+  }
 
 type let_kind = Lambda.let_kind
 
@@ -61,6 +65,8 @@ type return_type =
       Invariant: [output] should return a trailing expression
   *)
 
+module HandlerMap : Map.S with type key = jbl_label
+
 type cxt = {
   st : st ;
   should_return : return_type;
@@ -70,4 +76,4 @@ type cxt = {
 
 val empty_handler_map : value HandlerMap.t 
 
-val add_jmps : (jbl_label * value) list -> value HandlerMap.t -> value HandlerMap.t
+val add_jmps : (jbl_label * Ident.t * Ident.t list) list -> value HandlerMap.t -> value HandlerMap.t
