@@ -772,10 +772,7 @@ and
       begin match  st with 
          (* could be optimized when cases are less than 3 *)
          | NeedValue -> 
-           let v = Ext_ident.gen_js (* ~name:"exit_value" *) () in 
-
-           (* let _ret_value =  *)
-           (*   match lbody with {value= Some v; _ } -> v  | _ -> assert false in *)
+           let v = Ext_ident.gen_js  () in 
            let lbody = compile_lambda {cxt with 
                                        jmp_table = jmp_table;
                                        st = Assign v
