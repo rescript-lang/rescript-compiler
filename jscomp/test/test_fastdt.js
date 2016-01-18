@@ -315,7 +315,7 @@ function trim_tree_same(dt) {
       var n = l[1];
       var t = trim_tree_same$prime(n[2]);
       var f = trim_tree_same$prime(n[3]);
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (t[0]) {
         var p1 = t[1];
         if (f[0]) {
@@ -336,13 +336,13 @@ function trim_tree_same(dt) {
                   ];
         }
         else {
-          exit = 102;
+          exit = 1;
         }
       }
       else {
-        exit = 102;
+        exit = 1;
       }
-      if (exit === 102) {
+      if (exit === 1) {
         return [
                 /* Node */0,
                 [
@@ -970,7 +970,7 @@ function print_tree(out, dt) {
 function read_tree(h) {
   var l = Pervasives.input_line(h);
   var match = split_white(l);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (match) {
     switch (match[1]) {
       case "L" : 
@@ -979,7 +979,7 @@ function read_tree(h) {
             var match$2 = match$1[2];
             if (match$2) {
               if (match$2[2]) {
-                exit = 28;
+                exit = 1;
               }
               else {
                 return [
@@ -989,18 +989,18 @@ function read_tree(h) {
               }
             }
             else {
-              exit = 28;
+              exit = 1;
             }
           }
           else {
-            exit = 28;
+            exit = 1;
           }
           break;
       case "N" : 
           var match$3 = match[2];
           if (match$3) {
             if (match$3[2]) {
-              exit = 28;
+              exit = 1;
             }
             else {
               var s = get_fid(match$3[1]);
@@ -1018,17 +1018,17 @@ function read_tree(h) {
             }
           }
           else {
-            exit = 28;
+            exit = 1;
           }
           break;
       default:
-        exit = 28;
+        exit = 1;
     }
   }
   else {
-    exit = 28;
+    exit = 1;
   }
-  if (exit === 28) {
+  if (exit === 1) {
     return Pervasives.failwith("malformed line: '" + (l + "'"));
   }
   

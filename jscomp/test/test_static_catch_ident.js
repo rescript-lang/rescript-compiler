@@ -9,7 +9,7 @@ var Scan_failure = [
 ];
 
 function scanf_bad_input(_, x) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   var s;
   if (x[1] === Scan_failure) {
     s = x[2];

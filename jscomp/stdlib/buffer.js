@@ -199,14 +199,14 @@ function advance_to_non_alpha(s, start) {
       }
       else {
         var match = s.charCodeAt(i);
-        /* initialize */var exit = 0;
+        var exit = 0;
         if (match >= 91) {
           if (match >= 97) {
             if (match >= 123) {
               return i;
             }
             else {
-              exit = 14;
+              exit = 1;
             }
           }
           else {
@@ -214,14 +214,14 @@ function advance_to_non_alpha(s, start) {
               return i;
             }
             else {
-              exit = 14;
+              exit = 1;
             }
           }
         }
         else {
           if (match >= 58) {
             if (match >= 65) {
-              exit = 14;
+              exit = 1;
             }
             else {
               return i;
@@ -229,14 +229,14 @@ function advance_to_non_alpha(s, start) {
           }
           else {
             if (match >= 48) {
-              exit = 14;
+              exit = 1;
             }
             else {
               return i;
             }
           }
         }
-        if (exit === 14) {
+        if (exit === 1) {
           _i = i + 1;
         }
         
@@ -252,7 +252,7 @@ function find_ident(s, start, lim) {
   }
   else {
     var c = s.charCodeAt(start);
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (c !== 40) {
       if (c !== 123) {
         var stop = advance_to_non_alpha(s, start + 1);
@@ -263,13 +263,13 @@ function find_ident(s, start, lim) {
               ];
       }
       else {
-        exit = 11;
+        exit = 1;
       }
     }
     else {
-      exit = 11;
+      exit = 1;
     }
-    if (exit === 11) {
+    if (exit === 1) {
       var new_start = start + 1;
       var stop$1 = advance_to_closing(c, closing(c), 0, s, new_start);
       return [

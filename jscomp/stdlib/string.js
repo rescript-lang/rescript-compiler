@@ -100,11 +100,11 @@ function escaped(s) {
       }
       else {
         var c = s.charCodeAt(i);
-        /* initialize */var exit = 0;
+        var exit = 0;
         if (c >= 14) {
           if (c !== 34) {
             if (c !== 92) {
-              exit = 15;
+              exit = 1;
             }
             else {
               return /* true */1;
@@ -120,7 +120,7 @@ function escaped(s) {
               return /* true */1;
             }
             else {
-              exit = 15;
+              exit = 1;
             }
           }
           else {
@@ -128,11 +128,11 @@ function escaped(s) {
               return /* true */1;
             }
             else {
-              exit = 15;
+              exit = 1;
             }
           }
         }
-        if (exit === 15) {
+        if (exit === 1) {
           if (Caml_string.caml_is_printable(c)) {
             _i = i + 1;
           }

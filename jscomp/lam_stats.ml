@@ -86,7 +86,7 @@ type meta = {
   mutable export_idents : Ident.t list;
   alias_tbl : alias_tbl; 
   exit_codes : int Hash_set.hashset;
-  mutable unused_exit_code : int ; (* clean up later*)
+
   ident_tbl : ident_tbl;
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them

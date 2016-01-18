@@ -201,18 +201,18 @@ function flat_map(f, lx) {
 }
 
 function map2_last(f, l1, l2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (l1) {
     var l1$1 = l1[2];
     var u = l1[1];
-    /* initialize */var exit$1 = 0;
+    var exit$1 = 0;
     if (l1$1) {
-      exit$1 = 16;
+      exit$1 = 2;
     }
     else {
       if (l2) {
         if (l2[2]) {
-          exit$1 = 16;
+          exit$1 = 2;
         }
         else {
           return [
@@ -223,10 +223,10 @@ function map2_last(f, l1, l2) {
         }
       }
       else {
-        exit = 15;
+        exit = 1;
       }
     }
-    if (exit$1 === 16) {
+    if (exit$1 === 2) {
       if (l2) {
         var r = f(/* false */0, u, l2[1]);
         return [
@@ -236,20 +236,20 @@ function map2_last(f, l1, l2) {
               ];
       }
       else {
-        exit = 15;
+        exit = 1;
       }
     }
     
   }
   else {
     if (l2) {
-      exit = 15;
+      exit = 1;
     }
     else {
       return /* [] */0;
     }
   }
-  if (exit === 15) {
+  if (exit === 1) {
     return Pervasives.invalid_arg("List.map2_last");
   }
   

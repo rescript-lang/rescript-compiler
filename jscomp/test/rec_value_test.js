@@ -283,7 +283,7 @@ var suites_002 = [
     "mutual",
     function () {
       var $js;
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (a) {
         if (b) {
           var match = b[2];

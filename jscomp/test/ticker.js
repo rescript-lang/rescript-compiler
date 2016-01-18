@@ -14,11 +14,11 @@ function split(delim, s) {
       var i = _i;
       var l = _l;
       if (i !== 0) {
-        /* initialize */var exit = 0;
+        var exit = 0;
         var i$prime;
         try {
           i$prime = $$String.rindex_from(s, i - 1, delim);
-          exit = -1;
+          exit = 1;
         }
         catch (exn){
           if (exn === Caml_exceptions.Not_found) {
@@ -32,7 +32,7 @@ function split(delim, s) {
             throw exn;
           }
         }
-        if (exit === -1) {
+        if (exit === 1) {
           var l_001 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
           var l$1 = [
             /* :: */0,
@@ -502,7 +502,7 @@ function split$1(x, param) {
 }
 
 function merge$1(f, s1, s2) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height(s2)) {
@@ -513,18 +513,18 @@ function merge$1(f, s1, s2) {
                     ], match[2]), merge$1(f, s1[4], match[3]));
     }
     else {
-      exit = 20;
+      exit = 1;
     }
   }
   else {
     if (s2) {
-      exit = 20;
+      exit = 1;
     }
     else {
       return /* Empty */0;
     }
   }
-  if (exit === 20) {
+  if (exit === 1) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$1(v2, s1);
@@ -867,7 +867,7 @@ function process_input_line(ticker_map, all_tickers, line) {
           ];
   };
   var tokens = split(/* "|" */124, line);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (tokens) {
     switch (tokens[1]) {
       case "Q" : 
@@ -876,7 +876,7 @@ function process_input_line(ticker_map, all_tickers, line) {
             var match$1 = match[2];
             if (match$1) {
               if (match$1[2]) {
-                exit = 4;
+                exit = 1;
               }
               else {
                 var ticker_map$1 = ticker_map ? ticker_map[1] : compute_update_sequences(all_tickers);
@@ -893,11 +893,11 @@ function process_input_line(ticker_map, all_tickers, line) {
               }
             }
             else {
-              exit = 4;
+              exit = 1;
             }
           }
           else {
-            exit = 4;
+            exit = 1;
           }
           break;
       case "R" : 
@@ -913,7 +913,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$5 = match$4[2];
                       if (match$5) {
                         if (match$5[2]) {
-                          exit = 4;
+                          exit = 1;
                         }
                         else {
                           return [
@@ -928,11 +928,11 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        exit = 4;
+                        exit = 1;
                       }
                     }
                     else {
-                      exit = 4;
+                      exit = 1;
                     }
                     break;
                 case "-" : 
@@ -941,7 +941,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$7 = match$6[2];
                       if (match$7) {
                         if (match$7[2]) {
-                          exit = 4;
+                          exit = 1;
                         }
                         else {
                           return [
@@ -956,16 +956,16 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        exit = 4;
+                        exit = 1;
                       }
                     }
                     else {
-                      exit = 4;
+                      exit = 1;
                     }
                     break;
                 case "S" : 
                     if (match$3[2]) {
-                      exit = 4;
+                      exit = 1;
                     }
                     else {
                       return [
@@ -986,25 +986,25 @@ function process_input_line(ticker_map, all_tickers, line) {
                     }
                     break;
                 default:
-                  exit = 4;
+                  exit = 1;
               }
             }
             else {
-              exit = 4;
+              exit = 1;
             }
           }
           else {
-            exit = 4;
+            exit = 1;
           }
           break;
       default:
-        exit = 4;
+        exit = 1;
     }
   }
   else {
-    exit = 4;
+    exit = 1;
   }
-  if (exit === 4) {
+  if (exit === 1) {
     return Pervasives.failwith("Invalid input line");
   }
   

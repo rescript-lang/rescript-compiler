@@ -161,7 +161,6 @@ let count_alias_globals
     {alias_tbl = Hashtbl.create 31 ; 
      ident_tbl = Hashtbl.create 31;
      exit_codes = Hash_set.create 31 ;
-     unused_exit_code = 0; 
      exports = export_idents;
      required_modules = [] ;
      filename;
@@ -169,5 +168,4 @@ let count_alias_globals
      export_idents
    } in 
   collect_helper  meta lam ; 
-  meta.unused_exit_code <- Lam_stats_util.find_unused_exit_code meta.exit_codes; 
   meta

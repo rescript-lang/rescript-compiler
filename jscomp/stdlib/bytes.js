@@ -165,19 +165,19 @@ function escaped(s) {
   for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
     var c = s[i];
     var $js;
-    /* initialize */var exit = 0;
+    var exit = 0;
     c >= 14 ? (
         c !== 34 ? (
-            c !== 92 ? (exit = 30) : ($js = 2)
+            c !== 92 ? (exit = 1) : ($js = 2)
           ) : ($js = 2)
       ) : (
         c >= 11 ? (
-            c >= 13 ? ($js = 2) : (exit = 30)
+            c >= 13 ? ($js = 2) : (exit = 1)
           ) : (
-            c >= 8 ? ($js = 2) : (exit = 30)
+            c >= 8 ? ($js = 2) : (exit = 1)
           )
       );
-    if (exit === 30) {
+    if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
     }
     n += $js;
@@ -190,7 +190,7 @@ function escaped(s) {
     n = 0;
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
-      /* initialize */var exit$1 = 0;
+      var exit$1 = 0;
       var switcher = -34 + c$1;
       if (!(58 < (switcher >>> 0))) {
         if (56 < (-1 + switcher >>> 0)) {
@@ -199,12 +199,12 @@ function escaped(s) {
           s$prime[n] = c$1;
         }
         else {
-          exit$1 = 27;
+          exit$1 = 1;
         }
       }
       else {
         if (switcher >= -20) {
-          exit$1 = 27;
+          exit$1 = 1;
         }
         else {
           switch (34 + switcher) {
@@ -233,7 +233,7 @@ function escaped(s) {
             case 7 : 
             case 11 : 
             case 12 : 
-                exit$1 = 27;
+                exit$1 = 1;
                 break;
             case 13 : 
                 s$prime[n] = /* "\\" */92;
@@ -244,7 +244,7 @@ function escaped(s) {
           }
         }
       }
-      if (exit$1 === 27) {
+      if (exit$1 === 1) {
         if (Caml_string.caml_is_printable(c$1)) {
           s$prime[n] = c$1;
         }

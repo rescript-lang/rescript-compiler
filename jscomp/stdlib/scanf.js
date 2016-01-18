@@ -457,10 +457,10 @@ function token_bool(ib) {
 
 function token_int_literal(conv, ib) {
   var tok;
-  /* initialize */var exit = 0;
+  var exit = 0;
   var switcher = -88 + conv;
   if (32 < (switcher >>> 0)) {
-    exit = 228;
+    exit = 1;
   }
   else {
     switch (switcher) {
@@ -473,7 +473,7 @@ function token_int_literal(conv, ib) {
       case 12 : 
       case 17 : 
       case 29 : 
-          exit = 226;
+          exit = 2;
           break;
       case 1 : 
       case 2 : 
@@ -501,17 +501,17 @@ function token_int_literal(conv, ib) {
       case 28 : 
       case 30 : 
       case 31 : 
-          exit = 228;
+          exit = 1;
           break;
       case 0 : 
       case 32 : 
-          exit = 227;
+          exit = 3;
           break;
       
     }
   }
   switch (exit) {
-    case 228 : 
+    case 1 : 
         throw [
               0,
               Caml_exceptions.Assert_failure,
@@ -522,10 +522,10 @@ function token_int_literal(conv, ib) {
                 11
               ]
             ];
-    case 226 : 
+    case 2 : 
         tok = token(ib);
         break;
-    case 227 : 
+    case 3 : 
         tok = "0x" + token(ib);
         break;
     
@@ -745,14 +745,14 @@ function scan_unsigned_int(width, ib) {
         return width$1;
       }
       else {
-        /* initialize */var exit = 0;
+        var exit = 0;
         if (c$1 >= 99) {
           if (c$1 !== 111) {
             if (c$1 !== 120) {
               return scan_decimal_digits(width$1, ib);
             }
             else {
-              exit = 178;
+              exit = 1;
             }
           }
           else {
@@ -764,10 +764,10 @@ function scan_unsigned_int(width, ib) {
             return c$1 >= 98 ? scan_binary_int(store_char(width$1, ib, c$1), ib) : scan_decimal_digits(width$1, ib);
           }
           else {
-            exit = 178;
+            exit = 1;
           }
         }
-        if (exit === 178) {
+        if (exit === 1) {
           return scan_hexadecimal_int(store_char(width$1, ib, c$1), ib);
         }
         
@@ -785,10 +785,10 @@ function scan_optionally_signed_int(width, ib) {
 }
 
 function scan_int_conv(conv, width, ib) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   var switcher = -88 + conv;
   if (32 < (switcher >>> 0)) {
-    exit = 174;
+    exit = 1;
   }
   else {
     switch (switcher) {
@@ -828,7 +828,7 @@ function scan_int_conv(conv, width, ib) {
       case 28 : 
       case 30 : 
       case 31 : 
-          exit = 174;
+          exit = 1;
           break;
       case 0 : 
       case 32 : 
@@ -836,7 +836,7 @@ function scan_int_conv(conv, width, ib) {
       
     }
   }
-  if (exit === 174) {
+  if (exit === 1) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -870,19 +870,19 @@ function scan_exp_part(width, ib) {
       return width;
     }
     else {
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (c !== 69) {
         if (c !== 101) {
           return width;
         }
         else {
-          exit = 165;
+          exit = 1;
         }
       }
       else {
-        exit = 165;
+        exit = 1;
       }
-      if (exit === 165) {
+      if (exit === 1) {
         return scan_optionally_signed_decimal_int(store_char(width, ib, c), ib);
       }
       
@@ -987,25 +987,25 @@ function scan_string(stp, width, ib) {
             }
           }
           else {
-            /* initialize */var exit = 0;
+            var exit = 0;
             var switcher = -9 + c;
             if (!(4 < (switcher >>> 0))) {
               if (1 < (-2 + switcher >>> 0)) {
                 return width;
               }
               else {
-                exit = 145;
+                exit = 1;
               }
             }
             else {
               if (switcher !== 23) {
-                exit = 145;
+                exit = 1;
               }
               else {
                 return width;
               }
             }
-            if (exit === 145) {
+            if (exit === 1) {
               _width = store_char(width, ib, c);
             }
             
@@ -1122,12 +1122,12 @@ function check_next_char_for_string(param, param$1) {
 
 function scan_backslash_char(width, ib) {
   var c = check_next_char_for_char(width, ib);
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (c >= 40) {
     if (c >= 58) {
       var switcher = -92 + c;
       if (28 < (switcher >>> 0)) {
-        exit = 128;
+        exit = 1;
       }
       else {
         switch (switcher) {
@@ -1136,7 +1136,7 @@ function scan_backslash_char(width, ib) {
           case 18 : 
           case 22 : 
           case 24 : 
-              exit = 126;
+              exit = 2;
               break;
           case 1 : 
           case 2 : 
@@ -1161,7 +1161,7 @@ function scan_backslash_char(width, ib) {
           case 25 : 
           case 26 : 
           case 27 : 
-              exit = 128;
+              exit = 1;
               break;
           case 28 : 
               var get_digit = function () {
@@ -1191,19 +1191,19 @@ function scan_backslash_char(width, ib) {
         return store_char(width - 2, ib, char_for_decimal_code(c, c1$1, c2$1));
       }
       else {
-        exit = 128;
+        exit = 1;
       }
     }
   }
   else {
     exit = c !== 34 ? (
-        c >= 39 ? 126 : 128
-      ) : 126;
+        c >= 39 ? 2 : 1
+      ) : 2;
   }
   switch (exit) {
-    case 128 : 
+    case 1 : 
         return bad_input_escape(c);
-    case 126 : 
+    case 2 : 
         return store_char(width, ib, char_for_backslash(c));
     
   }
@@ -1326,22 +1326,22 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
 }
 
 function scanf_bad_input(ib, x) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   var s;
   if (x[1] === Scan_failure) {
     s = x[2];
-    exit = 91;
+    exit = 1;
   }
   else {
     if (x[1] === Caml_exceptions.Failure) {
       s = x[2];
-      exit = 91;
+      exit = 1;
     }
     else {
       throw x;
     }
   }
-  if (exit === 91) {
+  if (exit === 1) {
     var i = char_count(ib);
     return bad_input(Printf.sprintf([
                       /* Format */0,
@@ -1602,9 +1602,9 @@ function make_scanf(ib, _fmt, readers) {
         case 2 : 
             var rest = fmt[2];
             var pad = fmt[1];
-            /* initialize */var exit = 0;
+            var exit = 0;
             if (typeof rest === "number") {
-              exit = 67;
+              exit = 1;
             }
             else {
               switch (rest[0]) {
@@ -1649,10 +1649,10 @@ function make_scanf(ib, _fmt, readers) {
                     }
                     break;
                 default:
-                  exit = 67;
+                  exit = 1;
               }
             }
-            if (exit === 67) {
+            if (exit === 1) {
               var scan$3 = function (width, _, ib) {
                 return scan_string(/* None */0, width, ib);
               };
@@ -1824,9 +1824,9 @@ function make_scanf(ib, _fmt, readers) {
             var rest$1 = fmt[3];
             var char_set = fmt[2];
             var width_opt = fmt[1];
-            /* initialize */var exit$1 = 0;
+            var exit$1 = 0;
             if (typeof rest$1 === "number") {
-              exit$1 = 69;
+              exit$1 = 1;
             }
             else {
               if (rest$1[0] === 17) {
@@ -1851,10 +1851,10 @@ function make_scanf(ib, _fmt, readers) {
                       ];
               }
               else {
-                exit$1 = 69;
+                exit$1 = 1;
               }
             }
-            if (exit$1 === 69) {
+            if (exit$1 === 1) {
               var width$1 = width_of_pad_opt(width_opt);
               scan_chars_in_char_set(char_set, /* None */0, width$1, ib);
               var s$3 = token(ib);
@@ -1996,17 +1996,17 @@ function kscanf(ib, ef, param) {
       ];
     }
     catch (exc){
-      /* initialize */var exit = 0;
+      var exit = 0;
       if (exc[1] === Scan_failure) {
-        exit = 21;
+        exit = 1;
       }
       else {
         if (exc[1] === Caml_exceptions.Failure) {
-          exit = 21;
+          exit = 1;
         }
         else {
           if (exc === Caml_exceptions.End_of_file) {
-            exit = 21;
+            exit = 1;
           }
           else {
             if (exc[1] === Caml_exceptions.Invalid_argument) {
@@ -2018,7 +2018,7 @@ function kscanf(ib, ef, param) {
           }
         }
       }
-      if (exit === 21) {
+      if (exit === 1) {
         match = [
           /* Exc */1,
           exc

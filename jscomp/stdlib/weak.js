@@ -399,7 +399,7 @@ function Make(H) {
         else {
           if (h === hashes[i]) {
             var match = Caml_primitive.caml_weak_get_copy(bucket, i);
-            /* initialize */var exit = 0;
+            var exit = 0;
             if (match) {
               if (H[1](match[1], d)) {
                 var match$1 = Caml_primitive.caml_weak_get(bucket, i);
@@ -416,13 +416,13 @@ function Make(H) {
                 }
               }
               else {
-                exit = 5;
+                exit = 1;
               }
             }
             else {
-              exit = 5;
+              exit = 1;
             }
-            if (exit === 5) {
+            if (exit === 1) {
               _i = i + 1;
             }
             

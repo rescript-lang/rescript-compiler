@@ -642,10 +642,10 @@ function stable_sort(cmp, l) {
     };
   };
   var sort = function (n, l) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (n !== 2) {
       if (n !== 3) {
-        exit = 41;
+        exit = 1;
       }
       else {
         if (l) {
@@ -739,15 +739,15 @@ function stable_sort(cmp, l) {
                       );
             }
             else {
-              exit = 41;
+              exit = 1;
             }
           }
           else {
-            exit = 41;
+            exit = 1;
           }
         }
         else {
-          exit = 41;
+          exit = 1;
         }
       }
     }
@@ -776,14 +776,14 @@ function stable_sort(cmp, l) {
                   ];
         }
         else {
-          exit = 41;
+          exit = 1;
         }
       }
       else {
-        exit = 41;
+        exit = 1;
       }
     }
-    if (exit === 41) {
+    if (exit === 1) {
       var n1 = (n >> 1);
       var n2 = n - n1;
       var l2 = chop(n1, l);
@@ -794,10 +794,10 @@ function stable_sort(cmp, l) {
     
   };
   var rev_sort = function (n, l) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (n !== 2) {
       if (n !== 3) {
-        exit = 47;
+        exit = 1;
       }
       else {
         if (l) {
@@ -891,15 +891,15 @@ function stable_sort(cmp, l) {
                       );
             }
             else {
-              exit = 47;
+              exit = 1;
             }
           }
           else {
-            exit = 47;
+            exit = 1;
           }
         }
         else {
-          exit = 47;
+          exit = 1;
         }
       }
     }
@@ -928,14 +928,14 @@ function stable_sort(cmp, l) {
                   ];
         }
         else {
-          exit = 47;
+          exit = 1;
         }
       }
       else {
-        exit = 47;
+        exit = 1;
       }
     }
-    if (exit === 47) {
+    if (exit === 1) {
       var n1 = (n >> 1);
       var n2 = n - n1;
       var l2 = chop(n1, l);
@@ -1049,10 +1049,10 @@ function sort_uniq(cmp, l) {
     };
   };
   var sort = function (n, l) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (n !== 2) {
       if (n !== 3) {
-        exit = 14;
+        exit = 1;
       }
       else {
         if (l) {
@@ -1232,15 +1232,15 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              exit = 14;
+              exit = 1;
             }
           }
           else {
-            exit = 14;
+            exit = 1;
           }
         }
         else {
-          exit = 14;
+          exit = 1;
         }
       }
     }
@@ -1276,14 +1276,14 @@ function sort_uniq(cmp, l) {
                   ];
         }
         else {
-          exit = 14;
+          exit = 1;
         }
       }
       else {
-        exit = 14;
+        exit = 1;
       }
     }
-    if (exit === 14) {
+    if (exit === 1) {
       var n1 = (n >> 1);
       var n2 = n - n1;
       var l2 = chop(n1, l);
@@ -1294,10 +1294,10 @@ function sort_uniq(cmp, l) {
     
   };
   var rev_sort = function (n, l) {
-    /* initialize */var exit = 0;
+    var exit = 0;
     if (n !== 2) {
       if (n !== 3) {
-        exit = 27;
+        exit = 1;
       }
       else {
         if (l) {
@@ -1477,15 +1477,15 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              exit = 27;
+              exit = 1;
             }
           }
           else {
-            exit = 27;
+            exit = 1;
           }
         }
         else {
-          exit = 27;
+          exit = 1;
         }
       }
     }
@@ -1521,14 +1521,14 @@ function sort_uniq(cmp, l) {
                   ];
         }
         else {
-          exit = 27;
+          exit = 1;
         }
       }
       else {
-        exit = 27;
+        exit = 1;
       }
     }
-    if (exit === 27) {
+    if (exit === 1) {
       var n1 = (n >> 1);
       var n2 = n - n1;
       var l2 = chop(n1, l);

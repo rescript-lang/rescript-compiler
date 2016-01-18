@@ -12,11 +12,11 @@ function chr(n) {
 }
 
 function escaped(c) {
-  /* initialize */var exit = 0;
+  var exit = 0;
   if (c !== 39) {
     if (c !== 92) {
       if (c >= 14) {
-        exit = 7;
+        exit = 1;
       }
       else {
         switch (c) {
@@ -36,7 +36,7 @@ function escaped(c) {
           case 7 : 
           case 11 : 
           case 12 : 
-              exit = 7;
+              exit = 1;
               break;
           case 13 : 
               return "\\r";
@@ -51,7 +51,7 @@ function escaped(c) {
   else {
     return "\\'";
   }
-  if (exit === 7) {
+  if (exit === 1) {
     if (Caml_string.caml_is_printable(c)) {
       var s = new Array(1);
       /* unknown */"string.unsafe_set";
