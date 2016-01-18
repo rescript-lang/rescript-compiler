@@ -125,6 +125,8 @@ class virtual fold =
        val log3 : 'a -> 'b -> 'c -> unit 
      *)
                  (* TODO: Add some primitives so that [js inliner] can do a better job *)
+                 (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
                  (* | Int32_bin of int_op * expression * expression *)
                  (* f.apply(null,args) -- Fully applied guaranteed 
        TODO: once we know args's shape --

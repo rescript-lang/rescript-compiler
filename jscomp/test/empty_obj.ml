@@ -1,0 +1,2 @@
+let v = object 
+end

@@ -44,6 +44,8 @@ let oo = "Caml_oo"
 
 let no_side_effect = Js_analyzer.no_side_effect_expression
 
+type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 
+type unary_op =  ?comment:string -> J.expression -> J.expression
 (*
   remove pure part of the expression
   and keep the non-pure part while preserve the semantics 
@@ -552,7 +554,23 @@ module Exp = struct
 
      check: Re-association: avoid integer overflow
   *) 
-  let rec add ?comment (e1 : t) (e2 : t) = 
+  let rec to_int32  ?comment (e : J.expression)  : J.expression = 
+    let expression_desc =  e.expression_desc in
+    match expression_desc  with 
+    | Bin(Bor, a, {expression_desc = Number (Int {i = 0});  _})
+        -> 
+          to_int32 ?comment a
+    | _ ->
+        { comment ;
+          expression_desc = Bin (Bor, {comment = None; expression_desc }, int 0)
+        }
+
+  let rec to_uint32 ?comment (e : J.expression)  : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Lsr, e , int 0)
+    }
+
+  let rec float_add ?comment (e1 : t) (e2 : t) = 
     match e1.expression_desc, e2.expression_desc with 
     | Number (Int {i;_}), Number (Int {i = j;_}) -> 
       int ?comment (i + j)
@@ -577,15 +595,100 @@ module Exp = struct
     (*     bin ?comment Plus  e2 e1 *)
     | _ -> 
       bin ?comment Plus e1 e2
+  let int32_add ?comment e1 e2 = 
+    (* to_int32 @@  *)float_add ?comment e1 e2
 
-  and minus ?comment e1 e2 = 
+  let float_minus ?comment e1 e2 = 
     bin ?comment Minus e1 e2 
 
-  and mul ?comment e1 e2 = 
+  let int32_minus ?comment e1 e2 : J.expression = 
+     (* to_int32 @@ *)  float_minus ?comment e1 e2
+
+  let float_mul ?comment e1 e2 = 
     bin ?comment Mul e1 e2 
 
-  and div ?comment e1 e2 = 
+  let float_div ?comment e1 e2 = 
     bin ?comment Div e1 e2 
+  let float_notequal ?comment e1 e2 = 
+    bin ?comment NotEqEq e1 e2
+
+  let int32_div ?comment e1 e2 : J.expression = 
+    to_int32 (float_div ?comment e1 e2)
+    
+
+  (* TODO: call primitive *)    
+  let int32_mul ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Mul, e1,e2)
+    }
+  
+
+  (* TODO: check division by zero *)                
+  let int32_mod ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Mod, e1,e2)
+    }
+
+  let int32_lsl ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Lsl, e1,e2)
+    }
+
+  (* TODO: optimization *)    
+  let int32_lsr ?comment
+      (e1 : J.expression) 
+      (e2 : J.expression) : J.expression = 
+    match e1.expression_desc, e2.expression_desc with
+    | Number (Int { i = i1}), Number( Int {i = i2})
+      ->
+        int @@ Int32.to_int 
+                 (Int32.shift_right_logical
+                    (Int32.of_int i1) i2)
+    | _ ,  Number( Int {i = i2})
+      ->
+        if i2 = 0 then 
+          e1
+        else 
+          { comment ; 
+            expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
+          }
+    | _, _ ->
+        to_int32  { comment ; 
+                    expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
+                  }
+
+  let int32_asr ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Asr, e1,e2)
+    }
+
+  let int32_bxor ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Bxor, e1,e2)
+    }
+
+  let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
+    match e1.expression_desc with 
+    | Bin (Bor ,a, {expression_desc = Number (Int {i = 0})})
+        -> 
+          (* Note that in JS
+             {[ -1 >>> 0 & 0xffffffff = -1]} is the same as 
+             {[ (-1 >>> 0 | 0 ) & 0xffffff ]}
+           *)
+          int32_band a e2
+    | _  ->
+        { comment ; 
+          expression_desc = Bin (Band, e1,e2)
+        }
+
+  let int32_bor ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Bor, e1,e2)
+    }
+
+  (* let int32_bin ?comment op e1 e2 : J.expression =  *)
+  (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)
+
 
     (* TODO -- alpha conversion 
         remember to add parens..

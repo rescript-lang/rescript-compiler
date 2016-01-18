@@ -63,6 +63,10 @@ val is_constant : J.expression -> bool
 
 val extract_non_pure : J.expression -> J.expression option
 
+type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 
+
+type unary_op =  ?comment:string -> J.expression -> J.expression
+
 module Exp : sig 
   type t = J.expression 
 
@@ -139,15 +143,23 @@ module Exp : sig
 
   val is_type_number : ?comment:string -> t -> t
 
-  val bin : ?comment:string -> Js_op.binop -> t -> t -> t 
+  (* val bin : ?comment:string -> Js_op.binary_op -> t -> t -> t  *)
+  val to_int32 : unary_op
+  val to_uint32 : unary_op
 
-  val int_plus : ?comment:string -> t -> t -> t
+  val int_plus : binary_op
+  val int_minus : binary_op
+  val int32_lsl : binary_op
+  val int32_lsr : binary_op
+  val int32_asr : binary_op
+  val int32_mod : binary_op
+  val int32_bxor : binary_op
+  val int32_band : binary_op
+  val int32_bor : binary_op
+  val float_plus : binary_op
+  val float_minus : binary_op
+  val float_notequal : binary_op
 
-  val int_minus : ?comment:string -> t -> t -> t
-
-  val float_plus : ?comment:string -> t -> t -> t
-
-  val float_minus : ?comment:string -> t -> t -> t
   (* val un : ?comment:string -> Js_op.unop -> t -> t  *)
   val not : t -> t
 
@@ -219,14 +231,15 @@ module Exp : sig
 
   val stringcomp : ?comment:string -> Js_op.binop -> t -> t -> t
 
-  val add : ?comment:string -> t -> t -> t
 
-  val minus : ?comment:string -> t -> t -> t
-
-  val mul : ?comment:string -> t -> t -> t
-  
-  val div : ?comment:string -> t -> t -> t
-
+  val float_add : ?comment:string -> t -> t -> t
+  val float_minus : ?comment:string -> t -> t -> t
+  val float_mul : ?comment:string -> t -> t -> t
+  val float_div : ?comment:string -> t -> t -> t
+  val int32_div : ?comment:string -> t -> t -> t
+  val int32_add : ?comment:string -> t -> t -> t
+  val int32_minus : ?comment:string -> t -> t -> t
+  val int32_mul : ?comment:string -> t -> t -> t
   val of_block : ?comment:string -> J.statement list -> J.expression -> t
 end
 

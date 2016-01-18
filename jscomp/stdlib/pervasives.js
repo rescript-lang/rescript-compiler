@@ -45,7 +45,7 @@ function lnot(x) {
   return x ^ -1;
 }
 
-var max_int = (-1 >>> 1);
+var max_int = 2147483647;
 
 var min_int = max_int + 1;
 

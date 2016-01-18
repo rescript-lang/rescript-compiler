@@ -92,7 +92,7 @@ var suites = [
   suites_002
 ];
 
-Mt.from_suites("buffer", suites);
+Mt.from_suites("buffer_test.ml", suites);
 
 exports.v = v;
 exports.bytes_equal = bytes_equal;
