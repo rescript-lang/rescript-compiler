@@ -177,7 +177,8 @@ type used_stats =
          pass, you can not do it in a single pass, however, some simple 
          dead code can be detected in a single pass
        *)
-  | Used
+  | Once_pure (* used only once so that, if we do the inlining, it will be [Dead] *)
+  | Used (**)
   | Scanning_pure
   | Scanning_non_pure
   | NA

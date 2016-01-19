@@ -116,10 +116,12 @@ let mark_dead = object (self)
   method! variable_declaration vd =  
     match vd with 
     | { ident_info = {used_stats = Dead_pure } ; _}
-    | { ident_info = {used_stats = Dead_non_pure } ; value = None} -> 
-      self
-    | { ident_info = {used_stats = Dead_non_pure } ; value = Some x} -> 
-      self#expression x 
+      -> self
+    | { ident_info = {used_stats = Dead_non_pure } ; value } -> 
+      begin match value with
+      | None -> self
+      | Some x -> self#expression x 
+      end
     | {ident; ident_info ; value ; _} -> 
       let pure = 
         match value with 

@@ -28,17 +28,12 @@
     ]}
  *)
 
-type position = string * int * int * int 
-(** TODO is this even used ? *)
 
-val err : string ->
-  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
+type ('a,'b) logging =   ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
 
-val warn : string ->
-  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
-
-val info : string ->
-  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
-
-val ierr : string ->
-  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b 
+val err : string -> ('a,'b) logging
+val ierr : bool -> string -> ('a,'b) logging 
+val warn : string -> ('a,'b) logging
+val iwarn : bool -> string -> ('a,'b) logging 
+val info : string -> ('a,'b) logging
+val iinfo : bool -> string -> ('a,'b) logging

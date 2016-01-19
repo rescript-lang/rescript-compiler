@@ -282,8 +282,9 @@ let compile ~filename env sigs lam  : J.program  =
           (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
 
           js 
-          (* |> Js_inline_and_eliminate.inline_and_shake *)
           |> Js_pass_flatten.program
+          (* |> Js_inline_and_eliminate.inline_and_shake *)
+
           |> Js_pass_flatten_and_mark_dead.program
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
           |> Js_shake.shake_program
