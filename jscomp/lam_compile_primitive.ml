@@ -69,82 +69,107 @@ let translate
         E.assign  v (E.int_plus v (E.int n))
       | _ -> E.unknown_primitive prim
     end
-  | Paddint | Paddbint _ | Paddfloat ->
+  | Paddint | Paddbint _
+    ->
     begin match args with
       | [e1;e2] ->
-        E.add  e1  e2
+        E.int32_add  e1  e2
       | _ -> E.unknown_primitive prim
     end
-  | (Psubint | Psubbint _ | Psubfloat)->
+ | Paddfloat
+     -> 
     begin match args with
       | [e1;e2] ->
-        E.minus   e1  e2
+        E.float_add  e1  e2
+      | _ -> E.unknown_primitive prim
+    end
+  | Psubint | Psubbint _ 
+    -> 
+    begin match args with
+      | [e1;e2] ->
+          E.int32_minus   e1  e2
       | _ -> E.unknown_primitive prim end
-
-  | (Pmulint | Pmulbint _ | Pmulfloat)->
+  | Psubfloat
+    ->
+      begin match args with
+      | [e1;e2] ->
+          E.float_minus   e1  e2
+      | _ -> E.unknown_primitive prim 
+      end
+  | Pmulint | Pmulbint _ 
+    ->
     begin match args with
       | [e1; e2]  ->
-        E.mul  e1  e2
-      | _ -> E.unknown_primitive prim end
+        E.int32_mul  e1  e2
+      | _ -> E.unknown_primitive prim 
+    end
+  | Pmulfloat 
+    -> 
+      begin match args with
+      | [e1; e2]  ->
+          E.float_mul  e1  e2
+      | _ -> E.unknown_primitive prim 
+      end
   | Pdivfloat -> 
     begin match args with  (* TODO: see ocamljs -- assertion*)
-      | [e1;e2] ->
-        (E.div  e1  e2) (** 32 bits  *)
+      | [e1;e2] -> E.float_div  e1  e2
       | _ -> E.unknown_primitive prim end
   | (  Pdivint | Pdivbint _)->
     begin match args with  (* TODO: see ocamljs -- assertion*)
       | [e1;e2] ->
-        E.bin Bor (E.div  e1  e2) (E.int 0) (** 32 bits  *)
+        E.int32_div e1 e2  (** 32 bits  *)
       | _ -> E.unknown_primitive prim end
-  | (Pmodint | Pmodbint _) ->
+  | Pmodint | Pmodbint _ ->
     begin match args with
       | [e1; e2] ->
-        E.bin Mod  e1  e2
-      | _ -> E.unknown_primitive prim end
-
-  | (Plslint | Plslbint _) ->
+        E.int32_mod   e1  e2
+      | _ -> E.unknown_primitive prim 
+    end
+  | Plslint | Plslbint _ ->
     begin match args with
       | [e1;e2] ->
-        E.bin Lsl  e1  e2
-      | _ -> E.unknown_primitive prim end
+        E.int32_lsl e1  e2
+      | _ -> E.unknown_primitive prim 
+    end
   | (Plsrint | Plsrbint _) ->
     begin match args with
       | [e1; e2] ->
-        E.bin Lsr  e1  e2
+        E.int32_lsr   e1  e2
       | _ -> E.unknown_primitive prim
     end
   | (Pasrint | Pasrbint _) ->
     begin match args with
       | [e1;e2] ->
-        E.bin Asr  e1  e2
+        E.int32_asr  e1  e2
       | _ -> E.unknown_primitive prim
     end
 
-  | (Pandint | Pandbint _)->
+  | Pandint | Pandbint _->
     begin match args with
       | [e1;e2] ->
-        E.bin Band  e1  e2
+        E.int32_band  e1  e2
       | _ -> E.unknown_primitive prim
     end
-  | (Porint | Porbint _) ->
+  | Porint | Porbint _ ->
     begin match args with
       | [e1;e2] ->
-        E.bin Bor  e1  e2
+        E.int32_bor  e1  e2
       | _ -> E.unknown_primitive prim
     end
-  | (Pxorint | Pxorbint _) ->
+  | Pxorint | Pxorbint _ ->
     begin match args with
       | [e1;e2] ->
-        E.bin Bxor  e1  e2
+        E.int32_bxor  e1  e2
       | _ -> E.unknown_primitive prim
     end
-  | Psequand ->
+
+  | Psequand -> (* TODO: rhs is possibly a tail call *)
     begin match args with
       | [e1;e2] ->
         E.and_   e1  e2
       | _ -> E.unknown_primitive prim
     end
-  | Psequor -> (* rhs is possibly a tail call *)
+  | Psequor -> (* TODO: rhs is possibly a tail call *)
     begin match args with
       | [e1;e2] ->
         E.or_  e1  e2
@@ -152,10 +177,14 @@ let translate
     end
   | Pisout -> 
     begin match args with 
-      (** learn from js_of_ocaml
-          > range  and < 0 
+      (* predicate: [x > range  and x < 0 ]
+         can be simplified if x is positive , x > range
+         if x is negative, fine, its uint is for sure larger than range,
+         the output is not readable, we might change it back.
       *)
-      | [range; e] -> E.lt range (E.bin  Lsr e  (E.int 0))
+      | [range; e] -> 
+          (* E.and_ (E.lt) *)
+          E.lt range (E.to_uint32 e)
       | _ -> E.unknown_primitive prim
     end
   | Pidentity ->

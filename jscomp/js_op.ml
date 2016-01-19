@@ -52,6 +52,41 @@ type binop =
   | Div
   | Mod
 
+(**
+note that we don't need raise [Div_by_zero] in ocamlscript
+
+{[
+let add x y = x + y  (* | 0 *)
+let minus x y = x - y (* | 0 *)
+let mul x y = x * y   (* caml_mul | Math.imul *)
+let div x y = x / y (* caml_div (x/y|0)*)
+let imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)
+
+let bor x y = x lor y   (* x  | y *)
+let bxor x y = x lxor y (* x ^ y *)
+let band x y = x land y (* x & y *)
+let ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)
+let ilsl x y = x lsl y (* x << y*)
+let ilsr x y = x lsr y  (* x >>> y | 0 *)
+let iasr  x y = x asr y (* x >> y *)
+]}
+
+
+Note that js treat unsigned shift 0 bits in a special way
+   Unsigned shifts convert their left-hand side to Uint32, 
+   signed shifts convert it to Int32.
+   Shifting by 0 digits returns the converted value.
+   {[
+    function ToUint32(x) {
+        return x >>> 0;
+    }
+    function ToInt32(x) {
+        return x >> 0;
+    }
+   ]}
+   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]
+   and [-1 >>> 0 >> 0 ] will be [-1]
+*)
 type int_op = 
     
   | Bor
@@ -62,10 +97,17 @@ type int_op =
   | Asr
 
   | Plus
+      (* for [+], given two numbers 
+         x + y | 0
+       *)
   | Minus
+      (* x - y | 0 *)
   | Mul
+      (* *)
   | Div
+      (* x / y | 0 *)
   | Mod
+      (* x  % y *)
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Expressions_and_Operators#Bitwise_operators
     {[

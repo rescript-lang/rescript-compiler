@@ -113,6 +113,9 @@ and expression_desc =
   | Seq of expression * expression
   | Cond of expression * expression * expression
   | Bin of binop * expression * expression
+
+  (* [int_op] will guarantee return [int32] bits 
+     https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators  *)
   (* | Int32_bin of int_op * expression * expression *)
   | FlatCall of expression * expression 
     (* f.apply(null,args) -- Fully applied guaranteed 

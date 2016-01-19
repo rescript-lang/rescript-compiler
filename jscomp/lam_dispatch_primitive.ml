@@ -79,7 +79,7 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     |"caml_div_float" -> 
         begin match args with 
-        | [e0;e1] -> E.bin Div e0 e1 
+        | [e0;e1] -> E.float_div e0 e1
         | _ -> assert false 
         end
     |"caml_sub_float" -> 
@@ -181,12 +181,12 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_int32_div"| "caml_nativeint_div" -> 
         begin match args with 
-        | [e0;e1] -> E.bin Bor (E.bin Div e0 e1) (E.int 0)
+        | [e0;e1] -> E.int32_div e0 e1
         | _ -> assert false 
         end
     | "caml_int32_mul" | "caml_nativeint_mul"  -> 
         begin match args with 
-        | [e0;e1] -> E.bin Mul e0 e1 
+        | [e0;e1] -> E.int32_mul e0 e1 
         | _ -> assert false 
         end
     | "caml_int32_of_int" | "caml_nativeint_of_int" 
@@ -197,7 +197,7 @@ let query (prim : Lam_compile_env.primitive_description)
          end
     |  "caml_int32_of_float" | "caml_int_of_float"|"caml_nativeint_of_float" -> 
         begin match args with 
-        | [e] -> E.bin Bor e (E.int 0) (* (|) *)
+        | [e] -> E.to_int32 e 
         | _ -> assert false 
         end
     | "caml_int32_to_float" | "caml_int32_to_int" | "caml_nativeint_to_int" 
@@ -213,18 +213,18 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_int32_xor" | "caml_nativeint_xor" -> 
         begin match args with 
-        | [e0; e1] -> E.bin Bxor e0 e1 
+        | [e0; e1] -> E.int32_bxor e0 e1 
         | _ -> assert false 
         end
           
     | "caml_int32_and" | "caml_nativeint_and" -> 
         begin match args with 
-        | [e0;e1] -> E.bin Band e0 e1 
+        | [e0;e1] -> E.int32_band e0 e1 
         | _ -> assert false 
         end
     | "caml_int32_or" | "caml_nativeint_or" ->
         begin match args with
-        | [e0;e1] -> E.bin Bor e0 e1 
+        | [e0;e1] -> E.int32_bor e0 e1 
         | _ -> assert false  
         end
     | "caml_le_float" ->
@@ -246,12 +246,12 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_neq_float" -> 
         begin match args with 
-        | [e0;e1] -> E.bin NotEqEq e0 e1 
+        | [e0;e1] -> E.float_notequal e0 e1
         | _ -> assert false 
         end
     | "caml_mul_float" -> 
         begin match args with 
-        | [e0; e1] -> E.bin Mul e0 e1 
+        | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
         end
     | "caml_int64_bits_of_float"

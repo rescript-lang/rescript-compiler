@@ -51,18 +51,9 @@ let op_int_prec (op : Js_op.int_op) =
 
 let op_str (op : Js_op.binop) =
   match op with
-  | Eq      -> "="
-  | Or      -> "||"
-  | And     -> "&&"
   | Bor     -> "|"
   | Bxor    -> "^"
   | Band    -> "&"
-  | EqEqEq  -> "==="
-  | NotEqEq -> "!=="
-  | Lt      -> "<"
-  | Le      -> "<="
-  | Gt      -> ">"
-  | Ge      -> ">="
   | Lsl     -> "<<"
   | Lsr     -> ">>>"
   | Asr     -> ">>"
@@ -72,6 +63,31 @@ let op_str (op : Js_op.binop) =
   | Div     -> "/"
   | Mod     -> "%"
 
+  | Eq      -> "="
+  | Or      -> "||"
+  | And     -> "&&"
+  | EqEqEq  -> "==="
+  | NotEqEq -> "!=="
+  | Lt      -> "<"
+  | Le      -> "<="
+  | Gt      -> ">"
+  | Ge      -> ">="
+
+
+let op_int_str (op : Js_op.int_op) = 
+  match op with
+  | Bor     -> "|"
+  | Bxor    -> "^"
+  | Band    -> "&"
+  | Lsl     -> "<<"
+  | Lsr     -> ">>>"
+  | Asr     -> ">>"
+  | Plus    -> "+"
+  | Minus   -> "-"
+  | Mul     -> "*"
+  | Div     -> "/"
+  | Mod     -> "%"
+  
 let str_of_used_stats = function
   | Js_op.Dead_pure ->  "Dead_pure"
   | Dead_non_pure -> "Dead_non_pure"

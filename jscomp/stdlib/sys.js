@@ -19,7 +19,7 @@ var cygwin = /* false */0;
 
 var max_array_length = 4294967295;
 
-var max_string_length = (word_size / 8 | 0) * max_array_length - 1;
+var max_string_length = 4294967295;
 
 var interactive = [
   0,

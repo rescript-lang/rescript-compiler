@@ -25,4 +25,4 @@ let suites = [
             )
 ]
 open Mt 
-;; from_suites "buffer" suites
+;; from_suites __FILE__ suites
