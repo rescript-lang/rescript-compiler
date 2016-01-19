@@ -43,18 +43,28 @@ function is_in_char_set(char_set, c) {
 }
 
 function pad_of_pad_opt(pad_opt) {
-  return pad_opt ? [
+  if (pad_opt) {
+    return [
             /* Lit_padding */0,
             /* Right */1,
             pad_opt[1]
-          ] : /* No_padding */0;
+          ];
+  }
+  else {
+    return /* No_padding */0;
+  }
 }
 
 function prec_of_prec_opt(prec_opt) {
-  return prec_opt ? [
+  if (prec_opt) {
+    return [
             /* Lit_precision */0,
             prec_opt[1]
-          ] : /* No_precision */0;
+          ];
+  }
+  else {
+    return /* No_precision */0;
+  }
 }
 
 function param_format_of_ignored_format(ign, fmt) {
@@ -342,7 +352,12 @@ function bprint_char_set(buf, char_set) {
       buffer_add_char(buf, /* "]" */93);
     }
     print_out(set, 1);
-    return is_alone(/* "-" */45) ? buffer_add_char(buf, /* "-" */45) : 0;
+    if (is_alone(/* "-" */45)) {
+      return buffer_add_char(buf, /* "-" */45);
+    }
+    else {
+      return 0;
+    }
   };
   var print_out = function (set, _i) {
     while(/* true */1) {
@@ -414,7 +429,14 @@ function bprint_char_set(buf, char_set) {
         }
       }
       if (exit === 1) {
-        return !is_in_char_set(set, Pervasives.char_of_int(i + 1)) ? (print_char(buf, i - 1), print_char(buf, i), print_out(set, i + 2)) : print_in(set, i - 1, i + 2);
+        if (!is_in_char_set(set, Pervasives.char_of_int(i + 1))) {
+          print_char(buf, i - 1);
+          print_char(buf, i);
+          return print_out(set, i + 2);
+        }
+        else {
+          return print_in(set, i - 1, i + 2);
+        }
       }
       
     }
@@ -430,7 +452,12 @@ function bprint_char_set(buf, char_set) {
         print_char(buf, i);
         print_char(buf, /* "-" */45);
         print_char(buf, j - 1);
-        return j < 256 ? print_out(set, j + 1) : 0;
+        if (j < 256) {
+          return print_out(set, j + 1);
+        }
+        else {
+          return 0;
+        }
       }
       else {
         _j = j + 1;
@@ -439,9 +466,19 @@ function bprint_char_set(buf, char_set) {
   };
   var print_char = function (buf, i) {
     var c = Pervasives.char_of_int(i);
-    return c !== 37 ? (
-              c !== 64 ? buffer_add_char(buf, c) : (buffer_add_char(buf, /* "%" */37), buffer_add_char(buf, /* "@" */64))
-            ) : (buffer_add_char(buf, /* "%" */37), buffer_add_char(buf, /* "%" */37));
+    if (c !== 37) {
+      if (c !== 64) {
+        return buffer_add_char(buf, c);
+      }
+      else {
+        buffer_add_char(buf, /* "%" */37);
+        return buffer_add_char(buf, /* "@" */64);
+      }
+    }
+    else {
+      buffer_add_char(buf, /* "%" */37);
+      return buffer_add_char(buf, /* "%" */37);
+    }
   };
   buffer_add_char(buf, /* "[" */91);
   print_start(is_in_char_set(char_set, /* "\000" */0) ? (buffer_add_char(buf, /* "^" */94), rev_char_set(char_set)) : char_set);
@@ -461,11 +498,21 @@ function bprint_padty(buf, padty) {
 }
 
 function bprint_ignored_flag(buf, ign_flag) {
-  return ign_flag ? buffer_add_char(buf, /* "_" */95) : 0;
+  if (ign_flag) {
+    return buffer_add_char(buf, /* "_" */95);
+  }
+  else {
+    return 0;
+  }
 }
 
 function bprint_pad_opt(buf, pad_opt) {
-  return pad_opt ? buffer_add_string(buf, Pervasives.string_of_int(pad_opt[1])) : /* () */0;
+  if (pad_opt) {
+    return buffer_add_string(buf, Pervasives.string_of_int(pad_opt[1]));
+  }
+  else {
+    return /* () */0;
+  }
 }
 
 function bprint_padding(buf, pad) {
@@ -474,14 +521,28 @@ function bprint_padding(buf, pad) {
   }
   else {
     bprint_padty(buf, pad[1]);
-    return pad[0] ? buffer_add_char(buf, /* "*" */42) : buffer_add_string(buf, Pervasives.string_of_int(pad[2]));
+    if (pad[0]) {
+      return buffer_add_char(buf, /* "*" */42);
+    }
+    else {
+      return buffer_add_string(buf, Pervasives.string_of_int(pad[2]));
+    }
   }
 }
 
 function bprint_precision(buf, prec) {
-  return typeof prec === "number" ? (
-            prec !== 0 ? buffer_add_string(buf, ".*") : /* () */0
-          ) : (buffer_add_char(buf, /* "." */46), buffer_add_string(buf, Pervasives.string_of_int(prec[1])));
+  if (typeof prec === "number") {
+    if (prec !== 0) {
+      return buffer_add_string(buf, ".*");
+    }
+    else {
+      return /* () */0;
+    }
+  }
+  else {
+    buffer_add_char(buf, /* "." */46);
+    return buffer_add_string(buf, Pervasives.string_of_int(prec[1]));
+  }
 }
 
 function bprint_iconv_flag(buf, iconv) {
@@ -613,7 +674,12 @@ function string_of_formatting_gen(formatting_gen) {
 }
 
 function bprint_char_literal(buf, chr) {
-  return chr !== 37 ? buffer_add_char(buf, chr) : buffer_add_string(buf, "%%");
+  if (chr !== 37) {
+    return buffer_add_char(buf, chr);
+  }
+  else {
+    return buffer_add_string(buf, "%%");
+  }
 }
 
 function bprint_string_literal(buf, str) {
@@ -702,7 +768,12 @@ function bprint_fmtty(buf, _fmtty) {
 }
 
 function int_of_custom_arity(param) {
-  return param ? 1 + int_of_custom_arity(param[1]) : 0;
+  if (param) {
+    return 1 + int_of_custom_arity(param[1]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function bprint_fmt(buf, fmt) {
@@ -2170,10 +2241,15 @@ function fmtty_of_fmt(_fmtty) {
 }
 
 function fmtty_of_custom(arity, fmtty) {
-  return arity ? [
+  if (arity) {
+    return [
             /* Any_ty */12,
             fmtty_of_custom(arity[1], fmtty)
-          ] : fmtty;
+          ];
+  }
+  else {
+    return fmtty;
+  }
 }
 
 function fmtty_of_ignored_format(ign, fmt) {
@@ -2213,21 +2289,37 @@ function fmtty_of_ignored_format(ign, fmt) {
 }
 
 function fmtty_of_padding_fmtty(pad, fmtty) {
-  return typeof pad === "number" ? fmtty : (
-            pad[0] ? [
-                /* Int_ty */2,
-                fmtty
-              ] : fmtty
-          );
+  if (typeof pad === "number") {
+    return fmtty;
+  }
+  else {
+    if (pad[0]) {
+      return [
+              /* Int_ty */2,
+              fmtty
+            ];
+    }
+    else {
+      return fmtty;
+    }
+  }
 }
 
 function fmtty_of_precision_fmtty(prec, fmtty) {
-  return typeof prec === "number" ? (
-            prec !== 0 ? [
-                /* Int_ty */2,
-                fmtty
-              ] : fmtty
-          ) : fmtty;
+  if (typeof prec === "number") {
+    if (prec !== 0) {
+      return [
+              /* Int_ty */2,
+              fmtty
+            ];
+    }
+    else {
+      return fmtty;
+    }
+  }
+  else {
+    return fmtty;
+  }
 }
 
 var Type_mismatch = [
@@ -3705,13 +3797,27 @@ function convert_float(fconv, prec, x) {
       };
     };
     var match = Caml_float.caml_classify_float(x);
-    return match !== 3 ? (
-              match >= 4 ? "nan" : (
-                  is_valid(0) ? str : str + "."
-                )
-            ) : (
-              x < 0.0 ? "neg_infinity" : "infinity"
-            );
+    if (match !== 3) {
+      if (match >= 4) {
+        return "nan";
+      }
+      else {
+        if (is_valid(0)) {
+          return str;
+        }
+        else {
+          return str + ".";
+        }
+      }
+    }
+    else {
+      if (x < 0.0) {
+        return "neg_infinity";
+      }
+      else {
+        return "infinity";
+      }
+    }
   }
 }
 
@@ -4160,21 +4266,26 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
 function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
   if (typeof pad === "number") {
     if (typeof prec === "number") {
-      return prec !== 0 ? function (p, x) {
-                var str = fix_int_precision(p, trans(iconv, x));
-                return make_printf(k, o, [
-                            /* Acc_data_string */4,
-                            acc,
-                            str
-                          ], fmt);
-              } : function (x) {
-                var str = trans(iconv, x);
-                return make_printf(k, o, [
-                            /* Acc_data_string */4,
-                            acc,
-                            str
-                          ], fmt);
-              };
+      if (prec !== 0) {
+        return function (p, x) {
+          var str = fix_int_precision(p, trans(iconv, x));
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
+      }
+      else {
+        return function (x) {
+          var str = trans(iconv, x);
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
+      }
     }
     else {
       var p = prec[1];
@@ -4192,21 +4303,26 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (pad[0]) {
       var padty = pad[1];
       if (typeof prec === "number") {
-        return prec !== 0 ? function (w, p, x) {
-                  var str = fix_padding(padty, w, fix_int_precision(p, trans(iconv, x)));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                } : function (w, x) {
-                  var str = fix_padding(padty, w, trans(iconv, x));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                };
+        if (prec !== 0) {
+          return function (w, p, x) {
+            var str = fix_padding(padty, w, fix_int_precision(p, trans(iconv, x)));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
+        else {
+          return function (w, x) {
+            var str = fix_padding(padty, w, trans(iconv, x));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
       }
       else {
         var p$1 = prec[1];
@@ -4224,21 +4340,26 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       var w = pad[2];
       var padty$1 = pad[1];
       if (typeof prec === "number") {
-        return prec !== 0 ? function (p, x) {
-                  var str = fix_padding(padty$1, w, fix_int_precision(p, trans(iconv, x)));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                } : function (x) {
-                  var str = fix_padding(padty$1, w, trans(iconv, x));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                };
+        if (prec !== 0) {
+          return function (p, x) {
+            var str = fix_padding(padty$1, w, fix_int_precision(p, trans(iconv, x)));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
+        else {
+          return function (x) {
+            var str = fix_padding(padty$1, w, trans(iconv, x));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
       }
       else {
         var p$2 = prec[1];
@@ -4258,21 +4379,26 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
 function make_float_padding_precision(k, o, acc, fmt, pad, prec, fconv) {
   if (typeof pad === "number") {
     if (typeof prec === "number") {
-      return prec !== 0 ? function (p, x) {
-                var str = convert_float(fconv, p, x);
-                return make_printf(k, o, [
-                            /* Acc_data_string */4,
-                            acc,
-                            str
-                          ], fmt);
-              } : function (x) {
-                var str = convert_float(fconv, default_float_precision, x);
-                return make_printf(k, o, [
-                            /* Acc_data_string */4,
-                            acc,
-                            str
-                          ], fmt);
-              };
+      if (prec !== 0) {
+        return function (p, x) {
+          var str = convert_float(fconv, p, x);
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
+      }
+      else {
+        return function (x) {
+          var str = convert_float(fconv, default_float_precision, x);
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
+      }
     }
     else {
       var p = prec[1];
@@ -4290,22 +4416,27 @@ function make_float_padding_precision(k, o, acc, fmt, pad, prec, fconv) {
     if (pad[0]) {
       var padty = pad[1];
       if (typeof prec === "number") {
-        return prec !== 0 ? function (w, p, x) {
-                  var str = fix_padding(padty, w, convert_float(fconv, p, x));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                } : function (w, x) {
-                  var str = convert_float(fconv, default_float_precision, x);
-                  var str$prime = fix_padding(padty, w, str);
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str$prime
-                            ], fmt);
-                };
+        if (prec !== 0) {
+          return function (w, p, x) {
+            var str = fix_padding(padty, w, convert_float(fconv, p, x));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
+        else {
+          return function (w, x) {
+            var str = convert_float(fconv, default_float_precision, x);
+            var str$prime = fix_padding(padty, w, str);
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str$prime
+                      ], fmt);
+          };
+        }
       }
       else {
         var p$1 = prec[1];
@@ -4323,22 +4454,27 @@ function make_float_padding_precision(k, o, acc, fmt, pad, prec, fconv) {
       var w = pad[2];
       var padty$1 = pad[1];
       if (typeof prec === "number") {
-        return prec !== 0 ? function (p, x) {
-                  var str = fix_padding(padty$1, w, convert_float(fconv, p, x));
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str
-                            ], fmt);
-                } : function (x) {
-                  var str = convert_float(fconv, default_float_precision, x);
-                  var str$prime = fix_padding(padty$1, w, str);
-                  return make_printf(k, o, [
-                              /* Acc_data_string */4,
-                              acc,
-                              str$prime
-                            ], fmt);
-                };
+        if (prec !== 0) {
+          return function (p, x) {
+            var str = fix_padding(padty$1, w, convert_float(fconv, p, x));
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str
+                      ], fmt);
+          };
+        }
+        else {
+          return function (x) {
+            var str = convert_float(fconv, default_float_precision, x);
+            var str$prime = fix_padding(padty$1, w, str);
+            return make_printf(k, o, [
+                        /* Acc_data_string */4,
+                        acc,
+                        str$prime
+                      ], fmt);
+          };
+        }
       }
       else {
         var p$2 = prec[1];
@@ -4706,42 +4842,57 @@ function open_box_of_string(str) {
 }
 
 function make_padding_fmt_ebb(pad, fmt) {
-  return typeof pad === "number" ? [
+  if (typeof pad === "number") {
+    return [
             /* Padding_fmt_EBB */0,
             /* No_padding */0,
             fmt
-          ] : (
-            pad[0] ? [
-                /* Padding_fmt_EBB */0,
-                [
-                  /* Arg_padding */1,
-                  pad[1]
-                ],
-                fmt
-              ] : [
-                /* Padding_fmt_EBB */0,
-                [
-                  /* Lit_padding */0,
-                  pad[1],
-                  pad[2]
-                ],
-                fmt
-              ]
-          );
+          ];
+  }
+  else {
+    if (pad[0]) {
+      return [
+              /* Padding_fmt_EBB */0,
+              [
+                /* Arg_padding */1,
+                pad[1]
+              ],
+              fmt
+            ];
+    }
+    else {
+      return [
+              /* Padding_fmt_EBB */0,
+              [
+                /* Lit_padding */0,
+                pad[1],
+                pad[2]
+              ],
+              fmt
+            ];
+    }
+  }
 }
 
 function make_precision_fmt_ebb(prec, fmt) {
-  return typeof prec === "number" ? (
-            prec !== 0 ? [
-                /* Precision_fmt_EBB */0,
-                /* Arg_precision */1,
-                fmt
-              ] : [
-                /* Precision_fmt_EBB */0,
-                /* No_precision */0,
-                fmt
-              ]
-          ) : [
+  if (typeof prec === "number") {
+    if (prec !== 0) {
+      return [
+              /* Precision_fmt_EBB */0,
+              /* Arg_precision */1,
+              fmt
+            ];
+    }
+    else {
+      return [
+              /* Precision_fmt_EBB */0,
+              /* No_precision */0,
+              fmt
+            ];
+    }
+  }
+  else {
+    return [
             /* Precision_fmt_EBB */0,
             [
               /* Lit_precision */0,
@@ -4749,37 +4900,46 @@ function make_precision_fmt_ebb(prec, fmt) {
             ],
             fmt
           ];
+  }
 }
 
 function make_padprec_fmt_ebb(pad, prec, fmt) {
   var match = make_precision_fmt_ebb(prec, fmt);
   var fmt$prime = match[2];
   var prec$1 = match[1];
-  return typeof pad === "number" ? [
+  if (typeof pad === "number") {
+    return [
             /* Padprec_fmt_EBB */0,
             /* No_padding */0,
             prec$1,
             fmt$prime
-          ] : (
-            pad[0] ? [
-                /* Padprec_fmt_EBB */0,
-                [
-                  /* Arg_padding */1,
-                  pad[1]
-                ],
-                prec$1,
-                fmt$prime
-              ] : [
-                /* Padprec_fmt_EBB */0,
-                [
-                  /* Lit_padding */0,
-                  pad[1],
-                  pad[2]
-                ],
-                prec$1,
-                fmt$prime
-              ]
-          );
+          ];
+  }
+  else {
+    if (pad[0]) {
+      return [
+              /* Padprec_fmt_EBB */0,
+              [
+                /* Arg_padding */1,
+                pad[1]
+              ],
+              prec$1,
+              fmt$prime
+            ];
+    }
+    else {
+      return [
+              /* Padprec_fmt_EBB */0,
+              [
+                /* Lit_padding */0,
+                pad[1],
+                pad[2]
+              ],
+              prec$1,
+              fmt$prime
+            ];
+    }
+  }
 }
 
 function fmt_ebb_of_string(legacy_behavior, str) {
@@ -4938,7 +5098,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       unexpected_end_of_format(end_ind);
     }
     var match = str.charCodeAt(str_ind);
-    return match !== 95 ? parse_flags(pct_ind, str_ind, end_ind, /* false */0) : parse_flags(pct_ind, str_ind + 1, end_ind, /* true */1);
+    if (match !== 95) {
+      return parse_flags(pct_ind, str_ind, end_ind, /* false */0);
+    }
+    else {
+      return parse_flags(pct_ind, str_ind + 1, end_ind, /* true */1);
+    }
   };
   var parse_flags = function (pct_ind, str_ind, end_ind, ign) {
     var zero = [
@@ -5118,7 +5283,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       unexpected_end_of_format(end_ind);
     }
     var symb = str.charCodeAt(str_ind);
-    return symb !== 46 ? parse_conversion(pct_ind, str_ind + 1, end_ind, plus, sharp, space, ign, pad, /* No_precision */0, pad, symb) : parse_precision(pct_ind, str_ind + 1, end_ind, minus, plus, sharp, space, ign, pad);
+    if (symb !== 46) {
+      return parse_conversion(pct_ind, str_ind + 1, end_ind, plus, sharp, space, ign, pad, /* No_precision */0, pad, symb);
+    }
+    else {
+      return parse_precision(pct_ind, str_ind + 1, end_ind, minus, plus, sharp, space, ign, pad);
+    }
   };
   var parse_precision = function (pct_ind, str_ind, end_ind, minus, plus, sharp, space, ign, pad) {
     if (str_ind === end_ind) {
@@ -5172,10 +5342,15 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           }
           break;
       case 2 : 
-          return legacy_behavior$1 ? parse_after_precision(pct_ind, str_ind, end_ind, minus, plus, sharp, space, ign, pad, [
+          if (legacy_behavior$1) {
+            return parse_after_precision(pct_ind, str_ind, end_ind, minus, plus, sharp, space, ign, pad, [
                         /* Lit_precision */0,
                         0
-                      ]) : invalid_format_without(str_ind - 1, /* "." */46, "precision");
+                      ]);
+          }
+          else {
+            return invalid_format_without(str_ind - 1, /* "." */46, "precision");
+          }
       
     }
   };
@@ -5200,25 +5375,36 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         exit = 1;
       }
       if (exit === 1) {
-        return minus !== 0 ? (
-                  typeof prec === "number" ? parse_conv([
-                          /* Arg_padding */1,
-                          /* Left */0
-                        ]) : parse_conv([
-                          /* Lit_padding */0,
-                          /* Left */0,
-                          prec[1]
-                        ])
-                ) : (
-                  typeof prec === "number" ? parse_conv([
-                          /* Arg_padding */1,
-                          /* Right */1
-                        ]) : parse_conv([
-                          /* Lit_padding */0,
-                          /* Right */1,
-                          prec[1]
-                        ])
-                );
+        if (minus !== 0) {
+          if (typeof prec === "number") {
+            return parse_conv([
+                        /* Arg_padding */1,
+                        /* Left */0
+                      ]);
+          }
+          else {
+            return parse_conv([
+                        /* Lit_padding */0,
+                        /* Left */0,
+                        prec[1]
+                      ]);
+          }
+        }
+        else {
+          if (typeof prec === "number") {
+            return parse_conv([
+                        /* Arg_padding */1,
+                        /* Right */1
+                      ]);
+          }
+          else {
+            return parse_conv([
+                        /* Lit_padding */0,
+                        /* Right */1,
+                        prec[1]
+                      ]);
+          }
+        }
       }
       
     }
@@ -5280,24 +5466,44 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return padprec;
     };
     var check_no_0 = function (symb, pad) {
-      return typeof pad === "number" ? pad : (
-                pad[0] ? (
-                    pad[1] >= 2 ? (
-                        legacy_behavior$1 ? [
-                            /* Arg_padding */1,
-                            /* Right */1
-                          ] : incompatible_flag(pct_ind, str_ind, symb, "0")
-                      ) : pad
-                  ) : (
-                    pad[1] >= 2 ? (
-                        legacy_behavior$1 ? [
-                            /* Lit_padding */0,
-                            /* Right */1,
-                            pad[2]
-                          ] : incompatible_flag(pct_ind, str_ind, symb, "0")
-                      ) : pad
-                  )
-              );
+      if (typeof pad === "number") {
+        return pad;
+      }
+      else {
+        if (pad[0]) {
+          if (pad[1] >= 2) {
+            if (legacy_behavior$1) {
+              return [
+                      /* Arg_padding */1,
+                      /* Right */1
+                    ];
+            }
+            else {
+              return incompatible_flag(pct_ind, str_ind, symb, "0");
+            }
+          }
+          else {
+            return pad;
+          }
+        }
+        else {
+          if (pad[1] >= 2) {
+            if (legacy_behavior$1) {
+              return [
+                      /* Lit_padding */0,
+                      /* Right */1,
+                      pad[2]
+                    ];
+            }
+            else {
+              return incompatible_flag(pct_ind, str_ind, symb, "0");
+            }
+          }
+          else {
+            return pad;
+          }
+        }
+      }
     };
     var opt_of_pad = function (c, pad) {
       if (typeof pad === "number") {
@@ -5310,20 +5516,30 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         else {
           switch (pad[1]) {
             case 0 : 
-                return legacy_behavior$1 ? [
+                if (legacy_behavior$1) {
+                  return [
                           /* Some */0,
                           pad[2]
-                        ] : incompatible_flag(pct_ind, str_ind, c, "'-'");
+                        ];
+                }
+                else {
+                  return incompatible_flag(pct_ind, str_ind, c, "'-'");
+                }
             case 1 : 
                 return [
                         /* Some */0,
                         pad[2]
                       ];
             case 2 : 
-                return legacy_behavior$1 ? [
+                if (legacy_behavior$1) {
+                  return [
                           /* Some */0,
                           pad[2]
-                        ] : incompatible_flag(pct_ind, str_ind, c, "'0'");
+                        ];
+                }
+                else {
+                  return incompatible_flag(pct_ind, str_ind, c, "'0'");
+                }
             
           }
         }
@@ -5337,12 +5553,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     };
     var get_prec_opt = function () {
       var match = get_prec(/* () */0);
-      return typeof match === "number" ? (
-                match !== 0 ? incompatible_flag(pct_ind, str_ind, /* "_" */95, "'*'") : /* None */0
-              ) : [
+      if (typeof match === "number") {
+        if (match !== 0) {
+          return incompatible_flag(pct_ind, str_ind, /* "_" */95, "'*'");
+        }
+        else {
+          return /* None */0;
+        }
+      }
+      else {
+        return [
                 /* Some */0,
                 match[1]
               ];
+      }
     };
     var fmt_result;
     var exit = 0;
@@ -5536,36 +5760,46 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             break;
         case 99 : 
             var char_format = function (fmt_rest) {
-              return get_ign(/* () */0) ? [
+              if (get_ign(/* () */0)) {
+                return [
                         /* Fmt_EBB */0,
                         [
                           /* Ignored_param */23,
                           /* Ignored_char */0,
                           fmt_rest
                         ]
-                      ] : [
+                      ];
+              }
+              else {
+                return [
                         /* Fmt_EBB */0,
                         [
                           /* Char */0,
                           fmt_rest
                         ]
                       ];
+              }
             };
             var scan_format = function (fmt_rest) {
-              return get_ign(/* () */0) ? [
+              if (get_ign(/* () */0)) {
+                return [
                         /* Fmt_EBB */0,
                         [
                           /* Ignored_param */23,
                           /* Ignored_scan_next_char */4,
                           fmt_rest
                         ]
-                      ] : [
+                      ];
+              }
+              else {
+                return [
                         /* Fmt_EBB */0,
                         [
                           /* Scan_next_char */22,
                           fmt_rest
                         ]
                       ];
+              }
             };
             var match$10 = parse(str_ind, end_ind);
             var fmt_rest$5 = match$10[1];
@@ -5808,9 +6042,17 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             var match$20 = get_prec(/* () */0);
             var pad$3;
             var exit$1 = 0;
-            typeof match$20 === "number" ? (
-                match$20 !== 0 ? (exit$1 = 9) : (pad$3 = match$19)
-              ) : (exit$1 = 9);
+            if (typeof match$20 === "number") {
+              if (match$20 !== 0) {
+                exit$1 = 9;
+              }
+              else {
+                pad$3 = match$19;
+              }
+            }
+            else {
+              exit$1 = 9;
+            }
             if (exit$1 === 9) {
               pad$3 = typeof match$19 === "number" ? /* No_padding */0 : (
                   match$19[0] ? (
@@ -6649,11 +6891,22 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       var str_ind_1 = parse_spaces(str_ind, end_ind);
       var match$1 = str.charCodeAt(str_ind_1);
       var exit = 0;
-      match$1 >= 48 ? (
-          match$1 >= 58 ? (match = /* None */0) : (exit = 1)
-        ) : (
-          match$1 !== 45 ? (match = /* None */0) : (exit = 1)
-        );
+      if (match$1 >= 48) {
+        if (match$1 >= 58) {
+          match = /* None */0;
+        }
+        else {
+          exit = 1;
+        }
+      }
+      else {
+        if (match$1 !== 45) {
+          match = /* None */0;
+        }
+        else {
+          exit = 1;
+        }
+      }
       if (exit === 1) {
         var match$2 = parse_integer(str_ind_1, end_ind);
         var str_ind_3 = parse_spaces(match$2[1], end_ind);
@@ -6794,7 +7047,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         }
         var c = str.charCodeAt(str_ind);
         if (c !== 45) {
-          return c !== 93 ? parse_char_set_after_char(str_ind + 1, end_ind, c) : str_ind + 1;
+          if (c !== 93) {
+            return parse_char_set_after_char(str_ind + 1, end_ind, c);
+          }
+          else {
+            return str_ind + 1;
+          }
         }
         else {
           add_char(/* "-" */45);
@@ -6866,7 +7124,15 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       var c$prime = str.charCodeAt(str_ind);
       if (c$prime !== 37) {
-        return c$prime !== 93 ? (add_range(c, c$prime), parse_char_set_content(str_ind + 1, end_ind)) : (add_char(c), add_char(/* "-" */45), str_ind + 1);
+        if (c$prime !== 93) {
+          add_range(c, c$prime);
+          return parse_char_set_content(str_ind + 1, end_ind);
+        }
+        else {
+          add_char(c);
+          add_char(/* "-" */45);
+          return str_ind + 1;
+        }
       }
       else {
         if (str_ind + 1 === end_ind) {
@@ -7042,26 +7308,34 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   };
   var add_literal = function (lit_start, str_ind, fmt) {
     var size = str_ind - lit_start;
-    return size !== 0 ? (
-              size !== 1 ? [
-                  /* Fmt_EBB */0,
-                  [
-                    /* String_literal */11,
-                    $$String.sub(str, lit_start, size),
-                    fmt
-                  ]
-                ] : [
-                  /* Fmt_EBB */0,
-                  [
-                    /* Char_literal */12,
-                    str.charCodeAt(lit_start),
-                    fmt
-                  ]
+    if (size !== 0) {
+      if (size !== 1) {
+        return [
+                /* Fmt_EBB */0,
+                [
+                  /* String_literal */11,
+                  $$String.sub(str, lit_start, size),
+                  fmt
                 ]
-            ) : [
+              ];
+      }
+      else {
+        return [
+                /* Fmt_EBB */0,
+                [
+                  /* Char_literal */12,
+                  str.charCodeAt(lit_start),
+                  fmt
+                ]
+              ];
+      }
+    }
+    else {
+      return [
               /* Fmt_EBB */0,
               fmt
             ];
+    }
   };
   var search_subformat_end = function (_str_ind, end_ind, c) {
     while(/* true */1) {

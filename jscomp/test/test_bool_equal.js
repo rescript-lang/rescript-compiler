@@ -3,11 +3,22 @@
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function bool_equal(x, y) {
-  return x !== 0 ? (
-            y !== 0 ? /* true */1 : /* false */0
-          ) : (
-            y !== 0 ? /* false */0 : /* true */1
-          );
+  if (x !== 0) {
+    if (y !== 0) {
+      return /* true */1;
+    }
+    else {
+      return /* false */0;
+    }
+  }
+  else {
+    if (y !== 0) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
 }
 
 function assertions() {

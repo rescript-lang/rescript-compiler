@@ -3,7 +3,12 @@
 
 function f(param) {
   if (typeof param === "number") {
-    return param ? 5 : 4;
+    if (param) {
+      return 5;
+    }
+    else {
+      return 4;
+    }
   }
   else {
     switch (param[0]) {
@@ -21,10 +26,15 @@ function f(param) {
 }
 
 function bind(x, f) {
-  return x[0] ? x : [
+  if (x[0]) {
+    return x;
+  }
+  else {
+    return [
             /* Left */0,
             f(x[1])
           ];
+  }
 }
 
 exports.f = f;

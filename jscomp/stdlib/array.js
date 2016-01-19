@@ -32,18 +32,36 @@ function make_matrix(sx, sy, init) {
 
 function copy(a) {
   var l = a.length;
-  return l ? Caml_array.caml_array_sub(a, 0, l) : /* array */[];
+  if (l) {
+    return Caml_array.caml_array_sub(a, 0, l);
+  }
+  else {
+    return /* array */[];
+  }
 }
 
 function append(a1, a2) {
   var l1 = a1.length;
-  return l1 ? (
-            a2.length ? a1.concat(a2) : Caml_array.caml_array_sub(a1, 0, l1)
-          ) : copy(a2);
+  if (l1) {
+    if (a2.length) {
+      return a1.concat(a2);
+    }
+    else {
+      return Caml_array.caml_array_sub(a1, 0, l1);
+    }
+  }
+  else {
+    return copy(a2);
+  }
 }
 
 function sub(a, ofs, len) {
-  return len < 0 || ofs > a.length - len ? Pervasives.invalid_arg("Array.sub") : Caml_array.caml_array_sub(a, ofs, len);
+  if (len < 0 || ofs > a.length - len) {
+    return Pervasives.invalid_arg("Array.sub");
+  }
+  else {
+    return Caml_array.caml_array_sub(a, ofs, len);
+  }
 }
 
 function fill(a, ofs, len, v) {
@@ -59,7 +77,12 @@ function fill(a, ofs, len, v) {
 }
 
 function blit(a1, ofs1, a2, ofs2, len) {
-  return len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len ? Pervasives.invalid_arg("Array.blit") : Caml_array.caml_array_blit(a1, ofs1, a2, ofs2, len);
+  if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
+    return Pervasives.invalid_arg("Array.blit");
+  }
+  else {
+    return Caml_array.caml_array_blit(a1, ofs1, a2, ofs2, len);
+  }
 }
 
 function iter(f, a) {

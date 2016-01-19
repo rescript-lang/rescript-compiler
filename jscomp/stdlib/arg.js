@@ -47,55 +47,36 @@ function assoc3(x, _l) {
 }
 
 function make_symlist(prefix, sep, suffix, l) {
-  return l ? List.fold_left(function (x, y) {
+  if (l) {
+    return List.fold_left(function (x, y) {
                 return x + (sep + y);
-              }, prefix + l[1], l[2]) + suffix : "<none>";
+              }, prefix + l[1], l[2]) + suffix;
+  }
+  else {
+    return "<none>";
+  }
 }
 
 function print_spec(buf, param) {
   var doc = param[3];
   var spec = param[2];
   var key = param[1];
-  return doc.length ? (
-            spec[0] === 11 ? Printf.bprintf(buf, [
-                      /* Format */0,
+  if (doc.length) {
+    if (spec[0] === 11) {
+      return Printf.bprintf(buf, [
+                    /* Format */0,
+                    [
+                      /* String_literal */11,
+                      "  ",
                       [
-                        /* String_literal */11,
-                        "  ",
+                        /* String */2,
+                        /* No_padding */0,
                         [
-                          /* String */2,
-                          /* No_padding */0,
+                          /* Char_literal */12,
+                          /* " " */32,
                           [
-                            /* Char_literal */12,
-                            /* " " */32,
-                            [
-                              /* String */2,
-                              /* No_padding */0,
-                              [
-                                /* String */2,
-                                /* No_padding */0,
-                                [
-                                  /* Char_literal */12,
-                                  /* "\n" */10,
-                                  /* End_of_format */0
-                                ]
-                              ]
-                            ]
-                          ]
-                        ]
-                      ],
-                      "  %s %s%s\n"
-                    ])(key, make_symlist("{", "|", "}", spec[1]), doc) : Printf.bprintf(buf, [
-                      /* Format */0,
-                      [
-                        /* String_literal */11,
-                        "  ",
-                        [
-                          /* String */2,
-                          /* No_padding */0,
-                          [
-                            /* Char_literal */12,
-                            /* " " */32,
+                            /* String */2,
+                            /* No_padding */0,
                             [
                               /* String */2,
                               /* No_padding */0,
@@ -107,10 +88,42 @@ function print_spec(buf, param) {
                             ]
                           ]
                         ]
-                      ],
-                      "  %s %s\n"
-                    ])(key, doc)
-          ) : 0;
+                      ]
+                    ],
+                    "  %s %s%s\n"
+                  ])(key, make_symlist("{", "|", "}", spec[1]), doc);
+    }
+    else {
+      return Printf.bprintf(buf, [
+                    /* Format */0,
+                    [
+                      /* String_literal */11,
+                      "  ",
+                      [
+                        /* String */2,
+                        /* No_padding */0,
+                        [
+                          /* Char_literal */12,
+                          /* " " */32,
+                          [
+                            /* String */2,
+                            /* No_padding */0,
+                            [
+                              /* Char_literal */12,
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ]
+                          ]
+                        ]
+                      ]
+                    ],
+                    "  %s %s\n"
+                  ])(key, doc);
+    }
+  }
+  else {
+    return 0;
+  }
 }
 
 function help_action() {
@@ -795,7 +808,12 @@ function second_word(s) {
 
 function max_arg_len(cur, param) {
   var kwd = param[1];
-  return param[2][0] === 11 ? Pervasives.max(cur, kwd.length) : Pervasives.max(cur, kwd.length + second_word(param[3]));
+  if (param[2][0] === 11) {
+    return Pervasives.max(cur, kwd.length);
+  }
+  else {
+    return Pervasives.max(cur, kwd.length + second_word(param[3]));
+  }
 }
 
 function add_padding(len, ksd) {

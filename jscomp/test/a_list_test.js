@@ -86,7 +86,8 @@ var suites_002 = [
                   ]
                 ],
                 Ext_list.flat_map(function (x) {
-                      return x % 2 ? [
+                      if (x % 2) {
+                        return [
                                 /* :: */0,
                                 1,
                                 [
@@ -94,11 +95,15 @@ var suites_002 = [
                                   1,
                                   /* [] */0
                                 ]
-                              ] : [
+                              ];
+                      }
+                      else {
+                        return [
                                 /* :: */0,
                                 0,
                                 /* [] */0
                               ];
+                      }
                     }, [
                       /* :: */0,
                       0,

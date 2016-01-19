@@ -12,7 +12,12 @@ while(console.log(Pervasives.string_of_int(v[1])), ++ v[1], +(v[1] < 10)) {
 };
 
 function fib(n) {
-  return 1 < (n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+  if (1 < (n >>> 0)) {
+    return fib(n - 1) + fib(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 var x = [

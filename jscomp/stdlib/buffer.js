@@ -29,15 +29,30 @@ function to_bytes(b) {
 }
 
 function sub(b, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > b[2] - len ? Pervasives.invalid_arg("Buffer.sub") : Bytes.sub_string(b[1], ofs, len);
+  if (ofs < 0 || len < 0 || ofs > b[2] - len) {
+    return Pervasives.invalid_arg("Buffer.sub");
+  }
+  else {
+    return Bytes.sub_string(b[1], ofs, len);
+  }
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
-  return len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len ? Pervasives.invalid_arg("Buffer.blit") : Bytes.blit(src[1], srcoff, dst, dstoff, len);
+  if (len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len) {
+    return Pervasives.invalid_arg("Buffer.blit");
+  }
+  else {
+    return Bytes.blit(src[1], srcoff, dst, dstoff, len);
+  }
 }
 
 function nth(b, ofs) {
-  return ofs < 0 || ofs >= b[2] ? Pervasives.invalid_arg("Buffer.nth") : b[1][ofs];
+  if (ofs < 0 || ofs >= b[2]) {
+    return Pervasives.invalid_arg("Buffer.nth");
+  }
+  else {
+    return b[1][ofs];
+  }
 }
 
 function length(b) {
@@ -63,7 +78,12 @@ function resize(b, more) {
     new_len = 2 * new_len;
   };
   if (new_len > Sys.max_string_length) {
-    b[2] + more <= Sys.max_string_length ? (new_len = Sys.max_string_length) : Pervasives.failwith("Buffer.add: cannot grow buffer");
+    if (b[2] + more <= Sys.max_string_length) {
+      new_len = Sys.max_string_length;
+    }
+    else {
+      Pervasives.failwith("Buffer.add: cannot grow buffer");
+    }
   }
   var new_buffer = Caml_string.caml_create_string(new_len);
   Bytes.blit(b[1], 0, new_buffer, 0, b[2]);
@@ -325,7 +345,12 @@ function add_substitute(b, f, s) {
         }
       }
       else {
-        return previous === /* "\\" */92 ? add_char(b, previous) : 0;
+        if (previous === /* "\\" */92) {
+          return add_char(b, previous);
+        }
+        else {
+          return 0;
+        }
       }
     };
   };

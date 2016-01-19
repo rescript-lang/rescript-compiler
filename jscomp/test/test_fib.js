@@ -2,11 +2,21 @@
 "use strict";
 
 function fib(n) {
-  return 1 < (n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+  if (1 < (n >>> 0)) {
+    return fib(n - 1) + fib(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 function fib2(n) {
-  return 1 < (-1 + n >>> 0) ? fib2(n - 1) + fib2(n - 2) : 1;
+  if (1 < (-1 + n >>> 0)) {
+    return fib2(n - 1) + fib2(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 var v = 0;
@@ -34,15 +44,25 @@ function cons(x, y) {
 }
 
 function length(x) {
-  return x ? 1 + length(x[2]) : 0;
+  if (x) {
+    return 1 + length(x[2]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function map(f, x) {
-  return x ? [
+  if (x) {
+    return [
             /* Cons */0,
             f(x[1]),
             map(f, x[2])
-          ] : /* Nil */0;
+          ];
+  }
+  else {
+    return /* Nil */0;
+  }
 }
 
 function f(x) {

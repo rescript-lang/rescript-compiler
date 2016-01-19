@@ -42,16 +42,32 @@ function force_val_lazy_block(blk) {
 
 function force(lzv) {
   var t = Caml_obj_runtime.caml_obj_tag(lzv);
-  return t === Obj.forward_tag ? lzv[0] : (
-            t !== Obj.lazy_tag ? lzv : force_lazy_block(lzv)
-          );
+  if (t === Obj.forward_tag) {
+    return lzv[0];
+  }
+  else {
+    if (t !== Obj.lazy_tag) {
+      return lzv;
+    }
+    else {
+      return force_lazy_block(lzv);
+    }
+  }
 }
 
 function force_val(lzv) {
   var t = Caml_obj_runtime.caml_obj_tag(lzv);
-  return t === Obj.forward_tag ? lzv[0] : (
-            t !== Obj.lazy_tag ? lzv : force_val_lazy_block(lzv)
-          );
+  if (t === Obj.forward_tag) {
+    return lzv[0];
+  }
+  else {
+    if (t !== Obj.lazy_tag) {
+      return lzv;
+    }
+    else {
+      return force_val_lazy_block(lzv);
+    }
+  }
 }
 
 exports.Undefined = Undefined;

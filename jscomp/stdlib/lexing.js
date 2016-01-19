@@ -157,10 +157,15 @@ function sub_lexeme_char(lexbuf, i) {
 }
 
 function sub_lexeme_char_opt(lexbuf, i) {
-  return i >= 0 ? [
+  if (i >= 0) {
+    return [
             /* Some */0,
             lexbuf[2][i]
-          ] : /* None */0;
+          ];
+  }
+  else {
+    return /* None */0;
+  }
 }
 
 function lexeme_char(lexbuf, i) {

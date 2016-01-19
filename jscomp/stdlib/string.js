@@ -78,17 +78,36 @@ function mapi(f, s) {
 
 function is_space(param) {
   var switcher = -9 + param;
-  return 4 < (switcher >>> 0) ? (
-            switcher !== 23 ? /* false */0 : /* true */1
-          ) : (
-            switcher !== 2 ? /* true */1 : /* false */0
-          );
+  if (4 < (switcher >>> 0)) {
+    if (switcher !== 23) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
+  else {
+    if (switcher !== 2) {
+      return /* true */1;
+    }
+    else {
+      return /* false */0;
+    }
+  }
 }
 
 function trim(s) {
-  return s === "" ? s : (
-            is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1)) ? bts(Bytes.trim(bos(s))) : s
-          );
+  if (s === "") {
+    return s;
+  }
+  else {
+    if (is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1))) {
+      return bts(Bytes.trim(bos(s)));
+    }
+    else {
+      return s;
+    }
+  }
 }
 
 function escaped(s) {
@@ -144,7 +163,12 @@ function escaped(s) {
       }
     };
   };
-  return needs_escape(0) ? bts(Bytes.escaped(bos(s))) : s;
+  if (needs_escape(0)) {
+    return bts(Bytes.escaped(bos(s)));
+  }
+  else {
+    return s;
+  }
 }
 
 function index(s, c) {

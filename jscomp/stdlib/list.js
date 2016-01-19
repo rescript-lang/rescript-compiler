@@ -23,11 +23,21 @@ function length(l) {
 }
 
 function hd(param) {
-  return param ? param[1] : Pervasives.failwith("hd");
+  if (param) {
+    return param[1];
+  }
+  else {
+    return Pervasives.failwith("hd");
+  }
 }
 
 function tl(param) {
-  return param ? param[2] : Pervasives.failwith("tl");
+  if (param) {
+    return param[2];
+  }
+  else {
+    return Pervasives.failwith("tl");
+  }
 }
 
 function nth(l, n) {
@@ -80,7 +90,12 @@ function rev(l) {
 }
 
 function flatten(param) {
-  return param ? Pervasives.$at(param[1], flatten(param[2])) : /* [] */0;
+  if (param) {
+    return Pervasives.$at(param[1], flatten(param[2]));
+  }
+  else {
+    return /* [] */0;
+  }
 }
 
 function map(f, param) {
@@ -183,7 +198,12 @@ function fold_left(f, _accu, _l) {
 }
 
 function fold_right(f, l, accu) {
-  return l ? f(l[1], fold_right(f, l[2], accu)) : accu;
+  if (l) {
+    return f(l[1], fold_right(f, l[2], accu));
+  }
+  else {
+    return accu;
+  }
 }
 
 function map2(f, l1, l2) {
@@ -201,7 +221,12 @@ function map2(f, l1, l2) {
     }
   }
   else {
-    return l2 ? Pervasives.invalid_arg("List.map2") : /* [] */0;
+    if (l2) {
+      return Pervasives.invalid_arg("List.map2");
+    }
+    else {
+      return /* [] */0;
+    }
   }
 }
 
@@ -226,7 +251,12 @@ function rev_map2(f, l1, l2) {
         }
       }
       else {
-        return l2 ? Pervasives.invalid_arg("List.rev_map2") : accu;
+        if (l2) {
+          return Pervasives.invalid_arg("List.rev_map2");
+        }
+        else {
+          return accu;
+        }
       }
     };
   };
@@ -248,7 +278,12 @@ function iter2(f, _l1, _l2) {
       }
     }
     else {
-      return l2 ? Pervasives.invalid_arg("List.iter2") : /* () */0;
+      if (l2) {
+        return Pervasives.invalid_arg("List.iter2");
+      }
+      else {
+        return /* () */0;
+      }
     }
   };
 }
@@ -269,49 +304,107 @@ function fold_left2(f, _accu, _l1, _l2) {
       }
     }
     else {
-      return l2 ? Pervasives.invalid_arg("List.fold_left2") : accu;
+      if (l2) {
+        return Pervasives.invalid_arg("List.fold_left2");
+      }
+      else {
+        return accu;
+      }
     }
   };
 }
 
 function fold_right2(f, l1, l2, accu) {
-  return l1 ? (
-            l2 ? f(l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu)) : Pervasives.invalid_arg("List.fold_right2")
-          ) : (
-            l2 ? Pervasives.invalid_arg("List.fold_right2") : accu
-          );
+  if (l1) {
+    if (l2) {
+      return f(l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
+    }
+    else {
+      return Pervasives.invalid_arg("List.fold_right2");
+    }
+  }
+  else {
+    if (l2) {
+      return Pervasives.invalid_arg("List.fold_right2");
+    }
+    else {
+      return accu;
+    }
+  }
 }
 
 function for_all(p, param) {
-  return param ? +(p(param[1]) && for_all(p, param[2])) : /* true */1;
+  if (param) {
+    return +(p(param[1]) && for_all(p, param[2]));
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function exists(p, param) {
-  return param ? +(p(param[1]) || exists(p, param[2])) : /* false */0;
+  if (param) {
+    return +(p(param[1]) || exists(p, param[2]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function for_all2(p, l1, l2) {
-  return l1 ? (
-            l2 ? +(p(l1[1], l2[1]) && for_all2(p, l1[2], l2[2])) : Pervasives.invalid_arg("List.for_all2")
-          ) : (
-            l2 ? Pervasives.invalid_arg("List.for_all2") : /* true */1
-          );
+  if (l1) {
+    if (l2) {
+      return +(p(l1[1], l2[1]) && for_all2(p, l1[2], l2[2]));
+    }
+    else {
+      return Pervasives.invalid_arg("List.for_all2");
+    }
+  }
+  else {
+    if (l2) {
+      return Pervasives.invalid_arg("List.for_all2");
+    }
+    else {
+      return /* true */1;
+    }
+  }
 }
 
 function exists2(p, l1, l2) {
-  return l1 ? (
-            l2 ? +(p(l1[1], l2[1]) || exists2(p, l1[2], l2[2])) : Pervasives.invalid_arg("List.exists2")
-          ) : (
-            l2 ? Pervasives.invalid_arg("List.exists2") : /* false */0
-          );
+  if (l1) {
+    if (l2) {
+      return +(p(l1[1], l2[1]) || exists2(p, l1[2], l2[2]));
+    }
+    else {
+      return Pervasives.invalid_arg("List.exists2");
+    }
+  }
+  else {
+    if (l2) {
+      return Pervasives.invalid_arg("List.exists2");
+    }
+    else {
+      return /* false */0;
+    }
+  }
 }
 
 function mem(x, param) {
-  return param ? +(Caml_primitive.caml_compare(param[1], x) === 0 || mem(x, param[2])) : /* false */0;
+  if (param) {
+    return +(Caml_primitive.caml_compare(param[1], x) === 0 || mem(x, param[2]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function memq(x, param) {
-  return param ? +(param[1] === x || memq(x, param[2])) : /* false */0;
+  if (param) {
+    return +(param[1] === x || memq(x, param[2]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function assoc(x, _param) {
@@ -351,22 +444,37 @@ function assq(x, _param) {
 }
 
 function mem_assoc(x, param) {
-  return param ? +(Caml_primitive.caml_compare(param[1][1], x) === 0 || mem_assoc(x, param[2])) : /* false */0;
+  if (param) {
+    return +(Caml_primitive.caml_compare(param[1][1], x) === 0 || mem_assoc(x, param[2]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function mem_assq(x, param) {
-  return param ? +(param[1][1] === x || mem_assq(x, param[2])) : /* false */0;
+  if (param) {
+    return +(param[1][1] === x || mem_assq(x, param[2]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function remove_assoc(x, param) {
   if (param) {
     var l = param[2];
     var pair = param[1];
-    return Caml_primitive.caml_compare(pair[1], x) ? [
+    if (Caml_primitive.caml_compare(pair[1], x)) {
+      return [
               /* :: */0,
               pair,
               remove_assoc(x, l)
-            ] : l;
+            ];
+    }
+    else {
+      return l;
+    }
   }
   else {
     return /* [] */0;
@@ -377,11 +485,16 @@ function remove_assq(x, param) {
   if (param) {
     var l = param[2];
     var pair = param[1];
-    return pair[1] === x ? l : [
+    if (pair[1] === x) {
+      return l;
+    }
+    else {
+      return [
               /* :: */0,
               pair,
               remove_assq(x, l)
             ];
+    }
   }
   else {
     return /* [] */0;
@@ -502,19 +615,30 @@ function split(param) {
 }
 
 function combine(l1, l2) {
-  return l1 ? (
-            l2 ? [
-                /* :: */0,
-                [
-                  /* tuple */0,
-                  l1[1],
-                  l2[1]
-                ],
-                combine(l1[2], l2[2])
-              ] : Pervasives.invalid_arg("List.combine")
-          ) : (
-            l2 ? Pervasives.invalid_arg("List.combine") : /* [] */0
-          );
+  if (l1) {
+    if (l2) {
+      return [
+              /* :: */0,
+              [
+                /* tuple */0,
+                l1[1],
+                l2[1]
+              ],
+              combine(l1[2], l2[2])
+            ];
+    }
+    else {
+      return Pervasives.invalid_arg("List.combine");
+    }
+  }
+  else {
+    if (l2) {
+      return Pervasives.invalid_arg("List.combine");
+    }
+    else {
+      return /* [] */0;
+    }
+  }
 }
 
 function merge(cmp, l1, l2) {
@@ -522,15 +646,20 @@ function merge(cmp, l1, l2) {
     if (l2) {
       var h2 = l2[1];
       var h1 = l1[1];
-      return cmp(h1, h2) <= 0 ? [
+      if (cmp(h1, h2) <= 0) {
+        return [
                 /* :: */0,
                 h1,
                 merge(cmp, l1[2], l2)
-              ] : [
+              ];
+      }
+      else {
+        return [
                 /* :: */0,
                 h2,
                 merge(cmp, l1, l2[2])
               ];
+      }
     }
     else {
       return l1;
@@ -655,87 +784,104 @@ function stable_sort(cmp, l) {
               var x3 = match$1[1];
               var x2 = match[1];
               var x1 = l[1];
-              return cmp(x1, x2) <= 0 ? (
-                        cmp(x2, x3) <= 0 ? [
+              if (cmp(x1, x2) <= 0) {
+                if (cmp(x2, x3) <= 0) {
+                  return [
+                          /* :: */0,
+                          x1,
+                          [
+                            /* :: */0,
+                            x2,
+                            [
+                              /* :: */0,
+                              x3,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+                else {
+                  if (cmp(x1, x3) <= 0) {
+                    return [
                             /* :: */0,
                             x1,
                             [
                               /* :: */0,
-                              x2,
+                              x3,
                               [
                                 /* :: */0,
-                                x3,
+                                x2,
                                 /* [] */0
                               ]
                             ]
-                          ] : (
-                            cmp(x1, x3) <= 0 ? [
-                                /* :: */0,
-                                x1,
-                                [
-                                  /* :: */0,
-                                  x3,
-                                  [
-                                    /* :: */0,
-                                    x2,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ] : [
-                                /* :: */0,
-                                x3,
-                                [
-                                  /* :: */0,
-                                  x1,
-                                  [
-                                    /* :: */0,
-                                    x2,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                          )
-                      ) : (
-                        cmp(x1, x3) <= 0 ? [
+                          ];
+                  }
+                  else {
+                    return [
                             /* :: */0,
-                            x2,
+                            x3,
                             [
                               /* :: */0,
                               x1,
                               [
                                 /* :: */0,
-                                x3,
+                                x2,
                                 /* [] */0
                               ]
                             ]
-                          ] : (
-                            cmp(x2, x3) <= 0 ? [
+                          ];
+                  }
+                }
+              }
+              else {
+                if (cmp(x1, x3) <= 0) {
+                  return [
+                          /* :: */0,
+                          x2,
+                          [
+                            /* :: */0,
+                            x1,
+                            [
+                              /* :: */0,
+                              x3,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+                else {
+                  if (cmp(x2, x3) <= 0) {
+                    return [
+                            /* :: */0,
+                            x2,
+                            [
+                              /* :: */0,
+                              x3,
+                              [
                                 /* :: */0,
-                                x2,
-                                [
-                                  /* :: */0,
-                                  x3,
-                                  [
-                                    /* :: */0,
-                                    x1,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ] : [
-                                /* :: */0,
-                                x3,
-                                [
-                                  /* :: */0,
-                                  x2,
-                                  [
-                                    /* :: */0,
-                                    x1,
-                                    /* [] */0
-                                  ]
-                                ]
+                                x1,
+                                /* [] */0
                               ]
-                          )
-                      );
+                            ]
+                          ];
+                  }
+                  else {
+                    return [
+                            /* :: */0,
+                            x3,
+                            [
+                              /* :: */0,
+                              x2,
+                              [
+                                /* :: */0,
+                                x1,
+                                /* [] */0
+                              ]
+                            ]
+                          ];
+                  }
+                }
+              }
             }
             else {
               exit = 1;
@@ -756,7 +902,8 @@ function stable_sort(cmp, l) {
         if (match$2) {
           var x2$1 = match$2[1];
           var x1$1 = l[1];
-          return cmp(x1$1, x2$1) <= 0 ? [
+          if (cmp(x1$1, x2$1) <= 0) {
+            return [
                     /* :: */0,
                     x1$1,
                     [
@@ -764,7 +911,10 @@ function stable_sort(cmp, l) {
                       x2$1,
                       /* [] */0
                     ]
-                  ] : [
+                  ];
+          }
+          else {
+            return [
                     /* :: */0,
                     x2$1,
                     [
@@ -773,6 +923,7 @@ function stable_sort(cmp, l) {
                       /* [] */0
                     ]
                   ];
+          }
         }
         else {
           exit = 1;
@@ -807,87 +958,104 @@ function stable_sort(cmp, l) {
               var x3 = match$1[1];
               var x2 = match[1];
               var x1 = l[1];
-              return cmp(x1, x2) > 0 ? (
-                        cmp(x2, x3) > 0 ? [
+              if (cmp(x1, x2) > 0) {
+                if (cmp(x2, x3) > 0) {
+                  return [
+                          /* :: */0,
+                          x1,
+                          [
+                            /* :: */0,
+                            x2,
+                            [
+                              /* :: */0,
+                              x3,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+                else {
+                  if (cmp(x1, x3) > 0) {
+                    return [
                             /* :: */0,
                             x1,
                             [
                               /* :: */0,
-                              x2,
+                              x3,
                               [
                                 /* :: */0,
-                                x3,
+                                x2,
                                 /* [] */0
                               ]
                             ]
-                          ] : (
-                            cmp(x1, x3) > 0 ? [
-                                /* :: */0,
-                                x1,
-                                [
-                                  /* :: */0,
-                                  x3,
-                                  [
-                                    /* :: */0,
-                                    x2,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ] : [
-                                /* :: */0,
-                                x3,
-                                [
-                                  /* :: */0,
-                                  x1,
-                                  [
-                                    /* :: */0,
-                                    x2,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ]
-                          )
-                      ) : (
-                        cmp(x1, x3) > 0 ? [
+                          ];
+                  }
+                  else {
+                    return [
                             /* :: */0,
-                            x2,
+                            x3,
                             [
                               /* :: */0,
                               x1,
                               [
                                 /* :: */0,
-                                x3,
+                                x2,
                                 /* [] */0
                               ]
                             ]
-                          ] : (
-                            cmp(x2, x3) > 0 ? [
+                          ];
+                  }
+                }
+              }
+              else {
+                if (cmp(x1, x3) > 0) {
+                  return [
+                          /* :: */0,
+                          x2,
+                          [
+                            /* :: */0,
+                            x1,
+                            [
+                              /* :: */0,
+                              x3,
+                              /* [] */0
+                            ]
+                          ]
+                        ];
+                }
+                else {
+                  if (cmp(x2, x3) > 0) {
+                    return [
+                            /* :: */0,
+                            x2,
+                            [
+                              /* :: */0,
+                              x3,
+                              [
                                 /* :: */0,
-                                x2,
-                                [
-                                  /* :: */0,
-                                  x3,
-                                  [
-                                    /* :: */0,
-                                    x1,
-                                    /* [] */0
-                                  ]
-                                ]
-                              ] : [
-                                /* :: */0,
-                                x3,
-                                [
-                                  /* :: */0,
-                                  x2,
-                                  [
-                                    /* :: */0,
-                                    x1,
-                                    /* [] */0
-                                  ]
-                                ]
+                                x1,
+                                /* [] */0
                               ]
-                          )
-                      );
+                            ]
+                          ];
+                  }
+                  else {
+                    return [
+                            /* :: */0,
+                            x3,
+                            [
+                              /* :: */0,
+                              x2,
+                              [
+                                /* :: */0,
+                                x1,
+                                /* [] */0
+                              ]
+                            ]
+                          ];
+                  }
+                }
+              }
             }
             else {
               exit = 1;
@@ -908,7 +1076,8 @@ function stable_sort(cmp, l) {
         if (match$2) {
           var x2$1 = match$2[1];
           var x1$1 = l[1];
-          return cmp(x1$1, x2$1) > 0 ? [
+          if (cmp(x1$1, x2$1) > 0) {
+            return [
                     /* :: */0,
                     x1$1,
                     [
@@ -916,7 +1085,10 @@ function stable_sort(cmp, l) {
                       x2$1,
                       /* [] */0
                     ]
-                  ] : [
+                  ];
+          }
+          else {
+            return [
                     /* :: */0,
                     x2$1,
                     [
@@ -925,6 +1097,7 @@ function stable_sort(cmp, l) {
                       /* [] */0
                     ]
                   ];
+          }
         }
         else {
           exit = 1;
@@ -945,7 +1118,12 @@ function stable_sort(cmp, l) {
     
   };
   var len = length(l);
-  return len < 2 ? l : sort(len, l);
+  if (len < 2) {
+    return l;
+  }
+  else {
+    return sort(len, l);
+  }
 }
 
 function sort_uniq(cmp, l) {
@@ -1084,33 +1262,40 @@ function sort_uniq(cmp, l) {
                     }
                     else {
                       var c$2 = cmp(x1, x3);
-                      return c$2 ? (
-                                c$2 < 0 ? [
-                                    /* :: */0,
-                                    x1,
-                                    [
-                                      /* :: */0,
-                                      x3,
-                                      [
-                                        /* :: */0,
-                                        x2,
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ] : [
+                      if (c$2) {
+                        if (c$2 < 0) {
+                          return [
+                                  /* :: */0,
+                                  x1,
+                                  [
                                     /* :: */0,
                                     x3,
                                     [
                                       /* :: */0,
-                                      x1,
-                                      [
-                                        /* :: */0,
-                                        x2,
-                                        /* [] */0
-                                      ]
+                                      x2,
+                                      /* [] */0
                                     ]
                                   ]
-                              ) : [
+                                ];
+                        }
+                        else {
+                          return [
+                                  /* :: */0,
+                                  x3,
+                                  [
+                                    /* :: */0,
+                                    x1,
+                                    [
+                                      /* :: */0,
+                                      x2,
+                                      /* [] */0
+                                    ]
+                                  ]
+                                ];
+                        }
+                      }
+                      else {
+                        return [
                                 /* :: */0,
                                 x1,
                                 [
@@ -1119,6 +1304,7 @@ function sort_uniq(cmp, l) {
                                   /* [] */0
                                 ]
                               ];
+                      }
                     }
                   }
                   else {
@@ -1153,33 +1339,40 @@ function sort_uniq(cmp, l) {
                     }
                     else {
                       var c$4 = cmp(x2, x3);
-                      return c$4 ? (
-                                c$4 < 0 ? [
-                                    /* :: */0,
-                                    x2,
-                                    [
-                                      /* :: */0,
-                                      x3,
-                                      [
-                                        /* :: */0,
-                                        x1,
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ] : [
+                      if (c$4) {
+                        if (c$4 < 0) {
+                          return [
+                                  /* :: */0,
+                                  x2,
+                                  [
                                     /* :: */0,
                                     x3,
                                     [
                                       /* :: */0,
-                                      x2,
-                                      [
-                                        /* :: */0,
-                                        x1,
-                                        /* [] */0
-                                      ]
+                                      x1,
+                                      /* [] */0
                                     ]
                                   ]
-                              ) : [
+                                ];
+                        }
+                        else {
+                          return [
+                                  /* :: */0,
+                                  x3,
+                                  [
+                                    /* :: */0,
+                                    x2,
+                                    [
+                                      /* :: */0,
+                                      x1,
+                                      /* [] */0
+                                    ]
+                                  ]
+                                ];
+                        }
+                      }
+                      else {
+                        return [
                                 /* :: */0,
                                 x2,
                                 [
@@ -1188,6 +1381,7 @@ function sort_uniq(cmp, l) {
                                   /* [] */0
                                 ]
                               ];
+                      }
                     }
                   }
                   else {
@@ -1205,29 +1399,37 @@ function sort_uniq(cmp, l) {
               }
               else {
                 var c$5 = cmp(x2, x3);
-                return c$5 ? (
-                          c$5 < 0 ? [
-                              /* :: */0,
-                              x2,
-                              [
-                                /* :: */0,
-                                x3,
-                                /* [] */0
-                              ]
-                            ] : [
+                if (c$5) {
+                  if (c$5 < 0) {
+                    return [
+                            /* :: */0,
+                            x2,
+                            [
                               /* :: */0,
                               x3,
-                              [
-                                /* :: */0,
-                                x2,
-                                /* [] */0
-                              ]
+                              /* [] */0
                             ]
-                        ) : [
+                          ];
+                  }
+                  else {
+                    return [
+                            /* :: */0,
+                            x3,
+                            [
+                              /* :: */0,
+                              x2,
+                              /* [] */0
+                            ]
+                          ];
+                  }
+                }
+                else {
+                  return [
                           /* :: */0,
                           x2,
                           /* [] */0
                         ];
+                }
               }
             }
             else {
@@ -1250,29 +1452,37 @@ function sort_uniq(cmp, l) {
           var x2$1 = match$2[1];
           var x1$1 = l[1];
           var c$6 = cmp(x1$1, x2$1);
-          return c$6 ? (
-                    c$6 < 0 ? [
-                        /* :: */0,
-                        x1$1,
-                        [
-                          /* :: */0,
-                          x2$1,
-                          /* [] */0
-                        ]
-                      ] : [
+          if (c$6) {
+            if (c$6 < 0) {
+              return [
+                      /* :: */0,
+                      x1$1,
+                      [
                         /* :: */0,
                         x2$1,
-                        [
-                          /* :: */0,
-                          x1$1,
-                          /* [] */0
-                        ]
+                        /* [] */0
                       ]
-                  ) : [
+                    ];
+            }
+            else {
+              return [
+                      /* :: */0,
+                      x2$1,
+                      [
+                        /* :: */0,
+                        x1$1,
+                        /* [] */0
+                      ]
+                    ];
+            }
+          }
+          else {
+            return [
                     /* :: */0,
                     x1$1,
                     /* [] */0
                   ];
+          }
         }
         else {
           exit = 1;
@@ -1329,33 +1539,40 @@ function sort_uniq(cmp, l) {
                     }
                     else {
                       var c$2 = cmp(x1, x3);
-                      return c$2 ? (
-                                c$2 > 0 ? [
-                                    /* :: */0,
-                                    x1,
-                                    [
-                                      /* :: */0,
-                                      x3,
-                                      [
-                                        /* :: */0,
-                                        x2,
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ] : [
+                      if (c$2) {
+                        if (c$2 > 0) {
+                          return [
+                                  /* :: */0,
+                                  x1,
+                                  [
                                     /* :: */0,
                                     x3,
                                     [
                                       /* :: */0,
-                                      x1,
-                                      [
-                                        /* :: */0,
-                                        x2,
-                                        /* [] */0
-                                      ]
+                                      x2,
+                                      /* [] */0
                                     ]
                                   ]
-                              ) : [
+                                ];
+                        }
+                        else {
+                          return [
+                                  /* :: */0,
+                                  x3,
+                                  [
+                                    /* :: */0,
+                                    x1,
+                                    [
+                                      /* :: */0,
+                                      x2,
+                                      /* [] */0
+                                    ]
+                                  ]
+                                ];
+                        }
+                      }
+                      else {
+                        return [
                                 /* :: */0,
                                 x1,
                                 [
@@ -1364,6 +1581,7 @@ function sort_uniq(cmp, l) {
                                   /* [] */0
                                 ]
                               ];
+                      }
                     }
                   }
                   else {
@@ -1398,33 +1616,40 @@ function sort_uniq(cmp, l) {
                     }
                     else {
                       var c$4 = cmp(x2, x3);
-                      return c$4 ? (
-                                c$4 > 0 ? [
-                                    /* :: */0,
-                                    x2,
-                                    [
-                                      /* :: */0,
-                                      x3,
-                                      [
-                                        /* :: */0,
-                                        x1,
-                                        /* [] */0
-                                      ]
-                                    ]
-                                  ] : [
+                      if (c$4) {
+                        if (c$4 > 0) {
+                          return [
+                                  /* :: */0,
+                                  x2,
+                                  [
                                     /* :: */0,
                                     x3,
                                     [
                                       /* :: */0,
-                                      x2,
-                                      [
-                                        /* :: */0,
-                                        x1,
-                                        /* [] */0
-                                      ]
+                                      x1,
+                                      /* [] */0
                                     ]
                                   ]
-                              ) : [
+                                ];
+                        }
+                        else {
+                          return [
+                                  /* :: */0,
+                                  x3,
+                                  [
+                                    /* :: */0,
+                                    x2,
+                                    [
+                                      /* :: */0,
+                                      x1,
+                                      /* [] */0
+                                    ]
+                                  ]
+                                ];
+                        }
+                      }
+                      else {
+                        return [
                                 /* :: */0,
                                 x2,
                                 [
@@ -1433,6 +1658,7 @@ function sort_uniq(cmp, l) {
                                   /* [] */0
                                 ]
                               ];
+                      }
                     }
                   }
                   else {
@@ -1450,29 +1676,37 @@ function sort_uniq(cmp, l) {
               }
               else {
                 var c$5 = cmp(x2, x3);
-                return c$5 ? (
-                          c$5 > 0 ? [
-                              /* :: */0,
-                              x2,
-                              [
-                                /* :: */0,
-                                x3,
-                                /* [] */0
-                              ]
-                            ] : [
+                if (c$5) {
+                  if (c$5 > 0) {
+                    return [
+                            /* :: */0,
+                            x2,
+                            [
                               /* :: */0,
                               x3,
-                              [
-                                /* :: */0,
-                                x2,
-                                /* [] */0
-                              ]
+                              /* [] */0
                             ]
-                        ) : [
+                          ];
+                  }
+                  else {
+                    return [
+                            /* :: */0,
+                            x3,
+                            [
+                              /* :: */0,
+                              x2,
+                              /* [] */0
+                            ]
+                          ];
+                  }
+                }
+                else {
+                  return [
                           /* :: */0,
                           x2,
                           /* [] */0
                         ];
+                }
               }
             }
             else {
@@ -1495,29 +1729,37 @@ function sort_uniq(cmp, l) {
           var x2$1 = match$2[1];
           var x1$1 = l[1];
           var c$6 = cmp(x1$1, x2$1);
-          return c$6 ? (
-                    c$6 > 0 ? [
-                        /* :: */0,
-                        x1$1,
-                        [
-                          /* :: */0,
-                          x2$1,
-                          /* [] */0
-                        ]
-                      ] : [
+          if (c$6) {
+            if (c$6 > 0) {
+              return [
+                      /* :: */0,
+                      x1$1,
+                      [
                         /* :: */0,
                         x2$1,
-                        [
-                          /* :: */0,
-                          x1$1,
-                          /* [] */0
-                        ]
+                        /* [] */0
                       ]
-                  ) : [
+                    ];
+            }
+            else {
+              return [
+                      /* :: */0,
+                      x2$1,
+                      [
+                        /* :: */0,
+                        x1$1,
+                        /* [] */0
+                      ]
+                    ];
+            }
+          }
+          else {
+            return [
                     /* :: */0,
                     x1$1,
                     /* [] */0
                   ];
+          }
         }
         else {
           exit = 1;
@@ -1538,7 +1780,12 @@ function sort_uniq(cmp, l) {
     
   };
   var len = length(l);
-  return len < 2 ? l : sort(len, l);
+  if (len < 2) {
+    return l;
+  }
+  else {
+    return sort(len, l);
+  }
 }
 
 var append = Pervasives.$at;

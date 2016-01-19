@@ -6,7 +6,12 @@ function f() {
   var n = 0;
   while(function () {
         var fib = function (n) {
-          return 1 < (n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+          if (1 < (n >>> 0)) {
+            return fib(n - 1) + fib(n - 2);
+          }
+          else {
+            return 1;
+          }
         };
         return +(fib(n) > 10);
       }()) {

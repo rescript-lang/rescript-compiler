@@ -11,11 +11,22 @@ function caml_array_sub(x, offset, len) {
 }
 
 function caml_array_set(xs, index, newval) {
-  return index < 0 || index >= xs.length ? Pervasives.invalid_arg("index out of bounds") : (xs[index] = newval, /* () */0);
+  if (index < 0 || index >= xs.length) {
+    return Pervasives.invalid_arg("index out of bounds");
+  }
+  else {
+    xs[index] = newval;
+    return /* () */0;
+  }
 }
 
 function caml_array_get(xs, index) {
-  return index < 0 || index >= xs.length ? Pervasives.invalid_arg("index out of bounds") : xs[index];
+  if (index < 0 || index >= xs.length) {
+    return Pervasives.invalid_arg("index out of bounds");
+  }
+  else {
+    return xs[index];
+  }
 }
 
 function caml_make_vect(len, init) {

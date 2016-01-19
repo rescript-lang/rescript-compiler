@@ -32,7 +32,16 @@ function add_queue(x, q) {
     c_001
   ];
   var match = q[1];
-  return match ? (q[1] = c, match[1][2] = c, /* () */0) : (q[1] = c, q[2] = c, /* () */0);
+  if (match) {
+    q[1] = c;
+    match[1][2] = c;
+    return /* () */0;
+  }
+  else {
+    q[1] = c;
+    q[2] = c;
+    return /* () */0;
+  }
 }
 
 var Empty_queue = [
@@ -118,11 +127,22 @@ function pp_force_break_line(state) {
     var match$1 = match[1];
     var width = match$1[2];
     var bl_ty = match$1[1];
-    return width > state[9] ? (
-              bl_ty !== 0 ? (
-                  bl_ty >= 5 ? /* () */0 : break_line(state, width)
-                ) : /* () */0
-            ) : 0;
+    if (width > state[9]) {
+      if (bl_ty !== 0) {
+        if (bl_ty >= 5) {
+          return /* () */0;
+        }
+        else {
+          return break_line(state, width);
+        }
+      }
+      else {
+        return /* () */0;
+      }
+    }
+    else {
+      return 0;
+    }
   }
   else {
     return pp_output_newline(state);
@@ -147,15 +167,20 @@ function format_pp_token(state, size, param) {
             var add_tab = function (n, ls) {
               if (ls) {
                 var x = ls[1];
-                return Caml_primitive.caml_lessthan(n, x) ? [
+                if (Caml_primitive.caml_lessthan(n, x)) {
+                  return [
                           /* :: */0,
                           n,
                           ls
-                        ] : [
+                        ];
+                }
+                else {
+                  return [
                           /* :: */0,
                           x,
                           add_tab(n, ls[2])
                         ];
+                }
               }
               else {
                 return [
@@ -174,15 +199,37 @@ function format_pp_token(state, size, param) {
           break;
       case 1 : 
           var match$1 = state[2];
-          return match$1 ? (state[2] = match$1[2], /* () */0) : /* () */0;
+          if (match$1) {
+            state[2] = match$1[2];
+            return /* () */0;
+          }
+          else {
+            return /* () */0;
+          }
       case 2 : 
           var match$2 = state[3];
-          return match$2 ? (state[3] = match$2[2], /* () */0) : /* () */0;
+          if (match$2) {
+            state[3] = match$2[2];
+            return /* () */0;
+          }
+          else {
+            return /* () */0;
+          }
       case 3 : 
           var match$3 = state[2];
-          return match$3 ? break_line(state, match$3[1][2]) : pp_output_newline(state);
+          if (match$3) {
+            return break_line(state, match$3[1][2]);
+          }
+          else {
+            return pp_output_newline(state);
+          }
       case 4 : 
-          return state[10] !== state[6] - state[9] ? pp_skip_token(state) : 0;
+          if (state[10] !== state[6] - state[9]) {
+            return pp_skip_token(state);
+          }
+          else {
+            return 0;
+          }
       case 5 : 
           var match$4 = state[5];
           if (match$4) {
@@ -217,13 +264,29 @@ function format_pp_token(state, size, param) {
               case 2 : 
                   return break_new_line(state, off, width);
               case 3 : 
-                  return size > state[9] ? break_new_line(state, off, width) : break_same_line(state, n);
+                  if (size > state[9]) {
+                    return break_new_line(state, off, width);
+                  }
+                  else {
+                    return break_same_line(state, n);
+                  }
               case 4 : 
-                  return state[11] ? break_same_line(state, n) : (
-                            size > state[9] ? break_new_line(state, off, width) : (
-                                state[10] > state[6] - width + off ? break_new_line(state, off, width) : break_same_line(state, n)
-                              )
-                          );
+                  if (state[11]) {
+                    return break_same_line(state, n);
+                  }
+                  else {
+                    if (size > state[9]) {
+                      return break_new_line(state, off, width);
+                    }
+                    else {
+                      if (state[10] > state[6] - width + off) {
+                        return break_new_line(state, off, width);
+                      }
+                      else {
+                        return break_same_line(state, n);
+                      }
+                    }
+                  }
               case 0 : 
               case 5 : 
                   return break_same_line(state, n);
@@ -275,7 +338,12 @@ function format_pp_token(state, size, param) {
               tab = insertion_point;
             }
             var offset = tab - insertion_point;
-            return offset >= 0 ? break_same_line(state, offset + param[1]) : break_new_line(state, tab + param[2], state[6]);
+            if (offset >= 0) {
+              return break_same_line(state, offset + param[1]);
+            }
+            else {
+              return break_new_line(state, tab + param[2], state[6]);
+            }
           }
           else {
             return /* () */0;
@@ -327,7 +395,14 @@ function advance_loop(state) {
   while(/* true */1) {
     var match = peek_queue(state[27]);
     var size = match[1];
-    return !(size < 0 && state[13] - state[12] < state[9]) ? (take_queue(state[27]), format_pp_token(state, size < 0 ? pp_infinity : size, match[2]), state[12] = match[3] + state[12]) : 0;
+    if (!(size < 0 && state[13] - state[12] < state[9])) {
+      take_queue(state[27]);
+      format_pp_token(state, size < 0 ? pp_infinity : size, match[2]);
+      return state[12] = match[3] + state[12];
+    }
+    else {
+      return 0;
+    }
   };
 }
 
@@ -416,13 +491,27 @@ function set_size(state, ty) {
               exit = 1;
               break;
           case 3 : 
-              return !ty ? (queue_elem[1] = state[13] + size, state[1] = t, /* () */0) : 0;
+              if (!ty) {
+                queue_elem[1] = state[13] + size;
+                state[1] = t;
+                return /* () */0;
+              }
+              else {
+                return 0;
+              }
           default:
             return /* () */0;
         }
       }
       if (exit === 1) {
-        return ty ? (queue_elem[1] = state[13] + size, state[1] = t, /* () */0) : 0;
+        if (ty) {
+          queue_elem[1] = state[13] + size;
+          state[1] = t;
+          return /* () */0;
+        }
+        else {
+          return 0;
+        }
       }
       
     }
@@ -460,7 +549,12 @@ function pp_open_box_gen(state, indent, br_ty) {
     return scan_push(state, /* false */0, elem);
   }
   else {
-    return state[14] === state[15] ? enqueue_string(state, state[16]) : 0;
+    if (state[14] === state[15]) {
+      return enqueue_string(state, state[16]);
+    }
+    else {
+      return 0;
+    }
   }
 }
 
@@ -497,7 +591,8 @@ function pp_open_tag(state, tag_name) {
     ];
     state[25](tag_name);
   }
-  return state[22] ? pp_enqueue(state, [
+  if (state[22]) {
+    return pp_enqueue(state, [
                 /* record */0,
                 0,
                 [
@@ -505,7 +600,11 @@ function pp_open_tag(state, tag_name) {
                   tag_name
                 ],
                 0
-              ]) : 0;
+              ]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_close_tag(state, _) {
@@ -519,7 +618,14 @@ function pp_close_tag(state, _) {
   }
   if (state[21]) {
     var match = state[4];
-    return match ? (state[26](match[1]), state[4] = match[2], /* () */0) : /* () */0;
+    if (match) {
+      state[26](match[1]);
+      state[4] = match[2];
+      return /* () */0;
+    }
+    else {
+      return /* () */0;
+    }
   }
   else {
     return 0;
@@ -593,7 +699,12 @@ function pp_flush_queue(state, b) {
 }
 
 function pp_print_as_size(state, size, s) {
-  return state[14] < state[15] ? enqueue_string_as(state, size, s) : 0;
+  if (state[14] < state[15]) {
+    return enqueue_string_as(state, size, s);
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_print_as(state, isize, s) {
@@ -651,11 +762,21 @@ function pp_print_flush(state, _) {
 }
 
 function pp_force_newline(state, _) {
-  return state[14] < state[15] ? enqueue_advance(state, make_queue_elem(0, /* Pp_newline */3, 0)) : 0;
+  if (state[14] < state[15]) {
+    return enqueue_advance(state, make_queue_elem(0, /* Pp_newline */3, 0));
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_print_if_newline(state, _) {
-  return state[14] < state[15] ? enqueue_advance(state, make_queue_elem(0, /* Pp_if_newline */4, 0)) : 0;
+  if (state[14] < state[15]) {
+    return enqueue_advance(state, make_queue_elem(0, /* Pp_if_newline */4, 0));
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_print_break(state, width, offset) {
@@ -804,11 +925,22 @@ function pp_print_text(ppf, s) {
       pp_force_newline(ppf, /* () */0);
     }
   };
-  return left[1] !== len ? flush(/* () */0) : 0;
+  if (left[1] !== len) {
+    return flush(/* () */0);
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_set_max_boxes(state, n) {
-  return n > 1 ? (state[15] = n, /* () */0) : 0;
+  if (n > 1) {
+    state[15] = n;
+    return /* () */0;
+  }
+  else {
+    return 0;
+  }
 }
 
 function pp_get_max_boxes(state, _) {
@@ -829,7 +961,12 @@ function pp_get_ellipsis_text(state, _) {
 }
 
 function pp_limit(n) {
-  return n < pp_infinity ? n : -1 + pp_infinity;
+  if (n < pp_infinity) {
+    return n;
+  }
+  else {
+    return -1 + pp_infinity;
+  }
 }
 
 function pp_set_min_space_left(state, n) {
@@ -1278,7 +1415,12 @@ function compute_tag(output, tag_acc) {
   output(ppf, tag_acc);
   pp_print_flush(ppf, /* () */0);
   var len = Buffer.length(buf);
-  return len < 2 ? Buffer.contents(buf) : Buffer.sub(buf, 1, len - 2);
+  if (len < 2) {
+    return Buffer.contents(buf);
+  }
+  else {
+    return Buffer.sub(buf, 1, len - 2);
+  }
 }
 
 function output_formatting_lit(ppf, fmting_lit) {

@@ -7,7 +7,12 @@ function $$eval(_bdd, vars) {
   while(/* true */1) {
     var bdd = _bdd;
     if (typeof bdd === "number") {
-      return bdd !== 0 ? /* false */0 : /* true */1;
+      if (bdd !== 0) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
     }
     else {
       _bdd = vars[bdd[2]] ? bdd[4] : bdd[1];
@@ -16,9 +21,17 @@ function $$eval(_bdd, vars) {
 }
 
 function getId(bdd) {
-  return typeof bdd === "number" ? (
-            bdd !== 0 ? 0 : 1
-          ) : bdd[3];
+  if (typeof bdd === "number") {
+    if (bdd !== 0) {
+      return 0;
+    }
+    else {
+      return 1;
+    }
+  }
+  else {
+    return bdd[3];
+  }
 }
 
 var initSize_1 = 8 * 1024 - 1;
@@ -174,9 +187,17 @@ function mkNode(low, v, high) {
 }
 
 function cmpVar(x, y) {
-  return x < y ? /* LESS */0 : (
-            x > y ? /* GREATER */2 : /* EQUAL */1
-          );
+  if (x < y) {
+    return /* LESS */0;
+  }
+  else {
+    if (x > y) {
+      return /* GREATER */2;
+    }
+    else {
+      return /* EQUAL */1;
+    }
+  }
 }
 
 var zero = /* Zero */1;
@@ -211,7 +232,12 @@ function hash(x, y) {
 
 function not(n) {
   if (typeof n === "number") {
-    return n !== 0 ? /* One */0 : /* Zero */1;
+    if (n !== 0) {
+      return /* One */0;
+    }
+    else {
+      return /* Zero */1;
+    }
   }
   else {
     var id = n[3];
@@ -230,7 +256,12 @@ function not(n) {
 
 function and2(n1, n2) {
   if (typeof n1 === "number") {
-    return n1 !== 0 ? /* Zero */1 : n2;
+    if (n1 !== 0) {
+      return /* Zero */1;
+    }
+    else {
+      return n2;
+    }
   }
   else {
     var r1 = n1[4];
@@ -238,7 +269,12 @@ function and2(n1, n2) {
     var v1 = n1[2];
     var l1 = n1[1];
     if (typeof n2 === "number") {
-      return n2 !== 0 ? /* Zero */1 : n1;
+      if (n2 !== 0) {
+        return /* Zero */1;
+      }
+      else {
+        return n1;
+      }
     }
     else {
       var r2 = n2[4];
@@ -275,7 +311,12 @@ function and2(n1, n2) {
 
 function xor(n1, n2) {
   if (typeof n1 === "number") {
-    return n1 !== 0 ? n2 : not(n2);
+    if (n1 !== 0) {
+      return n2;
+    }
+    else {
+      return not(n2);
+    }
   }
   else {
     var r1 = n1[4];
@@ -283,7 +324,12 @@ function xor(n1, n2) {
     var v1 = n1[2];
     var l1 = n1[1];
     if (typeof n2 === "number") {
-      return n2 !== 0 ? n1 : not(n1);
+      if (n2 !== 0) {
+        return n1;
+      }
+      else {
+        return not(n1);
+      }
     }
     else {
       var r2 = n2[4];
@@ -320,10 +366,20 @@ function xor(n1, n2) {
 
 function hwb(n) {
   var h = function (i, j) {
-    return i === j ? mkVar(i) : xor(and2(not(mkVar(j)), h(i, j - 1)), and2(mkVar(j), g(i, j - 1)));
+    if (i === j) {
+      return mkVar(i);
+    }
+    else {
+      return xor(and2(not(mkVar(j)), h(i, j - 1)), and2(mkVar(j), g(i, j - 1)));
+    }
   };
   var g = function (i, j) {
-    return i === j ? mkVar(i) : xor(and2(not(mkVar(i)), h(i + 1, j)), and2(mkVar(i), g(i + 1, j)));
+    if (i === j) {
+      return mkVar(i);
+    }
+    else {
+      return xor(and2(not(mkVar(i)), h(i + 1, j)), and2(mkVar(i), g(i + 1, j)));
+    }
   };
   return h(0, n - 1);
 }
@@ -347,11 +403,22 @@ function random_vars(n) {
 }
 
 function bool_equal(a, b) {
-  return a !== 0 ? (
-            b !== 0 ? /* true */1 : /* false */0
-          ) : (
-            b !== 0 ? /* false */0 : /* true */1
-          );
+  if (a !== 0) {
+    if (b !== 0) {
+      return /* true */1;
+    }
+    else {
+      return /* false */0;
+    }
+  }
+  else {
+    if (b !== 0) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
 }
 
 function test_hwb(bdd, vars) {

@@ -39,7 +39,12 @@ function next_char(ib) {
 }
 
 function peek_char(ib) {
-  return ib[3] ? ib[2] : next_char(ib);
+  if (ib[3]) {
+    return ib[2];
+  }
+  else {
+    return next_char(ib);
+  }
 }
 
 function checked_peek_char(ib) {
@@ -65,15 +70,31 @@ function beginning_of_input(ib) {
 
 function name_of_input(ib) {
   var match = ib[9];
-  return typeof match === "number" ? (
-            match ? "unnamed function" : "unnamed character string"
-          ) : (
-            match[0] ? "unnamed pervasives input channel" : match[1]
-          );
+  if (typeof match === "number") {
+    if (match) {
+      return "unnamed function";
+    }
+    else {
+      return "unnamed character string";
+    }
+  }
+  else {
+    if (match[0]) {
+      return "unnamed pervasives input channel";
+    }
+    else {
+      return match[1];
+    }
+  }
 }
 
 function char_count(ib) {
-  return ib[3] ? ib[4] - 1 : ib[4];
+  if (ib[3]) {
+    return ib[4] - 1;
+  }
+  else {
+    return ib[4];
+  }
 }
 
 function line_count(ib) {
@@ -194,7 +215,14 @@ function from_ic(scan_close_ic, iname, ic) {
       }
       else {
         lim[1] = Pervasives.input(ic, buf, 0, len);
-        return lim[1] ? (i[1] = 1, buf[0]) : (eof[1] = /* true */1, scan_close_ic(ic));
+        if (lim[1]) {
+          i[1] = 1;
+          return buf[0];
+        }
+        else {
+          eof[1] = /* true */1;
+          return scan_close_ic(ic);
+        }
       }
     }
   };
@@ -277,9 +305,17 @@ function from_channel(param) {
 
 function close_in(ib) {
   var match = ib[9];
-  return typeof match === "number" ? /* () */0 : (
-            match[0] ? Pervasives.close_in(match[1]) : Pervasives.close_in(match[2])
-          );
+  if (typeof match === "number") {
+    return /* () */0;
+  }
+  else {
+    if (match[0]) {
+      return Pervasives.close_in(match[1]);
+    }
+    else {
+      return Pervasives.close_in(match[2]);
+    }
+  }
 }
 
 var Scan_failure = [
@@ -386,11 +422,22 @@ function skip_whites(ib) {
     var c = peek_char(ib);
     if (!eof(ib)) {
       var switcher = -9 + c;
-      return !(4 < (switcher >>> 0)) ? (
-                1 < (-2 + switcher >>> 0) ? invalidate_current_char(ib) : /* () */0
-              ) : (
-                switcher !== 23 ? /* () */0 : invalidate_current_char(ib)
-              );
+      if (!(4 < (switcher >>> 0))) {
+        if (1 < (-2 + switcher >>> 0)) {
+          return invalidate_current_char(ib);
+        }
+        else {
+          return /* () */0;
+        }
+      }
+      else {
+        if (switcher !== 23) {
+          return /* () */0;
+        }
+        else {
+          return invalidate_current_char(ib);
+        }
+      }
     }
     else {
       return 0;
@@ -531,7 +578,12 @@ function token_int_literal(conv, ib) {
     
   }
   var l = tok.length;
-  return l === 0 || tok.charCodeAt(0) !== /* "+" */43 ? tok : $$String.sub(tok, 1, l - 1);
+  if (l === 0 || tok.charCodeAt(0) !== /* "+" */43) {
+    return tok;
+  }
+  else {
+    return $$String.sub(tok, 1, l - 1);
+  }
 }
 
 function token_int(conv, ib) {
@@ -650,7 +702,11 @@ function scan_digits_plus(basis, digitp, width, ib) {
   };
   if (width) {
     var c = checked_peek_char(ib);
-    return digitp(c) ? scan_digits(store_char(width, ib, c)) : bad_input(Printf.sprintf([
+    if (digitp(c)) {
+      return scan_digits(store_char(width, ib, c));
+    }
+    else {
+      return bad_input(Printf.sprintf([
                         /* Format */0,
                         [
                           /* String_literal */11,
@@ -674,6 +730,7 @@ function scan_digits_plus(basis, digitp, width, ib) {
                         ],
                         "character %C is not a valid %s digit"
                       ])(c, basis));
+    }
   }
   else {
     return bad_token_length("digits");
@@ -681,7 +738,12 @@ function scan_digits_plus(basis, digitp, width, ib) {
 }
 
 function is_binary_digit(param) {
-  return 1 < (-48 + param >>> 0) ? /* false */0 : /* true */1;
+  if (1 < (-48 + param >>> 0)) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function scan_binary_int(param, param$1) {
@@ -689,7 +751,12 @@ function scan_binary_int(param, param$1) {
 }
 
 function is_octal_digit(param) {
-  return 7 < (-48 + param >>> 0) ? /* false */0 : /* true */1;
+  if (7 < (-48 + param >>> 0)) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function scan_octal_int(param, param$1) {
@@ -698,11 +765,22 @@ function scan_octal_int(param, param$1) {
 
 function is_hexa_digit(param) {
   var switcher = -48 + param;
-  return 22 < (switcher >>> 0) ? (
-            5 < (-49 + switcher >>> 0) ? /* false */0 : /* true */1
-          ) : (
-            6 < (-10 + switcher >>> 0) ? /* true */1 : /* false */0
-          );
+  if (22 < (switcher >>> 0)) {
+    if (5 < (-49 + switcher >>> 0)) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
+  else {
+    if (6 < (-10 + switcher >>> 0)) {
+      return /* true */1;
+    }
+    else {
+      return /* false */0;
+    }
+  }
 }
 
 function scan_hexadecimal_int(param, param$1) {
@@ -761,7 +839,12 @@ function scan_unsigned_int(width, ib) {
         }
         else {
           if (c$1 !== 88) {
-            return c$1 >= 98 ? scan_binary_int(store_char(width$1, ib, c$1), ib) : scan_decimal_digits(width$1, ib);
+            if (c$1 >= 98) {
+              return scan_binary_int(store_char(width$1, ib, c$1), ib);
+            }
+            else {
+              return scan_decimal_digits(width$1, ib);
+            }
           }
           else {
             exit = 1;
@@ -854,9 +937,17 @@ function scan_int_conv(conv, width, ib) {
 function scan_frac_part(width, ib) {
   if (width) {
     var c = peek_char(ib);
-    return eof(ib) ? width : (
-              9 < (-48 + c >>> 0) ? width : scan_decimal_digits(store_char(width, ib, c), ib)
-            );
+    if (eof(ib)) {
+      return width;
+    }
+    else {
+      if (9 < (-48 + c >>> 0)) {
+        return width;
+      }
+      else {
+        return scan_decimal_digits(store_char(width, ib, c), ib);
+      }
+    }
   }
   else {
     return width;
@@ -948,7 +1039,12 @@ function scan_caml_float(width, precision, ib) {
     else {
       var switcher = -69 + c;
       if (!(32 < (switcher >>> 0))) {
-        return 30 < (-1 + switcher >>> 0) ? scan_exp_part(width$1, ib) : bad_float(/* () */0);
+        if (30 < (-1 + switcher >>> 0)) {
+          return scan_exp_part(width$1, ib);
+        }
+        else {
+          return bad_float(/* () */0);
+        }
       }
       else {
         if (switcher !== -23) {
@@ -1047,7 +1143,12 @@ function char_for_backslash(c) {
     }
   }
   else {
-    return c !== 98 ? c : /* "\b" */8;
+    if (c !== 98) {
+      return c;
+    }
+    else {
+      return /* "\b" */8;
+    }
   }
 }
 
@@ -1057,7 +1158,8 @@ function decimal_value_of_char(c) {
 
 function char_for_decimal_code(c0, c1, c2) {
   var c = 100 * decimal_value_of_char(c0) + 10 * decimal_value_of_char(c1) + decimal_value_of_char(c2);
-  return c < 0 || c > 255 ? bad_input(Printf.sprintf([
+  if (c < 0 || c > 255) {
+    return bad_input(Printf.sprintf([
                       /* Format */0,
                       [
                         /* String_literal */11,
@@ -1074,18 +1176,31 @@ function char_for_decimal_code(c0, c1, c2) {
                         ]
                       ],
                       "bad character decimal encoding \\%c%c%c"
-                    ])(c0, c1, c2)) : Pervasives.char_of_int(c);
+                    ])(c0, c1, c2));
+  }
+  else {
+    return Pervasives.char_of_int(c);
+  }
 }
 
 function hexadecimal_value_of_char(c) {
-  return c >= /* "a" */97 ? c - 87 : (
-            c >= /* "A" */65 ? c - 55 : c - /* "0" */48
-          );
+  if (c >= /* "a" */97) {
+    return c - 87;
+  }
+  else {
+    if (c >= /* "A" */65) {
+      return c - 55;
+    }
+    else {
+      return c - /* "0" */48;
+    }
+  }
 }
 
 function char_for_hexadecimal_code(c1, c2) {
   var c = 16 * hexadecimal_value_of_char(c1) + hexadecimal_value_of_char(c2);
-  return c < 0 || c > 255 ? bad_input(Printf.sprintf([
+  if (c < 0 || c > 255) {
+    return bad_input(Printf.sprintf([
                       /* Format */0,
                       [
                         /* String_literal */11,
@@ -1099,13 +1214,22 @@ function char_for_hexadecimal_code(c1, c2) {
                         ]
                       ],
                       "bad character hexadecimal encoding \\%c%c"
-                    ])(c1, c2)) : Pervasives.char_of_int(c);
+                    ])(c1, c2));
+  }
+  else {
+    return Pervasives.char_of_int(c);
+  }
 }
 
 function check_next_char(message, width, ib) {
   if (width) {
     var c = peek_char(ib);
-    return eof(ib) ? bad_end_of_input(message) : c;
+    if (eof(ib)) {
+      return bad_end_of_input(message);
+    }
+    else {
+      return c;
+    }
   }
   else {
     return bad_token_length(message);
@@ -1167,11 +1291,22 @@ function scan_backslash_char(width, ib) {
               var get_digit = function () {
                 var c = next_char(ib);
                 var switcher = -48 + c;
-                return 22 < (switcher >>> 0) ? (
-                          5 < (-49 + switcher >>> 0) ? bad_input_escape(c) : c
-                        ) : (
-                          6 < (-10 + switcher >>> 0) ? c : bad_input_escape(c)
-                        );
+                if (22 < (switcher >>> 0)) {
+                  if (5 < (-49 + switcher >>> 0)) {
+                    return bad_input_escape(c);
+                  }
+                  else {
+                    return c;
+                  }
+                }
+                else {
+                  if (6 < (-10 + switcher >>> 0)) {
+                    return c;
+                  }
+                  else {
+                    return bad_input_escape(c);
+                  }
+                }
               };
               var c1 = get_digit(/* () */0);
               var c2 = get_digit(/* () */0);
@@ -1184,7 +1319,12 @@ function scan_backslash_char(width, ib) {
       if (c >= 48) {
         var get_digit$1 = function () {
           var c = next_char(ib);
-          return 9 < (-48 + c >>> 0) ? bad_input_escape(c) : c;
+          if (9 < (-48 + c >>> 0)) {
+            return bad_input_escape(c);
+          }
+          else {
+            return c;
+          }
         };
         var c1$1 = get_digit$1(/* () */0);
         var c2$1 = get_digit$1(/* () */0);
@@ -1212,15 +1352,30 @@ function scan_backslash_char(width, ib) {
 function scan_caml_char(width, ib) {
   var find_start = function (width) {
     var c = checked_peek_char(ib);
-    return c !== 39 ? character_mismatch(/* "'" */39, c) : find_char(ignore_char(width, ib));
+    if (c !== 39) {
+      return character_mismatch(/* "'" */39, c);
+    }
+    else {
+      return find_char(ignore_char(width, ib));
+    }
   };
   var find_char = function (width) {
     var c = check_next_char_for_char(width, ib);
-    return c !== 92 ? find_stop(store_char(width, ib, c)) : find_stop(scan_backslash_char(ignore_char(width, ib), ib));
+    if (c !== 92) {
+      return find_stop(store_char(width, ib, c));
+    }
+    else {
+      return find_stop(scan_backslash_char(ignore_char(width, ib), ib));
+    }
   };
   var find_stop = function (width) {
     var c = check_next_char_for_char(width, ib);
-    return c !== 39 ? character_mismatch(/* "'" */39, c) : ignore_char(width, ib);
+    if (c !== 39) {
+      return character_mismatch(/* "'" */39, c);
+    }
+    else {
+      return ignore_char(width, ib);
+    }
   };
   return find_start(width);
 }
@@ -1228,7 +1383,12 @@ function scan_caml_char(width, ib) {
 function scan_caml_string(width, ib) {
   var find_start = function (width) {
     var c = checked_peek_char(ib);
-    return c !== 34 ? character_mismatch(/* "\"" */34, c) : find_stop(ignore_char(width, ib));
+    if (c !== 34) {
+      return character_mismatch(/* "\"" */34, c);
+    }
+    else {
+      return find_stop(ignore_char(width, ib));
+    }
   };
   var find_stop = function (_width) {
     while(/* true */1) {
@@ -1249,13 +1409,26 @@ function scan_caml_string(width, ib) {
   };
   var scan_backslash = function (width) {
     var match = check_next_char_for_string(width, ib);
-    return match !== 10 ? (
-              match !== 13 ? find_stop(scan_backslash_char(width, ib)) : skip_newline(ignore_char(width, ib))
-            ) : skip_spaces(ignore_char(width, ib));
+    if (match !== 10) {
+      if (match !== 13) {
+        return find_stop(scan_backslash_char(width, ib));
+      }
+      else {
+        return skip_newline(ignore_char(width, ib));
+      }
+    }
+    else {
+      return skip_spaces(ignore_char(width, ib));
+    }
   };
   var skip_newline = function (width) {
     var match = check_next_char_for_string(width, ib);
-    return match !== 10 ? find_stop(store_char(width, ib, /* "\r" */13)) : skip_spaces(ignore_char(width, ib));
+    if (match !== 10) {
+      return find_stop(store_char(width, ib, /* "\r" */13));
+    }
+    else {
+      return skip_spaces(ignore_char(width, ib));
+    }
   };
   var skip_spaces = function (_width) {
     while(/* true */1) {
@@ -1314,7 +1487,12 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
     scan_chars(width, c);
     if (!eof(ib)) {
       var ci = peek_char(ib);
-      return c === ci ? invalidate_current_char(ib) : character_mismatch(c, ci);
+      if (c === ci) {
+        return invalidate_current_char(ib);
+      }
+      else {
+        return character_mismatch(c, ci);
+      }
     }
     else {
       return 0;
@@ -1383,7 +1561,12 @@ function get_counter(ib, counter) {
 }
 
 function width_of_pad_opt(pad_opt) {
-  return pad_opt ? pad_opt[1] : Pervasives.max_int;
+  if (pad_opt) {
+    return pad_opt[1];
+  }
+  else {
+    return Pervasives.max_int;
+  }
 }
 
 function stopper_of_formatting_lit(fmting) {
@@ -1713,7 +1896,12 @@ function make_scanf(ib, _fmt, readers) {
                       }
                       }(c$5)));
         case 8 : 
-            return fmt[1] >= 15 ? pad_prec_scanf(ib, fmt[4], readers, fmt[2], fmt[3], scan_caml_float, token_float) : pad_prec_scanf(ib, fmt[4], readers, fmt[2], fmt[3], scan_float, token_float);
+            if (fmt[1] >= 15) {
+              return pad_prec_scanf(ib, fmt[4], readers, fmt[2], fmt[3], scan_caml_float, token_float);
+            }
+            else {
+              return pad_prec_scanf(ib, fmt[4], readers, fmt[2], fmt[3], scan_float, token_float);
+            }
         case 9 : 
             scan_bool(ib);
             var b = token_bool(ib);
@@ -2026,7 +2214,12 @@ function kscanf(ib, ef, param) {
       }
       
     }
-    return match[0] ? ef(ib, match[1]) : apply(f, match[1]);
+    if (match[0]) {
+      return ef(ib, match[1]);
+    }
+    else {
+      return apply(f, match[1]);
+    }
   };
   return take_format_readers(k, fmt);
 }

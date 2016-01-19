@@ -20,6 +20,15 @@
 
 
 
-(** A pass converting nested js statement into a flatten visual appearance *)
+(** A pass converting nested js statement into a flatten visual appearance 
+
+    Note this module is used to convert some nested expressions to flat statements, 
+    in general, it's more human readable, and since it generate flat statements, we can spot
+    some inline opportunities for the produced statemetns, 
+    (inline) expressions inside a nested expression would generate ugly code.
+
+    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!J_helper}, 
+    it  tries to spit out expression istead of statements if it can
+*)
 
 val program : J.program -> J.program

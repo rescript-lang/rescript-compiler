@@ -3,7 +3,12 @@
 var List = require("../stdlib/list");
 
 function fib(n) {
-  return 1 < (-1 + n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+  if (1 < (-1 + n >>> 0)) {
+    return fib(n - 1) + fib(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 function cons(x, y) {
@@ -15,11 +20,16 @@ function cons(x, y) {
 }
 
 function map(f, param) {
-  return param ? [
+  if (param) {
+    return [
             /* Cons */0,
             f(param[1]),
             map(f, param[2])
-          ] : /* Nil */0;
+          ];
+  }
+  else {
+    return /* Nil */0;
+  }
 }
 
 function sum(n) {

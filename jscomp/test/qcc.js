@@ -30,7 +30,13 @@ function bufferize(f) {
           /* tuple */0,
           function () {
             var match = buf[1];
-            return match ? (buf[1] = /* None */0, match[1]) : f(/* () */0);
+            if (match) {
+              buf[1] = /* None */0;
+              return match[1];
+            }
+            else {
+              return f(/* () */0);
+            }
           },
           function (x) {
             if (buf[1] !== /* None */0) {
@@ -143,18 +149,38 @@ var s = new Array(100);
 
 function getq() {
   var c = getch(/* () */0);
-  return c !== 92 ? c : (
-            peekch(/* () */0) === /* "n" */110 ? (getch(/* () */0), /* "\n" */10) : c
-          );
+  if (c !== 92) {
+    return c;
+  }
+  else {
+    if (peekch(/* () */0) === /* "n" */110) {
+      getch(/* () */0);
+      return /* "\n" */10;
+    }
+    else {
+      return c;
+    }
+  }
 }
 
 function isid(param) {
   var switcher = -91 + param;
-  return 5 < (switcher >>> 0) ? (
-            57 < (26 + switcher >>> 0) ? /* false */0 : /* true */1
-          ) : (
-            switcher !== 4 ? /* false */0 : /* true */1
-          );
+  if (5 < (switcher >>> 0)) {
+    if (57 < (26 + switcher >>> 0)) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
+  else {
+    if (switcher !== 4) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
 }
 
 function id(_n, _ch) {
@@ -239,10 +265,15 @@ function op(ch, _param) {
 function cconst() {
   var ch = getq(/* () */0);
   var qt = getch(/* () */0);
-  return qt !== /* "'" */39 ? Pervasives.failwith("syntax error") : [
+  if (qt !== /* "'" */39) {
+    return Pervasives.failwith("syntax error");
+  }
+  else {
+    return [
             /* ILit */1,
             ch
           ];
+  }
 }
 
 function skip(_param) {
@@ -251,9 +282,17 @@ function skip(_param) {
     var exit = 0;
     if (ch >= 14) {
       if (ch !== 32) {
-        return ch !== 47 ? ch : (
-                  peekch(/* () */0) === /* "*" */42 ? com(getch(/* () */0)) : ch
-                );
+        if (ch !== 47) {
+          return ch;
+        }
+        else {
+          if (peekch(/* () */0) === /* "*" */42) {
+            return com(getch(/* () */0));
+          }
+          else {
+            return ch;
+          }
+        }
       }
       else {
         exit = 1;
@@ -342,7 +381,11 @@ function next() {
       return slit(gpos[1], gpos[1]);
     }
     if (exit === 1) {
-      return isid(c) ? id(0, c) : op(c, [
+      if (isid(c)) {
+        return id(0, c);
+      }
+      else {
+        return op(c, [
                     /* :: */0,
                     "++",
                     [
@@ -383,6 +426,7 @@ function next() {
                       ]
                     ]
                   ]);
+      }
     }
     
   }
@@ -414,7 +458,14 @@ var opos = [
 ];
 
 function out(x) {
-  return x !== 0 ? (out(x / 256 | 0), obuf[opos[1]] = Char.chr(x & 255), ++ opos[1]) : 0;
+  if (x !== 0) {
+    out(x / 256 | 0);
+    obuf[opos[1]] = Char.chr(x & 255);
+    return ++ opos[1];
+  }
+  else {
+    return 0;
+  }
 }
 
 function le(n, x) {
@@ -524,12 +575,22 @@ var align = [
 
 function push(r) {
   ++ align[1];
-  return r < 8 ? out(80 + r) : out(16720 + r - 8);
+  if (r < 8) {
+    return out(80 + r);
+  }
+  else {
+    return out(16720 + r - 8);
+  }
 }
 
 function pop(r) {
   -- align[1];
-  return r < 8 ? out(88 + r) : out(16728 + r - 8);
+  if (r < 8) {
+    return out(88 + r);
+  }
+  else {
+    return out(16728 + r - 8);
+  }
 }
 
 var lval = [
@@ -546,25 +607,43 @@ var lval = [
 
 function patchlval() {
   var match = lval[1][1];
-  return match[0] ? (opos[1] -= match[1], /* () */0) : (obuf[opos[1] - match[1]] = /* "\141" */141, /* () */0);
+  if (match[0]) {
+    opos[1] -= match[1];
+    return /* () */0;
+  }
+  else {
+    obuf[opos[1] - match[1]] = /* "\141" */141;
+    return /* () */0;
+  }
 }
 
 function read(param) {
-  return param !== 0 ? (out(4722614), le(8, 0), lval[1] = [
-              /* tuple */0,
-              [
-                /* Del */1,
-                4
-              ],
-              /* Chr */1
-            ], /* () */0) : (out(18571), le(8, 0), lval[1] = [
-              /* tuple */0,
-              [
-                /* Del */1,
-                3
-              ],
-              /* Int */0
-            ], /* () */0);
+  if (param !== 0) {
+    out(4722614);
+    le(8, 0);
+    lval[1] = [
+      /* tuple */0,
+      [
+        /* Del */1,
+        4
+      ],
+      /* Chr */1
+    ];
+    return /* () */0;
+  }
+  else {
+    out(18571);
+    le(8, 0);
+    lval[1] = [
+      /* tuple */0,
+      [
+        /* Del */1,
+        3
+      ],
+      /* Int */0
+    ];
+    return /* () */0;
+  }
 }
 
 var globs = Caml_array.caml_make_vect(100, [
@@ -1031,7 +1110,12 @@ function binary(stk, lvl) {
   }
   else {
     var lvlof = function (o) {
-      return !List.mem_assoc(o, lvls) ? -1 : List.assoc(o, lvls);
+      if (!List.mem_assoc(o, lvls)) {
+        return -1;
+      }
+      else {
+        return List.assoc(o, lvls);
+      }
     };
     var fold = function (_param) {
       while(/* true */1) {
@@ -1185,7 +1269,12 @@ function unary(stk) {
                         ])(o));
             }
             out(List.assoc(o, unops));
-            return o === "!" ? cmp(2) : 0;
+            if (o === "!") {
+              return cmp(2);
+            }
+            else {
+              return 0;
+            }
         }
         break;
     case 1 : 
@@ -1308,7 +1397,12 @@ function postfix(stk) {
             out(1216605192);
           }
           out(65488);
-          return align[1] % 2 !== 0 ? out(1216594952) : 0;
+          if (align[1] % 2 !== 0) {
+            return out(1216594952);
+          }
+          else {
+            return 0;
+          }
       case "++" : 
       case "--" : 
           exit = 1;
@@ -1392,7 +1486,12 @@ function expr(stk) {
           push(0);
           expr(stk);
           pop(1);
-          ty ? out(34817) : out(4753665);
+          if (ty) {
+            out(34817);
+          }
+          else {
+            out(4753665);
+          }
           _param = /* () */0;
         }
         else {
@@ -1719,7 +1818,15 @@ function block(brk, stk) {
     stmt(brk, stk$prime);
   };
   next$1(/* () */0);
-  return n !== 0 ? (out(4752324), out(n * 8), align[1] -= n, /* () */0) : 0;
+  if (n !== 0) {
+    out(4752324);
+    out(n * 8);
+    align[1] -= n;
+    return /* () */0;
+  }
+  else {
+    return 0;
+  }
 }
 
 function top(_param) {
@@ -1968,7 +2075,12 @@ function elfgen(outf) {
   var itr = function (f) {
     return symitr(function (i, s) {
                 var g = globs[i];
-                return g[2] < 0 && g[1] !== 0 ? f(s, s.length, g[1]) : 0;
+                if (g[2] < 0 && g[1] !== 0) {
+                  return f(s, s.length, g[1]);
+                }
+                else {
+                  return 0;
+                }
               });
   };
   var va = function (x) {
@@ -1976,9 +2088,17 @@ function elfgen(outf) {
   };
   var patchloc = function (i, _) {
     var g = globs[i];
-    return g[2] >= 0 && g[2] < base ? patch(/* false */0, g[1], va(g[2])) : (
-              g[2] >= 0 ? patch(/* false */0, g[1], g[2]) : 0
-            );
+    if (g[2] >= 0 && g[2] < base) {
+      return patch(/* false */0, g[1], va(g[2]));
+    }
+    else {
+      if (g[2] >= 0) {
+        return patch(/* false */0, g[1], g[2]);
+      }
+      else {
+        return 0;
+      }
+    }
   };
   symitr(patchloc);
   var strtab = opos[1];

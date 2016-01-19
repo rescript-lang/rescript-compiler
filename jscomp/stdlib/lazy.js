@@ -12,7 +12,12 @@ function from_fun(f) {
 
 function from_val(v) {
   var t = Caml_obj_runtime.caml_obj_tag(v);
-  return t === Obj.forward_tag || t === Obj.lazy_tag || t === Obj.double_tag ? Caml_obj_runtime.caml_lazy_make_forward(v) : v;
+  if (t === Obj.forward_tag || t === Obj.lazy_tag || t === Obj.double_tag) {
+    return Caml_obj_runtime.caml_lazy_make_forward(v);
+  }
+  else {
+    return v;
+  }
 }
 
 function is_val(l) {

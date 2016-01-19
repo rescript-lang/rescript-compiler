@@ -6,7 +6,12 @@ var List = require("../stdlib/list");
 
 function Make(Ord) {
   var height = function (param) {
-    return param ? param[4] : 0;
+    if (param) {
+      return param[4];
+    }
+    else {
+      return 0;
+    }
   };
   var create = function (l, v, r) {
     var hl = l ? l[4] : 0;
@@ -27,9 +32,17 @@ function Make(Ord) {
         var lr = l[3];
         var lv = l[2];
         var ll = l[1];
-        return height(ll) >= height(lr) ? create(ll, lv, create(lr, v, r)) : (
-                  lr ? create(create(ll, lv, lr[1]), lr[2], create(lr[3], v, r)) : Pervasives.invalid_arg("Set.bal")
-                );
+        if (height(ll) >= height(lr)) {
+          return create(ll, lv, create(lr, v, r));
+        }
+        else {
+          if (lr) {
+            return create(create(ll, lv, lr[1]), lr[2], create(lr[3], v, r));
+          }
+          else {
+            return Pervasives.invalid_arg("Set.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Set.bal");
@@ -41,9 +54,17 @@ function Make(Ord) {
           var rr = r[3];
           var rv = r[2];
           var rl = r[1];
-          return height(rr) >= height(rl) ? create(create(l, v, rl), rv, rr) : (
-                    rl ? create(create(l, v, rl[1]), rl[2], create(rl[3], rv, rr)) : Pervasives.invalid_arg("Set.bal")
-                  );
+          if (height(rr) >= height(rl)) {
+            return create(create(l, v, rl), rv, rr);
+          }
+          else {
+            if (rl) {
+              return create(create(l, v, rl[1]), rl[2], create(rl[3], rv, rr));
+            }
+            else {
+              return Pervasives.invalid_arg("Set.bal");
+            }
+          }
         }
         else {
           return Pervasives.invalid_arg("Set.bal");
@@ -66,9 +87,17 @@ function Make(Ord) {
       var v = t[2];
       var l = t[1];
       var c = Ord[1](x, v);
-      return c ? (
-                c < 0 ? bal(add(x, l), v, r) : bal(l, v, add(x, r))
-              ) : t;
+      if (c) {
+        if (c < 0) {
+          return bal(add(x, l), v, r);
+        }
+        else {
+          return bal(l, v, add(x, r));
+        }
+      }
+      else {
+        return t;
+      }
     }
     else {
       return [
@@ -90,19 +119,37 @@ function Make(Ord) {
           ];
   };
   var add_min_element = function (v, param) {
-    return param ? bal(add_min_element(v, param[1]), param[2], param[3]) : singleton(v);
+    if (param) {
+      return bal(add_min_element(v, param[1]), param[2], param[3]);
+    }
+    else {
+      return singleton(v);
+    }
   };
   var add_max_element = function (v, param) {
-    return param ? bal(param[1], param[2], add_max_element(v, param[3])) : singleton(v);
+    if (param) {
+      return bal(param[1], param[2], add_max_element(v, param[3]));
+    }
+    else {
+      return singleton(v);
+    }
   };
   var join = function (l, v, r) {
     if (l) {
       if (r) {
         var rh = r[4];
         var lh = l[4];
-        return lh > rh + 2 ? bal(l[1], l[2], join(l[3], v, r)) : (
-                  rh > lh + 2 ? bal(join(l, v, r[1]), r[2], r[3]) : create(l, v, r)
-                );
+        if (lh > rh + 2) {
+          return bal(l[1], l[2], join(l[3], v, r));
+        }
+        else {
+          if (rh > lh + 2) {
+            return bal(join(l, v, r[1]), r[2], r[3]);
+          }
+          else {
+            return create(l, v, r);
+          }
+        }
       }
       else {
         return add_max_element(v, l);
@@ -149,21 +196,42 @@ function Make(Ord) {
   var remove_min_elt = function (param) {
     if (param) {
       var l = param[1];
-      return l ? bal(remove_min_elt(l), param[2], param[3]) : param[3];
+      if (l) {
+        return bal(remove_min_elt(l), param[2], param[3]);
+      }
+      else {
+        return param[3];
+      }
     }
     else {
       return Pervasives.invalid_arg("Set.remove_min_elt");
     }
   };
   var merge = function (t1, t2) {
-    return t1 ? (
-              t2 ? bal(t1, min_elt(t2), remove_min_elt(t2)) : t1
-            ) : t2;
+    if (t1) {
+      if (t2) {
+        return bal(t1, min_elt(t2), remove_min_elt(t2));
+      }
+      else {
+        return t1;
+      }
+    }
+    else {
+      return t2;
+    }
   };
   var concat = function (t1, t2) {
-    return t1 ? (
-              t2 ? join(t1, min_elt(t2), remove_min_elt(t2)) : t1
-            ) : t2;
+    if (t1) {
+      if (t2) {
+        return join(t1, min_elt(t2), remove_min_elt(t2));
+      }
+      else {
+        return t1;
+      }
+    }
+    else {
+      return t2;
+    }
   };
   var split = function (x, param) {
     if (param) {
@@ -211,7 +279,12 @@ function Make(Ord) {
   };
   var empty = /* Empty */0;
   var is_empty = function (param) {
-    return param ? /* false */0 : /* true */1;
+    if (param) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
   };
   var mem = function (x, param) {
     if (param) {
@@ -228,9 +301,17 @@ function Make(Ord) {
       var v = param[2];
       var l = param[1];
       var c = Ord[1](x, v);
-      return c ? (
-                c < 0 ? bal(remove(x, l), v, r) : bal(l, v, remove(x, r))
-              ) : merge(l, r);
+      if (c) {
+        if (c < 0) {
+          return bal(remove(x, l), v, r);
+        }
+        else {
+          return bal(l, v, remove(x, r));
+        }
+      }
+      else {
+        return merge(l, r);
+      }
     }
     else {
       return /* Empty */0;
@@ -278,7 +359,12 @@ function Make(Ord) {
         var l1 = s1[1];
         var match = split(v1, s2);
         var l2 = match[1];
-        return match[2] !== 0 ? join(inter(l1, l2), v1, inter(r1, match[3])) : concat(inter(l1, l2), inter(r1, match[3]));
+        if (match[2] !== 0) {
+          return join(inter(l1, l2), v1, inter(r1, match[3]));
+        }
+        else {
+          return concat(inter(l1, l2), inter(r1, match[3]));
+        }
       }
       else {
         return /* Empty */0;
@@ -296,7 +382,12 @@ function Make(Ord) {
         var l1 = s1[1];
         var match = split(v1, s2);
         var l2 = match[1];
-        return match[2] !== 0 ? concat(diff(l1, l2), diff(r1, match[3])) : join(diff(l1, l2), v1, diff(r1, match[3]));
+        if (match[2] !== 0) {
+          return concat(diff(l1, l2), diff(r1, match[3]));
+        }
+        else {
+          return join(diff(l1, l2), v1, diff(r1, match[3]));
+        }
       }
       else {
         return s1;
@@ -344,7 +435,12 @@ function Make(Ord) {
         }
       }
       else {
-        return e2 ? -1 : 0;
+        if (e2) {
+          return -1;
+        }
+        else {
+          return 0;
+        }
       }
     };
   };
@@ -363,21 +459,29 @@ function Make(Ord) {
         var v1 = s1[2];
         var l1 = s1[1];
         var c = Ord[1](v1, s2[2]);
-        return c ? (
-                  c < 0 ? +(subset([
-                            /* Node */0,
-                            l1,
-                            v1,
-                            /* Empty */0,
-                            0
-                          ], l2) && subset(r1, s2)) : +(subset([
-                            /* Node */0,
-                            /* Empty */0,
-                            v1,
-                            r1,
-                            0
-                          ], r2) && subset(l1, s2))
-                ) : +(subset(l1, l2) && subset(r1, r2));
+        if (c) {
+          if (c < 0) {
+            return +(subset([
+                          /* Node */0,
+                          l1,
+                          v1,
+                          /* Empty */0,
+                          0
+                        ], l2) && subset(r1, s2));
+          }
+          else {
+            return +(subset([
+                          /* Node */0,
+                          /* Empty */0,
+                          v1,
+                          r1,
+                          0
+                        ], r2) && subset(l1, s2));
+          }
+        }
+        else {
+          return +(subset(l1, l2) && subset(r1, r2));
+        }
       }
       else {
         return /* false */0;
@@ -414,10 +518,20 @@ function Make(Ord) {
     };
   };
   var for_all = function (p, param) {
-    return param ? +(p(param[2]) && for_all(p, param[1]) && for_all(p, param[3])) : /* true */1;
+    if (param) {
+      return +(p(param[2]) && for_all(p, param[1]) && for_all(p, param[3]));
+    }
+    else {
+      return /* true */1;
+    }
   };
   var exists = function (p, param) {
-    return param ? +(p(param[2]) || exists(p, param[1]) || exists(p, param[3])) : /* false */0;
+    if (param) {
+      return +(p(param[2]) || exists(p, param[1]) || exists(p, param[3]));
+    }
+    else {
+      return /* false */0;
+    }
   };
   var filter = function (p, param) {
     if (param) {
@@ -425,7 +539,12 @@ function Make(Ord) {
       var l$prime = filter(p, param[1]);
       var pv = p(v);
       var r$prime = filter(p, param[3]);
-      return pv ? join(l$prime, v, r$prime) : concat(l$prime, r$prime);
+      if (pv) {
+        return join(l$prime, v, r$prime);
+      }
+      else {
+        return concat(l$prime, r$prime);
+      }
     }
     else {
       return /* Empty */0;
@@ -441,15 +560,20 @@ function Make(Ord) {
       var match$1 = partition(p, param[3]);
       var rf = match$1[2];
       var rt = match$1[1];
-      return pv ? [
+      if (pv) {
+        return [
                 /* tuple */0,
                 join(lt, v, rt),
                 concat(lf, rf)
-              ] : [
+              ];
+      }
+      else {
+        return [
                 /* tuple */0,
                 concat(lt, rt),
                 join(lf, v, rf)
               ];
+      }
     }
     else {
       return [
@@ -460,7 +584,12 @@ function Make(Ord) {
     }
   };
   var cardinal = function (param) {
-    return param ? cardinal(param[1]) + 1 + cardinal(param[3]) : 0;
+    if (param) {
+      return cardinal(param[1]) + 1 + cardinal(param[3]);
+    }
+    else {
+      return 0;
+    }
   };
   var elements_aux = function (_accu, _param) {
     while(/* true */1) {
@@ -649,9 +778,17 @@ function Make(Ord) {
           if (match$2) {
             var match$3 = match$2[2];
             var x3 = match$2[1];
-            return match$3 ? (
-                      match$3[2] ? of_sorted_list(List.sort_uniq(Ord[1], l)) : add(match$3[1], add(x3, add(x2, add(x1, singleton(x0)))))
-                    ) : add(x3, add(x2, add(x1, singleton(x0))));
+            if (match$3) {
+              if (match$3[2]) {
+                return of_sorted_list(List.sort_uniq(Ord[1], l));
+              }
+              else {
+                return add(match$3[1], add(x3, add(x2, add(x1, singleton(x0)))));
+              }
+            }
+            else {
+              return add(x3, add(x2, add(x1, singleton(x0))));
+            }
           }
           else {
             return add(x2, add(x1, singleton(x0)));

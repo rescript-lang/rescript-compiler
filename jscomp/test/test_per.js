@@ -31,15 +31,30 @@ var Exit = [
 ];
 
 function min(x, y) {
-  return Caml_primitive.caml_lessequal(x, y) ? x : y;
+  if (Caml_primitive.caml_lessequal(x, y)) {
+    return x;
+  }
+  else {
+    return y;
+  }
 }
 
 function max(x, y) {
-  return Caml_primitive.caml_greaterequal(x, y) ? x : y;
+  if (Caml_primitive.caml_greaterequal(x, y)) {
+    return x;
+  }
+  else {
+    return y;
+  }
 }
 
 function abs(x) {
-  return x >= 0 ? x : -x;
+  if (x >= 0) {
+    return x;
+  }
+  else {
+    return -x;
+  }
 }
 
 function lnot(x) {
@@ -72,11 +87,21 @@ function $caret(s1, s2) {
 }
 
 function char_of_int(n) {
-  return n < 0 || n > 255 ? invalid_arg("char_of_int") : n;
+  if (n < 0 || n > 255) {
+    return invalid_arg("char_of_int");
+  }
+  else {
+    return n;
+  }
 }
 
 function string_of_bool(b) {
-  return b ? "true" : "false";
+  if (b) {
+    return "true";
+  }
+  else {
+    return "false";
+  }
 }
 
 function bool_of_string(param) {
@@ -131,11 +156,16 @@ function string_of_float(f) {
 }
 
 function $at(l1, l2) {
-  return l1 ? [
+  if (l1) {
+    return [
             /* :: */0,
             l1[1],
             $at(l1[2], l2)
-          ] : l2;
+          ];
+  }
+  else {
+    return l2;
+  }
 }
 
 var stdin = Caml_io.caml_ml_open_descriptor_in(0);
@@ -218,11 +248,21 @@ function output_string(oc, s) {
 }
 
 function output(oc, s, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > s.length - len ? invalid_arg("output") : Caml_io.caml_ml_output(oc, s, ofs, len);
+  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+    return invalid_arg("output");
+  }
+  else {
+    return Caml_io.caml_ml_output(oc, s, ofs, len);
+  }
 }
 
 function output_substring(oc, s, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > s.length - len ? invalid_arg("output_substring") : Caml_io.caml_ml_output(oc, s, ofs, len);
+  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+    return invalid_arg("output_substring");
+  }
+  else {
+    return Caml_io.caml_ml_output(oc, s, ofs, len);
+  }
 }
 
 function output_value(chan, v) {
@@ -278,7 +318,12 @@ function open_in_bin(name) {
 }
 
 function input(ic, s, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > s.length - len ? invalid_arg("input") : Caml_primitive.caml_ml_input(ic, s, ofs, len);
+  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+    return invalid_arg("input");
+  }
+  else {
+    return Caml_primitive.caml_ml_input(ic, s, ofs, len);
+  }
 }
 
 function unsafe_really_input(ic, s, _ofs, _len) {
@@ -302,7 +347,12 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 }
 
 function really_input(ic, s, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > s.length - len ? invalid_arg("really_input") : unsafe_really_input(ic, s, ofs, len);
+  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+    return invalid_arg("really_input");
+  }
+  else {
+    return unsafe_really_input(ic, s, ofs, len);
+  }
 }
 
 function really_input_string(ic, len) {

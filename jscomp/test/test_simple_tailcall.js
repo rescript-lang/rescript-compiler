@@ -8,7 +8,12 @@ function tailcall() {
 }
 
 function non_length(x) {
-  return x ? 1 + non_length(x[2]) : 0;
+  if (x) {
+    return 1 + non_length(x[2]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function length(_acc, _x) {

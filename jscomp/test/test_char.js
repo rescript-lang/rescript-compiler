@@ -8,7 +8,12 @@ function f(x) {
 }
 
 function chr(n) {
-  return n < 0 || n > 255 ? Pervasives.invalid_arg("Char.chr") : n;
+  if (n < 0 || n > 255) {
+    return Pervasives.invalid_arg("Char.chr");
+  }
+  else {
+    return n;
+  }
 }
 
 function escaped(c) {
@@ -70,11 +75,21 @@ function escaped(c) {
 }
 
 function lowercase(c) {
-  return c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222 ? c + 32 : c;
+  if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
+    return c + 32;
+  }
+  else {
+    return c;
+  }
 }
 
 function uppercase(c) {
-  return c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254 ? c - 32 : c;
+  if (c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254) {
+    return c - 32;
+  }
+  else {
+    return c;
+  }
 }
 
 function compare(c1, c2) {

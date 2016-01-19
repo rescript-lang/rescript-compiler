@@ -21,7 +21,12 @@ function f(x) {
 }
 
 function f2(x) {
-  return x ? 0 : 1;
+  if (x) {
+    return 0;
+  }
+  else {
+    return 1;
+  }
 }
 
 function f3(x) {

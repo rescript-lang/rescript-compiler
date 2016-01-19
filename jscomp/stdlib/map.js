@@ -5,7 +5,12 @@ var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function Make(funarg) {
   var height = function (param) {
-    return param ? param[5] : 0;
+    if (param) {
+      return param[5];
+    }
+    else {
+      return 0;
+    }
   };
   var create = function (l, x, d, r) {
     var hl = height(l);
@@ -38,9 +43,17 @@ function Make(funarg) {
         var ld = l[3];
         var lv = l[2];
         var ll = l[1];
-        return height(ll) >= height(lr) ? create(ll, lv, ld, create(lr, x, d, r)) : (
-                  lr ? create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height(ll) >= height(lr)) {
+          return create(ll, lv, ld, create(lr, x, d, r));
+        }
+        else {
+          if (lr) {
+            return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -53,9 +66,17 @@ function Make(funarg) {
           var rd = r[3];
           var rv = r[2];
           var rl = r[1];
-          return height(rr) >= height(rl) ? create(create(l, x, d, rl), rv, rd, rr) : (
-                    rl ? create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                  );
+          if (height(rr) >= height(rl)) {
+            return create(create(l, x, d, rl), rv, rd, rr);
+          }
+          else {
+            if (rl) {
+              return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
+            }
+            else {
+              return Pervasives.invalid_arg("Map.bal");
+            }
+          }
         }
         else {
           return Pervasives.invalid_arg("Map.bal");
@@ -74,7 +95,12 @@ function Make(funarg) {
     }
   };
   var is_empty = function (param) {
-    return param ? /* false */0 : /* true */1;
+    if (param) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
   };
   var add = function (x, data, param) {
     if (param) {
@@ -83,9 +109,16 @@ function Make(funarg) {
       var v = param[2];
       var l = param[1];
       var c = funarg[1](x, v);
-      return c ? (
-                c < 0 ? bal(add(x, data, l), v, d, r) : bal(l, v, d, add(x, data, r))
-              ) : [
+      if (c) {
+        if (c < 0) {
+          return bal(add(x, data, l), v, d, r);
+        }
+        else {
+          return bal(l, v, d, add(x, data, r));
+        }
+      }
+      else {
+        return [
                 /* Node */0,
                 l,
                 x,
@@ -93,6 +126,7 @@ function Make(funarg) {
                 r,
                 param[5]
               ];
+      }
     }
     else {
       return [
@@ -176,7 +210,12 @@ function Make(funarg) {
   var remove_min_binding = function (param) {
     if (param) {
       var l = param[1];
-      return l ? bal(remove_min_binding(l), param[2], param[3], param[4]) : param[4];
+      if (l) {
+        return bal(remove_min_binding(l), param[2], param[3], param[4]);
+      }
+      else {
+        return param[4];
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.remove_min_elt");
@@ -203,9 +242,17 @@ function Make(funarg) {
       var v = param[2];
       var l = param[1];
       var c = funarg[1](x, v);
-      return c ? (
-                c < 0 ? bal(remove(x, l), v, d, r) : bal(l, v, d, remove(x, r))
-              ) : merge(l, r);
+      if (c) {
+        if (c < 0) {
+          return bal(remove(x, l), v, d, r);
+        }
+        else {
+          return bal(l, v, d, remove(x, r));
+        }
+      }
+      else {
+        return merge(l, r);
+      }
     }
     else {
       return /* Empty */0;
@@ -275,25 +322,53 @@ function Make(funarg) {
     };
   };
   var for_all = function (p, param) {
-    return param ? +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4])) : /* true */1;
+    if (param) {
+      return +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4]));
+    }
+    else {
+      return /* true */1;
+    }
   };
   var exists = function (p, param) {
-    return param ? +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4])) : /* false */0;
+    if (param) {
+      return +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4]));
+    }
+    else {
+      return /* false */0;
+    }
   };
   var add_min_binding = function (k, v, param) {
-    return param ? bal(add_min_binding(k, v, param[1]), param[2], param[3], param[4]) : singleton(k, v);
+    if (param) {
+      return bal(add_min_binding(k, v, param[1]), param[2], param[3], param[4]);
+    }
+    else {
+      return singleton(k, v);
+    }
   };
   var add_max_binding = function (k, v, param) {
-    return param ? bal(param[1], param[2], param[3], add_max_binding(k, v, param[4])) : singleton(k, v);
+    if (param) {
+      return bal(param[1], param[2], param[3], add_max_binding(k, v, param[4]));
+    }
+    else {
+      return singleton(k, v);
+    }
   };
   var join = function (l, v, d, r) {
     if (l) {
       if (r) {
         var rh = r[5];
         var lh = l[5];
-        return lh > rh + 2 ? bal(l[1], l[2], l[3], join(l[4], v, d, r)) : (
-                  rh > lh + 2 ? bal(join(l, v, d, r[1]), r[2], r[3], r[4]) : create(l, v, d, r)
-                );
+        if (lh > rh + 2) {
+          return bal(l[1], l[2], l[3], join(l[4], v, d, r));
+        }
+        else {
+          if (rh > lh + 2) {
+            return bal(join(l, v, d, r[1]), r[2], r[3], r[4]);
+          }
+          else {
+            return create(l, v, d, r);
+          }
+        }
       }
       else {
         return add_max_binding(v, d, l);
@@ -318,7 +393,12 @@ function Make(funarg) {
     }
   };
   var concat_or_join = function (t1, v, d, t2) {
-    return d ? join(t1, v, d[1], t2) : concat(t1, t2);
+    if (d) {
+      return join(t1, v, d[1], t2);
+    }
+    else {
+      return concat(t1, t2);
+    }
   };
   var split = function (x, param) {
     if (param) {
@@ -422,7 +502,12 @@ function Make(funarg) {
       var l$prime = filter(p, param[1]);
       var pvd = p(v, d);
       var r$prime = filter(p, param[4]);
-      return pvd ? join(l$prime, v, d, r$prime) : concat(l$prime, r$prime);
+      if (pvd) {
+        return join(l$prime, v, d, r$prime);
+      }
+      else {
+        return concat(l$prime, r$prime);
+      }
     }
     else {
       return /* Empty */0;
@@ -439,15 +524,20 @@ function Make(funarg) {
       var match$1 = partition(p, param[4]);
       var rf = match$1[2];
       var rt = match$1[1];
-      return pvd ? [
+      if (pvd) {
+        return [
                 /* tuple */0,
                 join(lt, v, d, rt),
                 concat(lf, rf)
-              ] : [
+              ];
+      }
+      else {
+        return [
                 /* tuple */0,
                 concat(lt, rt),
                 join(lf, v, d, rf)
               ];
+      }
     }
     else {
       return [
@@ -503,7 +593,12 @@ function Make(funarg) {
           }
         }
         else {
-          return e2 ? -1 : 0;
+          if (e2) {
+            return -1;
+          }
+          else {
+            return 0;
+          }
         }
       };
     };
@@ -511,16 +606,32 @@ function Make(funarg) {
   };
   var equal = function (cmp, m1, m2) {
     var equal_aux = function (e1, e2) {
-      return e1 ? (
-                e2 ? +(funarg[1](e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4]))) : /* false */0
-              ) : (
-                e2 ? /* false */0 : /* true */1
-              );
+      if (e1) {
+        if (e2) {
+          return +(funarg[1](e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        if (e2) {
+          return /* false */0;
+        }
+        else {
+          return /* true */1;
+        }
+      }
     };
     return equal_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
   };
   var cardinal = function (param) {
-    return param ? cardinal(param[1]) + 1 + cardinal(param[4]) : 0;
+    if (param) {
+      return cardinal(param[1]) + 1 + cardinal(param[4]);
+    }
+    else {
+      return 0;
+    }
   };
   var bindings_aux = function (_accu, _param) {
     while(/* true */1) {
