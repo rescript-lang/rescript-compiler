@@ -2,7 +2,12 @@
 "use strict";
 
 function is_empty(param) {
-  return param ? /* false */0 : /* true */1;
+  if (param) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 var v = is_empty(/* Empty */0);

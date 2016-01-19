@@ -256,7 +256,12 @@ function Make(H) {
               test_shrink_bucket(t);
             }
           }
-          return t[4] > (t[1].length / over_limit | 0) ? resize(t) : 0;
+          if (t[4] > (t[1].length / over_limit | 0)) {
+            return resize(t);
+          }
+          else {
+            return 0;
+          }
         }
         else {
           if (Caml_primitive.caml_weak_check(bucket, i)) {

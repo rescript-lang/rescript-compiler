@@ -63,13 +63,23 @@ function array_elem(a, i) {
             return /* true */1;
           }
           else {
-            v < i ? (_lo = mi) : (_hi = mi);
+            if (v < i) {
+              _lo = mi;
+            }
+            else {
+              _hi = mi;
+            }
           }
         }
       }
     };
   };
-  return _N ? bin_search(0, _N - 1) : /* false */0;
+  if (_N) {
+    return bin_search(0, _N - 1);
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 var split_white_re = Str.regexp("[ \t]+");
@@ -107,7 +117,13 @@ function clean_up_dict(fcounts, minfc) {
     0
   ];
   Hashtbl.iter(function (str, f) {
-        return Caml_primitive.caml_greaterthan(Hashtbl.find(fcounts, f), minfc) ? (Hashtbl.replace(okay_f, str, id[1]), ++ id[1]) : 0;
+        if (Caml_primitive.caml_greaterthan(Hashtbl.find(fcounts, f), minfc)) {
+          Hashtbl.replace(okay_f, str, id[1]);
+          return ++ id[1];
+        }
+        else {
+          return 0;
+        }
       }, dict);
   dictN[1] = id[1];
   Hashtbl.clear(dict);
@@ -137,7 +153,12 @@ function map_filter(f, param) {
 }
 
 function $slash$dot$dot(a, b) {
-  return b ? a / b : 0.5;
+  if (b) {
+    return a / b;
+  }
+  else {
+    return 0.5;
+  }
 }
 
 function predict(dt, x) {
@@ -188,7 +209,12 @@ function predict_committee(dts, x) {
 
 function is_real_value(f) {
   var match = Caml_float.caml_classify_float(f);
-  return match >= 3 ? /* false */0 : /* true */1;
+  if (match >= 3) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
@@ -196,13 +222,27 @@ function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
     return x * x;
   };
   var plp2 = function (x) {
-    return x <= 0 || x >= 1 ? 0 : (
-              x < 0.2 ? 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * sqr(x - 0.10) : (
-                  x < 0.5 ? 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * sqr(x - 0.35) : (
-                      x < 0.8 ? 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * sqr(x - 0.65) : 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * sqr(x - 0.90)
-                    )
-                )
-            );
+    if (x <= 0 || x >= 1) {
+      return 0;
+    }
+    else {
+      if (x < 0.2) {
+        return 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * sqr(x - 0.10);
+      }
+      else {
+        if (x < 0.5) {
+          return 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * sqr(x - 0.35);
+        }
+        else {
+          if (x < 0.8) {
+            return 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * sqr(x - 0.65);
+          }
+          else {
+            return 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * sqr(x - 0.90);
+          }
+        }
+      }
+    }
   };
   var best = /* None */0;
   for(var f = 0 ,f_finish = _F.length - 1; f<= f_finish; ++f){
@@ -212,7 +252,12 @@ function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
       for(var i = 0 ,i_finish = /* unknown */"Bigarray.dim_1" - 1; i<= i_finish; ++i){
         var n = /* unknown */"Bigarray.get[generic,unknown]";
         if (validEx[n] > 0) {
-          _Y[n] ? c_1t += _W[n] : c_1f += _W[n];
+          if (_Y[n]) {
+            c_1t += _W[n];
+          }
+          else {
+            c_1f += _W[n];
+          }
         }
         
       }
@@ -322,10 +367,14 @@ function trim_tree_same(dt) {
           var p2 = f[1];
           var tp = p1[0] / (p1[0] + p1[1]);
           var fp = p2[0] / (p2[0] + p2[1]);
-          return Math.abs(tp - fp) < 1e-6 ? [
+          if (Math.abs(tp - fp) < 1e-6) {
+            return [
                     /* Leaf */1,
                     mkfp(p1[0] + p2[0], p1[1] + p2[1])
-                  ] : [
+                  ];
+          }
+          else {
+            return [
                     /* Node */0,
                     [
                       /* record */0,
@@ -334,6 +383,7 @@ function trim_tree_same(dt) {
                       f
                     ]
                   ];
+          }
         }
         else {
           exit = 1;
@@ -432,7 +482,12 @@ function build_dt(max_depth, leaf_acc, smooth, validExO, _F, _Y, _W) {
   var c_f = 0;
   for(var n = 0 ,n_finish = _N - 1; n<= n_finish; ++n){
     if (validEx[n] > 0) {
-      _Y[n] ? c_t += _W[n] : c_f += _W[n];
+      if (_Y[n]) {
+        c_t += _W[n];
+      }
+      else {
+        c_f += _W[n];
+      }
     }
     
   }

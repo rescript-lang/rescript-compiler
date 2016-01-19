@@ -34,9 +34,14 @@ function init_mod(loc, shape) {
     }
   }
   else {
-    return shape[0] ? shape[1] : $$Array.map(function (param) {
+    if (shape[0]) {
+      return shape[1];
+    }
+    else {
+      return $$Array.map(function (param) {
                   return init_mod(loc, param);
                 }, shape[1]);
+    }
   }
 }
 
@@ -63,13 +68,32 @@ function update_mod(shape, o, n) {
   if (typeof shape === "number") {
     switch (shape) {
       case 0 : 
-          return Caml_obj_runtime.caml_obj_tag(n) === Obj.closure_tag && n.length <= o.length ? (overwrite(o, n), Caml_obj_runtime.caml_obj_truncate(o, n.length)) : overwrite(o, function (x) {
+          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.closure_tag && n.length <= o.length) {
+            overwrite(o, n);
+            return Caml_obj_runtime.caml_obj_truncate(o, n.length);
+          }
+          else {
+            return overwrite(o, function (x) {
                         return n(x);
                       });
+          }
       case 1 : 
-          return Caml_obj_runtime.caml_obj_tag(n) === Obj.lazy_tag ? (o[0] = n[0], /* () */0) : (
-                    Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag ? (Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag), o[0] = n[0], /* () */0) : (Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag), o[0] = n, /* () */0)
-                  );
+          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.lazy_tag) {
+            o[0] = n[0];
+            return /* () */0;
+          }
+          else {
+            if (Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag) {
+              Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
+              o[0] = n[0];
+              return /* () */0;
+            }
+            else {
+              Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
+              o[0] = n;
+              return /* () */0;
+            }
+          }
       case 2 : 
           if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length === 4)) {
             throw [

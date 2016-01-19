@@ -16,7 +16,12 @@ function bytes(b) {
 }
 
 function substring(str, ofs, len) {
-  return ofs < 0 || len < 0 || ofs > str.length - len ? Pervasives.invalid_arg("Digest.substring") : Caml_primitive.caml_md5_string(str, ofs, len);
+  if (ofs < 0 || len < 0 || ofs > str.length - len) {
+    return Pervasives.invalid_arg("Digest.substring");
+  }
+  else {
+    return Caml_primitive.caml_md5_string(str, ofs, len);
+  }
 }
 
 function subbytes(b, ofs, len) {

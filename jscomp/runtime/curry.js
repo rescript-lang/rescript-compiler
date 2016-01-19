@@ -73,45 +73,70 @@ function curry1(o, x, arity) {
 
 function app1(o, x) {
   var len = o.length;
-  return len === 1 || len === 0 ? o(x) : curry1(o, x, len);
+  if (len === 1 || len === 0) {
+    return o(x);
+  }
+  else {
+    return curry1(o, x, len);
+  }
 }
 
 function app2(o, x, y) {
   var len = o.length;
-  return len === 2 ? o(x, y) : curry(o, /* array */[
+  if (len === 2) {
+    return o(x, y);
+  }
+  else {
+    return curry(o, /* array */[
                 x,
                 y
               ]);
+  }
 }
 
 function app3(o, a0, a1, a2) {
   var len = o.length;
-  return len === 3 ? o(a0, a1, a2) : curry(o, /* array */[
+  if (len === 3) {
+    return o(a0, a1, a2);
+  }
+  else {
+    return curry(o, /* array */[
                 a0,
                 a1,
                 a2
               ]);
+  }
 }
 
 function app4(o, a0, a1, a2, a3) {
   var len = o.length;
-  return len === 4 ? o(a0, a1, a2)(a3) : curry(o, /* array */[
+  if (len === 4) {
+    return o(a0, a1, a2)(a3);
+  }
+  else {
+    return curry(o, /* array */[
                 a0,
                 a1,
                 a2,
                 a3
               ]);
+  }
 }
 
 function app5(o, a0, a1, a2, a3, a4) {
   var len = o.length;
-  return len === 4 ? o(a0, a1, a2)(a3, a4) : curry(o, /* array */[
+  if (len === 4) {
+    return o(a0, a1, a2)(a3, a4);
+  }
+  else {
+    return curry(o, /* array */[
                 a0,
                 a1,
                 a2,
                 a3,
                 a4
               ]);
+  }
 }
 
 exports.curry = curry;

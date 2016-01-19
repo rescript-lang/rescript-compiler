@@ -83,7 +83,12 @@ function intaux(s, n) {
 }
 
 function $$int(s, bound) {
-  return bound > 1073741823 || bound <= 0 ? Pervasives.invalid_arg("Random.int") : intaux(s, bound);
+  if (bound > 1073741823 || bound <= 0) {
+    return Pervasives.invalid_arg("Random.int");
+  }
+  else {
+    return intaux(s, bound);
+  }
 }
 
 function int32aux(s, n) {
@@ -100,7 +105,12 @@ function int32aux(s, n) {
 }
 
 function int32(s, bound) {
-  return bound <= 0 ? Pervasives.invalid_arg("Random.int32") : int32aux(s, bound);
+  if (bound <= 0) {
+    return Pervasives.invalid_arg("Random.int32");
+  }
+  else {
+    return int32aux(s, bound);
+  }
 }
 
 function int64aux(s, n) {
@@ -118,7 +128,12 @@ function int64aux(s, n) {
 }
 
 function int64(s, bound) {
-  return bound <= 0 ? Pervasives.invalid_arg("Random.int64") : int64aux(s, bound);
+  if (bound <= 0) {
+    return Pervasives.invalid_arg("Random.int64");
+  }
+  else {
+    return int64aux(s, bound);
+  }
 }
 
 var nativeint = Nativeint.size === 32 ? function (s, bound) {

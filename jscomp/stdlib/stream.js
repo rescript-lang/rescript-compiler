@@ -97,22 +97,34 @@ function get_data(count, _d) {
             var match$1 = g[1];
             if (match$1) {
               var match$2 = match$1[1];
-              return match$2 ? (g[1] = /* None */0, [
-                          /* Scons */0,
-                          match$2[1],
-                          d
-                        ]) : /* Sempty */0;
+              if (match$2) {
+                g[1] = /* None */0;
+                return [
+                        /* Scons */0,
+                        match$2[1],
+                        d
+                      ];
+              }
+              else {
+                return /* Sempty */0;
+              }
             }
             else {
               var match$3 = g[2](count);
-              return match$3 ? [
+              if (match$3) {
+                return [
                         /* Scons */0,
                         match$3[1],
                         d
-                      ] : (g[1] = [
-                          /* Some */0,
-                          /* None */0
-                        ], /* Sempty */0);
+                      ];
+              }
+              else {
+                g[1] = [
+                  /* Some */0,
+                  /* None */0
+                ];
+                return /* Sempty */0;
+              }
             }
             break;
         case 4 : 
@@ -220,10 +232,16 @@ function peek(s) {
             if (b[4] >= b[3]) {
               fill_buff(b);
             }
-            return b[3] ? [
+            if (b[3]) {
+              return [
                       /* Some */0,
                       b[2][b[4]]
-                    ] : (set_data(s, /* Sempty */0), /* None */0);
+                    ];
+            }
+            else {
+              set_data(s, /* Sempty */0);
+              return /* None */0;
+            }
         
       }
     }
@@ -396,10 +414,16 @@ function of_string(s) {
   ];
   return from(function () {
               var c = count[1];
-              return c < s.length ? (++ count[1], [
-                          /* Some */0,
-                          s.charCodeAt(c)
-                        ]) : /* None */0;
+              if (c < s.length) {
+                ++ count[1];
+                return [
+                        /* Some */0,
+                        s.charCodeAt(c)
+                      ];
+              }
+              else {
+                return /* None */0;
+              }
             });
 }
 
@@ -410,10 +434,16 @@ function of_bytes(s) {
   ];
   return from(function () {
               var c = count[1];
-              return c < s.length ? (++ count[1], [
-                          /* Some */0,
-                          s[c]
-                        ]) : /* None */0;
+              if (c < s.length) {
+                ++ count[1];
+                return [
+                        /* Some */0,
+                        s[c]
+                      ];
+              }
+              else {
+                return /* None */0;
+              }
             });
 }
 

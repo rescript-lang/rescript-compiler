@@ -20,7 +20,12 @@ function lazy_test() {
   var h = u[1];
   var tag = Caml_obj_runtime.caml_obj_tag(v);
   if (tag !== 250) {
-    tag === 246 ? CamlinternalLazy.force_lazy_block(v) : v;
+    if (tag === 246) {
+      CamlinternalLazy.force_lazy_block(v);
+    }
+    else {
+      ;
+    }
   }
   var g = u[1];
   return [

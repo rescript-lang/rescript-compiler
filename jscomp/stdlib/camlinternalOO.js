@@ -31,7 +31,12 @@ function public_method_label(s) {
     accu = 223 * accu + s.charCodeAt(i);
   }
   accu = accu & (1 << 31) - 1;
-  return accu > 1073741823 ? accu - (1 << 31) : accu;
+  if (accu > 1073741823) {
+    return accu - (1 << 31);
+  }
+  else {
+    return accu;
+  }
 }
 
 function compare(x, y) {
@@ -39,7 +44,12 @@ function compare(x, y) {
 }
 
 function height(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create(l, x, d, r) {
@@ -64,9 +74,17 @@ function bal(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height(ll) >= height(lr) ? create(ll, lv, ld, create(lr, x, d, r)) : (
-                lr ? create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, ld, create(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -79,9 +97,17 @@ function bal(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height(rr) >= height(rl) ? create(create(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height(rr) >= height(rl)) {
+          return create(create(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -107,9 +133,16 @@ function add(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare(x, v);
-    return c ? (
-              c < 0 ? bal(add(x, data, l), v, d, r) : bal(l, v, d, add(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal(add(x, data, l), v, d, r);
+      }
+      else {
+        return bal(l, v, d, add(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -117,6 +150,7 @@ function add(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -167,7 +201,12 @@ function compare$1(x, y) {
 }
 
 function height$1(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create$1(l, x, d, r) {
@@ -192,9 +231,17 @@ function bal$1(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height$1(ll) >= height$1(lr) ? create$1(ll, lv, ld, create$1(lr, x, d, r)) : (
-                lr ? create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height$1(ll) >= height$1(lr)) {
+        return create$1(ll, lv, ld, create$1(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -207,9 +254,17 @@ function bal$1(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height$1(rr) >= height$1(rl) ? create$1(create$1(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height$1(rr) >= height$1(rl)) {
+          return create$1(create$1(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -235,9 +290,16 @@ function add$1(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$1(x, v);
-    return c ? (
-              c < 0 ? bal$1(add$1(x, data, l), v, d, r) : bal$1(l, v, d, add$1(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal$1(add$1(x, data, l), v, d, r);
+      }
+      else {
+        return bal$1(l, v, d, add$1(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -245,6 +307,7 @@ function add$1(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -281,7 +344,12 @@ function compare$2(x, y) {
 }
 
 function height$2(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create$2(l, x, d, r) {
@@ -306,9 +374,17 @@ function bal$2(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height$2(ll) >= height$2(lr) ? create$2(ll, lv, ld, create$2(lr, x, d, r)) : (
-                lr ? create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height$2(ll) >= height$2(lr)) {
+        return create$2(ll, lv, ld, create$2(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -321,9 +397,17 @@ function bal$2(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height$2(rr) >= height$2(rl) ? create$2(create$2(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height$2(rr) >= height$2(rl)) {
+          return create$2(create$2(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -349,9 +433,16 @@ function add$2(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$2(x, v);
-    return c ? (
-              c < 0 ? bal$2(add$2(x, data, l), v, d, r) : bal$2(l, v, d, add$2(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal$2(add$2(x, data, l), v, d, r);
+      }
+      else {
+        return bal$2(l, v, d, add$2(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -359,6 +450,7 @@ function add$2(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -410,7 +502,12 @@ var table_count = [
 var dummy_met = [0];
 
 function fit_size(n) {
-  return n <= 2 ? n : fit_size((n + 1) / 2 | 0) * 2;
+  if (n <= 2) {
+    return n;
+  }
+  else {
+    return fit_size((n + 1) / 2 | 0) * 2;
+  }
 }
 
 function new_table(pub_labels) {
@@ -495,15 +592,21 @@ function get_method_labels(table, names) {
 
 function set_method(table, label, element) {
   ++ method_count[1];
-  return find$2(label, table[4]) ? put(table, label, element) : (table[6] = [
-              /* :: */0,
-              [
-                /* tuple */0,
-                label,
-                element
-              ],
-              table[6]
-            ], /* () */0);
+  if (find$2(label, table[4])) {
+    return put(table, label, element);
+  }
+  else {
+    table[6] = [
+      /* :: */0,
+      [
+        /* tuple */0,
+        label,
+        element
+      ],
+      table[6]
+    ];
+    return /* () */0;
+  }
 }
 
 function get_method(table, label) {
@@ -521,7 +624,12 @@ function get_method(table, label) {
 }
 
 function to_list(arr) {
-  return arr ? $$Array.to_list(arr) : /* [] */0;
+  if (arr) {
+    return $$Array.to_list(arr);
+  }
+  else {
+    return /* [] */0;
+  }
 }
 
 function narrow(table, vars, virt_meths, concr_meths) {
@@ -548,7 +656,12 @@ function narrow(table, vars, virt_meths, concr_meths) {
     table[5]
   ];
   table[7] = fold(function (lab, info, tvars) {
-        return List.mem(lab, vars$1) ? add(lab, info, tvars) : tvars;
+        if (List.mem(lab, vars$1)) {
+          return add(lab, info, tvars);
+        }
+        else {
+          return tvars;
+        }
       }, table[7], /* Empty */0);
   var by_name = [
     0,
@@ -583,11 +696,16 @@ function narrow(table, vars, virt_meths, concr_meths) {
   table[3] = by_name[1];
   table[4] = by_label[1];
   table[6] = List.fold_right(function (met, hm) {
-        return List.mem(met[1], virt_meth_labs) ? hm : [
+        if (List.mem(met[1], virt_meth_labs)) {
+          return hm;
+        }
+        else {
+          return [
                   /* :: */0,
                   met,
                   hm
                 ];
+        }
       }, table[6], /* [] */0);
   return /* () */0;
 }
@@ -602,11 +720,16 @@ function widen(table) {
   table[3] = match[1];
   table[4] = match[2];
   table[6] = List.fold_right(function (met, hm) {
-        return List.mem(met[1], virt_meths) ? hm : [
+        if (List.mem(met[1], virt_meths)) {
+          return hm;
+        }
+        else {
+          return [
                   /* :: */0,
                   met,
                   hm
                 ];
+        }
       }, table[6], match[3]);
   return /* () */0;
 }
@@ -636,7 +759,12 @@ function new_variable(table, name) {
 }
 
 function to_array(arr) {
-  return Caml_primitive.caml_equal(arr, 0) ? /* array */[] : arr;
+  if (Caml_primitive.caml_equal(arr, 0)) {
+    return /* array */[];
+  }
+  else {
+    return arr;
+  }
 }
 
 function new_methods_variables(table, meths, vals) {
@@ -809,7 +937,12 @@ function iter_f(obj, _param) {
 
 function run_initializers(obj, table) {
   var inits = table[8];
-  return inits !== /* [] */0 ? iter_f(obj, inits) : 0;
+  if (inits !== /* [] */0) {
+    return iter_f(obj, inits);
+  }
+  else {
+    return 0;
+  }
 }
 
 function run_initializers_opt(obj_0, obj, table) {
@@ -890,7 +1023,12 @@ function lookup_keys(i, keys, tables) {
 }
 
 function lookup_tables(root, keys) {
-  return root[2] !== /* Empty */0 ? lookup_keys(keys.length - 1, keys, root[2]) : build_path(keys.length - 1, keys, root);
+  if (root[2] !== /* Empty */0) {
+    return lookup_keys(keys.length - 1, keys, root[2]);
+  }
+  else {
+    return build_path(keys.length - 1, keys, root);
+  }
 }
 
 function get_const(x) {

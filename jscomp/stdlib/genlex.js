@@ -308,18 +308,40 @@ function make_lexer(keywords) {
         var exit$1 = 0;
         if (c >= 91) {
           var switcher = -95 + c;
-          27 < (switcher >>> 0) ? (
-              switcher >= 97 ? (exit$1 = 2) : (exit = 1)
-            ) : (
-              switcher !== 1 ? (exit$1 = 2) : (exit = 1)
-            );
+          if (27 < (switcher >>> 0)) {
+            if (switcher >= 97) {
+              exit$1 = 2;
+            }
+            else {
+              exit = 1;
+            }
+          }
+          else {
+            if (switcher !== 1) {
+              exit$1 = 2;
+            }
+            else {
+              exit = 1;
+            }
+          }
         }
         else {
-          c >= 48 ? (
-              6 < (-58 + c >>> 0) ? (exit$1 = 2) : (exit = 1)
-            ) : (
-              c !== 39 ? (exit = 1) : (exit$1 = 2)
-            );
+          if (c >= 48) {
+            if (6 < (-58 + c >>> 0)) {
+              exit$1 = 2;
+            }
+            else {
+              exit = 1;
+            }
+          }
+          else {
+            if (c !== 39) {
+              exit = 1;
+            }
+            else {
+              exit$1 = 2;
+            }
+          }
         }
         if (exit$1 === 2) {
           Stream.junk(strm__);
@@ -348,15 +370,31 @@ function make_lexer(keywords) {
         var exit$1 = 0;
         if (c >= 94) {
           var switcher = -95 + c;
-          30 < (switcher >>> 0) ? (
-              switcher >= 32 ? (exit = 1) : (exit$1 = 2)
-            ) : (
-              switcher !== 29 ? (exit = 1) : (exit$1 = 2)
-            );
+          if (30 < (switcher >>> 0)) {
+            if (switcher >= 32) {
+              exit = 1;
+            }
+            else {
+              exit$1 = 2;
+            }
+          }
+          else {
+            if (switcher !== 29) {
+              exit = 1;
+            }
+            else {
+              exit$1 = 2;
+            }
+          }
         }
         else {
           if (c >= 65) {
-            c !== 92 ? (exit = 1) : (exit$1 = 2);
+            if (c !== 92) {
+              exit = 1;
+            }
+            else {
+              exit$1 = 2;
+            }
           }
           else {
             if (c >= 33) {
@@ -457,9 +495,17 @@ function make_lexer(keywords) {
         var c = match[1];
         var exit$1 = 0;
         if (c >= 58) {
-          c !== 69 ? (
-              c !== 101 ? (exit = 1) : (exit$1 = 2)
-            ) : (exit$1 = 2);
+          if (c !== 69) {
+            if (c !== 101) {
+              exit = 1;
+            }
+            else {
+              exit$1 = 2;
+            }
+          }
+          else {
+            exit$1 = 2;
+          }
         }
         else {
           if (c !== 46) {
@@ -765,15 +811,25 @@ function make_lexer(keywords) {
   };
   var maybe_comment = function (strm__) {
     var match = Stream.peek(strm__);
-    return match ? (
-              match[1] !== 42 ? [
-                  /* Some */0,
-                  keyword_or_error(/* "(" */40)
-                ] : (Stream.junk(strm__), comment(strm__), next_token(strm__))
-            ) : [
+    if (match) {
+      if (match[1] !== 42) {
+        return [
+                /* Some */0,
+                keyword_or_error(/* "(" */40)
+              ];
+      }
+      else {
+        Stream.junk(strm__);
+        comment(strm__);
+        return next_token(strm__);
+      }
+    }
+    else {
+      return [
               /* Some */0,
               keyword_or_error(/* "(" */40)
             ];
+    }
   };
   var comment = function (strm__) {
     while(/* true */1) {
@@ -811,7 +867,15 @@ function make_lexer(keywords) {
   var maybe_nested_comment = function (strm__) {
     var match = Stream.peek(strm__);
     if (match) {
-      return match[1] !== 42 ? (Stream.junk(strm__), comment(strm__)) : (Stream.junk(strm__), comment(strm__), comment(strm__));
+      if (match[1] !== 42) {
+        Stream.junk(strm__);
+        return comment(strm__);
+      }
+      else {
+        Stream.junk(strm__);
+        comment(strm__);
+        return comment(strm__);
+      }
     }
     else {
       throw Stream.Failure;
@@ -822,9 +886,19 @@ function make_lexer(keywords) {
       var match = Stream.peek(strm__);
       if (match) {
         var c = match[1];
-        return c !== 41 ? (
-                  c !== 42 ? (Stream.junk(strm__), comment(strm__)) : Stream.junk(strm__)
-                ) : (Stream.junk(strm__), /* () */0);
+        if (c !== 41) {
+          if (c !== 42) {
+            Stream.junk(strm__);
+            return comment(strm__);
+          }
+          else {
+            return Stream.junk(strm__);
+          }
+        }
+        else {
+          Stream.junk(strm__);
+          return /* () */0;
+        }
       }
       else {
         throw Stream.Failure;

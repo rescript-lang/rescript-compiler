@@ -121,13 +121,18 @@ function sqrt(x) {
       var q$1 = r / i;
       w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
     }
-    return x[0] >= 0.0 ? /* array */[
+    if (x[0] >= 0.0) {
+      return /* array */[
               w,
               0.5 * x[1] / w
-            ] : /* array */[
+            ];
+    }
+    else {
+      return /* array */[
               0.5 * i / w,
               x[1] >= 0.0 ? w : -w
             ];
+    }
   }
 }
 

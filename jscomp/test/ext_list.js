@@ -41,7 +41,12 @@ function same_length(_xs, _ys) {
       }
     }
     else {
-      return ys ? /* false */0 : /* true */1;
+      if (ys) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
     }
   };
 }
@@ -100,7 +105,12 @@ function filter_map2(f, _xs, _ys) {
       }
     }
     else {
-      return ys ? Pervasives.invalid_arg("Ext_list.filter_map2") : /* [] */0;
+      if (ys) {
+        return Pervasives.invalid_arg("Ext_list.filter_map2");
+      }
+      else {
+        return /* [] */0;
+      }
     }
   };
 }
@@ -134,7 +144,12 @@ function filter_map2i(f, xs, ys) {
         }
       }
       else {
-        return ys ? Pervasives.invalid_arg("Ext_list.filter_map2i") : /* [] */0;
+        if (ys) {
+          return Pervasives.invalid_arg("Ext_list.filter_map2i");
+        }
+        else {
+          return /* [] */0;
+        }
       }
     };
   };
@@ -176,7 +191,12 @@ function flat_map2(f, lx, ly) {
         }
       }
       else {
-        return ly ? Pervasives.invalid_arg("Ext_list.flat_map2") : List.rev(acc);
+        if (ly) {
+          return Pervasives.invalid_arg("Ext_list.flat_map2");
+        }
+        else {
+          return List.rev(acc);
+        }
       }
     };
   };
@@ -291,11 +311,16 @@ function init(n, f) {
 function take(n, l) {
   var arr = $$Array.of_list(l);
   var arr_length = arr.length;
-  return arr_length < n ? Pervasives.invalid_arg("Ext_list.take") : [
+  if (arr_length < n) {
+    return Pervasives.invalid_arg("Ext_list.take");
+  }
+  else {
+    return [
             /* tuple */0,
             $$Array.to_list($$Array.sub(arr, 0, n)),
             $$Array.to_list($$Array.sub(arr, n, arr_length - n))
           ];
+  }
 }
 
 function exclude_tail(x) {
@@ -326,14 +351,20 @@ function exclude_tail(x) {
 }
 
 function group(cmp, lst) {
-  return lst ? aux(cmp, lst[1], group(cmp, lst[2])) : /* [] */0;
+  if (lst) {
+    return aux(cmp, lst[1], group(cmp, lst[2]));
+  }
+  else {
+    return /* [] */0;
+  }
 }
 
 function aux(cmp, x, xss) {
   if (xss) {
     var ys = xss[2];
     var y = xss[1];
-    return cmp(x, List.hd(y)) ? [
+    if (cmp(x, List.hd(y))) {
+      return [
               /* :: */0,
               [
                 /* :: */0,
@@ -341,11 +372,15 @@ function aux(cmp, x, xss) {
                 y
               ],
               ys
-            ] : [
+            ];
+    }
+    else {
+      return [
               /* :: */0,
               y,
               aux(cmp, x, ys)
             ];
+    }
   }
   else {
     return [

@@ -117,7 +117,14 @@ function clear(h) {
 
 function reset(h) {
   var len = h[2].length;
-  return h.length < 4 || len === h[4] ? clear(h) : (h[1] = 0, h[2] = Caml_array.caml_make_vect(h[4], /* Empty */0), /* () */0);
+  if (h.length < 4 || len === h[4]) {
+    return clear(h);
+  }
+  else {
+    h[1] = 0;
+    h[2] = Caml_array.caml_make_vect(h[4], /* Empty */0);
+    return /* () */0;
+  }
 }
 
 function copy(h) {
@@ -169,7 +176,12 @@ function resize(indexfun, h) {
 }
 
 function key_index(h, key) {
-  return h.length >= 3 ? Caml_primitive.caml_hash(10, 100, h[3], key) & h[2].length - 1 : Caml_primitive.caml_hash_univ_param(10, 100, key) % h[2].length;
+  if (h.length >= 3) {
+    return Caml_primitive.caml_hash(10, 100, h[3], key) & h[2].length - 1;
+  }
+  else {
+    return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[2].length;
+  }
 }
 
 function add(h, key, info) {
@@ -183,7 +195,12 @@ function add(h, key, info) {
   ];
   h[2][i] = bucket;
   ++ h[1];
-  return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+  if (h[1] > (h[2].length << 1)) {
+    return resize(key_index, h);
+  }
+  else {
+    return 0;
+  }
 }
 
 function remove(h, key) {
@@ -191,12 +208,18 @@ function remove(h, key) {
     if (param) {
       var next = param[3];
       var k = param[1];
-      return Caml_primitive.caml_compare(k, key) ? [
+      if (Caml_primitive.caml_compare(k, key)) {
+        return [
                 /* Cons */0,
                 k,
                 param[2],
                 remove_bucket(next)
-              ] : (-- h[1], next);
+              ];
+      }
+      else {
+        -- h[1];
+        return next;
+      }
     }
     else {
       return /* Empty */0;
@@ -233,7 +256,12 @@ function find(h, key) {
         var rest2 = rest1[3];
         if (Caml_primitive.caml_compare(key, rest1[1])) {
           if (rest2) {
-            return Caml_primitive.caml_compare(key, rest2[1]) ? find_rec(key, rest2[3]) : rest2[2];
+            if (Caml_primitive.caml_compare(key, rest2[1])) {
+              return find_rec(key, rest2[3]);
+            }
+            else {
+              return rest2[2];
+            }
           }
           else {
             throw Caml_exceptions.Not_found;
@@ -286,17 +314,22 @@ function replace(h, key, info) {
     if (param) {
       var next = param[3];
       var k = param[1];
-      return Caml_primitive.caml_compare(k, key) ? [
+      if (Caml_primitive.caml_compare(k, key)) {
+        return [
                 /* Cons */0,
                 k,
                 param[2],
                 replace_bucket(next)
-              ] : [
+              ];
+      }
+      else {
+        return [
                 /* Cons */0,
                 key,
                 info,
                 next
               ];
+      }
     }
     else {
       throw Caml_exceptions.Not_found;
@@ -317,7 +350,12 @@ function replace(h, key, info) {
         l
       ];
       ++ h[1];
-      return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+      if (h[1] > (h[2].length << 1)) {
+        return resize(key_index, h);
+      }
+      else {
+        return 0;
+      }
     }
     else {
       throw exn;
@@ -327,7 +365,12 @@ function replace(h, key, info) {
 
 function mem(h, key) {
   var mem_in_bucket = function (param) {
-    return param ? +(Caml_primitive.caml_compare(param[1], key) === 0 || mem_in_bucket(param[3])) : /* false */0;
+    if (param) {
+      return +(Caml_primitive.caml_compare(param[1], key) === 0 || mem_in_bucket(param[3]));
+    }
+    else {
+      return /* false */0;
+    }
   };
   return mem_in_bucket(h[2][key_index(h, key)]);
 }
@@ -422,19 +465,30 @@ function MakeSeeded(H) {
     ];
     h[2][i] = bucket;
     ++ h[1];
-    return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+    if (h[1] > (h[2].length << 1)) {
+      return resize(key_index, h);
+    }
+    else {
+      return 0;
+    }
   };
   var remove = function (h, key) {
     var remove_bucket = function (param) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        return H[1](k, key) ? (-- h[1], next) : [
+        if (H[1](k, key)) {
+          -- h[1];
+          return next;
+        }
+        else {
+          return [
                   /* Cons */0,
                   k,
                   param[2],
                   remove_bucket(next)
                 ];
+        }
       }
       else {
         return /* Empty */0;
@@ -475,7 +529,12 @@ function MakeSeeded(H) {
           }
           else {
             if (rest2) {
-              return H[1](key, rest2[1]) ? rest2[2] : find_rec(key, rest2[3]);
+              if (H[1](key, rest2[1])) {
+                return rest2[2];
+              }
+              else {
+                return find_rec(key, rest2[3]);
+              }
             }
             else {
               throw Caml_exceptions.Not_found;
@@ -520,17 +579,22 @@ function MakeSeeded(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        return H[1](k, key) ? [
+        if (H[1](k, key)) {
+          return [
                   /* Cons */0,
                   key,
                   info,
                   next
-                ] : [
+                ];
+        }
+        else {
+          return [
                   /* Cons */0,
                   k,
                   param[2],
                   replace_bucket(next)
                 ];
+        }
       }
       else {
         throw Caml_exceptions.Not_found;
@@ -551,7 +615,12 @@ function MakeSeeded(H) {
           l
         ];
         ++ h[1];
-        return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+        if (h[1] > (h[2].length << 1)) {
+          return resize(key_index, h);
+        }
+        else {
+          return 0;
+        }
       }
       else {
         throw exn;
@@ -560,7 +629,12 @@ function MakeSeeded(H) {
   };
   var mem = function (h, key) {
     var mem_in_bucket = function (param) {
-      return param ? +(H[1](param[1], key) || mem_in_bucket(param[3])) : /* false */0;
+      if (param) {
+        return +(H[1](param[1], key) || mem_in_bucket(param[3]));
+      }
+      else {
+        return /* false */0;
+      }
     };
     return mem_in_bucket(h[2][key_index(h, key)]);
   };
@@ -602,19 +676,30 @@ function Make(H) {
     ];
     h[2][i] = bucket;
     ++ h[1];
-    return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+    if (h[1] > (h[2].length << 1)) {
+      return resize(key_index, h);
+    }
+    else {
+      return 0;
+    }
   };
   var remove = function (h, key) {
     var remove_bucket = function (param) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        return equal(k, key) ? (-- h[1], next) : [
+        if (equal(k, key)) {
+          -- h[1];
+          return next;
+        }
+        else {
+          return [
                   /* Cons */0,
                   k,
                   param[2],
                   remove_bucket(next)
                 ];
+        }
       }
       else {
         return /* Empty */0;
@@ -655,7 +740,12 @@ function Make(H) {
           }
           else {
             if (rest2) {
-              return equal(key, rest2[1]) ? rest2[2] : find_rec(key, rest2[3]);
+              if (equal(key, rest2[1])) {
+                return rest2[2];
+              }
+              else {
+                return find_rec(key, rest2[3]);
+              }
             }
             else {
               throw Caml_exceptions.Not_found;
@@ -700,17 +790,22 @@ function Make(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        return equal(k, key) ? [
+        if (equal(k, key)) {
+          return [
                   /* Cons */0,
                   key,
                   info,
                   next
-                ] : [
+                ];
+        }
+        else {
+          return [
                   /* Cons */0,
                   k,
                   param[2],
                   replace_bucket(next)
                 ];
+        }
       }
       else {
         throw Caml_exceptions.Not_found;
@@ -731,7 +826,12 @@ function Make(H) {
           l
         ];
         ++ h[1];
-        return h[1] > (h[2].length << 1) ? resize(key_index, h) : 0;
+        if (h[1] > (h[2].length << 1)) {
+          return resize(key_index, h);
+        }
+        else {
+          return 0;
+        }
       }
       else {
         throw exn;
@@ -740,7 +840,12 @@ function Make(H) {
   };
   var mem = function (h, key) {
     var mem_in_bucket = function (param) {
-      return param ? +(equal(param[1], key) || mem_in_bucket(param[3])) : /* false */0;
+      if (param) {
+        return +(equal(param[1], key) || mem_in_bucket(param[3]));
+      }
+      else {
+        return /* false */0;
+      }
     };
     return mem_in_bucket(h[2][key_index(h, key)]);
   };

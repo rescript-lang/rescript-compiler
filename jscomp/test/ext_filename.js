@@ -28,7 +28,12 @@ function absolute_path(s) {
           _s = dir;
         }
         else {
-          return base === Filename.parent_dir_name ? Filename.dirname(aux(dir)) : Filename.concat(aux(dir), base);
+          if (base === Filename.parent_dir_name) {
+            return Filename.dirname(aux(dir));
+          }
+          else {
+            return Filename.concat(aux(dir), base);
+          }
         }
       }
     };

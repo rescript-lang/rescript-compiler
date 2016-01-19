@@ -39,12 +39,17 @@ var Break = [
 ];
 
 function catch_break(on) {
-  return on ? set_signal(sigint, [
+  if (on) {
+    return set_signal(sigint, [
                 /* Signal_handle */0,
                 function () {
                   throw Break;
                 }
-              ]) : set_signal(sigint, /* Signal_default */0);
+              ]);
+  }
+  else {
+    return set_signal(sigint, /* Signal_default */0);
+  }
 }
 
 var argv = match_002;

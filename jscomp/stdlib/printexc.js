@@ -68,7 +68,8 @@ var locfmt = [
 
 function field(x, i) {
   var f = x[i];
-  return !Caml_obj_runtime.caml_obj_is_block(f) ? Printf.sprintf([
+  if (!Caml_obj_runtime.caml_obj_is_block(f)) {
+    return Printf.sprintf([
                   /* Format */0,
                   [
                     /* Int */4,
@@ -78,23 +79,37 @@ function field(x, i) {
                     /* End_of_format */0
                   ],
                   "%d"
-                ])(f) : (
-            Caml_obj_runtime.caml_obj_tag(f) === Obj.string_tag ? Printf.sprintf([
-                      /* Format */0,
-                      [
-                        /* Caml_string */3,
-                        /* No_padding */0,
-                        /* End_of_format */0
-                      ],
-                      "%S"
-                    ])(f) : (
-                Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag ? Pervasives.string_of_float(f) : "_"
-              )
-          );
+                ])(f);
+  }
+  else {
+    if (Caml_obj_runtime.caml_obj_tag(f) === Obj.string_tag) {
+      return Printf.sprintf([
+                    /* Format */0,
+                    [
+                      /* Caml_string */3,
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ],
+                    "%S"
+                  ])(f);
+    }
+    else {
+      if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
+        return Pervasives.string_of_float(f);
+      }
+      else {
+        return "_";
+      }
+    }
+  }
 }
 
 function other_fields(x, i) {
-  return i >= x.length ? "" : Printf.sprintf([
+  if (i >= x.length) {
+    return "";
+  }
+  else {
+    return Printf.sprintf([
                   /* Format */0,
                   [
                     /* String_literal */11,
@@ -111,6 +126,7 @@ function other_fields(x, i) {
                   ],
                   ", %s%s"
                 ])(field(x, i), other_fields(x, i + 1));
+  }
 }
 
 function fields(x) {
@@ -305,30 +321,48 @@ function convert_raw_backtrace(rbckt) {
 
 function format_backtrace_slot(pos, slot) {
   var info = function (is_raise) {
-    return is_raise ? (
-              pos ? "Re-raised at" : "Raised at"
-            ) : (
-              pos ? "Called from" : "Raised by primitive operation at"
-            );
+    if (is_raise) {
+      if (pos) {
+        return "Re-raised at";
+      }
+      else {
+        return "Raised at";
+      }
+    }
+    else {
+      if (pos) {
+        return "Called from";
+      }
+      else {
+        return "Raised by primitive operation at";
+      }
+    }
   };
-  return slot[0] ? (
-            slot[1] !== 0 ? /* None */0 : [
-                /* Some */0,
-                Printf.sprintf([
-                        /* Format */0,
+  if (slot[0]) {
+    if (slot[1] !== 0) {
+      return /* None */0;
+    }
+    else {
+      return [
+              /* Some */0,
+              Printf.sprintf([
+                      /* Format */0,
+                      [
+                        /* String */2,
+                        /* No_padding */0,
                         [
-                          /* String */2,
-                          /* No_padding */0,
-                          [
-                            /* String_literal */11,
-                            " unknown location",
-                            /* End_of_format */0
-                          ]
-                        ],
-                        "%s unknown location"
-                      ])(info(/* false */0))
-              ]
-          ) : [
+                          /* String_literal */11,
+                          " unknown location",
+                          /* End_of_format */0
+                        ]
+                      ],
+                      "%s unknown location"
+                    ])(info(/* false */0))
+            ];
+    }
+  }
+  else {
+    return [
             /* Some */0,
             Printf.sprintf([
                     /* Format */0,
@@ -378,6 +412,7 @@ function format_backtrace_slot(pos, slot) {
                     '%s file "%s", line %d, characters %d-%d'
                   ])(info(slot[1]), slot[2], slot[3], slot[4], slot[5])
           ];
+  }
 }
 
 function print_exception_backtrace(outchan, backtrace) {
@@ -464,7 +499,11 @@ function backtrace_slot_is_raise(param) {
 }
 
 function backtrace_slot_location(param) {
-  return param[0] ? /* None */0 : [
+  if (param[0]) {
+    return /* None */0;
+  }
+  else {
+    return [
             /* Some */0,
             [
               /* record */0,
@@ -474,6 +513,7 @@ function backtrace_slot_location(param) {
               param[5]
             ]
           ];
+  }
 }
 
 function backtrace_slots(raw_backtrace) {
@@ -481,15 +521,30 @@ function backtrace_slots(raw_backtrace) {
   if (match) {
     var backtrace = match[1];
     var usable_slot = function (param) {
-      return param[0] ? /* false */0 : /* true */1;
+      if (param[0]) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
     };
     var exists_usable = function (i) {
-      return i !== -1 ? +(usable_slot(backtrace[i]) || exists_usable(i - 1)) : /* false */0;
+      if (i !== -1) {
+        return +(usable_slot(backtrace[i]) || exists_usable(i - 1));
+      }
+      else {
+        return /* false */0;
+      }
     };
-    return exists_usable(backtrace.length - 1) ? [
+    if (exists_usable(backtrace.length - 1)) {
+      return [
               /* Some */0,
               backtrace
-            ] : /* None */0;
+            ];
+    }
+    else {
+      return /* None */0;
+    }
   }
   else {
     return /* None */0;
@@ -518,7 +573,12 @@ function register_printer(fn) {
 }
 
 function exn_slot(x) {
-  return Caml_obj_runtime.caml_obj_tag(x) ? x : x[0];
+  if (Caml_obj_runtime.caml_obj_tag(x)) {
+    return x;
+  }
+  else {
+    return x[0];
+  }
 }
 
 function exn_slot_id(x) {

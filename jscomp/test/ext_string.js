@@ -120,18 +120,35 @@ function escaped(s) {
           }
         }
         else {
-          return match >= 11 ? (match !== 13, /* true */1) : (match >= 8, /* true */1);
+          if (match >= 11) {
+            match !== 13;
+            return /* true */1;
+          }
+          else {
+            match >= 8;
+            return /* true */1;
+          }
         }
       }
     };
   };
-  return needs_escape(0) ? Bytes.unsafe_to_string(Ext_bytes.escaped(Bytes.unsafe_of_string(s))) : s;
+  if (needs_escape(0)) {
+    return Bytes.unsafe_to_string(Ext_bytes.escaped(Bytes.unsafe_of_string(s)));
+  }
+  else {
+    return s;
+  }
 }
 
 function for_all(p, s) {
   var len = s.length;
   var aux = function (i) {
-    return i >= len ? /* true */1 : +(p(s.charCodeAt(i)) && aux(i + 1));
+    if (i >= len) {
+      return /* true */1;
+    }
+    else {
+      return +(p(s.charCodeAt(i)) && aux(i + 1));
+    }
   };
   return aux(0);
 }

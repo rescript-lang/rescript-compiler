@@ -66,7 +66,12 @@ function take(q) {
   -- q[1];
   var tail = q[2];
   var head = tail[2];
-  head === tail ? (q[2] = /* None */0) : (tail[2] = head[2]);
+  if (head === tail) {
+    q[2] = /* None */0;
+  }
+  else {
+    tail[2] = head[2];
+  }
   return head[1];
 }
 

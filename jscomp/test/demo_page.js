@@ -4,7 +4,12 @@ var React = require("react");
 var ReactDom = require("react-dom");
 
 function fib(n) {
-  return 1 < (-1 + n >>> 0) ? fib(n - 1) + fib(n - 2) : 1;
+  if (1 < (-1 + n >>> 0)) {
+    return fib(n - 1) + fib(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 function sum(n) {
@@ -16,11 +21,16 @@ function sum(n) {
 }
 
 function map(f, param) {
-  return param ? [
+  if (param) {
+    return [
             /* Cons */0,
             f(param[1]),
             map(f, param[2])
-          ] : /* Nil */0;
+          ];
+  }
+  else {
+    return /* Nil */0;
+  }
 }
 
 function test_curry(x, y) {

@@ -37,7 +37,12 @@ function public_method_label(s) {
     accu = 223 * accu + s.charCodeAt(i);
   }
   accu = accu & (1 << 31) - 1;
-  return accu > 1073741823 ? accu - (1 << 31) : accu;
+  if (accu > 1073741823) {
+    return accu - (1 << 31);
+  }
+  else {
+    return accu;
+  }
 }
 
 function compare(x, y) {
@@ -45,7 +50,12 @@ function compare(x, y) {
 }
 
 function height(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create(l, x, d, r) {
@@ -81,9 +91,17 @@ function bal(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height(ll) >= height(lr) ? create(ll, lv, ld, create(lr, x, d, r)) : (
-                lr ? create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height(ll) >= height(lr)) {
+        return create(ll, lv, ld, create(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -96,9 +114,17 @@ function bal(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height(rr) >= height(rl) ? create(create(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height(rr) >= height(rl)) {
+          return create(create(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -118,7 +144,12 @@ function bal(l, x, d, r) {
 }
 
 function is_empty(param) {
-  return param ? /* false */0 : /* true */1;
+  if (param) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function add(x, data, param) {
@@ -128,9 +159,16 @@ function add(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare(x, v);
-    return c ? (
-              c < 0 ? bal(add(x, data, l), v, d, r) : bal(l, v, d, add(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal(add(x, data, l), v, d, r);
+      }
+      else {
+        return bal(l, v, d, add(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -138,6 +176,7 @@ function add(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -226,7 +265,12 @@ function max_binding(_param) {
 function remove_min_binding(param) {
   if (param) {
     var l = param[1];
-    return l ? bal(remove_min_binding(l), param[2], param[3], param[4]) : param[4];
+    if (l) {
+      return bal(remove_min_binding(l), param[2], param[3], param[4]);
+    }
+    else {
+      return param[4];
+    }
   }
   else {
     return Pervasives.invalid_arg("Map.remove_min_elt");
@@ -255,9 +299,17 @@ function remove(x, param) {
     var v = param[2];
     var l = param[1];
     var c = compare(x, v);
-    return c ? (
-              c < 0 ? bal(remove(x, l), v, d, r) : bal(l, v, d, remove(x, r))
-            ) : merge(l, r);
+    if (c) {
+      if (c < 0) {
+        return bal(remove(x, l), v, d, r);
+      }
+      else {
+        return bal(l, v, d, remove(x, r));
+      }
+    }
+    else {
+      return merge(l, r);
+    }
   }
   else {
     return /* Empty */0;
@@ -332,19 +384,39 @@ function fold(f, _m, _accu) {
 }
 
 function for_all(p, param) {
-  return param ? +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4])) : /* true */1;
+  if (param) {
+    return +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4]));
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function exists(p, param) {
-  return param ? +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4])) : /* false */0;
+  if (param) {
+    return +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function add_min_binding(k, v, param) {
-  return param ? bal(add_min_binding(k, v, param[1]), param[2], param[3], param[4]) : singleton(k, v);
+  if (param) {
+    return bal(add_min_binding(k, v, param[1]), param[2], param[3], param[4]);
+  }
+  else {
+    return singleton(k, v);
+  }
 }
 
 function add_max_binding(k, v, param) {
-  return param ? bal(param[1], param[2], param[3], add_max_binding(k, v, param[4])) : singleton(k, v);
+  if (param) {
+    return bal(param[1], param[2], param[3], add_max_binding(k, v, param[4]));
+  }
+  else {
+    return singleton(k, v);
+  }
 }
 
 function join(l, v, d, r) {
@@ -352,9 +424,17 @@ function join(l, v, d, r) {
     if (r) {
       var rh = r[5];
       var lh = l[5];
-      return lh > rh + 2 ? bal(l[1], l[2], l[3], join(l[4], v, d, r)) : (
-                rh > lh + 2 ? bal(join(l, v, d, r[1]), r[2], r[3], r[4]) : create(l, v, d, r)
-              );
+      if (lh > rh + 2) {
+        return bal(l[1], l[2], l[3], join(l[4], v, d, r));
+      }
+      else {
+        if (rh > lh + 2) {
+          return bal(join(l, v, d, r[1]), r[2], r[3], r[4]);
+        }
+        else {
+          return create(l, v, d, r);
+        }
+      }
     }
     else {
       return add_max_binding(v, d, l);
@@ -381,7 +461,12 @@ function concat(t1, t2) {
 }
 
 function concat_or_join(t1, v, d, t2) {
-  return d ? join(t1, v, d[1], t2) : concat(t1, t2);
+  if (d) {
+    return join(t1, v, d[1], t2);
+  }
+  else {
+    return concat(t1, t2);
+  }
 }
 
 function split(x, param) {
@@ -488,7 +573,12 @@ function filter(p, param) {
     var l$prime = filter(p, param[1]);
     var pvd = p(v, d);
     var r$prime = filter(p, param[4]);
-    return pvd ? join(l$prime, v, d, r$prime) : concat(l$prime, r$prime);
+    if (pvd) {
+      return join(l$prime, v, d, r$prime);
+    }
+    else {
+      return concat(l$prime, r$prime);
+    }
   }
   else {
     return /* Empty */0;
@@ -506,15 +596,20 @@ function partition(p, param) {
     var match$1 = partition(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
-    return pvd ? [
+    if (pvd) {
+      return [
               /* tuple */0,
               join(lt, v, d, rt),
               concat(lf, rf)
-            ] : [
+            ];
+    }
+    else {
+      return [
               /* tuple */0,
               concat(lt, rt),
               join(lf, v, d, rf)
             ];
+    }
   }
   else {
     return [
@@ -572,7 +667,12 @@ function compare$1(cmp, m1, m2) {
         }
       }
       else {
-        return e2 ? -1 : 0;
+        if (e2) {
+          return -1;
+        }
+        else {
+          return 0;
+        }
       }
     };
   };
@@ -581,17 +681,33 @@ function compare$1(cmp, m1, m2) {
 
 function equal(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
-    return e1 ? (
-              e2 ? +(compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4]))) : /* false */0
-            ) : (
-              e2 ? /* false */0 : /* true */1
-            );
+    if (e1) {
+      if (e2) {
+        return +(compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      if (e2) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
+    }
   };
   return equal_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
 }
 
 function cardinal(param) {
-  return param ? cardinal(param[1]) + 1 + cardinal(param[4]) : 0;
+  if (param) {
+    return cardinal(param[1]) + 1 + cardinal(param[4]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function bindings_aux(_accu, _param) {
@@ -653,7 +769,12 @@ function compare$2(x, y) {
 }
 
 function height$1(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create$1(l, x, d, r) {
@@ -689,9 +810,17 @@ function bal$1(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height$1(ll) >= height$1(lr) ? create$1(ll, lv, ld, create$1(lr, x, d, r)) : (
-                lr ? create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height$1(ll) >= height$1(lr)) {
+        return create$1(ll, lv, ld, create$1(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -704,9 +833,17 @@ function bal$1(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height$1(rr) >= height$1(rl) ? create$1(create$1(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height$1(rr) >= height$1(rl)) {
+          return create$1(create$1(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -726,7 +863,12 @@ function bal$1(l, x, d, r) {
 }
 
 function is_empty$1(param) {
-  return param ? /* false */0 : /* true */1;
+  if (param) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function add$1(x, data, param) {
@@ -736,9 +878,16 @@ function add$1(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$2(x, v);
-    return c ? (
-              c < 0 ? bal$1(add$1(x, data, l), v, d, r) : bal$1(l, v, d, add$1(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal$1(add$1(x, data, l), v, d, r);
+      }
+      else {
+        return bal$1(l, v, d, add$1(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -746,6 +895,7 @@ function add$1(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -834,7 +984,12 @@ function max_binding$1(_param) {
 function remove_min_binding$1(param) {
   if (param) {
     var l = param[1];
-    return l ? bal$1(remove_min_binding$1(l), param[2], param[3], param[4]) : param[4];
+    if (l) {
+      return bal$1(remove_min_binding$1(l), param[2], param[3], param[4]);
+    }
+    else {
+      return param[4];
+    }
   }
   else {
     return Pervasives.invalid_arg("Map.remove_min_elt");
@@ -863,9 +1018,17 @@ function remove$1(x, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$2(x, v);
-    return c ? (
-              c < 0 ? bal$1(remove$1(x, l), v, d, r) : bal$1(l, v, d, remove$1(x, r))
-            ) : merge$2(l, r);
+    if (c) {
+      if (c < 0) {
+        return bal$1(remove$1(x, l), v, d, r);
+      }
+      else {
+        return bal$1(l, v, d, remove$1(x, r));
+      }
+    }
+    else {
+      return merge$2(l, r);
+    }
   }
   else {
     return /* Empty */0;
@@ -940,19 +1103,39 @@ function fold$1(f, _m, _accu) {
 }
 
 function for_all$1(p, param) {
-  return param ? +(p(param[2], param[3]) && for_all$1(p, param[1]) && for_all$1(p, param[4])) : /* true */1;
+  if (param) {
+    return +(p(param[2], param[3]) && for_all$1(p, param[1]) && for_all$1(p, param[4]));
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function exists$1(p, param) {
-  return param ? +(p(param[2], param[3]) || exists$1(p, param[1]) || exists$1(p, param[4])) : /* false */0;
+  if (param) {
+    return +(p(param[2], param[3]) || exists$1(p, param[1]) || exists$1(p, param[4]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function add_min_binding$1(k, v, param) {
-  return param ? bal$1(add_min_binding$1(k, v, param[1]), param[2], param[3], param[4]) : singleton$1(k, v);
+  if (param) {
+    return bal$1(add_min_binding$1(k, v, param[1]), param[2], param[3], param[4]);
+  }
+  else {
+    return singleton$1(k, v);
+  }
 }
 
 function add_max_binding$1(k, v, param) {
-  return param ? bal$1(param[1], param[2], param[3], add_max_binding$1(k, v, param[4])) : singleton$1(k, v);
+  if (param) {
+    return bal$1(param[1], param[2], param[3], add_max_binding$1(k, v, param[4]));
+  }
+  else {
+    return singleton$1(k, v);
+  }
 }
 
 function join$1(l, v, d, r) {
@@ -960,9 +1143,17 @@ function join$1(l, v, d, r) {
     if (r) {
       var rh = r[5];
       var lh = l[5];
-      return lh > rh + 2 ? bal$1(l[1], l[2], l[3], join$1(l[4], v, d, r)) : (
-                rh > lh + 2 ? bal$1(join$1(l, v, d, r[1]), r[2], r[3], r[4]) : create$1(l, v, d, r)
-              );
+      if (lh > rh + 2) {
+        return bal$1(l[1], l[2], l[3], join$1(l[4], v, d, r));
+      }
+      else {
+        if (rh > lh + 2) {
+          return bal$1(join$1(l, v, d, r[1]), r[2], r[3], r[4]);
+        }
+        else {
+          return create$1(l, v, d, r);
+        }
+      }
     }
     else {
       return add_max_binding$1(v, d, l);
@@ -989,7 +1180,12 @@ function concat$1(t1, t2) {
 }
 
 function concat_or_join$1(t1, v, d, t2) {
-  return d ? join$1(t1, v, d[1], t2) : concat$1(t1, t2);
+  if (d) {
+    return join$1(t1, v, d[1], t2);
+  }
+  else {
+    return concat$1(t1, t2);
+  }
 }
 
 function split$1(x, param) {
@@ -1096,7 +1292,12 @@ function filter$1(p, param) {
     var l$prime = filter$1(p, param[1]);
     var pvd = p(v, d);
     var r$prime = filter$1(p, param[4]);
-    return pvd ? join$1(l$prime, v, d, r$prime) : concat$1(l$prime, r$prime);
+    if (pvd) {
+      return join$1(l$prime, v, d, r$prime);
+    }
+    else {
+      return concat$1(l$prime, r$prime);
+    }
   }
   else {
     return /* Empty */0;
@@ -1114,15 +1315,20 @@ function partition$1(p, param) {
     var match$1 = partition$1(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
-    return pvd ? [
+    if (pvd) {
+      return [
               /* tuple */0,
               join$1(lt, v, d, rt),
               concat$1(lf, rf)
-            ] : [
+            ];
+    }
+    else {
+      return [
               /* tuple */0,
               concat$1(lt, rt),
               join$1(lf, v, d, rf)
             ];
+    }
   }
   else {
     return [
@@ -1180,7 +1386,12 @@ function compare$3(cmp, m1, m2) {
         }
       }
       else {
-        return e2 ? -1 : 0;
+        if (e2) {
+          return -1;
+        }
+        else {
+          return 0;
+        }
       }
     };
   };
@@ -1189,17 +1400,33 @@ function compare$3(cmp, m1, m2) {
 
 function equal$1(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
-    return e1 ? (
-              e2 ? +(compare$2(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$1(e1[3], e1[4]), cons_enum$1(e2[3], e2[4]))) : /* false */0
-            ) : (
-              e2 ? /* false */0 : /* true */1
-            );
+    if (e1) {
+      if (e2) {
+        return +(compare$2(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$1(e1[3], e1[4]), cons_enum$1(e2[3], e2[4])));
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      if (e2) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
+    }
   };
   return equal_aux(cons_enum$1(m1, /* End */0), cons_enum$1(m2, /* End */0));
 }
 
 function cardinal$1(param) {
-  return param ? cardinal$1(param[1]) + 1 + cardinal$1(param[4]) : 0;
+  if (param) {
+    return cardinal$1(param[1]) + 1 + cardinal$1(param[4]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function bindings_aux$1(_accu, _param) {
@@ -1261,7 +1488,12 @@ function compare$4(x, y) {
 }
 
 function height$2(param) {
-  return param ? param[5] : 0;
+  if (param) {
+    return param[5];
+  }
+  else {
+    return 0;
+  }
 }
 
 function create$2(l, x, d, r) {
@@ -1297,9 +1529,17 @@ function bal$2(l, x, d, r) {
       var ld = l[3];
       var lv = l[2];
       var ll = l[1];
-      return height$2(ll) >= height$2(lr) ? create$2(ll, lv, ld, create$2(lr, x, d, r)) : (
-                lr ? create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r)) : Pervasives.invalid_arg("Map.bal")
-              );
+      if (height$2(ll) >= height$2(lr)) {
+        return create$2(ll, lv, ld, create$2(lr, x, d, r));
+      }
+      else {
+        if (lr) {
+          return create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r));
+        }
+        else {
+          return Pervasives.invalid_arg("Map.bal");
+        }
+      }
     }
     else {
       return Pervasives.invalid_arg("Map.bal");
@@ -1312,9 +1552,17 @@ function bal$2(l, x, d, r) {
         var rd = r[3];
         var rv = r[2];
         var rl = r[1];
-        return height$2(rr) >= height$2(rl) ? create$2(create$2(l, x, d, rl), rv, rd, rr) : (
-                  rl ? create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr)) : Pervasives.invalid_arg("Map.bal")
-                );
+        if (height$2(rr) >= height$2(rl)) {
+          return create$2(create$2(l, x, d, rl), rv, rd, rr);
+        }
+        else {
+          if (rl) {
+            return create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr));
+          }
+          else {
+            return Pervasives.invalid_arg("Map.bal");
+          }
+        }
       }
       else {
         return Pervasives.invalid_arg("Map.bal");
@@ -1334,7 +1582,12 @@ function bal$2(l, x, d, r) {
 }
 
 function is_empty$2(param) {
-  return param ? /* false */0 : /* true */1;
+  if (param) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function add$2(x, data, param) {
@@ -1344,9 +1597,16 @@ function add$2(x, data, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$4(x, v);
-    return c ? (
-              c < 0 ? bal$2(add$2(x, data, l), v, d, r) : bal$2(l, v, d, add$2(x, data, r))
-            ) : [
+    if (c) {
+      if (c < 0) {
+        return bal$2(add$2(x, data, l), v, d, r);
+      }
+      else {
+        return bal$2(l, v, d, add$2(x, data, r));
+      }
+    }
+    else {
+      return [
               /* Node */0,
               l,
               x,
@@ -1354,6 +1614,7 @@ function add$2(x, data, param) {
               r,
               param[5]
             ];
+    }
   }
   else {
     return [
@@ -1442,7 +1703,12 @@ function max_binding$2(_param) {
 function remove_min_binding$2(param) {
   if (param) {
     var l = param[1];
-    return l ? bal$2(remove_min_binding$2(l), param[2], param[3], param[4]) : param[4];
+    if (l) {
+      return bal$2(remove_min_binding$2(l), param[2], param[3], param[4]);
+    }
+    else {
+      return param[4];
+    }
   }
   else {
     return Pervasives.invalid_arg("Map.remove_min_elt");
@@ -1471,9 +1737,17 @@ function remove$2(x, param) {
     var v = param[2];
     var l = param[1];
     var c = compare$4(x, v);
-    return c ? (
-              c < 0 ? bal$2(remove$2(x, l), v, d, r) : bal$2(l, v, d, remove$2(x, r))
-            ) : merge$4(l, r);
+    if (c) {
+      if (c < 0) {
+        return bal$2(remove$2(x, l), v, d, r);
+      }
+      else {
+        return bal$2(l, v, d, remove$2(x, r));
+      }
+    }
+    else {
+      return merge$4(l, r);
+    }
   }
   else {
     return /* Empty */0;
@@ -1548,19 +1822,39 @@ function fold$2(f, _m, _accu) {
 }
 
 function for_all$2(p, param) {
-  return param ? +(p(param[2], param[3]) && for_all$2(p, param[1]) && for_all$2(p, param[4])) : /* true */1;
+  if (param) {
+    return +(p(param[2], param[3]) && for_all$2(p, param[1]) && for_all$2(p, param[4]));
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function exists$2(p, param) {
-  return param ? +(p(param[2], param[3]) || exists$2(p, param[1]) || exists$2(p, param[4])) : /* false */0;
+  if (param) {
+    return +(p(param[2], param[3]) || exists$2(p, param[1]) || exists$2(p, param[4]));
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function add_min_binding$2(k, v, param) {
-  return param ? bal$2(add_min_binding$2(k, v, param[1]), param[2], param[3], param[4]) : singleton$2(k, v);
+  if (param) {
+    return bal$2(add_min_binding$2(k, v, param[1]), param[2], param[3], param[4]);
+  }
+  else {
+    return singleton$2(k, v);
+  }
 }
 
 function add_max_binding$2(k, v, param) {
-  return param ? bal$2(param[1], param[2], param[3], add_max_binding$2(k, v, param[4])) : singleton$2(k, v);
+  if (param) {
+    return bal$2(param[1], param[2], param[3], add_max_binding$2(k, v, param[4]));
+  }
+  else {
+    return singleton$2(k, v);
+  }
 }
 
 function join$2(l, v, d, r) {
@@ -1568,9 +1862,17 @@ function join$2(l, v, d, r) {
     if (r) {
       var rh = r[5];
       var lh = l[5];
-      return lh > rh + 2 ? bal$2(l[1], l[2], l[3], join$2(l[4], v, d, r)) : (
-                rh > lh + 2 ? bal$2(join$2(l, v, d, r[1]), r[2], r[3], r[4]) : create$2(l, v, d, r)
-              );
+      if (lh > rh + 2) {
+        return bal$2(l[1], l[2], l[3], join$2(l[4], v, d, r));
+      }
+      else {
+        if (rh > lh + 2) {
+          return bal$2(join$2(l, v, d, r[1]), r[2], r[3], r[4]);
+        }
+        else {
+          return create$2(l, v, d, r);
+        }
+      }
     }
     else {
       return add_max_binding$2(v, d, l);
@@ -1597,7 +1899,12 @@ function concat$2(t1, t2) {
 }
 
 function concat_or_join$2(t1, v, d, t2) {
-  return d ? join$2(t1, v, d[1], t2) : concat$2(t1, t2);
+  if (d) {
+    return join$2(t1, v, d[1], t2);
+  }
+  else {
+    return concat$2(t1, t2);
+  }
 }
 
 function split$2(x, param) {
@@ -1704,7 +2011,12 @@ function filter$2(p, param) {
     var l$prime = filter$2(p, param[1]);
     var pvd = p(v, d);
     var r$prime = filter$2(p, param[4]);
-    return pvd ? join$2(l$prime, v, d, r$prime) : concat$2(l$prime, r$prime);
+    if (pvd) {
+      return join$2(l$prime, v, d, r$prime);
+    }
+    else {
+      return concat$2(l$prime, r$prime);
+    }
   }
   else {
     return /* Empty */0;
@@ -1722,15 +2034,20 @@ function partition$2(p, param) {
     var match$1 = partition$2(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
-    return pvd ? [
+    if (pvd) {
+      return [
               /* tuple */0,
               join$2(lt, v, d, rt),
               concat$2(lf, rf)
-            ] : [
+            ];
+    }
+    else {
+      return [
               /* tuple */0,
               concat$2(lt, rt),
               join$2(lf, v, d, rf)
             ];
+    }
   }
   else {
     return [
@@ -1788,7 +2105,12 @@ function compare$5(cmp, m1, m2) {
         }
       }
       else {
-        return e2 ? -1 : 0;
+        if (e2) {
+          return -1;
+        }
+        else {
+          return 0;
+        }
       }
     };
   };
@@ -1797,17 +2119,33 @@ function compare$5(cmp, m1, m2) {
 
 function equal$2(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
-    return e1 ? (
-              e2 ? +(compare$4(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$2(e1[3], e1[4]), cons_enum$2(e2[3], e2[4]))) : /* false */0
-            ) : (
-              e2 ? /* false */0 : /* true */1
-            );
+    if (e1) {
+      if (e2) {
+        return +(compare$4(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$2(e1[3], e1[4]), cons_enum$2(e2[3], e2[4])));
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      if (e2) {
+        return /* false */0;
+      }
+      else {
+        return /* true */1;
+      }
+    }
   };
   return equal_aux(cons_enum$2(m1, /* End */0), cons_enum$2(m2, /* End */0));
 }
 
 function cardinal$2(param) {
-  return param ? cardinal$2(param[1]) + 1 + cardinal$2(param[4]) : 0;
+  if (param) {
+    return cardinal$2(param[1]) + 1 + cardinal$2(param[4]);
+  }
+  else {
+    return 0;
+  }
 }
 
 function bindings_aux$2(_accu, _param) {
@@ -1884,7 +2222,12 @@ var table_count = [
 var dummy_met = [0];
 
 function fit_size(n) {
-  return n <= 2 ? n : fit_size((n + 1) / 2 | 0) * 2;
+  if (n <= 2) {
+    return n;
+  }
+  else {
+    return fit_size((n + 1) / 2 | 0) * 2;
+  }
 }
 
 function new_table(pub_labels) {
@@ -1969,15 +2312,21 @@ function get_method_labels(table, names) {
 
 function set_method(table, label, element) {
   ++ method_count[1];
-  return find$2(label, table[4]) ? put(table, label, element) : (table[6] = [
-              /* :: */0,
-              [
-                /* tuple */0,
-                label,
-                element
-              ],
-              table[6]
-            ], /* () */0);
+  if (find$2(label, table[4])) {
+    return put(table, label, element);
+  }
+  else {
+    table[6] = [
+      /* :: */0,
+      [
+        /* tuple */0,
+        label,
+        element
+      ],
+      table[6]
+    ];
+    return /* () */0;
+  }
 }
 
 function get_method(table, label) {
@@ -1995,7 +2344,12 @@ function get_method(table, label) {
 }
 
 function to_list(arr) {
-  return arr ? $$Array.to_list(arr) : /* [] */0;
+  if (arr) {
+    return $$Array.to_list(arr);
+  }
+  else {
+    return /* [] */0;
+  }
 }
 
 function narrow(table, vars, virt_meths, concr_meths) {
@@ -2022,7 +2376,12 @@ function narrow(table, vars, virt_meths, concr_meths) {
     table[5]
   ];
   table[7] = fold(function (lab, info, tvars) {
-        return List.mem(lab, vars$1) ? add(lab, info, tvars) : tvars;
+        if (List.mem(lab, vars$1)) {
+          return add(lab, info, tvars);
+        }
+        else {
+          return tvars;
+        }
       }, table[7], /* Empty */0);
   var by_name = [
     0,
@@ -2057,11 +2416,16 @@ function narrow(table, vars, virt_meths, concr_meths) {
   table[3] = by_name[1];
   table[4] = by_label[1];
   table[6] = List.fold_right(function (met, hm) {
-        return List.mem(met[1], virt_meth_labs) ? hm : [
+        if (List.mem(met[1], virt_meth_labs)) {
+          return hm;
+        }
+        else {
+          return [
                   /* :: */0,
                   met,
                   hm
                 ];
+        }
       }, table[6], /* [] */0);
   return /* () */0;
 }
@@ -2076,11 +2440,16 @@ function widen(table) {
   table[3] = match[1];
   table[4] = match[2];
   table[6] = List.fold_right(function (met, hm) {
-        return List.mem(met[1], virt_meths) ? hm : [
+        if (List.mem(met[1], virt_meths)) {
+          return hm;
+        }
+        else {
+          return [
                   /* :: */0,
                   met,
                   hm
                 ];
+        }
       }, table[6], match[3]);
   return /* () */0;
 }
@@ -2110,7 +2479,12 @@ function new_variable(table, name) {
 }
 
 function to_array(arr) {
-  return Caml_primitive.caml_equal(arr, 0) ? /* array */[] : arr;
+  if (Caml_primitive.caml_equal(arr, 0)) {
+    return /* array */[];
+  }
+  else {
+    return arr;
+  }
 }
 
 function new_methods_variables(table, meths, vals) {
@@ -2283,7 +2657,12 @@ function iter_f(obj, _param) {
 
 function run_initializers(obj, table) {
   var inits = table[8];
-  return inits !== /* [] */0 ? iter_f(obj, inits) : 0;
+  if (inits !== /* [] */0) {
+    return iter_f(obj, inits);
+  }
+  else {
+    return 0;
+  }
 }
 
 function run_initializers_opt(obj_0, obj, table) {
@@ -2364,7 +2743,12 @@ function lookup_keys(i, keys, tables) {
 }
 
 function lookup_tables(root, keys) {
-  return root[2] !== /* Empty */0 ? lookup_keys(keys.length - 1, keys, root[2]) : build_path(keys.length - 1, keys, root);
+  if (root[2] !== /* Empty */0) {
+    return lookup_keys(keys.length - 1, keys, root[2]);
+  }
+  else {
+    return build_path(keys.length - 1, keys, root);
+  }
 }
 
 function get_const(x) {

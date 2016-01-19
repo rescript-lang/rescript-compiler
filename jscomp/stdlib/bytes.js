@@ -75,15 +75,30 @@ function extend(s, left, right) {
 }
 
 function fill(s, ofs, len, c) {
-  return ofs < 0 || len < 0 || ofs > s.length - len ? Pervasives.invalid_arg("String.fill / Bytes.fill") : Caml_string.caml_fill_string(s, ofs, len, c);
+  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+    return Pervasives.invalid_arg("String.fill / Bytes.fill");
+  }
+  else {
+    return Caml_string.caml_fill_string(s, ofs, len, c);
+  }
 }
 
 function blit(s1, ofs1, s2, ofs2, len) {
-  return len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len ? Pervasives.invalid_arg("Bytes.blit") : Caml_string.caml_blit_bytes(s1, ofs1, s2, ofs2, len);
+  if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
+    return Pervasives.invalid_arg("Bytes.blit");
+  }
+  else {
+    return Caml_string.caml_blit_bytes(s1, ofs1, s2, ofs2, len);
+  }
 }
 
 function blit_string(s1, ofs1, s2, ofs2, len) {
-  return len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len ? Pervasives.invalid_arg("String.blit / Bytes.blit_string") : Caml_string.caml_blit_string(s1, ofs1, s2, ofs2, len);
+  if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
+    return Pervasives.invalid_arg("String.blit / Bytes.blit_string");
+  }
+  else {
+    return Caml_string.caml_blit_string(s1, ofs1, s2, ofs2, len);
+  }
 }
 
 function iter(f, a) {
@@ -140,11 +155,22 @@ var cat = Caml_string.bytes_cat;
 
 function is_space(param) {
   var switcher = -9 + param;
-  return 4 < (switcher >>> 0) ? (
-            switcher !== 23 ? /* false */0 : /* true */1
-          ) : (
-            switcher !== 2 ? /* true */1 : /* false */0
-          );
+  if (4 < (switcher >>> 0)) {
+    if (switcher !== 23) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  }
+  else {
+    if (switcher !== 2) {
+      return /* true */1;
+    }
+    else {
+      return /* false */0;
+    }
+  }
 }
 
 function trim(s) {
@@ -157,7 +183,12 @@ function trim(s) {
   while(j >= i && is_space(s[j])) {
     -- j;
   };
-  return j >= i ? sub(s, i, j - i + 1) : empty;
+  if (j >= i) {
+    return sub(s, i, j - i + 1);
+  }
+  else {
+    return empty;
+  }
 }
 
 function escaped(s) {
@@ -166,17 +197,37 @@ function escaped(s) {
     var c = s[i];
     var $js;
     var exit = 0;
-    c >= 14 ? (
-        c !== 34 ? (
-            c !== 92 ? (exit = 1) : ($js = 2)
-          ) : ($js = 2)
-      ) : (
-        c >= 11 ? (
-            c >= 13 ? ($js = 2) : (exit = 1)
-          ) : (
-            c >= 8 ? ($js = 2) : (exit = 1)
-          )
-      );
+    if (c >= 14) {
+      if (c !== 34) {
+        if (c !== 92) {
+          exit = 1;
+        }
+        else {
+          $js = 2;
+        }
+      }
+      else {
+        $js = 2;
+      }
+    }
+    else {
+      if (c >= 11) {
+        if (c >= 13) {
+          $js = 2;
+        }
+        else {
+          exit = 1;
+        }
+      }
+      else {
+        if (c >= 8) {
+          $js = 2;
+        }
+        else {
+          exit = 1;
+        }
+      }
+    }
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
     }
@@ -342,7 +393,12 @@ function index(s, c) {
 
 function index_from(s, i, c) {
   var l = s.length;
-  return i < 0 || i > l ? Pervasives.invalid_arg("String.index_from / Bytes.index_from") : index_rec(s, l, i, c);
+  if (i < 0 || i > l) {
+    return Pervasives.invalid_arg("String.index_from / Bytes.index_from");
+  }
+  else {
+    return index_rec(s, l, i, c);
+  }
 }
 
 function rindex_rec(s, _i, c) {
@@ -367,7 +423,12 @@ function rindex(s, c) {
 }
 
 function rindex_from(s, i, c) {
-  return i < -1 || i >= s.length ? Pervasives.invalid_arg("String.rindex_from / Bytes.rindex_from") : rindex_rec(s, i, c);
+  if (i < -1 || i >= s.length) {
+    return Pervasives.invalid_arg("String.rindex_from / Bytes.rindex_from");
+  }
+  else {
+    return rindex_rec(s, i, c);
+  }
 }
 
 function contains_from(s, i, c) {

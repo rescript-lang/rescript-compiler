@@ -37,9 +37,17 @@ function caml_create_string(len) {
 }
 
 function caml_string_compare(s1, s2) {
-  return s1 === s2 ? 0 : (
-            s1 < s2 ? -1 : 1
-          );
+  if (s1 === s2) {
+    return 0;
+  }
+  else {
+    if (s1 < s2) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  }
 }
 
 function caml_fill_string(s, i, l, c) {

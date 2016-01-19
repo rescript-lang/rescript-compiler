@@ -48,7 +48,13 @@ var xxx = "a";
 var a = xxx.charCodeAt(0);
 
 function u(b) {
-  return b ? (Pervasives.print_int(1), 32) : 7;
+  if (b) {
+    Pervasives.print_int(1);
+    return 32;
+  }
+  else {
+    return 7;
+  }
 }
 
 function f2(h, b, _) {
@@ -73,9 +79,17 @@ function f(x) {
 
 function is_lazy_force(x) {
   var tag = Caml_obj_runtime.caml_obj_tag(x);
-  return tag === 250 ? x[1] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(x) : x
-          );
+  if (tag === 250) {
+    return x[1];
+  }
+  else {
+    if (tag === 246) {
+      return CamlinternalLazy.force_lazy_block(x);
+    }
+    else {
+      return x;
+    }
+  }
 }
 
 function fib(n) {

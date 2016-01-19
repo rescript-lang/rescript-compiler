@@ -48,7 +48,12 @@ Caml_primitive.caml_update_dummy(xx, [
     ]);
 
 function naive(n) {
-  return 1 < (n >>> 0) ? n + naive(n - 1) + naive(n - 2) : 1;
+  if (1 < (n >>> 0)) {
+    return n + naive(n - 1) + naive(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 var one = 1;
@@ -164,19 +169,39 @@ Caml_primitive.caml_update_dummy(xs$1, [
 var two = 2;
 
 function fib2(n) {
-  return 1 < (n >>> 0) ? fib2(n - 1) + fib2(n - 2) : 1;
+  if (1 < (n >>> 0)) {
+    return fib2(n - 1) + fib2(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 function fib3(n) {
-  return 1 < (n >>> 0) ? fib3(n - 1) + fib3(n - 2) : 1;
+  if (1 < (n >>> 0)) {
+    return fib3(n - 1) + fib3(n - 2);
+  }
+  else {
+    return 1;
+  }
 }
 
 function odd(n) {
-  return n === 1 ? /* true */1 : even(n - 1);
+  if (n === 1) {
+    return /* true */1;
+  }
+  else {
+    return even(n - 1);
+  }
 }
 
 function even(n) {
-  return n ? odd(n - 1) : /* true */1;
+  if (n) {
+    return odd(n - 1);
+  }
+  else {
+    return /* true */1;
+  }
 }
 
 function even2(_n) {
@@ -193,9 +218,17 @@ function even2(_n) {
 
 function lazy_v() {
   var tag = Caml_obj_runtime.caml_obj_tag(lazy_v);
-  return tag === 250 ? lazy_v[1] : (
-            tag === 246 ? CamlinternalLazy.force_lazy_block(lazy_v) : lazy_v
-          );
+  if (tag === 250) {
+    return lazy_v[1];
+  }
+  else {
+    if (tag === 246) {
+      return CamlinternalLazy.force_lazy_block(lazy_v);
+    }
+    else {
+      return lazy_v;
+    }
+  }
 }
 
 function sum(_acc, _n) {
@@ -291,7 +324,12 @@ var suites_002 = [
             var match$1 = match[2];
             if (match$1) {
               var match$2 = match$1[2];
-              match$2 ? ($js = match$2[1]) : (exit = 1);
+              if (match$2) {
+                $js = match$2[1];
+              }
+              else {
+                exit = 1;
+              }
             }
             else {
               exit = 1;

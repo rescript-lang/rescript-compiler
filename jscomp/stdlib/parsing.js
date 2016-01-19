@@ -158,7 +158,12 @@ function yyparse(tables, start, lexer, lexbuf) {
     }
     else {
       current_lookahead_fun[1] = function (tok) {
-        return Caml_obj_runtime.caml_obj_is_block(tok) ? +(tables[3][Caml_obj_runtime.caml_obj_tag(tok)] === curr_char) : +(tables[2][tok] === curr_char);
+        if (Caml_obj_runtime.caml_obj_is_block(tok)) {
+          return +(tables[3][Caml_obj_runtime.caml_obj_tag(tok)] === curr_char);
+        }
+        else {
+          return +(tables[2][tok] === curr_char);
+        }
       };
       throw exn;
     }

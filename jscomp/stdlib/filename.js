@@ -16,7 +16,12 @@ function generic_quote(quotequote, s) {
   var b = Buffer.create(l + 20);
   Buffer.add_char(b, /* "'" */39);
   for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
-    s[i] === "'" ? Buffer.add_string(b, quotequote) : Buffer.add_char(b, s.charCodeAt(i));
+    if (s[i] === "'") {
+      Buffer.add_string(b, quotequote);
+    }
+    else {
+      Buffer.add_char(b, s.charCodeAt(i));
+    }
   }
   Buffer.add_char(b, /* "'" */39);
   return Buffer.contents(b);
@@ -55,7 +60,12 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       }
     };
   };
-  return name === "" ? current_dir_name : find_end(name.length - 1);
+  if (name === "") {
+    return current_dir_name;
+  }
+  else {
+    return find_end(name.length - 1);
+  }
 }
 
 function generic_dirname(is_dir_sep, current_dir_name, name) {
@@ -107,7 +117,12 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
       }
     };
   };
-  return name === "" ? current_dir_name : trailing_sep(name.length - 1);
+  if (name === "") {
+    return current_dir_name;
+  }
+  else {
+    return trailing_sep(name.length - 1);
+  }
 }
 
 var current_dir_name = ".";
@@ -176,12 +191,22 @@ var dir_sep = "/";
 
 function concat(dirname, filename) {
   var l = dirname.length;
-  return l === 0 || is_dir_sep$1(dirname, l - 1) ? dirname + filename : dirname + (dir_sep + filename);
+  if (l === 0 || is_dir_sep$1(dirname, l - 1)) {
+    return dirname + filename;
+  }
+  else {
+    return dirname + (dir_sep + filename);
+  }
 }
 
 function chop_suffix(name, suff) {
   var n = name.length - suff.length;
-  return n < 0 ? Pervasives.invalid_arg("Filename.chop_suffix") : $$String.sub(name, 0, n);
+  if (n < 0) {
+    return Pervasives.invalid_arg("Filename.chop_suffix");
+  }
+  else {
+    return $$String.sub(name, 0, n);
+  }
 }
 
 function chop_extension(name) {

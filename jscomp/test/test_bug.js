@@ -9,17 +9,37 @@ function escaped(s) {
     var c = s[i];
     var $js;
     var exit = 0;
-    c >= 14 ? (
-        c !== 34 ? (
-            c !== 92 ? (exit = 1) : ($js = 2)
-          ) : ($js = 2)
-      ) : (
-        c >= 11 ? (
-            c >= 13 ? ($js = 2) : (exit = 1)
-          ) : (
-            c >= 8 ? ($js = 2) : (exit = 1)
-          )
-      );
+    if (c >= 14) {
+      if (c !== 34) {
+        if (c !== 92) {
+          exit = 1;
+        }
+        else {
+          $js = 2;
+        }
+      }
+      else {
+        $js = 2;
+      }
+    }
+    else {
+      if (c >= 11) {
+        if (c >= 13) {
+          $js = 2;
+        }
+        else {
+          exit = 1;
+        }
+      }
+      else {
+        if (c >= 8) {
+          $js = 2;
+        }
+        else {
+          exit = 1;
+        }
+      }
+    }
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
     }

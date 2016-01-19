@@ -35,13 +35,26 @@ function escaped(s) {
       var c = s[i$1];
       var exit = 0;
       if (c >= 35) {
-        c !== 92 ? (
-            c >= 127 ? (exit = 1) : (s$prime[n] = c)
-          ) : (exit = 2);
+        if (c !== 92) {
+          if (c >= 127) {
+            exit = 1;
+          }
+          else {
+            s$prime[n] = c;
+          }
+        }
+        else {
+          exit = 2;
+        }
       }
       else {
         if (c >= 32) {
-          c >= 34 ? (exit = 2) : (s$prime[n] = c);
+          if (c >= 34) {
+            exit = 2;
+          }
+          else {
+            s$prime[n] = c;
+          }
         }
         else {
           if (c >= 14) {

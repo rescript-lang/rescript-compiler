@@ -7,15 +7,20 @@ function merge(order, l1, l2) {
     var h1 = l1[1];
     if (l2) {
       var h2 = l2[1];
-      return order(h1, h2) ? [
+      if (order(h1, h2)) {
+        return [
                 /* :: */0,
                 h1,
                 merge(order, l1[2], l2)
-              ] : [
+              ];
+      }
+      else {
+        return [
                 /* :: */0,
                 h2,
                 merge(order, l1, l2[2])
               ];
+      }
     }
     else {
       return l1;
@@ -74,11 +79,16 @@ function list(order, l) {
   var merge2 = function (x) {
     if (x) {
       var match = x[2];
-      return match ? [
+      if (match) {
+        return [
                 /* :: */0,
                 merge(order, x[1], match[1]),
                 merge2(match[2])
-              ] : x;
+              ];
+      }
+      else {
+        return x;
+      }
     }
     else {
       return x;
