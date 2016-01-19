@@ -111,7 +111,7 @@ function app3(o, a0, a1, a2) {
 function app4(o, a0, a1, a2, a3) {
   var len = o.length;
   if (len === 4) {
-    return o(a0, a1, a2)(a3);
+    return o(a0, a1, a2, a3);
   }
   else {
     return curry(o, /* array */[
@@ -125,8 +125,8 @@ function app4(o, a0, a1, a2, a3) {
 
 function app5(o, a0, a1, a2, a3, a4) {
   var len = o.length;
-  if (len === 4) {
-    return o(a0, a1, a2)(a3, a4);
+  if (len === 5) {
+    return o(a0, a1, a2, a3, a4);
   }
   else {
     return curry(o, /* array */[
@@ -139,6 +139,60 @@ function app5(o, a0, a1, a2, a3, a4) {
   }
 }
 
+function app6(o, a0, a1, a2, a3, a4, a5) {
+  var len = o.length;
+  if (len === 6) {
+    return o(a0, a1, a2, a3, a4, a5);
+  }
+  else {
+    return curry(o, /* array */[
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5
+              ]);
+  }
+}
+
+function app7(o, a0, a1, a2, a3, a4, a5, a6) {
+  var len = o.length;
+  if (len === 7) {
+    return o(a0, a1, a2, a3, a4, a5, a6);
+  }
+  else {
+    return curry(o, /* array */[
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6
+              ]);
+  }
+}
+
+function app8(o, a0, a1, a2, a3, a4, a5, a6, a7) {
+  var len = o.length;
+  if (len === 8) {
+    return o(a0, a1, a2, a3, a4, a5, a6, a7);
+  }
+  else {
+    return curry(o, /* array */[
+                a0,
+                a1,
+                a2,
+                a3,
+                a4,
+                a5,
+                a6,
+                a7
+              ]);
+  }
+}
+
 exports.curry = curry;
 exports.curry1 = curry1;
 exports.app1 = app1;
@@ -146,4 +200,7 @@ exports.app2 = app2;
 exports.app3 = app3;
 exports.app4 = app4;
 exports.app5 = app5;
+exports.app6 = app6;
+exports.app7 = app7;
+exports.app8 = app8;
 /* No side effect */

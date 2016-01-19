@@ -119,12 +119,31 @@ let app3 o a0 a1 a2 =
 
 let app4 o a0 a1 a2 a3 =  
   let len = function_length o in 
-  if len = 4 then apply3 o a0 a1 a2 a3
+  if len = 4 then apply4 o a0 a1 a2 a3
   else 
     Obj.magic (curry o [|a0;a1;a2; a3 |])
 
 let app5 o a0 a1 a2 a3 a4 =  
   let len = function_length o in 
-  if len = 4 then apply3 o a0 a1 a2 a3 a4 
+  if len = 5 then apply5 o a0 a1 a2 a3 a4
   else 
     Obj.magic (curry o [|a0;a1;a2; a3; a4 |])
+
+
+let app6 o a0 a1 a2 a3 a4 a5  =  
+  let len = function_length o in 
+  if len = 6 then apply6 o a0 a1 a2 a3 a4 a5
+  else 
+    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5 |])
+
+let app7 o a0 a1 a2 a3 a4 a5 a6 =  
+  let len = function_length o in 
+  if len = 7 then apply7 o a0 a1 a2 a3 a4 a5 a6 
+  else 
+    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5; a6 |])
+
+let app8 o a0 a1 a2 a3 a4 a5 a6 a7  =  
+  let len = function_length o in 
+  if len = 8 then apply8 o a0 a1 a2 a3 a4 a5 a6 a7 
+  else 
+    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5; a6; a7|])
