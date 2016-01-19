@@ -68,13 +68,15 @@ type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expressi
 type unary_op =  ?comment:string -> J.expression -> J.expression
 
 module Exp : sig 
+
   type t = J.expression 
 
-  val mk : ?comment:string -> J.expression_desc -> t
+  val mk :
+    ?comment:string -> J.expression_desc -> t
 
-  val access : ?comment:string -> t -> t -> t 
+  val access : binary_op
 
-  val string_access : ?comment:string -> t -> t -> t
+  val string_access : binary_op
 
   val var : ?comment:string  -> J.ident -> t 
 
@@ -107,29 +109,29 @@ module Exp : sig
 
   val dot : ?comment:string -> t -> string -> t
 
-  val array_length : ?comment:string -> t -> t
+  val array_length : unary_op
 
-  val string_length : ?comment:string -> t -> t
+  val string_length : unary_op
 
-  val string_of_small_int_array : ?comment:string -> t -> t
+  val string_of_small_int_array : unary_op
   
-  val bytes_length :  ?comment:string -> t -> t
+  val bytes_length :  unary_op
 
-  val function_length : ?comment:string -> t -> t      
+  val function_length : unary_op
 
-  val char_of_int : ?comment:string -> t -> t
+  val char_of_int : unary_op
 
-  val char_to_int : ?comment:string -> t -> t
+  val char_to_int : unary_op
 
   val array_append : ?comment:string -> t -> t list -> t
 
-  val string_append : ?comment:string -> t -> t -> t
+  val string_append : binary_op
   (**
      When in ES6 mode, we can use Symbol to guarantee its uniquess,
      we can not tag [js] object, since it can be frozen 
    *)
   
-  val tag_ml_obj : ?comment:string -> t -> t
+  val tag_ml_obj : unary_op
 
   val var_dot : ?comment:string -> Ident.t -> string -> t
 
@@ -137,13 +139,13 @@ module Exp : sig
 
   val index : ?comment:string -> t -> int -> t
 
-  val assign :  ?comment:string -> t -> t -> t 
+  val assign :  binary_op
 
-  val triple_equal : ?comment:string -> t -> t -> t 
+  val triple_equal : binary_op
 
-  val is_type_number : ?comment:string -> t -> t
+  val is_type_number : unary_op
 
-  (* val bin : ?comment:string -> Js_op.binary_op -> t -> t -> t  *)
+
   val to_int32 : unary_op
   val to_uint32 : unary_op
 
@@ -160,12 +162,12 @@ module Exp : sig
   val float_minus : binary_op
   val float_notequal : binary_op
 
-  (* val un : ?comment:string -> Js_op.unop -> t -> t  *)
+
   val not : t -> t
 
   val call : ?comment:string  -> ?info:Js_call_info.t -> t -> t list -> t 
 
-  val flat_call : ?comment:string -> t -> t  -> t
+  val flat_call : binary_op
 
   val dump : ?comment:string -> Js_op.level -> t list -> t
 
@@ -173,9 +175,9 @@ module Exp : sig
 
   val arr : ?comment:string -> J.mutable_flag -> J.expression list -> t
 
-  val uninitialized_array : ?comment:string -> t -> t
+  val uninitialized_array : unary_op
 
-  val seq : ?comment:string -> t -> t -> t  
+  val seq : binary_op
 
   val obj : ?comment:string -> J.property_map -> t 
   
@@ -201,9 +203,9 @@ module Exp : sig
   val math : ?comment:string -> string -> t list -> t
   (** [math "abs"] --> Math["abs"] *)    
 
-  val inc : ?comment:string -> t -> t
+  val inc : unary_op
 
-  val dec : ?comment:string -> t -> t
+  val dec : unary_op
   
   val prefix_inc : ?comment:string -> J.vident -> t
 
@@ -213,33 +215,33 @@ module Exp : sig
   
   val tag : ?comment:string -> J.expression -> t
   
-  val to_ocaml_boolean : ?comment:string -> t -> t
+  val to_ocaml_boolean : unary_op
   
-  val and_ : ?comment:string -> t -> t -> t
+  val and_ : binary_op
   
-  val or_ : ?comment:string -> t -> t -> t
+  val or_ : binary_op
       
-  val lt : ?comment:string -> t -> t -> t    
+  val lt : binary_op
       
-  val le : ?comment:string -> t -> t -> t
+  val le : binary_op
       
-  val gt : ?comment:string -> t -> t -> t    
+  val gt : binary_op
 
-  val ge : ?comment:string -> t -> t -> t
+  val ge : binary_op
 
   val intcomp : ?comment:string -> Lambda.comparison -> t -> t -> t    
 
   val stringcomp : ?comment:string -> Js_op.binop -> t -> t -> t
 
 
-  val float_add : ?comment:string -> t -> t -> t
-  val float_minus : ?comment:string -> t -> t -> t
-  val float_mul : ?comment:string -> t -> t -> t
-  val float_div : ?comment:string -> t -> t -> t
-  val int32_div : ?comment:string -> t -> t -> t
-  val int32_add : ?comment:string -> t -> t -> t
-  val int32_minus : ?comment:string -> t -> t -> t
-  val int32_mul : ?comment:string -> t -> t -> t
+  val float_add : binary_op
+  val float_minus : binary_op
+  val float_mul : binary_op
+  val float_div : binary_op
+  val int32_div : binary_op
+  val int32_add : binary_op
+  val int32_minus : binary_op
+  val int32_mul : binary_op
   val of_block : ?comment:string -> J.statement list -> J.expression -> t
 end
 
@@ -255,10 +257,10 @@ module Stmt : sig
 
   val if_ : 
     ?comment:string  ->
-    ?declaration: Lambda.let_kind * Ident.t -> (* when it's not None, 
-                                                  we also need make a variable declaration in the
-                                                  begininnig, however, we can optmize such case
-                                                *)
+    ?declaration: Lambda.let_kind * Ident.t ->
+    (* when it's not None, we also need make a variable declaration in the
+       begininnig, however, we can optmize such case
+    *)
     ?else_:J.block ->  
     J.expression -> 
     J.block -> 
@@ -266,7 +268,8 @@ module Stmt : sig
 
   val block : ?comment:string  -> J.block -> t
 
-  val int_switch : ?comment:string -> ?declaration:Lambda.let_kind * Ident.t -> 
+  val int_switch :
+    ?comment:string -> ?declaration:Lambda.let_kind * Ident.t -> 
     ?default:J.block -> J.expression -> int J.case_clause list -> t 
 
   val string_switch : ?comment:string -> ?declaration:Lambda.let_kind * Ident.t -> 
@@ -291,13 +294,15 @@ module Stmt : sig
   val while_ : ?comment:string ->
     ?label:J.label -> ?env:Js_closure.t -> Exp.t -> J.block -> t
 
-  val for_ : ?comment:string ->
+  val for_ : 
+    ?comment:string ->
     ?env:Js_closure.t ->
-      J.for_ident_expression option ->
-        J.finish_ident_expression ->
-          J.for_ident  -> J.for_direction -> J.block -> t
+    J.for_ident_expression option ->
+    J.finish_ident_expression ->
+    J.for_ident  -> J.for_direction -> J.block -> t
 
-  val try_ : ?comment:string  ->
+  val try_ :
+    ?comment:string  ->
     ?with_:J.ident * J.block -> ?finally:J.block -> J.block -> t
 
   val exp : ?comment:string  -> J.expression -> t

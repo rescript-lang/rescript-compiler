@@ -143,3 +143,4 @@ tailcall_inline_test
 obj_test
 demo_page
 complex_test
+inline_edge_cases

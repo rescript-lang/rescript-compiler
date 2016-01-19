@@ -57,23 +57,23 @@ let rec extract_non_pure (x : J.expression)  =
   | Str _
   | Number _ -> None (* Can be refined later *)
   | Access (a,b) -> 
-      begin match extract_non_pure a , extract_non_pure b with 
+    begin match extract_non_pure a , extract_non_pure b with 
       | None, None -> None
       | _, _ -> Some x 
-      end
+    end
   | Array (xs,_mutable_flag)  ->
-      if List.for_all (fun x -> extract_non_pure x = None)  xs then
-        None 
-      else Some x 
+    if List.for_all (fun x -> extract_non_pure x = None)  xs then
+      None 
+    else Some x 
   | Seq (a,b) -> 
-      begin match extract_non_pure a , extract_non_pure b with 
+    begin match extract_non_pure a , extract_non_pure b with 
       | None, None  ->  None
       | Some u, Some v ->  
-          Some { x with expression_desc =  Seq(u,v)}
-            (* may still have some simplification*)
+        Some { x with expression_desc =  Seq(u,v)}
+      (* may still have some simplification*)
       | None, (Some _ as v) ->  v
       | (Some _ as u), None -> u 
-      end
+    end
   | _ -> Some x 
 
 (* TODO Should this comment be removed *)
@@ -158,18 +158,19 @@ module Exp = struct
    *)        
   let rec seq ?comment (e0 : t) (e1 : t) : t = 
     match e0.expression_desc, e1.expression_desc with 
-    | (Seq( a, {expression_desc = Number _ ;  })| Seq( {expression_desc = Number _ ;  },a)), _
+    | (Seq( a, {expression_desc = Number _ ;  })
+      | Seq( {expression_desc = Number _ ;  },a)), _
       -> 
-        seq ?comment a e1
+      seq ?comment a e1
     | _, ( Seq( {expression_desc = Number _ ;  }, a)) -> 
-        (* Return value could not be changed*)
-        seq ?comment e0 a
+      (* Return value could not be changed*)
+      seq ?comment e0 a
     | _, ( Seq(a,( {expression_desc = Number _ ;  } as v ) ))-> 
-        (* Return value could not be changed*)
-        seq ?comment (seq  e0 a) v
+      (* Return value could not be changed*)
+      seq ?comment (seq  e0 a) v
 
     | _ -> 
-        {expression_desc = Seq(e0,e1); comment}
+      {expression_desc = Seq(e0,e1); comment}
 
   let rec econd ?comment (b : t) (t : t) (f : t) : t = 
     match b.expression_desc , t.expression_desc, f.expression_desc with
@@ -178,30 +179,33 @@ module Exp = struct
     | (Number _ | Array _), _, _ 
       -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
 
-    | (
-       (Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) |
-       Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))
-     ), _, _ -> 
-       econd ?comment x f t 
+    | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
+       | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
+      -> 
+      econd ?comment x f t 
     | (Bin (Ge, 
-              ({expression_desc = (String_length _ | Array_length _ | Bytes_length _ | Function_length _ );
-               _}), {expression_desc = Number (Int { i = 0 ; _})})), _, _ 
-        -> f
+            ({expression_desc = 
+                (String_length _ 
+                | Array_length _ | Bytes_length _ | Function_length _ );
+              _}), {expression_desc = Number (Int { i = 0 ; _})})), _, _ 
+      -> f
 
     | (Bin (Gt, 
-              ({expression_desc = (String_length _ | Array_length _ | Bytes_length _ | Function_length _ );
-               _} as pred ), {expression_desc = Number (Int {i = 0; })})), _, _
+            ({expression_desc = 
+                (String_length _ 
+                | Array_length _ | Bytes_length _ | Function_length _ );
+              _} as pred ), {expression_desc = Number (Int {i = 0; })})), _, _
       ->
-        (** Add comment when simplified *)
-        econd ?comment pred t f 
+      (** Add comment when simplified *)
+      econd ?comment pred t f 
 
     | Int_of_boolean  b, _, _  -> econd ?comment  b t f
 
     | _ -> 
-        if Js_analyzer.eq_expression t f then
-          if no_side_effect b then t else seq  ?comment b t
-        else
-          {expression_desc = Cond(b,t,f); comment}
+      if Js_analyzer.eq_expression t f then
+        if no_side_effect b then t else seq  ?comment b t
+      else
+        {expression_desc = Cond(b,t,f); comment}
 
   let int ?comment ?c  i : t = 
     {expression_desc = Number (Int {i; c}) ; comment}
@@ -435,10 +439,11 @@ module Exp = struct
   (* return a value of type boolean *)
   let rec not ({expression_desc; comment} as e : t) : t =
     match expression_desc with 
-    | Bin((EqEqEq (* | EqEq *)), e0,e1) -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
+    | Bin(EqEqEq , e0,e1)
+      -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
     | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
     | Number (Int {i; _}) -> 
-        if i != 0 then false_ else true_
+      if i != 0 then false_ else true_
     | Int_of_boolean  e -> not e
     | x -> {expression_desc = Not e ; comment = None}
 
@@ -558,12 +563,12 @@ module Exp = struct
     let expression_desc =  e.expression_desc in
     match expression_desc  with 
     | Bin(Bor, a, {expression_desc = Number (Int {i = 0});  _})
-        -> 
-          to_int32 ?comment a
+      -> 
+      to_int32 ?comment a
     | _ ->
-        { comment ;
-          expression_desc = Bin (Bor, {comment = None; expression_desc }, int 0)
-        }
+      { comment ;
+        expression_desc = Bin (Bor, {comment = None; expression_desc }, int 0)
+      }
 
   let rec to_uint32 ?comment (e : J.expression)  : J.expression = 
     { comment ; 
@@ -641,9 +646,9 @@ module Exp = struct
     match e1.expression_desc, e2.expression_desc with
     | Number (Int { i = i1}), Number( Int {i = i2})
       ->
-        int @@ Int32.to_int 
-                 (Int32.shift_right_logical
-                    (Int32.of_int i1) i2)
+      int @@ Int32.to_int 
+        (Int32.shift_right_logical
+           (Int32.of_int i1) i2)
     | _ ,  Number( Int {i = i2})
       ->
         if i2 = 0 then 
@@ -931,13 +936,15 @@ module Stmt = struct
         aux ?comment e else_  then_ acc 
 
     | ((Bin (Gt, 
-              ({expression_desc = (String_length _ | Array_length _ | Bytes_length _ | Function_length _ );
+             ({expression_desc = 
+                 (String_length _ 
+                 | Array_length _ | Bytes_length _ | Function_length _ );
                _} as e ), {expression_desc = Number (Int { i = 0; _})}))
 
-    | Int_of_boolean e), _ , _
+      | Int_of_boolean e), _ , _
       ->
-        (** Add comment when simplified *)
-        aux ?comment e then_ else_ acc 
+      (** Add comment when simplified *)
+      aux ?comment e then_ else_ acc 
 
     | _ -> 
       { statement_desc = If (e, 
