@@ -18,7 +18,15 @@
 
 (* Author: Hongbo Zhang  *)
 
+(* When we inline a function call, if we don't do a beta-reduction immediately, there is 
+   a chance that it is ignored, (we can not assume that each pass is robust enough)
 
+   After we do inlining, it makes sense to do another constant folding and propogation 
+ *)
+
+(* Check: shall we inline functions with while loop? if it is used only once, 
+   it makes sense to inline it
+*)
 
 module S = J_helper.Stmt
 module E = J_helper.Exp
