@@ -35,63 +35,163 @@ module E = J_helper.Exp
 let count_collects () = 
   object (self)
     inherit Js_fold.fold as super
-    val stats = Hashtbl.create 83
-    method use id = 
+    val stats : (Ident.t , int ref ) Hashtbl.t = Hashtbl.create 83
+    val defined_idents = Hashtbl.create 83
+
+    val mutable export_set  : Ident_set.t = Ident_set.empty
+    val mutable name : string = ""
+
+    method add_use id = 
       match Hashtbl.find stats id with
       | exception Not_found -> Hashtbl.add stats id (ref 1)
       | v -> incr v 
-    method! variable_declaration vd=  
-      match vd with 
-      | {ident = _; value = None ; _} -> self
-      | {ident = _; value = Some x; _} -> self#expression x 
-    method! ident id = self#use id; self
-    method get_stats = stats
+    method! program x = 
+      export_set <- x.export_set ; 
+      name <- x.name;
+      super#program x
+    method! variable_declaration 
+        ({ident; value ; property  ; ident_info }  as v)
+      =  
+      begin
+        Hashtbl.add defined_idents ident v; 
+        match value with 
+        | None
+          -> 
+          self
+        | Some x
+          -> self#expression x 
+      end
+    method! ident id = self#add_use id; self
+    method get_stats = 
+      Hashtbl.iter (fun ident (v : J.variable_declaration) -> 
+          if Ident_set.mem ident export_set then 
+            Js_op_util.update_used_stats v.ident_info Exported
+          else 
+          begin match Hashtbl.find stats ident with 
+            | exception Not_found -> 
+              let pure = 
+                match v.value  with 
+                | None -> false  (* can not happen *)
+                | Some x -> J_helper.no_side_effect x  in
+              Js_op_util.update_used_stats v.ident_info (if pure then Dead_pure else Dead_non_pure)
+            | num -> 
+              if !num = 1 then 
+                let pure = 
+                  match v.value  with 
+                  | None -> false  (* can not happen *)
+                  | Some x -> J_helper.no_side_effect x  in
+                Js_op_util.update_used_stats v.ident_info (if pure then Once_pure else Used) 
+          end
+        ) defined_idents; defined_idents
   end
 
-let subst export_set (stats : (Ident.t, int ref) Hashtbl.t) = 
+
+let get_stats program
+  =  ((count_collects ()) #program program) #get_stats
+
+
+(* 1. recursive value ? let rec x = 1 :: x
+    non-terminating
+    2. duplicative identifiers ..
+    remove it at the same time is a bit unsafe,
+    since we have to guarantee that the one use
+    case is substituted
+    we already have this? in [defined_idents]
+*)
+(* There is a side effect when traversing dead code, since 
+   we assume that substitue a node would mark a node as dead node,
+   so if we traverse a dead node, this would get a wrong result.
+   it does happen in such scenario
+   {[
+     let generic_basename is_dir_sep current_dir_name name =
+       let rec find_end n =
+         if n < 0 then String.sub name 0 1
+         else if is_dir_sep name n then find_end (n - 1)
+         else find_beg n (n + 1)
+       and find_beg n p =
+         if n < 0 then String.sub name 0 p
+         else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)
+         else find_beg (n - 1) p
+       in
+       if name = ""
+       then current_dir_name
+       else find_end (String.length name - 1)
+   ]}
+   [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, 
+   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded 
+   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
+   while it is still called 
+*)
+let subst name export_set stats  = 
   object (self)
     inherit Js_map.map as super
-    val subst = Hashtbl.create 83 
+    method! statement st = 
+      match st with 
+      | {statement_desc =
+           Variable ({value = _ ;
+                      ident_info = {used_stats = Dead_pure}
+                     }) ; comment = _}
+        ->
+        S.block []
+      | {statement_desc = Variable { ident_info = {used_stats = Dead_non_pure} ; value = Some v  ; _ } 
+        ; _}
+        -> S.exp v
+      | _ -> super#statement st 
     method! block bs = 
       match bs with
       | ({statement_desc = 
-            Variable ({value = Some ({expression_desc = Fun _; _} as v )} as vd); _} as st) :: rest  -> 
+            Variable ({value =
+                         Some ({expression_desc = Fun _; _ } as v )
+                      } as vd) ; comment = _} as st) :: rest  -> 
         let is_export = Ident_set.mem vd.ident export_set in
         if is_export then 
-          super#statement st :: self#block rest 
+          self#statement st :: self#block rest 
         else 
           begin 
-            match Hashtbl.find stats vd.ident with
+            match (Hashtbl.find stats vd.ident : J.variable_declaration) with
             | exception Not_found -> 
               if Js_analyzer.no_side_effect_expression v 
               then S.exp v  :: self#block rest 
               else self#block rest 
-            | number when !number  = 1 && Js_analyzer.no_side_effect_expression v -> 
-                (** 1. recursive value ? let rec x = 1 :: x 
-                    non-terminating
-                    2. duplicative identifiers ..
-                    remove it at the same time is a bit unsafe, 
-                    since we have to guarantee that the one use
-                    case is substituted
-                 *)
-                let v' = self#expression v in
-                Hashtbl.add subst vd.ident v';
-                self#block rest
-            | _ -> super#statement st  :: self#block rest 
+
+            | _ -> self#statement st  :: self#block rest 
+          end
+
+      | {statement_desc = 
+           Return {return_value = {expression_desc = Call({expression_desc = Var (Id id)},args,_info)}} } as st 
+        :: rest 
+        -> 
+        begin match Hashtbl.find stats id with 
+          | exception Not_found 
+            ->  self#statement st :: self#block rest 
+
+          | { value = Some {expression_desc = Fun (params, block, _env) ; comment = _}; 
+              property = Immutable;
+              ident_info = {used_stats = Once_pure };
+              ident = _
+            } as v
+            when Ext_list.same_length params args 
+            -> 
+            begin
+              (* Ext_log.iwarn false __LOC__ "%s is dead ----- \n" id.name ; *)
+              Js_op_util.update_used_stats v.ident_info Dead_pure;
+              let block  = 
+                List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
+                  params args  ( self#block block) in
+              (* Mark a function as dead means it will never be scanned, 
+                 here we inline the function
+              *)
+              block @ self#block rest
             end
-          
-      | x :: xs ->
-          self#statement x :: self#block xs
-      | [] -> []
-    method! expression e =
-      match e.expression_desc with
-      | Var (Id id) -> 
-        begin match Hashtbl.find subst id with
-          | exception Not_found -> e 
-          | v -> 
-              self#expression v 
+          | _ ->
+            self#statement st :: self#block rest
         end
-      | _ -> super#expression e 
+      | x :: xs 
+        ->
+        self#statement x :: self#block xs
+      | [] 
+        -> []
+
   end
 
 type inline_state = 
@@ -180,9 +280,9 @@ let pass_beta =
   end
 
 let inline_and_shake (program : J.program) = 
-  let _stats = ((count_collects ()) #program program) #get_stats in
+  let _stats = get_stats program in
   let _export_set = program.export_set in
   program
-  |> (subst _export_set _stats )# program
-  |> pass_beta #program
+  |> (subst program.name _export_set _stats )# program
+  (* |> pass_beta #program *)
     

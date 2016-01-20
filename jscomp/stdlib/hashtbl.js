@@ -230,23 +230,6 @@ function remove(h, key) {
   return /* () */0;
 }
 
-function find_rec(key, _param) {
-  while(/* true */1) {
-    var param = _param;
-    if (param) {
-      if (Caml_primitive.caml_compare(key, param[1])) {
-        _param = param[3];
-      }
-      else {
-        return param[2];
-      }
-    }
-    else {
-      throw Caml_exceptions.Not_found;
-    }
-  };
-}
-
 function find(h, key) {
   var match = h[2][key_index(h, key)];
   if (match) {
@@ -257,7 +240,22 @@ function find(h, key) {
         if (Caml_primitive.caml_compare(key, rest1[1])) {
           if (rest2) {
             if (Caml_primitive.caml_compare(key, rest2[1])) {
-              return find_rec(key, rest2[3]);
+              var key$1 = key;
+              var _param = rest2[3];
+              while(/* true */1) {
+                var param = _param;
+                if (param) {
+                  if (Caml_primitive.caml_compare(key$1, param[1])) {
+                    _param = param[3];
+                  }
+                  else {
+                    return param[2];
+                  }
+                }
+                else {
+                  throw Caml_exceptions.Not_found;
+                }
+              };
             }
             else {
               return rest2[2];
@@ -498,22 +496,6 @@ function MakeSeeded(H) {
     h[2][i] = remove_bucket(h[2][i]);
     return /* () */0;
   };
-  var find_rec = function (key, _param) {
-    while(/* true */1) {
-      var param = _param;
-      if (param) {
-        if (H[1](key, param[1])) {
-          return param[2];
-        }
-        else {
-          _param = param[3];
-        }
-      }
-      else {
-        throw Caml_exceptions.Not_found;
-      }
-    };
-  };
   var find = function (h, key) {
     var match = h[2][key_index(h, key)];
     if (match) {
@@ -533,7 +515,22 @@ function MakeSeeded(H) {
                 return rest2[2];
               }
               else {
-                return find_rec(key, rest2[3]);
+                var key$1 = key;
+                var _param = rest2[3];
+                while(/* true */1) {
+                  var param = _param;
+                  if (param) {
+                    if (H[1](key$1, param[1])) {
+                      return param[2];
+                    }
+                    else {
+                      _param = param[3];
+                    }
+                  }
+                  else {
+                    throw Caml_exceptions.Not_found;
+                  }
+                };
               }
             }
             else {
@@ -709,22 +706,6 @@ function Make(H) {
     h[2][i] = remove_bucket(h[2][i]);
     return /* () */0;
   };
-  var find_rec = function (key, _param) {
-    while(/* true */1) {
-      var param = _param;
-      if (param) {
-        if (equal(key, param[1])) {
-          return param[2];
-        }
-        else {
-          _param = param[3];
-        }
-      }
-      else {
-        throw Caml_exceptions.Not_found;
-      }
-    };
-  };
   var find = function (h, key) {
     var match = h[2][key_index(h, key)];
     if (match) {
@@ -744,7 +725,22 @@ function Make(H) {
                 return rest2[2];
               }
               else {
-                return find_rec(key, rest2[3]);
+                var key$1 = key;
+                var _param = rest2[3];
+                while(/* true */1) {
+                  var param = _param;
+                  if (param) {
+                    if (equal(key$1, param[1])) {
+                      return param[2];
+                    }
+                    else {
+                      _param = param[3];
+                    }
+                  }
+                  else {
+                    throw Caml_exceptions.Not_found;
+                  }
+                };
               }
             }
             else {

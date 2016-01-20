@@ -46,25 +46,24 @@ function nth(l, n) {
     return Pervasives.invalid_arg("List.nth");
   }
   else {
-    var nth_aux = function (_l, _n) {
-      while(/* true */1) {
-        var n = _n;
-        var l = _l;
-        if (l) {
-          if (n) {
-            _n = n - 1;
-            _l = l[2];
-          }
-          else {
-            return l[1];
-          }
+    var _l = l;
+    var _n = n;
+    while(/* true */1) {
+      var n$1 = _n;
+      var l$1 = _l;
+      if (l$1) {
+        if (n$1) {
+          _n = n$1 - 1;
+          _l = l$1[2];
         }
         else {
-          return Pervasives.failwith("nth");
+          return l$1[1];
         }
-      };
+      }
+      else {
+        return Pervasives.failwith("nth");
+      }
     };
-    return nth_aux(l, n);
   }
 }
 
@@ -132,24 +131,23 @@ function mapi$1(f, l) {
 }
 
 function rev_map(f, l) {
-  var rmap_f = function (_accu, _param) {
-    while(/* true */1) {
-      var param = _param;
-      var accu = _accu;
-      if (param) {
-        _param = param[2];
-        _accu = [
-          /* :: */0,
-          f(param[1]),
-          accu
-        ];
-      }
-      else {
-        return accu;
-      }
-    };
+  var _accu = /* [] */0;
+  var _param = l;
+  while(/* true */1) {
+    var param = _param;
+    var accu = _accu;
+    if (param) {
+      _param = param[2];
+      _accu = [
+        /* :: */0,
+        f(param[1]),
+        accu
+      ];
+    }
+    else {
+      return accu;
+    }
   };
-  return rmap_f(/* [] */0, l);
 }
 
 function iter(f, _param) {
@@ -165,12 +163,15 @@ function iter(f, _param) {
   };
 }
 
-function iteri(_i, f, _param) {
+function iteri(f, l) {
+  var _i = 0;
+  var f$1 = f;
+  var _param = l;
   while(/* true */1) {
     var param = _param;
     var i = _i;
     if (param) {
-      f(i, param[1]);
+      f$1(i, param[1]);
       _param = param[2];
       _i = i + 1;
     }
@@ -178,10 +179,6 @@ function iteri(_i, f, _param) {
       return /* () */0;
     }
   };
-}
-
-function iteri$1(f, l) {
-  return iteri(0, f, l);
 }
 
 function fold_left(f, _accu, _l) {
@@ -232,36 +229,36 @@ function map2(f, l1, l2) {
 }
 
 function rev_map2(f, l1, l2) {
-  var rmap2_f = function (_accu, _l1, _l2) {
-    while(/* true */1) {
-      var l2 = _l2;
-      var l1 = _l1;
-      var accu = _accu;
-      if (l1) {
-        if (l2) {
-          _l2 = l2[2];
-          _l1 = l1[2];
-          _accu = [
-            /* :: */0,
-            f(l1[1], l2[1]),
-            accu
-          ];
-        }
-        else {
-          return Pervasives.invalid_arg("List.rev_map2");
-        }
+  var _accu = /* [] */0;
+  var _l1 = l1;
+  var _l2 = l2;
+  while(/* true */1) {
+    var l2$1 = _l2;
+    var l1$1 = _l1;
+    var accu = _accu;
+    if (l1$1) {
+      if (l2$1) {
+        _l2 = l2$1[2];
+        _l1 = l1$1[2];
+        _accu = [
+          /* :: */0,
+          f(l1$1[1], l2$1[1]),
+          accu
+        ];
       }
       else {
-        if (l2) {
-          return Pervasives.invalid_arg("List.rev_map2");
-        }
-        else {
-          return accu;
-        }
+        return Pervasives.invalid_arg("List.rev_map2");
       }
-    };
+    }
+    else {
+      if (l2$1) {
+        return Pervasives.invalid_arg("List.rev_map2");
+      }
+      else {
+        return accu;
+      }
+    }
   };
-  return rmap2_f(/* [] */0, l1, l2);
 }
 
 function iter2(f, _l1, _l2) {
@@ -521,13 +518,15 @@ function find(p, _param) {
 }
 
 function find_all(p) {
-  var find = function (_accu, _param) {
+  return function (param) {
+    var _accu = /* [] */0;
+    var _param = param;
     while(/* true */1) {
-      var param = _param;
+      var param$1 = _param;
       var accu = _accu;
-      if (param) {
-        var l = param[2];
-        var x = param[1];
+      if (param$1) {
+        var l = param$1[2];
+        var x = param$1[1];
         if (p(x)) {
           _param = l;
           _accu = [
@@ -545,47 +544,44 @@ function find_all(p) {
       }
     };
   };
-  return function (param) {
-    return find(/* [] */0, param);
-  };
 }
 
 function partition(p, l) {
-  var part = function (_yes, _no, _param) {
-    while(/* true */1) {
-      var param = _param;
-      var no = _no;
-      var yes = _yes;
-      if (param) {
-        var l = param[2];
-        var x = param[1];
-        if (p(x)) {
-          _param = l;
-          _yes = [
-            /* :: */0,
-            x,
-            yes
-          ];
-        }
-        else {
-          _param = l;
-          _no = [
-            /* :: */0,
-            x,
-            no
-          ];
-        }
+  var _yes = /* [] */0;
+  var _no = /* [] */0;
+  var _param = l;
+  while(/* true */1) {
+    var param = _param;
+    var no = _no;
+    var yes = _yes;
+    if (param) {
+      var l$1 = param[2];
+      var x = param[1];
+      if (p(x)) {
+        _param = l$1;
+        _yes = [
+          /* :: */0,
+          x,
+          yes
+        ];
       }
       else {
-        return [
-                /* tuple */0,
-                rev(yes),
-                rev(no)
-              ];
+        _param = l$1;
+        _no = [
+          /* :: */0,
+          x,
+          no
+        ];
       }
-    };
+    }
+    else {
+      return [
+              /* tuple */0,
+              rev(yes),
+              rev(no)
+            ];
+    }
   };
-  return part(/* [] */0, /* [] */0, l);
 }
 
 function split(param) {
@@ -700,76 +696,6 @@ function chop(_k, _l) {
 }
 
 function stable_sort(cmp, l) {
-  var rev_merge = function (_l1, _l2, _accu) {
-    while(/* true */1) {
-      var accu = _accu;
-      var l2 = _l2;
-      var l1 = _l1;
-      if (l1) {
-        if (l2) {
-          var h2 = l2[1];
-          var h1 = l1[1];
-          if (cmp(h1, h2) <= 0) {
-            _accu = [
-              /* :: */0,
-              h1,
-              accu
-            ];
-            _l1 = l1[2];
-          }
-          else {
-            _accu = [
-              /* :: */0,
-              h2,
-              accu
-            ];
-            _l2 = l2[2];
-          }
-        }
-        else {
-          return rev_append(l1, accu);
-        }
-      }
-      else {
-        return rev_append(l2, accu);
-      }
-    };
-  };
-  var rev_merge_rev = function (_l1, _l2, _accu) {
-    while(/* true */1) {
-      var accu = _accu;
-      var l2 = _l2;
-      var l1 = _l1;
-      if (l1) {
-        if (l2) {
-          var h2 = l2[1];
-          var h1 = l1[1];
-          if (cmp(h1, h2) > 0) {
-            _accu = [
-              /* :: */0,
-              h1,
-              accu
-            ];
-            _l1 = l1[2];
-          }
-          else {
-            _accu = [
-              /* :: */0,
-              h2,
-              accu
-            ];
-            _l2 = l2[2];
-          }
-        }
-        else {
-          return rev_append(l1, accu);
-        }
-      }
-      else {
-        return rev_append(l2, accu);
-      }
-    };
-  };
   var sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
@@ -940,7 +866,42 @@ function stable_sort(cmp, l) {
       var l2 = chop(n1, l);
       var s1 = rev_sort(n1, l);
       var s2 = rev_sort(n2, l2);
-      return rev_merge_rev(s1, s2, /* [] */0);
+      var _l1 = s1;
+      var _l2 = s2;
+      var _accu = /* [] */0;
+      while(/* true */1) {
+        var accu = _accu;
+        var l2$1 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2$1) {
+            var h2 = l2$1[1];
+            var h1 = l1[1];
+            if (cmp(h1, h2) > 0) {
+              _accu = [
+                /* :: */0,
+                h1,
+                accu
+              ];
+              _l1 = l1[2];
+            }
+            else {
+              _accu = [
+                /* :: */0,
+                h2,
+                accu
+              ];
+              _l2 = l2$1[2];
+            }
+          }
+          else {
+            return rev_append(l1, accu);
+          }
+        }
+        else {
+          return rev_append(l2$1, accu);
+        }
+      };
     }
     
   };
@@ -1114,7 +1075,42 @@ function stable_sort(cmp, l) {
       var l2 = chop(n1, l);
       var s1 = sort(n1, l);
       var s2 = sort(n2, l2);
-      return rev_merge(s1, s2, /* [] */0);
+      var _l1 = s1;
+      var _l2 = s2;
+      var _accu = /* [] */0;
+      while(/* true */1) {
+        var accu = _accu;
+        var l2$1 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2$1) {
+            var h2 = l2$1[1];
+            var h1 = l1[1];
+            if (cmp(h1, h2) <= 0) {
+              _accu = [
+                /* :: */0,
+                h1,
+                accu
+              ];
+              _l1 = l1[2];
+            }
+            else {
+              _accu = [
+                /* :: */0,
+                h2,
+                accu
+              ];
+              _l2 = l2$1[2];
+            }
+          }
+          else {
+            return rev_append(l1, accu);
+          }
+        }
+        else {
+          return rev_append(l2$1, accu);
+        }
+      };
     }
     
   };
@@ -1128,104 +1124,6 @@ function stable_sort(cmp, l) {
 }
 
 function sort_uniq(cmp, l) {
-  var rev_merge = function (_l1, _l2, _accu) {
-    while(/* true */1) {
-      var accu = _accu;
-      var l2 = _l2;
-      var l1 = _l1;
-      if (l1) {
-        if (l2) {
-          var t2 = l2[2];
-          var h2 = l2[1];
-          var t1 = l1[2];
-          var h1 = l1[1];
-          var c = cmp(h1, h2);
-          if (c) {
-            if (c < 0) {
-              _accu = [
-                /* :: */0,
-                h1,
-                accu
-              ];
-              _l1 = t1;
-            }
-            else {
-              _accu = [
-                /* :: */0,
-                h2,
-                accu
-              ];
-              _l2 = t2;
-            }
-          }
-          else {
-            _accu = [
-              /* :: */0,
-              h1,
-              accu
-            ];
-            _l2 = t2;
-            _l1 = t1;
-          }
-        }
-        else {
-          return rev_append(l1, accu);
-        }
-      }
-      else {
-        return rev_append(l2, accu);
-      }
-    };
-  };
-  var rev_merge_rev = function (_l1, _l2, _accu) {
-    while(/* true */1) {
-      var accu = _accu;
-      var l2 = _l2;
-      var l1 = _l1;
-      if (l1) {
-        if (l2) {
-          var t2 = l2[2];
-          var h2 = l2[1];
-          var t1 = l1[2];
-          var h1 = l1[1];
-          var c = cmp(h1, h2);
-          if (c) {
-            if (c > 0) {
-              _accu = [
-                /* :: */0,
-                h1,
-                accu
-              ];
-              _l1 = t1;
-            }
-            else {
-              _accu = [
-                /* :: */0,
-                h2,
-                accu
-              ];
-              _l2 = t2;
-            }
-          }
-          else {
-            _accu = [
-              /* :: */0,
-              h1,
-              accu
-            ];
-            _l2 = t2;
-            _l1 = t1;
-          }
-        }
-        else {
-          return rev_append(l1, accu);
-        }
-      }
-      else {
-        return rev_append(l2, accu);
-      }
-    };
-  };
   var sort = function (n, l) {
     var exit = 0;
     if (n !== 2) {
@@ -1499,7 +1397,56 @@ function sort_uniq(cmp, l) {
       var l2 = chop(n1, l);
       var s1 = rev_sort(n1, l);
       var s2 = rev_sort(n2, l2);
-      return rev_merge_rev(s1, s2, /* [] */0);
+      var _l1 = s1;
+      var _l2 = s2;
+      var _accu = /* [] */0;
+      while(/* true */1) {
+        var accu = _accu;
+        var l2$1 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2$1) {
+            var t2 = l2$1[2];
+            var h2 = l2$1[1];
+            var t1 = l1[2];
+            var h1 = l1[1];
+            var c$7 = cmp(h1, h2);
+            if (c$7) {
+              if (c$7 > 0) {
+                _accu = [
+                  /* :: */0,
+                  h1,
+                  accu
+                ];
+                _l1 = t1;
+              }
+              else {
+                _accu = [
+                  /* :: */0,
+                  h2,
+                  accu
+                ];
+                _l2 = t2;
+              }
+            }
+            else {
+              _accu = [
+                /* :: */0,
+                h1,
+                accu
+              ];
+              _l2 = t2;
+              _l1 = t1;
+            }
+          }
+          else {
+            return rev_append(l1, accu);
+          }
+        }
+        else {
+          return rev_append(l2$1, accu);
+        }
+      };
     }
     
   };
@@ -1776,7 +1723,56 @@ function sort_uniq(cmp, l) {
       var l2 = chop(n1, l);
       var s1 = sort(n1, l);
       var s2 = sort(n2, l2);
-      return rev_merge(s1, s2, /* [] */0);
+      var _l1 = s1;
+      var _l2 = s2;
+      var _accu = /* [] */0;
+      while(/* true */1) {
+        var accu = _accu;
+        var l2$1 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2$1) {
+            var t2 = l2$1[2];
+            var h2 = l2$1[1];
+            var t1 = l1[2];
+            var h1 = l1[1];
+            var c$7 = cmp(h1, h2);
+            if (c$7) {
+              if (c$7 < 0) {
+                _accu = [
+                  /* :: */0,
+                  h1,
+                  accu
+                ];
+                _l1 = t1;
+              }
+              else {
+                _accu = [
+                  /* :: */0,
+                  h2,
+                  accu
+                ];
+                _l2 = t2;
+              }
+            }
+            else {
+              _accu = [
+                /* :: */0,
+                h1,
+                accu
+              ];
+              _l2 = t2;
+              _l1 = t1;
+            }
+          }
+          else {
+            return rev_append(l1, accu);
+          }
+        }
+        else {
+          return rev_append(l2$1, accu);
+        }
+      };
     }
     
   };
@@ -1816,7 +1812,7 @@ exports.map = map;
 exports.mapi = mapi$1;
 exports.rev_map = rev_map;
 exports.iter = iter;
-exports.iteri = iteri$1;
+exports.iteri = iteri;
 exports.fold_left = fold_left;
 exports.fold_right = fold_right;
 exports.map2 = map2;

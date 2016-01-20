@@ -88,10 +88,12 @@ let op_int_str (op : Js_op.int_op) =
   | Div     -> "/"
   | Mod     -> "%"
   
-let str_of_used_stats = function
+let str_of_used_stats x = 
+  match (x : Js_op.used_stats) with
   | Js_op.Dead_pure ->  "Dead_pure"
   | Dead_non_pure -> "Dead_non_pure"
   | Exported -> "Exported" 
+  | Once_pure -> "Once_pure"
   | Used -> "Used"
   | Scanning_pure -> "Scanning_pure"
   | Scanning_non_pure -> "Scanning_non_pure"
@@ -100,7 +102,11 @@ let str_of_used_stats = function
 let update_used_stats (ident_info : J.ident_info) used_stats = 
   match ident_info.used_stats with 
   | Dead_pure | Dead_non_pure | Exported  -> ()
-  | Scanning_pure | Scanning_non_pure | Used | NA  -> 
+  | Scanning_pure 
+  | Scanning_non_pure
+  | Used
+  | Once_pure
+  | NA  -> 
     ident_info.used_stats <- used_stats
 
 let same_kind (x : Js_op.kind) (y : Js_op.kind)  =

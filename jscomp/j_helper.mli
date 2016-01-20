@@ -279,9 +279,10 @@ module Stmt : sig
     ?ident_info:J.ident_info 
     -> kind:Lambda.let_kind -> Ident.t -> t
 
-  val define : ?comment:string ->
+  val define : 
+    ?comment:string ->
     ?ident_info:J.ident_info ->
-      kind:Lambda.let_kind -> Ident.t -> J.expression  -> t
+    kind:Lambda.let_kind -> Ident.t -> J.expression  -> t
 
   val const_variable :
       ?comment:string -> ?exp:J.expression -> Ident.t -> t

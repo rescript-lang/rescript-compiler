@@ -221,20 +221,6 @@ function Make(funarg) {
       return Pervasives.invalid_arg("Map.remove_min_elt");
     }
   };
-  var merge = function (t1, t2) {
-    if (t1) {
-      if (t2) {
-        var match = min_binding(t2);
-        return bal(t1, match[1], match[2], remove_min_binding(t2));
-      }
-      else {
-        return t1;
-      }
-    }
-    else {
-      return t2;
-    }
-  };
   var remove = function (x, param) {
     if (param) {
       var r = param[4];
@@ -251,7 +237,20 @@ function Make(funarg) {
         }
       }
       else {
-        return merge(l, r);
+        var t1 = l;
+        var t2 = r;
+        if (t1) {
+          if (t2) {
+            var match = min_binding(t2);
+            return bal(t1, match[1], match[2], remove_min_binding(t2));
+          }
+          else {
+            return t1;
+          }
+        }
+        else {
+          return t2;
+        }
       }
     }
     else {
@@ -448,16 +447,16 @@ function Make(funarg) {
             ];
     }
   };
-  var merge$1 = function (f, s1, s2) {
+  var merge = function (f, s1, s2) {
     var exit = 0;
     if (s1) {
       var v1 = s1[2];
       if (s1[5] >= height(s2)) {
         var match = split(v1, s2);
-        return concat_or_join(merge$1(f, s1[1], match[1]), v1, f(v1, [
+        return concat_or_join(merge(f, s1[1], match[1]), v1, f(v1, [
                         /* Some */0,
                         s1[3]
-                      ], match[2]), merge$1(f, s1[4], match[3]));
+                      ], match[2]), merge(f, s1[4], match[3]));
       }
       else {
         exit = 1;
@@ -475,10 +474,10 @@ function Make(funarg) {
       if (s2) {
         var v2 = s2[2];
         var match$1 = split(v2, s1);
-        return concat_or_join(merge$1(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+        return concat_or_join(merge(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
                         /* Some */0,
                         s2[3]
-                      ]), merge$1(f, match$1[3], s2[4]));
+                      ]), merge(f, match$1[3], s2[4]));
       }
       else {
         throw [
@@ -567,42 +566,41 @@ function Make(funarg) {
     };
   };
   var compare = function (cmp, m1, m2) {
-    var compare_aux = function (_e1, _e2) {
-      while(/* true */1) {
-        var e2 = _e2;
-        var e1 = _e1;
-        if (e1) {
-          if (e2) {
-            var c = funarg[1](e1[1], e2[1]);
-            if (c !== 0) {
-              return c;
-            }
-            else {
-              var c$1 = cmp(e1[2], e2[2]);
-              if (c$1 !== 0) {
-                return c$1;
-              }
-              else {
-                _e2 = cons_enum(e2[3], e2[4]);
-                _e1 = cons_enum(e1[3], e1[4]);
-              }
-            }
+    var _e1 = cons_enum(m1, /* End */0);
+    var _e2 = cons_enum(m2, /* End */0);
+    while(/* true */1) {
+      var e2 = _e2;
+      var e1 = _e1;
+      if (e1) {
+        if (e2) {
+          var c = funarg[1](e1[1], e2[1]);
+          if (c !== 0) {
+            return c;
           }
           else {
-            return 1;
+            var c$1 = cmp(e1[2], e2[2]);
+            if (c$1 !== 0) {
+              return c$1;
+            }
+            else {
+              _e2 = cons_enum(e2[3], e2[4]);
+              _e1 = cons_enum(e1[3], e1[4]);
+            }
           }
         }
         else {
-          if (e2) {
-            return -1;
-          }
-          else {
-            return 0;
-          }
+          return 1;
         }
-      };
+      }
+      else {
+        if (e2) {
+          return -1;
+        }
+        else {
+          return 0;
+        }
+      }
     };
-    return compare_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
   };
   var equal = function (cmp, m1, m2) {
     var equal_aux = function (e1, e2) {
@@ -665,7 +663,7 @@ function Make(funarg) {
           add,
           singleton,
           remove,
-          merge$1,
+          merge,
           compare,
           equal,
           iter,

@@ -126,19 +126,17 @@ function length(q) {
 function iter(f, q) {
   if (q[1] > 0) {
     var tail = q[2];
-    var iter$1 = function (_cell) {
-      while(/* true */1) {
-        var cell = _cell;
-        f(cell[1]);
-        if (cell !== tail) {
-          _cell = cell[2];
-        }
-        else {
-          return 0;
-        }
-      };
+    var _cell = tail[2];
+    while(/* true */1) {
+      var cell = _cell;
+      f(cell[1]);
+      if (cell !== tail) {
+        _cell = cell[2];
+      }
+      else {
+        return 0;
+      }
     };
-    return iter$1(tail[2]);
   }
   else {
     return 0;
@@ -148,21 +146,20 @@ function iter(f, q) {
 function fold(f, accu, q) {
   if (q[1]) {
     var tail = q[2];
-    var fold$1 = function (_accu, _cell) {
-      while(/* true */1) {
-        var cell = _cell;
-        var accu = _accu;
-        var accu$1 = f(accu, cell[1]);
-        if (cell === tail) {
-          return accu$1;
-        }
-        else {
-          _cell = cell[2];
-          _accu = accu$1;
-        }
-      };
+    var _accu = accu;
+    var _cell = tail[2];
+    while(/* true */1) {
+      var cell = _cell;
+      var accu$1 = _accu;
+      var accu$2 = f(accu$1, cell[1]);
+      if (cell === tail) {
+        return accu$2;
+      }
+      else {
+        _cell = cell[2];
+        _accu = accu$2;
+      }
     };
-    return fold$1(accu, tail[2]);
   }
   else {
     return accu;

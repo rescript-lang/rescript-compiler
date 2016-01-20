@@ -111,34 +111,32 @@ var string_of_int = Caml_primitive.string_of_int;
 
 function valid_float_lexem(s) {
   var l = s.length;
-  var loop = function (_i) {
-    while(/* true */1) {
-      var i = _i;
-      if (i >= l) {
-        return $caret(s, ".");
-      }
-      else {
-        var match = s.charCodeAt(i);
-        if (match >= 48) {
-          if (match >= 58) {
-            return s;
-          }
-          else {
-            _i = i + 1;
-          }
+  var _i = 0;
+  while(/* true */1) {
+    var i = _i;
+    if (i >= l) {
+      return $caret(s, ".");
+    }
+    else {
+      var match = s.charCodeAt(i);
+      if (match >= 48) {
+        if (match >= 58) {
+          return s;
         }
         else {
-          if (match !== 45) {
-            return s;
-          }
-          else {
-            _i = i + 1;
-          }
+          _i = i + 1;
         }
       }
-    };
+      else {
+        if (match !== 45) {
+          return s;
+        }
+        else {
+          _i = i + 1;
+        }
+      }
+    }
   };
-  return loop(0);
 }
 
 function string_of_float(f) {
@@ -209,24 +207,22 @@ function open_out_bin(name) {
 }
 
 function flush_all() {
-  var iter = function (_param) {
-    while(/* true */1) {
-      var param = _param;
-      if (param) {
-        try {
-          Caml_primitive.caml_ml_flush(param[1]);
-        }
-        catch (exn){
-          
-        }
-        _param = param[2];
+  var _param = Caml_primitive.caml_ml_out_channels_list(/* () */0);
+  while(/* true */1) {
+    var param = _param;
+    if (param) {
+      try {
+        Caml_primitive.caml_ml_flush(param[1]);
       }
-      else {
-        return /* () */0;
+      catch (exn){
+        
       }
-    };
+      _param = param[2];
+    }
+    else {
+      return /* () */0;
+    }
   };
-  return iter(Caml_primitive.caml_ml_out_channels_list(/* () */0));
 }
 
 function output_bytes(oc, s) {

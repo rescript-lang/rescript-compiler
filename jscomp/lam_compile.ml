@@ -1003,7 +1003,10 @@ and
 
 
     | Lsend(meth_kind,met, obj, args,loc) -> 
-      (* TODO: debug with IDEA -- *)
+      (* Note that in [Texp_apply] for [%sendcache] the cache might not be used 
+         see {!CamlinternalOO.send_meth} and {!Translcore.transl_exp0} the branch
+         [Texp_apply] when [public_send ], args are simply dropped
+      *)
       let [@warning "-8"] (args_code, label::obj'::args) = 
         (met :: obj :: args) 
         |> List.map (fun (x : Lambda.lambda) -> 

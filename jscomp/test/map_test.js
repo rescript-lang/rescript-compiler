@@ -156,42 +156,41 @@ function cons_enum(_m, _e) {
 }
 
 function compare$1(cmp, m1, m2) {
-  var compare_aux = function (_e1, _e2) {
-    while(/* true */1) {
-      var e2 = _e2;
-      var e1 = _e1;
-      if (e1) {
-        if (e2) {
-          var c = compare(e1[1], e2[1]);
-          if (c !== 0) {
-            return c;
-          }
-          else {
-            var c$1 = cmp(e1[2], e2[2]);
-            if (c$1 !== 0) {
-              return c$1;
-            }
-            else {
-              _e2 = cons_enum(e2[3], e2[4]);
-              _e1 = cons_enum(e1[3], e1[4]);
-            }
-          }
+  var _e1 = cons_enum(m1, /* End */0);
+  var _e2 = cons_enum(m2, /* End */0);
+  while(/* true */1) {
+    var e2 = _e2;
+    var e1 = _e1;
+    if (e1) {
+      if (e2) {
+        var c = compare(e1[1], e2[1]);
+        if (c !== 0) {
+          return c;
         }
         else {
-          return 1;
+          var c$1 = cmp(e1[2], e2[2]);
+          if (c$1 !== 0) {
+            return c$1;
+          }
+          else {
+            _e2 = cons_enum(e2[3], e2[4]);
+            _e1 = cons_enum(e1[3], e1[4]);
+          }
         }
       }
       else {
-        if (e2) {
-          return -1;
-        }
-        else {
-          return 0;
-        }
+        return 1;
       }
-    };
+    }
+    else {
+      if (e2) {
+        return -1;
+      }
+      else {
+        return 0;
+      }
+    }
   };
-  return compare_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
 }
 
 function cardinal(param) {

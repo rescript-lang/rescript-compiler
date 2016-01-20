@@ -71,37 +71,22 @@ function bits(s) {
   return newval30;
 }
 
-function intaux(s, n) {
-  while(/* true */1) {
-    var r = bits(s);
-    var v = r % n;
-    if (!(r - v > 1073741823 - n + 1)) {
-      return v;
-    }
-    
-  };
-}
-
 function $$int(s, bound) {
   if (bound > 1073741823 || bound <= 0) {
     return Pervasives.invalid_arg("Random.int");
   }
   else {
-    return intaux(s, bound);
+    var s$1 = s;
+    var n = bound;
+    while(/* true */1) {
+      var r = bits(s$1);
+      var v = r % n;
+      if (!(r - v > 1073741823 - n + 1)) {
+        return v;
+      }
+      
+    };
   }
-}
-
-function int32aux(s, n) {
-  while(/* true */1) {
-    var b1 = bits(s);
-    var b2 = ((bits(s) & 1) << 30);
-    var r = b1 | b2;
-    var v = r % n;
-    if (!(r - v > Int32.max_int - n + 1)) {
-      return v;
-    }
-    
-  };
 }
 
 function int32(s, bound) {
@@ -109,22 +94,19 @@ function int32(s, bound) {
     return Pervasives.invalid_arg("Random.int32");
   }
   else {
-    return int32aux(s, bound);
+    var s$1 = s;
+    var n = bound;
+    while(/* true */1) {
+      var b1 = bits(s$1);
+      var b2 = ((bits(s$1) & 1) << 30);
+      var r = b1 | b2;
+      var v = r % n;
+      if (!(r - v > Int32.max_int - n + 1)) {
+        return v;
+      }
+      
+    };
   }
-}
-
-function int64aux(s, n) {
-  while(/* true */1) {
-    var b1 = bits(s);
-    var b2 = (bits(s) << 30);
-    var b3 = ((bits(s) & 7) << 60);
-    var r = b1 | b2 | b3;
-    var v = r % n;
-    if (!(r - v > Int64.max_int - n + 1)) {
-      return v;
-    }
-    
-  };
 }
 
 function int64(s, bound) {
@@ -132,7 +114,19 @@ function int64(s, bound) {
     return Pervasives.invalid_arg("Random.int64");
   }
   else {
-    return int64aux(s, bound);
+    var s$1 = s;
+    var n = bound;
+    while(/* true */1) {
+      var b1 = bits(s$1);
+      var b2 = (bits(s$1) << 30);
+      var b3 = ((bits(s$1) & 7) << 60);
+      var r = b1 | b2 | b3;
+      var v = r % n;
+      if (!(r - v > Int64.max_int - n + 1)) {
+        return v;
+      }
+      
+    };
   }
 }
 

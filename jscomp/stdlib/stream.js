@@ -362,20 +362,18 @@ function empty(s) {
 }
 
 function iter(f, strm) {
-  var do_rec = function (_param) {
-    while(/* true */1) {
-      var match = peek(strm);
-      if (match) {
-        junk(strm);
-        f(match[1]);
-        _param = /* () */0;
-      }
-      else {
-        return /* () */0;
-      }
-    };
+  var _param = /* () */0;
+  while(/* true */1) {
+    var match = peek(strm);
+    if (match) {
+      junk(strm);
+      f(match[1]);
+      _param = /* () */0;
+    }
+    else {
+      return /* () */0;
+    }
   };
-  return do_rec(/* () */0);
 }
 
 function from(f) {

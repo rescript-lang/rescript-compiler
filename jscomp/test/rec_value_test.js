@@ -186,18 +186,15 @@ function fib3(n) {
   }
 }
 
-function odd(n) {
-  if (n === 1) {
-    return /* true */1;
-  }
-  else {
-    return even(n - 1);
-  }
-}
-
 function even(n) {
   if (n) {
-    return odd(n - 1);
+    var n$1 = n - 1;
+    if (n$1 === 1) {
+      return /* true */1;
+    }
+    else {
+      return even(n$1 - 1);
+    }
   }
   else {
     return /* true */1;

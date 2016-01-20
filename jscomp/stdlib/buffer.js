@@ -178,92 +178,91 @@ function closing(param) {
 }
 
 function advance_to_closing(opening, closing, k, s, start) {
-  var advance = function (_k, _i, lim) {
-    while(/* true */1) {
-      var i = _i;
-      var k = _k;
-      if (i >= lim) {
-        throw Caml_exceptions.Not_found;
+  var _k = k;
+  var _i = start;
+  var lim = s.length;
+  while(/* true */1) {
+    var i = _i;
+    var k$1 = _k;
+    if (i >= lim) {
+      throw Caml_exceptions.Not_found;
+    }
+    else {
+      if (s.charCodeAt(i) === opening) {
+        _i = i + 1;
+        _k = k$1 + 1;
       }
       else {
-        if (s.charCodeAt(i) === opening) {
-          _i = i + 1;
-          _k = k + 1;
-        }
-        else {
-          if (s.charCodeAt(i) === closing) {
-            if (k) {
-              _i = i + 1;
-              _k = k - 1;
-            }
-            else {
-              return i;
-            }
+        if (s.charCodeAt(i) === closing) {
+          if (k$1) {
+            _i = i + 1;
+            _k = k$1 - 1;
           }
           else {
-            _i = i + 1;
+            return i;
           }
         }
+        else {
+          _i = i + 1;
+        }
       }
-    };
+    }
   };
-  return advance(k, start, s.length);
 }
 
 function advance_to_non_alpha(s, start) {
-  var advance = function (_i, lim) {
-    while(/* true */1) {
-      var i = _i;
-      if (i >= lim) {
-        return lim;
-      }
-      else {
-        var match = s.charCodeAt(i);
-        var exit = 0;
-        if (match >= 91) {
-          if (match >= 97) {
-            if (match >= 123) {
-              return i;
-            }
-            else {
-              exit = 1;
-            }
+  var _i = start;
+  var lim = s.length;
+  while(/* true */1) {
+    var i = _i;
+    if (i >= lim) {
+      return lim;
+    }
+    else {
+      var match = s.charCodeAt(i);
+      var exit = 0;
+      if (match >= 91) {
+        if (match >= 97) {
+          if (match >= 123) {
+            return i;
           }
           else {
-            if (match !== 95) {
-              return i;
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
         }
         else {
-          if (match >= 58) {
-            if (match >= 65) {
-              exit = 1;
-            }
-            else {
-              return i;
-            }
+          if (match !== 95) {
+            return i;
           }
           else {
-            if (match >= 48) {
-              exit = 1;
-            }
-            else {
-              return i;
-            }
+            exit = 1;
           }
         }
-        if (exit === 1) {
-          _i = i + 1;
-        }
-        
       }
-    };
+      else {
+        if (match >= 58) {
+          if (match >= 65) {
+            exit = 1;
+          }
+          else {
+            return i;
+          }
+        }
+        else {
+          if (match >= 48) {
+            exit = 1;
+          }
+          else {
+            return i;
+          }
+        }
+      }
+      if (exit === 1) {
+        _i = i + 1;
+      }
+      
+    }
   };
-  return advance(start, s.length);
 }
 
 function find_ident(s, start, lim) {
@@ -304,57 +303,56 @@ function find_ident(s, start, lim) {
 
 function add_substitute(b, f, s) {
   var lim = s.length;
-  var subst = function (_previous, _i) {
-    while(/* true */1) {
-      var i = _i;
-      var previous = _previous;
-      if (i < lim) {
-        var current = s.charCodeAt(i);
-        if (current !== 36) {
-          if (previous === /* "\\" */92) {
-            add_char(b, /* "\\" */92);
-            add_char(b, current);
-            _i = i + 1;
-            _previous = /* " " */32;
-          }
-          else {
-            if (current !== 92) {
-              add_char(b, current);
-              _i = i + 1;
-              _previous = current;
-            }
-            else {
-              _i = i + 1;
-              _previous = current;
-            }
-          }
+  var _previous = /* " " */32;
+  var _i = 0;
+  while(/* true */1) {
+    var i = _i;
+    var previous = _previous;
+    if (i < lim) {
+      var current = s.charCodeAt(i);
+      if (current !== 36) {
+        if (previous === /* "\\" */92) {
+          add_char(b, /* "\\" */92);
+          add_char(b, current);
+          _i = i + 1;
+          _previous = /* " " */32;
         }
         else {
-          if (previous === /* "\\" */92) {
+          if (current !== 92) {
             add_char(b, current);
             _i = i + 1;
-            _previous = /* " " */32;
+            _previous = current;
           }
           else {
-            var j = i + 1;
-            var match = find_ident(s, j, lim);
-            add_string(b, f(match[1]));
-            _i = match[2];
-            _previous = /* " " */32;
+            _i = i + 1;
+            _previous = current;
           }
         }
       }
       else {
         if (previous === /* "\\" */92) {
-          return add_char(b, previous);
+          add_char(b, current);
+          _i = i + 1;
+          _previous = /* " " */32;
         }
         else {
-          return 0;
+          var j = i + 1;
+          var match = find_ident(s, j, lim);
+          add_string(b, f(match[1]));
+          _i = match[2];
+          _previous = /* " " */32;
         }
       }
-    };
+    }
+    else {
+      if (previous === /* "\\" */92) {
+        return add_char(b, previous);
+      }
+      else {
+        return 0;
+      }
+    }
   };
-  return subst(/* " " */32, 0);
 }
 
 exports.create = create;

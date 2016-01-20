@@ -128,24 +128,23 @@ function mapi(f, a) {
 }
 
 function to_list(a) {
-  var tolist = function (_i, _res) {
-    while(/* true */1) {
-      var res = _res;
-      var i = _i;
-      if (i < 0) {
-        return res;
-      }
-      else {
-        _res = [
-          /* :: */0,
-          a[i],
-          res
-        ];
-        _i = i - 1;
-      }
-    };
+  var _i = a.length - 1;
+  var _res = /* [] */0;
+  while(/* true */1) {
+    var res = _res;
+    var i = _i;
+    if (i < 0) {
+      return res;
+    }
+    else {
+      _res = [
+        /* :: */0,
+        a[i],
+        res
+      ];
+      _i = i - 1;
+    }
   };
-  return tolist(a.length - 1, /* [] */0);
 }
 
 function list_length(_accu, _param) {
@@ -165,21 +164,20 @@ function list_length(_accu, _param) {
 function of_list(l) {
   if (l) {
     var a = Caml_array.caml_make_vect(list_length(0, l), l[1]);
-    var fill = function (_i, _param) {
-      while(/* true */1) {
-        var param = _param;
-        var i = _i;
-        if (param) {
-          a[i] = param[1];
-          _param = param[2];
-          _i = i + 1;
-        }
-        else {
-          return a;
-        }
-      };
+    var _i = 1;
+    var _param = l[2];
+    while(/* true */1) {
+      var param = _param;
+      var i = _i;
+      if (param) {
+        a[i] = param[1];
+        _param = param[2];
+        _i = i + 1;
+      }
+      else {
+        return a;
+      }
     };
-    return fill(1, l[2]);
   }
   else {
     return /* array */[];
@@ -239,23 +237,23 @@ function sort(cmp, a) {
       }
     }
   };
-  var trickledown = function (l, _i, e) {
-    while(/* true */1) {
-      var i = _i;
-      var j = maxson(l, i);
-      if (cmp(a[j], e) > 0) {
-        a[i] = a[j];
-        _i = j;
-      }
-      else {
-        a[i] = e;
-        return /* () */0;
-      }
-    };
-  };
   var trickle = function (l, i, e) {
     try {
-      return trickledown(l, i, e);
+      var l$1 = l;
+      var _i = i;
+      var e$1 = e;
+      while(/* true */1) {
+        var i$1 = _i;
+        var j = maxson(l$1, i$1);
+        if (cmp(a[j], e$1) > 0) {
+          a[i$1] = a[j];
+          _i = j;
+        }
+        else {
+          a[i$1] = e$1;
+          return /* () */0;
+        }
+      };
     }
     catch (exn){
       if (exn[1] === Bottom) {
@@ -267,17 +265,16 @@ function sort(cmp, a) {
       }
     }
   };
-  var bubbledown = function (l, _i) {
-    while(/* true */1) {
-      var i = _i;
-      var j = maxson(l, i);
-      a[i] = a[j];
-      _i = j;
-    };
-  };
   var bubble = function (l, i) {
     try {
-      return bubbledown(l, i);
+      var l$1 = l;
+      var _i = i;
+      while(/* true */1) {
+        var i$1 = _i;
+        var j = maxson(l$1, i$1);
+        a[i$1] = a[j];
+        _i = j;
+      };
     }
     catch (exn){
       if (exn[1] === Bottom) {
@@ -346,40 +343,42 @@ function stable_sort(cmp, a) {
   var merge = function (src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs) {
     var src1r = src1ofs + src1len;
     var src2r = src2ofs + src2len;
-    var loop = function (_i1, _s1, _i2, _s2, _d) {
-      while(/* true */1) {
-        var d = _d;
-        var s2 = _s2;
-        var i2 = _i2;
-        var s1 = _s1;
-        var i1 = _i1;
-        if (cmp(s1, s2) <= 0) {
-          dst[d] = s1;
-          var i1$1 = i1 + 1;
-          if (i1$1 < src1r) {
-            _d = d + 1;
-            _s1 = a[i1$1];
-            _i1 = i1$1;
-          }
-          else {
-            return blit(src2, i2, dst, d + 1, src2r - i2);
-          }
+    var _i1 = src1ofs;
+    var _s1 = a[src1ofs];
+    var _i2 = src2ofs;
+    var _s2 = src2[src2ofs];
+    var _d = dstofs;
+    while(/* true */1) {
+      var d = _d;
+      var s2 = _s2;
+      var i2 = _i2;
+      var s1 = _s1;
+      var i1 = _i1;
+      if (cmp(s1, s2) <= 0) {
+        dst[d] = s1;
+        var i1$1 = i1 + 1;
+        if (i1$1 < src1r) {
+          _d = d + 1;
+          _s1 = a[i1$1];
+          _i1 = i1$1;
         }
         else {
-          dst[d] = s2;
-          var i2$1 = i2 + 1;
-          if (i2$1 < src2r) {
-            _d = d + 1;
-            _s2 = src2[i2$1];
-            _i2 = i2$1;
-          }
-          else {
-            return blit(a, i1, dst, d + 1, src1r - i1);
-          }
+          return blit(src2, i2, dst, d + 1, src2r - i2);
         }
-      };
+      }
+      else {
+        dst[d] = s2;
+        var i2$1 = i2 + 1;
+        if (i2$1 < src2r) {
+          _d = d + 1;
+          _s2 = src2[i2$1];
+          _i2 = i2$1;
+        }
+        else {
+          return blit(a, i1, dst, d + 1, src1r - i1);
+        }
+      }
     };
-    return loop(src1ofs, a[src1ofs], src2ofs, src2[src2ofs], dstofs);
   };
   var isortto = function (srcofs, dst, dstofs, len) {
     for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){

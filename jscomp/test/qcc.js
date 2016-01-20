@@ -183,99 +183,6 @@ function isid(param) {
   }
 }
 
-function id(_n, _ch) {
-  while(/* true */1) {
-    var ch = _ch;
-    var n = _n;
-    s[n] = ch;
-    if (isid(peekch(/* () */0))) {
-      _ch = getch(/* () */0);
-      _n = n + 1;
-    }
-    else {
-      return [
-              /* Sym */3,
-              addsym(Bytes.to_string(Bytes.sub(s, 0, n + 1)))
-            ];
-    }
-  };
-}
-
-function ilit(_n) {
-  while(/* true */1) {
-    var n = _n;
-    var match = peekch(/* () */0);
-    if (9 < (-48 + match >>> 0)) {
-      return [
-              /* ILit */1,
-              n
-            ];
-    }
-    else {
-      _n = 10 * n + getch(/* () */0) - 48;
-    }
-  };
-}
-
-function slit(b, _e) {
-  while(/* true */1) {
-    var e = _e;
-    var match = peekch(/* () */0);
-    if (match !== 34) {
-      glo[e] = getq(/* () */0);
-      _e = e + 1;
-    }
-    else {
-      getch(/* () */0);
-      gpos[1] = e + 8 & -8;
-      return [
-              /* SLit */2,
-              b + textoff + base,
-              Bytes.to_string(Bytes.sub(glo, b, e - b))
-            ];
-    }
-  };
-}
-
-function op(ch, _param) {
-  while(/* true */1) {
-    var param = _param;
-    if (param) {
-      var lop = param[1];
-      if (lop.charCodeAt(0) === ch && lop.charCodeAt(1) === peekch(/* () */0)) {
-        getch(/* () */0);
-        return [
-                /* Op */0,
-                lop
-              ];
-      }
-      else {
-        _param = param[2];
-      }
-    }
-    else {
-      return [
-              /* Op */0,
-              $$String.make(1, ch)
-            ];
-    }
-  };
-}
-
-function cconst() {
-  var ch = getq(/* () */0);
-  var qt = getch(/* () */0);
-  if (qt !== /* "'" */39) {
-    return Pervasives.failwith("syntax error");
-  }
-  else {
-    return [
-            /* ILit */1,
-            ch
-          ];
-  }
-}
-
 function skip(_param) {
   while(/* true */1) {
     var ch = getch(/* () */0);
@@ -287,7 +194,21 @@ function skip(_param) {
         }
         else {
           if (peekch(/* () */0) === /* "*" */42) {
-            return com(getch(/* () */0));
+            var _param$1 = getch(/* () */0);
+            while(/* true */1) {
+              var match = getch(/* () */0);
+              if (match !== 42) {
+                _param$1 = /* () */0;
+              }
+              else {
+                if (peekch(/* () */0) === /* "/" */47) {
+                  return skip(getch(/* () */0));
+                }
+                else {
+                  _param$1 = /* () */0;
+                }
+              }
+            };
           }
           else {
             return ch;
@@ -323,23 +244,6 @@ function skip(_param) {
   };
 }
 
-function com(_param) {
-  while(/* true */1) {
-    var match = getch(/* () */0);
-    if (match !== 42) {
-      _param = /* () */0;
-    }
-    else {
-      if (peekch(/* () */0) === /* "/" */47) {
-        return skip(getch(/* () */0));
-      }
-      else {
-        _param = /* () */0;
-      }
-    }
-  };
-}
-
 function next() {
   var match;
   try {
@@ -365,7 +269,20 @@ function next() {
           exit = 1;
         }
         else {
-          return ilit(c - 48);
+          var _n = c - 48;
+          while(/* true */1) {
+            var n = _n;
+            var match$1 = peekch(/* () */0);
+            if (9 < (-48 + match$1 >>> 0)) {
+              return [
+                      /* ILit */1,
+                      n
+                    ];
+            }
+            else {
+              _n = 10 * n + getch(/* () */0) - 48;
+            }
+          };
         }
       }
       else {
@@ -373,59 +290,126 @@ function next() {
           exit = 1;
         }
         else {
-          return cconst(/* () */0);
+          var ch = getq(/* () */0);
+          var qt = getch(/* () */0);
+          if (qt !== /* "'" */39) {
+            return Pervasives.failwith("syntax error");
+          }
+          else {
+            return [
+                    /* ILit */1,
+                    ch
+                  ];
+          }
         }
       }
     }
     else {
-      return slit(gpos[1], gpos[1]);
+      var b = gpos[1];
+      var _e = gpos[1];
+      while(/* true */1) {
+        var e = _e;
+        var match$2 = peekch(/* () */0);
+        if (match$2 !== 34) {
+          glo[e] = getq(/* () */0);
+          _e = e + 1;
+        }
+        else {
+          getch(/* () */0);
+          gpos[1] = e + 8 & -8;
+          return [
+                  /* SLit */2,
+                  b + textoff + base,
+                  Bytes.to_string(Bytes.sub(glo, b, e - b))
+                ];
+        }
+      };
     }
     if (exit === 1) {
       if (isid(c)) {
-        return id(0, c);
+        var _n$1 = 0;
+        var _ch = c;
+        while(/* true */1) {
+          var ch$1 = _ch;
+          var n$1 = _n$1;
+          s[n$1] = ch$1;
+          if (isid(peekch(/* () */0))) {
+            _ch = getch(/* () */0);
+            _n$1 = n$1 + 1;
+          }
+          else {
+            return [
+                    /* Sym */3,
+                    addsym(Bytes.to_string(Bytes.sub(s, 0, n$1 + 1)))
+                  ];
+          }
+        };
       }
       else {
-        return op(c, [
+        var ch$2 = c;
+        var _param = [
+          /* :: */0,
+          "++",
+          [
+            /* :: */0,
+            "--",
+            [
+              /* :: */0,
+              "&&",
+              [
+                /* :: */0,
+                "||",
+                [
+                  /* :: */0,
+                  "==",
+                  [
                     /* :: */0,
-                    "++",
+                    "<=",
                     [
                       /* :: */0,
-                      "--",
+                      ">=",
                       [
                         /* :: */0,
-                        "&&",
+                        "!=",
                         [
                           /* :: */0,
-                          "||",
+                          ">>",
                           [
                             /* :: */0,
-                            "==",
-                            [
-                              /* :: */0,
-                              "<=",
-                              [
-                                /* :: */0,
-                                ">=",
-                                [
-                                  /* :: */0,
-                                  "!=",
-                                  [
-                                    /* :: */0,
-                                    ">>",
-                                    [
-                                      /* :: */0,
-                                      "<<",
-                                      /* [] */0
-                                    ]
-                                  ]
-                                ]
-                              ]
-                            ]
+                            "<<",
+                            /* [] */0
                           ]
                         ]
                       ]
                     ]
-                  ]);
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ];
+        while(/* true */1) {
+          var param = _param;
+          if (param) {
+            var lop = param[1];
+            if (lop.charCodeAt(0) === ch$2 && lop.charCodeAt(1) === peekch(/* () */0)) {
+              getch(/* () */0);
+              return [
+                      /* Op */0,
+                      lop
+                    ];
+            }
+            else {
+              _param = param[2];
+            }
+          }
+          else {
+            return [
+                    /* Op */0,
+                    $$String.make(1, ch$2)
+                  ];
+          }
+        };
       }
     }
     
@@ -1117,7 +1101,30 @@ function binary(stk, lvl) {
         return List.assoc(o, lvls);
       }
     };
-    var fold = function (_param) {
+    var foldtst = function (_loc) {
+      while(/* true */1) {
+        var loc = _loc;
+        var t = next$1(/* () */0);
+        if (t[0]) {
+          unnext(t);
+          return loc;
+        }
+        else {
+          if (lvlof(t[1]) === lvl) {
+            var loc$prime = test(lvl - 8, loc);
+            binary(stk, lvl - 1);
+            _loc = loc$prime;
+          }
+          else {
+            unnext(t);
+            return loc;
+          }
+        }
+      };
+    };
+    binary(stk, lvl - 1);
+    if (lvl < 8) {
+      var _param = /* () */0;
       while(/* true */1) {
         var t = next$1(/* () */0);
         if (t[0]) {
@@ -1144,31 +1151,6 @@ function binary(stk, lvl) {
           }
         }
       };
-    };
-    var foldtst = function (_loc) {
-      while(/* true */1) {
-        var loc = _loc;
-        var t = next$1(/* () */0);
-        if (t[0]) {
-          unnext(t);
-          return loc;
-        }
-        else {
-          if (lvlof(t[1]) === lvl) {
-            var loc$prime = test(lvl - 8, loc);
-            binary(stk, lvl - 1);
-            _loc = loc$prime;
-          }
-          else {
-            unnext(t);
-            return loc;
-          }
-        }
-      };
-    };
-    binary(stk, lvl - 1);
-    if (lvl < 8) {
-      return fold(/* () */0);
     }
     else {
       var loc = foldtst(0);
@@ -1473,35 +1455,33 @@ function postfix(stk) {
 }
 
 function expr(stk) {
-  var eqexpr = function (_param) {
-    while(/* true */1) {
-      var t = next$1(/* () */0);
-      if (t[0]) {
-        return unnext(t);
-      }
-      else {
-        if (t[1] === "=") {
-          patchlval(/* () */0);
-          var ty = lval[1][2];
-          push(0);
-          expr(stk);
-          pop(1);
-          if (ty) {
-            out(34817);
-          }
-          else {
-            out(4753665);
-          }
-          _param = /* () */0;
+  binary(stk, 10);
+  var _param = /* () */0;
+  while(/* true */1) {
+    var t = next$1(/* () */0);
+    if (t[0]) {
+      return unnext(t);
+    }
+    else {
+      if (t[1] === "=") {
+        patchlval(/* () */0);
+        var ty = lval[1][2];
+        push(0);
+        expr(stk);
+        pop(1);
+        if (ty) {
+          out(34817);
         }
         else {
-          return unnext(t);
+          out(4753665);
         }
+        _param = /* () */0;
       }
-    };
+      else {
+        return unnext(t);
+      }
+    }
   };
-  binary(stk, 10);
-  return eqexpr(/* () */0);
 }
 
 function decl(g, _n, _stk) {
@@ -2263,11 +2243,6 @@ function elfgen(outf) {
 }
 
 function main() {
-  var doone = function (c, stk) {
-    opos[1] = 0;
-    c(stk);
-    return Pervasives.print_bytes(Bytes.sub(obuf, 0, opos[1]));
-  };
   var ppsym = function (param) {
     switch (param[0]) {
       case 0 : 
@@ -2358,47 +2333,49 @@ function main() {
       
     }
   };
-  var pptoks = function (_param) {
-    while(/* true */1) {
-      var tok = next$1(/* () */0);
-      if (tok[0]) {
-        ppsym(tok);
-        _param = /* () */0;
-      }
-      else {
-        if (tok[1] === "EOF!") {
-          return Printf.printf([
-                      /* Format */0,
-                      [
-                        /* String_literal */11,
-                        "End of input stream\n",
-                        /* End_of_format */0
-                      ],
-                      "End of input stream\n"
-                    ]);
-        }
-        else {
-          ppsym(tok);
-          _param = /* () */0;
-        }
-      }
-    };
-  };
   var f = Sys.argv.length < 2 ? "-blk" : Sys.argv[1];
   switch (f) {
     case "-blk" : 
-        return doone(function (param) {
-                    return block([
-                                /* tuple */0,
-                                [
-                                  0,
-                                  0
-                                ],
-                                0
-                              ], param);
-                  }, /* [] */0);
+        var c = function (param) {
+          return block([
+                      /* tuple */0,
+                      [
+                        0,
+                        0
+                      ],
+                      0
+                    ], param);
+        };
+        var stk = /* [] */0;
+        opos[1] = 0;
+        c(stk);
+        return Pervasives.print_bytes(Bytes.sub(obuf, 0, opos[1]));
     case "-lex" : 
-        return pptoks(/* () */0);
+        var _param = /* () */0;
+        while(/* true */1) {
+          var tok = next$1(/* () */0);
+          if (tok[0]) {
+            ppsym(tok);
+            _param = /* () */0;
+          }
+          else {
+            if (tok[1] === "EOF!") {
+              return Printf.printf([
+                          /* Format */0,
+                          [
+                            /* String_literal */11,
+                            "End of input stream\n",
+                            /* End_of_format */0
+                          ],
+                          "End of input stream\n"
+                        ]);
+            }
+            else {
+              ppsym(tok);
+              _param = /* () */0;
+            }
+          }
+        };
     default:
       var oc = Pervasives.open_out("a.out");
       inch[1] = Pervasives.open_in(f);

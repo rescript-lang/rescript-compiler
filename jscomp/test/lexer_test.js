@@ -11,23 +11,21 @@ var Arith_parser = require("./arith_parser");
 
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);
-  var aux = function (_acc) {
-    while(/* true */1) {
-      var acc = _acc;
-      var v = lex(buf);
-      if (v === /* EOF */7) {
-        return List.rev(acc);
-      }
-      else {
-        _acc = [
-          /* :: */0,
-          v,
-          acc
-        ];
-      }
-    };
+  var _acc = /* [] */0;
+  while(/* true */1) {
+    var acc = _acc;
+    var v = lex(buf);
+    if (v === /* EOF */7) {
+      return List.rev(acc);
+    }
+    else {
+      _acc = [
+        /* :: */0,
+        v,
+        acc
+      ];
+    }
   };
-  return aux(/* [] */0);
 }
 
 function f(param) {

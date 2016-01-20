@@ -236,7 +236,8 @@ and finish_ident_expression = expression (* pure *)
 
 and statement_desc =
   | Block of block
-  | Variable of variable_declaration (* Function declaration and Variable declaration  *)
+  | Variable of variable_declaration
+        (* Function declaration and Variable declaration  *)
   | Exp of expression
   | If of expression * block * block option
   | While of label option *  expression * block 

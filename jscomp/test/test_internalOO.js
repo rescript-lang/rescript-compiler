@@ -277,21 +277,6 @@ function remove_min_binding(param) {
   }
 }
 
-function merge(t1, t2) {
-  if (t1) {
-    if (t2) {
-      var match = min_binding(t2);
-      return bal(t1, match[1], match[2], remove_min_binding(t2));
-    }
-    else {
-      return t1;
-    }
-  }
-  else {
-    return t2;
-  }
-}
-
 function remove(x, param) {
   if (param) {
     var r = param[4];
@@ -308,7 +293,20 @@ function remove(x, param) {
       }
     }
     else {
-      return merge(l, r);
+      var t1 = l;
+      var t2 = r;
+      if (t1) {
+        if (t2) {
+          var match = min_binding(t2);
+          return bal(t1, match[1], match[2], remove_min_binding(t2));
+        }
+        else {
+          return t1;
+        }
+      }
+      else {
+        return t2;
+      }
     }
   }
   else {
@@ -518,16 +516,16 @@ function split(x, param) {
   }
 }
 
-function merge$1(f, s1, s2) {
+function merge(f, s1, s2) {
   var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height(s2)) {
       var match = split(v1, s2);
-      return concat_or_join(merge$1(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join(merge(f, s1[1], match[1]), v1, f(v1, [
                       /* Some */0,
                       s1[3]
-                    ], match[2]), merge$1(f, s1[4], match[3]));
+                    ], match[2]), merge(f, s1[4], match[3]));
     }
     else {
       exit = 1;
@@ -545,10 +543,10 @@ function merge$1(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split(v2, s1);
-      return concat_or_join(merge$1(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join(merge(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
                       /* Some */0,
                       s2[3]
-                    ]), merge$1(f, match$1[3], s2[4]));
+                    ]), merge(f, match$1[3], s2[4]));
     }
     else {
       throw [
@@ -641,42 +639,41 @@ function cons_enum(_m, _e) {
 }
 
 function compare$1(cmp, m1, m2) {
-  var compare_aux = function (_e1, _e2) {
-    while(/* true */1) {
-      var e2 = _e2;
-      var e1 = _e1;
-      if (e1) {
-        if (e2) {
-          var c = compare(e1[1], e2[1]);
-          if (c !== 0) {
-            return c;
-          }
-          else {
-            var c$1 = cmp(e1[2], e2[2]);
-            if (c$1 !== 0) {
-              return c$1;
-            }
-            else {
-              _e2 = cons_enum(e2[3], e2[4]);
-              _e1 = cons_enum(e1[3], e1[4]);
-            }
-          }
+  var _e1 = cons_enum(m1, /* End */0);
+  var _e2 = cons_enum(m2, /* End */0);
+  while(/* true */1) {
+    var e2 = _e2;
+    var e1 = _e1;
+    if (e1) {
+      if (e2) {
+        var c = compare(e1[1], e2[1]);
+        if (c !== 0) {
+          return c;
         }
         else {
-          return 1;
+          var c$1 = cmp(e1[2], e2[2]);
+          if (c$1 !== 0) {
+            return c$1;
+          }
+          else {
+            _e2 = cons_enum(e2[3], e2[4]);
+            _e1 = cons_enum(e1[3], e1[4]);
+          }
         }
       }
       else {
-        if (e2) {
-          return -1;
-        }
-        else {
-          return 0;
-        }
+        return 1;
       }
-    };
+    }
+    else {
+      if (e2) {
+        return -1;
+      }
+      else {
+        return 0;
+      }
+    }
   };
-  return compare_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
 }
 
 function equal(cmp, m1, m2) {
@@ -744,7 +741,7 @@ var Vars = [
   add,
   singleton,
   remove,
-  merge$1,
+  merge,
   compare$1,
   equal,
   iter,
@@ -996,21 +993,6 @@ function remove_min_binding$1(param) {
   }
 }
 
-function merge$2(t1, t2) {
-  if (t1) {
-    if (t2) {
-      var match = min_binding$1(t2);
-      return bal$1(t1, match[1], match[2], remove_min_binding$1(t2));
-    }
-    else {
-      return t1;
-    }
-  }
-  else {
-    return t2;
-  }
-}
-
 function remove$1(x, param) {
   if (param) {
     var r = param[4];
@@ -1027,7 +1009,20 @@ function remove$1(x, param) {
       }
     }
     else {
-      return merge$2(l, r);
+      var t1 = l;
+      var t2 = r;
+      if (t1) {
+        if (t2) {
+          var match = min_binding$1(t2);
+          return bal$1(t1, match[1], match[2], remove_min_binding$1(t2));
+        }
+        else {
+          return t1;
+        }
+      }
+      else {
+        return t2;
+      }
     }
   }
   else {
@@ -1237,16 +1232,16 @@ function split$1(x, param) {
   }
 }
 
-function merge$3(f, s1, s2) {
+function merge$1(f, s1, s2) {
   var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height$1(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join$1(merge$3(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join$1(merge$1(f, s1[1], match[1]), v1, f(v1, [
                       /* Some */0,
                       s1[3]
-                    ], match[2]), merge$3(f, s1[4], match[3]));
+                    ], match[2]), merge$1(f, s1[4], match[3]));
     }
     else {
       exit = 1;
@@ -1264,10 +1259,10 @@ function merge$3(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$3(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join$1(merge$1(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
                       /* Some */0,
                       s2[3]
-                    ]), merge$3(f, match$1[3], s2[4]));
+                    ]), merge$1(f, match$1[3], s2[4]));
     }
     else {
       throw [
@@ -1360,42 +1355,41 @@ function cons_enum$1(_m, _e) {
 }
 
 function compare$3(cmp, m1, m2) {
-  var compare_aux = function (_e1, _e2) {
-    while(/* true */1) {
-      var e2 = _e2;
-      var e1 = _e1;
-      if (e1) {
-        if (e2) {
-          var c = compare$2(e1[1], e2[1]);
-          if (c !== 0) {
-            return c;
-          }
-          else {
-            var c$1 = cmp(e1[2], e2[2]);
-            if (c$1 !== 0) {
-              return c$1;
-            }
-            else {
-              _e2 = cons_enum$1(e2[3], e2[4]);
-              _e1 = cons_enum$1(e1[3], e1[4]);
-            }
-          }
+  var _e1 = cons_enum$1(m1, /* End */0);
+  var _e2 = cons_enum$1(m2, /* End */0);
+  while(/* true */1) {
+    var e2 = _e2;
+    var e1 = _e1;
+    if (e1) {
+      if (e2) {
+        var c = compare$2(e1[1], e2[1]);
+        if (c !== 0) {
+          return c;
         }
         else {
-          return 1;
+          var c$1 = cmp(e1[2], e2[2]);
+          if (c$1 !== 0) {
+            return c$1;
+          }
+          else {
+            _e2 = cons_enum$1(e2[3], e2[4]);
+            _e1 = cons_enum$1(e1[3], e1[4]);
+          }
         }
       }
       else {
-        if (e2) {
-          return -1;
-        }
-        else {
-          return 0;
-        }
+        return 1;
       }
-    };
+    }
+    else {
+      if (e2) {
+        return -1;
+      }
+      else {
+        return 0;
+      }
+    }
   };
-  return compare_aux(cons_enum$1(m1, /* End */0), cons_enum$1(m2, /* End */0));
 }
 
 function equal$1(cmp, m1, m2) {
@@ -1463,7 +1457,7 @@ var Meths = [
   add$1,
   singleton$1,
   remove$1,
-  merge$3,
+  merge$1,
   compare$3,
   equal$1,
   iter$1,
@@ -1715,21 +1709,6 @@ function remove_min_binding$2(param) {
   }
 }
 
-function merge$4(t1, t2) {
-  if (t1) {
-    if (t2) {
-      var match = min_binding$2(t2);
-      return bal$2(t1, match[1], match[2], remove_min_binding$2(t2));
-    }
-    else {
-      return t1;
-    }
-  }
-  else {
-    return t2;
-  }
-}
-
 function remove$2(x, param) {
   if (param) {
     var r = param[4];
@@ -1746,7 +1725,20 @@ function remove$2(x, param) {
       }
     }
     else {
-      return merge$4(l, r);
+      var t1 = l;
+      var t2 = r;
+      if (t1) {
+        if (t2) {
+          var match = min_binding$2(t2);
+          return bal$2(t1, match[1], match[2], remove_min_binding$2(t2));
+        }
+        else {
+          return t1;
+        }
+      }
+      else {
+        return t2;
+      }
     }
   }
   else {
@@ -1956,16 +1948,16 @@ function split$2(x, param) {
   }
 }
 
-function merge$5(f, s1, s2) {
+function merge$2(f, s1, s2) {
   var exit = 0;
   if (s1) {
     var v1 = s1[2];
     if (s1[5] >= height$2(s2)) {
       var match = split$2(v1, s2);
-      return concat_or_join$2(merge$5(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join$2(merge$2(f, s1[1], match[1]), v1, f(v1, [
                       /* Some */0,
                       s1[3]
-                    ], match[2]), merge$5(f, s1[4], match[3]));
+                    ], match[2]), merge$2(f, s1[4], match[3]));
     }
     else {
       exit = 1;
@@ -1983,10 +1975,10 @@ function merge$5(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$2(v2, s1);
-      return concat_or_join$2(merge$5(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join$2(merge$2(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
                       /* Some */0,
                       s2[3]
-                    ]), merge$5(f, match$1[3], s2[4]));
+                    ]), merge$2(f, match$1[3], s2[4]));
     }
     else {
       throw [
@@ -2079,42 +2071,41 @@ function cons_enum$2(_m, _e) {
 }
 
 function compare$5(cmp, m1, m2) {
-  var compare_aux = function (_e1, _e2) {
-    while(/* true */1) {
-      var e2 = _e2;
-      var e1 = _e1;
-      if (e1) {
-        if (e2) {
-          var c = compare$4(e1[1], e2[1]);
-          if (c !== 0) {
-            return c;
-          }
-          else {
-            var c$1 = cmp(e1[2], e2[2]);
-            if (c$1 !== 0) {
-              return c$1;
-            }
-            else {
-              _e2 = cons_enum$2(e2[3], e2[4]);
-              _e1 = cons_enum$2(e1[3], e1[4]);
-            }
-          }
+  var _e1 = cons_enum$2(m1, /* End */0);
+  var _e2 = cons_enum$2(m2, /* End */0);
+  while(/* true */1) {
+    var e2 = _e2;
+    var e1 = _e1;
+    if (e1) {
+      if (e2) {
+        var c = compare$4(e1[1], e2[1]);
+        if (c !== 0) {
+          return c;
         }
         else {
-          return 1;
+          var c$1 = cmp(e1[2], e2[2]);
+          if (c$1 !== 0) {
+            return c$1;
+          }
+          else {
+            _e2 = cons_enum$2(e2[3], e2[4]);
+            _e1 = cons_enum$2(e1[3], e1[4]);
+          }
         }
       }
       else {
-        if (e2) {
-          return -1;
-        }
-        else {
-          return 0;
-        }
+        return 1;
       }
-    };
+    }
+    else {
+      if (e2) {
+        return -1;
+      }
+      else {
+        return 0;
+      }
+    }
   };
-  return compare_aux(cons_enum$2(m1, /* End */0), cons_enum$2(m2, /* End */0));
 }
 
 function equal$2(cmp, m1, m2) {
@@ -2182,7 +2173,7 @@ var Labs = [
   add$2,
   singleton$2,
   remove$2,
-  merge$5,
+  merge$2,
   compare$5,
   equal$2,
   iter$2,
@@ -2715,30 +2706,28 @@ function lookup_keys(i, keys, tables) {
   }
   else {
     var key = keys[i];
-    var lookup_key = function (_tables) {
-      while(/* true */1) {
-        var tables = _tables;
-        if (tables[1] === key) {
-          return lookup_keys(i - 1, keys, tables[2]);
+    var _tables = tables;
+    while(/* true */1) {
+      var tables$1 = _tables;
+      if (tables$1[1] === key) {
+        return lookup_keys(i - 1, keys, tables$1[2]);
+      }
+      else {
+        if (tables$1[3] !== /* Empty */0) {
+          _tables = tables$1[3];
         }
         else {
-          if (tables[3] !== /* Empty */0) {
-            _tables = tables[3];
-          }
-          else {
-            var next = [
-              /* Cons */0,
-              key,
-              /* Empty */0,
-              /* Empty */0
-            ];
-            tables[3] = next;
-            return build_path(i - 1, keys, next);
-          }
+          var next = [
+            /* Cons */0,
+            key,
+            /* Empty */0,
+            /* Empty */0
+          ];
+          tables$1[3] = next;
+          return build_path(i - 1, keys, next);
         }
-      };
+      }
     };
-    return lookup_key(tables);
   }
 }
 

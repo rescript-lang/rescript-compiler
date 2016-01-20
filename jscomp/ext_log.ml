@@ -20,16 +20,34 @@
 
 
 
-type position = string * int * int * int 
+
+type ('a,'b) logging =  
+  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
 
 let err str f v =
   Format.fprintf Format.err_formatter ("%s " ^^ f) str  v 
 
+let ierr b str f v =
+  if b then 
+    Format.fprintf Format.err_formatter ("%s " ^^ f) str  v 
+  else
+    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  v 
+
 let warn str f v =
   Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+
+let iwarn b str f v = 
+  if b then 
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+  else 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
 
 let info str f v =
   Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
 
-let ierr str f v =
-  Format.ifprintf Format.err_formatter ("%s " ^^ f) str  v 
+let iinfo b str f v =
+  if b then 
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
+  else
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
+

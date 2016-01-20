@@ -89,6 +89,10 @@ hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
     ../stdlib/array.cmx
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmx : inline_edge_cases.cmi
+inline_regression_test.cmo : ../stdlib/string.cmi mt.cmo \
+    ../stdlib/filename.cmi
+inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
+    ../stdlib/filename.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
 lazy_test.cmo : ../stdlib/lazy.cmi
@@ -425,6 +429,10 @@ hashtbl_test.cmo : mt.cmo ../stdlib/list.cmo ../stdlib/hashtbl.cmo \
     ../stdlib/array.cmo
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmo : inline_edge_cases.cmi
+inline_regression_test.cmo : ../stdlib/string.cmi mt.cmo \
+    ../stdlib/filename.cmi
+inline_regression_test.cmo : ../stdlib/string.cmo mt.cmo \
+    ../stdlib/filename.cmo
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmo : ../stdlib/map.cmo
 lazy_test.cmo : ../stdlib/lazy.cmi
