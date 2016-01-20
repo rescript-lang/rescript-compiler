@@ -1,5 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+var Filename = require("../stdlib/filename");
+var Mt = require("./mt");
 var $$String = require("../stdlib/string");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -40,5 +42,33 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
   }
 }
 
+function basename(param) {
+  return generic_basename(function (s, i) {
+              return +(s[i] === "/");
+            }, Filename.current_dir_name, param);
+}
+
+var suites_001 = [
+  /* tuple */0,
+  "basename",
+  function () {
+    return [
+            /* Eq */0,
+            basename("b/c/a.b"),
+            "a.b"
+          ];
+  }
+];
+
+var suites = [
+  /* :: */0,
+  suites_001,
+  /* [] */0
+];
+
+Mt.from_pair_suites("inline_regression_test.ml", suites);
+
 exports.generic_basename = generic_basename;
-/* No side effect */
+exports.basename = basename;
+exports.suites = suites;
+/*  Not a pure module */

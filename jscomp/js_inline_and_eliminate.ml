@@ -118,8 +118,9 @@ let get_stats program
        else find_end (String.length name - 1)
    ]}
    [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, 
-   if the order is not correct, or even worse, only the wrong one get expanded, then 
-   some code non-dead will be marked as dead
+   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded 
+   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, 
+   while it is still called 
 *)
 let subst name export_set stats  = 
   object (self)
@@ -127,14 +128,14 @@ let subst name export_set stats  =
     method! statement st = 
       match st with 
       | {statement_desc =
-            Variable ({value = _ ;
-                       ident_info = {used_stats = Dead_pure}
-                      }) ; comment = _}
+           Variable ({value = _ ;
+                      ident_info = {used_stats = Dead_pure}
+                     }) ; comment = _}
         ->
         S.block []
       | {statement_desc = Variable { ident_info = {used_stats = Dead_non_pure} ; value = Some v  ; _ } 
         ; _}
-         -> S.exp v
+        -> S.exp v
       | _ -> super#statement st 
     method! block bs = 
       match bs with
@@ -174,9 +175,9 @@ let subst name export_set stats  =
             begin
               (* Ext_log.iwarn false __LOC__ "%s is dead ----- \n" id.name ; *)
               Js_op_util.update_used_stats v.ident_info Dead_pure;
-               let block  = 
-                 List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
-                   params args  ( self#block block) in
+              let block  = 
+                List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
+                  params args  ( self#block block) in
               (* Mark a function as dead means it will never be scanned, 
                  here we inline the function
               *)
@@ -187,7 +188,7 @@ let subst name export_set stats  =
         end
       | x :: xs 
         ->
-          self#statement x :: self#block xs
+        self#statement x :: self#block xs
       | [] 
         -> []
 

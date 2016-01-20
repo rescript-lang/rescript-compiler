@@ -11,3 +11,14 @@ let generic_basename is_dir_sep current_dir_name name =
   if name = ""
   then current_dir_name
   else find_end (String.length name - 1)
+
+
+let basename = 
+  generic_basename (fun s i ->  s.[i] = '/')  Filename.current_dir_name
+
+
+let suites = Mt.[
+   "basename", (fun _ ->  Eq (basename "b/c/a.b", "a.b"))
+  ]
+
+;; Mt.from_pair_suites __FILE__ suites
