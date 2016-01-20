@@ -24,7 +24,7 @@ function lexeme(lexbuf) {
 }
 
 function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
-  while(/* true */1) {
+  while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (9 < (__ocaml_lex_state$1 >>> 0)) {

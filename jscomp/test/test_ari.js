@@ -31,7 +31,7 @@ function ff(param) {
 var fff = VV.test_primit2(3);
 
 function length_aux(_len, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var len = _len;
     if (param) {

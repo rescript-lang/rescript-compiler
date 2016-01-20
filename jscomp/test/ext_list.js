@@ -5,7 +5,7 @@ var $$Array = require("../stdlib/array");
 var List = require("../stdlib/list");
 
 function filter_map(f, _xs) {
-  while(/* true */1) {
+  while(true) {
     var xs = _xs;
     if (xs) {
       var ys = xs[2];
@@ -28,7 +28,7 @@ function filter_map(f, _xs) {
 }
 
 function same_length(_xs, _ys) {
-  while(/* true */1) {
+  while(true) {
     var ys = _ys;
     var xs = _xs;
     if (xs) {
@@ -53,7 +53,7 @@ function same_length(_xs, _ys) {
 
 function filter_mapi(f, xs) {
   var aux = function (_i, _xs) {
-    while(/* true */1) {
+    while(true) {
       var xs = _xs;
       var i = _i;
       if (xs) {
@@ -80,7 +80,7 @@ function filter_mapi(f, xs) {
 }
 
 function filter_map2(f, _xs, _ys) {
-  while(/* true */1) {
+  while(true) {
     var ys = _ys;
     var xs = _xs;
     if (xs) {
@@ -117,7 +117,7 @@ function filter_map2(f, _xs, _ys) {
 
 function filter_map2i(f, xs, ys) {
   var aux = function (_i, _xs, _ys) {
-    while(/* true */1) {
+    while(true) {
       var ys = _ys;
       var xs = _xs;
       var i = _i;
@@ -157,7 +157,7 @@ function filter_map2i(f, xs, ys) {
 }
 
 function rev_map_append(f, _l1, _l2) {
-  while(/* true */1) {
+  while(true) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
@@ -178,7 +178,7 @@ function flat_map2(f, lx, ly) {
   var _acc = /* [] */0;
   var _lx = lx;
   var _ly = ly;
-  while(/* true */1) {
+  while(true) {
     var ly$1 = _ly;
     var lx$1 = _lx;
     var acc = _acc;
@@ -206,7 +206,7 @@ function flat_map2(f, lx, ly) {
 function flat_map(f, lx) {
   var _acc = /* [] */0;
   var _lx = lx;
-  while(/* true */1) {
+  while(true) {
     var lx$1 = _lx;
     var acc = _acc;
     if (lx$1) {
@@ -325,7 +325,7 @@ function take(n, l) {
 function exclude_tail(x) {
   var _acc = /* [] */0;
   var _x = x;
-  while(/* true */1) {
+  while(true) {
     var x$1 = _x;
     var acc = _acc;
     if (x$1) {
@@ -398,7 +398,7 @@ function stable_group(cmp, lst) {
 }
 
 function drop(_n, _h) {
-  while(/* true */1) {
+  while(true) {
     var h = _h;
     var n = _n;
     if (n < 0) {
@@ -422,7 +422,7 @@ function drop(_n, _h) {
 }
 
 function for_all_ret(p, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var a = param[1];
@@ -443,7 +443,7 @@ function for_all_ret(p, _param) {
 }
 
 function for_all_opt(p, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var v = p(param[1]);
@@ -469,7 +469,7 @@ function fold(f, l, init) {
 function rev_map_acc(acc, f, l) {
   var _accu = acc;
   var _param = l;
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {

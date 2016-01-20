@@ -165,7 +165,7 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare(x, param[2]);
@@ -183,7 +183,7 @@ function find(x, _param) {
 }
 
 function fold(f, _m, _accu) {
-  while(/* true */1) {
+  while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
@@ -447,7 +447,7 @@ function add$2(x, data, param) {
 }
 
 function find$1(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare$2(x, param[2]);
@@ -547,7 +547,7 @@ function get_method_label(table, name) {
   try {
     var x = name;
     var _param = table[3];
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var c = compare$1(x, param[2]);
@@ -920,7 +920,7 @@ function create_object_opt(obj_0, table) {
 }
 
 function iter_f(obj, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       param[1](obj);
@@ -993,7 +993,7 @@ function lookup_keys(i, keys, tables) {
   else {
     var key = keys[i];
     var _tables = tables;
-    while(/* true */1) {
+    while(true) {
       var tables$1 = _tables;
       if (tables$1[1] === key) {
         return lookup_keys(i - 1, keys, tables$1[2]);

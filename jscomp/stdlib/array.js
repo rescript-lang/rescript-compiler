@@ -130,7 +130,7 @@ function mapi(f, a) {
 function to_list(a) {
   var _i = a.length - 1;
   var _res = /* [] */0;
-  while(/* true */1) {
+  while(true) {
     var res = _res;
     var i = _i;
     if (i < 0) {
@@ -148,7 +148,7 @@ function to_list(a) {
 }
 
 function list_length(_accu, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -166,7 +166,7 @@ function of_list(l) {
     var a = Caml_array.caml_make_vect(list_length(0, l), l[1]);
     var _i = 1;
     var _param = l[2];
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       var i = _i;
       if (param) {
@@ -242,7 +242,7 @@ function sort(cmp, a) {
       var l$1 = l;
       var _i = i;
       var e$1 = e;
-      while(/* true */1) {
+      while(true) {
         var i$1 = _i;
         var j = maxson(l$1, i$1);
         if (cmp(a[j], e$1) > 0) {
@@ -269,7 +269,7 @@ function sort(cmp, a) {
     try {
       var l$1 = l;
       var _i = i;
-      while(/* true */1) {
+      while(true) {
         var i$1 = _i;
         var j = maxson(l$1, i$1);
         a[i$1] = a[j];
@@ -286,7 +286,7 @@ function sort(cmp, a) {
     }
   };
   var trickleup = function (_i, e) {
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       var father = (i - 1) / 3 | 0;
       if (i === father) {
@@ -348,7 +348,7 @@ function stable_sort(cmp, a) {
     var _i2 = src2ofs;
     var _s2 = src2[src2ofs];
     var _d = dstofs;
-    while(/* true */1) {
+    while(true) {
       var d = _d;
       var s2 = _s2;
       var i2 = _i2;

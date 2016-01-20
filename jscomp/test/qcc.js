@@ -82,7 +82,7 @@ var syms = [
 ];
 
 function find(s, _n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n >= syms[1]) {
       ++ syms[1];
@@ -184,7 +184,7 @@ function isid(param) {
 }
 
 function skip(_param) {
-  while(/* true */1) {
+  while(true) {
     var ch = getch(/* () */0);
     var exit = 0;
     if (ch >= 14) {
@@ -195,7 +195,7 @@ function skip(_param) {
         else {
           if (peekch(/* () */0) === /* "*" */42) {
             var _param$1 = getch(/* () */0);
-            while(/* true */1) {
+            while(true) {
               var match = getch(/* () */0);
               if (match !== 42) {
                 _param$1 = /* () */0;
@@ -270,7 +270,7 @@ function next() {
         }
         else {
           var _n = c - 48;
-          while(/* true */1) {
+          while(true) {
             var n = _n;
             var match$1 = peekch(/* () */0);
             if (9 < (-48 + match$1 >>> 0)) {
@@ -307,7 +307,7 @@ function next() {
     else {
       var b = gpos[1];
       var _e = gpos[1];
-      while(/* true */1) {
+      while(true) {
         var e = _e;
         var match$2 = peekch(/* () */0);
         if (match$2 !== 34) {
@@ -329,7 +329,7 @@ function next() {
       if (isid(c)) {
         var _n$1 = 0;
         var _ch = c;
-        while(/* true */1) {
+        while(true) {
           var ch$1 = _ch;
           var n$1 = _n$1;
           s[n$1] = ch$1;
@@ -388,7 +388,7 @@ function next() {
             ]
           ]
         ];
-        while(/* true */1) {
+        while(true) {
           var param = _param;
           if (param) {
             var lop = param[1];
@@ -1102,7 +1102,7 @@ function binary(stk, lvl) {
       }
     };
     var foldtst = function (_loc) {
-      while(/* true */1) {
+      while(true) {
         var loc = _loc;
         var t = next$1(/* () */0);
         if (t[0]) {
@@ -1125,7 +1125,7 @@ function binary(stk, lvl) {
     binary(stk, lvl - 1);
     if (lvl < 8) {
       var _param = /* () */0;
-      while(/* true */1) {
+      while(true) {
         var t = next$1(/* () */0);
         if (t[0]) {
           return unnext(t);
@@ -1319,7 +1319,7 @@ function postfix(stk) {
     switch (op) {
       case "(" : 
           var emitargs = function (_l, _rl) {
-            while(/* true */1) {
+            while(true) {
               var rl = _rl;
               var l = _l;
               if (nextis([
@@ -1457,7 +1457,7 @@ function postfix(stk) {
 function expr(stk) {
   binary(stk, 10);
   var _param = /* () */0;
-  while(/* true */1) {
+  while(true) {
     var t = next$1(/* () */0);
     if (t[0]) {
       return unnext(t);
@@ -1485,7 +1485,7 @@ function expr(stk) {
 }
 
 function decl(g, _n, _stk) {
-  while(/* true */1) {
+  while(true) {
     var stk = _stk;
     var n = _n;
     var t = next$1(/* () */0);
@@ -1493,7 +1493,7 @@ function decl(g, _n, _stk) {
       var top = stk ? stk[1][2] : 0;
       var vars = (function(top){
       return function (_n, _stk) {
-        while(/* true */1) {
+        while(true) {
           var stk = _stk;
           var n = _n;
           while(nextis([
@@ -1810,7 +1810,7 @@ function block(brk, stk) {
 }
 
 function top(_param) {
-  while(/* true */1) {
+  while(true) {
     if (!nextis([
             /* Op */0,
             "EOF!"
@@ -1833,7 +1833,7 @@ function top(_param) {
             opos[1]
           ];
           var emitargs = function (_regs, _n, _stk) {
-            while(/* true */1) {
+            while(true) {
               var stk = _stk;
               var n = _n;
               var regs = _regs;
@@ -2113,7 +2113,7 @@ function elfgen(outf) {
   ];
   itr(function (_, _$1, l) {
         var genrel = function (_l) {
-          while(/* true */1) {
+          while(true) {
             var l = _l;
             if (l !== 0) {
               le(64, va(l));
@@ -2352,7 +2352,7 @@ function main() {
         return Pervasives.print_bytes(Bytes.sub(obuf, 0, opos[1]));
     case "-lex" : 
         var _param = /* () */0;
-        while(/* true */1) {
+        while(true) {
           var tok = next$1(/* () */0);
           if (tok[0]) {
             ppsym(tok);

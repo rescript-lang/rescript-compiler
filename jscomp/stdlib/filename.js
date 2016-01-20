@@ -17,7 +17,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
   }
   else {
     var _n = name.length - 1;
-    while(/* true */1) {
+    while(true) {
       var n = _n;
       if (n < 0) {
         return $$String.sub(name, 0, 1);
@@ -29,7 +29,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
         else {
           var _n$1 = n;
           var p = n + 1;
-          while(/* true */1) {
+          while(true) {
             var n$1 = _n$1;
             if (n$1 < 0) {
               return $$String.sub(name, 0, p);
@@ -55,7 +55,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
   }
   else {
     var _n = name.length - 1;
-    while(/* true */1) {
+    while(true) {
       var n = _n;
       if (n < 0) {
         return $$String.sub(name, 0, 1);
@@ -66,7 +66,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
         }
         else {
           var _n$1 = n;
-          while(/* true */1) {
+          while(true) {
             var n$1 = _n$1;
             if (n$1 < 0) {
               return current_dir_name;
@@ -74,7 +74,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
             else {
               if (is_dir_sep(name, n$1)) {
                 var _n$2 = n$1;
-                while(/* true */1) {
+                while(true) {
                   var n$2 = _n$2;
                   if (n$2 < 0) {
                     return $$String.sub(name, 0, 1);
@@ -200,7 +200,7 @@ function chop_suffix(name, suff) {
 
 function chop_extension(name) {
   var _i = name.length - 1;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i < 0 || is_dir_sep$1(name, i)) {
       return Pervasives.invalid_arg("Filename.chop_extension");
@@ -270,7 +270,7 @@ function get_temp_dir_name() {
 function temp_file($staropt$star, prefix, suffix) {
   var temp_dir = $staropt$star ? $staropt$star[1] : current_temp_dir_name[1];
   var _counter = 0;
-  while(/* true */1) {
+  while(true) {
     var counter = _counter;
     var name = temp_file_name(temp_dir, prefix, suffix);
     try {
@@ -313,7 +313,7 @@ function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
     ];
   var temp_dir = $staropt$star$1 ? $staropt$star$1[1] : current_temp_dir_name[1];
   var _counter = 0;
-  while(/* true */1) {
+  while(true) {
     var counter = _counter;
     var name = temp_file_name(temp_dir, prefix, suffix);
     try {

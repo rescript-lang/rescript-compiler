@@ -30,7 +30,7 @@ function fill_buff(b) {
 }
 
 function get_data(count, _d) {
-  while(/* true */1) {
+  while(true) {
     var d = _d;
     if (typeof d === "number") {
       return d;
@@ -152,7 +152,7 @@ function get_data(count, _d) {
 }
 
 function peek(s) {
-  while(/* true */1) {
+  while(true) {
     var match = s[2];
     if (typeof match === "number") {
       return /* None */0;
@@ -249,7 +249,7 @@ function peek(s) {
 }
 
 function junk(s) {
-  while(/* true */1) {
+  while(true) {
     var match = s[2];
     var exit = 0;
     if (typeof match === "number") {
@@ -363,7 +363,7 @@ function empty(s) {
 
 function iter(f, strm) {
   var _param = /* () */0;
-  while(/* true */1) {
+  while(true) {
     var match = peek(strm);
     if (match) {
       junk(strm);

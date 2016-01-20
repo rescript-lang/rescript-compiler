@@ -16,7 +16,7 @@ var node_current = ".";
 function absolute_path(s) {
   var s$1 = Filename.is_relative(s) ? Filename.concat(/* Missing primitve */"caml_sys_getcwd", s) : s;
   var aux = function (_s) {
-    while(/* true */1) {
+    while(true) {
       var s = _s;
       var base = Filename.basename(s);
       var dir = Filename.dirname(s);
@@ -69,7 +69,7 @@ function relative_path(file1, file2) {
   var dir1 = Ext_string.split(/* None */0, Filename.dirname(file1), Filename.dir_sep.charCodeAt(0));
   var dir2 = Ext_string.split(/* None */0, Filename.dirname(file2), Filename.dir_sep.charCodeAt(0));
   var go = function (_dir1, _dir2) {
-    while(/* true */1) {
+    while(true) {
       var dir2 = _dir2;
       var dir1 = _dir1;
       var exit = 0;

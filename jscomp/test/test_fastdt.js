@@ -25,7 +25,7 @@ function mkfp(a, b) {
 function array_elem(a, i) {
   var _N = a.length;
   var lin_search = function (_lo, hi) {
-    while(/* true */1) {
+    while(true) {
       var lo = _lo;
       if (a[lo] === i) {
         return /* true */1;
@@ -48,7 +48,7 @@ function array_elem(a, i) {
   if (_N) {
     var _lo = 0;
     var _hi = _N - 1;
-    while(/* true */1) {
+    while(true) {
       var hi = _hi;
       var lo = _lo;
       if (hi - lo < 5) {
@@ -162,7 +162,7 @@ function $slash$dot$dot(a, b) {
 
 function predict(dt, x) {
   var _param = dt;
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param[0]) {
       var p = param[1];
@@ -177,7 +177,7 @@ function predict(dt, x) {
 
 function compute_tree_error(tree) {
   var cte = function (_acc, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       var acc = _acc;
       if (param[0]) {
@@ -579,7 +579,7 @@ function build_boosted_dt(size, max_depth, leaf_acc, smooth, input_f, _F, _Y, _W
     var pred = Caml_array.caml_make_vect(_N, 0);
     var read = (function(i,pred){
     return function (_n) {
-      while(/* true */1) {
+      while(true) {
         var n = _n;
         var match = mrl(/* () */0);
         if (match) {
@@ -680,7 +680,7 @@ function build_single_dt(max_depth, leaf_acc, smooth, _, _F, _Y, _W) {
 
 function uniq(l) {
   var uniq$prime = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var match = param[2];
@@ -766,7 +766,7 @@ function load_data(minfc, fp) {
   ];
   var fcount = Hashtbl.create(/* None */0, 10);
   var cnt = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var match = mrl(/* () */0);
       if (match) {
         var match$1 = split_white(match[1]);
@@ -813,7 +813,7 @@ function load_data(minfc, fp) {
   var _W = Caml_array.caml_make_vect(_N[1], 1);
   Pervasives.seek_in(h, 0);
   var read = function (_n) {
-    while(/* true */1) {
+    while(true) {
       var n = _n;
       var match = mrl(/* () */0);
       if (match) {
@@ -894,7 +894,7 @@ function predict_file(model, fp) {
     }
   };
   var read = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var match = mrl(/* () */0);
       if (match) {
         var match$1 = split_white(match[1]);
@@ -956,7 +956,7 @@ function print_tree(out, dt) {
         return /* () */0;
       }, dict);
   var print_tree$prime = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param[0]) {
         var p = param[1];

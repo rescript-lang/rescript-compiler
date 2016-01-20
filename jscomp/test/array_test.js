@@ -9,7 +9,7 @@ var List = require("../stdlib/list");
 function is_sorted(x) {
   var len = x.length;
   var _i = 0;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i >= len - 1) {
       return /* true */1;

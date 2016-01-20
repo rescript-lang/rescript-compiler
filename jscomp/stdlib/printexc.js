@@ -184,7 +184,7 @@ function fields(x) {
 
 function to_string(x) {
   var _param = printers[1];
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var match;

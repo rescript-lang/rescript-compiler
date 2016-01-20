@@ -85,7 +85,7 @@ function copy(q) {
           tail$prime
         ]);
     var copy$1 = function (_prev, _cell) {
-      while(/* true */1) {
+      while(true) {
         var cell = _cell;
         var prev = _prev;
         if (cell !== tail) {
@@ -127,7 +127,7 @@ function iter(f, q) {
   if (q[1] > 0) {
     var tail = q[2];
     var _cell = tail[2];
-    while(/* true */1) {
+    while(true) {
       var cell = _cell;
       f(cell[1]);
       if (cell !== tail) {
@@ -148,7 +148,7 @@ function fold(f, accu, q) {
     var tail = q[2];
     var _accu = accu;
     var _cell = tail[2];
-    while(/* true */1) {
+    while(true) {
       var cell = _cell;
       var accu$1 = _accu;
       var accu$2 = f(accu$1, cell[1]);

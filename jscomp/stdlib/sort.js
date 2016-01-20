@@ -95,7 +95,7 @@ function list(order, l) {
     }
   };
   var _llist = initlist(l);
-  while(/* true */1) {
+  while(true) {
     var llist = _llist;
     if (llist) {
       if (llist[2]) {
@@ -120,7 +120,7 @@ function swap(arr, i, j) {
 
 function array(cmp, arr) {
   var qsort = function (_lo, _hi) {
-    while(/* true */1) {
+    while(true) {
       var hi = _hi;
       var lo = _lo;
       if (hi - lo >= 6) {

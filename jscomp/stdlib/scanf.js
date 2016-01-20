@@ -388,11 +388,11 @@ function character_mismatch(c, ci) {
 }
 
 function check_char(ib, _c) {
-  while(/* true */1) {
+  while(true) {
     var c = _c;
     if (c === /* " " */32) {
       var ib$1 = ib;
-      while(/* true */1) {
+      while(true) {
         var c$1 = peek_char(ib$1);
         if (!eof(ib$1)) {
           var switcher = -9 + c$1;
@@ -558,7 +558,7 @@ function token_float(ib) {
 }
 
 function scan_decimal_digits(_width, ib) {
-  while(/* true */1) {
+  while(true) {
     var width = _width;
     if (width) {
       var c = peek_char(ib);
@@ -628,7 +628,7 @@ function scan_digits_plus(basis, digitp, width, ib) {
     var c = checked_peek_char(ib);
     if (digitp(c)) {
       var _width = store_char(width, ib, c);
-      while(/* true */1) {
+      while(true) {
         var width$1 = _width;
         if (width$1) {
           var c$1 = peek_char(ib);
@@ -1011,7 +1011,7 @@ function scan_caml_float(width, precision, ib) {
 
 function scan_string(stp, width, ib) {
   var _width = width;
-  while(/* true */1) {
+  while(true) {
     var width$1 = _width;
     if (width$1) {
       var c = peek_char(ib);
@@ -1338,7 +1338,7 @@ function scan_caml_char(width, ib) {
 
 function scan_caml_string(width, ib) {
   var find_stop = function (_width) {
-    while(/* true */1) {
+    while(true) {
       var width = _width;
       var c = check_next_char_for_string(width, ib);
       if (c !== 34) {
@@ -1367,7 +1367,7 @@ function scan_caml_string(width, ib) {
     };
   };
   var skip_spaces = function (_width) {
-    while(/* true */1) {
+    while(true) {
       var width = _width;
       var match = check_next_char_for_string(width, ib);
       if (match !== 32) {
@@ -1413,7 +1413,7 @@ function scan_bool(ib) {
 
 function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
   var scan_chars = function (_i, stp) {
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       var c = peek_char(ib);
       if (i > 0 && !eof(ib) && CamlinternalFormat.is_in_char_set(char_set, c) && c !== stp) {
@@ -1535,7 +1535,7 @@ function stopper_of_formatting_lit(fmting) {
 }
 
 function take_format_readers(k, _fmt) {
-  while(/* true */1) {
+  while(true) {
     var fmt = _fmt;
     if (typeof fmt === "number") {
       return k(/* Nil */0);
@@ -1643,7 +1643,7 @@ function take_format_readers(k, _fmt) {
 }
 
 function take_fmtty_format_readers(k, _fmtty, fmt) {
-  while(/* true */1) {
+  while(true) {
     var fmtty = _fmtty;
     if (typeof fmtty === "number") {
       return take_format_readers(k, fmt);
@@ -1705,7 +1705,7 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
 }
 
 function make_scanf(ib, _fmt, readers) {
-  while(/* true */1) {
+  while(true) {
     var fmt = _fmt;
     if (typeof fmt === "number") {
       return /* Nil */0;
@@ -2161,7 +2161,7 @@ function kscanf(ib, ef, param) {
     else {
       var _f = f;
       var _args = match[1];
-      while(/* true */1) {
+      while(true) {
         var args = _args;
         var f$1 = _f;
         if (args) {

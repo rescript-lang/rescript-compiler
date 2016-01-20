@@ -14,7 +14,7 @@ function caml_array_sub(x, offset, len) {
 }
 
 function len(_acc, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     var acc = _acc;
     if (l) {
@@ -28,7 +28,7 @@ function len(_acc, _l) {
 }
 
 function fill(arr, _i, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     var i = _i;
     if (l) {

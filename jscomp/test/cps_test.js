@@ -10,7 +10,7 @@ function test() {
     0
   ];
   var f = function (_n, _acc) {
-    while(/* true */1) {
+    while(true) {
       var acc = _acc;
       var n = _n;
       if (n) {

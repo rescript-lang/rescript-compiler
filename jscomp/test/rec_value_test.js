@@ -202,7 +202,7 @@ function even(n) {
 }
 
 function even2(_n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n) {
       _n = n - 1;
@@ -229,7 +229,7 @@ function lazy_v() {
 }
 
 function sum(_acc, _n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     var acc = _acc;
     if (n > 0) {

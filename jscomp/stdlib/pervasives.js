@@ -112,7 +112,7 @@ var string_of_int = Caml_primitive.string_of_int;
 function valid_float_lexem(s) {
   var l = s.length;
   var _i = 0;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i >= l) {
       return $caret(s, ".");
@@ -208,7 +208,7 @@ function open_out_bin(name) {
 
 function flush_all() {
   var _param = Caml_primitive.caml_ml_out_channels_list(/* () */0);
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       try {
@@ -313,7 +313,7 @@ function input(ic, s, ofs, len) {
 }
 
 function unsafe_really_input(ic, s, _ofs, _len) {
-  while(/* true */1) {
+  while(true) {
     var len = _len;
     var ofs = _ofs;
     if (len <= 0) {
@@ -349,7 +349,7 @@ function really_input_string(ic, len) {
 
 function input_line(chan) {
   var build_result = function (buf, _pos, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       var pos = _pos;
       if (param) {
@@ -365,7 +365,7 @@ function input_line(chan) {
     };
   };
   var scan = function (_accu, _len) {
-    while(/* true */1) {
+    while(true) {
       var len = _len;
       var accu = _accu;
       var n = Caml_primitive.caml_ml_input_scan_line(chan);

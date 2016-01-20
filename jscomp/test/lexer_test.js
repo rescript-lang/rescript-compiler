@@ -12,7 +12,7 @@ var Arith_parser = require("./arith_parser");
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);
   var _acc = /* [] */0;
-  while(/* true */1) {
+  while(true) {
     var acc = _acc;
     var v = lex(buf);
     if (v === /* EOF */7) {

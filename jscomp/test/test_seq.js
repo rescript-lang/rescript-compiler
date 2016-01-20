@@ -23,7 +23,7 @@ var Stop = [
 ];
 
 function assoc3(x, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     if (l) {
       var match = l[1];

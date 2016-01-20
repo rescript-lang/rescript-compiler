@@ -136,7 +136,7 @@ function add(x, data, param) {
 }
 
 function cons_enum(_m, _e) {
-  while(/* true */1) {
+  while(true) {
     var e = _e;
     var m = _m;
     if (m) {
@@ -158,7 +158,7 @@ function cons_enum(_m, _e) {
 function compare$1(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
-  while(/* true */1) {
+  while(true) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
@@ -324,7 +324,7 @@ function add$1(x, data, param) {
 }
 
 function find(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = $$String.compare(x, param[2]);

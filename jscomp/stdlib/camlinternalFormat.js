@@ -360,7 +360,7 @@ function bprint_char_set(buf, char_set) {
     }
   };
   var print_out = function (set, _i) {
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i < 256) {
         if (is_in_char_set(set, Pervasives.char_of_int(i))) {
@@ -625,7 +625,7 @@ function bprint_string_literal(buf, str) {
 }
 
 function bprint_fmtty(buf, _fmtty) {
-  while(/* true */1) {
+  while(true) {
     var fmtty = _fmtty;
     if (typeof fmtty === "number") {
       return /* () */0;
@@ -714,7 +714,7 @@ function int_of_custom_arity(param) {
 function bprint_fmt(buf, fmt) {
   var _fmt = fmt;
   var _ign_flag = /* false */0;
-  while(/* true */1) {
+  while(true) {
     var ign_flag = _ign_flag;
     var fmt$1 = _fmt;
     if (typeof fmt$1 === "number") {
@@ -2055,7 +2055,7 @@ function fmtty_of_formatting_gen(formatting_gen) {
 }
 
 function fmtty_of_fmt(_fmtty) {
-  while(/* true */1) {
+  while(true) {
     var fmtty = _fmtty;
     if (typeof fmtty === "number") {
       return /* End_of_fmtty */0;
@@ -3699,7 +3699,7 @@ function convert_float(fconv, prec, x) {
   else {
     var len = str.length;
     var is_valid = function (_i) {
-      while(/* true */1) {
+      while(true) {
         var i = _i;
         if (i === len) {
           return /* false */0;
@@ -3770,7 +3770,7 @@ function string_of_fmtty(fmtty) {
 }
 
 function make_printf(_k, o, _acc, _fmt) {
-  while(/* true */1) {
+  while(true) {
     var fmt = _fmt;
     var acc = _acc;
     var k = _k;
@@ -4460,7 +4460,7 @@ function make_custom(k, o, acc, rest, arity, f) {
 }
 
 function output_acc(o, _acc) {
-  while(/* true */1) {
+  while(true) {
     var acc = _acc;
     var exit = 0;
     if (typeof acc === "number") {
@@ -4518,7 +4518,7 @@ function output_acc(o, _acc) {
 }
 
 function bufput_acc(b, _acc) {
-  while(/* true */1) {
+  while(true) {
     var acc = _acc;
     var exit = 0;
     if (typeof acc === "number") {
@@ -4576,7 +4576,7 @@ function bufput_acc(b, _acc) {
 }
 
 function strput_acc(b, _acc) {
-  while(/* true */1) {
+  while(true) {
     var acc = _acc;
     var exit = 0;
     if (typeof acc === "number") {
@@ -4668,7 +4668,7 @@ function open_box_of_string(str) {
                   ])(str);
     };
     var parse_spaces = function (_i) {
-      while(/* true */1) {
+      while(true) {
         var i = _i;
         if (i === len) {
           return i;
@@ -4690,7 +4690,7 @@ function open_box_of_string(str) {
       };
     };
     var parse_lword = function (_, _j) {
-      while(/* true */1) {
+      while(true) {
         var j = _j;
         if (j === len) {
           return j;
@@ -4707,7 +4707,7 @@ function open_box_of_string(str) {
       };
     };
     var parse_int = function (_, _j) {
-      while(/* true */1) {
+      while(true) {
         var j = _j;
         if (j === len) {
           return j;
@@ -5019,7 +5019,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     var lit_start = beg_ind;
     var _str_ind = beg_ind;
     var end_ind$1 = end_ind;
-    while(/* true */1) {
+    while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind$1) {
         return add_literal(lit_start, str_ind, /* End_of_format */0);
@@ -5115,7 +5115,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return /* () */0;
     };
     var _str_ind = str_ind;
-    while(/* true */1) {
+    while(true) {
       var str_ind$1 = _str_ind;
       if (str_ind$1 === end_ind) {
         unexpected_end_of_format(end_ind);
@@ -7000,7 +7000,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return parse_char_set_after_char(str_ind + 1, end_ind, c);
     };
     var parse_char_set_content = function (_str_ind, end_ind) {
-      while(/* true */1) {
+      while(true) {
         var str_ind = _str_ind;
         if (str_ind === end_ind) {
           unexpected_end_of_format(end_ind);
@@ -7021,7 +7021,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       };
     };
     var parse_char_set_after_char = function (_str_ind, end_ind, _c) {
-      while(/* true */1) {
+      while(true) {
         var c = _c;
         var str_ind = _str_ind;
         if (str_ind === end_ind) {
@@ -7140,7 +7140,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           ];
   };
   var parse_spaces = function (_str_ind, end_ind) {
-    while(/* true */1) {
+    while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
         unexpected_end_of_format(end_ind);
@@ -7154,7 +7154,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     };
   };
   var parse_positive = function (_str_ind, end_ind, _acc) {
-    while(/* true */1) {
+    while(true) {
       var acc = _acc;
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
@@ -7298,7 +7298,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
   };
   var search_subformat_end = function (_str_ind, end_ind, c) {
-    while(/* true */1) {
+    while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
         failwith_message([
@@ -7505,7 +7505,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     
   };
   var compute_int_conv = function (pct_ind, str_ind, _plus, _sharp, _space, symb) {
-    while(/* true */1) {
+    while(true) {
       var space = _space;
       var sharp = _sharp;
       var plus = _plus;
@@ -7751,7 +7751,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     };
   };
   var compute_float_conv = function (pct_ind, str_ind, _plus, _space, symb) {
-    while(/* true */1) {
+    while(true) {
       var space = _space;
       var plus = _plus;
       if (plus !== 0) {

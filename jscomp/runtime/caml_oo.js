@@ -13,7 +13,7 @@ function caml_get_public_method(obj, tag, cacheid) {
   }
   else {
     var aux = function (_i) {
-      while(/* true */1) {
+      while(true) {
         var i = _i;
         if (i < 3) {
           throw [

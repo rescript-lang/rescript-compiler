@@ -112,7 +112,7 @@ function trim(s) {
 
 function escaped(s) {
   var needs_escape = function (_i) {
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i >= s.length) {
         return /* false */0;

@@ -4,7 +4,7 @@ var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_array = require("../runtime/caml_array");
 
 function $$eval(_bdd, vars) {
-  while(/* true */1) {
+  while(true) {
     var bdd = _bdd;
     if (typeof bdd === "number") {
       if (bdd !== 0) {
@@ -65,7 +65,7 @@ function resize(newSize) {
   var newSz_1 = newSize - 1;
   var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
-    while(/* true */1) {
+    while(true) {
       var bucket = _bucket;
       if (bucket) {
         var n = bucket[1];
@@ -143,7 +143,7 @@ function mkNode(low, v, high) {
     var ind = hashVal(idl, idh, v) & sz_1[1];
     var bucket = htab[1][ind];
     var _b = bucket;
-    while(/* true */1) {
+    while(true) {
       var b = _b;
       if (b) {
         var n = b[1];

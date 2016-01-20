@@ -6,7 +6,7 @@ var $$Array = require("../stdlib/array");
 
 function f() {
   var f$1 = function (_acc, _n) {
-    while(/* true */1) {
+    while(true) {
       var n = _n;
       var acc = _acc;
       if (n > 0) {

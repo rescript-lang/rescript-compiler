@@ -6,7 +6,7 @@ function test4(n) {
 }
 
 function test3(_n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n) {
       _n = n - 1;
@@ -18,7 +18,7 @@ function test3(_n) {
 }
 
 function test2(_n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n) {
       _n = n - 1;
@@ -30,14 +30,14 @@ function test2(_n) {
 }
 
 function test0(_n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n) {
       _n = n - 1;
     }
     else {
       var _n$1 = n;
-      while(/* true */1) {
+      while(true) {
         var n$1 = _n$1;
         if (n$1) {
           _n$1 = n$1 - 1;

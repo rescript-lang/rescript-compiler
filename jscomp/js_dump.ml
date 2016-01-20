@@ -983,19 +983,30 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
        block  cxt f s2 )
 
   | While (label, e, s, _env) ->  (*  FIXME: print scope as well *)
-    (match label with 
-     | Some i ->
-       P.string f i ; 
-       P.string f L.colon;
-       P.newline f ;
-     | None -> ());
-    P.string f "while";
-    let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e in
-    P.space f ; 
-    let cxt = block cxt f s in
-    semi f;
-    cxt
-
+      begin 
+        (match label with 
+        | Some i ->
+            P.string f i ; 
+            P.string f L.colon;
+            P.newline f ;
+        | None -> ());
+        let cxt = 
+          match e.expression_desc with
+          | Number (Int {i = 1}) ->
+              P.string f "while";
+              P.string f "(true)"; 
+              P.space f ;
+              cxt 
+          | _ -> 
+              P.string f "while";
+              let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e in
+              P.space f ; 
+              cxt 
+        in
+        let cxt = block cxt f s in
+        semi f;
+        cxt
+      end
   | ForRange (for_ident_expression, finish, id, direction, s, env) -> 
     let action cxt  = 
       P.vgroup f 0 @@ fun _ -> 
