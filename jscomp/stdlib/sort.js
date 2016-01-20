@@ -94,23 +94,21 @@ function list(order, l) {
       return x;
     }
   };
-  var mergeall = function (_llist) {
-    while(/* true */1) {
-      var llist = _llist;
-      if (llist) {
-        if (llist[2]) {
-          _llist = merge2(llist);
-        }
-        else {
-          return llist[1];
-        }
+  var _llist = initlist(l);
+  while(/* true */1) {
+    var llist = _llist;
+    if (llist) {
+      if (llist[2]) {
+        _llist = merge2(llist);
       }
       else {
-        return /* [] */0;
+        return llist[1];
       }
-    };
+    }
+    else {
+      return /* [] */0;
+    }
   };
-  return mergeall(initlist(l));
 }
 
 function swap(arr, i, j) {

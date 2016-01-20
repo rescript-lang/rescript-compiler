@@ -175,49 +175,48 @@ function rev_map_append(f, _l1, _l2) {
 }
 
 function flat_map2(f, lx, ly) {
-  var aux = function (_acc, _lx, _ly) {
-    while(/* true */1) {
-      var ly = _ly;
-      var lx = _lx;
-      var acc = _acc;
-      if (lx) {
-        if (ly) {
-          _ly = ly[2];
-          _lx = lx[2];
-          _acc = List.rev_append(f(lx[1], ly[1]), acc);
-        }
-        else {
-          return Pervasives.invalid_arg("Ext_list.flat_map2");
-        }
+  var _acc = /* [] */0;
+  var _lx = lx;
+  var _ly = ly;
+  while(/* true */1) {
+    var ly$1 = _ly;
+    var lx$1 = _lx;
+    var acc = _acc;
+    if (lx$1) {
+      if (ly$1) {
+        _ly = ly$1[2];
+        _lx = lx$1[2];
+        _acc = List.rev_append(f(lx$1[1], ly$1[1]), acc);
       }
       else {
-        if (ly) {
-          return Pervasives.invalid_arg("Ext_list.flat_map2");
-        }
-        else {
-          return List.rev(acc);
-        }
+        return Pervasives.invalid_arg("Ext_list.flat_map2");
       }
-    };
-  };
-  return aux(/* [] */0, lx, ly);
-}
-
-function flat_map(f, lx) {
-  var aux = function (_acc, _lx) {
-    while(/* true */1) {
-      var lx = _lx;
-      var acc = _acc;
-      if (lx) {
-        _lx = lx[2];
-        _acc = List.rev_append(f(lx[1]), acc);
+    }
+    else {
+      if (ly$1) {
+        return Pervasives.invalid_arg("Ext_list.flat_map2");
       }
       else {
         return List.rev(acc);
       }
-    };
+    }
   };
-  return aux(/* [] */0, lx);
+}
+
+function flat_map(f, lx) {
+  var _acc = /* [] */0;
+  var _lx = lx;
+  while(/* true */1) {
+    var lx$1 = _lx;
+    var acc = _acc;
+    if (lx$1) {
+      _lx = lx$1[2];
+      _acc = List.rev_append(f(lx$1[1]), acc);
+    }
+    else {
+      return List.rev(acc);
+    }
+  };
 }
 
 function map2_last(f, l1, l2) {
@@ -324,30 +323,29 @@ function take(n, l) {
 }
 
 function exclude_tail(x) {
-  var aux = function (_acc, _x) {
-    while(/* true */1) {
-      var x = _x;
-      var acc = _acc;
-      if (x) {
-        var ys = x[2];
-        if (ys) {
-          _x = ys;
-          _acc = [
-            /* :: */0,
-            x[1],
-            acc
-          ];
-        }
-        else {
-          return List.rev(acc);
-        }
+  var _acc = /* [] */0;
+  var _x = x;
+  while(/* true */1) {
+    var x$1 = _x;
+    var acc = _acc;
+    if (x$1) {
+      var ys = x$1[2];
+      if (ys) {
+        _x = ys;
+        _acc = [
+          /* :: */0,
+          x$1[1],
+          acc
+        ];
       }
       else {
-        return Pervasives.invalid_arg("Ext_list.exclude_tail");
+        return List.rev(acc);
       }
-    };
+    }
+    else {
+      return Pervasives.invalid_arg("Ext_list.exclude_tail");
+    }
   };
-  return aux(/* [] */0, x);
 }
 
 function group(cmp, lst) {
@@ -469,24 +467,23 @@ function fold(f, l, init) {
 }
 
 function rev_map_acc(acc, f, l) {
-  var rmap_f = function (_accu, _param) {
-    while(/* true */1) {
-      var param = _param;
-      var accu = _accu;
-      if (param) {
-        _param = param[2];
-        _accu = [
-          /* :: */0,
-          f(param[1]),
-          accu
-        ];
-      }
-      else {
-        return accu;
-      }
-    };
+  var _accu = acc;
+  var _param = l;
+  while(/* true */1) {
+    var param = _param;
+    var accu = _accu;
+    if (param) {
+      _param = param[2];
+      _accu = [
+        /* :: */0,
+        f(param[1]),
+        accu
+      ];
+    }
+    else {
+      return accu;
+    }
   };
-  return rmap_f(acc, l);
 }
 
 exports.filter_map = filter_map;

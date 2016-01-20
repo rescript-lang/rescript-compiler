@@ -8,23 +8,21 @@ var List = require("../stdlib/list");
 
 function is_sorted(x) {
   var len = x.length;
-  var aux = function (_i) {
-    while(/* true */1) {
-      var i = _i;
-      if (i >= len - 1) {
-        return /* true */1;
+  var _i = 0;
+  while(/* true */1) {
+    var i = _i;
+    if (i >= len - 1) {
+      return /* true */1;
+    }
+    else {
+      if (Caml_primitive.caml_lessthan(x[i], x[i + 1])) {
+        _i = i + 1;
       }
       else {
-        if (Caml_primitive.caml_lessthan(x[i], x[i + 1])) {
-          _i = i + 1;
-        }
-        else {
-          return /* false */0;
-        }
+        return /* false */0;
       }
-    };
+    }
   };
-  return aux(0);
 }
 
 var array_suites_001 = [

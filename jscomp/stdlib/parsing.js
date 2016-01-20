@@ -73,7 +73,19 @@ var current_lookahead_fun = [
 ];
 
 function yyparse(tables, start, lexer, lexbuf) {
-  var loop = function (_cmd, _arg) {
+  var init_asp = env[11];
+  var init_sp = env[14];
+  var init_stackbase = env[6];
+  var init_state = env[15];
+  var init_curr_char = env[7];
+  var init_lval = env[8];
+  var init_errflag = env[16];
+  env[6] = env[14] + 1;
+  env[7] = start;
+  env[10] = lexbuf[12];
+  try {
+    var _cmd = /* Start */0;
+    var _arg = /* () */0;
     while(/* true */1) {
       var arg = _arg;
       var cmd = _cmd;
@@ -130,21 +142,8 @@ function yyparse(tables, start, lexer, lexbuf) {
         
       }
     };
-  };
-  var init_asp = env[11];
-  var init_sp = env[14];
-  var init_stackbase = env[6];
-  var init_state = env[15];
-  var init_curr_char = env[7];
-  var init_lval = env[8];
-  var init_errflag = env[16];
-  env[6] = env[14] + 1;
-  env[7] = start;
-  env[10] = lexbuf[12];
-  try {
-    return loop(/* Start */0, /* () */0);
   }
-  catch (exn){
+  catch (exn$1){
     var curr_char = env[7];
     env[11] = init_asp;
     env[14] = init_sp;
@@ -153,8 +152,8 @@ function yyparse(tables, start, lexer, lexbuf) {
     env[7] = init_curr_char;
     env[8] = init_lval;
     env[16] = init_errflag;
-    if (exn[1] === YYexit) {
-      return exn[2];
+    if (exn$1[1] === YYexit) {
+      return exn$1[2];
     }
     else {
       current_lookahead_fun[1] = function (tok) {
@@ -165,7 +164,7 @@ function yyparse(tables, start, lexer, lexbuf) {
           return +(tables[2][tok] === curr_char);
         }
       };
-      throw exn;
+      throw exn$1;
     }
   }
 }
@@ -175,25 +174,23 @@ function peek_val(env, n) {
 }
 
 function symbol_start_pos() {
-  var loop = function (_i) {
-    while(/* true */1) {
-      var i = _i;
-      if (i <= 0) {
-        return env[4][env[11]];
+  var _i = env[12];
+  while(/* true */1) {
+    var i = _i;
+    if (i <= 0) {
+      return env[4][env[11]];
+    }
+    else {
+      var st = env[3][env[11] - i + 1];
+      var en = env[4][env[11] - i + 1];
+      if (Caml_primitive.caml_notequal(st, en)) {
+        return st;
       }
       else {
-        var st = env[3][env[11] - i + 1];
-        var en = env[4][env[11] - i + 1];
-        if (Caml_primitive.caml_notequal(st, en)) {
-          return st;
-        }
-        else {
-          _i = i - 1;
-        }
+        _i = i - 1;
       }
-    };
+    }
   };
-  return loop(env[12]);
 }
 
 function symbol_end_pos() {

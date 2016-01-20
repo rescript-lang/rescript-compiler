@@ -119,7 +119,10 @@ function bytes_of_string(s) {
   return res;
 }
 
-function string_of_large_bytes(bytes, i, len) {
+function bytes_to_string(a) {
+  var bytes = a;
+  var i = 0;
+  var len = a.length;
   var s = "";
   var s_len = len;
   var seg = 1024;
@@ -138,10 +141,6 @@ function string_of_large_bytes(bytes, i, len) {
     };
     return s;
   }
-}
-
-function bytes_to_string(a) {
-  return string_of_large_bytes(a, 0, a.length);
 }
 
 function caml_string_of_char_array(chars) {

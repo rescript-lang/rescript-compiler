@@ -76,22 +76,22 @@ function f(x) {
 }
 
 function fib3(n) {
-  var fib_help = function (_a, _b, _n) {
-    while(/* true */1) {
-      var n = _n;
-      var b = _b;
-      var a = _a;
-      if (n > 0) {
-        _n = n - 1;
-        _b = a + b;
-        _a = b;
-      }
-      else {
-        return a;
-      }
-    };
+  var _a = 0;
+  var _b = 1;
+  var _n = n;
+  while(/* true */1) {
+    var n$1 = _n;
+    var b = _b;
+    var a = _a;
+    if (n$1 > 0) {
+      _n = n$1 - 1;
+      _b = a + b;
+      _a = b;
+    }
+    else {
+      return a;
+    }
   };
-  return fib_help(0, 1, n);
 }
 
 var b = fib;

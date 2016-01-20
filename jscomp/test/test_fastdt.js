@@ -45,7 +45,9 @@ function array_elem(a, i) {
       }
     };
   };
-  var bin_search = function (_lo, _hi) {
+  if (_N) {
+    var _lo = 0;
+    var _hi = _N - 1;
     while(/* true */1) {
       var hi = _hi;
       var lo = _lo;
@@ -73,9 +75,6 @@ function array_elem(a, i) {
         }
       }
     };
-  };
-  if (_N) {
-    return bin_search(0, _N - 1);
   }
   else {
     return /* false */0;
@@ -162,20 +161,18 @@ function $slash$dot$dot(a, b) {
 }
 
 function predict(dt, x) {
-  var predict$prime = function (_param) {
-    while(/* true */1) {
-      var param = _param;
-      if (param[0]) {
-        var p = param[1];
-        return p[0] / (p[0] + p[1]);
-      }
-      else {
-        var n = param[1];
-        _param = array_elem(x, n[1]) ? n[2] : n[3];
-      }
-    };
+  var _param = dt;
+  while(/* true */1) {
+    var param = _param;
+    if (param[0]) {
+      var p = param[1];
+      return p[0] / (p[0] + p[1]);
+    }
+    else {
+      var n = param[1];
+      _param = array_elem(x, n[1]) ? n[2] : n[3];
+    }
   };
-  return predict$prime(dt);
 }
 
 function compute_tree_error(tree) {
@@ -768,21 +765,6 @@ function load_data(minfc, fp) {
     0
   ];
   var fcount = Hashtbl.create(/* None */0, 10);
-  var add_count = function (f) {
-    var $js;
-    try {
-      $js = Hashtbl.find(fcount, f);
-    }
-    catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
-        $js = 0;
-      }
-      else {
-        throw exn;
-      }
-    }
-    return Hashtbl.replace(fcount, f, 1 + $js);
-  };
   var cnt = function (_param) {
     while(/* true */1) {
       var match = mrl(/* () */0);
@@ -790,7 +772,20 @@ function load_data(minfc, fp) {
         var match$1 = split_white(match[1]);
         if (match$1) {
           List.iter(function (z) {
-                return add_count(get_fid(z));
+                var f = get_fid(z);
+                var $js;
+                try {
+                  $js = Hashtbl.find(fcount, f);
+                }
+                catch (exn){
+                  if (exn === Caml_exceptions.Not_found) {
+                    $js = 0;
+                  }
+                  else {
+                    throw exn;
+                  }
+                }
+                return Hashtbl.replace(fcount, f, 1 + $js);
               }, match$1[2]);
           ++ _N[1];
           _param = /* () */0;

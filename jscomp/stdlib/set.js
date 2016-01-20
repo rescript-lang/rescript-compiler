@@ -207,19 +207,6 @@ function Make(funarg) {
       return Pervasives.invalid_arg("Set.remove_min_elt");
     }
   };
-  var merge = function (t1, t2) {
-    if (t1) {
-      if (t2) {
-        return bal(t1, min_elt(t2), remove_min_elt(t2));
-      }
-      else {
-        return t1;
-      }
-    }
-    else {
-      return t2;
-    }
-  };
   var concat = function (t1, t2) {
     if (t1) {
       if (t2) {
@@ -310,7 +297,19 @@ function Make(funarg) {
         }
       }
       else {
-        return merge(l, r);
+        var t1 = l;
+        var t2 = r;
+        if (t1) {
+          if (t2) {
+            return bal(t1, min_elt(t2), remove_min_elt(t2));
+          }
+          else {
+            return t1;
+          }
+        }
+        else {
+          return t2;
+        }
       }
     }
     else {
@@ -415,7 +414,9 @@ function Make(funarg) {
       }
     };
   };
-  var compare_aux = function (_e1, _e2) {
+  var compare = function (s1, s2) {
+    var _e1 = cons_enum(s1, /* End */0);
+    var _e2 = cons_enum(s2, /* End */0);
     while(/* true */1) {
       var e2 = _e2;
       var e1 = _e1;
@@ -443,9 +444,6 @@ function Make(funarg) {
         }
       }
     };
-  };
-  var compare = function (s1, s2) {
-    return compare_aux(cons_enum(s1, /* End */0), cons_enum(s2, /* End */0));
   };
   var equal = function (s1, s2) {
     return +(compare(s1, s2) === 0);
@@ -629,142 +627,6 @@ function Make(funarg) {
       }
     };
   };
-  var of_sorted_list = function (l) {
-    var sub = function (n, l) {
-      var exit = 0;
-      if (3 < (n >>> 0)) {
-        exit = 1;
-      }
-      else {
-        switch (n) {
-          case 0 : 
-              return [
-                      /* tuple */0,
-                      /* Empty */0,
-                      l
-                    ];
-          case 1 : 
-              if (l) {
-                return [
-                        /* tuple */0,
-                        [
-                          /* Node */0,
-                          /* Empty */0,
-                          l[1],
-                          /* Empty */0,
-                          1
-                        ],
-                        l[2]
-                      ];
-              }
-              else {
-                exit = 1;
-              }
-              break;
-          case 2 : 
-              if (l) {
-                var match = l[2];
-                if (match) {
-                  return [
-                          /* tuple */0,
-                          [
-                            /* Node */0,
-                            [
-                              /* Node */0,
-                              /* Empty */0,
-                              l[1],
-                              /* Empty */0,
-                              1
-                            ],
-                            match[1],
-                            /* Empty */0,
-                            2
-                          ],
-                          match[2]
-                        ];
-                }
-                else {
-                  exit = 1;
-                }
-              }
-              else {
-                exit = 1;
-              }
-              break;
-          case 3 : 
-              if (l) {
-                var match$1 = l[2];
-                if (match$1) {
-                  var match$2 = match$1[2];
-                  if (match$2) {
-                    return [
-                            /* tuple */0,
-                            [
-                              /* Node */0,
-                              [
-                                /* Node */0,
-                                /* Empty */0,
-                                l[1],
-                                /* Empty */0,
-                                1
-                              ],
-                              match$1[1],
-                              [
-                                /* Node */0,
-                                /* Empty */0,
-                                match$2[1],
-                                /* Empty */0,
-                                1
-                              ],
-                              2
-                            ],
-                            match$2[2]
-                          ];
-                  }
-                  else {
-                    exit = 1;
-                  }
-                }
-                else {
-                  exit = 1;
-                }
-              }
-              else {
-                exit = 1;
-              }
-              break;
-          
-        }
-      }
-      if (exit === 1) {
-        var nl = n / 2 | 0;
-        var match$3 = sub(nl, l);
-        var l$1 = match$3[2];
-        if (l$1) {
-          var match$4 = sub(n - nl - 1, l$1[2]);
-          return [
-                  /* tuple */0,
-                  create(match$3[1], l$1[1], match$4[1]),
-                  match$4[2]
-                ];
-        }
-        else {
-          throw [
-                0,
-                Caml_exceptions.Assert_failure,
-                [
-                  0,
-                  "set.ml",
-                  372,
-                  18
-                ]
-              ];
-        }
-      }
-      
-    };
-    return sub(List.length(l), l)[1];
-  };
   var of_list = function (l) {
     if (l) {
       var match = l[2];
@@ -780,7 +642,141 @@ function Make(funarg) {
             var x3 = match$2[1];
             if (match$3) {
               if (match$3[2]) {
-                return of_sorted_list(List.sort_uniq(funarg[1], l));
+                var l$1 = List.sort_uniq(funarg[1], l);
+                var sub = function (n, l) {
+                  var exit = 0;
+                  if (3 < (n >>> 0)) {
+                    exit = 1;
+                  }
+                  else {
+                    switch (n) {
+                      case 0 : 
+                          return [
+                                  /* tuple */0,
+                                  /* Empty */0,
+                                  l
+                                ];
+                      case 1 : 
+                          if (l) {
+                            return [
+                                    /* tuple */0,
+                                    [
+                                      /* Node */0,
+                                      /* Empty */0,
+                                      l[1],
+                                      /* Empty */0,
+                                      1
+                                    ],
+                                    l[2]
+                                  ];
+                          }
+                          else {
+                            exit = 1;
+                          }
+                          break;
+                      case 2 : 
+                          if (l) {
+                            var match = l[2];
+                            if (match) {
+                              return [
+                                      /* tuple */0,
+                                      [
+                                        /* Node */0,
+                                        [
+                                          /* Node */0,
+                                          /* Empty */0,
+                                          l[1],
+                                          /* Empty */0,
+                                          1
+                                        ],
+                                        match[1],
+                                        /* Empty */0,
+                                        2
+                                      ],
+                                      match[2]
+                                    ];
+                            }
+                            else {
+                              exit = 1;
+                            }
+                          }
+                          else {
+                            exit = 1;
+                          }
+                          break;
+                      case 3 : 
+                          if (l) {
+                            var match$1 = l[2];
+                            if (match$1) {
+                              var match$2 = match$1[2];
+                              if (match$2) {
+                                return [
+                                        /* tuple */0,
+                                        [
+                                          /* Node */0,
+                                          [
+                                            /* Node */0,
+                                            /* Empty */0,
+                                            l[1],
+                                            /* Empty */0,
+                                            1
+                                          ],
+                                          match$1[1],
+                                          [
+                                            /* Node */0,
+                                            /* Empty */0,
+                                            match$2[1],
+                                            /* Empty */0,
+                                            1
+                                          ],
+                                          2
+                                        ],
+                                        match$2[2]
+                                      ];
+                              }
+                              else {
+                                exit = 1;
+                              }
+                            }
+                            else {
+                              exit = 1;
+                            }
+                          }
+                          else {
+                            exit = 1;
+                          }
+                          break;
+                      
+                    }
+                  }
+                  if (exit === 1) {
+                    var nl = n / 2 | 0;
+                    var match$3 = sub(nl, l);
+                    var l$1 = match$3[2];
+                    if (l$1) {
+                      var match$4 = sub(n - nl - 1, l$1[2]);
+                      return [
+                              /* tuple */0,
+                              create(match$3[1], l$1[1], match$4[1]),
+                              match$4[2]
+                            ];
+                    }
+                    else {
+                      throw [
+                            0,
+                            Caml_exceptions.Assert_failure,
+                            [
+                              0,
+                              "set.ml",
+                              372,
+                              18
+                            ]
+                          ];
+                    }
+                  }
+                  
+                };
+                return sub(List.length(l$1), l$1)[1];
               }
               else {
                 return add(match$3[1], add(x3, add(x2, add(x1, singleton(x0)))));

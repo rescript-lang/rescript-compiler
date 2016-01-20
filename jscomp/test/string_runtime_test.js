@@ -41,19 +41,17 @@ var suites_002 = [
       /* tuple */0,
       "caml_string_of_bytes",
       function () {
-        var f = function (len) {
-          var b = new Array(1000);
-          Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
-          return [
-                  /* tuple */0,
-                  Caml_string.bytes_to_string(b),
-                  $$String.init(len, function () {
-                        return /* "c" */99;
-                      })
-                ];
-        };
         var match = List.split(List.map(function (x) {
-                  return f(x);
+                  var len = x;
+                  var b = new Array(1000);
+                  Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
+                  return [
+                          /* tuple */0,
+                          Caml_string.bytes_to_string(b),
+                          $$String.init(len, function () {
+                                return /* "c" */99;
+                              })
+                        ];
                 }, [
                   /* :: */0,
                   1000,

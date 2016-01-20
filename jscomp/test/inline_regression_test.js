@@ -3,7 +3,11 @@
 var $$String = require("../stdlib/string");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
-  var find_end = function (_n) {
+  if (name === "") {
+    return current_dir_name;
+  }
+  else {
+    var _n = name.length - 1;
     while(/* true */1) {
       var n = _n;
       if (n < 0) {
@@ -14,32 +18,25 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
           _n = n - 1;
         }
         else {
-          return find_beg(n, n + 1);
+          var _n$1 = n;
+          var p = n + 1;
+          while(/* true */1) {
+            var n$1 = _n$1;
+            if (n$1 < 0) {
+              return $$String.sub(name, 0, p);
+            }
+            else {
+              if (is_dir_sep(name, n$1)) {
+                return $$String.sub(name, n$1 + 1, p - n$1 - 1);
+              }
+              else {
+                _n$1 = n$1 - 1;
+              }
+            }
+          };
         }
       }
     };
-  };
-  var find_beg = function (_n, p) {
-    while(/* true */1) {
-      var n = _n;
-      if (n < 0) {
-        return $$String.sub(name, 0, p);
-      }
-      else {
-        if (is_dir_sep(name, n)) {
-          return $$String.sub(name, n + 1, p - n - 1);
-        }
-        else {
-          _n = n - 1;
-        }
-      }
-    };
-  };
-  if (name === "") {
-    return current_dir_name;
-  }
-  else {
-    return find_end(name.length - 1);
   }
 }
 

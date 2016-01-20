@@ -11,22 +11,22 @@ function fib(n) {
 }
 
 function fib2(n) {
-  var aux = function (_a, _b, _i) {
-    while(/* true */1) {
-      var i = _i;
-      var b = _b;
-      var a = _a;
-      if (n === i) {
-        return a;
-      }
-      else {
-        _i = i + 1;
-        _b = a + b;
-        _a = b;
-      }
-    };
+  var _a = 1;
+  var _b = 1;
+  var _i = 0;
+  while(/* true */1) {
+    var i = _i;
+    var b = _b;
+    var a = _a;
+    if (n === i) {
+      return a;
+    }
+    else {
+      _i = i + 1;
+      _b = a + b;
+      _a = b;
+    }
   };
-  return aux(1, 1, 0);
 }
 
 function fib3(n) {

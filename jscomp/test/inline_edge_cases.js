@@ -29,18 +29,6 @@ function test2(_n) {
   };
 }
 
-function test1(_n) {
-  while(/* true */1) {
-    var n = _n;
-    if (n) {
-      _n = n - 1;
-    }
-    else {
-      return test2(n) + 2;
-    }
-  };
-}
-
 function test0(_n) {
   while(/* true */1) {
     var n = _n;
@@ -48,7 +36,16 @@ function test0(_n) {
       _n = n - 1;
     }
     else {
-      return test1(n);
+      var _n$1 = n;
+      while(/* true */1) {
+        var n$1 = _n$1;
+        if (n$1) {
+          _n$1 = n$1 - 1;
+        }
+        else {
+          return test2(n$1) + 2;
+        }
+      };
     }
   };
 }

@@ -38,42 +38,6 @@ function new_engine(tbl, state, buf) {
   return result;
 }
 
-function lex_refill(read_fun, aux_buffer, lexbuf) {
-  var read = read_fun(aux_buffer, aux_buffer.length);
-  var n = read > 0 ? read : (lexbuf[9] = /* true */1, 0);
-  if (lexbuf[3] + n > lexbuf[2].length) {
-    if (lexbuf[3] - lexbuf[5] + n <= lexbuf[2].length) {
-      Bytes.blit(lexbuf[2], lexbuf[5], lexbuf[2], 0, lexbuf[3] - lexbuf[5]);
-    }
-    else {
-      var newlen = Pervasives.min(2 * lexbuf[2].length, Sys.max_string_length);
-      if (lexbuf[3] - lexbuf[5] + n > newlen) {
-        Pervasives.failwith("Lexing.lex_refill: cannot grow buffer");
-      }
-      var newbuf = Caml_string.caml_create_string(newlen);
-      Bytes.blit(lexbuf[2], lexbuf[5], newbuf, 0, lexbuf[3] - lexbuf[5]);
-      lexbuf[2] = newbuf;
-    }
-    var s = lexbuf[5];
-    lexbuf[4] += s;
-    lexbuf[6] -= s;
-    lexbuf[5] = 0;
-    lexbuf[7] -= s;
-    lexbuf[3] -= s;
-    var t = lexbuf[10];
-    for(var i = 0 ,i_finish = t.length - 1; i<= i_finish; ++i){
-      var v = t[i];
-      if (v >= 0) {
-        t[i] = v - s;
-      }
-      
-    }
-  }
-  Bytes.blit(aux_buffer, 0, lexbuf[2], lexbuf[3], n);
-  lexbuf[3] += n;
-  return /* () */0;
-}
-
 var zero_pos = [
   /* record */0,
   "",
@@ -86,7 +50,42 @@ function from_function(f) {
   return [
           /* record */0,
           function (param) {
-            return lex_refill(f, new Array(512), param);
+            var read_fun = f;
+            var aux_buffer = new Array(512);
+            var lexbuf = param;
+            var read = read_fun(aux_buffer, aux_buffer.length);
+            var n = read > 0 ? read : (lexbuf[9] = /* true */1, 0);
+            if (lexbuf[3] + n > lexbuf[2].length) {
+              if (lexbuf[3] - lexbuf[5] + n <= lexbuf[2].length) {
+                Bytes.blit(lexbuf[2], lexbuf[5], lexbuf[2], 0, lexbuf[3] - lexbuf[5]);
+              }
+              else {
+                var newlen = Pervasives.min(2 * lexbuf[2].length, Sys.max_string_length);
+                if (lexbuf[3] - lexbuf[5] + n > newlen) {
+                  Pervasives.failwith("Lexing.lex_refill: cannot grow buffer");
+                }
+                var newbuf = Caml_string.caml_create_string(newlen);
+                Bytes.blit(lexbuf[2], lexbuf[5], newbuf, 0, lexbuf[3] - lexbuf[5]);
+                lexbuf[2] = newbuf;
+              }
+              var s = lexbuf[5];
+              lexbuf[4] += s;
+              lexbuf[6] -= s;
+              lexbuf[5] = 0;
+              lexbuf[7] -= s;
+              lexbuf[3] -= s;
+              var t = lexbuf[10];
+              for(var i = 0 ,i_finish = t.length - 1; i<= i_finish; ++i){
+                var v = t[i];
+                if (v >= 0) {
+                  t[i] = v - s;
+                }
+                
+              }
+            }
+            Bytes.blit(aux_buffer, 0, lexbuf[2], lexbuf[3], n);
+            lexbuf[3] += n;
+            return /* () */0;
           },
           new Array(1024),
           0,

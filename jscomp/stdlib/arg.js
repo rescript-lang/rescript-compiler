@@ -57,75 +57,6 @@ function make_symlist(prefix, sep, suffix, l) {
   }
 }
 
-function print_spec(buf, param) {
-  var doc = param[3];
-  var spec = param[2];
-  var key = param[1];
-  if (doc.length) {
-    if (spec[0] === 11) {
-      return Printf.bprintf(buf, [
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "  ",
-                      [
-                        /* String */2,
-                        /* No_padding */0,
-                        [
-                          /* Char_literal */12,
-                          /* " " */32,
-                          [
-                            /* String */2,
-                            /* No_padding */0,
-                            [
-                              /* String */2,
-                              /* No_padding */0,
-                              [
-                                /* Char_literal */12,
-                                /* "\n" */10,
-                                /* End_of_format */0
-                              ]
-                            ]
-                          ]
-                        ]
-                      ]
-                    ],
-                    "  %s %s%s\n"
-                  ])(key, make_symlist("{", "|", "}", spec[1]), doc);
-    }
-    else {
-      return Printf.bprintf(buf, [
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "  ",
-                      [
-                        /* String */2,
-                        /* No_padding */0,
-                        [
-                          /* Char_literal */12,
-                          /* " " */32,
-                          [
-                            /* String */2,
-                            /* No_padding */0,
-                            [
-                              /* Char_literal */12,
-                              /* "\n" */10,
-                              /* End_of_format */0
-                            ]
-                          ]
-                        ]
-                      ]
-                    ],
-                    "  %s %s\n"
-                  ])(key, doc);
-    }
-  }
-  else {
-    return 0;
-  }
-}
-
 function help_action() {
   throw [
         0,
@@ -206,7 +137,74 @@ function usage_b(buf, speclist, errmsg) {
           "%s\n"
         ])(errmsg);
   return List.iter(function (param) {
-              return print_spec(buf, param);
+              var buf$1 = buf;
+              var param$1 = param;
+              var doc = param$1[3];
+              var spec = param$1[2];
+              var key = param$1[1];
+              if (doc.length) {
+                if (spec[0] === 11) {
+                  return Printf.bprintf(buf$1, [
+                                /* Format */0,
+                                [
+                                  /* String_literal */11,
+                                  "  ",
+                                  [
+                                    /* String */2,
+                                    /* No_padding */0,
+                                    [
+                                      /* Char_literal */12,
+                                      /* " " */32,
+                                      [
+                                        /* String */2,
+                                        /* No_padding */0,
+                                        [
+                                          /* String */2,
+                                          /* No_padding */0,
+                                          [
+                                            /* Char_literal */12,
+                                            /* "\n" */10,
+                                            /* End_of_format */0
+                                          ]
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ],
+                                "  %s %s%s\n"
+                              ])(key, make_symlist("{", "|", "}", spec[1]), doc);
+                }
+                else {
+                  return Printf.bprintf(buf$1, [
+                                /* Format */0,
+                                [
+                                  /* String_literal */11,
+                                  "  ",
+                                  [
+                                    /* String */2,
+                                    /* No_padding */0,
+                                    [
+                                      /* Char_literal */12,
+                                      /* " " */32,
+                                      [
+                                        /* String */2,
+                                        /* No_padding */0,
+                                        [
+                                          /* Char_literal */12,
+                                          /* "\n" */10,
+                                          /* End_of_format */0
+                                        ]
+                                      ]
+                                    ]
+                                  ]
+                                ],
+                                "  %s %s\n"
+                              ])(key, doc);
+                }
+              }
+              else {
+                return 0;
+              }
             }, add_help(speclist));
 }
 
@@ -777,7 +775,8 @@ function parse_dynamic(l, f, msg) {
 
 function second_word(s) {
   var len = s.length;
-  var loop = function (_n) {
+  try {
+    var _n = $$String.index(s, /* " " */32);
     while(/* true */1) {
       var n = _n;
       if (n >= len) {
@@ -792,9 +791,6 @@ function second_word(s) {
         }
       }
     };
-  };
-  try {
-    return loop($$String.index(s, /* " " */32));
   }
   catch (exn){
     if (exn === Caml_exceptions.Not_found) {
@@ -816,59 +812,57 @@ function max_arg_len(cur, param) {
   }
 }
 
-function add_padding(len, ksd) {
-  var spec = ksd[2];
-  var kwd = ksd[1];
-  if (ksd[3] === "") {
-    return ksd;
-  }
-  else {
-    if (spec[0] === 11) {
-      var msg = ksd[3];
-      var cutcol = second_word(msg);
-      var spaces = $$String.make(Pervasives.max(0, len - cutcol) + 3, /* " " */32);
-      return [
-              /* tuple */0,
-              kwd,
-              spec,
-              "\n" + (spaces + msg)
-            ];
-    }
-    else {
-      var msg$1 = ksd[3];
-      var cutcol$1 = second_word(msg$1);
-      var kwd_len = kwd.length;
-      var diff = len - kwd_len - cutcol$1;
-      if (diff <= 0) {
-        return [
-                /* tuple */0,
-                kwd,
-                spec,
-                msg$1
-              ];
-      }
-      else {
-        var spaces$1 = $$String.make(diff, /* " " */32);
-        var prefix = $$String.sub(msg$1, 0, cutcol$1);
-        var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
-        return [
-                /* tuple */0,
-                kwd,
-                spec,
-                prefix + (spaces$1 + suffix)
-              ];
-      }
-    }
-  }
-}
-
 function align($staropt$star, speclist) {
   var limit = $staropt$star ? $staropt$star[1] : Pervasives.max_int;
   var completed = add_help(speclist);
   var len = List.fold_left(max_arg_len, 0, completed);
   var len$1 = Pervasives.min(len, limit);
   return List.map(function (param) {
-              return add_padding(len$1, param);
+              var len$2 = len$1;
+              var ksd = param;
+              var spec = ksd[2];
+              var kwd = ksd[1];
+              if (ksd[3] === "") {
+                return ksd;
+              }
+              else {
+                if (spec[0] === 11) {
+                  var msg = ksd[3];
+                  var cutcol = second_word(msg);
+                  var spaces = $$String.make(Pervasives.max(0, len$2 - cutcol) + 3, /* " " */32);
+                  return [
+                          /* tuple */0,
+                          kwd,
+                          spec,
+                          "\n" + (spaces + msg)
+                        ];
+                }
+                else {
+                  var msg$1 = ksd[3];
+                  var cutcol$1 = second_word(msg$1);
+                  var kwd_len = kwd.length;
+                  var diff = len$2 - kwd_len - cutcol$1;
+                  if (diff <= 0) {
+                    return [
+                            /* tuple */0,
+                            kwd,
+                            spec,
+                            msg$1
+                          ];
+                  }
+                  else {
+                    var spaces$1 = $$String.make(diff, /* " " */32);
+                    var prefix = $$String.sub(msg$1, 0, cutcol$1);
+                    var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
+                    return [
+                            /* tuple */0,
+                            kwd,
+                            spec,
+                            prefix + (spaces$1 + suffix)
+                          ];
+                  }
+                }
+              }
             }, completed);
 }
 

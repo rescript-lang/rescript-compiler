@@ -121,34 +121,32 @@ function string_of_int(n) {
 
 function valid_float_lexem(s) {
   var l = s.length;
-  var loop = function (_i) {
-    while(/* true */1) {
-      var i = _i;
-      if (i >= l) {
-        return $caret(s, ".");
-      }
-      else {
-        var match = s.charCodeAt(i);
-        if (match >= 48) {
-          if (match >= 58) {
-            return s;
-          }
-          else {
-            _i = i + 1;
-          }
+  var _i = 0;
+  while(/* true */1) {
+    var i = _i;
+    if (i >= l) {
+      return $caret(s, ".");
+    }
+    else {
+      var match = s.charCodeAt(i);
+      if (match >= 48) {
+        if (match >= 58) {
+          return s;
         }
         else {
-          if (match !== 45) {
-            return s;
-          }
-          else {
-            _i = i + 1;
-          }
+          _i = i + 1;
         }
       }
-    };
+      else {
+        if (match !== 45) {
+          return s;
+        }
+        else {
+          _i = i + 1;
+        }
+      }
+    }
   };
-  return loop(0);
 }
 
 function string_of_float(f) {
@@ -219,24 +217,22 @@ function open_out_bin(name) {
 }
 
 function flush_all() {
-  var iter = function (_param) {
-    while(/* true */1) {
-      var param = _param;
-      if (param) {
-        try {
-          Caml_primitive.caml_ml_flush(param[1]);
-        }
-        catch (exn){
-          
-        }
-        _param = param[2];
+  var _param = Caml_primitive.caml_ml_out_channels_list(/* () */0);
+  while(/* true */1) {
+    var param = _param;
+    if (param) {
+      try {
+        Caml_primitive.caml_ml_flush(param[1]);
       }
-      else {
-        return /* () */0;
+      catch (exn){
+        
       }
-    };
+      _param = param[2];
+    }
+    else {
+      return /* () */0;
+    }
   };
-  return iter(Caml_primitive.caml_ml_out_channels_list(/* () */0));
 }
 
 function output_bytes(oc, s) {
@@ -378,50 +374,49 @@ function input_line(chan) {
       }
     };
   };
-  var scan = function (_accu, _len) {
-    while(/* true */1) {
-      var len = _len;
-      var accu = _accu;
-      var n = Caml_primitive.caml_ml_input_scan_line(chan);
-      if (n) {
-        if (n > 0) {
-          var res = Caml_string.caml_create_string(n - 1);
-          Caml_primitive.caml_ml_input(chan, res, 0, n - 1);
-          Caml_io.caml_ml_input_char(chan);
-          if (accu) {
-            var len$1 = len + n - 1;
-            return build_result(Caml_string.caml_create_string(len$1), len$1, [
-                        /* :: */0,
-                        res,
-                        accu
-                      ]);
-          }
-          else {
-            return res;
-          }
+  var _accu = /* [] */0;
+  var _len = 0;
+  while(/* true */1) {
+    var len = _len;
+    var accu = _accu;
+    var n = Caml_primitive.caml_ml_input_scan_line(chan);
+    if (n) {
+      if (n > 0) {
+        var res = Caml_string.caml_create_string(n - 1);
+        Caml_primitive.caml_ml_input(chan, res, 0, n - 1);
+        Caml_io.caml_ml_input_char(chan);
+        if (accu) {
+          var len$1 = len + n - 1;
+          return build_result(Caml_string.caml_create_string(len$1), len$1, [
+                      /* :: */0,
+                      res,
+                      accu
+                    ]);
         }
         else {
-          var beg = Caml_string.caml_create_string(-n);
-          Caml_primitive.caml_ml_input(chan, beg, 0, -n);
-          _len = len - n;
-          _accu = [
-            /* :: */0,
-            beg,
-            accu
-          ];
+          return res;
         }
       }
       else {
-        if (accu) {
-          return build_result(Caml_string.caml_create_string(len), len, accu);
-        }
-        else {
-          throw Caml_exceptions.End_of_file;
-        }
+        var beg = Caml_string.caml_create_string(-n);
+        Caml_primitive.caml_ml_input(chan, beg, 0, -n);
+        _len = len - n;
+        _accu = [
+          /* :: */0,
+          beg,
+          accu
+        ];
       }
-    };
+    }
+    else {
+      if (accu) {
+        return build_result(Caml_string.caml_create_string(len), len, accu);
+      }
+      else {
+        throw Caml_exceptions.End_of_file;
+      }
+    }
   };
-  return scan(/* [] */0, 0);
 }
 
 function close_in_noerr(ic) {

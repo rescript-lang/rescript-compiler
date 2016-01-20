@@ -283,7 +283,7 @@ let compile ~filename env sigs lam  : J.program  =
 
           js 
           |> Js_pass_flatten.program
-          (* |> Js_inline_and_eliminate.inline_and_shake *)
+          |> Js_inline_and_eliminate.inline_and_shake
 
           |> Js_pass_flatten_and_mark_dead.program
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )

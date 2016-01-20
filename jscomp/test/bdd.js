@@ -142,47 +142,45 @@ function mkNode(low, v, high) {
   else {
     var ind = hashVal(idl, idh, v) & sz_1[1];
     var bucket = htab[1][ind];
-    var lookup = function (_b) {
-      while(/* true */1) {
-        var b = _b;
-        if (b) {
-          var n = b[1];
-          if (typeof n === "number") {
-            throw [
+    var _b = bucket;
+    while(/* true */1) {
+      var b = _b;
+      if (b) {
+        var n = b[1];
+        if (typeof n === "number") {
+          throw [
+                0,
+                Caml_exceptions.Assert_failure,
+                [
                   0,
-                  Caml_exceptions.Assert_failure,
-                  [
-                    0,
-                    "bdd.ml",
-                    99,
-                    31
-                  ]
-                ];
-          }
-          else {
-            if (v === n[2] && idl === getId(n[1]) && idh === getId(n[4])) {
-              return n;
-            }
-            else {
-              _b = b[2];
-            }
-          }
+                  "bdd.ml",
+                  99,
+                  31
+                ]
+              ];
         }
         else {
-          var n_003 = (++ nodeC[1], nodeC[1]);
-          var n$1 = [
-            /* Node */0,
-            low,
-            v,
-            n_003,
-            high
-          ];
-          insert(getId(low), getId(high), v, ind, bucket, n$1);
-          return n$1;
+          if (v === n[2] && idl === getId(n[1]) && idh === getId(n[4])) {
+            return n;
+          }
+          else {
+            _b = b[2];
+          }
         }
-      };
+      }
+      else {
+        var n_003 = (++ nodeC[1], nodeC[1]);
+        var n$1 = [
+          /* Node */0,
+          low,
+          v,
+          n_003,
+          high
+        ];
+        insert(getId(low), getId(high), v, ind, bucket, n$1);
+        return n$1;
+      }
     };
-    return lookup(bucket);
   }
 }
 
