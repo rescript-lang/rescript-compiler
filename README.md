@@ -3,6 +3,9 @@
 ## Introduction
 OCamlScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). Users of OCamlScript can write type-safe, high performance OCaml code, and deploy the generated JavaScript in any platform with a JavaScript execution engine.
 
+You can try [OCamlScript in the brower](http://bloomberg.github.io/ocamlscript/js-demo/), edit the code on the left panel
+and see the generated JS on the right panel on the fly.
+
 Each OCaml module is mapped to a corresponding JavaScript module, and names are preserved so that:
 
 1. The stacktrace is preserved, the generated code is debuggable with or without sourcemap.
