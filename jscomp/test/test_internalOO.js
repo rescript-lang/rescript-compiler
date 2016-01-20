@@ -191,7 +191,7 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare(x, param[2]);
@@ -219,7 +219,7 @@ function mem(x, param) {
 }
 
 function min_binding(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var l = param[1];
@@ -241,7 +241,7 @@ function min_binding(_param) {
 }
 
 function max_binding(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var r = param[4];
@@ -315,7 +315,7 @@ function remove(x, param) {
 }
 
 function iter(f, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       iter(f, param[1]);
@@ -368,7 +368,7 @@ function mapi(f, param) {
 }
 
 function fold(f, _m, _accu) {
-  while(/* true */1) {
+  while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
@@ -619,7 +619,7 @@ function partition(p, param) {
 }
 
 function cons_enum(_m, _e) {
-  while(/* true */1) {
+  while(true) {
     var e = _e;
     var m = _m;
     if (m) {
@@ -641,7 +641,7 @@ function cons_enum(_m, _e) {
 function compare$1(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
-  while(/* true */1) {
+  while(true) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
@@ -708,7 +708,7 @@ function cardinal(param) {
 }
 
 function bindings_aux(_accu, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -907,7 +907,7 @@ function add$1(x, data, param) {
 }
 
 function find$1(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare$2(x, param[2]);
@@ -935,7 +935,7 @@ function mem$1(x, param) {
 }
 
 function min_binding$1(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var l = param[1];
@@ -957,7 +957,7 @@ function min_binding$1(_param) {
 }
 
 function max_binding$1(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var r = param[4];
@@ -1031,7 +1031,7 @@ function remove$1(x, param) {
 }
 
 function iter$1(f, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       iter$1(f, param[1]);
@@ -1084,7 +1084,7 @@ function mapi$1(f, param) {
 }
 
 function fold$1(f, _m, _accu) {
-  while(/* true */1) {
+  while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
@@ -1335,7 +1335,7 @@ function partition$1(p, param) {
 }
 
 function cons_enum$1(_m, _e) {
-  while(/* true */1) {
+  while(true) {
     var e = _e;
     var m = _m;
     if (m) {
@@ -1357,7 +1357,7 @@ function cons_enum$1(_m, _e) {
 function compare$3(cmp, m1, m2) {
   var _e1 = cons_enum$1(m1, /* End */0);
   var _e2 = cons_enum$1(m2, /* End */0);
-  while(/* true */1) {
+  while(true) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
@@ -1424,7 +1424,7 @@ function cardinal$1(param) {
 }
 
 function bindings_aux$1(_accu, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -1623,7 +1623,7 @@ function add$2(x, data, param) {
 }
 
 function find$2(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare$4(x, param[2]);
@@ -1651,7 +1651,7 @@ function mem$2(x, param) {
 }
 
 function min_binding$2(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var l = param[1];
@@ -1673,7 +1673,7 @@ function min_binding$2(_param) {
 }
 
 function max_binding$2(_param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var r = param[4];
@@ -1747,7 +1747,7 @@ function remove$2(x, param) {
 }
 
 function iter$2(f, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       iter$2(f, param[1]);
@@ -1800,7 +1800,7 @@ function mapi$2(f, param) {
 }
 
 function fold$2(f, _m, _accu) {
-  while(/* true */1) {
+  while(true) {
     var accu = _accu;
     var m = _m;
     if (m) {
@@ -2051,7 +2051,7 @@ function partition$2(p, param) {
 }
 
 function cons_enum$2(_m, _e) {
-  while(/* true */1) {
+  while(true) {
     var e = _e;
     var m = _m;
     if (m) {
@@ -2073,7 +2073,7 @@ function cons_enum$2(_m, _e) {
 function compare$5(cmp, m1, m2) {
   var _e1 = cons_enum$2(m1, /* End */0);
   var _e2 = cons_enum$2(m2, /* End */0);
-  while(/* true */1) {
+  while(true) {
     var e2 = _e2;
     var e1 = _e1;
     if (e1) {
@@ -2140,7 +2140,7 @@ function cardinal$2(param) {
 }
 
 function bindings_aux$2(_accu, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -2634,7 +2634,7 @@ function create_object_opt(obj_0, table) {
 }
 
 function iter_f(obj, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       param[1](obj);
@@ -2707,7 +2707,7 @@ function lookup_keys(i, keys, tables) {
   else {
     var key = keys[i];
     var _tables = tables;
-    while(/* true */1) {
+    while(true) {
       var tables$1 = _tables;
       if (tables$1[1] === key) {
         return lookup_keys(i - 1, keys, tables$1[2]);

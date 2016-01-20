@@ -3,7 +3,7 @@
 var Caml_array = require("./caml_array");
 
 function curry(_f, _args) {
-  while(/* true */1) {
+  while(true) {
     var args = _args;
     var f = _f;
     var arity = f.length;

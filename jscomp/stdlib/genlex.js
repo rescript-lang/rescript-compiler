@@ -87,7 +87,7 @@ function make_lexer(keywords) {
     }
   };
   var next_token = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       if (match) {
         var c = match[1];
@@ -324,7 +324,7 @@ function make_lexer(keywords) {
               reset_buffer(/* () */0);
               store(c);
               var strm__$3 = strm__;
-              while(/* true */1) {
+              while(true) {
                 var match$4 = Stream.peek(strm__$3);
                 var exit$3 = 0;
                 if (match$4) {
@@ -403,7 +403,7 @@ function make_lexer(keywords) {
     };
   };
   var ident2 = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       var exit = 0;
       if (match) {
@@ -503,7 +503,7 @@ function make_lexer(keywords) {
     };
   };
   var number = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       var exit = 0;
       if (match) {
@@ -536,7 +536,7 @@ function make_lexer(keywords) {
             Stream.junk(strm__);
             store(/* "." */46);
             var strm__$1 = strm__;
-            while(/* true */1) {
+            while(true) {
               var match$1 = Stream.peek(strm__$1);
               var exit$2 = 0;
               if (match$1) {
@@ -628,7 +628,7 @@ function make_lexer(keywords) {
     }
   };
   var end_exponent_part = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       var exit = 0;
       if (match) {
@@ -657,7 +657,7 @@ function make_lexer(keywords) {
     };
   };
   var string = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       if (match) {
         var c = match[1];
@@ -823,7 +823,7 @@ function make_lexer(keywords) {
     }
   };
   var comment = function (strm__) {
-    while(/* true */1) {
+    while(true) {
       var match = Stream.peek(strm__);
       if (match) {
         var exit = 0;
@@ -857,7 +857,7 @@ function make_lexer(keywords) {
             case 2 : 
                 Stream.junk(strm__);
                 var strm__$2 = strm__;
-                while(/* true */1) {
+                while(true) {
                   var match$2 = Stream.peek(strm__$2);
                   if (match$2) {
                     var c = match$2[1];

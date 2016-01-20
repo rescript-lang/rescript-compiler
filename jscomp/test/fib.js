@@ -14,7 +14,7 @@ function fib2(n) {
   var _a = 1;
   var _b = 1;
   var _i = 0;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     var b = _b;
     var a = _a;

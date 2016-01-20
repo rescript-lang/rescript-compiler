@@ -140,7 +140,7 @@ function Make(funarg) {
     }
   };
   var find = function (x, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var c = funarg[1](x, param[2]);
@@ -166,7 +166,7 @@ function Make(funarg) {
     }
   };
   var min_binding = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var l = param[1];
@@ -187,7 +187,7 @@ function Make(funarg) {
     };
   };
   var max_binding = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var r = param[4];
@@ -258,7 +258,7 @@ function Make(funarg) {
     }
   };
   var iter = function (f, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         iter(f, param[1]);
@@ -308,7 +308,7 @@ function Make(funarg) {
     }
   };
   var fold = function (f, _m, _accu) {
-    while(/* true */1) {
+    while(true) {
       var accu = _accu;
       var m = _m;
       if (m) {
@@ -547,7 +547,7 @@ function Make(funarg) {
     }
   };
   var cons_enum = function (_m, _e) {
-    while(/* true */1) {
+    while(true) {
       var e = _e;
       var m = _m;
       if (m) {
@@ -568,7 +568,7 @@ function Make(funarg) {
   var compare = function (cmp, m1, m2) {
     var _e1 = cons_enum(m1, /* End */0);
     var _e2 = cons_enum(m2, /* End */0);
-    while(/* true */1) {
+    while(true) {
       var e2 = _e2;
       var e1 = _e1;
       if (e1) {
@@ -632,7 +632,7 @@ function Make(funarg) {
     }
   };
   var bindings_aux = function (_accu, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       var accu = _accu;
       if (param) {

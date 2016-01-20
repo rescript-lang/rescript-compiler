@@ -6,7 +6,7 @@ var Caml_primitive = require("../runtime/caml_primitive");
 var List = require("../stdlib/list");
 
 function length_aux(_len, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var len = _len;
     if (param) {
@@ -48,7 +48,7 @@ function nth(l, n) {
   else {
     var _l = l;
     var _n = n;
-    while(/* true */1) {
+    while(true) {
       var n$1 = _n;
       var l$1 = _l;
       if (l$1) {
@@ -68,7 +68,7 @@ function nth(l, n) {
 }
 
 function rev_append(_l1, _l2) {
-  while(/* true */1) {
+  while(true) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
@@ -133,7 +133,7 @@ function mapi$1(f, l) {
 function rev_map(f, l) {
   var _accu = /* [] */0;
   var _param = l;
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -151,7 +151,7 @@ function rev_map(f, l) {
 }
 
 function iter(f, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       f(param[1]);
@@ -167,7 +167,7 @@ function iteri(f, l) {
   var _i = 0;
   var f$1 = f;
   var _param = l;
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var i = _i;
     if (param) {
@@ -182,7 +182,7 @@ function iteri(f, l) {
 }
 
 function fold_left(f, _accu, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     var accu = _accu;
     if (l) {
@@ -232,7 +232,7 @@ function rev_map2(f, l1, l2) {
   var _accu = /* [] */0;
   var _l1 = l1;
   var _l2 = l2;
-  while(/* true */1) {
+  while(true) {
     var l2$1 = _l2;
     var l1$1 = _l1;
     var accu = _accu;
@@ -262,7 +262,7 @@ function rev_map2(f, l1, l2) {
 }
 
 function iter2(f, _l1, _l2) {
-  while(/* true */1) {
+  while(true) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
@@ -287,7 +287,7 @@ function iter2(f, _l1, _l2) {
 }
 
 function fold_left2(f, _accu, _l1, _l2) {
-  while(/* true */1) {
+  while(true) {
     var l2 = _l2;
     var l1 = _l1;
     var accu = _accu;
@@ -406,7 +406,7 @@ function memq(x, param) {
 }
 
 function assoc(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var match = param[1];
@@ -424,7 +424,7 @@ function assoc(x, _param) {
 }
 
 function assq(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var match = param[1];
@@ -500,7 +500,7 @@ function remove_assq(x, param) {
 }
 
 function find(p, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var x = param[1];
@@ -521,7 +521,7 @@ function find_all(p) {
   return function (param) {
     var _accu = /* [] */0;
     var _param = param;
-    while(/* true */1) {
+    while(true) {
       var param$1 = _param;
       var accu = _accu;
       if (param$1) {
@@ -550,7 +550,7 @@ function partition(p, l) {
   var _yes = /* [] */0;
   var _no = /* [] */0;
   var _param = l;
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var no = _no;
     var yes = _yes;
@@ -668,7 +668,7 @@ function merge(cmp, l1, l2) {
 }
 
 function chop(_k, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     var k = _k;
     if (k) {
@@ -869,7 +869,7 @@ function stable_sort(cmp, l) {
       var _l1 = s1;
       var _l2 = s2;
       var _accu = /* [] */0;
-      while(/* true */1) {
+      while(true) {
         var accu = _accu;
         var l2$1 = _l2;
         var l1 = _l1;
@@ -1078,7 +1078,7 @@ function stable_sort(cmp, l) {
       var _l1 = s1;
       var _l2 = s2;
       var _accu = /* [] */0;
-      while(/* true */1) {
+      while(true) {
         var accu = _accu;
         var l2$1 = _l2;
         var l1 = _l1;
@@ -1400,7 +1400,7 @@ function sort_uniq(cmp, l) {
       var _l1 = s1;
       var _l2 = s2;
       var _accu = /* [] */0;
-      while(/* true */1) {
+      while(true) {
         var accu = _accu;
         var l2$1 = _l2;
         var l1 = _l1;
@@ -1726,7 +1726,7 @@ function sort_uniq(cmp, l) {
       var _l1 = s1;
       var _l2 = s2;
       var _accu = /* [] */0;
-      while(/* true */1) {
+      while(true) {
         var accu = _accu;
         var l2$1 = _l2;
         var l1 = _l1;

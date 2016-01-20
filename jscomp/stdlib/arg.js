@@ -29,7 +29,7 @@ var Stop = [
 ];
 
 function assoc3(x, _l) {
-  while(/* true */1) {
+  while(true) {
     var l = _l;
     if (l) {
       var match = l[1];
@@ -777,7 +777,7 @@ function second_word(s) {
   var len = s.length;
   try {
     var _n = $$String.index(s, /* " " */32);
-    while(/* true */1) {
+    while(true) {
       var n = _n;
       if (n >= len) {
         return len;

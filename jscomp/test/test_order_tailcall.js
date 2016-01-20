@@ -2,7 +2,7 @@
 "use strict";
 
 function f(_x, _y) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     var x = _x;
     _y = x;
@@ -11,7 +11,7 @@ function f(_x, _y) {
 }
 
 function f1(_x, _y, _z) {
-  while(/* true */1) {
+  while(true) {
     var z = _z;
     var y = _y;
     var x = _x;
@@ -22,14 +22,14 @@ function f1(_x, _y, _z) {
 }
 
 function f2(_, _y) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     _y = y + 10;
   };
 }
 
 function f3(_x, _y) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     var x = _x;
     _y = x + 10;
@@ -38,7 +38,7 @@ function f3(_x, _y) {
 }
 
 function f4(_x, _y) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     var x = _x;
     _y = y + x;
@@ -47,7 +47,7 @@ function f4(_x, _y) {
 }
 
 function f5(_x, _y, z) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     _y = z + 20;
     _x = y + 10;
@@ -63,7 +63,7 @@ function f7(b) {
 }
 
 function f8(_x, _y) {
-  while(/* true */1) {
+  while(true) {
     var y = _y;
     var x = _x;
     if (x > 10) {

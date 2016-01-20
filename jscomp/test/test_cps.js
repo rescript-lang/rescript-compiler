@@ -4,7 +4,7 @@ var Pervasives = require("../stdlib/pervasives");
 var Caml_array = require("../runtime/caml_array");
 
 function f(_n, _acc) {
-  while(/* true */1) {
+  while(true) {
     var acc = _acc;
     var n = _n;
     if (n) {

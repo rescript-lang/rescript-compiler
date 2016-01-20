@@ -86,7 +86,7 @@ function yyparse(tables, start, lexer, lexbuf) {
   try {
     var _cmd = /* Start */0;
     var _arg = /* () */0;
-    while(/* true */1) {
+    while(true) {
       var arg = _arg;
       var cmd = _cmd;
       var match = Caml_lexer.caml_parse_engine(tables, env, cmd, arg);
@@ -175,7 +175,7 @@ function peek_val(env, n) {
 
 function symbol_start_pos() {
   var _i = env[12];
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i <= 0) {
       return env[4][env[11]];

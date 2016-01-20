@@ -64,7 +64,7 @@ function Make(H) {
                 var _i = 0;
                 var b = param;
                 var _accu = param$1;
-                while(/* true */1) {
+                while(true) {
                   var accu = _accu;
                   var i = _i;
                   if (i >= length(b)) {
@@ -87,7 +87,7 @@ function Make(H) {
     return $$Array.iter(function (param) {
                 var _i = 0;
                 var b = param;
-                while(/* true */1) {
+                while(true) {
                   var i = _i;
                   if (i >= length(b)) {
                     return /* () */0;
@@ -110,7 +110,7 @@ function Make(H) {
                 var _i = 0;
                 var j = param;
                 var b = param$1;
-                while(/* true */1) {
+                while(true) {
                   var i = _i;
                   if (i >= length(b)) {
                     return /* () */0;
@@ -129,7 +129,7 @@ function Make(H) {
               }, t[1]);
   };
   var count_bucket = function (_i, b, _accu) {
-    while(/* true */1) {
+    while(true) {
       var accu = _accu;
       var i = _i;
       if (i >= length(b)) {
@@ -162,7 +162,7 @@ function Make(H) {
     var live = count_bucket(0, bucket, 0);
     if (live <= prev_len) {
       var loop = function (_i, _j) {
-        while(/* true */1) {
+        while(true) {
           var j = _j;
           var i = _i;
           if (j >= prev_len) {
@@ -208,7 +208,7 @@ function Make(H) {
     var hashes = t[2][index];
     var sz = length(bucket);
     var _i = 0;
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i >= sz) {
         var newsz = Pervasives.min((3 * sz / 2 | 0) + 3, Sys.max_array_length - 1);
@@ -290,7 +290,7 @@ function Make(H) {
     var hashes = t[2][index];
     var sz = length(bucket);
     var _i = 0;
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i >= sz) {
         return ifnotfound(h, index);
@@ -345,7 +345,7 @@ function Make(H) {
     var hashes = t[2][index];
     var sz = length(bucket);
     var _i = 0;
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i >= sz) {
         return ifnotfound;
@@ -389,7 +389,7 @@ function Make(H) {
     var sz = length(bucket);
     var _i = 0;
     var _accu = /* [] */0;
-    while(/* true */1) {
+    while(true) {
       var accu = _accu;
       var i = _i;
       if (i >= sz) {

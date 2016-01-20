@@ -297,7 +297,7 @@ function format_pp_token(state, size, param) {
           if (match$8) {
             var tabs$1 = match$8[1][1];
             var find = function (n, _param) {
-              while(/* true */1) {
+              while(true) {
                 var param = _param;
                 if (param) {
                   var x = param[1];
@@ -388,7 +388,7 @@ function format_pp_token(state, size, param) {
 function advance_left(state) {
   try {
     var state$1 = state;
-    while(/* true */1) {
+    while(true) {
       var match = peek_queue(state$1[27]);
       var size = match[1];
       if (!(size < 0 && state$1[13] - state$1[12] < state$1[9])) {
@@ -853,7 +853,7 @@ function pp_set_tab(state, _) {
 }
 
 function pp_print_list(_$staropt$star, pp_v, ppf, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var $staropt$star = _$staropt$star;
     var pp_sep = $staropt$star ? $staropt$star[1] : pp_print_cut;
@@ -1045,7 +1045,7 @@ function display_newline(state, _) {
 var blank_line = $$String.make(80, /* " " */32);
 
 function display_blanks(state, _n) {
-  while(/* true */1) {
+  while(true) {
     var n = _n;
     if (n > 0) {
       if (n <= 80) {

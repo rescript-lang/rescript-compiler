@@ -78,7 +78,7 @@ function $$int(s, bound) {
   else {
     var s$1 = s;
     var n = bound;
-    while(/* true */1) {
+    while(true) {
       var r = bits(s$1);
       var v = r % n;
       if (!(r - v > 1073741823 - n + 1)) {
@@ -96,7 +96,7 @@ function int32(s, bound) {
   else {
     var s$1 = s;
     var n = bound;
-    while(/* true */1) {
+    while(true) {
       var b1 = bits(s$1);
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
@@ -116,7 +116,7 @@ function int64(s, bound) {
   else {
     var s$1 = s;
     var n = bound;
-    while(/* true */1) {
+    while(true) {
       var b1 = bits(s$1);
       var b2 = (bits(s$1) << 30);
       var b3 = ((bits(s$1) & 7) << 60);

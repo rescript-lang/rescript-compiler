@@ -181,7 +181,7 @@ function advance_to_closing(opening, closing, k, s, start) {
   var _k = k;
   var _i = start;
   var lim = s.length;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     var k$1 = _k;
     if (i >= lim) {
@@ -213,7 +213,7 @@ function advance_to_closing(opening, closing, k, s, start) {
 function advance_to_non_alpha(s, start) {
   var _i = start;
   var lim = s.length;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i >= lim) {
       return lim;
@@ -305,7 +305,7 @@ function add_substitute(b, f, s) {
   var lim = s.length;
   var _previous = /* " " */32;
   var _i = 0;
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     var previous = _previous;
     if (i < lim) {

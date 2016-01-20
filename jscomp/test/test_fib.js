@@ -79,7 +79,7 @@ function fib3(n) {
   var _a = 0;
   var _b = 1;
   var _n = n;
-  while(/* true */1) {
+  while(true) {
     var n$1 = _n;
     var b = _b;
     var a = _a;

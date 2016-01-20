@@ -160,7 +160,7 @@ function Make(Ord) {
     }
   };
   var min_elt = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var l = param[1];
@@ -177,7 +177,7 @@ function Make(Ord) {
     };
   };
   var max_elt = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var r = param[3];
@@ -398,7 +398,7 @@ function Make(Ord) {
     }
   };
   var cons_enum = function (_s, _e) {
-    while(/* true */1) {
+    while(true) {
       var e = _e;
       var s = _s;
       if (s) {
@@ -416,7 +416,7 @@ function Make(Ord) {
     };
   };
   var compare_aux = function (_e1, _e2) {
-    while(/* true */1) {
+    while(true) {
       var e2 = _e2;
       var e1 = _e1;
       if (e1) {
@@ -492,7 +492,7 @@ function Make(Ord) {
     }
   };
   var iter = function (f, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         iter(f, param[1]);
@@ -505,7 +505,7 @@ function Make(Ord) {
     };
   };
   var fold = function (f, _s, _accu) {
-    while(/* true */1) {
+    while(true) {
       var accu = _accu;
       var s = _s;
       if (s) {
@@ -592,7 +592,7 @@ function Make(Ord) {
     }
   };
   var elements_aux = function (_accu, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       var accu = _accu;
       if (param) {
@@ -612,7 +612,7 @@ function Make(Ord) {
     return elements_aux(/* [] */0, s);
   };
   var find = function (x, _param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var v = param[2];

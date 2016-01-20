@@ -133,7 +133,7 @@ function add(x, data, param) {
 }
 
 function find(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare(x, param[2]);
@@ -312,7 +312,7 @@ function add$1(x, data, param) {
 }
 
 function find$1(x, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     if (param) {
       var c = compare$1(x, param[2]);

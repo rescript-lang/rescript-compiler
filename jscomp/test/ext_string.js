@@ -10,7 +10,7 @@ function split_by($staropt$star, is_delim, str) {
   var _acc = /* [] */0;
   var _last_pos = len;
   var _pos = len - 1;
-  while(/* true */1) {
+  while(true) {
     var pos = _pos;
     var last_pos = _last_pos;
     var acc = _acc;
@@ -71,7 +71,7 @@ function ends_with(s, beg) {
   else {
     var _j = s_finish;
     var _k = s_beg;
-    while(/* true */1) {
+    while(true) {
       var k = _k;
       var j = _j;
       if (k < 0) {
@@ -92,7 +92,7 @@ function ends_with(s, beg) {
 
 function escaped(s) {
   var needs_escape = function (_i) {
-    while(/* true */1) {
+    while(true) {
       var i = _i;
       if (i >= s.length) {
         return /* false */0;

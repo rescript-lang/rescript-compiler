@@ -2,7 +2,7 @@
 "use strict";
 
 function tailcall() {
-  while(/* true */1) {
+  while(true) {
     
   };
 }
@@ -17,7 +17,7 @@ function non_length(x) {
 }
 
 function length(_acc, _x) {
-  while(/* true */1) {
+  while(true) {
     var x = _x;
     var acc = _acc;
     if (x) {

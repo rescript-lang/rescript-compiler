@@ -371,7 +371,7 @@ function uncapitalize(s) {
 }
 
 function index_rec(s, lim, _i, c) {
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i >= lim) {
       throw Caml_exceptions.Not_found;
@@ -402,7 +402,7 @@ function index_from(s, i, c) {
 }
 
 function rindex_rec(s, _i, c) {
-  while(/* true */1) {
+  while(true) {
     var i = _i;
     if (i < 0) {
       throw Caml_exceptions.Not_found;

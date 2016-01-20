@@ -68,7 +68,7 @@ var prng = [
 ];
 
 function power_2_above(_x, n) {
-  while(/* true */1) {
+  while(true) {
     var x = _x;
     if (x >= n) {
       return x;
@@ -242,7 +242,7 @@ function find(h, key) {
             if (Caml_primitive.caml_compare(key, rest2[1])) {
               var key$1 = key;
               var _param = rest2[3];
-              while(/* true */1) {
+              while(true) {
                 var param = _param;
                 if (param) {
                   if (Caml_primitive.caml_compare(key$1, param[1])) {
@@ -284,7 +284,7 @@ function find(h, key) {
 
 function find_all(h, key) {
   var find_in_bucket = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         var rest = param[3];
@@ -375,7 +375,7 @@ function mem(h, key) {
 
 function iter(f, h) {
   var do_bucket = function (_param) {
-    while(/* true */1) {
+    while(true) {
       var param = _param;
       if (param) {
         f(param[1], param[2]);
@@ -395,7 +395,7 @@ function iter(f, h) {
 
 function fold(f, h, init) {
   var do_bucket = function (_b, _accu) {
-    while(/* true */1) {
+    while(true) {
       var accu = _accu;
       var b = _b;
       if (b) {
@@ -416,7 +416,7 @@ function fold(f, h, init) {
 }
 
 function bucket_length(_accu, _param) {
-  while(/* true */1) {
+  while(true) {
     var param = _param;
     var accu = _accu;
     if (param) {
@@ -517,7 +517,7 @@ function MakeSeeded(H) {
               else {
                 var key$1 = key;
                 var _param = rest2[3];
-                while(/* true */1) {
+                while(true) {
                   var param = _param;
                   if (param) {
                     if (H[1](key$1, param[1])) {
@@ -549,7 +549,7 @@ function MakeSeeded(H) {
   };
   var find_all = function (h, key) {
     var find_in_bucket = function (_param) {
-      while(/* true */1) {
+      while(true) {
         var param = _param;
         if (param) {
           var rest = param[3];
@@ -727,7 +727,7 @@ function Make(H) {
               else {
                 var key$1 = key;
                 var _param = rest2[3];
-                while(/* true */1) {
+                while(true) {
                   var param = _param;
                   if (param) {
                     if (equal(key$1, param[1])) {
@@ -759,7 +759,7 @@ function Make(H) {
   };
   var find_all = function (h, key) {
     var find_in_bucket = function (_param) {
-      while(/* true */1) {
+      while(true) {
         var param = _param;
         if (param) {
           var rest = param[3];
