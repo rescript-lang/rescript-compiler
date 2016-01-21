@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function fib(n) {
   if (1 < (n >>> 0)) {
     return fib(n - 1) + fib(n - 2);
@@ -40,7 +41,7 @@ function fib3(n) {
   return a;
 }
 
-exports.fib = fib;
+exports.fib  = fib;
 exports.fib2 = fib2;
 exports.fib3 = fib3;
 /* No side effect */

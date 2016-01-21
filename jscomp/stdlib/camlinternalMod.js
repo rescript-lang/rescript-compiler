@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj = require("./obj");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var CamlinternalOO = require("./camlinternalOO");
-var $$Array = require("./array");
+var Obj              = require("./obj");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var CamlinternalOO   = require("./camlinternalOO");
+var $$Array          = require("./array");
 
 function init_mod(loc, shape) {
   if (typeof shape === "number") {
@@ -137,6 +138,6 @@ function update_mod(shape, o, n) {
   }
 }
 
-exports.init_mod = init_mod;
+exports.init_mod   = init_mod;
 exports.update_mod = update_mod;
 /* No side effect */

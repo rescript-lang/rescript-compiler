@@ -1,16 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Caml_format = require("../runtime/caml_format");
-var Printf = require("./printf");
-var Caml_primitive = require("../runtime/caml_primitive");
+
+var Caml_exceptions          = require("../runtime/caml_exceptions");
+var Pervasives               = require("./pervasives");
+var Caml_format              = require("../runtime/caml_format");
+var Printf                   = require("./printf");
+var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
-var Buffer = require("./buffer");
-var $$String = require("./string");
-var Caml_string = require("../runtime/caml_string");
-var List = require("./list");
-var CamlinternalFormat = require("./camlinternalFormat");
+var Buffer                   = require("./buffer");
+var $$String                 = require("./string");
+var Caml_string              = require("../runtime/caml_string");
+var List                     = require("./list");
+var CamlinternalFormat       = require("./camlinternalFormat");
 
 var null_char = /* "\000" */0;
 
@@ -2278,17 +2279,17 @@ var Scanning = [
   stdin
 ];
 
-exports.Scanning = Scanning;
-exports.Scan_failure = Scan_failure;
-exports.bscanf = bscanf;
-exports.fscanf = fscanf;
-exports.sscanf = sscanf;
-exports.scanf = scanf;
-exports.kscanf = kscanf;
-exports.ksscanf = ksscanf;
-exports.kfscanf = kfscanf;
-exports.bscanf_format = bscanf_format;
-exports.sscanf_format = sscanf_format;
+exports.Scanning           = Scanning;
+exports.Scan_failure       = Scan_failure;
+exports.bscanf             = bscanf;
+exports.fscanf             = fscanf;
+exports.sscanf             = sscanf;
+exports.scanf              = scanf;
+exports.kscanf             = kscanf;
+exports.ksscanf            = ksscanf;
+exports.kfscanf            = kfscanf;
+exports.bscanf_format      = bscanf_format;
+exports.sscanf_format      = sscanf_format;
 exports.format_from_string = format_from_string;
-exports.unescaped = unescaped;
+exports.unescaped          = unescaped;
 /* stdin Not a pure module */

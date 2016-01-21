@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Filename = require("../stdlib/filename");
-var List = require("../stdlib/list");
+var List     = require("../stdlib/list");
 
 var u = Filename.chop_extension;
 

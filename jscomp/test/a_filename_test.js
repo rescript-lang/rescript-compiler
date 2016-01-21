@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt           = require("./mt");
 var Ext_filename = require("./ext_filename");
 
 var suites_001 = [

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function is_empty(param) {
   if (param) {
     return /* false */0;

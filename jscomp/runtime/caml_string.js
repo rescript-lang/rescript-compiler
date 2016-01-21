@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("./caml_exceptions");
 
 function add(prim, prim$1) {
@@ -157,16 +158,16 @@ function caml_is_printable(c) {
   return +(code > 31 && code < 127);
 }
 
-exports.add = add;
-exports.bytes_cat = bytes_cat;
-exports.bytes_of_string = bytes_of_string;
-exports.bytes_to_string = bytes_to_string;
-exports.caml_is_printable = caml_is_printable;
+exports.add                       = add;
+exports.bytes_cat                 = bytes_cat;
+exports.bytes_of_string           = bytes_of_string;
+exports.bytes_to_string           = bytes_to_string;
+exports.caml_is_printable         = caml_is_printable;
 exports.caml_string_of_char_array = caml_string_of_char_array;
-exports.caml_string_get = caml_string_get;
-exports.caml_string_compare = caml_string_compare;
-exports.caml_create_string = caml_create_string;
-exports.caml_fill_string = caml_fill_string;
-exports.caml_blit_string = caml_blit_string;
-exports.caml_blit_bytes = caml_blit_bytes;
+exports.caml_string_get           = caml_string_get;
+exports.caml_string_compare       = caml_string_compare;
+exports.caml_create_string        = caml_create_string;
+exports.caml_fill_string          = caml_fill_string;
+exports.caml_blit_string          = caml_blit_string;
+exports.caml_blit_bytes           = caml_blit_bytes;
 /* No side effect */

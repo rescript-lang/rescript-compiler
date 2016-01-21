@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Hashtbl = require("../stdlib/hashtbl");
-var Pervasives = require("../stdlib/pervasives");
-var Mt = require("./mt");
+
+var Hashtbl        = require("../stdlib/hashtbl");
+var Pervasives     = require("../stdlib/pervasives");
+var Mt             = require("./mt");
 var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array = require("../stdlib/array");
-var List = require("../stdlib/list");
+var $$Array        = require("../stdlib/array");
+var List           = require("../stdlib/list");
 
 function to_list(tbl) {
   return Hashtbl.fold(function (k, v, acc) {
@@ -104,7 +105,7 @@ var suites = [
 Mt.from_pair_suites("hashtbl_test.ml", suites);
 
 exports.to_list = to_list;
-exports.f = f;
-exports.g = g;
-exports.suites = suites;
+exports.f       = f;
+exports.g       = g;
+exports.suites  = suites;
 /*  Not a pure module */

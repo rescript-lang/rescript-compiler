@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("../stdlib/bytes");
+
+var Bytes           = require("../stdlib/bytes");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt = require("./mt");
+var Mt              = require("./mt");
 
 var v = "gso";
 
@@ -159,10 +160,10 @@ var suites = [
 
 Mt.from_suites("exception", suites);
 
-exports.v = v;
-exports.is_equal = is_equal;
-exports.is_exception = is_exception;
-exports.is_normal_exception = is_normal_exception;
+exports.v                      = v;
+exports.is_equal               = is_equal;
+exports.is_exception           = is_exception;
+exports.is_normal_exception    = is_normal_exception;
 exports.is_arbitrary_exception = is_arbitrary_exception;
-exports.suites = suites;
+exports.suites                 = suites;
 /*  Not a pure module */

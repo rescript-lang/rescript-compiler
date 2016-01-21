@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
 
 function f() {
@@ -32,6 +33,6 @@ function ff() {
   return /* () */0;
 }
 
-exports.f = f;
+exports.f  = f;
 exports.ff = ff;
 /* No side effect */

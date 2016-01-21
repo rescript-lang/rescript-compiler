@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt                  = require("./mt");
 var Test_google_closure = require("./test_google_closure");
 
 Mt.from_suites("Closure", [

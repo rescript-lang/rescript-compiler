@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var $$String = require("./string");
 
 var make = $$String.make;
@@ -52,29 +53,29 @@ var uncapitalize = $$String.uncapitalize;
 
 var compare = $$String.compare;
 
-exports.make = make;
-exports.init = init;
-exports.copy = copy;
-exports.sub = sub;
-exports.fill = fill;
-exports.blit = blit;
-exports.concat = concat;
-exports.iter = iter;
-exports.iteri = iteri;
-exports.map = map;
-exports.mapi = mapi;
-exports.trim = trim;
-exports.escaped = escaped;
-exports.index = index;
-exports.rindex = rindex;
-exports.index_from = index_from;
-exports.rindex_from = rindex_from;
-exports.contains = contains;
-exports.contains_from = contains_from;
+exports.make           = make;
+exports.init           = init;
+exports.copy           = copy;
+exports.sub            = sub;
+exports.fill           = fill;
+exports.blit           = blit;
+exports.concat         = concat;
+exports.iter           = iter;
+exports.iteri          = iteri;
+exports.map            = map;
+exports.mapi           = mapi;
+exports.trim           = trim;
+exports.escaped        = escaped;
+exports.index          = index;
+exports.rindex         = rindex;
+exports.index_from     = index_from;
+exports.rindex_from    = rindex_from;
+exports.contains       = contains;
+exports.contains_from  = contains_from;
 exports.rcontains_from = rcontains_from;
-exports.uppercase = uppercase;
-exports.lowercase = lowercase;
-exports.capitalize = capitalize;
-exports.uncapitalize = uncapitalize;
-exports.compare = compare;
+exports.uppercase      = uppercase;
+exports.lowercase      = lowercase;
+exports.capitalize     = capitalize;
+exports.uncapitalize   = uncapitalize;
+exports.compare        = compare;
 /* No side effect */

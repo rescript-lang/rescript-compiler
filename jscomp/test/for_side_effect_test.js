@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Mt = require("./mt");
 
 function tst() {
@@ -35,7 +36,7 @@ var suites = [
 
 Mt.from_suites("for_side_effect_test.ml", suites);
 
-exports.tst = tst;
-exports.test2 = test2;
+exports.tst    = tst;
+exports.test2  = test2;
 exports.suites = suites;
 /*  Not a pure module */

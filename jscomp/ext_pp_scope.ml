@@ -26,6 +26,17 @@ type t =
 let empty = 
   String_map.empty 
 
+let rec print fmt v = 
+  Format.fprintf fmt "@[<v>{"  ;
+  String_map.iter (fun k m -> 
+      Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m       
+    )  v;
+  Format.fprintf fmt "}@]"  
+and print_int_map fmt m = 
+  Int_map.iter (fun k v -> 
+      Format.fprintf fmt "%d - %d" k v       
+    ) m    
+
 let add_ident (id : Ident.t) (cxt : t) : int * t = 
   match String_map.find id.name cxt with 
   | exception Not_found -> (0, String_map.add id.name Int_map.(add id.stamp 0  empty) cxt )
@@ -60,26 +71,6 @@ let sub_scope (scope : t) ident_collection : t =
     )
   ) ident_collection cxt 
 
-(* purely functional environment *)
 
-module P = Ext_format
 
-let string_of_id (id : Ident.t) ( cxt : t ) : int * t = 
 
-  match String_map.find id.name cxt with
-  | exception Not_found -> 
-    (
-      0,
-      String_map.add id.name Int_map.(add id.stamp 0  empty) cxt 
-    )
-  | imap -> (* stamp -> print id *)
-    begin 
-      match Int_map.find id.stamp imap with
-      | exception Not_found ->
-        let v = Int_map.cardinal imap in
-        (
-          v,
-          String_map.add id.name (Int_map.(add id.stamp v imap) : int Int_map.t) cxt
-        )
-      | i -> (i, cxt)
-    end

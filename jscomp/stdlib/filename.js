@@ -1,15 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("./camlinternalLazy");
-var Caml_sys = require("../runtime/caml_sys");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Printf = require("./printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Buffer = require("./buffer");
-var $$String = require("./string");
-var Random = require("./random");
+var Caml_sys         = require("../runtime/caml_sys");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Pervasives       = require("./pervasives");
+var Printf           = require("./printf");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var Buffer           = require("./buffer");
+var $$String         = require("./string");
+var Random           = require("./random");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
   if (name === "") {
@@ -367,21 +368,21 @@ var dirname$1 = dirname;
 
 var quote$1 = quote;
 
-exports.current_dir_name = current_dir_name$1;
-exports.parent_dir_name = parent_dir_name;
-exports.dir_sep = dir_sep;
-exports.concat = concat;
-exports.is_relative = is_relative$1;
-exports.is_implicit = is_implicit$1;
-exports.check_suffix = check_suffix$1;
-exports.chop_suffix = chop_suffix;
-exports.chop_extension = chop_extension;
-exports.basename = basename$1;
-exports.dirname = dirname$1;
-exports.temp_file = temp_file;
-exports.open_temp_file = open_temp_file;
+exports.current_dir_name  = current_dir_name$1;
+exports.parent_dir_name   = parent_dir_name;
+exports.dir_sep           = dir_sep;
+exports.concat            = concat;
+exports.is_relative       = is_relative$1;
+exports.is_implicit       = is_implicit$1;
+exports.check_suffix      = check_suffix$1;
+exports.chop_suffix       = chop_suffix;
+exports.chop_extension    = chop_extension;
+exports.basename          = basename$1;
+exports.dirname           = dirname$1;
+exports.temp_file         = temp_file;
+exports.open_temp_file    = open_temp_file;
 exports.get_temp_dir_name = get_temp_dir_name;
 exports.set_temp_dir_name = set_temp_dir_name;
-exports.temp_dir_name = temp_dir_name$2;
-exports.quote = quote$1;
+exports.temp_dir_name     = temp_dir_name$2;
+exports.quote             = quote$1;
 /* match Not a pure module */

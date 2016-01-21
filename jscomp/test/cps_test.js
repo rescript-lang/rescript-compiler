@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt         = require("./mt");
 var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
+var $$Array    = require("../stdlib/array");
 
 function test() {
   var v = [
@@ -112,7 +113,7 @@ Mt.from_suites("cps_test.ml", [
       ]
     ]);
 
-exports.test = test;
-exports.test_closure = test_closure;
+exports.test          = test;
+exports.test_closure  = test_closure;
 exports.test_closure2 = test_closure2;
 /*  Not a pure module */

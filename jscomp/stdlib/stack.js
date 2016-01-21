@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var List = require("./list");
+var List            = require("./list");
 
 var Empty = [
   248,
@@ -70,14 +71,14 @@ function iter(f, s) {
   return List.iter(f, s[1]);
 }
 
-exports.Empty = Empty;
-exports.create = create;
-exports.push = push;
-exports.pop = pop;
-exports.top = top;
-exports.clear = clear;
-exports.copy = copy;
+exports.Empty    = Empty;
+exports.create   = create;
+exports.push     = push;
+exports.pop      = pop;
+exports.top      = top;
+exports.clear    = clear;
+exports.copy     = copy;
 exports.is_empty = is_empty;
-exports.length = length;
-exports.iter = iter;
+exports.length   = length;
+exports.iter     = iter;
 /* No side effect */

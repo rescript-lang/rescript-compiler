@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Filename = require("../stdlib/filename");
+
+var Filename        = require("../stdlib/filename");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("../stdlib/pervasives");
-var Ext_string = require("./ext_string");
-var $$String = require("../stdlib/string");
-var List = require("../stdlib/list");
+var Pervasives      = require("../stdlib/pervasives");
+var Ext_string      = require("./ext_string");
+var $$String        = require("../stdlib/string");
+var List            = require("../stdlib/list");
 
 var node_sep = "/";
 
@@ -125,12 +126,12 @@ function node_relative_path(path1, path2) {
   return relative_path(try_chop_extension(absolute_path(path2)), try_chop_extension(absolute_path(path1))) + (node_sep + try_chop_extension(Filename.basename(path2)));
 }
 
-exports.node_sep = node_sep;
-exports.node_parent = node_parent;
-exports.node_current = node_current;
-exports.absolute_path = absolute_path;
-exports.chop_extension = chop_extension;
+exports.node_sep           = node_sep;
+exports.node_parent        = node_parent;
+exports.node_current       = node_current;
+exports.absolute_path      = absolute_path;
+exports.chop_extension     = chop_extension;
 exports.try_chop_extension = try_chop_extension;
-exports.relative_path = relative_path;
+exports.relative_path      = relative_path;
 exports.node_relative_path = node_relative_path;
 /* Filename Not a pure module */

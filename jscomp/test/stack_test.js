@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt    = require("./mt");
 var Stack = require("../stdlib/stack");
-var List = require("../stdlib/list");
+var List  = require("../stdlib/list");
 
 function to_list(v) {
   var acc = /* [] */0;
@@ -57,6 +58,6 @@ var suites = [
 Mt.from_pair_suites("stack_test.ml", suites);
 
 exports.to_list = to_list;
-exports.v = v;
-exports.suites = suites;
+exports.v       = v;
+exports.suites  = suites;
 /*  Not a pure module */

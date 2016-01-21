@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
-var Lexing = require("../stdlib/lexing");
+
+var Mt       = require("./mt");
+var Lexing   = require("../stdlib/lexing");
 var $$String = require("../stdlib/string");
 
 var __ocaml_lex_tables = [
@@ -62,8 +63,8 @@ var suites = [
 
 Mt.from_suites("simple_lexer", suites);
 
-exports.__ocaml_lex_tables = __ocaml_lex_tables;
-exports.translate = translate;
+exports.__ocaml_lex_tables        = __ocaml_lex_tables;
+exports.translate                 = translate;
 exports.__ocaml_lex_translate_rec = __ocaml_lex_translate_rec;
-exports.suites = suites;
+exports.suites                    = suites;
 /*  Not a pure module */

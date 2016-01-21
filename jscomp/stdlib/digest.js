@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("./bytes");
-var Pervasives = require("./pervasives");
+
+var Bytes           = require("./bytes");
+var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Char = require("./char");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$String = require("./string");
+var Char            = require("./char");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var $$String        = require("./string");
 
 function string(str) {
   return Caml_primitive.caml_md5_string(str, 0, str.length);
@@ -128,14 +129,14 @@ function from_hex(s) {
 
 var compare = $$String.compare;
 
-exports.compare = compare;
-exports.string = string;
-exports.bytes = bytes;
+exports.compare   = compare;
+exports.string    = string;
+exports.bytes     = bytes;
 exports.substring = substring;
-exports.subbytes = subbytes;
-exports.file = file;
-exports.output = output;
-exports.input = input;
-exports.to_hex = to_hex;
-exports.from_hex = from_hex;
+exports.subbytes  = subbytes;
+exports.file      = file;
+exports.output    = output;
+exports.input     = input;
+exports.to_hex    = to_hex;
+exports.from_hex  = from_hex;
 /* No side effect */

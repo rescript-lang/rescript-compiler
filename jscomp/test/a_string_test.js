@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt         = require("./mt");
 var Ext_string = require("./ext_string");
-var List = require("../stdlib/list");
+var List       = require("../stdlib/list");
 
 var split = Ext_string.split;
 
@@ -131,7 +132,7 @@ var suites = [
 
 Mt.from_suites("a_string_test.ml", suites);
 
-exports.split = split;
+exports.split    = split;
 exports.split_by = split_by;
-exports.suites = suites;
+exports.suites   = suites;
 /*  Not a pure module */

@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var $$String = require("../stdlib/string");
 
 function v() {

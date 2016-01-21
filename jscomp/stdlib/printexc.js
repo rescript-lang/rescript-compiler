@@ -1,13 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj = require("./obj");
-var Pervasives = require("./pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Printf = require("./printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array = require("./array");
-var Buffer = require("./buffer");
+var Obj              = require("./obj");
+var Pervasives       = require("./pervasives");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Printf           = require("./printf");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var $$Array          = require("./array");
+var Buffer           = require("./buffer");
 
 var printers = [
   0,
@@ -627,24 +628,24 @@ function convert_raw_backtrace_slot(prim) {
   return Caml_primitive.caml_convert_raw_backtrace_slot(prim);
 }
 
-exports.to_string = to_string;
-exports.print = print;
-exports.$$catch = $$catch;
-exports.print_backtrace = print_backtrace;
-exports.get_backtrace = get_backtrace;
-exports.record_backtrace = record_backtrace;
-exports.backtrace_status = backtrace_status;
-exports.register_printer = register_printer;
-exports.get_raw_backtrace = get_raw_backtrace;
-exports.print_raw_backtrace = print_raw_backtrace;
-exports.raw_backtrace_to_string = raw_backtrace_to_string;
-exports.get_callstack = get_callstack;
+exports.to_string                      = to_string;
+exports.print                          = print;
+exports.$$catch                        = $$catch;
+exports.print_backtrace                = print_backtrace;
+exports.get_backtrace                  = get_backtrace;
+exports.record_backtrace               = record_backtrace;
+exports.backtrace_status               = backtrace_status;
+exports.register_printer               = register_printer;
+exports.get_raw_backtrace              = get_raw_backtrace;
+exports.print_raw_backtrace            = print_raw_backtrace;
+exports.raw_backtrace_to_string        = raw_backtrace_to_string;
+exports.get_callstack                  = get_callstack;
 exports.set_uncaught_exception_handler = set_uncaught_exception_handler;
-exports.backtrace_slots = backtrace_slots;
-exports.Slot = Slot;
-exports.raw_backtrace_length = raw_backtrace_length;
-exports.get_raw_backtrace_slot = get_raw_backtrace_slot;
-exports.convert_raw_backtrace_slot = convert_raw_backtrace_slot;
-exports.exn_slot_id = exn_slot_id;
-exports.exn_slot_name = exn_slot_name;
+exports.backtrace_slots                = backtrace_slots;
+exports.Slot                           = Slot;
+exports.raw_backtrace_length           = raw_backtrace_length;
+exports.get_raw_backtrace_slot         = get_raw_backtrace_slot;
+exports.convert_raw_backtrace_slot     = convert_raw_backtrace_slot;
+exports.exn_slot_id                    = exn_slot_id;
+exports.exn_slot_name                  = exn_slot_name;
 /* No side effect */

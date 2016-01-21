@@ -180,3 +180,11 @@ let rev_map_acc  acc f l =
     | a::l -> rmap_f (f a :: accu) l
   in
   rmap_f acc l
+
+let rec rev_iter f xs =
+    match xs with    
+    | [] -> ()
+    | y :: ys -> 
+      rev_iter f ys ;
+      f y      
+      

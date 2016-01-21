@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
-var List = require("../stdlib/list");
+var $$Array    = require("../stdlib/array");
+var List       = require("../stdlib/list");
 
 function for_3(x) {
   var v = [
@@ -371,12 +372,12 @@ var suites = [
   suites_002
 ];
 
-exports.for_3 = for_3;
-exports.for_4 = for_4;
-exports.for_5 = for_5;
-exports.for_6 = for_6;
-exports.for_7 = for_7;
-exports.for_8 = for_8;
-exports.for_9 = for_9;
+exports.for_3  = for_3;
+exports.for_4  = for_4;
+exports.for_5  = for_5;
+exports.for_6  = for_6;
+exports.for_7  = for_7;
+exports.for_8  = for_8;
+exports.for_9  = for_9;
 exports.suites = suites;
 /* No side effect */

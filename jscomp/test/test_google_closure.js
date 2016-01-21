@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
-var $$Array = require("../stdlib/array");
+var $$Array    = require("../stdlib/array");
 
 function f(a, b, _) {
   return a + b;
@@ -34,9 +35,9 @@ var b = match_002;
 
 var c = arr;
 
-exports.f = f;
+exports.f  = f;
 exports.f2 = f2;
-exports.a = a;
-exports.b = b;
-exports.c = c;
+exports.a  = a;
+exports.b  = b;
+exports.c  = c;
 /* match Not a pure module */

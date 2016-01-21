@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
 
 Pervasives.print_int(3);

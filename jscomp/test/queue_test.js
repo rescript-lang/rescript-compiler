@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
-var Queue = require("../stdlib/queue");
+
+var Mt         = require("./mt");
+var Queue      = require("../stdlib/queue");
 var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
+var $$Array    = require("../stdlib/array");
 
 function to_array(q) {
   var v = Caml_array.caml_make_vect(Queue.length(q), 0);
@@ -49,6 +50,6 @@ var suites = [
 Mt.from_pair_suites("queue_test.ml", suites);
 
 exports.to_array = to_array;
-exports.queue_1 = queue_1;
-exports.suites = suites;
+exports.queue_1  = queue_1;
+exports.suites   = suites;
 /*  Not a pure module */

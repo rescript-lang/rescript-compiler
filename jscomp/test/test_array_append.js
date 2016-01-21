@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var $$Array = require("../stdlib/array");
 
 var const_v = $$Array.append(/* array */[

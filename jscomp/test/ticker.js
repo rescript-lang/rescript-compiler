@@ -1,12 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("../stdlib/pervasives");
-var Caml_format = require("../runtime/caml_format");
-var Printf = require("../stdlib/printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$String = require("../stdlib/string");
-var List = require("../stdlib/list");
+var Pervasives      = require("../stdlib/pervasives");
+var Caml_format     = require("../runtime/caml_format");
+var Printf          = require("../stdlib/printf");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var $$String        = require("../stdlib/string");
+var List            = require("../stdlib/list");
 
 function split(delim, s) {
   var len = s.length;
@@ -1212,14 +1213,14 @@ var lines = [
   ]
 ];
 
-exports.Util = Util;
-exports.string_of_rank = string_of_rank;
-exports.find_ticker_by_name = find_ticker_by_name;
-exports.print_all_composite = print_all_composite;
-exports.Ticker_map = Ticker_map;
+exports.Util                     = Util;
+exports.string_of_rank           = string_of_rank;
+exports.find_ticker_by_name      = find_ticker_by_name;
+exports.print_all_composite      = print_all_composite;
+exports.Ticker_map               = Ticker_map;
 exports.compute_update_sequences = compute_update_sequences;
-exports.process_quote = process_quote;
-exports.process_input_line = process_input_line;
-exports.lines = lines;
-exports.loop = loop;
+exports.process_quote            = process_quote;
+exports.process_input_line       = process_input_line;
+exports.lines                    = lines;
+exports.loop                     = loop;
 /* No side effect */

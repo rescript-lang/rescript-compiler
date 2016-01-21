@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array = require("../runtime/caml_array");
+var Caml_array      = require("../runtime/caml_array");
 
 function $$eval(_bdd, vars) {
   while(true) {
@@ -456,40 +457,40 @@ function main() {
 
 main(/* () */0);
 
-exports.$$eval = $$eval;
-exports.getId = getId;
-exports.initSize_1 = initSize_1;
-exports.nodeC = nodeC;
-exports.sz_1 = sz_1;
-exports.htab = htab;
-exports.n_items = n_items;
-exports.hashVal = hashVal;
-exports.resize = resize;
-exports.insert = insert;
+exports.$$eval      = $$eval;
+exports.getId       = getId;
+exports.initSize_1  = initSize_1;
+exports.nodeC       = nodeC;
+exports.sz_1        = sz_1;
+exports.htab        = htab;
+exports.n_items     = n_items;
+exports.hashVal     = hashVal;
+exports.resize      = resize;
+exports.insert      = insert;
 exports.resetUnique = resetUnique;
-exports.mkNode = mkNode;
-exports.cmpVar = cmpVar;
-exports.zero = zero;
-exports.one = one;
-exports.mkVar = mkVar;
-exports.cacheSize = cacheSize;
-exports.andslot1 = andslot1;
-exports.andslot2 = andslot2;
-exports.andslot3 = andslot3;
-exports.xorslot1 = xorslot1;
-exports.xorslot2 = xorslot2;
-exports.xorslot3 = xorslot3;
-exports.notslot1 = notslot1;
-exports.notslot2 = notslot2;
-exports.hash = hash;
-exports.not = not;
-exports.and2 = and2;
-exports.xor = xor;
-exports.hwb = hwb;
-exports.seed = seed;
-exports.random = random;
+exports.mkNode      = mkNode;
+exports.cmpVar      = cmpVar;
+exports.zero        = zero;
+exports.one         = one;
+exports.mkVar       = mkVar;
+exports.cacheSize   = cacheSize;
+exports.andslot1    = andslot1;
+exports.andslot2    = andslot2;
+exports.andslot3    = andslot3;
+exports.xorslot1    = xorslot1;
+exports.xorslot2    = xorslot2;
+exports.xorslot3    = xorslot3;
+exports.notslot1    = notslot1;
+exports.notslot2    = notslot2;
+exports.hash        = hash;
+exports.not         = not;
+exports.and2        = and2;
+exports.xor         = xor;
+exports.hwb         = hwb;
+exports.seed        = seed;
+exports.random      = random;
 exports.random_vars = random_vars;
-exports.bool_equal = bool_equal;
-exports.test_hwb = test_hwb;
-exports.main = main;
+exports.bool_equal  = bool_equal;
+exports.test_hwb    = test_hwb;
+exports.main        = main;
 /*  Not a pure module */

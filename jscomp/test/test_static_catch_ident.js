@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 var Scan_failure = [
@@ -34,6 +35,6 @@ function scanf_bad_input(_, x) {
   
 }
 
-exports.Scan_failure = Scan_failure;
+exports.Scan_failure    = Scan_failure;
 exports.scanf_bad_input = scanf_bad_input;
 /* No side effect */

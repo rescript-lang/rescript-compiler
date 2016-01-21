@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
 
 function odd(z) {
@@ -13,6 +14,6 @@ function even(y) {
   return odd(y);
 }
 
-exports.odd = odd;
+exports.odd  = odd;
 exports.even = even;
 /* No side effect */

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Sys = require("./sys");
+
+var Sys    = require("./sys");
 var Printf = require("./printf");
 
 function print_stat(c) {
@@ -325,10 +326,10 @@ function finalise_release() {
   return /* () */0;
 }
 
-exports.print_stat = print_stat;
-exports.allocated_bytes = allocated_bytes;
-exports.finalise = finalise;
+exports.print_stat       = print_stat;
+exports.allocated_bytes  = allocated_bytes;
+exports.finalise         = finalise;
 exports.finalise_release = finalise_release;
-exports.create_alarm = create_alarm;
-exports.delete_alarm = delete_alarm;
+exports.create_alarm     = create_alarm;
+exports.delete_alarm     = delete_alarm;
 /* No side effect */

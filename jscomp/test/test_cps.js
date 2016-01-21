@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
 var Caml_array = require("../runtime/caml_array");
 
@@ -41,6 +42,6 @@ f(10, function () {
       return /* () */0;
     });
 
-exports.f = f;
+exports.f            = f;
 exports.test_closure = test_closure;
 /*  Not a pure module */

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function ff(x) {
   var a;
   switch (x) {
@@ -59,7 +60,7 @@ function f3(x) {
 }
 
 exports.ff = ff;
-exports.f = f;
+exports.f  = f;
 exports.f2 = f2;
 exports.f3 = f3;
 /* No side effect */

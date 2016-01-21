@@ -80,6 +80,9 @@ let force_newline t =
 let space t  = 
   string t L.space
 
+let nspace  t n  = 
+  string  t (String.make n ' ')
+
 let group t i action = 
   if i = 0 then action ()
   else 

@@ -1,14 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Caml_format = require("../runtime/caml_format");
-var Sys = require("./sys");
-var Printf = require("./printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Buffer = require("./buffer");
-var $$String = require("./string");
-var List = require("./list");
+var Pervasives      = require("./pervasives");
+var Caml_format     = require("../runtime/caml_format");
+var Sys             = require("./sys");
+var Printf          = require("./printf");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var Buffer          = require("./buffer");
+var $$String        = require("./string");
+var List            = require("./list");
 
 var Bad = [
   248,
@@ -866,14 +867,14 @@ function align($staropt$star, speclist) {
             }, completed);
 }
 
-exports.parse = parse;
-exports.parse_dynamic = parse_dynamic;
-exports.parse_argv = parse_argv;
+exports.parse              = parse;
+exports.parse_dynamic      = parse_dynamic;
+exports.parse_argv         = parse_argv;
 exports.parse_argv_dynamic = parse_argv_dynamic;
-exports.Help = Help;
-exports.Bad = Bad;
-exports.usage = usage;
-exports.usage_string = usage_string;
-exports.align = align;
-exports.current = current;
+exports.Help               = Help;
+exports.Bad                = Bad;
+exports.usage              = usage;
+exports.usage_string       = usage_string;
+exports.align              = align;
+exports.current            = current;
 /* No side effect */

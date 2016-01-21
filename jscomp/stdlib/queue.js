@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_primitive  = require("../runtime/caml_primitive");
 
 var Empty = [
   248,
@@ -193,19 +194,19 @@ var pop = take;
 
 var top = peek;
 
-exports.Empty = Empty;
-exports.create = create;
-exports.add = add;
-exports.push = push;
-exports.take = take;
-exports.pop = pop;
-exports.peek = peek;
-exports.top = top;
-exports.clear = clear;
-exports.copy = copy;
+exports.Empty    = Empty;
+exports.create   = create;
+exports.add      = add;
+exports.push     = push;
+exports.take     = take;
+exports.pop      = pop;
+exports.peek     = peek;
+exports.top      = top;
+exports.clear    = clear;
+exports.copy     = copy;
 exports.is_empty = is_empty;
-exports.length = length;
-exports.iter = iter;
-exports.fold = fold;
+exports.length   = length;
+exports.iter     = iter;
+exports.fold     = fold;
 exports.transfer = transfer;
 /* No side effect */

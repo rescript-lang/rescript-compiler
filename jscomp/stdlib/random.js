@@ -1,13 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_sys = require("../runtime/caml_sys");
+
+var Caml_sys   = require("../runtime/caml_sys");
 var Pervasives = require("./pervasives");
-var Nativeint = require("./nativeint");
-var Int32 = require("./int32");
-var Digest = require("./digest");
-var Int64 = require("./int64");
+var Nativeint  = require("./nativeint");
+var Int32      = require("./int32");
+var Digest     = require("./digest");
+var Int64      = require("./int64");
 var Caml_array = require("../runtime/caml_array");
-var $$Array = require("./array");
+var $$Array    = require("./array");
 
 function new_state() {
   return [
@@ -275,17 +276,17 @@ var State = [
   bool
 ];
 
-exports.init = init;
+exports.init      = init;
 exports.full_init = full_init$1;
 exports.self_init = self_init;
-exports.bits = bits$1;
-exports.$$int = $$int$1;
-exports.int32 = int32$1;
+exports.bits      = bits$1;
+exports.$$int     = $$int$1;
+exports.int32     = int32$1;
 exports.nativeint = nativeint$1;
-exports.int64 = int64$1;
-exports.$$float = $$float$1;
-exports.bool = bool$1;
-exports.State = State;
+exports.int64     = int64$1;
+exports.$$float   = $$float$1;
+exports.bool      = bool$1;
+exports.State     = State;
 exports.get_state = get_state;
 exports.set_state = set_state;
 /* No side effect */

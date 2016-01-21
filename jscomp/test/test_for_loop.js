@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var $$Array = require("../stdlib/array");
 
 function for_(x) {
@@ -129,7 +130,7 @@ function for_6(x, u) {
   return v[1];
 }
 
-exports.for_ = for_;
+exports.for_  = for_;
 exports.for_2 = for_2;
 exports.for_3 = for_3;
 exports.for_4 = for_4;

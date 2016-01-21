@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
 
 var v = [
@@ -35,7 +36,7 @@ while(function () {
   console.log(Pervasives.string_of_int(3));
 };
 
-exports.v = v;
+exports.v   = v;
 exports.fib = fib;
-exports.x = x;
+exports.x   = x;
 /*  Not a pure module */

@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("./pervasives");
-var Buffer = require("./buffer");
+
+var Pervasives         = require("./pervasives");
+var Buffer             = require("./buffer");
 var CamlinternalFormat = require("./camlinternalFormat");
 
 function kfprintf(k, o, param) {
@@ -67,15 +68,15 @@ function sprintf(fmt) {
 
 var kprintf = ksprintf;
 
-exports.fprintf = fprintf;
-exports.printf = printf;
-exports.eprintf = eprintf;
-exports.sprintf = sprintf;
-exports.bprintf = bprintf;
-exports.ifprintf = ifprintf;
-exports.kfprintf = kfprintf;
+exports.fprintf   = fprintf;
+exports.printf    = printf;
+exports.eprintf   = eprintf;
+exports.sprintf   = sprintf;
+exports.bprintf   = bprintf;
+exports.ifprintf  = ifprintf;
+exports.kfprintf  = kfprintf;
 exports.ikfprintf = ikfprintf;
-exports.ksprintf = ksprintf;
-exports.kbprintf = kbprintf;
-exports.kprintf = kprintf;
+exports.ksprintf  = ksprintf;
+exports.kbprintf  = kbprintf;
+exports.kprintf   = kprintf;
 /* No side effect */

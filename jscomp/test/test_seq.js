@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("../stdlib/pervasives");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Pervasives      = require("../stdlib/pervasives");
+var Caml_primitive  = require("../runtime/caml_primitive");
 
 var Bad = [
   248,
@@ -114,12 +115,12 @@ function add_help(speclist) {
   return Pervasives.$at(speclist, Pervasives.$at(add1, add2));
 }
 
-exports.Bad = Bad;
-exports.Help = Help;
-exports.Stop = Stop;
-exports.assoc3 = assoc3;
+exports.Bad         = Bad;
+exports.Help        = Help;
+exports.Stop        = Stop;
+exports.assoc3      = assoc3;
 exports.help_action = help_action;
-exports.v = v;
-exports.f = f;
-exports.add_help = add_help;
+exports.v           = v;
+exports.f           = f;
+exports.add_help    = add_help;
 /* No side effect */

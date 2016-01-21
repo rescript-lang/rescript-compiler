@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
-var List = require("../stdlib/list");
+var List       = require("../stdlib/list");
 
 var $at = Pervasives.$at;
 
@@ -142,5 +143,5 @@ var Pervasives$1 = [
 var v = $at;
 
 exports.Pervasives = Pervasives$1;
-exports.v = v;
+exports.v          = v;
 /* No side effect */

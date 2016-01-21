@@ -1,14 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("../stdlib/pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
+
+var Pervasives       = require("../stdlib/pervasives");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
 var Test_inline_map2 = require("./test_inline_map2");
-var Mt = require("./mt");
-var Test_map_find = require("./test_map_find");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$String = require("../stdlib/string");
-var List = require("../stdlib/list");
-var Test_inline_map = require("./test_inline_map");
+var Mt               = require("./mt");
+var Test_map_find    = require("./test_map_find");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var $$String         = require("../stdlib/string");
+var List             = require("../stdlib/list");
+var Test_inline_map  = require("./test_inline_map");
 
 function compare(x, y) {
   return Caml_primitive.caml_int_compare(x, y);

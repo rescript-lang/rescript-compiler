@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Printf = require("../stdlib/printf");
 
 console.error(Printf.sprintf([

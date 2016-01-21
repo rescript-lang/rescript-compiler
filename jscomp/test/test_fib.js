@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function fib(n) {
   if (1 < (n >>> 0)) {
     return fib(n - 1) + fib(n - 2);
@@ -96,14 +97,14 @@ function fib3(n) {
 
 var b = fib;
 
-exports.fib = fib;
-exports.fib2 = fib2;
-exports.b = b;
-exports.sum = sum;
+exports.fib     = fib;
+exports.fib2    = fib2;
+exports.b       = b;
+exports.sum     = sum;
 exports.sumdown = sumdown;
-exports.cons = cons;
-exports.length = length;
-exports.map = map;
-exports.f = f;
-exports.fib3 = fib3;
+exports.cons    = cons;
+exports.length  = length;
+exports.map     = map;
+exports.f       = f;
+exports.fib3    = fib3;
 /*  Not a pure module */

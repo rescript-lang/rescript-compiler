@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_oo = require("../runtime/caml_oo");
-var Mt = require("./mt");
+
+var Caml_oo        = require("../runtime/caml_oo");
+var Mt             = require("./mt");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 
 var shared = [
@@ -396,11 +397,11 @@ var suites = [
 
 Mt.from_pair_suites("obj_test.ml", suites);
 
-exports.vv = vv;
-exports.v = v;
-exports.u = u;
-exports.uu = uu;
-exports.uuu = uuu;
-exports.vvvv = vvvv;
+exports.vv     = vv;
+exports.v      = v;
+exports.u      = u;
+exports.uu     = uu;
+exports.uuu    = uuu;
+exports.vvvv   = vvvv;
 exports.suites = suites;
 /* class Not a pure module */

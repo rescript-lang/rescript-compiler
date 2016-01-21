@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("./pervasives");
+
+var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array = require("../runtime/caml_array");
+var Caml_array      = require("../runtime/caml_array");
 
 function init(l, f) {
   if (l) {
@@ -426,24 +427,24 @@ function concat(prim) {
 
 var fast_sort = stable_sort;
 
-exports.init = init;
-exports.make_matrix = make_matrix;
+exports.init          = init;
+exports.make_matrix   = make_matrix;
 exports.create_matrix = create_matrix;
-exports.append = append;
-exports.concat = concat;
-exports.sub = sub;
-exports.copy = copy;
-exports.fill = fill;
-exports.blit = blit;
-exports.to_list = to_list;
-exports.of_list = of_list;
-exports.iter = iter;
-exports.map = map;
-exports.iteri = iteri;
-exports.mapi = mapi;
-exports.fold_left = fold_left;
-exports.fold_right = fold_right;
-exports.sort = sort;
-exports.stable_sort = stable_sort;
-exports.fast_sort = fast_sort;
+exports.append        = append;
+exports.concat        = concat;
+exports.sub           = sub;
+exports.copy          = copy;
+exports.fill          = fill;
+exports.blit          = blit;
+exports.to_list       = to_list;
+exports.of_list       = of_list;
+exports.iter          = iter;
+exports.map           = map;
+exports.iteri         = iteri;
+exports.mapi          = mapi;
+exports.fold_left     = fold_left;
+exports.fold_right    = fold_right;
+exports.sort          = sort;
+exports.stable_sort   = stable_sort;
+exports.fast_sort     = fast_sort;
 /* No side effect */

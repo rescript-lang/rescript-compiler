@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_array = require("./caml_array");
 
 function curry(_f, _args) {
@@ -193,14 +194,14 @@ function app8(o, a0, a1, a2, a3, a4, a5, a6, a7) {
   }
 }
 
-exports.curry = curry;
+exports.curry  = curry;
 exports.curry1 = curry1;
-exports.app1 = app1;
-exports.app2 = app2;
-exports.app3 = app3;
-exports.app4 = app4;
-exports.app5 = app5;
-exports.app6 = app6;
-exports.app7 = app7;
-exports.app8 = app8;
+exports.app1   = app1;
+exports.app2   = app2;
+exports.app3   = app3;
+exports.app4   = app4;
+exports.app5   = app5;
+exports.app6   = app6;
+exports.app7   = app7;
+exports.app8   = app8;
 /* No side effect */

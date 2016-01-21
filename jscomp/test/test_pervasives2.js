@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
-var Stack = require("../stdlib/stack");
-var List = require("../stdlib/list");
+var Stack      = require("../stdlib/stack");
+var List       = require("../stdlib/list");
 
 var length = List.length;
 
@@ -251,8 +252,8 @@ var ff = length;
 var fff = $at$1;
 
 exports.List = List$1;
-exports.U = U;
-exports.f = f;
-exports.ff = ff;
-exports.fff = fff;
+exports.U    = U;
+exports.f    = f;
+exports.ff   = ff;
+exports.fff  = fff;
 /* No side effect */

@@ -1,16 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj = require("./obj");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Caml_oo = require("../runtime/caml_oo");
-var Sys = require("./sys");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("./array");
-var Caml_string = require("../runtime/caml_string");
-var List = require("./list");
+var Obj              = require("./obj");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Pervasives       = require("./pervasives");
+var Caml_oo          = require("../runtime/caml_oo");
+var Sys              = require("./sys");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var Caml_array       = require("../runtime/caml_array");
+var $$Array          = require("./array");
+var Caml_string      = require("../runtime/caml_string");
+var List             = require("./list");
 
 function copy(o) {
   return Caml_exceptions.caml_set_oo_id(Caml_obj_runtime.caml_obj_dup(o));
@@ -1282,34 +1283,34 @@ function stats() {
         ];
 }
 
-exports.public_method_label = public_method_label;
-exports.new_method = new_method;
-exports.new_variable = new_variable;
-exports.new_methods_variables = new_methods_variables;
-exports.get_variable = get_variable;
-exports.get_variables = get_variables;
-exports.get_method_label = get_method_label;
-exports.get_method_labels = get_method_labels;
-exports.get_method = get_method;
-exports.set_method = set_method;
-exports.set_methods = set_methods;
-exports.narrow = narrow;
-exports.widen = widen;
-exports.add_initializer = add_initializer;
-exports.dummy_table = dummy_table;
-exports.create_table = create_table;
-exports.init_class = init_class;
-exports.inherits = inherits;
-exports.make_class = make_class;
-exports.make_class_store = make_class_store;
-exports.dummy_class = dummy_class;
-exports.copy = copy;
-exports.create_object = create_object;
-exports.create_object_opt = create_object_opt;
-exports.run_initializers = run_initializers;
-exports.run_initializers_opt = run_initializers_opt;
+exports.public_method_label                = public_method_label;
+exports.new_method                         = new_method;
+exports.new_variable                       = new_variable;
+exports.new_methods_variables              = new_methods_variables;
+exports.get_variable                       = get_variable;
+exports.get_variables                      = get_variables;
+exports.get_method_label                   = get_method_label;
+exports.get_method_labels                  = get_method_labels;
+exports.get_method                         = get_method;
+exports.set_method                         = set_method;
+exports.set_methods                        = set_methods;
+exports.narrow                             = narrow;
+exports.widen                              = widen;
+exports.add_initializer                    = add_initializer;
+exports.dummy_table                        = dummy_table;
+exports.create_table                       = create_table;
+exports.init_class                         = init_class;
+exports.inherits                           = inherits;
+exports.make_class                         = make_class;
+exports.make_class_store                   = make_class_store;
+exports.dummy_class                        = dummy_class;
+exports.copy                               = copy;
+exports.create_object                      = create_object;
+exports.create_object_opt                  = create_object_opt;
+exports.run_initializers                   = run_initializers;
+exports.run_initializers_opt               = run_initializers_opt;
 exports.create_object_and_run_initializers = create_object_and_run_initializers;
-exports.lookup_tables = lookup_tables;
-exports.params = params;
-exports.stats = stats;
+exports.lookup_tables                      = lookup_tables;
+exports.params                             = params;
+exports.stats                              = stats;
 /* No side effect */

@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("./bytes");
-var Pervasives = require("./pervasives");
-var Caml_lexer = require("../runtime/caml_lexer");
-var Sys = require("./sys");
+
+var Bytes       = require("./bytes");
+var Pervasives  = require("./pervasives");
+var Caml_lexer  = require("../runtime/caml_lexer");
+var Sys         = require("./sys");
 var Caml_string = require("../runtime/caml_string");
 
 function engine(tbl, state, buf) {
@@ -222,22 +223,22 @@ var dummy_pos = [
   -1
 ];
 
-exports.dummy_pos = dummy_pos;
-exports.from_channel = from_channel;
-exports.from_string = from_string;
-exports.from_function = from_function;
-exports.lexeme = lexeme;
-exports.lexeme_char = lexeme_char;
-exports.lexeme_start = lexeme_start;
-exports.lexeme_end = lexeme_end;
-exports.lexeme_start_p = lexeme_start_p;
-exports.lexeme_end_p = lexeme_end_p;
-exports.new_line = new_line;
-exports.flush_input = flush_input;
-exports.sub_lexeme = sub_lexeme;
-exports.sub_lexeme_opt = sub_lexeme_opt;
-exports.sub_lexeme_char = sub_lexeme_char;
+exports.dummy_pos           = dummy_pos;
+exports.from_channel        = from_channel;
+exports.from_string         = from_string;
+exports.from_function       = from_function;
+exports.lexeme              = lexeme;
+exports.lexeme_char         = lexeme_char;
+exports.lexeme_start        = lexeme_start;
+exports.lexeme_end          = lexeme_end;
+exports.lexeme_start_p      = lexeme_start_p;
+exports.lexeme_end_p        = lexeme_end_p;
+exports.new_line            = new_line;
+exports.flush_input         = flush_input;
+exports.sub_lexeme          = sub_lexeme;
+exports.sub_lexeme_opt      = sub_lexeme_opt;
+exports.sub_lexeme_char     = sub_lexeme_char;
 exports.sub_lexeme_char_opt = sub_lexeme_char_opt;
-exports.engine = engine;
-exports.new_engine = new_engine;
+exports.engine              = engine;
+exports.new_engine          = new_engine;
 /* No side effect */

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function f(param) {
   if (typeof param === "number") {
     if (param) {
@@ -37,6 +38,6 @@ function bind(x, f) {
   }
 }
 
-exports.f = f;
+exports.f    = f;
 exports.bind = bind;
 /* No side effect */

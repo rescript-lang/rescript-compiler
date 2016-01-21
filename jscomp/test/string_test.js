@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("../stdlib/bytes");
-var Mt = require("./mt");
+
+var Bytes    = require("../stdlib/bytes");
+var Mt       = require("./mt");
 var $$String = require("../stdlib/string");
 
 function ff(x) {

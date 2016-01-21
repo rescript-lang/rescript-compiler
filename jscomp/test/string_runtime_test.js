@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_string = require("../runtime/caml_string");
-var Mt = require("./mt");
-var $$String = require("../stdlib/string");
+var Mt          = require("./mt");
+var $$String    = require("../stdlib/string");
 var Caml_string = require("../runtime/caml_string");
-var List = require("../stdlib/list");
+var List        = require("../stdlib/list");
 
 var suites_001 = [
   /* tuple */0,
@@ -102,6 +103,6 @@ Mt.from_pair_suites("string_runtime_test.ml", suites);
 
 var S = 0;
 
-exports.S = S;
+exports.S      = S;
 exports.suites = suites;
 /*  Not a pure module */

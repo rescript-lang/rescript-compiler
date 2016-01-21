@@ -1,8 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("../stdlib/bytes");
-var Ext_bytes = require("./ext_bytes");
-var $$String = require("../stdlib/string");
+
+var Bytes       = require("../stdlib/bytes");
+var Ext_bytes   = require("./ext_bytes");
+var $$String    = require("../stdlib/string");
+var Caml_string = require("../runtime/caml_string");
 
 function split_by($staropt$star, is_delim, str) {
   var keep_empty = $staropt$star ? $staropt$star[1] : /* false */0;
@@ -156,11 +158,21 @@ function is_empty(s) {
   return +(s.length === 0);
 }
 
-exports.split_by = split_by;
-exports.split = split;
+function repeat(n, s) {
+  var len = s.length;
+  var res = Caml_string.caml_create_string(n * len);
+  for(var i = 0 ,i_finish = -1 + n; i<= i_finish; ++i){
+    $$String.blit(s, 0, res, i * len, len);
+  }
+  return Bytes.to_string(res);
+}
+
+exports.split_by    = split_by;
+exports.split       = split;
 exports.starts_with = starts_with;
-exports.ends_with = ends_with;
-exports.escaped = escaped;
-exports.for_all = for_all;
-exports.is_empty = is_empty;
+exports.ends_with   = ends_with;
+exports.escaped     = escaped;
+exports.for_all     = for_all;
+exports.is_empty    = is_empty;
+exports.repeat      = repeat;
 /* No side effect */

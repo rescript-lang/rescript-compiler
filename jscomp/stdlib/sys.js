@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_primitive  = require("../runtime/caml_primitive");
 
 var is_js = /* true */1;
 
@@ -100,41 +101,41 @@ var sigprof = -21;
 
 var ocaml_version = "4.02.3+dev1-2015-07-10";
 
-exports.argv = argv;
-exports.executable_name = executable_name;
-exports.interactive = interactive;
-exports.os_type = os_type;
-exports.unix = unix;
-exports.win32 = win32;
-exports.cygwin = cygwin;
-exports.word_size = word_size;
-exports.big_endian = big_endian;
-exports.is_js = is_js;
+exports.argv              = argv;
+exports.executable_name   = executable_name;
+exports.interactive       = interactive;
+exports.os_type           = os_type;
+exports.unix              = unix;
+exports.win32             = win32;
+exports.cygwin            = cygwin;
+exports.word_size         = word_size;
+exports.big_endian        = big_endian;
+exports.is_js             = is_js;
 exports.max_string_length = max_string_length;
-exports.max_array_length = max_array_length;
-exports.set_signal = set_signal;
-exports.sigabrt = sigabrt;
-exports.sigalrm = sigalrm;
-exports.sigfpe = sigfpe;
-exports.sighup = sighup;
-exports.sigill = sigill;
-exports.sigint = sigint;
-exports.sigkill = sigkill;
-exports.sigpipe = sigpipe;
-exports.sigquit = sigquit;
-exports.sigsegv = sigsegv;
-exports.sigterm = sigterm;
-exports.sigusr1 = sigusr1;
-exports.sigusr2 = sigusr2;
-exports.sigchld = sigchld;
-exports.sigcont = sigcont;
-exports.sigstop = sigstop;
-exports.sigtstp = sigtstp;
-exports.sigttin = sigttin;
-exports.sigttou = sigttou;
-exports.sigvtalrm = sigvtalrm;
-exports.sigprof = sigprof;
-exports.Break = Break;
-exports.catch_break = catch_break;
-exports.ocaml_version = ocaml_version;
+exports.max_array_length  = max_array_length;
+exports.set_signal        = set_signal;
+exports.sigabrt           = sigabrt;
+exports.sigalrm           = sigalrm;
+exports.sigfpe            = sigfpe;
+exports.sighup            = sighup;
+exports.sigill            = sigill;
+exports.sigint            = sigint;
+exports.sigkill           = sigkill;
+exports.sigpipe           = sigpipe;
+exports.sigquit           = sigquit;
+exports.sigsegv           = sigsegv;
+exports.sigterm           = sigterm;
+exports.sigusr1           = sigusr1;
+exports.sigusr2           = sigusr2;
+exports.sigchld           = sigchld;
+exports.sigcont           = sigcont;
+exports.sigstop           = sigstop;
+exports.sigtstp           = sigtstp;
+exports.sigttin           = sigttin;
+exports.sigttou           = sigttou;
+exports.sigvtalrm         = sigvtalrm;
+exports.sigprof           = sigprof;
+exports.Break             = Break;
+exports.catch_break       = catch_break;
+exports.ocaml_version     = ocaml_version;
 /* No side effect */

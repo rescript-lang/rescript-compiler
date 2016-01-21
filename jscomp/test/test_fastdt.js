@@ -1,19 +1,20 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_float = require("../runtime/caml_float");
-var Hashtbl = require("../stdlib/hashtbl");
+
+var Caml_float      = require("../runtime/caml_float");
+var Hashtbl         = require("../stdlib/hashtbl");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("../stdlib/pervasives");
-var Caml_format = require("../runtime/caml_format");
-var Bigarray = require("bigarray");
-var Sys = require("../stdlib/sys");
-var Printf = require("../stdlib/printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
-var Str = require("str");
-var List = require("../stdlib/list");
-var Random = require("../stdlib/random");
+var Pervasives      = require("../stdlib/pervasives");
+var Caml_format     = require("../runtime/caml_format");
+var Bigarray        = require("bigarray");
+var Sys             = require("../stdlib/sys");
+var Printf          = require("../stdlib/printf");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_array      = require("../runtime/caml_array");
+var $$Array         = require("../stdlib/array");
+var Str             = require("str");
+var List            = require("../stdlib/list");
+var Random          = require("../stdlib/random");
 
 function mkfp(a, b) {
   return /* array */[
@@ -1392,33 +1393,33 @@ var H = 0;
 
 var A = 0;
 
-exports.H = H;
-exports.A = A;
-exports.mkfp = mkfp;
-exports.array_elem = array_elem;
-exports.split_white_re = split_white_re;
-exports.split_white = split_white;
-exports.dict = dict;
-exports.dictN = dictN;
-exports.get_fid = get_fid;
-exports.clean_up_dict = clean_up_dict;
-exports.map_filter = map_filter;
-exports.$slash$dot$dot = $slash$dot$dot;
-exports.predict = predict;
+exports.H                  = H;
+exports.A                  = A;
+exports.mkfp               = mkfp;
+exports.array_elem         = array_elem;
+exports.split_white_re     = split_white_re;
+exports.split_white        = split_white;
+exports.dict               = dict;
+exports.dictN              = dictN;
+exports.get_fid            = get_fid;
+exports.clean_up_dict      = clean_up_dict;
+exports.map_filter         = map_filter;
+exports.$slash$dot$dot     = $slash$dot$dot;
+exports.predict            = predict;
 exports.compute_tree_error = compute_tree_error;
-exports.predict_committee = predict_committee;
-exports.is_real_value = is_real_value;
+exports.predict_committee  = predict_committee;
+exports.is_real_value      = is_real_value;
 exports.find_split_feature = find_split_feature;
-exports.trim_tree_same = trim_tree_same;
-exports.build_dt = build_dt;
-exports.build_bagged_dt = build_bagged_dt;
-exports.build_boosted_dt = build_boosted_dt;
-exports.build_single_dt = build_single_dt;
-exports.uniq = uniq;
-exports.of_list_rev = of_list_rev;
-exports.load_data = load_data;
-exports.predict_file = predict_file;
-exports.print_tree = print_tree;
-exports.read_tree = read_tree;
-exports.load_model = load_model;
+exports.trim_tree_same     = trim_tree_same;
+exports.build_dt           = build_dt;
+exports.build_bagged_dt    = build_bagged_dt;
+exports.build_boosted_dt   = build_boosted_dt;
+exports.build_single_dt    = build_single_dt;
+exports.uniq               = uniq;
+exports.of_list_rev        = of_list_rev;
+exports.load_data          = load_data;
+exports.predict_file       = predict_file;
+exports.print_tree         = print_tree;
+exports.read_tree          = read_tree;
+exports.load_model         = load_model;
 /* split_white_re Not a pure module */

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 var one = /* float array */[
   1.0,
   0.0
@@ -165,22 +166,22 @@ var i = /* float array */[
   1.0
 ];
 
-exports.zero = zero;
-exports.one = one;
-exports.i = i;
-exports.neg = neg;
-exports.conj = conj;
-exports.add = add;
-exports.sub = sub;
-exports.mul = mul;
-exports.inv = inv;
-exports.div = div;
-exports.sqrt = sqrt;
+exports.zero  = zero;
+exports.one   = one;
+exports.i     = i;
+exports.neg   = neg;
+exports.conj  = conj;
+exports.add   = add;
+exports.sub   = sub;
+exports.mul   = mul;
+exports.inv   = inv;
+exports.div   = div;
+exports.sqrt  = sqrt;
 exports.norm2 = norm2;
-exports.norm = norm;
-exports.arg = arg;
+exports.norm  = norm;
+exports.arg   = arg;
 exports.polar = polar;
-exports.exp = exp;
-exports.log = log;
-exports.pow = pow;
+exports.exp   = exp;
+exports.log   = log;
+exports.pow   = pow;
 /* No side effect */

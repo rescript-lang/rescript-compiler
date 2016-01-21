@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Filename = require("../stdlib/filename");
-var Mt = require("./mt");
+var Mt       = require("./mt");
 var $$String = require("../stdlib/string");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -69,6 +70,6 @@ var suites = [
 Mt.from_pair_suites("inline_regression_test.ml", suites);
 
 exports.generic_basename = generic_basename;
-exports.basename = basename;
-exports.suites = suites;
+exports.basename         = basename;
+exports.suites           = suites;
 /*  Not a pure module */

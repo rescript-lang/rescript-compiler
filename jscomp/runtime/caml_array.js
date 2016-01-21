@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
   var j = 0;
@@ -80,8 +81,8 @@ function caml_array_blit(a1, i1, a2, i2, len) {
   }
 }
 
-exports.caml_array_sub = caml_array_sub;
+exports.caml_array_sub    = caml_array_sub;
 exports.caml_array_concat = caml_array_concat;
-exports.caml_make_vect = caml_make_vect;
-exports.caml_array_blit = caml_array_blit;
+exports.caml_make_vect    = caml_make_vect;
+exports.caml_array_blit   = caml_array_blit;
 /* No side effect */
