@@ -23,23 +23,19 @@ function escaped(s) {
         $js = 2;
       }
     }
-    else {
-      if (c >= 11) {
-        if (c >= 13) {
-          $js = 2;
-        }
-        else {
-          exit = 1;
-        }
+    else if (c >= 11) {
+      if (c >= 13) {
+        $js = 2;
       }
       else {
-        if (c >= 8) {
-          $js = 2;
-        }
-        else {
-          exit = 1;
-        }
+        exit = 1;
       }
+    }
+    else if (c >= 8) {
+      $js = 2;
+    }
+    else {
+      exit = 1;
     }
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
@@ -55,23 +51,13 @@ function escaped(s) {
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
-      var switcher = -34 + c$1;
-      if (!(58 < (switcher >>> 0))) {
-        if (56 < (-1 + switcher >>> 0)) {
-          s$prime[n] = /* "\\" */92;
-          ++ n;
-          s$prime[n] = c$1;
-        }
-        else {
-          exit$1 = 1;
-        }
-      }
-      else {
+      var switcher = c$1 - 34;
+      if (switcher > 58 || switcher < 0) {
         if (switcher >= -20) {
           exit$1 = 1;
         }
         else {
-          switch (34 + switcher) {
+          switch (switcher + 34) {
             case 8 : 
                 s$prime[n] = /* "\\" */92;
                 ++ n;
@@ -107,6 +93,14 @@ function escaped(s) {
             
           }
         }
+      }
+      else if (switcher > 57 || switcher < 1) {
+        s$prime[n] = /* "\\" */92;
+        ++ n;
+        s$prime[n] = c$1;
+      }
+      else {
+        exit$1 = 1;
       }
       if (exit$1 === 1) {
         if (Caml_string.caml_is_printable(c$1)) {

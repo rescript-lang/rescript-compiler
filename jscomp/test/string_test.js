@@ -30,7 +30,7 @@ function ff(x) {
 
 function gg(x) {
   var a;
-  if (8 < (x >>> 0)) {
+  if (x > 8 || x < 0) {
     a = 8;
   }
   else {

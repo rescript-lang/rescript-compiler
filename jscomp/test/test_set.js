@@ -36,13 +36,30 @@ function Make(Ord) {
         if (height(ll) >= height(lr)) {
           return create(ll, lv, create(lr, v, r));
         }
+        else if (lr) {
+          return create(create(ll, lv, lr[1]), lr[2], create(lr[3], v, r));
+        }
         else {
-          if (lr) {
-            return create(create(ll, lv, lr[1]), lr[2], create(lr[3], v, r));
-          }
-          else {
-            return Pervasives.invalid_arg("Set.bal");
-          }
+          return Pervasives.invalid_arg("Set.bal");
+        }
+      }
+      else {
+        return Pervasives.invalid_arg("Set.bal");
+      }
+    }
+    else if (hr > hl + 2) {
+      if (r) {
+        var rr = r[3];
+        var rv = r[2];
+        var rl = r[1];
+        if (height(rr) >= height(rl)) {
+          return create(create(l, v, rl), rv, rr);
+        }
+        else if (rl) {
+          return create(create(l, v, rl[1]), rl[2], create(rl[3], rv, rr));
+        }
+        else {
+          return Pervasives.invalid_arg("Set.bal");
         }
       }
       else {
@@ -50,36 +67,13 @@ function Make(Ord) {
       }
     }
     else {
-      if (hr > hl + 2) {
-        if (r) {
-          var rr = r[3];
-          var rv = r[2];
-          var rl = r[1];
-          if (height(rr) >= height(rl)) {
-            return create(create(l, v, rl), rv, rr);
-          }
-          else {
-            if (rl) {
-              return create(create(l, v, rl[1]), rl[2], create(rl[3], rv, rr));
-            }
-            else {
-              return Pervasives.invalid_arg("Set.bal");
-            }
-          }
-        }
-        else {
-          return Pervasives.invalid_arg("Set.bal");
-        }
-      }
-      else {
-        return [
-                /* Node */0,
-                l,
-                v,
-                r,
-                hl >= hr ? hl + 1 : hr + 1
-              ];
-      }
+      return [
+              /* Node */0,
+              l,
+              v,
+              r,
+              hl >= hr ? hl + 1 : hr + 1
+            ];
     }
   };
   var add = function (x, t) {
@@ -143,13 +137,11 @@ function Make(Ord) {
         if (lh > rh + 2) {
           return bal(l[1], l[2], join(l[3], v, r));
         }
+        else if (rh > lh + 2) {
+          return bal(join(l, v, r[1]), r[2], r[3]);
+        }
         else {
-          if (rh > lh + 2) {
-            return bal(join(l, v, r[1]), r[2], r[3]);
-          }
-          else {
-            return create(l, v, r);
-          }
+          return create(l, v, r);
         }
       }
       else {
@@ -334,14 +326,12 @@ function Make(Ord) {
             return join(union(s1[1], match[1]), v1, union(s1[3], match[3]));
           }
         }
+        else if (h1 === 1) {
+          return add(v1, s2);
+        }
         else {
-          if (h1 === 1) {
-            return add(v1, s2);
-          }
-          else {
-            var match$1 = split(v2, s1);
-            return join(union(match$1[1], s2[1]), v2, union(match$1[3], s2[3]));
-          }
+          var match$1 = split(v2, s1);
+          return join(union(match$1[1], s2[1]), v2, union(match$1[3], s2[3]));
         }
       }
       else {
@@ -435,13 +425,11 @@ function Make(Ord) {
           return 1;
         }
       }
+      else if (e2) {
+        return -1;
+      }
       else {
-        if (e2) {
-          return -1;
-        }
-        else {
-          return 0;
-        }
+        return 0;
       }
     };
   };
@@ -633,7 +621,7 @@ function Make(Ord) {
   var of_sorted_list = function (l) {
     var sub = function (n, l) {
       var exit = 0;
-      if (3 < (n >>> 0)) {
+      if (n > 3 || n < 0) {
         exit = 1;
       }
       else {

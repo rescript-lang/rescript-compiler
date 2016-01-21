@@ -31,18 +31,14 @@ function array_elem(a, i) {
       if (a[lo] === i) {
         return /* true */1;
       }
+      else if (lo >= hi) {
+        return /* false */0;
+      }
+      else if (a[lo] < i) {
+        _lo = lo + 1;
+      }
       else {
-        if (lo >= hi) {
-          return /* false */0;
-        }
-        else {
-          if (a[lo] < i) {
-            _lo = lo + 1;
-          }
-          else {
-            return /* false */0;
-          }
-        }
+        return /* false */0;
       }
     };
   };
@@ -65,13 +61,11 @@ function array_elem(a, i) {
           if (v === i) {
             return /* true */1;
           }
+          else if (v < i) {
+            _lo = mi;
+          }
           else {
-            if (v < i) {
-              _lo = mi;
-            }
-            else {
-              _hi = mi;
-            }
+            _hi = mi;
           }
         }
       }
@@ -223,23 +217,17 @@ function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
     if (x <= 0 || x >= 1) {
       return 0;
     }
+    else if (x < 0.2) {
+      return 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * sqr(x - 0.10);
+    }
+    else if (x < 0.5) {
+      return 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * sqr(x - 0.35);
+    }
+    else if (x < 0.8) {
+      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * sqr(x - 0.65);
+    }
     else {
-      if (x < 0.2) {
-        return 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * sqr(x - 0.10);
-      }
-      else {
-        if (x < 0.5) {
-          return 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * sqr(x - 0.35);
-        }
-        else {
-          if (x < 0.8) {
-            return 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * sqr(x - 0.65);
-          }
-          else {
-            return 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * sqr(x - 0.90);
-          }
-        }
-      }
+      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * sqr(x - 0.90);
     }
   };
   var best = /* None */0;
@@ -1137,53 +1125,41 @@ while(i < _I) {
     ];
     i += 2;
   }
+  else if (i < _I - 1 && Sys.argv[i] === "-bag") {
+    bag_size = [
+      /* Some */0,
+      Caml_format.caml_int_of_string(Sys.argv[i + 1])
+    ];
+    i += 2;
+  }
+  else if (i < _I - 1 && Sys.argv[i] === "-load") {
+    load_dt = [
+      /* Some */0,
+      Sys.argv[i + 1]
+    ];
+    i += 2;
+  }
+  else if (i < _I - 1 && Sys.argv[i] === "-maxd") {
+    max_d = Caml_format.caml_int_of_string(Sys.argv[i + 1]);
+    i += 2;
+  }
+  else if (i < _I - 1 && Sys.argv[i] === "-rho") {
+    rho = Caml_format.caml_float_of_string(Sys.argv[i + 1]);
+    i += 2;
+  }
+  else if (i < _I - 1 && Sys.argv[i] === "-minfc") {
+    minfc = Caml_format.caml_int_of_string(Sys.argv[i + 1]);
+    i += 2;
+  }
+  else if (Sys.argv[i].length > 1 && Sys.argv[i][0] === "-") {
+    Pervasives.failwith(usage);
+  }
   else {
-    if (i < _I - 1 && Sys.argv[i] === "-bag") {
-      bag_size = [
-        /* Some */0,
-        Caml_format.caml_int_of_string(Sys.argv[i + 1])
-      ];
-      i += 2;
-    }
-    else {
-      if (i < _I - 1 && Sys.argv[i] === "-load") {
-        load_dt = [
-          /* Some */0,
-          Sys.argv[i + 1]
-        ];
-        i += 2;
-      }
-      else {
-        if (i < _I - 1 && Sys.argv[i] === "-maxd") {
-          max_d = Caml_format.caml_int_of_string(Sys.argv[i + 1]);
-          i += 2;
-        }
-        else {
-          if (i < _I - 1 && Sys.argv[i] === "-rho") {
-            rho = Caml_format.caml_float_of_string(Sys.argv[i + 1]);
-            i += 2;
-          }
-          else {
-            if (i < _I - 1 && Sys.argv[i] === "-minfc") {
-              minfc = Caml_format.caml_int_of_string(Sys.argv[i + 1]);
-              i += 2;
-            }
-            else {
-              if (Sys.argv[i].length > 1 && Sys.argv[i][0] === "-") {
-                Pervasives.failwith(usage);
-              }
-              else {
-                input_f = [
-                  /* Some */0,
-                  Sys.argv[i]
-                ];
-                ++ i;
-              }
-            }
-          }
-        }
-      }
-    }
+    input_f = [
+      /* Some */0,
+      Sys.argv[i]
+    ];
+    ++ i;
   }
 };
 

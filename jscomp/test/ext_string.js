@@ -23,27 +23,25 @@ function split_by($staropt$star, is_delim, str) {
               acc
             ];
     }
-    else {
-      if (is_delim(str.charCodeAt(pos))) {
-        var new_len = last_pos - pos - 1;
-        if (new_len !== 0 || keep_empty) {
-          var v = $$String.sub(str, pos + 1, new_len);
-          _pos = pos - 1;
-          _last_pos = pos;
-          _acc = [
-            /* :: */0,
-            v,
-            acc
-          ];
-        }
-        else {
-          _pos = pos - 1;
-          _last_pos = pos;
-        }
+    else if (is_delim(str.charCodeAt(pos))) {
+      var new_len = last_pos - pos - 1;
+      if (new_len !== 0 || keep_empty) {
+        var v = $$String.sub(str, pos + 1, new_len);
+        _pos = pos - 1;
+        _last_pos = pos;
+        _acc = [
+          /* :: */0,
+          v,
+          acc
+        ];
       }
       else {
         _pos = pos - 1;
+        _last_pos = pos;
       }
+    }
+    else {
+      _pos = pos - 1;
     }
   };
 }
@@ -79,14 +77,12 @@ function ends_with(s, beg) {
       if (k < 0) {
         return /* true */1;
       }
+      else if (s[j] === beg[k]) {
+        _k = k - 1;
+        _j = j - 1;
+      }
       else {
-        if (s[j] === beg[k]) {
-          _k = k - 1;
-          _j = j - 1;
-        }
-        else {
-          return /* false */0;
-        }
+        return /* false */0;
       }
     };
   }
@@ -102,16 +98,8 @@ function escaped(s) {
       else {
         var match = s.charCodeAt(i);
         if (match >= 32) {
-          var switcher = -34 + match;
-          if (!(58 < (switcher >>> 0))) {
-            if (56 < (-1 + switcher >>> 0)) {
-              return /* true */1;
-            }
-            else {
-              _i = i + 1;
-            }
-          }
-          else {
+          var switcher = match - 34;
+          if (switcher > 58 || switcher < 0) {
             if (switcher >= 93) {
               return /* true */1;
             }
@@ -119,16 +107,20 @@ function escaped(s) {
               _i = i + 1;
             }
           }
-        }
-        else {
-          if (match >= 11) {
-            match !== 13;
+          else if (switcher > 57 || switcher < 1) {
             return /* true */1;
           }
           else {
-            match >= 8;
-            return /* true */1;
+            _i = i + 1;
           }
+        }
+        else if (match >= 11) {
+          match !== 13;
+          return /* true */1;
+        }
+        else {
+          match >= 8;
+          return /* true */1;
         }
       }
     };
@@ -161,7 +153,7 @@ function is_empty(s) {
 function repeat(n, s) {
   var len = s.length;
   var res = Caml_string.caml_create_string(n * len);
-  for(var i = 0 ,i_finish = -1 + n; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
     $$String.blit(s, 0, res, i * len, len);
   }
   return Bytes.to_string(res);

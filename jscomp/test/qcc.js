@@ -89,13 +89,11 @@ function find(s, _n) {
       ++ syms[1];
       return n;
     }
+    else if (symtab[n] === s) {
+      return n;
+    }
     else {
-      if (symtab[n] === s) {
-        return n;
-      }
-      else {
-        _n = n + 1;
-      }
+      _n = n + 1;
     }
   };
 }
@@ -107,7 +105,7 @@ function match_001(s) {
 }
 
 function match_002(n) {
-  if (!(n < syms[1])) {
+  if (n >= syms[1]) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -153,34 +151,30 @@ function getq() {
   if (c !== 92) {
     return c;
   }
+  else if (peekch(/* () */0) === /* "n" */110) {
+    getch(/* () */0);
+    return /* "\n" */10;
+  }
   else {
-    if (peekch(/* () */0) === /* "n" */110) {
-      getch(/* () */0);
-      return /* "\n" */10;
-    }
-    else {
-      return c;
-    }
+    return c;
   }
 }
 
 function isid(param) {
-  var switcher = -91 + param;
-  if (5 < (switcher >>> 0)) {
-    if (57 < (26 + switcher >>> 0)) {
+  var switcher = param - 91;
+  if (switcher > 5 || switcher < 0) {
+    if ((switcher + 26 >>> 0) > 57) {
       return /* false */0;
     }
     else {
       return /* true */1;
     }
   }
+  else if (switcher !== 4) {
+    return /* false */0;
+  }
   else {
-    if (switcher !== 4) {
-      return /* false */0;
-    }
-    else {
-      return /* true */1;
-    }
+    return /* true */1;
   }
 }
 
@@ -193,50 +187,42 @@ function skip(_param) {
         if (ch !== 47) {
           return ch;
         }
+        else if (peekch(/* () */0) === /* "*" */42) {
+          var _param$1 = getch(/* () */0);
+          while(true) {
+            var match = getch(/* () */0);
+            if (match !== 42) {
+              _param$1 = /* () */0;
+            }
+            else if (peekch(/* () */0) === /* "/" */47) {
+              return skip(getch(/* () */0));
+            }
+            else {
+              _param$1 = /* () */0;
+            }
+          };
+        }
         else {
-          if (peekch(/* () */0) === /* "*" */42) {
-            var _param$1 = getch(/* () */0);
-            while(true) {
-              var match = getch(/* () */0);
-              if (match !== 42) {
-                _param$1 = /* () */0;
-              }
-              else {
-                if (peekch(/* () */0) === /* "/" */47) {
-                  return skip(getch(/* () */0));
-                }
-                else {
-                  _param$1 = /* () */0;
-                }
-              }
-            };
-          }
-          else {
-            return ch;
-          }
+          return ch;
         }
       }
       else {
         exit = 1;
       }
     }
-    else {
-      if (ch >= 11) {
-        if (ch >= 13) {
-          exit = 1;
-        }
-        else {
-          return ch;
-        }
+    else if (ch >= 11) {
+      if (ch >= 13) {
+        exit = 1;
       }
       else {
-        if (ch >= 9) {
-          exit = 1;
-        }
-        else {
-          return ch;
-        }
+        return ch;
       }
+    }
+    else if (ch >= 9) {
+      exit = 1;
+    }
+    else {
+      return ch;
     }
     if (exit === 1) {
       _param = /* () */0;
@@ -274,7 +260,7 @@ function next() {
           while(true) {
             var n = _n;
             var match$1 = peekch(/* () */0);
-            if (9 < (-48 + match$1 >>> 0)) {
+            if (match$1 > 57 || match$1 < 48) {
               return [
                       /* ILit */1,
                       n
@@ -286,22 +272,20 @@ function next() {
           };
         }
       }
+      else if (c !== 39) {
+        exit = 1;
+      }
       else {
-        if (c !== 39) {
-          exit = 1;
+        var ch = getq(/* () */0);
+        var qt = getch(/* () */0);
+        if (qt !== /* "'" */39) {
+          return Pervasives.failwith("syntax error");
         }
         else {
-          var ch = getq(/* () */0);
-          var qt = getch(/* () */0);
-          if (qt !== /* "'" */39) {
-            return Pervasives.failwith("syntax error");
-          }
-          else {
-            return [
-                    /* ILit */1,
-                    ch
-                  ];
-          }
+          return [
+                  /* ILit */1,
+                  ch
+                ];
         }
       }
     }
@@ -467,7 +451,7 @@ function get32(l) {
 }
 
 function patch(rel, loc, n) {
-  if (!(n < 4294967296)) {
+  if (n >= 4294967296) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -1095,11 +1079,11 @@ function binary(stk, lvl) {
   }
   else {
     var lvlof = function (o) {
-      if (!List.mem_assoc(o, lvls)) {
-        return -1;
+      if (List.mem_assoc(o, lvls)) {
+        return List.assoc(o, lvls);
       }
       else {
-        return List.assoc(o, lvls);
+        return -1;
       }
     };
     var foldtst = function (_loc) {
@@ -1110,16 +1094,14 @@ function binary(stk, lvl) {
           unnext(t);
           return loc;
         }
+        else if (lvlof(t[1]) === lvl) {
+          var loc$prime = test(lvl - 8, loc);
+          binary(stk, lvl - 1);
+          _loc = loc$prime;
+        }
         else {
-          if (lvlof(t[1]) === lvl) {
-            var loc$prime = test(lvl - 8, loc);
-            binary(stk, lvl - 1);
-            _loc = loc$prime;
-          }
-          else {
-            unnext(t);
-            return loc;
-          }
+          unnext(t);
+          return loc;
         }
       };
     };
@@ -1269,7 +1251,7 @@ function unary(stk) {
         var i = match[1];
         if (List.mem_assoc(i, stk)) {
           var l = List.assoc(i, stk);
-          if (!(l > -256)) {
+          if (l <= -256) {
             throw [
                   0,
                   Caml_exceptions.Assert_failure,
@@ -1463,24 +1445,22 @@ function expr(stk) {
     if (t[0]) {
       return unnext(t);
     }
-    else {
-      if (t[1] === "=") {
-        patchlval(/* () */0);
-        var ty = lval[1][2];
-        push(0);
-        expr(stk);
-        pop(1);
-        if (ty) {
-          out(34817);
-        }
-        else {
-          out(4753665);
-        }
-        _param = /* () */0;
+    else if (t[1] === "=") {
+      patchlval(/* () */0);
+      var ty = lval[1][2];
+      push(0);
+      expr(stk);
+      pop(1);
+      if (ty) {
+        out(34817);
       }
       else {
-        return unnext(t);
+        out(4753665);
       }
+      _param = /* () */0;
+    }
+    else {
+      return unnext(t);
     }
   };
 }
@@ -1544,20 +1524,20 @@ function decl(g, _n, _stk) {
                   stk
                 ];
               }
-              if (!nextis([
+              if (nextis([
                       /* Op */0,
                       ","
                     ])) {
+                next$1(/* () */0);
+                _stk = stk$prime;
+                _n = n$prime;
+              }
+              else {
                 return [
                         /* tuple */0,
                         n$prime,
                         stk$prime
                       ];
-              }
-              else {
-                next$1(/* () */0);
-                _stk = stk$prime;
-                _n = n$prime;
               }
             }
             else {
@@ -1596,7 +1576,7 @@ function decl(g, _n, _stk) {
     else {
       unnext(t);
       if (!g && n !== 0) {
-        if (!(n * 8 < 256)) {
+        if (n * 8 >= 256) {
           throw [
                 0,
                 Caml_exceptions.Assert_failure,
@@ -1642,10 +1622,7 @@ function stmt(brk, stk) {
     var loc = test(0, 0);
     stmt(brk, stk);
     var loc$1;
-    if (!nextis(tokelse)) {
-      loc$1 = loc;
-    }
-    else {
+    if (nextis(tokelse)) {
       next$1(/* () */0);
       out(233);
       var l = opos[1];
@@ -1654,130 +1631,125 @@ function stmt(brk, stk) {
       stmt(brk, stk);
       loc$1 = l;
     }
+    else {
+      loc$1 = loc;
+    }
     return patch(/* true */1, loc$1, opos[1]);
   }
-  else {
-    if (Caml_primitive.caml_equal(t, tokwhile) || Caml_primitive.caml_equal(t, tokfor)) {
-      var match_001 = [
+  else if (Caml_primitive.caml_equal(t, tokwhile) || Caml_primitive.caml_equal(t, tokfor)) {
+    var match_001 = [
+      0,
+      0
+    ];
+    var match_002 = align[1];
+    var bl = match_001;
+    var match;
+    if (Caml_primitive.caml_equal(t, tokwhile)) {
+      var loc$2 = opos[1];
+      pexpr(stk);
+      bl[1] = test(0, 0);
+      match = [
+        /* tuple */0,
         0,
-        0
+        loc$2
       ];
-      var match_002 = align[1];
-      var bl = match_001;
-      var match;
-      if (Caml_primitive.caml_equal(t, tokwhile)) {
-        var loc$2 = opos[1];
-        pexpr(stk);
-        bl[1] = test(0, 0);
-        match = [
-          /* tuple */0,
-          0,
-          loc$2
-        ];
-      }
-      else {
-        next$1(/* () */0);
-        if (!nextis([
-                /* Op */0,
-                ";"
-              ])) {
-          expr(stk);
-        }
-        next$1(/* () */0);
-        var top = opos[1];
-        if (!nextis([
-                /* Op */0,
-                ";"
-              ])) {
-          expr(stk);
-          bl[1] = test(0, 0);
-        }
-        else {
-          bl[1] = 0;
-        }
-        next$1(/* () */0);
-        out(233);
-        var bdy = opos[1];
-        le(32, 0);
-        var itr = opos[1];
-        expr(stk);
-        next$1(/* () */0);
-        out(233);
-        le(32, top - opos[1] - 4);
-        match = [
-          /* tuple */0,
-          bdy,
-          itr
-        ];
-      }
-      patch(/* true */1, match[1], opos[1]);
-      stmt([
-            /* tuple */0,
-            bl,
-            match_002
-          ], stk);
-      out(233);
-      le(32, match[2] - opos[1] - 4);
-      return patch(/* true */1, bl[1], opos[1]);
     }
     else {
-      if (Caml_primitive.caml_equal(t, tokret)) {
-        if (!nextis([
-                /* Op */0,
-                ";"
-              ])) {
-          expr(stk);
-        }
-        next$1(/* () */0);
-        out(233);
-        var loc$3 = opos[1];
-        le(32, retl[1]);
-        retl[1] = loc$3;
-        return /* () */0;
+      next$1(/* () */0);
+      if (!nextis([
+              /* Op */0,
+              ";"
+            ])) {
+        expr(stk);
+      }
+      next$1(/* () */0);
+      var top = opos[1];
+      if (nextis([
+              /* Op */0,
+              ";"
+            ])) {
+        bl[1] = 0;
       }
       else {
-        if (Caml_primitive.caml_equal(t, tokbreak)) {
-          next$1(/* () */0);
-          var brkl = brk[1];
-          var n = align[1] - brk[2];
-          if (!(n >= 0)) {
-            throw [
-                  0,
-                  Caml_exceptions.Assert_failure,
-                  [
-                    0,
-                    "qcc.ml",
-                    515,
-                    4
-                  ]
-                ];
-          }
-          if (n !== 0) {
-            out(4752324);
-            out(n * 8);
-          }
-          out(233);
-          var loc$4 = opos[1];
-          le(32, brkl[1]);
-          brkl[1] = loc$4;
-          return /* () */0;
-        }
-        else {
-          if (t[0]) {
-            exit = 1;
-          }
-          else {
-            switch (t[1]) {
-              case ";" : 
-                  return /* () */0;
-              case "{" : 
-                  return block(brk, stk);
-              default:
-                exit = 1;
-            }
-          }
-        }
+        expr(stk);
+        bl[1] = test(0, 0);
       }
+      next$1(/* () */0);
+      out(233);
+      var bdy = opos[1];
+      le(32, 0);
+      var itr = opos[1];
+      expr(stk);
+      next$1(/* () */0);
+      out(233);
+      le(32, top - opos[1] - 4);
+      match = [
+        /* tuple */0,
+        bdy,
+        itr
+      ];
+    }
+    patch(/* true */1, match[1], opos[1]);
+    stmt([
+          /* tuple */0,
+          bl,
+          match_002
+        ], stk);
+    out(233);
+    le(32, match[2] - opos[1] - 4);
+    return patch(/* true */1, bl[1], opos[1]);
+  }
+  else if (Caml_primitive.caml_equal(t, tokret)) {
+    if (!nextis([
+            /* Op */0,
+            ";"
+          ])) {
+      expr(stk);
+    }
+    next$1(/* () */0);
+    out(233);
+    var loc$3 = opos[1];
+    le(32, retl[1]);
+    retl[1] = loc$3;
+    return /* () */0;
+  }
+  else if (Caml_primitive.caml_equal(t, tokbreak)) {
+    next$1(/* () */0);
+    var brkl = brk[1];
+    var n = align[1] - brk[2];
+    if (n < 0) {
+      throw [
+            0,
+            Caml_exceptions.Assert_failure,
+            [
+              0,
+              "qcc.ml",
+              515,
+              4
+            ]
+          ];
+    }
+    if (n !== 0) {
+      out(4752324);
+      out(n * 8);
+    }
+    out(233);
+    var loc$4 = opos[1];
+    le(32, brkl[1]);
+    brkl[1] = loc$4;
+    return /* () */0;
+  }
+  else if (t[0]) {
+    exit = 1;
+  }
+  else {
+    switch (t[1]) {
+      case ";" : 
+          return /* () */0;
+      case "{" : 
+          return block(brk, stk);
+      default:
+        exit = 1;
     }
   }
   if (exit === 1) {
@@ -1812,152 +1784,150 @@ function block(brk, stk) {
 
 function top(_param) {
   while(true) {
-    if (!nextis([
+    if (nextis([
             /* Op */0,
             "EOF!"
           ])) {
-      if (nextis(tokint)) {
-        decl(/* true */1, 0, /* [] */0);
-        _param = /* () */0;
-      }
-      else {
-        var match = next$1(/* () */0);
-        if (match[0] === 3) {
-          var f = match[1];
-          var g = globs[f];
-          if (g[2] >= 0) {
-            Pervasives.failwith("symbol defined twice");
-          }
-          globs[f] = [
-            /* record */0,
-            g[1],
-            opos[1]
-          ];
-          var emitargs = function (_regs, _n, _stk) {
-            while(true) {
-              var stk = _stk;
-              var n = _n;
-              var regs = _regs;
-              var match = next$1(/* () */0);
-              var exit = 0;
-              switch (match[0]) {
-                case 0 : 
-                    if (match[1] === ")") {
-                      return stk;
-                    }
-                    else {
-                      exit = 1;
-                    }
-                    break;
-                case 1 : 
-                case 2 : 
+      return 0;
+    }
+    else if (nextis(tokint)) {
+      decl(/* true */1, 0, /* [] */0);
+      _param = /* () */0;
+    }
+    else {
+      var match = next$1(/* () */0);
+      if (match[0] === 3) {
+        var f = match[1];
+        var g = globs[f];
+        if (g[2] >= 0) {
+          Pervasives.failwith("symbol defined twice");
+        }
+        globs[f] = [
+          /* record */0,
+          g[1],
+          opos[1]
+        ];
+        var emitargs = function (_regs, _n, _stk) {
+          while(true) {
+            var stk = _stk;
+            var n = _n;
+            var regs = _regs;
+            var match = next$1(/* () */0);
+            var exit = 0;
+            switch (match[0]) {
+              case 0 : 
+                  if (match[1] === ")") {
+                    return stk;
+                  }
+                  else {
                     exit = 1;
-                    break;
-                case 3 : 
-                    var r = List.hd(regs);
-                    push(r);
-                    if (nextis([
-                            /* Op */0,
-                            ","
-                          ])) {
-                      next$1(/* () */0);
-                    }
-                    var stk$prime_001 = [
-                      /* tuple */0,
-                      match[1],
-                      -n * 8
-                    ];
-                    var stk$prime = [
-                      /* :: */0,
-                      stk$prime_001,
-                      stk
-                    ];
-                    _stk = stk$prime;
-                    _n = n + 1;
-                    _regs = List.tl(regs);
-                    break;
-                
-              }
-              if (exit === 1) {
-                return Pervasives.failwith("[var] or ) expected");
-              }
+                  }
+                  break;
+              case 1 : 
+              case 2 : 
+                  exit = 1;
+                  break;
+              case 3 : 
+                  var r = List.hd(regs);
+                  push(r);
+                  if (nextis([
+                          /* Op */0,
+                          ","
+                        ])) {
+                    next$1(/* () */0);
+                  }
+                  var stk$prime_001 = [
+                    /* tuple */0,
+                    match[1],
+                    -n * 8
+                  ];
+                  var stk$prime = [
+                    /* :: */0,
+                    stk$prime_001,
+                    stk
+                  ];
+                  _stk = stk$prime;
+                  _n = n + 1;
+                  _regs = List.tl(regs);
+                  break;
               
-            };
+            }
+            if (exit === 1) {
+              return Pervasives.failwith("[var] or ) expected");
+            }
+            
           };
-          next$1(/* () */0);
-          align[1] = 0;
-          out(85);
-          out(4753893);
-          var stk = emitargs([
+        };
+        next$1(/* () */0);
+        align[1] = 0;
+        out(85);
+        out(4753893);
+        var stk = emitargs([
+              /* :: */0,
+              7,
+              [
                 /* :: */0,
-                7,
+                6,
                 [
                   /* :: */0,
-                  6,
+                  2,
                   [
                     /* :: */0,
-                    2,
+                    1,
                     [
                       /* :: */0,
-                      1,
+                      8,
                       [
                         /* :: */0,
-                        8,
-                        [
-                          /* :: */0,
-                          9,
-                          /* [] */0
-                        ]
+                        9,
+                        /* [] */0
                       ]
                     ]
                   ]
                 ]
-              ], 1, /* [] */0);
-          while(Caml_primitive.caml_notequal(next$1(/* () */0), [
-                  /* Op */0,
-                  "{"
-                ])) {
-            
-          };
-          retl[1] = 0;
-          block([
-                /* tuple */0,
-                [
-                  0,
-                  0
-                ],
+              ]
+            ], 1, /* [] */0);
+        while(Caml_primitive.caml_notequal(next$1(/* () */0), [
+                /* Op */0,
+                "{"
+              ])) {
+          
+        };
+        retl[1] = 0;
+        block([
+              /* tuple */0,
+              [
+                0,
                 0
-              ], stk);
-          patch(/* true */1, retl[1], opos[1]);
-          out(51651);
-          if (dbg[1]) {
-            Printf.eprintf([
-                    /* Format */0,
+              ],
+              0
+            ], stk);
+        patch(/* true */1, retl[1], opos[1]);
+        out(51651);
+        if (dbg[1]) {
+          Printf.eprintf([
+                  /* Format */0,
+                  [
+                    /* String_literal */11,
+                    "done with function ",
                     [
-                      /* String_literal */11,
-                      "done with function ",
+                      /* String */2,
+                      /* No_padding */0,
                       [
-                        /* String */2,
-                        /* No_padding */0,
-                        [
-                          /* Char_literal */12,
-                          /* "\n" */10,
-                          /* End_of_format */0
-                        ]
+                        /* Char_literal */12,
+                        /* "\n" */10,
+                        /* End_of_format */0
                       ]
-                    ],
-                    "done with function %s\n"
-                  ])(symstr(f));
-          }
-          _param = /* () */0;
+                    ]
+                  ],
+                  "done with function %s\n"
+                ])(symstr(f));
         }
-        else {
-          return Pervasives.failwith("[decl] or [fun] expected");
-        }
+        _param = /* () */0;
       }
-    }
-    else {
-      return 0;
+      else {
+        return Pervasives.failwith("[decl] or [fun] expected");
+      }
     }
   };
 }
@@ -2072,13 +2042,11 @@ function elfgen(outf) {
     if (g[2] >= 0 && g[2] < base) {
       return patch(/* false */0, g[1], va(g[2]));
     }
+    else if (g[2] >= 0) {
+      return patch(/* false */0, g[1], g[2]);
+    }
     else {
-      if (g[2] >= 0) {
-        return patch(/* false */0, g[1], g[2]);
-      }
-      else {
-        return 0;
-      }
+      return 0;
     }
   };
   symitr(patchloc);
@@ -2359,22 +2327,20 @@ function main() {
             ppsym(tok);
             _param = /* () */0;
           }
+          else if (tok[1] === "EOF!") {
+            return Printf.printf([
+                        /* Format */0,
+                        [
+                          /* String_literal */11,
+                          "End of input stream\n",
+                          /* End_of_format */0
+                        ],
+                        "End of input stream\n"
+                      ]);
+          }
           else {
-            if (tok[1] === "EOF!") {
-              return Printf.printf([
-                          /* Format */0,
-                          [
-                            /* String_literal */11,
-                            "End of input stream\n",
-                            /* End_of_format */0
-                          ],
-                          "End of input stream\n"
-                        ]);
-            }
-            else {
-              ppsym(tok);
-              _param = /* () */0;
-            }
+            ppsym(tok);
+            _param = /* () */0;
           }
         };
     default:

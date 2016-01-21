@@ -128,13 +128,11 @@ function valid_float_lexem(s) {
           _i = i + 1;
         }
       }
+      else if (match !== 45) {
+        return s;
+      }
       else {
-        if (match !== 45) {
-          return s;
-        }
-        else {
-          _i = i + 1;
-        }
+        _i = i + 1;
       }
     }
   };
@@ -398,13 +396,11 @@ function input_line(chan) {
           ];
         }
       }
+      else if (accu) {
+        return build_result(Caml_string.caml_create_string(len), len, accu);
+      }
       else {
-        if (accu) {
-          return build_result(Caml_string.caml_create_string(len), len, accu);
-        }
-        else {
-          throw Caml_exceptions.End_of_file;
-        }
+        throw Caml_exceptions.End_of_file;
       }
     };
   };

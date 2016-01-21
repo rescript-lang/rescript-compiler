@@ -10,11 +10,11 @@ function escaped(s) {
     var match = s[i];
     var $js;
     if (match >= 32) {
-      var switcher = -34 + match;
-      $js = !(58 < (switcher >>> 0)) ? (
-          56 < (-1 + switcher >>> 0) ? 2 : 1
-        ) : (
+      var switcher = match - 34;
+      $js = switcher > 58 || switcher < 0 ? (
           switcher >= 93 ? 4 : 1
+        ) : (
+          switcher > 57 || switcher < 1 ? 2 : 1
         );
     }
     else {
@@ -48,56 +48,52 @@ function escaped(s) {
           exit = 2;
         }
       }
-      else {
-        if (c >= 32) {
-          if (c >= 34) {
-            exit = 2;
-          }
-          else {
-            s$prime[n] = c;
-          }
+      else if (c >= 32) {
+        if (c >= 34) {
+          exit = 2;
         }
         else {
-          if (c >= 14) {
-            exit = 1;
-          }
-          else {
-            switch (c) {
-              case 8 : 
-                  s$prime[n] = /* "\\" */92;
-                  ++ n;
-                  s$prime[n] = /* "b" */98;
-                  break;
-              case 9 : 
-                  s$prime[n] = /* "\\" */92;
-                  ++ n;
-                  s$prime[n] = /* "t" */116;
-                  break;
-              case 10 : 
-                  s$prime[n] = /* "\\" */92;
-                  ++ n;
-                  s$prime[n] = /* "n" */110;
-                  break;
-              case 0 : 
-              case 1 : 
-              case 2 : 
-              case 3 : 
-              case 4 : 
-              case 5 : 
-              case 6 : 
-              case 7 : 
-              case 11 : 
-              case 12 : 
-                  exit = 1;
-                  break;
-              case 13 : 
-                  s$prime[n] = /* "\\" */92;
-                  ++ n;
-                  s$prime[n] = /* "r" */114;
-                  break;
-              
-            }
-          }
+          s$prime[n] = c;
+        }
+      }
+      else if (c >= 14) {
+        exit = 1;
+      }
+      else {
+        switch (c) {
+          case 8 : 
+              s$prime[n] = /* "\\" */92;
+              ++ n;
+              s$prime[n] = /* "b" */98;
+              break;
+          case 9 : 
+              s$prime[n] = /* "\\" */92;
+              ++ n;
+              s$prime[n] = /* "t" */116;
+              break;
+          case 10 : 
+              s$prime[n] = /* "\\" */92;
+              ++ n;
+              s$prime[n] = /* "n" */110;
+              break;
+          case 0 : 
+          case 1 : 
+          case 2 : 
+          case 3 : 
+          case 4 : 
+          case 5 : 
+          case 6 : 
+          case 7 : 
+          case 11 : 
+          case 12 : 
+              exit = 1;
+              break;
+          case 13 : 
+              s$prime[n] = /* "\\" */92;
+              ++ n;
+              s$prime[n] = /* "r" */114;
+              break;
+          
         }
       }
       switch (exit) {

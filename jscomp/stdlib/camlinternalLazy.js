@@ -46,13 +46,11 @@ function force(lzv) {
   if (t === Obj.forward_tag) {
     return lzv[0];
   }
+  else if (t !== Obj.lazy_tag) {
+    return lzv;
+  }
   else {
-    if (t !== Obj.lazy_tag) {
-      return lzv;
-    }
-    else {
-      return force_lazy_block(lzv);
-    }
+    return force_lazy_block(lzv);
   }
 }
 
@@ -61,13 +59,11 @@ function force_val(lzv) {
   if (t === Obj.forward_tag) {
     return lzv[0];
   }
+  else if (t !== Obj.lazy_tag) {
+    return lzv;
+  }
   else {
-    if (t !== Obj.lazy_tag) {
-      return lzv;
-    }
-    else {
-      return force_val_lazy_block(lzv);
-    }
+    return force_val_lazy_block(lzv);
   }
 }
 

@@ -60,30 +60,28 @@ function get_data(count, _d) {
                 _d = d2;
               }
             }
-            else {
-              if (match[0]) {
-                throw [
+            else if (match[0]) {
+              throw [
+                    0,
+                    Caml_exceptions.Assert_failure,
+                    [
                       0,
-                      Caml_exceptions.Assert_failure,
+                      "stream.ml",
+                      53,
+                      12
+                    ]
+                  ];
+            }
+            else {
+              return [
+                      /* Scons */0,
+                      match[1],
                       [
-                        0,
-                        "stream.ml",
-                        53,
-                        12
+                        /* Sapp */1,
+                        match[2],
+                        d2
                       ]
                     ];
-              }
-              else {
-                return [
-                        /* Scons */0,
-                        match[1],
-                        [
-                          /* Sapp */1,
-                          match[2],
-                          d2
-                        ]
-                      ];
-              }
             }
             break;
         case 2 : 
@@ -184,26 +182,24 @@ function peek(s) {
                 return /* None */0;
               }
             }
-            else {
-              if (d[0]) {
-                throw [
+            else if (d[0]) {
+              throw [
+                    0,
+                    Caml_exceptions.Assert_failure,
+                    [
                       0,
-                      Caml_exceptions.Assert_failure,
-                      [
-                        0,
-                        "stream.ml",
-                        82,
-                        12
-                      ]
+                      "stream.ml",
+                      82,
+                      12
+                    ]
+                  ];
+            }
+            else {
+              set_data(s, d);
+              return [
+                      /* Some */0,
+                      d[1]
                     ];
-              }
-              else {
-                set_data(s, d);
-                return [
-                        /* Some */0,
-                        d[1]
-                      ];
-              }
             }
             break;
         case 2 : 
@@ -307,7 +303,7 @@ function nget(n, s) {
     if (match) {
       var a = match[1];
       junk(s);
-      var match$1 = nget(-1 + n, s);
+      var match$1 = nget(n - 1, s);
       return [
               /* tuple */0,
               [
@@ -320,7 +316,7 @@ function nget(n, s) {
                 a,
                 match$1[2]
               ],
-              1 + match$1[3]
+              match$1[3] + 1
             ];
     }
     else {

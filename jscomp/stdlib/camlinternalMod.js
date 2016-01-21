@@ -34,20 +34,18 @@ function init_mod(loc, shape) {
       
     }
   }
+  else if (shape[0]) {
+    return shape[1];
+  }
   else {
-    if (shape[0]) {
-      return shape[1];
-    }
-    else {
-      return $$Array.map(function (param) {
-                  return init_mod(loc, param);
-                }, shape[1]);
-    }
+    return $$Array.map(function (param) {
+                return init_mod(loc, param);
+              }, shape[1]);
   }
 }
 
 function overwrite(o, n) {
-  if (!(o.length >= n.length)) {
+  if (o.length < n.length) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -83,17 +81,15 @@ function update_mod(shape, o, n) {
             o[0] = n[0];
             return /* () */0;
           }
+          else if (Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag) {
+            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
+            o[0] = n[0];
+            return /* () */0;
+          }
           else {
-            if (Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag) {
-              Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
-              o[0] = n[0];
-              return /* () */0;
-            }
-            else {
-              Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
-              o[0] = n;
-              return /* () */0;
-            }
+            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
+            o[0] = n;
+            return /* () */0;
           }
       case 2 : 
           if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length === 4)) {
@@ -112,29 +108,27 @@ function update_mod(shape, o, n) {
       
     }
   }
+  else if (shape[0]) {
+    return /* () */0;
+  }
   else {
-    if (shape[0]) {
-      return /* () */0;
-    }
-    else {
-      var comps = shape[1];
-      if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length >= comps.length)) {
-        throw [
+    var comps = shape[1];
+    if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length >= comps.length)) {
+      throw [
+            0,
+            Caml_exceptions.Assert_failure,
+            [
               0,
-              Caml_exceptions.Assert_failure,
-              [
-                0,
-                "camlinternalMod.ml",
-                66,
-                6
-              ]
-            ];
-      }
-      for(var i = 0 ,i_finish = comps.length - 1; i<= i_finish; ++i){
-        update_mod(comps[i], o[i], n[i]);
-      }
-      return /* () */0;
+              "camlinternalMod.ml",
+              66,
+              6
+            ]
+          ];
     }
+    for(var i = 0 ,i_finish = comps.length - 1; i<= i_finish; ++i){
+      update_mod(comps[i], o[i], n[i]);
+    }
+    return /* () */0;
   }
 }
 

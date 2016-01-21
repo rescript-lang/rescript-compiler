@@ -74,7 +74,7 @@ let query (prim : Lam_compile_env.primitive_description)
         E.math "acos" args 
     |  "caml_add_float" -> 
         begin match args with 
-        | [e0;e1] -> E.float_plus e0 e1 (** TODO float plus*)
+        | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
         | _ -> assert false
         end
     |"caml_div_float" -> 
@@ -94,12 +94,12 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_ge_float"  ->
         begin match args with 
-        | [e0;e1] -> E.ge e0 e1
+        | [e0;e1] -> E.float_comp Cge e0 e1
         | _ -> assert false 
         end
     |"caml_gt_float"  ->
         begin match args with 
-        | [e0;e1] -> E.gt  e0 e1
+        | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
         end
     | "caml_tan_float"  ->
@@ -176,7 +176,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
     | "caml_int32_add"|"caml_nativeint_add" -> 
         begin match args with 
-        | [e0;e1] -> E.int_plus e0 e1 
+        | [e0;e1] -> E.int32_add e0 e1 
         | _ -> assert false 
         end
     | "caml_int32_div"| "caml_nativeint_div" -> 
@@ -208,7 +208,7 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_int32_sub"|"caml_nativeint_sub" ->
         begin match args with 
-        | [e0;e1] -> E.int_minus e0 e1 
+        | [e0;e1] -> E.int32_minus e0 e1 
         | _ -> assert false 
         end
     | "caml_int32_xor" | "caml_nativeint_xor" -> 
@@ -229,19 +229,19 @@ let query (prim : Lam_compile_env.primitive_description)
         end
     | "caml_le_float" ->
         begin match args with 
-        | [e0;e1] -> E.le e0 e1 
+        | [e0;e1] -> E.float_comp Cle e0 e1 
         | _ -> assert false 
         end
     | "caml_lt_float" ->
         begin match args with 
-        | [e0;e1] -> E.lt e0 e1 
+        | [e0;e1] -> E.float_comp Clt e0 e1 
         | _ -> assert false 
         end
     |  "caml_neg_float" -> 
         begin match args with 
         | [e] -> 
             (** TODO: use float.. *)
-            E.int_minus (E.int 0) e 
+            E.int32_minus (E.int 0) e 
         | _ -> assert false
         end
     | "caml_neq_float" -> 
@@ -284,7 +284,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_string_notequal"
       -> 
         begin match args with 
-        | [e0; e1] -> E.stringcomp NotEqEq e0 e1
+        | [e0; e1] -> E.string_comp NotEqEq e0 e1
               (** TODO: convert to ocaml ones*)
         | _ -> assert false 
         end
@@ -294,7 +294,7 @@ let query (prim : Lam_compile_env.primitive_description)
             match args with 
             | [e0; e1] 
               -> 
-                E.stringcomp Le e0 e1
+                E.string_comp Le e0 e1
             | _ -> assert false 
           end
     | "caml_string_lessthan"
@@ -302,7 +302,7 @@ let query (prim : Lam_compile_env.primitive_description)
           begin match args with 
           | [e0; e1] 
             -> 
-              E.stringcomp Lt e0 e1
+              E.string_comp Lt e0 e1
           | _ -> assert false 
           end
     | "caml_string_greaterequal"
@@ -310,7 +310,7 @@ let query (prim : Lam_compile_env.primitive_description)
           begin match args with 
           | [e0; e1] 
             -> 
-              E.stringcomp Ge  e0 e1
+              E.string_comp Ge  e0 e1
           | _ -> assert false 
           end
     | "caml_string_greaterthan"
@@ -318,7 +318,7 @@ let query (prim : Lam_compile_env.primitive_description)
           begin match args with 
           | [e0; e1] 
             -> 
-              E.stringcomp Gt  e0 e1
+              E.string_comp Gt  e0 e1
           | _ -> assert false 
           end
     | "caml_create_string" -> 

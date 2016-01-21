@@ -369,22 +369,20 @@ function bprint_char_set(buf, char_set) {
           var i$1 = i;
           var match = Pervasives.char_of_int(i$1);
           var exit = 0;
-          var switcher = -45 + match;
-          if (!(48 < (switcher >>> 0))) {
-            if (46 < (-1 + switcher >>> 0)) {
-              return print_out(set$1, i$1 + 1);
-            }
-            else {
-              exit = 1;
-            }
-          }
-          else {
+          var switcher = match - 45;
+          if (switcher > 48 || switcher < 0) {
             if (switcher >= 210) {
               return print_char(buf, 255);
             }
             else {
               exit = 1;
             }
+          }
+          else if (switcher > 47 || switcher < 1) {
+            return print_out(set$1, i$1 + 1);
+          }
+          else {
+            exit = 1;
           }
           if (exit === 1) {
             return print_second(set$1, i$1 + 1);
@@ -1768,25 +1766,23 @@ function trans(ty1, ty2) {
                   ]
                 ];
           }
-          else {
-            if (ty2[0] === 10) {
-              return [
-                      /* Alpha_ty */10,
-                      trans(ty1[1], ty2[1])
-                    ];
-            }
-            else {
-              throw [
-                    0,
-                    Caml_exceptions.Assert_failure,
-                    [
-                      0,
-                      "camlinternalFormat.ml",
-                      780,
-                      21
-                    ]
+          else if (ty2[0] === 10) {
+            return [
+                    /* Alpha_ty */10,
+                    trans(ty1[1], ty2[1])
                   ];
-            }
+          }
+          else {
+            throw [
+                  0,
+                  Caml_exceptions.Assert_failure,
+                  [
+                    0,
+                    "camlinternalFormat.ml",
+                    780,
+                    21
+                  ]
+                ];
           }
           break;
       case 11 : 
@@ -2225,16 +2221,14 @@ function fmtty_of_padding_fmtty(pad, fmtty) {
   if (typeof pad === "number") {
     return fmtty;
   }
+  else if (pad[0]) {
+    return [
+            /* Int_ty */2,
+            fmtty
+          ];
+  }
   else {
-    if (pad[0]) {
-      return [
-              /* Int_ty */2,
-              fmtty
-            ];
-    }
-    else {
-      return fmtty;
-    }
+    return fmtty;
   }
 }
 
@@ -2269,38 +2263,34 @@ function type_padding(pad, fmtty) {
             fmtty
           ];
   }
-  else {
-    if (pad[0]) {
-      if (typeof fmtty === "number") {
-        throw Type_mismatch;
-      }
-      else {
-        if (fmtty[0] === 2) {
-          return [
-                  /* Padding_fmtty_EBB */0,
-                  [
-                    /* Arg_padding */1,
-                    pad[1]
-                  ],
-                  fmtty[1]
-                ];
-        }
-        else {
-          throw Type_mismatch;
-        }
-      }
+  else if (pad[0]) {
+    if (typeof fmtty === "number") {
+      throw Type_mismatch;
     }
-    else {
+    else if (fmtty[0] === 2) {
       return [
               /* Padding_fmtty_EBB */0,
               [
-                /* Lit_padding */0,
-                pad[1],
-                pad[2]
+                /* Arg_padding */1,
+                pad[1]
               ],
-              fmtty
+              fmtty[1]
             ];
     }
+    else {
+      throw Type_mismatch;
+    }
+  }
+  else {
+    return [
+            /* Padding_fmtty_EBB */0,
+            [
+              /* Lit_padding */0,
+              pad[1],
+              pad[2]
+            ],
+            fmtty
+          ];
   }
 }
 
@@ -2312,18 +2302,16 @@ function type_padprec(pad, prec, fmtty) {
       if (typeof match$1 === "number") {
         throw Type_mismatch;
       }
+      else if (match$1[0] === 2) {
+        return [
+                /* Padprec_fmtty_EBB */0,
+                match[1],
+                /* Arg_precision */1,
+                match$1[1]
+              ];
+      }
       else {
-        if (match$1[0] === 2) {
-          return [
-                  /* Padprec_fmtty_EBB */0,
-                  match[1],
-                  /* Arg_precision */1,
-                  match$1[1]
-                ];
-        }
-        else {
-          throw Type_mismatch;
-        }
+        throw Type_mismatch;
       }
     }
     else {
@@ -2373,42 +2361,38 @@ function type_format_gen(fmt, fmtty) {
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0]) {
+            exit = 1;
+          }
           else {
-            if (fmtty[0]) {
-              exit = 1;
-            }
-            else {
-              var match = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Char */0,
-                        match[1]
-                      ],
-                      match[2]
-                    ];
-            }
+            var match = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Char */0,
+                      match[1]
+                    ],
+                    match[2]
+                  ];
           }
           break;
       case 1 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0]) {
+            exit = 1;
+          }
           else {
-            if (fmtty[0]) {
-              exit = 1;
-            }
-            else {
-              var match$1 = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Caml_char */1,
-                        match$1[1]
-                      ],
-                      match$1[2]
-                    ];
-            }
+            var match$1 = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Caml_char */1,
+                      match$1[1]
+                    ],
+                    match$1[2]
+                  ];
           }
           break;
       case 2 : 
@@ -2417,22 +2401,20 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$3 === "number") {
             throw Type_mismatch;
           }
+          else if (match$3[0] === 1) {
+            var match$4 = type_format_gen(fmt[2], match$3[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* String */2,
+                      match$2[1],
+                      match$4[1]
+                    ],
+                    match$4[2]
+                  ];
+          }
           else {
-            if (match$3[0] === 1) {
-              var match$4 = type_format_gen(fmt[2], match$3[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* String */2,
-                        match$2[1],
-                        match$4[1]
-                      ],
-                      match$4[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 3 : 
@@ -2441,22 +2423,20 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$6 === "number") {
             throw Type_mismatch;
           }
+          else if (match$6[0] === 1) {
+            var match$7 = type_format_gen(fmt[2], match$6[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Caml_string */3,
+                      match$5[1],
+                      match$7[1]
+                    ],
+                    match$7[2]
+                  ];
+          }
           else {
-            if (match$6[0] === 1) {
-              var match$7 = type_format_gen(fmt[2], match$6[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Caml_string */3,
-                        match$5[1],
-                        match$7[1]
-                      ],
-                      match$7[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 4 : 
@@ -2465,24 +2445,22 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$9 === "number") {
             throw Type_mismatch;
           }
+          else if (match$9[0] === 2) {
+            var match$10 = type_format_gen(fmt[4], match$9[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Int */4,
+                      fmt[1],
+                      match$8[1],
+                      match$8[2],
+                      match$10[1]
+                    ],
+                    match$10[2]
+                  ];
+          }
           else {
-            if (match$9[0] === 2) {
-              var match$10 = type_format_gen(fmt[4], match$9[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Int */4,
-                        fmt[1],
-                        match$8[1],
-                        match$8[2],
-                        match$10[1]
-                      ],
-                      match$10[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 5 : 
@@ -2491,24 +2469,22 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$12 === "number") {
             throw Type_mismatch;
           }
+          else if (match$12[0] === 3) {
+            var match$13 = type_format_gen(fmt[4], match$12[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Int32 */5,
+                      fmt[1],
+                      match$11[1],
+                      match$11[2],
+                      match$13[1]
+                    ],
+                    match$13[2]
+                  ];
+          }
           else {
-            if (match$12[0] === 3) {
-              var match$13 = type_format_gen(fmt[4], match$12[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Int32 */5,
-                        fmt[1],
-                        match$11[1],
-                        match$11[2],
-                        match$13[1]
-                      ],
-                      match$13[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 6 : 
@@ -2517,24 +2493,22 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$15 === "number") {
             throw Type_mismatch;
           }
+          else if (match$15[0] === 4) {
+            var match$16 = type_format_gen(fmt[4], match$15[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Nativeint */6,
+                      fmt[1],
+                      match$14[1],
+                      match$14[2],
+                      match$16[1]
+                    ],
+                    match$16[2]
+                  ];
+          }
           else {
-            if (match$15[0] === 4) {
-              var match$16 = type_format_gen(fmt[4], match$15[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Nativeint */6,
-                        fmt[1],
-                        match$14[1],
-                        match$14[2],
-                        match$16[1]
-                      ],
-                      match$16[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 7 : 
@@ -2543,24 +2517,22 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$18 === "number") {
             throw Type_mismatch;
           }
+          else if (match$18[0] === 5) {
+            var match$19 = type_format_gen(fmt[4], match$18[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Int64 */7,
+                      fmt[1],
+                      match$17[1],
+                      match$17[2],
+                      match$19[1]
+                    ],
+                    match$19[2]
+                  ];
+          }
           else {
-            if (match$18[0] === 5) {
-              var match$19 = type_format_gen(fmt[4], match$18[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Int64 */7,
-                        fmt[1],
-                        match$17[1],
-                        match$17[2],
-                        match$19[1]
-                      ],
-                      match$19[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 8 : 
@@ -2569,45 +2541,41 @@ function type_format_gen(fmt, fmtty) {
           if (typeof match$21 === "number") {
             throw Type_mismatch;
           }
+          else if (match$21[0] === 6) {
+            var match$22 = type_format_gen(fmt[4], match$21[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Float */8,
+                      fmt[1],
+                      match$20[1],
+                      match$20[2],
+                      match$22[1]
+                    ],
+                    match$22[2]
+                  ];
+          }
           else {
-            if (match$21[0] === 6) {
-              var match$22 = type_format_gen(fmt[4], match$21[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Float */8,
-                        fmt[1],
-                        match$20[1],
-                        match$20[2],
-                        match$22[1]
-                      ],
-                      match$22[2]
-                    ];
-            }
-            else {
-              throw Type_mismatch;
-            }
+            throw Type_mismatch;
           }
           break;
       case 9 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 7) {
+            var match$23 = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Bool */9,
+                      match$23[1]
+                    ],
+                    match$23[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 7) {
-              var match$23 = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Bool */9,
-                        match$23[1]
-                      ],
-                      match$23[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 10 : 
@@ -2646,108 +2614,100 @@ function type_format_gen(fmt, fmtty) {
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 8) {
+            var sub_fmtty$prime = fmtty[1];
+            if (Caml_primitive.caml_notequal([
+                    /* Fmtty_EBB */0,
+                    fmt[2]
+                  ], [
+                    /* Fmtty_EBB */0,
+                    sub_fmtty$prime
+                  ])) {
+              throw Type_mismatch;
+            }
+            var match$27 = type_format_gen(fmt[3], fmtty[2]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Format_arg */13,
+                      fmt[1],
+                      sub_fmtty$prime,
+                      match$27[1]
+                    ],
+                    match$27[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 8) {
-              var sub_fmtty$prime = fmtty[1];
-              if (Caml_primitive.caml_notequal([
-                      /* Fmtty_EBB */0,
-                      fmt[2]
-                    ], [
-                      /* Fmtty_EBB */0,
-                      sub_fmtty$prime
-                    ])) {
-                throw Type_mismatch;
-              }
-              var match$27 = type_format_gen(fmt[3], fmtty[2]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Format_arg */13,
-                        fmt[1],
-                        sub_fmtty$prime,
-                        match$27[1]
-                      ],
-                      match$27[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 14 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 9) {
+            var sub_fmtty1 = fmtty[1];
+            if (Caml_primitive.caml_notequal([
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(fmt[2])
+                  ], [
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(sub_fmtty1)
+                  ])) {
+              throw Type_mismatch;
+            }
+            var match$28 = type_format_gen(fmt[3], CamlinternalFormatBasics.erase_rel(fmtty[3]));
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Format_subst */14,
+                      fmt[1],
+                      sub_fmtty1,
+                      match$28[1]
+                    ],
+                    match$28[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 9) {
-              var sub_fmtty1 = fmtty[1];
-              if (Caml_primitive.caml_notequal([
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(fmt[2])
-                    ], [
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(sub_fmtty1)
-                    ])) {
-                throw Type_mismatch;
-              }
-              var match$28 = type_format_gen(fmt[3], CamlinternalFormatBasics.erase_rel(fmtty[3]));
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Format_subst */14,
-                        fmt[1],
-                        sub_fmtty1,
-                        match$28[1]
-                      ],
-                      match$28[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 15 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 10) {
+            var match$29 = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Alpha */15,
+                      match$29[1]
+                    ],
+                    match$29[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 10) {
-              var match$29 = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Alpha */15,
-                        match$29[1]
-                      ],
-                      match$29[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 16 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 11) {
+            var match$30 = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Theta */16,
+                      match$30[1]
+                    ],
+                    match$30[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 11) {
-              var match$30 = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Theta */16,
-                        match$30[1]
-                      ],
-                      match$30[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 17 : 
@@ -2811,66 +2771,60 @@ function type_format_gen(fmt, fmtty) {
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 13) {
+            var match$38 = type_format_gen(fmt[1], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Reader */19,
+                      match$38[1]
+                    ],
+                    match$38[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 13) {
-              var match$38 = type_format_gen(fmt[1], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Reader */19,
-                        match$38[1]
-                      ],
-                      match$38[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 20 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 1) {
+            var match$39 = type_format_gen(fmt[3], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Scan_char_set */20,
+                      fmt[1],
+                      fmt[2],
+                      match$39[1]
+                    ],
+                    match$39[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 1) {
-              var match$39 = type_format_gen(fmt[3], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Scan_char_set */20,
-                        fmt[1],
-                        fmt[2],
-                        match$39[1]
-                      ],
-                      match$39[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 21 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 2) {
+            var match$40 = type_format_gen(fmt[2], fmtty[1]);
+            return [
+                    /* Fmt_fmtty_EBB */0,
+                    [
+                      /* Scan_get_counter */21,
+                      fmt[1],
+                      match$40[1]
+                    ],
+                    match$40[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 2) {
-              var match$40 = type_format_gen(fmt[2], fmtty[1]);
-              return [
-                      /* Fmt_fmtty_EBB */0,
-                      [
-                        /* Scan_get_counter */21,
-                        fmt[1],
-                        match$40[1]
-                      ],
-                      match$40[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 23 : 
@@ -2883,22 +2837,20 @@ function type_format_gen(fmt, fmtty) {
                   if (typeof fmtty$1 === "number") {
                     throw Type_mismatch;
                   }
+                  else if (fmtty$1[0] === 14) {
+                    var match$41 = type_format_gen(fmt$1, fmtty$1[1]);
+                    return [
+                            /* Fmt_fmtty_EBB */0,
+                            [
+                              /* Ignored_param */23,
+                              /* Ignored_reader */3,
+                              match$41[1]
+                            ],
+                            match$41[2]
+                          ];
+                  }
                   else {
-                    if (fmtty$1[0] === 14) {
-                      var match$41 = type_format_gen(fmt$1, fmtty$1[1]);
-                      return [
-                              /* Fmt_fmtty_EBB */0,
-                              [
-                                /* Ignored_param */23,
-                                /* Ignored_reader */3,
-                                match$41[1]
-                              ],
-                              match$41[2]
-                            ];
-                    }
-                    else {
-                      throw Type_mismatch;
-                    }
+                    throw Type_mismatch;
                   }
                   break;
               case 0 : 
@@ -2987,289 +2939,265 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0]) {
+            exit = 1;
+          }
           else {
-            if (fmtty[0]) {
-              exit = 1;
-            }
-            else {
-              var match = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Char_ty */0,
-                        match[1]
-                      ],
-                      match[2]
-                    ];
-            }
+            var match = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Char_ty */0,
+                      match[1]
+                    ],
+                    match[2]
+                  ];
           }
           break;
       case 1 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 1) {
+            var match$1 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* String_ty */1,
+                      match$1[1]
+                    ],
+                    match$1[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 1) {
-              var match$1 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* String_ty */1,
-                        match$1[1]
-                      ],
-                      match$1[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 2 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 2) {
+            var match$2 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Int_ty */2,
+                      match$2[1]
+                    ],
+                    match$2[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 2) {
-              var match$2 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Int_ty */2,
-                        match$2[1]
-                      ],
-                      match$2[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 3 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 3) {
+            var match$3 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Int32_ty */3,
+                      match$3[1]
+                    ],
+                    match$3[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 3) {
-              var match$3 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Int32_ty */3,
-                        match$3[1]
-                      ],
-                      match$3[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 4 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 4) {
+            var match$4 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Nativeint_ty */4,
+                      match$4[1]
+                    ],
+                    match$4[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 4) {
-              var match$4 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Nativeint_ty */4,
-                        match$4[1]
-                      ],
-                      match$4[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 5 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 5) {
+            var match$5 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Int64_ty */5,
+                      match$5[1]
+                    ],
+                    match$5[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 5) {
-              var match$5 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Int64_ty */5,
-                        match$5[1]
-                      ],
-                      match$5[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 6 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 6) {
+            var match$6 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Float_ty */6,
+                      match$6[1]
+                    ],
+                    match$6[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 6) {
-              var match$6 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Float_ty */6,
-                        match$6[1]
-                      ],
-                      match$6[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 7 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 7) {
+            var match$7 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Bool_ty */7,
+                      match$7[1]
+                    ],
+                    match$7[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 7) {
-              var match$7 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Bool_ty */7,
-                        match$7[1]
-                      ],
-                      match$7[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 8 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 8) {
+            var sub2_fmtty$prime = fmtty[1];
+            if (Caml_primitive.caml_notequal([
+                    /* Fmtty_EBB */0,
+                    sub_fmtty[1]
+                  ], [
+                    /* Fmtty_EBB */0,
+                    sub2_fmtty$prime
+                  ])) {
+              throw Type_mismatch;
+            }
+            var match$8 = type_ignored_format_substitution(sub_fmtty[2], fmt, fmtty[2]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Format_arg_ty */8,
+                      sub2_fmtty$prime,
+                      match$8[1]
+                    ],
+                    match$8[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 8) {
-              var sub2_fmtty$prime = fmtty[1];
-              if (Caml_primitive.caml_notequal([
-                      /* Fmtty_EBB */0,
-                      sub_fmtty[1]
-                    ], [
-                      /* Fmtty_EBB */0,
-                      sub2_fmtty$prime
-                    ])) {
-                throw Type_mismatch;
-              }
-              var match$8 = type_ignored_format_substitution(sub_fmtty[2], fmt, fmtty[2]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Format_arg_ty */8,
-                        sub2_fmtty$prime,
-                        match$8[1]
-                      ],
-                      match$8[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 9 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 9) {
+            var sub2_fmtty$prime$1 = fmtty[2];
+            var sub1_fmtty$prime = fmtty[1];
+            if (Caml_primitive.caml_notequal([
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(sub_fmtty[1])
+                  ], [
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(sub1_fmtty$prime)
+                  ])) {
+              throw Type_mismatch;
+            }
+            if (Caml_primitive.caml_notequal([
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(sub_fmtty[2])
+                  ], [
+                    /* Fmtty_EBB */0,
+                    CamlinternalFormatBasics.erase_rel(sub2_fmtty$prime$1)
+                  ])) {
+              throw Type_mismatch;
+            }
+            var sub_fmtty$prime = trans(symm(sub1_fmtty$prime), sub2_fmtty$prime$1);
+            var match$9 = fmtty_rel_det(sub_fmtty$prime);
+            match$9[2](/* Refl */0);
+            match$9[4](/* Refl */0);
+            var match$10 = type_ignored_format_substitution(CamlinternalFormatBasics.erase_rel(sub_fmtty[3]), fmt, fmtty[3]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Format_subst_ty */9,
+                      sub1_fmtty$prime,
+                      sub2_fmtty$prime$1,
+                      symm(match$10[1])
+                    ],
+                    match$10[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 9) {
-              var sub2_fmtty$prime$1 = fmtty[2];
-              var sub1_fmtty$prime = fmtty[1];
-              if (Caml_primitive.caml_notequal([
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(sub_fmtty[1])
-                    ], [
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(sub1_fmtty$prime)
-                    ])) {
-                throw Type_mismatch;
-              }
-              if (Caml_primitive.caml_notequal([
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(sub_fmtty[2])
-                    ], [
-                      /* Fmtty_EBB */0,
-                      CamlinternalFormatBasics.erase_rel(sub2_fmtty$prime$1)
-                    ])) {
-                throw Type_mismatch;
-              }
-              var sub_fmtty$prime = trans(symm(sub1_fmtty$prime), sub2_fmtty$prime$1);
-              var match$9 = fmtty_rel_det(sub_fmtty$prime);
-              match$9[2](/* Refl */0);
-              match$9[4](/* Refl */0);
-              var match$10 = type_ignored_format_substitution(CamlinternalFormatBasics.erase_rel(sub_fmtty[3]), fmt, fmtty[3]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Format_subst_ty */9,
-                        sub1_fmtty$prime,
-                        sub2_fmtty$prime$1,
-                        symm(match$10[1])
-                      ],
-                      match$10[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 10 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 10) {
+            var match$11 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Alpha_ty */10,
+                      match$11[1]
+                    ],
+                    match$11[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 10) {
-              var match$11 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Alpha_ty */10,
-                        match$11[1]
-                      ],
-                      match$11[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 11 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 11) {
+            var match$12 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Theta_ty */11,
+                      match$12[1]
+                    ],
+                    match$12[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 11) {
-              var match$12 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Theta_ty */11,
-                        match$12[1]
-                      ],
-                      match$12[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 12 : 
@@ -3279,42 +3207,38 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 13) {
+            var match$13 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Reader_ty */13,
+                      match$13[1]
+                    ],
+                    match$13[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 13) {
-              var match$13 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Reader_ty */13,
-                        match$13[1]
-                      ],
-                      match$13[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       case 14 : 
           if (typeof fmtty === "number") {
             exit = 1;
           }
+          else if (fmtty[0] === 14) {
+            var match$14 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
+            return [
+                    /* Fmtty_fmt_EBB */0,
+                    [
+                      /* Ignored_reader_ty */14,
+                      match$14[1]
+                    ],
+                    match$14[2]
+                  ];
+          }
           else {
-            if (fmtty[0] === 14) {
-              var match$14 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-              return [
-                      /* Fmtty_fmt_EBB */0,
-                      [
-                        /* Ignored_reader_ty */14,
-                        match$14[1]
-                      ],
-                      match$14[2]
-                    ];
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           break;
       
@@ -3353,14 +3277,12 @@ function fix_padding(padty, width, str) {
             res[0] = str.charCodeAt(0);
             $$String.blit(str, 1, res, width$1 - len + 1, len - 1);
           }
+          else if (len > 1 && str[0] === "0" && (str[1] === "x" || str[1] === "X")) {
+            res[1] = str.charCodeAt(1);
+            $$String.blit(str, 2, res, width$1 - len + 2, len - 2);
+          }
           else {
-            if (len > 1 && str[0] === "0" && (str[1] === "x" || str[1] === "X")) {
-              res[1] = str.charCodeAt(1);
-              $$String.blit(str, 2, res, width$1 - len + 2, len - 2);
-            }
-            else {
-              $$String.blit(str, 0, res, width$1 - len, len);
-            }
+            $$String.blit(str, 0, res, width$1 - len, len);
           }
           break;
       
@@ -3376,66 +3298,62 @@ function fix_int_precision(prec, str) {
   var exit = 0;
   if (c >= 58) {
     if (c >= 71) {
-      if (5 < (-97 + c >>> 0)) {
+      if (c > 102 || c < 97) {
         return str;
       }
       else {
         exit = 2;
       }
     }
+    else if (c >= 65) {
+      exit = 2;
+    }
     else {
-      if (c >= 65) {
-        exit = 2;
+      return str;
+    }
+  }
+  else if (c !== 32) {
+    if (c >= 43) {
+      switch (c - 43) {
+        case 0 : 
+        case 2 : 
+            exit = 1;
+            break;
+        case 1 : 
+        case 3 : 
+        case 4 : 
+            return str;
+        case 5 : 
+            if (prec$1 + 2 > len && len > 1 && (str[1] === "x" || str[1] === "X")) {
+              var res = Bytes.make(prec$1 + 2, /* "0" */48);
+              res[1] = str.charCodeAt(1);
+              $$String.blit(str, 2, res, prec$1 - len + 4, len - 2);
+              return Bytes.unsafe_to_string(res);
+            }
+            else {
+              exit = 2;
+            }
+            break;
+        case 6 : 
+        case 7 : 
+        case 8 : 
+        case 9 : 
+        case 10 : 
+        case 11 : 
+        case 12 : 
+        case 13 : 
+        case 14 : 
+            exit = 2;
+            break;
+        
       }
-      else {
-        return str;
-      }
+    }
+    else {
+      return str;
     }
   }
   else {
-    if (c !== 32) {
-      if (c >= 43) {
-        switch (-43 + c) {
-          case 0 : 
-          case 2 : 
-              exit = 1;
-              break;
-          case 1 : 
-          case 3 : 
-          case 4 : 
-              return str;
-          case 5 : 
-              if (prec$1 + 2 > len && len > 1 && (str[1] === "x" || str[1] === "X")) {
-                var res = Bytes.make(prec$1 + 2, /* "0" */48);
-                res[1] = str.charCodeAt(1);
-                $$String.blit(str, 2, res, prec$1 - len + 4, len - 2);
-                return Bytes.unsafe_to_string(res);
-              }
-              else {
-                exit = 2;
-              }
-              break;
-          case 6 : 
-          case 7 : 
-          case 8 : 
-          case 9 : 
-          case 10 : 
-          case 11 : 
-          case 12 : 
-          case 13 : 
-          case 14 : 
-              exit = 2;
-              break;
-          
-        }
-      }
-      else {
-        return str;
-      }
-    }
-    else {
-      exit = 1;
-    }
+    exit = 1;
   }
   switch (exit) {
     case 1 : 
@@ -3707,22 +3625,20 @@ function convert_float(fconv, prec, x) {
         }
         else {
           var match = str.charCodeAt(i);
-          var switcher = -46 + match;
-          if (!(23 < (switcher >>> 0))) {
-            if (21 < (-1 + switcher >>> 0)) {
-              return /* true */1;
-            }
-            else {
-              _i = i + 1;
-            }
-          }
-          else {
+          var switcher = match - 46;
+          if (switcher > 23 || switcher < 0) {
             if (switcher !== 55) {
               _i = i + 1;
             }
             else {
               return /* true */1;
             }
+          }
+          else if (switcher > 22 || switcher < 1) {
+            return /* true */1;
+          }
+          else {
+            _i = i + 1;
           }
         }
       };
@@ -3732,22 +3648,18 @@ function convert_float(fconv, prec, x) {
       if (match >= 4) {
         return "nan";
       }
+      else if (is_valid(0)) {
+        return str;
+      }
       else {
-        if (is_valid(0)) {
-          return str;
-        }
-        else {
-          return str + ".";
-        }
+        return str + ".";
       }
     }
+    else if (x < 0.0) {
+      return "neg_infinity";
+    }
     else {
-      if (x < 0.0) {
-        return "neg_infinity";
-      }
-      else {
-        return "infinity";
-      }
+      return "infinity";
     }
   }
 }
@@ -3868,93 +3780,91 @@ function make_printf(_k, o, _acc, _fmt) {
                 }(k$1,o$1,acc$1,fmt$1,fconv,p));
               }
             }
-            else {
-              if (pad[0]) {
-                var padty = pad[1];
-                if (typeof prec === "number") {
-                  if (prec !== 0) {
-                    return (function(k$1,o$1,acc$1,fmt$1,fconv,padty){
-                    return function (w, p, x) {
-                      var str = fix_padding(padty, w, convert_float(fconv, p, x));
-                      return make_printf(k$1, o$1, [
-                                  /* Acc_data_string */4,
-                                  acc$1,
-                                  str
-                                ], fmt$1);
-                    }
-                    }(k$1,o$1,acc$1,fmt$1,fconv,padty));
-                  }
-                  else {
-                    return (function(k$1,o$1,acc$1,fmt$1,fconv,padty){
-                    return function (w, x) {
-                      var str = convert_float(fconv, default_float_precision, x);
-                      var str$prime = fix_padding(padty, w, str);
-                      return make_printf(k$1, o$1, [
-                                  /* Acc_data_string */4,
-                                  acc$1,
-                                  str$prime
-                                ], fmt$1);
-                    }
-                    }(k$1,o$1,acc$1,fmt$1,fconv,padty));
-                  }
-                }
-                else {
-                  var p$1 = prec[1];
-                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty,p$1){
-                  return function (w, x) {
-                    var str = fix_padding(padty, w, convert_float(fconv, p$1, x));
+            else if (pad[0]) {
+              var padty = pad[1];
+              if (typeof prec === "number") {
+                if (prec !== 0) {
+                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty){
+                  return function (w, p, x) {
+                    var str = fix_padding(padty, w, convert_float(fconv, p, x));
                     return make_printf(k$1, o$1, [
                                 /* Acc_data_string */4,
                                 acc$1,
                                 str
                               ], fmt$1);
                   }
-                  }(k$1,o$1,acc$1,fmt$1,fconv,padty,p$1));
+                  }(k$1,o$1,acc$1,fmt$1,fconv,padty));
+                }
+                else {
+                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty){
+                  return function (w, x) {
+                    var str = convert_float(fconv, default_float_precision, x);
+                    var str$prime = fix_padding(padty, w, str);
+                    return make_printf(k$1, o$1, [
+                                /* Acc_data_string */4,
+                                acc$1,
+                                str$prime
+                              ], fmt$1);
+                  }
+                  }(k$1,o$1,acc$1,fmt$1,fconv,padty));
                 }
               }
               else {
-                var w = pad[2];
-                var padty$1 = pad[1];
-                if (typeof prec === "number") {
-                  if (prec !== 0) {
-                    return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w){
-                    return function (p, x) {
-                      var str = fix_padding(padty$1, w, convert_float(fconv, p, x));
-                      return make_printf(k$1, o$1, [
-                                  /* Acc_data_string */4,
-                                  acc$1,
-                                  str
-                                ], fmt$1);
-                    }
-                    }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w));
-                  }
-                  else {
-                    return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w){
-                    return function (x) {
-                      var str = convert_float(fconv, default_float_precision, x);
-                      var str$prime = fix_padding(padty$1, w, str);
-                      return make_printf(k$1, o$1, [
-                                  /* Acc_data_string */4,
-                                  acc$1,
-                                  str$prime
-                                ], fmt$1);
-                    }
-                    }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w));
-                  }
+                var p$1 = prec[1];
+                return (function(k$1,o$1,acc$1,fmt$1,fconv,padty,p$1){
+                return function (w, x) {
+                  var str = fix_padding(padty, w, convert_float(fconv, p$1, x));
+                  return make_printf(k$1, o$1, [
+                              /* Acc_data_string */4,
+                              acc$1,
+                              str
+                            ], fmt$1);
                 }
-                else {
-                  var p$2 = prec[1];
-                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w,p$2){
-                  return function (x) {
-                    var str = fix_padding(padty$1, w, convert_float(fconv, p$2, x));
+                }(k$1,o$1,acc$1,fmt$1,fconv,padty,p$1));
+              }
+            }
+            else {
+              var w = pad[2];
+              var padty$1 = pad[1];
+              if (typeof prec === "number") {
+                if (prec !== 0) {
+                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w){
+                  return function (p, x) {
+                    var str = fix_padding(padty$1, w, convert_float(fconv, p, x));
                     return make_printf(k$1, o$1, [
                                 /* Acc_data_string */4,
                                 acc$1,
                                 str
                               ], fmt$1);
                   }
-                  }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w,p$2));
+                  }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w));
                 }
+                else {
+                  return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w){
+                  return function (x) {
+                    var str = convert_float(fconv, default_float_precision, x);
+                    var str$prime = fix_padding(padty$1, w, str);
+                    return make_printf(k$1, o$1, [
+                                /* Acc_data_string */4,
+                                acc$1,
+                                str$prime
+                              ], fmt$1);
+                  }
+                  }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w));
+                }
+              }
+              else {
+                var p$2 = prec[1];
+                return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w,p$2){
+                return function (x) {
+                  var str = fix_padding(padty$1, w, convert_float(fconv, p$2, x));
+                  return make_printf(k$1, o$1, [
+                              /* Acc_data_string */4,
+                              acc$1,
+                              str
+                            ], fmt$1);
+                }
+                }(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w,p$2));
               }
             }
         case 9 : 
@@ -4302,32 +4212,30 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
       return make_printf(k, o, new_acc, fmt);
     };
   }
+  else if (pad[0]) {
+    var padty = pad[1];
+    return function (w, x) {
+      var new_acc_002 = fix_padding(padty, w, trans(x));
+      var new_acc = [
+        /* Acc_data_string */4,
+        acc,
+        new_acc_002
+      ];
+      return make_printf(k, o, new_acc, fmt);
+    };
+  }
   else {
-    if (pad[0]) {
-      var padty = pad[1];
-      return function (w, x) {
-        var new_acc_002 = fix_padding(padty, w, trans(x));
-        var new_acc = [
-          /* Acc_data_string */4,
-          acc,
-          new_acc_002
-        ];
-        return make_printf(k, o, new_acc, fmt);
-      };
-    }
-    else {
-      var width = pad[2];
-      var padty$1 = pad[1];
-      return function (x) {
-        var new_acc_002 = fix_padding(padty$1, width, trans(x));
-        var new_acc = [
-          /* Acc_data_string */4,
-          acc,
-          new_acc_002
-        ];
-        return make_printf(k, o, new_acc, fmt);
-      };
-    }
+    var width = pad[2];
+    var padty$1 = pad[1];
+    return function (x) {
+      var new_acc_002 = fix_padding(padty$1, width, trans(x));
+      var new_acc = [
+        /* Acc_data_string */4,
+        acc,
+        new_acc_002
+      ];
+      return make_printf(k, o, new_acc, fmt);
+    };
   }
 }
 
@@ -4367,35 +4275,22 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       };
     }
   }
-  else {
-    if (pad[0]) {
-      var padty = pad[1];
-      if (typeof prec === "number") {
-        if (prec !== 0) {
-          return function (w, p, x) {
-            var str = fix_padding(padty, w, fix_int_precision(p, trans(iconv, x)));
-            return make_printf(k, o, [
-                        /* Acc_data_string */4,
-                        acc,
-                        str
-                      ], fmt);
-          };
-        }
-        else {
-          return function (w, x) {
-            var str = fix_padding(padty, w, trans(iconv, x));
-            return make_printf(k, o, [
-                        /* Acc_data_string */4,
-                        acc,
-                        str
-                      ], fmt);
-          };
-        }
+  else if (pad[0]) {
+    var padty = pad[1];
+    if (typeof prec === "number") {
+      if (prec !== 0) {
+        return function (w, p, x) {
+          var str = fix_padding(padty, w, fix_int_precision(p, trans(iconv, x)));
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
       }
       else {
-        var p$1 = prec[1];
         return function (w, x) {
-          var str = fix_padding(padty, w, fix_int_precision(p$1, trans(iconv, x)));
+          var str = fix_padding(padty, w, trans(iconv, x));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4405,34 +4300,24 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
     }
     else {
-      var w = pad[2];
-      var padty$1 = pad[1];
-      if (typeof prec === "number") {
-        if (prec !== 0) {
-          return function (p, x) {
-            var str = fix_padding(padty$1, w, fix_int_precision(p, trans(iconv, x)));
-            return make_printf(k, o, [
-                        /* Acc_data_string */4,
-                        acc,
-                        str
-                      ], fmt);
-          };
-        }
-        else {
-          return function (x) {
-            var str = fix_padding(padty$1, w, trans(iconv, x));
-            return make_printf(k, o, [
-                        /* Acc_data_string */4,
-                        acc,
-                        str
-                      ], fmt);
-          };
-        }
-      }
-      else {
-        var p$2 = prec[1];
-        return function (x) {
-          var str = fix_padding(padty$1, w, fix_int_precision(p$2, trans(iconv, x)));
+      var p$1 = prec[1];
+      return function (w, x) {
+        var str = fix_padding(padty, w, fix_int_precision(p$1, trans(iconv, x)));
+        return make_printf(k, o, [
+                    /* Acc_data_string */4,
+                    acc,
+                    str
+                  ], fmt);
+      };
+    }
+  }
+  else {
+    var w = pad[2];
+    var padty$1 = pad[1];
+    if (typeof prec === "number") {
+      if (prec !== 0) {
+        return function (p, x) {
+          var str = fix_padding(padty$1, w, fix_int_precision(p, trans(iconv, x)));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4440,6 +4325,27 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
                     ], fmt);
         };
       }
+      else {
+        return function (x) {
+          var str = fix_padding(padty$1, w, trans(iconv, x));
+          return make_printf(k, o, [
+                      /* Acc_data_string */4,
+                      acc,
+                      str
+                    ], fmt);
+        };
+      }
+    }
+    else {
+      var p$2 = prec[1];
+      return function (x) {
+        var str = fix_padding(padty$1, w, fix_int_precision(p$2, trans(iconv, x)));
+        return make_printf(k, o, [
+                    /* Acc_data_string */4,
+                    acc,
+                    str
+                  ], fmt);
+      };
     }
   }
 }
@@ -4698,7 +4604,7 @@ function open_box_of_string(str) {
         }
         else {
           var match = str.charCodeAt(j);
-          if (25 < (-97 + match >>> 0)) {
+          if (match > 122 || match < 97) {
             return j;
           }
           else {
@@ -4724,13 +4630,11 @@ function open_box_of_string(str) {
               exit = 1;
             }
           }
+          else if (match !== 45) {
+            return j;
+          }
           else {
-            if (match !== 45) {
-              return j;
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           if (exit === 1) {
             _j = j + 1;
@@ -4802,28 +4706,26 @@ function make_padding_fmt_ebb(pad, fmt) {
             fmt
           ];
   }
+  else if (pad[0]) {
+    return [
+            /* Padding_fmt_EBB */0,
+            [
+              /* Arg_padding */1,
+              pad[1]
+            ],
+            fmt
+          ];
+  }
   else {
-    if (pad[0]) {
-      return [
-              /* Padding_fmt_EBB */0,
-              [
-                /* Arg_padding */1,
-                pad[1]
-              ],
-              fmt
-            ];
-    }
-    else {
-      return [
-              /* Padding_fmt_EBB */0,
-              [
-                /* Lit_padding */0,
-                pad[1],
-                pad[2]
-              ],
-              fmt
-            ];
-    }
+    return [
+            /* Padding_fmt_EBB */0,
+            [
+              /* Lit_padding */0,
+              pad[1],
+              pad[2]
+            ],
+            fmt
+          ];
   }
 }
 
@@ -4868,30 +4770,28 @@ function make_padprec_fmt_ebb(pad, prec, fmt) {
             fmt$prime
           ];
   }
+  else if (pad[0]) {
+    return [
+            /* Padprec_fmt_EBB */0,
+            [
+              /* Arg_padding */1,
+              pad[1]
+            ],
+            prec$1,
+            fmt$prime
+          ];
+  }
   else {
-    if (pad[0]) {
-      return [
-              /* Padprec_fmt_EBB */0,
-              [
-                /* Arg_padding */1,
-                pad[1]
-              ],
-              prec$1,
-              fmt$prime
-            ];
-    }
-    else {
-      return [
-              /* Padprec_fmt_EBB */0,
-              [
-                /* Lit_padding */0,
-                pad[1],
-                pad[2]
-              ],
-              prec$1,
-              fmt$prime
-            ];
-    }
+    return [
+            /* Padprec_fmt_EBB */0,
+            [
+              /* Lit_padding */0,
+              pad[1],
+              pad[2]
+            ],
+            prec$1,
+            fmt$prime
+          ];
   }
 }
 
@@ -5123,8 +5023,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       var match = str.charCodeAt(str_ind$1);
       var exit = 0;
-      var switcher = -32 + match;
-      if (16 < (switcher >>> 0)) {
+      var switcher = match - 32;
+      if (switcher > 16 || switcher < 0) {
         exit = 1;
       }
       else {
@@ -5201,16 +5101,14 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       ]);
           }
         }
+        else if (match$1 !== 42) {
+          exit$1 = 1;
+        }
         else {
-          if (match$1 !== 42) {
-            exit$1 = 1;
-          }
-          else {
-            return parse_after_padding(pct_ind$1, str_ind$2 + 1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, [
-                        /* Arg_padding */1,
-                        padty
-                      ]);
-          }
+          return parse_after_padding(pct_ind$1, str_ind$2 + 1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, [
+                      /* Arg_padding */1,
+                      padty
+                    ]);
         }
         if (exit$1 === 1) {
           switch (padty) {
@@ -5273,26 +5171,24 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           return parse_literal(minus$1, str_ind$1);
         }
       }
+      else if (symb$1 >= 42) {
+        switch (symb$1 - 42) {
+          case 0 : 
+              return parse_after_precision(pct_ind$1, str_ind$1 + 1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, pad$1, /* Arg_precision */1);
+          case 1 : 
+          case 3 : 
+              exit = 1;
+              break;
+          case 2 : 
+          case 4 : 
+          case 5 : 
+              exit = 2;
+              break;
+          
+        }
+      }
       else {
-        if (symb$1 >= 42) {
-          switch (-42 + symb$1) {
-            case 0 : 
-                return parse_after_precision(pct_ind$1, str_ind$1 + 1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, pad$1, /* Arg_precision */1);
-            case 1 : 
-            case 3 : 
-                exit = 1;
-                break;
-            case 2 : 
-            case 4 : 
-            case 5 : 
-                exit = 2;
-                break;
-            
-          }
-        }
-        else {
-          exit = 2;
-        }
+        exit = 2;
       }
       switch (exit) {
         case 1 : 
@@ -5353,20 +5249,18 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       ]);
           }
         }
+        else if (typeof prec === "number") {
+          return parse_conv([
+                      /* Arg_padding */1,
+                      /* Right */1
+                    ]);
+        }
         else {
-          if (typeof prec === "number") {
-            return parse_conv([
-                        /* Arg_padding */1,
-                        /* Right */1
-                      ]);
-          }
-          else {
-            return parse_conv([
-                        /* Lit_padding */0,
-                        /* Right */1,
-                        prec[1]
-                      ]);
-          }
+          return parse_conv([
+                      /* Lit_padding */0,
+                      /* Right */1,
+                      prec[1]
+                    ]);
         }
       }
       
@@ -5432,79 +5326,73 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       if (typeof pad === "number") {
         return pad;
       }
-      else {
-        if (pad[0]) {
-          if (pad[1] >= 2) {
-            if (legacy_behavior$1) {
-              return [
-                      /* Arg_padding */1,
-                      /* Right */1
-                    ];
-            }
-            else {
-              return incompatible_flag(pct_ind, str_ind, symb, "0");
-            }
+      else if (pad[0]) {
+        if (pad[1] >= 2) {
+          if (legacy_behavior$1) {
+            return [
+                    /* Arg_padding */1,
+                    /* Right */1
+                  ];
           }
           else {
-            return pad;
+            return incompatible_flag(pct_ind, str_ind, symb, "0");
           }
         }
         else {
-          if (pad[1] >= 2) {
-            if (legacy_behavior$1) {
-              return [
-                      /* Lit_padding */0,
-                      /* Right */1,
-                      pad[2]
-                    ];
-            }
-            else {
-              return incompatible_flag(pct_ind, str_ind, symb, "0");
-            }
-          }
-          else {
-            return pad;
-          }
+          return pad;
         }
+      }
+      else if (pad[1] >= 2) {
+        if (legacy_behavior$1) {
+          return [
+                  /* Lit_padding */0,
+                  /* Right */1,
+                  pad[2]
+                ];
+        }
+        else {
+          return incompatible_flag(pct_ind, str_ind, symb, "0");
+        }
+      }
+      else {
+        return pad;
       }
     };
     var opt_of_pad = function (c, pad) {
       if (typeof pad === "number") {
         return /* None */0;
       }
+      else if (pad[0]) {
+        return incompatible_flag(pct_ind, str_ind, c, "'*'");
+      }
       else {
-        if (pad[0]) {
-          return incompatible_flag(pct_ind, str_ind, c, "'*'");
-        }
-        else {
-          switch (pad[1]) {
-            case 0 : 
-                if (legacy_behavior$1) {
-                  return [
-                          /* Some */0,
-                          pad[2]
-                        ];
-                }
-                else {
-                  return incompatible_flag(pct_ind, str_ind, c, "'-'");
-                }
-            case 1 : 
+        switch (pad[1]) {
+          case 0 : 
+              if (legacy_behavior$1) {
                 return [
                         /* Some */0,
                         pad[2]
                       ];
-            case 2 : 
-                if (legacy_behavior$1) {
-                  return [
-                          /* Some */0,
-                          pad[2]
-                        ];
-                }
-                else {
-                  return incompatible_flag(pct_ind, str_ind, c, "'0'");
-                }
-            
-          }
+              }
+              else {
+                return incompatible_flag(pct_ind, str_ind, c, "'-'");
+              }
+          case 1 : 
+              return [
+                      /* Some */0,
+                      pad[2]
+                    ];
+          case 2 : 
+              if (legacy_behavior$1) {
+                return [
+                        /* Some */0,
+                        pad[2]
+                      ];
+              }
+              else {
+                return incompatible_flag(pct_ind, str_ind, c, "'0'");
+              }
+          
         }
       }
     };
@@ -5769,7 +5657,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             var match$11 = get_pad_opt(/* "c" */99);
             fmt_result = match$11 ? (
                 match$11[1] !== 0 ? (
-                    !legacy_behavior$1 ? invalid_nonnull_char_width(str_ind) : char_format(fmt_rest$5)
+                    legacy_behavior$1 ? char_format(fmt_rest$5) : invalid_nonnull_char_width(str_ind)
                   ) : scan_format(fmt_rest$5)
               ) : char_format(fmt_rest$5);
             break;
@@ -6197,7 +6085,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               exit = 8;
             }
             else {
-              switch (-108 + symb) {
+              switch (symb - 108) {
                 case 0 : 
                     var iconv$1 = compute_int_conv(pct_ind, str_ind + 1, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), str.charCodeAt(str_ind));
                     var match$27 = parse(str_ind + 1, end_ind);
@@ -6273,43 +6161,41 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
             }
           }
+          else if (symb !== 76) {
+            exit = 8;
+          }
           else {
-            if (symb !== 76) {
-              exit = 8;
+            var iconv$3 = compute_int_conv(pct_ind, str_ind + 1, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), str.charCodeAt(str_ind));
+            var match$31 = parse(str_ind + 1, end_ind);
+            var fmt_rest$15 = match$31[1];
+            if (get_ign(/* () */0)) {
+              var ignored_002$4 = get_pad_opt(/* "_" */95);
+              var ignored$11 = [
+                /* Ignored_int64 */5,
+                iconv$3,
+                ignored_002$4
+              ];
+              fmt_result = [
+                /* Fmt_EBB */0,
+                [
+                  /* Ignored_param */23,
+                  ignored$11,
+                  fmt_rest$15
+                ]
+              ];
             }
             else {
-              var iconv$3 = compute_int_conv(pct_ind, str_ind + 1, get_plus(/* () */0), get_sharp(/* () */0), get_space(/* () */0), str.charCodeAt(str_ind));
-              var match$31 = parse(str_ind + 1, end_ind);
-              var fmt_rest$15 = match$31[1];
-              if (get_ign(/* () */0)) {
-                var ignored_002$4 = get_pad_opt(/* "_" */95);
-                var ignored$11 = [
-                  /* Ignored_int64 */5,
+              var match$32 = make_padprec_fmt_ebb(get_pad(/* () */0), get_prec(/* () */0), fmt_rest$15);
+              fmt_result = [
+                /* Fmt_EBB */0,
+                [
+                  /* Int64 */7,
                   iconv$3,
-                  ignored_002$4
-                ];
-                fmt_result = [
-                  /* Fmt_EBB */0,
-                  [
-                    /* Ignored_param */23,
-                    ignored$11,
-                    fmt_rest$15
-                  ]
-                ];
-              }
-              else {
-                var match$32 = make_padprec_fmt_ebb(get_pad(/* () */0), get_prec(/* () */0), fmt_rest$15);
-                fmt_result = [
-                  /* Fmt_EBB */0,
-                  [
-                    /* Int64 */7,
-                    iconv$3,
-                    match$32[1],
-                    match$32[2],
-                    match$32[3]
-                  ]
-                ];
-              }
+                  match$32[1],
+                  match$32[2],
+                  match$32[3]
+                ]
+              ];
             }
           }
           break;
@@ -6429,8 +6315,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       var exit = 0;
       if (c >= 65) {
         if (c >= 94) {
-          var switcher = -123 + c;
-          if (2 < (switcher >>> 0)) {
+          var switcher = c - 123;
+          if (switcher > 2 || switcher < 0) {
             exit = 1;
           }
           else {
@@ -6454,367 +6340,353 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
           }
         }
-        else {
-          if (c >= 91) {
-            switch (-91 + c) {
-              case 0 : 
-                  return parse_tag(/* false */0, str_ind + 1, end_ind);
-              case 1 : 
-                  exit = 1;
-                  break;
-              case 2 : 
-                  var match$1 = parse(str_ind + 1, end_ind);
-                  return [
-                          /* Fmt_EBB */0,
-                          [
-                            /* Formatting_lit */17,
-                            /* Close_box */0,
-                            match$1[1]
-                          ]
-                        ];
-              
-            }
-          }
-          else {
-            exit = 1;
-          }
-        }
-      }
-      else {
-        if (c !== 10) {
-          if (c >= 32) {
-            switch (-32 + c) {
-              case 0 : 
-                  var match$2 = parse(str_ind + 1, end_ind);
-                  return [
-                          /* Fmt_EBB */0,
-                          [
-                            /* Formatting_lit */17,
-                            [
-                              /* Break */0,
-                              "@ ",
-                              1,
-                              0
-                            ],
-                            match$2[1]
-                          ]
-                        ];
-              case 5 : 
-                  if (str_ind + 1 < end_ind && str[str_ind + 1] === "%") {
-                    var match$3 = parse(str_ind + 2, end_ind);
-                    return [
-                            /* Fmt_EBB */0,
-                            [
-                              /* Formatting_lit */17,
-                              /* Escaped_percent */6,
-                              match$3[1]
-                            ]
-                          ];
-                  }
-                  else {
-                    var match$4 = parse(str_ind, end_ind);
-                    return [
-                            /* Fmt_EBB */0,
-                            [
-                              /* Char_literal */12,
-                              /* "@" */64,
-                              match$4[1]
-                            ]
-                          ];
-                  }
-                  break;
-              case 12 : 
-                  var match$5 = parse(str_ind + 1, end_ind);
-                  return [
-                          /* Fmt_EBB */0,
-                          [
-                            /* Formatting_lit */17,
-                            [
-                              /* Break */0,
-                              "@,",
-                              0,
-                              0
-                            ],
-                            match$5[1]
-                          ]
-                        ];
-              case 14 : 
-                  var match$6 = parse(str_ind + 1, end_ind);
-                  return [
-                          /* Fmt_EBB */0,
-                          [
-                            /* Formatting_lit */17,
-                            /* Flush_newline */4,
-                            match$6[1]
-                          ]
-                        ];
-              case 27 : 
-                  var str_ind$1 = str_ind + 1;
-                  var end_ind$1 = end_ind;
-                  var match$7;
-                  try {
-                    if (str_ind$1 === end_ind$1 || str.charCodeAt(str_ind$1) !== /* "<" */60) {
-                      throw Caml_exceptions.Not_found;
-                    }
-                    var str_ind_1 = parse_spaces(str_ind$1 + 1, end_ind$1);
-                    var match$8 = str.charCodeAt(str_ind_1);
-                    var exit$1 = 0;
-                    if (match$8 >= 48) {
-                      if (match$8 >= 58) {
-                        throw Caml_exceptions.Not_found;
-                      }
-                      else {
-                        exit$1 = 1;
-                      }
-                    }
-                    else {
-                      if (match$8 !== 45) {
-                        throw Caml_exceptions.Not_found;
-                      }
-                      else {
-                        exit$1 = 1;
-                      }
-                    }
-                    if (exit$1 === 1) {
-                      var match$9 = parse_integer(str_ind_1, end_ind$1);
-                      var width = match$9[2];
-                      var str_ind_3 = parse_spaces(match$9[1], end_ind$1);
-                      var match$10 = str.charCodeAt(str_ind_3);
-                      var switcher$1 = -45 + match$10;
-                      if (!(12 < (switcher$1 >>> 0))) {
-                        if (1 < (-1 + switcher$1 >>> 0)) {
-                          var match$11 = parse_integer(str_ind_3, end_ind$1);
-                          var str_ind_5 = parse_spaces(match$11[1], end_ind$1);
-                          if (str.charCodeAt(str_ind_5) !== /* ">" */62) {
-                            throw Caml_exceptions.Not_found;
-                          }
-                          var s = $$String.sub(str, str_ind$1 - 2, str_ind_5 - str_ind$1 + 3);
-                          match$7 = [
-                            /* tuple */0,
-                            str_ind_5 + 1,
-                            [
-                              /* Break */0,
-                              s,
-                              width,
-                              match$11[2]
-                            ]
-                          ];
-                        }
-                        else {
-                          throw Caml_exceptions.Not_found;
-                        }
-                      }
-                      else {
-                        if (switcher$1 !== 17) {
-                          throw Caml_exceptions.Not_found;
-                        }
-                        else {
-                          var s$1 = $$String.sub(str, str_ind$1 - 2, str_ind_3 - str_ind$1 + 3);
-                          match$7 = [
-                            /* tuple */0,
-                            str_ind_3 + 1,
-                            [
-                              /* Break */0,
-                              s$1,
-                              width,
-                              0
-                            ]
-                          ];
-                        }
-                      }
-                    }
-                    
-                  }
-                  catch (exn){
-                    if (exn === Caml_exceptions.Not_found) {
-                      match$7 = [
-                        /* tuple */0,
-                        str_ind$1,
+        else if (c >= 91) {
+          switch (c - 91) {
+            case 0 : 
+                return parse_tag(/* false */0, str_ind + 1, end_ind);
+            case 1 : 
+                exit = 1;
+                break;
+            case 2 : 
+                var match$1 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
                         [
-                          /* Break */0,
-                          "@;",
-                          1,
-                          0
+                          /* Formatting_lit */17,
+                          /* Close_box */0,
+                          match$1[1]
                         ]
                       ];
-                    }
-                    else {
-                      if (exn[1] === Caml_exceptions.Failure) {
-                        match$7 = [
-                          /* tuple */0,
-                          str_ind$1,
+            
+          }
+        }
+        else {
+          exit = 1;
+        }
+      }
+      else if (c !== 10) {
+        if (c >= 32) {
+          switch (c - 32) {
+            case 0 : 
+                var match$2 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
                           [
                             /* Break */0,
-                            "@;",
+                            "@ ",
                             1,
+                            0
+                          ],
+                          match$2[1]
+                        ]
+                      ];
+            case 5 : 
+                if (str_ind + 1 < end_ind && str[str_ind + 1] === "%") {
+                  var match$3 = parse(str_ind + 2, end_ind);
+                  return [
+                          /* Fmt_EBB */0,
+                          [
+                            /* Formatting_lit */17,
+                            /* Escaped_percent */6,
+                            match$3[1]
+                          ]
+                        ];
+                }
+                else {
+                  var match$4 = parse(str_ind, end_ind);
+                  return [
+                          /* Fmt_EBB */0,
+                          [
+                            /* Char_literal */12,
+                            /* "@" */64,
+                            match$4[1]
+                          ]
+                        ];
+                }
+                break;
+            case 12 : 
+                var match$5 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
+                          [
+                            /* Break */0,
+                            "@,",
+                            0,
+                            0
+                          ],
+                          match$5[1]
+                        ]
+                      ];
+            case 14 : 
+                var match$6 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
+                          /* Flush_newline */4,
+                          match$6[1]
+                        ]
+                      ];
+            case 27 : 
+                var str_ind$1 = str_ind + 1;
+                var end_ind$1 = end_ind;
+                var match$7;
+                try {
+                  if (str_ind$1 === end_ind$1 || str.charCodeAt(str_ind$1) !== /* "<" */60) {
+                    throw Caml_exceptions.Not_found;
+                  }
+                  var str_ind_1 = parse_spaces(str_ind$1 + 1, end_ind$1);
+                  var match$8 = str.charCodeAt(str_ind_1);
+                  var exit$1 = 0;
+                  if (match$8 >= 48) {
+                    if (match$8 >= 58) {
+                      throw Caml_exceptions.Not_found;
+                    }
+                    else {
+                      exit$1 = 1;
+                    }
+                  }
+                  else if (match$8 !== 45) {
+                    throw Caml_exceptions.Not_found;
+                  }
+                  else {
+                    exit$1 = 1;
+                  }
+                  if (exit$1 === 1) {
+                    var match$9 = parse_integer(str_ind_1, end_ind$1);
+                    var width = match$9[2];
+                    var str_ind_3 = parse_spaces(match$9[1], end_ind$1);
+                    var match$10 = str.charCodeAt(str_ind_3);
+                    var switcher$1 = match$10 - 45;
+                    if (switcher$1 > 12 || switcher$1 < 0) {
+                      if (switcher$1 !== 17) {
+                        throw Caml_exceptions.Not_found;
+                      }
+                      else {
+                        var s = $$String.sub(str, str_ind$1 - 2, str_ind_3 - str_ind$1 + 3);
+                        match$7 = [
+                          /* tuple */0,
+                          str_ind_3 + 1,
+                          [
+                            /* Break */0,
+                            s,
+                            width,
                             0
                           ]
                         ];
                       }
-                      else {
-                        throw exn;
-                      }
                     }
-                  }
-                  var match$12 = parse(match$7[1], end_ind$1);
-                  return [
-                          /* Fmt_EBB */0,
-                          [
-                            /* Formatting_lit */17,
-                            match$7[2],
-                            match$12[1]
-                          ]
-                        ];
-              case 28 : 
-                  var str_ind$2 = str_ind + 1;
-                  var end_ind$2 = end_ind;
-                  var match$13;
-                  try {
-                    var str_ind_1$1 = parse_spaces(str_ind$2, end_ind$2);
-                    var match$14 = str.charCodeAt(str_ind_1$1);
-                    var exit$2 = 0;
-                    if (match$14 >= 48) {
-                      if (match$14 >= 58) {
-                        match$13 = /* None */0;
-                      }
-                      else {
-                        exit$2 = 1;
-                      }
+                    else if (switcher$1 === 2 || switcher$1 === 1) {
+                      throw Caml_exceptions.Not_found;
                     }
                     else {
-                      if (match$14 !== 45) {
-                        match$13 = /* None */0;
-                      }
-                      else {
-                        exit$2 = 1;
-                      }
-                    }
-                    if (exit$2 === 1) {
-                      var match$15 = parse_integer(str_ind_1$1, end_ind$2);
-                      var str_ind_3$1 = parse_spaces(match$15[1], end_ind$2);
-                      if (str.charCodeAt(str_ind_3$1) !== /* ">" */62) {
+                      var match$11 = parse_integer(str_ind_3, end_ind$1);
+                      var str_ind_5 = parse_spaces(match$11[1], end_ind$1);
+                      if (str.charCodeAt(str_ind_5) !== /* ">" */62) {
                         throw Caml_exceptions.Not_found;
                       }
-                      var s$2 = $$String.sub(str, str_ind$2 - 2, str_ind_3$1 - str_ind$2 + 3);
-                      match$13 = [
-                        /* Some */0,
+                      var s$1 = $$String.sub(str, str_ind$1 - 2, str_ind_5 - str_ind$1 + 3);
+                      match$7 = [
+                        /* tuple */0,
+                        str_ind_5 + 1,
                         [
-                          /* tuple */0,
-                          str_ind_3$1 + 1,
-                          [
-                            /* Magic_size */1,
-                            s$2,
-                            match$15[2]
-                          ]
+                          /* Break */0,
+                          s$1,
+                          width,
+                          match$11[2]
                         ]
                       ];
                     }
-                    
                   }
-                  catch (exn$1){
-                    if (exn$1 === Caml_exceptions.Not_found) {
+                  
+                }
+                catch (exn){
+                  if (exn === Caml_exceptions.Not_found) {
+                    match$7 = [
+                      /* tuple */0,
+                      str_ind$1,
+                      [
+                        /* Break */0,
+                        "@;",
+                        1,
+                        0
+                      ]
+                    ];
+                  }
+                  else if (exn[1] === Caml_exceptions.Failure) {
+                    match$7 = [
+                      /* tuple */0,
+                      str_ind$1,
+                      [
+                        /* Break */0,
+                        "@;",
+                        1,
+                        0
+                      ]
+                    ];
+                  }
+                  else {
+                    throw exn;
+                  }
+                }
+                var match$12 = parse(match$7[1], end_ind$1);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
+                          match$7[2],
+                          match$12[1]
+                        ]
+                      ];
+            case 28 : 
+                var str_ind$2 = str_ind + 1;
+                var end_ind$2 = end_ind;
+                var match$13;
+                try {
+                  var str_ind_1$1 = parse_spaces(str_ind$2, end_ind$2);
+                  var match$14 = str.charCodeAt(str_ind_1$1);
+                  var exit$2 = 0;
+                  if (match$14 >= 48) {
+                    if (match$14 >= 58) {
                       match$13 = /* None */0;
                     }
                     else {
-                      if (exn$1[1] === Caml_exceptions.Failure) {
-                        match$13 = /* None */0;
-                      }
-                      else {
-                        throw exn$1;
-                      }
+                      exit$2 = 1;
                     }
                   }
-                  if (match$13) {
-                    var match$16 = match$13[1];
-                    var match$17 = parse(match$16[1], end_ind$2);
-                    return [
-                            /* Fmt_EBB */0,
-                            [
-                              /* Formatting_lit */17,
-                              match$16[2],
-                              match$17[1]
-                            ]
-                          ];
+                  else if (match$14 !== 45) {
+                    match$13 = /* None */0;
                   }
                   else {
-                    var match$18 = parse(str_ind$2, end_ind$2);
-                    return [
-                            /* Fmt_EBB */0,
-                            [
-                              /* Formatting_lit */17,
-                              [
-                                /* Scan_indic */2,
-                                /* "<" */60
-                              ],
-                              match$18[1]
-                            ]
-                          ];
+                    exit$2 = 1;
                   }
-              case 1 : 
-              case 2 : 
-              case 3 : 
-              case 4 : 
-              case 6 : 
-              case 7 : 
-              case 8 : 
-              case 9 : 
-              case 10 : 
-              case 11 : 
-              case 13 : 
-              case 15 : 
-              case 16 : 
-              case 17 : 
-              case 18 : 
-              case 19 : 
-              case 20 : 
-              case 21 : 
-              case 22 : 
-              case 23 : 
-              case 24 : 
-              case 25 : 
-              case 26 : 
-              case 29 : 
-              case 30 : 
-                  exit = 1;
-                  break;
-              case 31 : 
-                  var match$19 = parse(str_ind + 1, end_ind);
+                  if (exit$2 === 1) {
+                    var match$15 = parse_integer(str_ind_1$1, end_ind$2);
+                    var str_ind_3$1 = parse_spaces(match$15[1], end_ind$2);
+                    if (str.charCodeAt(str_ind_3$1) !== /* ">" */62) {
+                      throw Caml_exceptions.Not_found;
+                    }
+                    var s$2 = $$String.sub(str, str_ind$2 - 2, str_ind_3$1 - str_ind$2 + 3);
+                    match$13 = [
+                      /* Some */0,
+                      [
+                        /* tuple */0,
+                        str_ind_3$1 + 1,
+                        [
+                          /* Magic_size */1,
+                          s$2,
+                          match$15[2]
+                        ]
+                      ]
+                    ];
+                  }
+                  
+                }
+                catch (exn$1){
+                  if (exn$1 === Caml_exceptions.Not_found) {
+                    match$13 = /* None */0;
+                  }
+                  else if (exn$1[1] === Caml_exceptions.Failure) {
+                    match$13 = /* None */0;
+                  }
+                  else {
+                    throw exn$1;
+                  }
+                }
+                if (match$13) {
+                  var match$16 = match$13[1];
+                  var match$17 = parse(match$16[1], end_ind$2);
                   return [
                           /* Fmt_EBB */0,
                           [
                             /* Formatting_lit */17,
-                            /* FFlush */2,
-                            match$19[1]
+                            match$16[2],
+                            match$17[1]
                           ]
                         ];
-              case 32 : 
-                  var match$20 = parse(str_ind + 1, end_ind);
+                }
+                else {
+                  var match$18 = parse(str_ind$2, end_ind$2);
                   return [
                           /* Fmt_EBB */0,
                           [
                             /* Formatting_lit */17,
-                            /* Escaped_at */5,
-                            match$20[1]
+                            [
+                              /* Scan_indic */2,
+                              /* "<" */60
+                            ],
+                            match$18[1]
                           ]
                         ];
-              
-            }
-          }
-          else {
-            exit = 1;
+                }
+            case 1 : 
+            case 2 : 
+            case 3 : 
+            case 4 : 
+            case 6 : 
+            case 7 : 
+            case 8 : 
+            case 9 : 
+            case 10 : 
+            case 11 : 
+            case 13 : 
+            case 15 : 
+            case 16 : 
+            case 17 : 
+            case 18 : 
+            case 19 : 
+            case 20 : 
+            case 21 : 
+            case 22 : 
+            case 23 : 
+            case 24 : 
+            case 25 : 
+            case 26 : 
+            case 29 : 
+            case 30 : 
+                exit = 1;
+                break;
+            case 31 : 
+                var match$19 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
+                          /* FFlush */2,
+                          match$19[1]
+                        ]
+                      ];
+            case 32 : 
+                var match$20 = parse(str_ind + 1, end_ind);
+                return [
+                        /* Fmt_EBB */0,
+                        [
+                          /* Formatting_lit */17,
+                          /* Escaped_at */5,
+                          match$20[1]
+                        ]
+                      ];
+            
           }
         }
         else {
-          var match$21 = parse(str_ind + 1, end_ind);
-          return [
-                  /* Fmt_EBB */0,
-                  [
-                    /* Formatting_lit */17,
-                    /* Force_newline */3,
-                    match$21[1]
-                  ]
-                ];
+          exit = 1;
         }
+      }
+      else {
+        var match$21 = parse(str_ind + 1, end_ind);
+        return [
+                /* Fmt_EBB */0,
+                [
+                  /* Formatting_lit */17,
+                  /* Force_newline */3,
+                  match$21[1]
+                ]
+              ];
       }
       if (exit === 1) {
         var match$22 = parse(str_ind + 1, end_ind);
@@ -6837,28 +6709,26 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     if (typeof fmt === "number") {
       return /* () */0;
     }
-    else {
-      if (fmt[0] === 11) {
-        if (typeof fmt[2] === "number") {
-          try {
-            return open_box_of_string(fmt[1]);
-          }
-          catch (exn){
-            if (exn[1] === Caml_exceptions.Failure) {
-              return /* () */0;
-            }
-            else {
-              throw exn;
-            }
-          }
+    else if (fmt[0] === 11) {
+      if (typeof fmt[2] === "number") {
+        try {
+          return open_box_of_string(fmt[1]);
         }
-        else {
-          return /* () */0;
+        catch (exn){
+          if (exn[1] === Caml_exceptions.Failure) {
+            return /* () */0;
+          }
+          else {
+            throw exn;
+          }
         }
       }
       else {
         return /* () */0;
       }
+    }
+    else {
+      return /* () */0;
     }
   };
   var parse_tag = function (is_open_tag, str_ind, end_ind) {
@@ -7044,58 +6914,56 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             exit = 1;
           }
         }
-        else {
-          if (c$prime !== 37) {
-            if (c$prime >= 45) {
-              var str_ind$1 = str_ind + 1;
-              var end_ind$1 = end_ind;
-              var c$1 = c;
-              if (str_ind$1 === end_ind$1) {
-                unexpected_end_of_format(end_ind$1);
-              }
-              var c$prime$1 = str.charCodeAt(str_ind$1);
-              if (c$prime$1 !== 37) {
-                if (c$prime$1 !== 93) {
-                  add_range(c$1, c$prime$1);
-                  return parse_char_set_content(str_ind$1 + 1, end_ind$1);
-                }
-                else {
-                  add_char(c$1);
-                  add_char(/* "-" */45);
-                  return str_ind$1 + 1;
-                }
+        else if (c$prime !== 37) {
+          if (c$prime >= 45) {
+            var str_ind$1 = str_ind + 1;
+            var end_ind$1 = end_ind;
+            var c$1 = c;
+            if (str_ind$1 === end_ind$1) {
+              unexpected_end_of_format(end_ind$1);
+            }
+            var c$prime$1 = str.charCodeAt(str_ind$1);
+            if (c$prime$1 !== 37) {
+              if (c$prime$1 !== 93) {
+                add_range(c$1, c$prime$1);
+                return parse_char_set_content(str_ind$1 + 1, end_ind$1);
               }
               else {
-                if (str_ind$1 + 1 === end_ind$1) {
-                  unexpected_end_of_format(end_ind$1);
-                }
-                var c$prime$2 = str.charCodeAt(str_ind$1 + 1);
-                var exit$1 = 0;
-                if (c$prime$2 !== 37) {
-                  if (c$prime$2 !== 64) {
-                    return fail_single_percent(str_ind$1);
-                  }
-                  else {
-                    exit$1 = 1;
-                  }
+                add_char(c$1);
+                add_char(/* "-" */45);
+                return str_ind$1 + 1;
+              }
+            }
+            else {
+              if (str_ind$1 + 1 === end_ind$1) {
+                unexpected_end_of_format(end_ind$1);
+              }
+              var c$prime$2 = str.charCodeAt(str_ind$1 + 1);
+              var exit$1 = 0;
+              if (c$prime$2 !== 37) {
+                if (c$prime$2 !== 64) {
+                  return fail_single_percent(str_ind$1);
                 }
                 else {
                   exit$1 = 1;
                 }
-                if (exit$1 === 1) {
-                  add_range(c$1, c$prime$2);
-                  return parse_char_set_content(str_ind$1 + 2, end_ind$1);
-                }
-                
               }
-            }
-            else {
-              exit = 2;
+              else {
+                exit$1 = 1;
+              }
+              if (exit$1 === 1) {
+                add_range(c$1, c$prime$2);
+                return parse_char_set_content(str_ind$1 + 2, end_ind$1);
+              }
+              
             }
           }
           else {
-            exit = 1;
+            exit = 2;
           }
+        }
+        else {
+          exit = 1;
         }
         switch (exit) {
           case 1 : 
@@ -7162,7 +7030,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         unexpected_end_of_format(end_ind);
       }
       var c = str.charCodeAt(str_ind);
-      if (9 < (-48 + c >>> 0)) {
+      if (c > 57 || c < 48) {
         return [
                 /* tuple */0,
                 str_ind,
@@ -7235,35 +7103,33 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         return parse_positive(str_ind, end_ind, 0);
       }
     }
-    else {
-      if (match !== 45) {
-        throw [
+    else if (match !== 45) {
+      throw [
+            0,
+            Caml_exceptions.Assert_failure,
+            [
               0,
-              Caml_exceptions.Assert_failure,
-              [
-                0,
-                "camlinternalFormat.ml",
-                2621,
-                11
-              ]
-            ];
+              "camlinternalFormat.ml",
+              2621,
+              11
+            ]
+          ];
+    }
+    else {
+      if (str_ind + 1 === end_ind) {
+        unexpected_end_of_format(end_ind);
+      }
+      var c = str.charCodeAt(str_ind + 1);
+      if (c > 57 || c < 48) {
+        return expected_character(str_ind + 1, "digit", c);
       }
       else {
-        if (str_ind + 1 === end_ind) {
-          unexpected_end_of_format(end_ind);
-        }
-        var c = str.charCodeAt(str_ind + 1);
-        if (9 < (-48 + c >>> 0)) {
-          return expected_character(str_ind + 1, "digit", c);
-        }
-        else {
-          var match$1 = parse_positive(str_ind + 1, end_ind, 0);
-          return [
-                  /* tuple */0,
-                  match$1[1],
-                  -match$1[2]
-                ];
-        }
+        var match$1 = parse_positive(str_ind + 1, end_ind, 0);
+        return [
+                /* tuple */0,
+                match$1[1],
+                -match$1[2]
+              ];
       }
     }
   };
@@ -7357,7 +7223,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 exit = 1;
               }
               else {
-                switch (-123 + match$1) {
+                switch (match$1 - 123) {
                   case 0 : 
                       var sub_end = search_subformat_end(str_ind + 2, end_ind, /* "}" */125);
                       _str_ind = sub_end + 2;
@@ -7371,44 +7237,40 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 }
               }
             }
+            else if (match$1 >= 96) {
+              exit = 1;
+            }
             else {
-              if (match$1 >= 96) {
-                exit = 1;
+              if (str_ind + 2 === end_ind) {
+                unexpected_end_of_format(end_ind);
               }
-              else {
-                if (str_ind + 2 === end_ind) {
-                  unexpected_end_of_format(end_ind);
-                }
-                var match$2 = str.charCodeAt(str_ind + 2);
-                if (match$2 !== 40) {
-                  if (match$2 !== 123) {
-                    _str_ind = str_ind + 3;
-                  }
-                  else {
-                    var sub_end$1 = search_subformat_end(str_ind + 3, end_ind, /* "}" */125);
-                    _str_ind = sub_end$1 + 2;
-                  }
+              var match$2 = str.charCodeAt(str_ind + 2);
+              if (match$2 !== 40) {
+                if (match$2 !== 123) {
+                  _str_ind = str_ind + 3;
                 }
                 else {
-                  var sub_end$2 = search_subformat_end(str_ind + 3, end_ind, /* ")" */41);
-                  _str_ind = sub_end$2 + 2;
+                  var sub_end$1 = search_subformat_end(str_ind + 3, end_ind, /* "}" */125);
+                  _str_ind = sub_end$1 + 2;
                 }
+              }
+              else {
+                var sub_end$2 = search_subformat_end(str_ind + 3, end_ind, /* ")" */41);
+                _str_ind = sub_end$2 + 2;
               }
             }
           }
-          else {
-            if (match$1 !== 40) {
-              if (match$1 !== 41) {
-                exit = 1;
-              }
-              else {
-                return expected_character(str_ind + 1, "character '}'", /* ")" */41);
-              }
+          else if (match$1 !== 40) {
+            if (match$1 !== 41) {
+              exit = 1;
             }
             else {
-              var sub_end$3 = search_subformat_end(str_ind + 2, end_ind, /* ")" */41);
-              _str_ind = sub_end$3 + 2;
+              return expected_character(str_ind + 1, "character '}'", /* ")" */41);
             }
+          }
+          else {
+            var sub_end$3 = search_subformat_end(str_ind + 2, end_ind, /* ")" */41);
+            _str_ind = sub_end$3 + 2;
           }
           if (exit === 1) {
             _str_ind = str_ind + 2;
@@ -7419,8 +7281,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     };
   };
   var is_int_base = function (symb) {
-    var switcher = -88 + symb;
-    if (32 < (switcher >>> 0)) {
+    var switcher = symb - 88;
+    if (switcher > 32 || switcher < 0) {
       return /* false */0;
     }
     else {
@@ -7471,7 +7333,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         exit = 1;
       }
       else {
-        switch (-108 + symb) {
+        switch (symb - 108) {
           case 0 : 
               return /* Line_counter */0;
           case 1 : 
@@ -7483,13 +7345,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         }
       }
     }
+    else if (symb !== 76) {
+      exit = 1;
+    }
     else {
-      if (symb !== 76) {
-        exit = 1;
-      }
-      else {
-        return /* Token_counter */2;
-      }
+      return /* Token_counter */2;
     }
     if (exit === 1) {
       throw [
@@ -7515,122 +7375,112 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         if (sharp !== 0) {
           exit = 1;
         }
-        else {
-          if (space !== 0) {
+        else if (space !== 0) {
+          exit = 2;
+        }
+        else if (symb !== 100) {
+          if (symb !== 105) {
             exit = 2;
           }
           else {
-            if (symb !== 100) {
-              if (symb !== 105) {
-                exit = 2;
-              }
-              else {
-                return /* Int_pi */4;
-              }
-            }
-            else {
-              return /* Int_pd */1;
-            }
-          }
-        }
-      }
-      else {
-        if (sharp !== 0) {
-          if (space !== 0) {
-            exit = 1;
-          }
-          else {
-            if (symb !== 88) {
-              if (symb !== 111) {
-                if (symb !== 120) {
-                  exit = 1;
-                }
-                else {
-                  return /* Int_Cx */7;
-                }
-              }
-              else {
-                return /* Int_Co */11;
-              }
-            }
-            else {
-              return /* Int_CX */9;
-            }
+            return /* Int_pi */4;
           }
         }
         else {
-          if (space !== 0) {
-            if (symb !== 100) {
-              if (symb !== 105) {
-                exit = 2;
-              }
-              else {
-                return /* Int_si */5;
-              }
+          return /* Int_pd */1;
+        }
+      }
+      else if (sharp !== 0) {
+        if (space !== 0) {
+          exit = 1;
+        }
+        else if (symb !== 88) {
+          if (symb !== 111) {
+            if (symb !== 120) {
+              exit = 1;
             }
             else {
-              return /* Int_sd */2;
+              return /* Int_Cx */7;
             }
           }
           else {
-            var switcher = -88 + symb;
-            if (32 < (switcher >>> 0)) {
-              exit = 2;
-            }
-            else {
-              switch (switcher) {
-                case 0 : 
-                    return /* Int_X */8;
-                case 12 : 
-                    return /* Int_d */0;
-                case 17 : 
-                    return /* Int_i */3;
-                case 23 : 
-                    return /* Int_o */10;
-                case 29 : 
-                    return /* Int_u */12;
-                case 1 : 
-                case 2 : 
-                case 3 : 
-                case 4 : 
-                case 5 : 
-                case 6 : 
-                case 7 : 
-                case 8 : 
-                case 9 : 
-                case 10 : 
-                case 11 : 
-                case 13 : 
-                case 14 : 
-                case 15 : 
-                case 16 : 
-                case 18 : 
-                case 19 : 
-                case 20 : 
-                case 21 : 
-                case 22 : 
-                case 24 : 
-                case 25 : 
-                case 26 : 
-                case 27 : 
-                case 28 : 
-                case 30 : 
-                case 31 : 
-                    exit = 2;
-                    break;
-                case 32 : 
-                    return /* Int_x */6;
-                
-              }
-            }
+            return /* Int_Co */11;
+          }
+        }
+        else {
+          return /* Int_CX */9;
+        }
+      }
+      else if (space !== 0) {
+        if (symb !== 100) {
+          if (symb !== 105) {
+            exit = 2;
+          }
+          else {
+            return /* Int_si */5;
+          }
+        }
+        else {
+          return /* Int_sd */2;
+        }
+      }
+      else {
+        var switcher = symb - 88;
+        if (switcher > 32 || switcher < 0) {
+          exit = 2;
+        }
+        else {
+          switch (switcher) {
+            case 0 : 
+                return /* Int_X */8;
+            case 12 : 
+                return /* Int_d */0;
+            case 17 : 
+                return /* Int_i */3;
+            case 23 : 
+                return /* Int_o */10;
+            case 29 : 
+                return /* Int_u */12;
+            case 1 : 
+            case 2 : 
+            case 3 : 
+            case 4 : 
+            case 5 : 
+            case 6 : 
+            case 7 : 
+            case 8 : 
+            case 9 : 
+            case 10 : 
+            case 11 : 
+            case 13 : 
+            case 14 : 
+            case 15 : 
+            case 16 : 
+            case 18 : 
+            case 19 : 
+            case 20 : 
+            case 21 : 
+            case 22 : 
+            case 24 : 
+            case 25 : 
+            case 26 : 
+            case 27 : 
+            case 28 : 
+            case 30 : 
+            case 31 : 
+                exit = 2;
+                break;
+            case 32 : 
+                return /* Int_x */6;
+            
           }
         }
       }
       switch (exit) {
         case 1 : 
             var exit$1 = 0;
-            var switcher$1 = -88 + symb;
-            if (32 < (switcher$1 >>> 0)) {
+            var switcher$1 = symb - 88;
+            if (switcher$1 > 32 || switcher$1 < 0) {
               exit = 2;
             }
             else {
@@ -7715,36 +7565,32 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   return incompatible_flag(pct_ind, str_ind, /* " " */32, "'+'");
                 }
               }
+              else if (legacy_behavior$1) {
+                _plus = /* false */0;
+              }
               else {
-                if (legacy_behavior$1) {
-                  _plus = /* false */0;
-                }
-                else {
-                  return incompatible_flag(pct_ind, str_ind, symb, "'+'");
-                }
+                return incompatible_flag(pct_ind, str_ind, symb, "'+'");
+              }
+            }
+            else if (space !== 0) {
+              if (legacy_behavior$1) {
+                _space = /* false */0;
+              }
+              else {
+                return incompatible_flag(pct_ind, str_ind, symb, "' '");
               }
             }
             else {
-              if (space !== 0) {
-                if (legacy_behavior$1) {
-                  _space = /* false */0;
-                }
-                else {
-                  return incompatible_flag(pct_ind, str_ind, symb, "' '");
-                }
-              }
-              else {
-                throw [
+              throw [
+                    0,
+                    Caml_exceptions.Assert_failure,
+                    [
                       0,
-                      Caml_exceptions.Assert_failure,
-                      [
-                        0,
-                        "camlinternalFormat.ml",
-                        2716,
-                        28
-                      ]
-                    ];
-              }
+                      "camlinternalFormat.ml",
+                      2716,
+                      28
+                    ]
+                  ];
             }
             break;
         
@@ -7767,8 +7613,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         else {
           var exit = 0;
           if (symb >= 72) {
-            var switcher = -101 + symb;
-            if (2 < (switcher >>> 0)) {
+            var switcher = symb - 101;
+            if (switcher > 2 || switcher < 0) {
               exit = 1;
             }
             else {
@@ -7783,22 +7629,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
             }
           }
+          else if (symb >= 69) {
+            switch (symb - 69) {
+              case 0 : 
+                  return /* Float_pE */7;
+              case 1 : 
+                  exit = 1;
+                  break;
+              case 2 : 
+                  return /* Float_pG */13;
+              
+            }
+          }
           else {
-            if (symb >= 69) {
-              switch (-69 + symb) {
-                case 0 : 
-                    return /* Float_pE */7;
-                case 1 : 
-                    exit = 1;
-                    break;
-                case 2 : 
-                    return /* Float_pG */13;
-                
-              }
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
           if (exit === 1) {
             if (legacy_behavior$1) {
@@ -7811,106 +7655,98 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           
         }
       }
-      else {
-        if (space !== 0) {
-          var exit$1 = 0;
-          if (symb >= 72) {
-            var switcher$1 = -101 + symb;
-            if (2 < (switcher$1 >>> 0)) {
-              exit$1 = 1;
-            }
-            else {
-              switch (switcher$1) {
-                case 0 : 
-                    return /* Float_se */5;
-                case 1 : 
-                    return /* Float_sf */2;
-                case 2 : 
-                    return /* Float_sg */11;
-                
-              }
-            }
+      else if (space !== 0) {
+        var exit$1 = 0;
+        if (symb >= 72) {
+          var switcher$1 = symb - 101;
+          if (switcher$1 > 2 || switcher$1 < 0) {
+            exit$1 = 1;
           }
           else {
-            if (symb >= 69) {
-              switch (-69 + symb) {
-                case 0 : 
-                    return /* Float_sE */8;
-                case 1 : 
-                    exit$1 = 1;
-                    break;
-                case 2 : 
-                    return /* Float_sG */14;
-                
-              }
-            }
-            else {
-              exit$1 = 1;
+            switch (switcher$1) {
+              case 0 : 
+                  return /* Float_se */5;
+              case 1 : 
+                  return /* Float_sf */2;
+              case 2 : 
+                  return /* Float_sg */11;
+              
             }
           }
-          if (exit$1 === 1) {
-            if (legacy_behavior$1) {
-              _space = /* false */0;
-            }
-            else {
-              return incompatible_flag(pct_ind, str_ind, symb, "' '");
-            }
+        }
+        else if (symb >= 69) {
+          switch (symb - 69) {
+            case 0 : 
+                return /* Float_sE */8;
+            case 1 : 
+                exit$1 = 1;
+                break;
+            case 2 : 
+                return /* Float_sG */14;
+            
           }
-          
         }
         else {
-          if (symb >= 72) {
-            var switcher$2 = -101 + symb;
-            if (2 < (switcher$2 >>> 0)) {
-              throw [
-                    0,
-                    Caml_exceptions.Assert_failure,
-                    [
-                      0,
-                      "camlinternalFormat.ml",
-                      2744,
-                      25
-                    ]
-                  ];
-            }
-            else {
-              switch (switcher$2) {
-                case 0 : 
-                    return /* Float_e */3;
-                case 1 : 
-                    return /* Float_f */0;
-                case 2 : 
-                    return /* Float_g */9;
-                
-              }
-            }
+          exit$1 = 1;
+        }
+        if (exit$1 === 1) {
+          if (legacy_behavior$1) {
+            _space = /* false */0;
           }
           else {
-            if (symb >= 69) {
-              switch (-69 + symb) {
-                case 0 : 
-                    return /* Float_E */6;
-                case 1 : 
-                    return /* Float_F */15;
-                case 2 : 
-                    return /* Float_G */12;
-                
-              }
-            }
-            else {
-              throw [
-                    0,
-                    Caml_exceptions.Assert_failure,
-                    [
-                      0,
-                      "camlinternalFormat.ml",
-                      2744,
-                      25
-                    ]
-                  ];
-            }
+            return incompatible_flag(pct_ind, str_ind, symb, "' '");
           }
         }
+        
+      }
+      else if (symb >= 72) {
+        var switcher$2 = symb - 101;
+        if (switcher$2 > 2 || switcher$2 < 0) {
+          throw [
+                0,
+                Caml_exceptions.Assert_failure,
+                [
+                  0,
+                  "camlinternalFormat.ml",
+                  2744,
+                  25
+                ]
+              ];
+        }
+        else {
+          switch (switcher$2) {
+            case 0 : 
+                return /* Float_e */3;
+            case 1 : 
+                return /* Float_f */0;
+            case 2 : 
+                return /* Float_g */9;
+            
+          }
+        }
+      }
+      else if (symb >= 69) {
+        switch (symb - 69) {
+          case 0 : 
+              return /* Float_E */6;
+          case 1 : 
+              return /* Float_F */15;
+          case 2 : 
+              return /* Float_G */12;
+          
+        }
+      }
+      else {
+        throw [
+              0,
+              Caml_exceptions.Assert_failure,
+              [
+                0,
+                "camlinternalFormat.ml",
+                2744,
+                25
+              ]
+            ];
       }
     };
   };

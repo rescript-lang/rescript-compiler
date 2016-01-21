@@ -160,13 +160,11 @@ function mkNode(low, v, high) {
                 ]
               ];
         }
+        else if (v === n[2] && idl === getId(n[1]) && idh === getId(n[4])) {
+          return n;
+        }
         else {
-          if (v === n[2] && idl === getId(n[1]) && idh === getId(n[4])) {
-            return n;
-          }
-          else {
-            _b = b[2];
-          }
+          _b = b[2];
         }
       }
       else {
@@ -189,13 +187,11 @@ function cmpVar(x, y) {
   if (x < y) {
     return /* LESS */0;
   }
+  else if (x > y) {
+    return /* GREATER */2;
+  }
   else {
-    if (x > y) {
-      return /* GREATER */2;
-    }
-    else {
-      return /* EQUAL */1;
-    }
+    return /* EQUAL */1;
   }
 }
 
@@ -410,13 +406,11 @@ function bool_equal(a, b) {
       return /* false */0;
     }
   }
+  else if (b !== 0) {
+    return /* false */0;
+  }
   else {
-    if (b !== 0) {
-      return /* false */0;
-    }
-    else {
-      return /* true */1;
-    }
+    return /* true */1;
   }
 }
 

@@ -4,7 +4,7 @@
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function f(x) {
-  if (2 < (-1 + x >>> 0)) {
+  if (x > 3 || x < 1) {
     throw [
           0,
           Caml_exceptions.Match_failure,

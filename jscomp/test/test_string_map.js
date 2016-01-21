@@ -43,13 +43,31 @@ function bal(l, x, d, r) {
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
       }
+      else if (lr) {
+        return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
+      }
       else {
-        if (lr) {
-          return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
-        }
-        else {
-          return Pervasives.invalid_arg("Map.bal");
-        }
+        return Pervasives.invalid_arg("Map.bal");
+      }
+    }
+    else {
+      return Pervasives.invalid_arg("Map.bal");
+    }
+  }
+  else if (hr > hl + 2) {
+    if (r) {
+      var rr = r[4];
+      var rd = r[3];
+      var rv = r[2];
+      var rl = r[1];
+      if (height(rr) >= height(rl)) {
+        return create(create(l, x, d, rl), rv, rd, rr);
+      }
+      else if (rl) {
+        return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
+      }
+      else {
+        return Pervasives.invalid_arg("Map.bal");
       }
     }
     else {
@@ -57,38 +75,14 @@ function bal(l, x, d, r) {
     }
   }
   else {
-    if (hr > hl + 2) {
-      if (r) {
-        var rr = r[4];
-        var rd = r[3];
-        var rv = r[2];
-        var rl = r[1];
-        if (height(rr) >= height(rl)) {
-          return create(create(l, x, d, rl), rv, rd, rr);
-        }
-        else {
-          if (rl) {
-            return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
-          }
-          else {
-            return Pervasives.invalid_arg("Map.bal");
-          }
-        }
-      }
-      else {
-        return Pervasives.invalid_arg("Map.bal");
-      }
-    }
-    else {
-      return [
-              /* Node */0,
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 : hr + 1
-            ];
-    }
+    return [
+            /* Node */0,
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 : hr + 1
+          ];
   }
 }
 

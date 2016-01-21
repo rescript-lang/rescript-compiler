@@ -183,6 +183,7 @@ module Exp = struct
        | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
       -> 
       econd ?comment x f t 
+
     | (Bin (Ge, 
             ({expression_desc = 
                 (String_length _ 
@@ -198,7 +199,7 @@ module Exp = struct
       ->
       (** Add comment when simplified *)
       econd ?comment pred t f 
-
+    | Not e, _, _ -> econd ?comment e f t 
     | Int_of_boolean  b, _, _  -> econd ?comment  b t f
 
     | _ -> 
@@ -333,23 +334,9 @@ module Exp = struct
     | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
     | _, _ -> {comment ; expression_desc = String_append(e,el)}
 
-  let int_plus ?comment  (e0 : t) (e1 : t) : t = 
-    match e0.expression_desc , e1.expression_desc  with 
-    | Number(Int {i = a; _}),  Number (Int { i = b ; _}) 
-      -> int (a + b)
-    | _, _ -> {comment ; expression_desc = Bin (Plus,e0,e1)}
 
-  let int_minus ?comment  (e0 : t) (e1 : t) : t = 
-    match e0.expression_desc , e1.expression_desc  with 
-    | Number(Int { i = a; _}),  Number (Int { i = b; _ }) 
-      -> int (a - b) (* OVERFLOW? *)
-    | _, _ -> {comment ; expression_desc = Bin (Minus,e0,e1)}
 
-  let float_plus ?comment  (e0 : t) (e1 : t) : t = 
-    {comment ; expression_desc = Bin (Plus,e0,e1)}
 
-  let float_minus ?comment  (e0 : t) (e1 : t) : t = 
-    {comment ; expression_desc = Bin (Minus,e0,e1)}
 
 
   let float_mod ?comment e1 e2 : J.expression = 
@@ -425,12 +412,8 @@ module Exp = struct
     | Number (Int {i = 0 ; _}) -> arr ?comment NA []
     | _ -> {comment; expression_desc = Array_of_size e}
 
-  (** TODO: remove : ?? *)         
-  let stringcomp ?comment cmp e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment cmp e0 e1
 
-  let intcomp ?comment cmp e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
 
   let is_type_number ?comment (e : t) : t = 
     match e.expression_desc with 
@@ -443,11 +426,24 @@ module Exp = struct
   (* let un ?comment op e : t  = {expression_desc = Un(op,e); comment} *)
 
   (* return a value of type boolean *)
+  (* TODO: 
+       when comparison with Int
+       it is right that !(x > 3 ) -> x <= 3 *)
   let rec not ({expression_desc; comment} as e : t) : t =
     match expression_desc with 
     | Bin(EqEqEq , e0,e1)
       -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
     | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
+
+    (* Note here the compiled js use primtive comparison only 
+       for *primitive types*, so it is safe to do such optimization,
+       for generic comparison, this does not hold        
+    *)
+    | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
+    | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}          
+    | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
+    | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
+
     | Number (Int {i; _}) -> 
       if i != 0 then false_ else true_
     | Int_of_boolean  e -> not e
@@ -512,17 +508,7 @@ module Exp = struct
   let string_of_small_int_array ?comment xs : t = 
     {expression_desc = String_of_small_int_array xs; comment}
       
-  let lt ?comment e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment Lt e0 e1 
 
-  let le ?comment e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment Le e0 e1 
-
-  let gt ?comment e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment Gt e0 e1 
-
-  let ge ?comment e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment Ge e0 e1 
   
   let dec ?comment (e : t ) =
      match e with
@@ -530,13 +516,6 @@ module Exp = struct
          {e with expression_desc = Number (Int ({ v with i = i - 1 }))} (*comment ?*)
      | _ -> bin ?comment Minus e (int 1 )
 
-  let prefix_inc ?comment (i : J.vident)  = 
-    let v : t = {expression_desc = Var i; comment = None} in
-    assign ?comment  v (int_plus v (int 1))
-
-  let prefix_dec ?comment i  = 
-    let v : t = {expression_desc = Var i; comment = None} in
-    assign ?comment v (int_minus v (int 1))
 
 
   (* we are calling [Caml_primitive.primitive_name], since it's under our
@@ -581,13 +560,62 @@ module Exp = struct
       expression_desc = Bin (Lsr, e , int 0)
     }
 
+  let string_comp cmp ?comment  e0 e1 = 
+    to_ocaml_boolean @@ bin ?comment cmp e0 e1
+  let int_comp cmp ?comment  e0 e1 = 
+    to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+  let float_comp cmp ?comment  e0 e1 = 
+    to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+  (* TODO: 
+     we can apply a more general optimization here, 
+     do some algebraic rewerite rules to rewrite [triple_equal]           
+  *)        
+  let is_out ?comment (e : t) (range : t) : t  = 
+    begin match range.expression_desc, e.expression_desc with 
+
+      | Number (Int {i = 1}), Var _ 
+        ->         
+        not (or_ (triple_equal e (int 0)) (triple_equal e (int 1)))                  
+      | Number (Int {i = 1}), 
+        (
+         Bin (Plus , {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
+       | Bin (Plus, {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) })
+        ) 
+        ->
+        not (or_ (triple_equal e (int ( -i ))) (triple_equal e (int (1 - i))))        
+      | Number (Int {i = 1}), 
+        Bin (Minus ,  ({expression_desc = Var _; _} as x), {expression_desc = Number (Int {i ; _}) })        
+        ->           
+        not (or_ (triple_equal x (int ( i + 1 ))) (triple_equal x (int i)))        
+      (* (x - i >>> 0 ) > k *)          
+      | Number (Int {i = k}), 
+        Bin (Minus ,  ({expression_desc = Var _; _} as x), 
+             {expression_desc = Number (Int {i ; _}) })        
+        ->           
+        (or_ (int_comp Cgt x (int (i + k)))  (int_comp Clt x  (int i)))
+      | Number (Int {i = k}), Var _  
+        -> 
+        (* Note that js support [ 1 < x < 3], 
+           we can optimize it into [ not ( 0<= x <=  k)]           
+        *)        
+        or_ (int_comp Cgt e (int ( k)))  (int_comp Clt e  (int 0))
+
+      | _, _ ->
+        int_comp ?comment Cgt (to_uint32 e)  range 
+    end
+
   let rec float_add ?comment (e1 : t) (e2 : t) = 
     match e1.expression_desc, e2.expression_desc with 
     | Number (Int {i;_}), Number (Int {i = j;_}) -> 
       int ?comment (i + j)
+    | _, Number (Int {i = j; c}) when j < 0 -> 
+      float_minus ?comment e1 {e2 with expression_desc = Number (Int {i = -j; c})}       
+
     | Bin(Plus, a1 , ({expression_desc = Number (Int {i = k; _})}  )), 
         Number (Int { i =j; _}) -> 
       bin ?comment Plus a1 (int (k + j))
+
     (* TODO remove commented code  ?? *)
     (* | Bin(Plus, a0 , ({expression_desc = Number (Int a1)}  )), *)
     (*     Bin(Plus, b0 , ({expression_desc = Number (Int b1)}  )) *)
@@ -606,14 +634,31 @@ module Exp = struct
     (*     bin ?comment Plus  e2 e1 *)
     | _ -> 
       bin ?comment Plus e1 e2
+  (* associative is error prone due to overflow *)
+  and float_minus ?comment  (e1 : t) (e2 : t) : t = 
+    match e1.expression_desc, e2.expression_desc with 
+    | Number (Int {i;_}), Number (Int {i = j;_}) -> 
+      int ?comment (i - j)
+    | _ -> 
+      bin ?comment Minus e1 e2
+
+
+
+
   let int32_add ?comment e1 e2 = 
     (* to_int32 @@  *)float_add ?comment e1 e2
 
-  let float_minus ?comment e1 e2 = 
-    bin ?comment Minus e1 e2 
 
   let int32_minus ?comment e1 e2 : J.expression = 
      (* to_int32 @@ *)  float_minus ?comment e1 e2
+
+  let prefix_inc ?comment (i : J.vident)  = 
+    let v : t = {expression_desc = Var i; comment = None} in
+    assign ?comment  v (int32_add v (int 1))
+
+  let prefix_dec ?comment i  = 
+    let v : t = {expression_desc = Var i; comment = None} in
+    assign ?comment v (int32_minus v (int 1))
 
   let float_mul ?comment e1 e2 = 
     bin ?comment Mul e1 e2 
@@ -905,9 +950,12 @@ module Stmt = struct
       | _, [], []                                   
         -> exp e :: acc 
 
+      | Not e, _ , _ :: _
+        -> aux ?comment e else_ then_ acc
       | _, [], _
         ->
           aux ?comment (Exp.not e) else_ [] acc
+      (* Be careful that this re-write may result in non-terminating effect *)
       | _, (y::ys),  (x::xs)
         when Js_analyzer.(eq_statement x y && no_side_effect e)
         ->

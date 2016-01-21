@@ -30,7 +30,7 @@ function curry(_f, _args) {
 }
 
 function curry1(o, x, arity) {
-  if (7 < (arity >>> 0)) {
+  if (arity > 7 || arity < 0) {
     return function (a) {
       return curry(o, /* array */[
                   x,

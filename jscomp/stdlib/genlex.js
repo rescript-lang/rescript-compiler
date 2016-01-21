@@ -94,36 +94,13 @@ function make_lexer(keywords) {
         var c = match[1];
         var exit = 0;
         if (c < 124) {
-          var switcher = -65 + c;
-          if (!(57 < (switcher >>> 0))) {
-            var switcher$1 = -26 + switcher;
-            if (5 < (switcher$1 >>> 0)) {
-              exit = 3;
-            }
-            else {
-              switch (switcher$1) {
-                case 1 : 
-                case 3 : 
-                    exit = 4;
-                    break;
-                case 4 : 
-                    exit = 3;
-                    break;
-                case 0 : 
-                case 2 : 
-                case 5 : 
-                    exit = 1;
-                    break;
-                
-              }
-            }
-          }
-          else {
+          var switcher = c - 65;
+          if (switcher > 57 || switcher < 0) {
             if (switcher >= 58) {
               exit = 1;
             }
             else {
-              switch (65 + switcher) {
+              switch (switcher + 65) {
                 case 9 : 
                 case 10 : 
                 case 12 : 
@@ -218,7 +195,7 @@ function make_lexer(keywords) {
                     var exit$2 = 0;
                     if (match$3) {
                       var c$2 = match$3[1];
-                      if (9 < (-48 + c$2 >>> 0)) {
+                      if (c$2 > 57 || c$2 < 48) {
                         exit$2 = 1;
                       }
                       else {
@@ -302,6 +279,29 @@ function make_lexer(keywords) {
               }
             }
           }
+          else {
+            var switcher$1 = switcher - 26;
+            if (switcher$1 > 5 || switcher$1 < 0) {
+              exit = 3;
+            }
+            else {
+              switch (switcher$1) {
+                case 1 : 
+                case 3 : 
+                    exit = 4;
+                    break;
+                case 4 : 
+                    exit = 3;
+                    break;
+                case 0 : 
+                case 2 : 
+                case 5 : 
+                    exit = 1;
+                    break;
+                
+              }
+            }
+          }
         }
         else {
           exit = c >= 127 ? (
@@ -332,8 +332,8 @@ function make_lexer(keywords) {
                   var c$3 = match$4[1];
                   var exit$4 = 0;
                   if (c$3 >= 91) {
-                    var switcher$2 = -95 + c$3;
-                    if (27 < (switcher$2 >>> 0)) {
+                    var switcher$2 = c$3 - 95;
+                    if (switcher$2 > 27 || switcher$2 < 0) {
                       if (switcher$2 >= 97) {
                         exit$4 = 2;
                       }
@@ -341,32 +341,26 @@ function make_lexer(keywords) {
                         exit$3 = 1;
                       }
                     }
+                    else if (switcher$2 !== 1) {
+                      exit$4 = 2;
+                    }
                     else {
-                      if (switcher$2 !== 1) {
-                        exit$4 = 2;
-                      }
-                      else {
-                        exit$3 = 1;
-                      }
+                      exit$3 = 1;
                     }
                   }
-                  else {
-                    if (c$3 >= 48) {
-                      if (6 < (-58 + c$3 >>> 0)) {
-                        exit$4 = 2;
-                      }
-                      else {
-                        exit$3 = 1;
-                      }
+                  else if (c$3 >= 48) {
+                    if (c$3 > 64 || c$3 < 58) {
+                      exit$4 = 2;
                     }
                     else {
-                      if (c$3 !== 39) {
-                        exit$3 = 1;
-                      }
-                      else {
-                        exit$4 = 2;
-                      }
+                      exit$3 = 1;
                     }
+                  }
+                  else if (c$3 !== 39) {
+                    exit$3 = 1;
+                  }
+                  else {
+                    exit$4 = 2;
                   }
                   if (exit$4 === 2) {
                     Stream.junk(strm__$3);
@@ -411,8 +405,8 @@ function make_lexer(keywords) {
         var c = match[1];
         var exit$1 = 0;
         if (c >= 94) {
-          var switcher = -95 + c;
-          if (30 < (switcher >>> 0)) {
+          var switcher = c - 95;
+          if (switcher > 30 || switcher < 0) {
             if (switcher >= 32) {
               exit = 1;
             }
@@ -420,70 +414,64 @@ function make_lexer(keywords) {
               exit$1 = 2;
             }
           }
+          else if (switcher !== 29) {
+            exit = 1;
+          }
           else {
-            if (switcher !== 29) {
-              exit = 1;
-            }
-            else {
-              exit$1 = 2;
-            }
+            exit$1 = 2;
+          }
+        }
+        else if (c >= 65) {
+          if (c !== 92) {
+            exit = 1;
+          }
+          else {
+            exit$1 = 2;
+          }
+        }
+        else if (c >= 33) {
+          switch (c - 33) {
+            case 1 : 
+            case 6 : 
+            case 7 : 
+            case 8 : 
+            case 11 : 
+            case 13 : 
+            case 15 : 
+            case 16 : 
+            case 17 : 
+            case 18 : 
+            case 19 : 
+            case 20 : 
+            case 21 : 
+            case 22 : 
+            case 23 : 
+            case 24 : 
+            case 26 : 
+                exit = 1;
+                break;
+            case 0 : 
+            case 2 : 
+            case 3 : 
+            case 4 : 
+            case 5 : 
+            case 9 : 
+            case 10 : 
+            case 12 : 
+            case 14 : 
+            case 25 : 
+            case 27 : 
+            case 28 : 
+            case 29 : 
+            case 30 : 
+            case 31 : 
+                exit$1 = 2;
+                break;
+            
           }
         }
         else {
-          if (c >= 65) {
-            if (c !== 92) {
-              exit = 1;
-            }
-            else {
-              exit$1 = 2;
-            }
-          }
-          else {
-            if (c >= 33) {
-              switch (-33 + c) {
-                case 1 : 
-                case 6 : 
-                case 7 : 
-                case 8 : 
-                case 11 : 
-                case 13 : 
-                case 15 : 
-                case 16 : 
-                case 17 : 
-                case 18 : 
-                case 19 : 
-                case 20 : 
-                case 21 : 
-                case 22 : 
-                case 23 : 
-                case 24 : 
-                case 26 : 
-                    exit = 1;
-                    break;
-                case 0 : 
-                case 2 : 
-                case 3 : 
-                case 4 : 
-                case 5 : 
-                case 9 : 
-                case 10 : 
-                case 12 : 
-                case 14 : 
-                case 25 : 
-                case 27 : 
-                case 28 : 
-                case 29 : 
-                case 30 : 
-                case 31 : 
-                    exit$1 = 2;
-                    break;
-                
-              }
-            }
-            else {
-              exit = 1;
-            }
-          }
+          exit = 1;
         }
         if (exit$1 === 2) {
           Stream.junk(strm__);
@@ -523,61 +511,57 @@ function make_lexer(keywords) {
             exit$1 = 2;
           }
         }
-        else {
-          if (c !== 46) {
-            if (c >= 48) {
-              Stream.junk(strm__);
-              store(c);
-            }
-            else {
-              exit = 1;
-            }
+        else if (c !== 46) {
+          if (c >= 48) {
+            Stream.junk(strm__);
+            store(c);
           }
           else {
-            Stream.junk(strm__);
-            store(/* "." */46);
-            var strm__$1 = strm__;
-            while(true) {
-              var match$1 = Stream.peek(strm__$1);
-              var exit$2 = 0;
-              if (match$1) {
-                var c$1 = match$1[1];
-                var switcher = -69 + c$1;
-                if (32 < (switcher >>> 0)) {
-                  if (9 < (21 + switcher >>> 0)) {
-                    exit$2 = 1;
-                  }
-                  else {
-                    Stream.junk(strm__$1);
-                    store(c$1);
-                  }
+            exit = 1;
+          }
+        }
+        else {
+          Stream.junk(strm__);
+          store(/* "." */46);
+          var strm__$1 = strm__;
+          while(true) {
+            var match$1 = Stream.peek(strm__$1);
+            var exit$2 = 0;
+            if (match$1) {
+              var c$1 = match$1[1];
+              var switcher = c$1 - 69;
+              if (switcher > 32 || switcher < 0) {
+                if ((switcher + 21 >>> 0) > 9) {
+                  exit$2 = 1;
                 }
                 else {
-                  if (30 < (-1 + switcher >>> 0)) {
-                    Stream.junk(strm__$1);
-                    store(/* "E" */69);
-                    return exponent_part(strm__$1);
-                  }
-                  else {
-                    exit$2 = 1;
-                  }
+                  Stream.junk(strm__$1);
+                  store(c$1);
                 }
+              }
+              else if (switcher > 31 || switcher < 1) {
+                Stream.junk(strm__$1);
+                store(/* "E" */69);
+                return exponent_part(strm__$1);
               }
               else {
                 exit$2 = 1;
               }
-              if (exit$2 === 1) {
-                return [
-                        /* Some */0,
-                        [
-                          /* Float */3,
-                          Caml_format.caml_float_of_string(get_string(/* () */0))
-                        ]
-                      ];
-              }
-              
-            };
-          }
+            }
+            else {
+              exit$2 = 1;
+            }
+            if (exit$2 === 1) {
+              return [
+                      /* Some */0,
+                      [
+                        /* Float */3,
+                        Caml_format.caml_float_of_string(get_string(/* () */0))
+                      ]
+                    ];
+            }
+            
+          };
         }
         if (exit$1 === 2) {
           Stream.junk(strm__);
@@ -634,7 +618,7 @@ function make_lexer(keywords) {
       var exit = 0;
       if (match) {
         var c = match[1];
-        if (9 < (-48 + c >>> 0)) {
+        if (c > 57 || c < 48) {
           exit = 1;
         }
         else {
@@ -735,8 +719,8 @@ function make_lexer(keywords) {
       var c1 = match[1];
       var exit = 0;
       if (c1 >= 58) {
-        var switcher = -110 + c1;
-        if (6 < (switcher >>> 0)) {
+        var switcher = c1 - 110;
+        if (switcher > 6 || switcher < 0) {
           exit = 1;
         }
         else {
@@ -760,58 +744,56 @@ function make_lexer(keywords) {
           }
         }
       }
-      else {
-        if (c1 >= 48) {
-          Stream.junk(strm__);
-          var match$1 = Stream.peek(strm__);
-          var exit$1 = 0;
-          if (match$1) {
-            var c2 = match$1[1];
-            if (9 < (-48 + c2 >>> 0)) {
-              exit$1 = 2;
-            }
-            else {
-              Stream.junk(strm__);
-              var match$2 = Stream.peek(strm__);
-              var exit$2 = 0;
-              if (match$2) {
-                var c3 = match$2[1];
-                if (9 < (-48 + c3 >>> 0)) {
-                  exit$2 = 3;
-                }
-                else {
-                  Stream.junk(strm__);
-                  return Char.chr((c1 - 48) * 100 + (c2 - 48) * 10 + (c3 - 48));
-                }
-              }
-              else {
-                exit$2 = 3;
-              }
-              if (exit$2 === 3) {
-                throw [
-                      0,
-                      Stream.$$Error,
-                      ""
-                    ];
-              }
-              
-            }
-          }
-          else {
+      else if (c1 >= 48) {
+        Stream.junk(strm__);
+        var match$1 = Stream.peek(strm__);
+        var exit$1 = 0;
+        if (match$1) {
+          var c2 = match$1[1];
+          if (c2 > 57 || c2 < 48) {
             exit$1 = 2;
           }
-          if (exit$1 === 2) {
-            throw [
-                  0,
-                  Stream.$$Error,
-                  ""
-                ];
+          else {
+            Stream.junk(strm__);
+            var match$2 = Stream.peek(strm__);
+            var exit$2 = 0;
+            if (match$2) {
+              var c3 = match$2[1];
+              if (c3 > 57 || c3 < 48) {
+                exit$2 = 3;
+              }
+              else {
+                Stream.junk(strm__);
+                return Char.chr((c1 - 48) * 100 + (c2 - 48) * 10 + (c3 - 48));
+              }
+            }
+            else {
+              exit$2 = 3;
+            }
+            if (exit$2 === 3) {
+              throw [
+                    0,
+                    Stream.$$Error,
+                    ""
+                  ];
+            }
+            
           }
-          
         }
         else {
-          exit = 1;
+          exit$1 = 2;
         }
+        if (exit$1 === 2) {
+          throw [
+                0,
+                Stream.$$Error,
+                ""
+              ];
+        }
+        
+      }
+      else {
+        exit = 1;
       }
       if (exit === 1) {
         Stream.junk(strm__);
@@ -828,8 +810,8 @@ function make_lexer(keywords) {
       var match = Stream.peek(strm__);
       if (match) {
         var exit = 0;
-        var switcher = -40 + match[1];
-        if (2 < (switcher >>> 0)) {
+        var switcher = match[1] - 40;
+        if (switcher > 2 || switcher < 0) {
           exit = 1;
         }
         else {

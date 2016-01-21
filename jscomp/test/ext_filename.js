@@ -24,18 +24,14 @@ function absolute_path(s) {
       if (dir === s) {
         return dir;
       }
+      else if (base === Filename.current_dir_name) {
+        _s = dir;
+      }
+      else if (base === Filename.parent_dir_name) {
+        return Filename.dirname(aux(dir));
+      }
       else {
-        if (base === Filename.current_dir_name) {
-          _s = dir;
-        }
-        else {
-          if (base === Filename.parent_dir_name) {
-            return Filename.dirname(aux(dir));
-          }
-          else {
-            return Filename.concat(aux(dir), base);
-          }
-        }
+        return Filename.concat(aux(dir), base);
       }
     };
   };

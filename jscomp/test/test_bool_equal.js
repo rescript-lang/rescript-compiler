@@ -12,13 +12,11 @@ function bool_equal(x, y) {
       return /* false */0;
     }
   }
+  else if (y !== 0) {
+    return /* false */0;
+  }
   else {
-    if (y !== 0) {
-      return /* false */0;
-    }
-    else {
-      return /* true */1;
-    }
+    return /* true */1;
   }
 }
 

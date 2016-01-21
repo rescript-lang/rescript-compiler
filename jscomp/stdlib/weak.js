@@ -170,16 +170,14 @@ function Make(H) {
             if (Caml_primitive.caml_weak_check(bucket, i)) {
               _i = i + 1;
             }
+            else if (Caml_primitive.caml_weak_check(bucket, j)) {
+              Caml_primitive.caml_weak_blit(bucket, j, bucket, i, 1);
+              hbucket[i] = hbucket[j];
+              _j = j - 1;
+              _i = i + 1;
+            }
             else {
-              if (Caml_primitive.caml_weak_check(bucket, j)) {
-                Caml_primitive.caml_weak_blit(bucket, j, bucket, i, 1);
-                hbucket[i] = hbucket[j];
-                _j = j - 1;
-                _i = i + 1;
-              }
-              else {
-                _j = j - 1;
-              }
+              _j = j - 1;
             }
           }
           else {
@@ -263,15 +261,13 @@ function Make(H) {
           return 0;
         }
       }
+      else if (Caml_primitive.caml_weak_check(bucket, i)) {
+        _i = i + 1;
+      }
       else {
-        if (Caml_primitive.caml_weak_check(bucket, i)) {
-          _i = i + 1;
-        }
-        else {
-          setter(bucket, i, d);
-          hashes[i] = h;
-          return /* () */0;
-        }
+        setter(bucket, i, d);
+        hashes[i] = h;
+        return /* () */0;
       }
     };
   };
@@ -296,18 +292,13 @@ function Make(H) {
       if (i >= sz) {
         return ifnotfound(h, index);
       }
-      else {
-        if (h === hashes[i]) {
-          var match = Caml_primitive.caml_weak_get_copy(bucket, i);
-          if (match) {
-            if (H[1](match[1], d)) {
-              var match$1 = Caml_primitive.caml_weak_get(bucket, i);
-              if (match$1) {
-                return match$1[1];
-              }
-              else {
-                _i = i + 1;
-              }
+      else if (h === hashes[i]) {
+        var match = Caml_primitive.caml_weak_get_copy(bucket, i);
+        if (match) {
+          if (H[1](match[1], d)) {
+            var match$1 = Caml_primitive.caml_weak_get(bucket, i);
+            if (match$1) {
+              return match$1[1];
             }
             else {
               _i = i + 1;
@@ -320,6 +311,9 @@ function Make(H) {
         else {
           _i = i + 1;
         }
+      }
+      else {
+        _i = i + 1;
       }
     };
   };
@@ -351,16 +345,11 @@ function Make(H) {
       if (i >= sz) {
         return ifnotfound;
       }
-      else {
-        if (h === hashes[i]) {
-          var match = Caml_primitive.caml_weak_get_copy(bucket, i);
-          if (match) {
-            if (H[1](match[1], d)) {
-              return iffound(bucket, i);
-            }
-            else {
-              _i = i + 1;
-            }
+      else if (h === hashes[i]) {
+        var match = Caml_primitive.caml_weak_get_copy(bucket, i);
+        if (match) {
+          if (H[1](match[1], d)) {
+            return iffound(bucket, i);
           }
           else {
             _i = i + 1;
@@ -369,6 +358,9 @@ function Make(H) {
         else {
           _i = i + 1;
         }
+      }
+      else {
+        _i = i + 1;
       }
     };
   };
@@ -396,40 +388,38 @@ function Make(H) {
       if (i >= sz) {
         return accu;
       }
-      else {
-        if (h === hashes[i]) {
-          var match = Caml_primitive.caml_weak_get_copy(bucket, i);
-          var exit = 0;
-          if (match) {
-            if (H[1](match[1], d)) {
-              var match$1 = Caml_primitive.caml_weak_get(bucket, i);
-              if (match$1) {
-                _accu = [
-                  /* :: */0,
-                  match$1[1],
-                  accu
-                ];
-                _i = i + 1;
-              }
-              else {
-                _i = i + 1;
-              }
+      else if (h === hashes[i]) {
+        var match = Caml_primitive.caml_weak_get_copy(bucket, i);
+        var exit = 0;
+        if (match) {
+          if (H[1](match[1], d)) {
+            var match$1 = Caml_primitive.caml_weak_get(bucket, i);
+            if (match$1) {
+              _accu = [
+                /* :: */0,
+                match$1[1],
+                accu
+              ];
+              _i = i + 1;
             }
             else {
-              exit = 1;
+              _i = i + 1;
             }
           }
           else {
             exit = 1;
           }
-          if (exit === 1) {
-            _i = i + 1;
-          }
-          
         }
         else {
+          exit = 1;
+        }
+        if (exit === 1) {
           _i = i + 1;
         }
+        
+      }
+      else {
+        _i = i + 1;
       }
     };
   };

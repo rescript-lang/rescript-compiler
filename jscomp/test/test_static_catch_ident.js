@@ -16,14 +16,12 @@ function scanf_bad_input(_, x) {
     s = x[2];
     exit = 1;
   }
+  else if (x[1] === Caml_exceptions.Failure) {
+    s = x[2];
+    exit = 1;
+  }
   else {
-    if (x[1] === Caml_exceptions.Failure) {
-      s = x[2];
-      exit = 1;
-    }
-    else {
-      throw x;
-    }
+    throw x;
   }
   if (exit === 1) {
     for(var i = 0; i<= 100; ++i){

@@ -14,7 +14,7 @@ function f() {
   var arr = Caml_array.caml_make_vect(10, function () {
         return /* () */0;
       });
-  for(var i = 0 ,i_finish = 10 - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 9; ++i){
     arr[i] = (function(i){
     return function () {
       v[1] += i;

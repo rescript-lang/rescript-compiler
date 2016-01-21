@@ -78,8 +78,8 @@ function mapi(f, s) {
 }
 
 function is_space(param) {
-  var switcher = -9 + param;
-  if (4 < (switcher >>> 0)) {
+  var switcher = param - 9;
+  if (switcher > 4 || switcher < 0) {
     if (switcher !== 23) {
       return /* false */0;
     }
@@ -87,13 +87,11 @@ function is_space(param) {
       return /* true */1;
     }
   }
+  else if (switcher !== 2) {
+    return /* true */1;
+  }
   else {
-    if (switcher !== 2) {
-      return /* true */1;
-    }
-    else {
-      return /* false */0;
-    }
+    return /* false */0;
   }
 }
 
@@ -101,13 +99,11 @@ function trim(s) {
   if (s === "") {
     return s;
   }
+  else if (is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1))) {
+    return bts(Bytes.trim(bos(s)));
+  }
   else {
-    if (is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1))) {
-      return bts(Bytes.trim(bos(s)));
-    }
-    else {
-      return s;
-    }
+    return s;
   }
 }
 
@@ -134,23 +130,19 @@ function escaped(s) {
             return /* true */1;
           }
         }
-        else {
-          if (c >= 11) {
-            if (c >= 13) {
-              return /* true */1;
-            }
-            else {
-              exit = 1;
-            }
+        else if (c >= 11) {
+          if (c >= 13) {
+            return /* true */1;
           }
           else {
-            if (c >= 8) {
-              return /* true */1;
-            }
-            else {
-              exit = 1;
-            }
+            exit = 1;
           }
+        }
+        else if (c >= 8) {
+          return /* true */1;
+        }
+        else {
+          exit = 1;
         }
         if (exit === 1) {
           if (Caml_string.caml_is_printable(c)) {

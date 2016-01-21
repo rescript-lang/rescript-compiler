@@ -7,11 +7,11 @@ function f() {
   var n = 0;
   while(function () {
         var fib = function (n) {
-          if (1 < (n >>> 0)) {
-            return fib(n - 1) + fib(n - 2);
+          if (n === 0 || n === 1) {
+            return 1;
           }
           else {
-            return 1;
+            return fib(n - 1) + fib(n - 2);
           }
         };
         return +(fib(n) > 10);

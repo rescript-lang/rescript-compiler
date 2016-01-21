@@ -1,10 +1,16 @@
 # [OCamlScript](http://bloomberg.github.io/ocamlscript/)
 
 ## Introduction
-OCamlScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). Users of OCamlScript can write type-safe, high performance OCaml code, and deploy the generated JavaScript in any platform with a JavaScript execution engine.
+OCamlScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). 
 
-You can try [OCamlScript in the brower](http://bloomberg.github.io/ocamlscript/js-demo/), edit the code on the left panel
-and see the generated JS on the right panel on the fly.
+You can try
+[OCamlScript in the brower](http://bloomberg.github.io/ocamlscript/js-demo/),
+edit the code on the left panel and see the generated JS on the right
+panel instantly.
+
+Users of OCamlScript can write type-safe, high performance OCaml code,
+and deploy the generated JavaScript in any platform with a JavaScript
+execution engine.
 
 Each OCaml module is mapped to a corresponding JavaScript module, and names are preserved so that:
 
@@ -37,7 +43,7 @@ function sum(n) {
 As you can see, there is no name mangling in the generated code, so if this module is called `M`,
 `M.sum()` is directly callable from other JavaScript code.
 
-You can learn more by exploring the online [in-browser compiler](https://bloomberg.github.io/ocamlscript/js-demo/).
+
 
   
 ## Disclaimer
