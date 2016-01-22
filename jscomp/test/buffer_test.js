@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("../stdlib/bytes");
+
+var Bytes           = require("../stdlib/bytes");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("../stdlib/pervasives");
-var Mt = require("./mt");
-var Buffer = require("../stdlib/buffer");
+var Pervasives      = require("../stdlib/pervasives");
+var Mt              = require("./mt");
+var Buffer          = require("../stdlib/buffer");
 
 var v = "gso";
 
@@ -94,7 +95,7 @@ var suites = [
 
 Mt.from_suites("buffer_test.ml", suites);
 
-exports.v = v;
+exports.v           = v;
 exports.bytes_equal = bytes_equal;
-exports.suites = suites;
+exports.suites      = suites;
 /*  Not a pure module */

@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt             = require("./mt");
 var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
-var List = require("../stdlib/list");
+var Caml_array     = require("../runtime/caml_array");
+var $$Array        = require("../stdlib/array");
+var List           = require("../stdlib/list");
 
 function is_sorted(x) {
   var len = x.length;

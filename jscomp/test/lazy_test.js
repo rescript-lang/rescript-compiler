@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 
@@ -35,7 +36,7 @@ function lazy_test() {
         ];
 }
 
-exports.u = u;
-exports.v = v;
+exports.u         = u;
+exports.v         = v;
 exports.lazy_test = lazy_test;
 /* No side effect */

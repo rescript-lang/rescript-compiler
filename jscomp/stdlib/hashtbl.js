@@ -1,16 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("./camlinternalLazy");
-var Caml_sys = require("../runtime/caml_sys");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Sys = require("./sys");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("./array");
-var $$String = require("./string");
-var Random = require("./random");
+var Caml_sys         = require("../runtime/caml_sys");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Pervasives       = require("./pervasives");
+var Sys              = require("./sys");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var Caml_array       = require("../runtime/caml_array");
+var $$Array          = require("./array");
+var $$String         = require("./string");
+var Random           = require("./random");
 
 function hash(x) {
   return Caml_primitive.caml_hash(10, 100, 0, x);
@@ -874,25 +875,25 @@ function seeded_hash_param(prim, prim$1, prim$2, prim$3) {
   return Caml_primitive.caml_hash(prim, prim$1, prim$2, prim$3);
 }
 
-exports.create = create;
-exports.clear = clear;
-exports.reset = reset;
-exports.copy = copy;
-exports.add = add;
-exports.find = find;
-exports.find_all = find_all;
-exports.mem = mem;
-exports.remove = remove;
-exports.replace = replace;
-exports.iter = iter;
-exports.fold = fold;
-exports.length = length;
-exports.randomize = randomize;
-exports.stats = stats;
-exports.Make = Make;
-exports.MakeSeeded = MakeSeeded;
-exports.hash = hash;
-exports.seeded_hash = seeded_hash;
-exports.hash_param = hash_param;
+exports.create            = create;
+exports.clear             = clear;
+exports.reset             = reset;
+exports.copy              = copy;
+exports.add               = add;
+exports.find              = find;
+exports.find_all          = find_all;
+exports.mem               = mem;
+exports.remove            = remove;
+exports.replace           = replace;
+exports.iter              = iter;
+exports.fold              = fold;
+exports.length            = length;
+exports.randomize         = randomize;
+exports.stats             = stats;
+exports.Make              = Make;
+exports.MakeSeeded        = MakeSeeded;
+exports.hash              = hash;
+exports.seeded_hash       = seeded_hash;
+exports.hash_param        = hash_param;
 exports.seeded_hash_param = seeded_hash_param;
 /* randomized_default Not a pure module */

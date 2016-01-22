@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("../stdlib/pervasives");
+
+var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
+var Caml_array      = require("../runtime/caml_array");
+var $$Array         = require("../stdlib/array");
 
 var v = [
   0,
@@ -52,8 +53,8 @@ if (v[1] !== 45) {
       ];
 }
 
-exports.v = v;
+exports.v     = v;
 exports.count = count;
-exports.arr = arr;
-exports.f = f;
+exports.arr   = arr;
+exports.f     = f;
 /*  Not a pure module */

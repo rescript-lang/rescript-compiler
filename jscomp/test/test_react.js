@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var React = require("@");
-var React = require("react");
+
+var React    = require("@");
+var React    = require("react");
 var ReactDom = require("react-dom");
 
 console.log("hey");

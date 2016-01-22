@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function v(display_name, _) {
   return {
           "display_name": display_name ? undefined : display_name[1],
@@ -23,7 +24,7 @@ var v3 = {
   "hi": "ghos"
 };
 
-exports.v = v;
+exports.v  = v;
 exports.v2 = v2;
 exports.v3 = v3;
 /* v2 Not a pure module */

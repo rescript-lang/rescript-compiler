@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var BUI = require("@blp/ui");
-var UI = require("@ui");
+
+var BUI     = require("@blp/ui");
+var UI      = require("@ui");
 var Runtime = require("@runtime");
 
 var data = /* array */[
@@ -113,6 +114,6 @@ function ui_layout(compile, lookup, appContext) {
   return hw1;
 }
 
-exports.data = data;
+exports.data      = data;
 exports.ui_layout = ui_layout;
 /* @blp/ui Not a pure module */

@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("./camlinternalLazy");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var List = require("./list");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Pervasives       = require("./pervasives");
+var List             = require("./list");
 
 var Failure = [
   248,
@@ -622,27 +623,27 @@ var sempty = [
   /* Sempty */0
 ];
 
-exports.Failure = Failure;
-exports.$$Error = $$Error;
-exports.from = from;
-exports.of_list = of_list;
-exports.of_string = of_string;
-exports.of_bytes = of_bytes;
+exports.Failure    = Failure;
+exports.$$Error    = $$Error;
+exports.from       = from;
+exports.of_list    = of_list;
+exports.of_string  = of_string;
+exports.of_bytes   = of_bytes;
 exports.of_channel = of_channel;
-exports.iter = iter;
-exports.next = next;
-exports.empty = empty;
-exports.peek = peek;
-exports.junk = junk;
-exports.count = count;
-exports.npeek = npeek;
-exports.iapp = iapp;
-exports.icons = icons;
-exports.ising = ising;
-exports.lapp = lapp;
-exports.lcons = lcons;
-exports.lsing = lsing;
-exports.sempty = sempty;
-exports.slazy = slazy;
-exports.dump = dump;
+exports.iter       = iter;
+exports.next       = next;
+exports.empty      = empty;
+exports.peek       = peek;
+exports.junk       = junk;
+exports.count      = count;
+exports.npeek      = npeek;
+exports.iapp       = iapp;
+exports.icons      = icons;
+exports.ising      = ising;
+exports.lapp       = lapp;
+exports.lcons      = lcons;
+exports.lsing      = lsing;
+exports.sempty     = sempty;
+exports.slazy      = slazy;
+exports.dump       = dump;
 /* No side effect */

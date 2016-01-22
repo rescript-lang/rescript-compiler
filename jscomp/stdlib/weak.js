@@ -1,12 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives = require("./pervasives");
-var Sys = require("./sys");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("./array");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Pervasives       = require("./pervasives");
+var Sys              = require("./sys");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var Caml_array       = require("../runtime/caml_array");
+var $$Array          = require("./array");
 
 function length(x) {
   return x.length - 1;
@@ -492,13 +493,13 @@ function blit(prim, prim$1, prim$2, prim$3, prim$4) {
   return Caml_primitive.caml_weak_blit(prim, prim$1, prim$2, prim$3, prim$4);
 }
 
-exports.create = create;
-exports.length = length;
-exports.set = set;
-exports.get = get;
+exports.create   = create;
+exports.length   = length;
+exports.set      = set;
+exports.get      = get;
 exports.get_copy = get_copy;
-exports.check = check;
-exports.fill = fill;
-exports.blit = blit;
-exports.Make = Make;
+exports.check    = check;
+exports.fill     = fill;
+exports.blit     = blit;
+exports.Make     = Make;
 /* No side effect */

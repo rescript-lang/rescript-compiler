@@ -103,22 +103,24 @@ let best_string_quote s =
   then '\''
   else '"'
 
-let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) : Ext_pp_scope.t  =
+
+(**
+   same as {!Js_dump.ident} except it generates a string instead of doing the printing
+*)
+let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t)   =
   if Ext_ident.is_js id then (* reserved by compiler *)
-    begin P.string f id.name ; cxt end
+     ( id.name , cxt) 
   else 
-    (* if false then *)
-    (*   (\** Faster print ..  *)
-    (*       Also for debugging *)
-    (*    *\) *)
-    (*   let name = Ext_ident.convert id.name in *)
-    (*   ( P.string f (Printf.sprintf "%s$%d" name id.stamp ); cxt) *)
-    (* else *)
+    (* For fast/debug mode, we can generate the name as 
+       [Printf.sprintf "%s$%d" name id.stamp] which is 
+       not relevant to the context       
+    *)    
     let name = Ext_ident.convert id.name in
+    let i,new_cxt = Ext_pp_scope.add_ident  id cxt in
     (* Attention: 
-       $$Array.length, there is an invariant: that global module is 
-       always printed in the begining(in the imports), so you get a gurantee, 
-       (global modules can not be renamed like List$1) 
+       $$Array.length, due to the fact that global module is 
+       always printed in the begining(via imports), so you get a gurantee, 
+       (global modules will not be printed as [List$1]) 
 
        However, this means we loose the ability of dynamic loading, is it a big 
        deal? we can fix this by a scanning first, since we already know which 
@@ -127,14 +129,16 @@ let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) : Ext_pp_scope.t  =
        check [test/test_global_print.ml] for regression
 
     *)
-    let i,new_cxt = Ext_pp_scope.string_of_id  id cxt in
-    let () =  
-      P.string f 
-        (if i == 0 then 
-           name (* var $$String = require("String")*)
-         else
-           Printf.sprintf"%s$%d" name i) in
-    new_cxt
+    (if i == 0 then 
+       name 
+     else
+       Printf.sprintf"%s$%d" name i), new_cxt 
+
+
+let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) : Ext_pp_scope.t  =
+  let str, cxt = str_of_ident cxt id in
+  P.string f str; 
+  cxt   
 
 let pp_string f ?(quote='"') ?(utf=false) s =
   let array_str1 =
@@ -200,7 +204,9 @@ f/122 -->
              else check last bumped id, increase it and register
 *)
 
-let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
+let rec pp_function 
+    cxt (f : P.t) ?name  return 
+    (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
   let ipp_ident cxt f id un_used = 
     if un_used then 
       ident cxt f (Ext_ident.make_unused ())
@@ -241,7 +247,13 @@ let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list) (b : J.block)
   in
   (* the context will be continued after this function *)
   let outer_cxt = Ext_pp_scope.merge set_env cxt in  
-  (* the context used to be printed inside this function*)
+
+  (* the context used to be printed inside this function
+
+     when printing a function, 
+     only the enclosed variables and function name matters, 
+     if the function does not capture any variable, then the context is empty     
+  *)
   let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
 
   (
@@ -1227,64 +1239,70 @@ and statement_list top cxt f  b =
     (if top then P.force_newline f);
     statement_list top cxt f  r
 
-(* and statement_list cxt f b =  *)
-(*   match b with  *)
-(*   | [] -> cxt  *)
-(*   | _ -> P.vgroup f 0 (fun _ -> loop_statement cxt f b) *)
-
 and block cxt f b =
   (* This one is for '{' *)
   P.brace_vgroup f 1 (fun _ -> statement_list false cxt   f b )
 
-(* Node style *)
-let requires cxt f (modules : (Ident.t * string) list ) =
-  P.newline f ; 
-  let rec aux cxt  modules =
-    match modules with
-    | [] -> cxt 
-    | (id,s) :: rest  ->
-      let cxt = P.group f 0 @@ fun _ -> 
-          P.string f L.var;
-          P.space f ;
-          let cxt = ident cxt f id in
-          P.space f;
-          P.string f L.eq;
-          P.space f;
-          P.string f L.require;
-          P.paren_group f 0 @@ (fun _ ->
-              pp_string f ~utf:true ~quote:(best_string_quote s) s  );
-          cxt in
-      semi f ; 
-      P.newline f ;
-      aux cxt rest 
-  in aux cxt modules 
 
 let exports cxt f (idents : Ident.t list) = 
+  let outer_cxt, reversed_list, margin = 
+    List.fold_left (fun (cxt, acc, len ) (id : Ident.t) -> 
+        let s = Ext_ident.convert id.name in        
+        let str,cxt  = str_of_ident cxt id in         
+        cxt, ( (s,str) :: acc ) , max len (String.length s)   )
+      (cxt, [], 0)  idents in    
   P.newline f ;
-  List.iter (fun (id : Ident.t) -> 
+  Ext_list.rev_iter (fun (s,export) -> 
       P.group f 0 @@ (fun _ ->  
           P.string f L.exports;
           P.string f L.dot;
-          P.string f (Ext_ident.convert id.name); 
-          P.space f ;
+          P.string f s; 
+          P.nspace f (margin - String.length s +  1) ;
           P.string f L.eq;
           P.space f;
-          ignore @@ ident cxt f id;
+          P.string f export;          
           semi f;);
       P.newline f;
-    ) 
-    idents
+    ) reversed_list;
+  outer_cxt  
 
-let node_program 
-    f
-    ({modules; block = b ; exports = exp ; side_effect  } : J.program)
-  = 
+
+let node_program f ( program : J.program) = 
   let cxt = Ext_pp_scope.empty in
-  let cxt = requires cxt  f modules in
+  (* Node style *)
+  let requires cxt f (modules : (Ident.t * string) list ) =
+    P.newline f ; 
+    (* the context used to print the following program *)  
+    let outer_cxt, reversed_list, margin  =
+      List.fold_left
+        (fun (cxt, acc, len) (id,s) ->
+           let str, cxt = str_of_ident cxt id  in
+           cxt, ((str,s) :: acc), (max len (String.length str))
+        )
+        (cxt, [], 0)  modules in
+    P.force_newline f ;    
+    Ext_list.rev_iter (fun (s,file) ->
+        P.string f L.var;
+        P.space f ;
+        P.string f s ;
+        P.nspace f (margin - String.length s + 1) ;
+        P.string f L.eq;
+        P.space f;
+        P.string f L.require;
+        P.paren_group f 0 @@ (fun _ ->
+            pp_string f ~utf:true ~quote:(best_string_quote s) file  );
+        semi f ;
+        P.newline f ;
+      ) reversed_list;
+    outer_cxt
+  in
+
+  let cxt = requires cxt  f program.modules in
+
   let () = P.force_newline f in
-  let cxt =  statement_list true cxt f b  in
+  let cxt =  statement_list true cxt f program.block  in
   let () = P.force_newline f in
-  exports cxt f exp
+  exports cxt f program.exports
 
 
 let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.program)
@@ -1358,13 +1376,13 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
   let () = 
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
-    P.newline f ;
     P.string f {|"use strict";|};
+    P.newline f ;    
   in
   (match Sys.getenv "OCAML_AMD_MODULE" with 
    | exception Not_found -> 
-    node_program f program
-             | _ -> amd_program f program ) ;
+    ignore (node_program f program)
+   | _ -> amd_program f program ) ;
   P.string f (
     match program.side_effect with
     | None -> "/* No side effect */"

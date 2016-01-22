@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("../stdlib/pervasives");
+
+var Pervasives  = require("../stdlib/pervasives");
 var Caml_format = require("../runtime/caml_format");
-var Lexing = require("../stdlib/lexing");
+var Lexing      = require("../stdlib/lexing");
 
 var __ocaml_lex_tables = [
   /* record */0,
@@ -85,8 +86,8 @@ function str(e) {
   }
 }
 
-exports.__ocaml_lex_tables = __ocaml_lex_tables;
-exports.lexeme = lexeme;
+exports.__ocaml_lex_tables     = __ocaml_lex_tables;
+exports.lexeme                 = lexeme;
 exports.__ocaml_lex_lexeme_rec = __ocaml_lex_lexeme_rec;
-exports.str = str;
+exports.str                    = str;
 /* No side effect */

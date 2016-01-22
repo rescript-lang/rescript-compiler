@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
-var Parsing = require("../stdlib/parsing");
+var Parsing    = require("../stdlib/parsing");
 
 var yytransl_const = /* array */[
   259,
@@ -147,19 +148,19 @@ function toplevel(lexfun, lexbuf) {
 
 exports.yytransl_const = yytransl_const;
 exports.yytransl_block = yytransl_block;
-exports.yylhs = yylhs;
-exports.yylen = yylen;
-exports.yydefred = yydefred;
-exports.yydgoto = yydgoto;
-exports.yysindex = yysindex;
-exports.yyrindex = yyrindex;
-exports.yygindex = yygindex;
-exports.yytablesize = yytablesize;
-exports.yytable = yytable;
-exports.yycheck = yycheck;
-exports.yynames_const = yynames_const;
-exports.yynames_block = yynames_block;
-exports.yyact = yyact;
-exports.yytables = yytables;
-exports.toplevel = toplevel;
+exports.yylhs          = yylhs;
+exports.yylen          = yylen;
+exports.yydefred       = yydefred;
+exports.yydgoto        = yydgoto;
+exports.yysindex       = yysindex;
+exports.yyrindex       = yyrindex;
+exports.yygindex       = yygindex;
+exports.yytablesize    = yytablesize;
+exports.yytable        = yytable;
+exports.yycheck        = yycheck;
+exports.yynames_const  = yynames_const;
+exports.yynames_block  = yynames_block;
+exports.yyact          = yyact;
+exports.yytables       = yytables;
+exports.toplevel       = toplevel;
 /* No side effect */

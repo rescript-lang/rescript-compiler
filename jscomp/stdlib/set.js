@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("./pervasives");
+
+var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var List = require("./list");
+var List            = require("./list");
 
 function Make(funarg) {
   var height = function (param) {

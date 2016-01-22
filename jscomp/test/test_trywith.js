@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function u() {
@@ -35,8 +36,8 @@ var u1 = "bad character decimal encoding \\";
 
 var v = "bad character decimal encoding \\%c%c%c";
 
-exports.u = u;
+exports.u  = u;
 exports.u1 = u1;
-exports.v = v;
-exports.f = f;
+exports.v  = v;
+exports.f  = f;
 /* No side effect */

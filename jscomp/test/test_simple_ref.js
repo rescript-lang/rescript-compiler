@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 var v = [
   0,
   0
@@ -35,8 +36,8 @@ function real_escape(f, _) {
 
 var u = $$escape(h);
 
-exports.u = u;
-exports.gen = gen;
+exports.u               = u;
+exports.gen             = gen;
 exports.not_real_escape = not_real_escape;
-exports.real_escape = real_escape;
+exports.real_escape     = real_escape;
 /* u Not a pure module */

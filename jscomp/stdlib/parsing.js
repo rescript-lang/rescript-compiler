@@ -1,12 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Lexing = require("./lexing");
-var Caml_lexer = require("../runtime/caml_lexer");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("./array");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Lexing           = require("./lexing");
+var Caml_lexer       = require("../runtime/caml_lexer");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var Caml_array       = require("../runtime/caml_array");
+var $$Array          = require("./array");
 
 var YYexit = [
   248,
@@ -233,20 +234,20 @@ function set_trace(prim) {
   return Caml_lexer.caml_set_parser_trace(prim);
 }
 
-exports.symbol_start = symbol_start;
-exports.symbol_end = symbol_end;
-exports.rhs_start = rhs_start;
-exports.rhs_end = rhs_end;
-exports.symbol_start_pos = symbol_start_pos;
-exports.symbol_end_pos = symbol_end_pos;
-exports.rhs_start_pos = rhs_start_pos;
-exports.rhs_end_pos = rhs_end_pos;
-exports.clear_parser = clear_parser;
-exports.Parse_error = Parse_error;
-exports.set_trace = set_trace;
-exports.YYexit = YYexit;
-exports.yyparse = yyparse;
-exports.peek_val = peek_val;
+exports.symbol_start         = symbol_start;
+exports.symbol_end           = symbol_end;
+exports.rhs_start            = rhs_start;
+exports.rhs_end              = rhs_end;
+exports.symbol_start_pos     = symbol_start_pos;
+exports.symbol_end_pos       = symbol_end_pos;
+exports.rhs_start_pos        = rhs_start_pos;
+exports.rhs_end_pos          = rhs_end_pos;
+exports.clear_parser         = clear_parser;
+exports.Parse_error          = Parse_error;
+exports.set_trace            = set_trace;
+exports.YYexit               = YYexit;
+exports.yyparse              = yyparse;
+exports.peek_val             = peek_val;
 exports.is_current_lookahead = is_current_lookahead;
-exports.parse_error = parse_error;
+exports.parse_error          = parse_error;
 /* No side effect */

@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Format = require("../stdlib/format");
 
 Format.fprintf(Format.std_formatter, [

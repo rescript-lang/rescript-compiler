@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("./pervasives");
+
+var Pervasives  = require("./pervasives");
 var Caml_string = require("../runtime/caml_string");
 
 function chr(n) {
@@ -91,9 +92,9 @@ function compare(c1, c2) {
   return c1 - c2;
 }
 
-exports.chr = chr;
-exports.escaped = escaped;
+exports.chr       = chr;
+exports.escaped   = escaped;
 exports.lowercase = lowercase;
 exports.uppercase = uppercase;
-exports.compare = compare;
+exports.compare   = compare;
 /* No side effect */

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function erase_rel(param) {
   if (typeof param === "number") {
     return /* End_of_fmtty */0;
@@ -348,6 +349,6 @@ function concat_fmt(fmt1, fmt2) {
 }
 
 exports.concat_fmtty = concat_fmtty;
-exports.erase_rel = erase_rel;
-exports.concat_fmt = concat_fmt;
+exports.erase_rel    = erase_rel;
+exports.concat_fmt   = concat_fmt;
 /* No side effect */

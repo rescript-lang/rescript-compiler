@@ -1,17 +1,18 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("./bytes");
-var Caml_float = require("../runtime/caml_float");
-var Pervasives = require("./pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_format = require("../runtime/caml_format");
-var Char = require("./char");
-var Sys = require("./sys");
-var Caml_primitive = require("../runtime/caml_primitive");
+
+var Bytes                    = require("./bytes");
+var Caml_float               = require("../runtime/caml_float");
+var Pervasives               = require("./pervasives");
+var Caml_exceptions          = require("../runtime/caml_exceptions");
+var Caml_format              = require("../runtime/caml_format");
+var Char                     = require("./char");
+var Sys                      = require("./sys");
+var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
-var Buffer = require("./buffer");
-var $$String = require("./string");
-var Caml_string = require("../runtime/caml_string");
+var Buffer                   = require("./buffer");
+var $$String                 = require("./string");
+var Caml_string              = require("../runtime/caml_string");
 
 function create_char_set() {
   return Bytes.make(32, /* "\000" */0);
@@ -8043,27 +8044,27 @@ function format_of_string_format(str, param) {
   }
 }
 
-exports.is_in_char_set = is_in_char_set;
-exports.rev_char_set = rev_char_set;
-exports.create_char_set = create_char_set;
-exports.add_in_char_set = add_in_char_set;
-exports.freeze_char_set = freeze_char_set;
+exports.is_in_char_set                 = is_in_char_set;
+exports.rev_char_set                   = rev_char_set;
+exports.create_char_set                = create_char_set;
+exports.add_in_char_set                = add_in_char_set;
+exports.freeze_char_set                = freeze_char_set;
 exports.param_format_of_ignored_format = param_format_of_ignored_format;
-exports.make_printf = make_printf;
-exports.output_acc = output_acc;
-exports.bufput_acc = bufput_acc;
-exports.strput_acc = strput_acc;
-exports.type_format = type_format;
-exports.fmt_ebb_of_string = fmt_ebb_of_string;
-exports.format_of_string_fmtty = format_of_string_fmtty;
-exports.format_of_string_format = format_of_string_format;
-exports.char_of_iconv = char_of_iconv;
-exports.string_of_formatting_lit = string_of_formatting_lit;
-exports.string_of_formatting_gen = string_of_formatting_gen;
-exports.string_of_fmtty = string_of_fmtty;
-exports.string_of_fmt = string_of_fmt;
-exports.open_box_of_string = open_box_of_string;
-exports.symm = symm;
-exports.trans = trans;
-exports.recast = recast;
+exports.make_printf                    = make_printf;
+exports.output_acc                     = output_acc;
+exports.bufput_acc                     = bufput_acc;
+exports.strput_acc                     = strput_acc;
+exports.type_format                    = type_format;
+exports.fmt_ebb_of_string              = fmt_ebb_of_string;
+exports.format_of_string_fmtty         = format_of_string_fmtty;
+exports.format_of_string_format        = format_of_string_format;
+exports.char_of_iconv                  = char_of_iconv;
+exports.string_of_formatting_lit       = string_of_formatting_lit;
+exports.string_of_formatting_gen       = string_of_formatting_gen;
+exports.string_of_fmtty                = string_of_fmtty;
+exports.string_of_fmt                  = string_of_fmt;
+exports.open_box_of_string             = open_box_of_string;
+exports.symm                           = symm;
+exports.trans                          = trans;
+exports.recast                         = recast;
 /* No side effect */

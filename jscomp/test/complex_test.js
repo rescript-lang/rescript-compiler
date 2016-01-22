@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Complex = require("../stdlib/complex");
-var Mt = require("./mt");
+var Mt      = require("./mt");
 
 var suites_001 = [
   /* tuple */0,

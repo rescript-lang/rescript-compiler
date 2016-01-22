@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function f(x) {
@@ -41,7 +42,7 @@ function f3(x) {
   }
 }
 
-exports.f = f;
+exports.f  = f;
 exports.f2 = f2;
 exports.f3 = f3;
 /* No side effect */

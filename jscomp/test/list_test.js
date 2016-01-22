@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt = require("./mt");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array = require("../stdlib/array");
-var List = require("../stdlib/list");
+var Mt              = require("./mt");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var $$Array         = require("../stdlib/array");
+var List            = require("../stdlib/list");
 
 var list_suites_001 = [
   /* tuple */0,

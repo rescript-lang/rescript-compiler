@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_oo = require("../runtime/caml_oo");
+
+var Caml_oo         = require("../runtime/caml_oo");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var CamlinternalOO = require("../stdlib/camlinternalOO");
+var CamlinternalOO  = require("../stdlib/camlinternalOO");
 
 var shared = [
   0,
@@ -201,9 +202,9 @@ function test() {
   }
 }
 
-exports.u = u;
-exports.uu = uu;
-exports.uuu = uuu;
-exports.v = v;
+exports.u    = u;
+exports.uu   = uu;
+exports.uuu  = uuu;
+exports.v    = v;
 exports.test = test;
 /* class Not a pure module */

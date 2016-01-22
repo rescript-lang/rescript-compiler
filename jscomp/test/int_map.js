@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("../stdlib/pervasives");
+
+var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_primitive  = require("../runtime/caml_primitive");
 
 function compare(x, y) {
   return Caml_primitive.caml_int_compare(x, y);
@@ -696,28 +697,28 @@ var empty = /* Empty */0;
 
 var choose = min_binding;
 
-exports.empty = empty;
-exports.is_empty = is_empty;
-exports.mem = mem;
-exports.add = add;
-exports.singleton = singleton;
-exports.remove = remove;
-exports.merge = merge;
-exports.compare = compare$1;
-exports.equal = equal;
-exports.iter = iter;
-exports.fold = fold;
-exports.for_all = for_all;
-exports.exists = exists;
-exports.filter = filter;
-exports.partition = partition;
-exports.cardinal = cardinal;
-exports.bindings = bindings;
+exports.empty       = empty;
+exports.is_empty    = is_empty;
+exports.mem         = mem;
+exports.add         = add;
+exports.singleton   = singleton;
+exports.remove      = remove;
+exports.merge       = merge;
+exports.compare     = compare$1;
+exports.equal       = equal;
+exports.iter        = iter;
+exports.fold        = fold;
+exports.for_all     = for_all;
+exports.exists      = exists;
+exports.filter      = filter;
+exports.partition   = partition;
+exports.cardinal    = cardinal;
+exports.bindings    = bindings;
 exports.min_binding = min_binding;
 exports.max_binding = max_binding;
-exports.choose = choose;
-exports.split = split;
-exports.find = find;
-exports.map = map;
-exports.mapi = mapi;
+exports.choose      = choose;
+exports.split       = split;
+exports.find        = find;
+exports.map         = map;
+exports.mapi        = mapi;
 /* No side effect */

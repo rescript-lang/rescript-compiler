@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function g(x) {
   return /* array */[
           3,
@@ -46,12 +47,12 @@ function f(x) {
   return /* () */0;
 }
 
-exports.g = g;
-exports.ff = ff;
-exports.fff = fff;
-exports.a = a;
-exports.aa = aa;
-exports.aaa = aaa;
+exports.g    = g;
+exports.ff   = ff;
+exports.fff  = fff;
+exports.a    = a;
+exports.aa   = aa;
+exports.aaa  = aaa;
 exports.aaaa = aaaa;
-exports.f = f;
+exports.f    = f;
 /* No side effect */

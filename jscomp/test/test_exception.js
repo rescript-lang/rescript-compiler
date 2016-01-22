@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Test_common = require("./test_common");
+var Test_common     = require("./test_common");
 
 var Local = [
   248,
@@ -42,9 +43,9 @@ function xx() {
 }
 
 exports.Local = Local;
-exports.f = f;
-exports.g = g;
-exports.h = h;
-exports.x = x;
-exports.xx = xx;
+exports.f     = f;
+exports.g     = g;
+exports.h     = h;
+exports.x     = x;
+exports.xx    = xx;
 /* No side effect */

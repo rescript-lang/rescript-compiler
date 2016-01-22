@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("../stdlib/pervasives");
+
+var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt = require("./mt");
-var Caml_primitive = require("../runtime/caml_primitive");
-var List = require("../stdlib/list");
+var Mt              = require("./mt");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var List            = require("../stdlib/list");
 
 function compare(x, y) {
   return Caml_primitive.caml_int_compare(x, y);

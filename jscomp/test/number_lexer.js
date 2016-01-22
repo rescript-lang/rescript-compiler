@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Pervasives = require("../stdlib/pervasives");
-var Lexing = require("../stdlib/lexing");
-var Sys = require("../stdlib/sys");
+var Lexing     = require("../stdlib/lexing");
+var Sys        = require("../stdlib/sys");
 
 var l = Sys.is_js ? function (prim) {
     return console.log(prim);
@@ -76,8 +77,8 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
   };
 }
 
-exports.l = l;
-exports.__ocaml_lex_tables = __ocaml_lex_tables;
-exports.token = token;
+exports.l                     = l;
+exports.__ocaml_lex_tables    = __ocaml_lex_tables;
+exports.token                 = token;
 exports.__ocaml_lex_token_rec = __ocaml_lex_token_rec;
 /* No side effect */

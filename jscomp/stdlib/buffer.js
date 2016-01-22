@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("./bytes");
-var Pervasives = require("./pervasives");
+
+var Bytes           = require("./bytes");
+var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Sys = require("./sys");
-var $$String = require("./string");
-var Caml_string = require("../runtime/caml_string");
+var Sys             = require("./sys");
+var $$String        = require("./string");
+var Caml_string     = require("../runtime/caml_string");
 
 function create(n) {
   var n$1 = n < 1 ? 1 : n;
@@ -355,22 +356,22 @@ function add_substitute(b, f, s) {
   };
 }
 
-exports.create = create;
-exports.contents = contents;
-exports.to_bytes = to_bytes;
-exports.sub = sub;
-exports.blit = blit;
-exports.nth = nth;
-exports.length = length;
-exports.clear = clear;
-exports.reset = reset;
-exports.add_char = add_char;
-exports.add_string = add_string;
-exports.add_bytes = add_bytes;
-exports.add_substring = add_substring;
-exports.add_subbytes = add_subbytes;
+exports.create         = create;
+exports.contents       = contents;
+exports.to_bytes       = to_bytes;
+exports.sub            = sub;
+exports.blit           = blit;
+exports.nth            = nth;
+exports.length         = length;
+exports.clear          = clear;
+exports.reset          = reset;
+exports.add_char       = add_char;
+exports.add_string     = add_string;
+exports.add_bytes      = add_bytes;
+exports.add_substring  = add_substring;
+exports.add_subbytes   = add_subbytes;
 exports.add_substitute = add_substitute;
-exports.add_buffer = add_buffer;
-exports.add_channel = add_channel;
-exports.output_buffer = output_buffer;
+exports.add_buffer     = add_buffer;
+exports.add_channel    = add_channel;
+exports.output_buffer  = output_buffer;
 /* No side effect */

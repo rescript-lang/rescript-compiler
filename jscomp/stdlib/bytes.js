@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Pervasives = require("./pervasives");
+
+var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Char = require("./char");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_string = require("../runtime/caml_string");
-var List = require("./list");
+var Char            = require("./char");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_string     = require("../runtime/caml_string");
+var List            = require("./list");
 
 function make(n, c) {
   var s = Caml_string.caml_create_string(n);
@@ -488,38 +489,38 @@ function unsafe_of_string(prim) {
   return Caml_string.bytes_of_string(prim);
 }
 
-exports.make = make;
-exports.init = init;
-exports.empty = empty;
-exports.copy = copy;
-exports.of_string = of_string;
-exports.to_string = to_string;
-exports.sub = sub;
-exports.sub_string = sub_string;
-exports.extend = extend;
-exports.fill = fill;
-exports.blit = blit;
-exports.blit_string = blit_string;
-exports.concat = concat;
-exports.cat = cat;
-exports.iter = iter;
-exports.iteri = iteri;
-exports.map = map;
-exports.mapi = mapi;
-exports.trim = trim;
-exports.escaped = escaped;
-exports.index = index;
-exports.rindex = rindex;
-exports.index_from = index_from;
-exports.rindex_from = rindex_from;
-exports.contains = contains;
-exports.contains_from = contains_from;
-exports.rcontains_from = rcontains_from;
-exports.uppercase = uppercase;
-exports.lowercase = lowercase;
-exports.capitalize = capitalize;
-exports.uncapitalize = uncapitalize;
-exports.compare = compare;
+exports.make             = make;
+exports.init             = init;
+exports.empty            = empty;
+exports.copy             = copy;
+exports.of_string        = of_string;
+exports.to_string        = to_string;
+exports.sub              = sub;
+exports.sub_string       = sub_string;
+exports.extend           = extend;
+exports.fill             = fill;
+exports.blit             = blit;
+exports.blit_string      = blit_string;
+exports.concat           = concat;
+exports.cat              = cat;
+exports.iter             = iter;
+exports.iteri            = iteri;
+exports.map              = map;
+exports.mapi             = mapi;
+exports.trim             = trim;
+exports.escaped          = escaped;
+exports.index            = index;
+exports.rindex           = rindex;
+exports.index_from       = index_from;
+exports.rindex_from      = rindex_from;
+exports.contains         = contains;
+exports.contains_from    = contains_from;
+exports.rcontains_from   = rcontains_from;
+exports.uppercase        = uppercase;
+exports.lowercase        = lowercase;
+exports.capitalize       = capitalize;
+exports.uncapitalize     = uncapitalize;
+exports.compare          = compare;
 exports.unsafe_to_string = unsafe_to_string;
 exports.unsafe_of_string = unsafe_of_string;
 /* No side effect */

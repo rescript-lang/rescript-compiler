@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj = require("./obj");
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Obj              = require("./obj");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
 
 var Undefined = [
   248,
@@ -70,9 +71,9 @@ function force_val(lzv) {
   }
 }
 
-exports.Undefined = Undefined;
-exports.force_lazy_block = force_lazy_block;
+exports.Undefined            = Undefined;
+exports.force_lazy_block     = force_lazy_block;
 exports.force_val_lazy_block = force_val_lazy_block;
-exports.force = force;
-exports.force_val = force_val;
+exports.force                = force;
+exports.force_val            = force_val;
 /* No side effect */

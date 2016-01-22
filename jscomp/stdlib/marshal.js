@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Bytes = require("./bytes");
-var Pervasives = require("./pervasives");
+
+var Bytes          = require("./bytes");
+var Pervasives     = require("./pervasives");
 var Caml_primitive = require("../runtime/caml_primitive");
 
 function to_buffer(buff, ofs, len, v, flags) {
@@ -55,12 +56,12 @@ function from_channel(prim) {
   return Caml_primitive.caml_input_value(prim);
 }
 
-exports.to_channel = to_channel;
-exports.to_buffer = to_buffer;
+exports.to_channel   = to_channel;
+exports.to_buffer    = to_buffer;
 exports.from_channel = from_channel;
-exports.from_bytes = from_bytes;
-exports.from_string = from_string;
-exports.header_size = header_size;
-exports.data_size = data_size;
-exports.total_size = total_size;
+exports.from_bytes   = from_bytes;
+exports.from_string  = from_string;
+exports.header_size  = header_size;
+exports.data_size    = data_size;
+exports.total_size   = total_size;
 /* No side effect */

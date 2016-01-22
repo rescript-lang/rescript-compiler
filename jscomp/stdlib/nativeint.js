@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Caml_format = require("../runtime/caml_format");
-var Sys = require("./sys");
+
+var Caml_format    = require("../runtime/caml_format");
+var Sys            = require("./sys");
 var Caml_primitive = require("../runtime/caml_primitive");
 
 function succ(n) {
@@ -45,16 +46,16 @@ var one = 1;
 
 var minus_one = -1;
 
-exports.zero = zero;
-exports.one = one;
+exports.zero      = zero;
+exports.one       = one;
 exports.minus_one = minus_one;
-exports.succ = succ;
-exports.pred = pred;
-exports.abs = abs;
-exports.size = size;
-exports.max_int = max_int;
-exports.min_int = min_int;
-exports.lognot = lognot;
+exports.succ      = succ;
+exports.pred      = pred;
+exports.abs       = abs;
+exports.size      = size;
+exports.max_int   = max_int;
+exports.min_int   = min_int;
+exports.lognot    = lognot;
 exports.to_string = to_string;
-exports.compare = compare;
+exports.compare   = compare;
 /* No side effect */

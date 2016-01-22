@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var $$Set = require("../stdlib/set");
+
+var $$Set    = require("../stdlib/set");
 var $$String = require("../stdlib/string");
 
 var v = [

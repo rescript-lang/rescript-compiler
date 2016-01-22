@@ -6,4 +6,5 @@ export var ends_with: (s : any, beg : any) => any ;
 export var escaped: (s : any) => any ;
 export var for_all: (p : any, s : any) => any ;
 export var is_empty: (s : any) => any ;
+export var repeat: (n : any, s : any) => any ;
 

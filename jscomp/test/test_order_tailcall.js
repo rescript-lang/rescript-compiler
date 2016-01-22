@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
 function f(_x, _y) {
   while(true) {
     var y = _y;
@@ -85,7 +86,7 @@ function f8(_x, _y) {
   };
 }
 
-exports.f = f;
+exports.f  = f;
 exports.f1 = f1;
 exports.f2 = f2;
 exports.f3 = f3;

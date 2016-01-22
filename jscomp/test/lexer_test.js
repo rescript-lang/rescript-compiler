@@ -1,13 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Arith_syntax = require("./arith_syntax");
-var Mt = require("./mt");
-var Lexing = require("../stdlib/lexing");
-var Number_lexer = require("./number_lexer");
-var Arith_lexer = require("./arith_lexer");
-var List = require("../stdlib/list");
-var Arith_parser = require("./arith_parser");
+var Arith_syntax    = require("./arith_syntax");
+var Mt              = require("./mt");
+var Lexing          = require("../stdlib/lexing");
+var Number_lexer    = require("./number_lexer");
+var Arith_lexer     = require("./arith_lexer");
+var List            = require("../stdlib/list");
+var Arith_parser    = require("./arith_parser");
 
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);
@@ -252,8 +253,8 @@ var lexer_suites = [
 
 Mt.from_pair_suites("lexer_test.ml", lexer_suites);
 
-exports.get_tokens = get_tokens;
-exports.f = f;
-exports.from_tokens = from_tokens;
+exports.get_tokens   = get_tokens;
+exports.f            = f;
+exports.from_tokens  = from_tokens;
 exports.lexer_suites = lexer_suites;
 /*  Not a pure module */

@@ -37,3 +37,5 @@ val escaped : string -> string
 val for_all : (char -> bool) -> string -> bool
 
 val is_empty : string -> bool
+
+val repeat : int -> string -> string 

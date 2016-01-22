@@ -38,4 +38,4 @@ val sub_scope : t -> Ident_set.t -> t
 
 val merge : Ident_set.t -> t -> t
 
-val string_of_id : Ident.t -> t -> int * t
+val print : Format.formatter -> t -> unit

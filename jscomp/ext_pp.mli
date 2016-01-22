@@ -39,6 +39,8 @@ val string : t -> string -> unit
 
 val space :  t -> unit
 
+val nspace : t -> int ->  unit
+
 val group : t -> int -> (unit -> 'a) -> 'a
 (** [group] will record current indentation 
     and indent futher

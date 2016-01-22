@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt = require("./mt");
-var Caml_primitive = require("../runtime/caml_primitive");
-var List = require("../stdlib/list");
+var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Mt               = require("./mt");
+var Caml_primitive   = require("../runtime/caml_primitive");
+var List             = require("../stdlib/list");
 
 var x = [];
 
@@ -469,26 +470,26 @@ var suites = [
 
 Mt.from_pair_suites("rec_value_test.ml", suites);
 
-exports.x = x;
-exports.a = a;
-exports.b = b;
-exports.c = c;
-exports.xx = xx;
-exports.naive = naive;
-exports.fib = fib;
-exports.xs = xs$1;
-exports.fib2 = fib2;
-exports.two = two;
-exports.fib3 = fib3;
-exports.even = even;
-exports.even2 = even2;
-exports.lazy_v = lazy_v;
-exports.sum = sum;
-exports.fake_v = fake_v;
-exports.fake_y = fake_y;
-exports.fake_z = fake_z;
+exports.x       = x;
+exports.a       = a;
+exports.b       = b;
+exports.c       = c;
+exports.xx      = xx;
+exports.naive   = naive;
+exports.fib     = fib;
+exports.xs      = xs$1;
+exports.fib2    = fib2;
+exports.two     = two;
+exports.fib3    = fib3;
+exports.even    = even;
+exports.even2   = even2;
+exports.lazy_v  = lazy_v;
+exports.sum     = sum;
+exports.fake_v  = fake_v;
+exports.fake_y  = fake_y;
+exports.fake_z  = fake_z;
 exports.fake_z2 = fake_z2;
 exports.fake_y2 = fake_y2;
-exports.v = v$1;
-exports.suites = suites;
+exports.v       = v$1;
+exports.suites  = suites;
 /* xs Not a pure module */

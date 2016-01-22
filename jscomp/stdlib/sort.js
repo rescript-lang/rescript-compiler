@@ -1,5 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function merge(order, l1, l2) {
@@ -189,7 +190,7 @@ function array(cmp, arr) {
   return /* () */0;
 }
 
-exports.list = list;
+exports.list  = list;
 exports.array = array;
 exports.merge = merge;
 /* No side effect */

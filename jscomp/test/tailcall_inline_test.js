@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
-var Mt = require("./mt");
+
+var Mt         = require("./mt");
 var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
+var $$Array    = require("../stdlib/array");
 
 function f() {
   var f$1 = function (_acc, _n) {
@@ -89,6 +90,6 @@ var suites = [
 
 Mt.from_pair_suites("tailcall_inline_test.ml", suites);
 
-exports.f = f;
+exports.f      = f;
 exports.suites = suites;
 /*  Not a pure module */

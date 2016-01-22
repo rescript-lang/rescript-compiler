@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array = require("../runtime/caml_array");
-var $$Array = require("../stdlib/array");
+var Caml_array      = require("../runtime/caml_array");
+var $$Array         = require("../stdlib/array");
 
 var v = [
   0,
