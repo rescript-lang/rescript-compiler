@@ -7,7 +7,7 @@ class type doc =
   object
     method getElementById : string -> html_element
   end
-external doc :  doc = "doc" [@@js.global]
+external doc :  doc = "doc" [@@js.global "doc"]
 
 class type console = 
     object 
