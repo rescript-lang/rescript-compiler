@@ -121,6 +121,8 @@ obj_test.cmo : mt.cmo
 obj_test.cmx : mt.cmx
 of_string_test.cmo : mt.cmo
 of_string_test.cmx : mt.cmx
+primitive_reg_test.cmo :
+primitive_reg_test.cmx :
 qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi
@@ -461,6 +463,8 @@ obj_test.cmo : mt.cmo
 obj_test.cmo : mt.cmo
 of_string_test.cmo : mt.cmo
 of_string_test.cmo : mt.cmo
+primitive_reg_test.cmo :
+primitive_reg_test.cmo :
 qcc.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/list.cmi ../stdlib/char.cmi ../stdlib/bytes.cmi \
     ../stdlib/array.cmi

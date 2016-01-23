@@ -350,6 +350,12 @@ module Exp = struct
 
   let float_minus ?comment  (e0 : t) (e1 : t) : t = 
     {comment ; expression_desc = Bin (Minus,e0,e1)}
+
+
+  let float_mod ?comment e1 e2 : J.expression = 
+    { comment ; 
+      expression_desc = Bin (Mod, e1,e2)
+    }
           
   let obj ?comment properties : t = 
     {expression_desc = Object properties; comment }

@@ -162,7 +162,7 @@ module Exp : sig
   val float_minus : binary_op
   val float_notequal : binary_op
 
-
+  val float_mod : binary_op  
   val not : t -> t
 
   val call : ?comment:string  -> ?info:Js_call_info.t -> t -> t list -> t 

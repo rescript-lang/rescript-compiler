@@ -264,9 +264,17 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_copysign_float"
     | "caml_expm1_float"
     | "caml_hypot_float"
-    (*   "caml_fmod_float"; TODO: *)
+
      ->
         E.runtime_call J_helper.float prim.prim_name args
+    | "caml_fmod_float" 
+        (* float module like js number module *)      
+        ->      
+        begin match args with 
+        | [e0;e1] -> E.float_mod e0 e1
+        | _ -> assert false 
+        end
+        
     | "caml_string_equal" 
       -> 
         begin match args with 
@@ -655,8 +663,11 @@ let query (prim : Lam_compile_env.primitive_description)
         | _ -> assert false
         end
     | _ -> 
-        E.str ~comment:"Missing primitve" ~pure:false  prim.prim_name;
-        (* raise X.NA *) (* Fall back, maybe spit out a warning*)
+
+      let comment = "Missing primitve" in       
+      Ext_log.warn __LOC__ "%s" (Printf.sprintf  "%s: %s\n" comment prim.prim_name) ;
+      E.str ~comment ~pure:false  prim.prim_name;
+      (* raise X.NA *) (* Fall back, maybe spit out a warning*)
     end in 
      v 
   with X.NA ->
