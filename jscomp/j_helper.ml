@@ -306,7 +306,7 @@ module Exp = struct
     match v.expression_desc with 
     | Str (_, x) ->
         assert (String.length x = 1) ;
-        int ~comment:("\"" ^ Ext_string.escaped  x ^ "\"")  
+        int ~comment:(Printf.sprintf "%S"  x )  
           (Char.code x.[0])
     | Char_of_int v -> v 
     | _ -> {comment; expression_desc = Char_to_int v }
