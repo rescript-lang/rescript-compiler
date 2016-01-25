@@ -126,7 +126,10 @@ class virtual map =
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
-                 (* For [caml_array_append]*) (* typeof v === "number"*)
+                 (* For [caml_array_append]*)
+                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
                  (* !v *) (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
@@ -340,7 +343,7 @@ class virtual map =
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
       | Int_of_boolean _x -> let _x = o#expression _x in Int_of_boolean _x
-      | Is_type_number _x -> let _x = o#expression _x in Is_type_number _x
+      | Typeof _x -> let _x = o#expression _x in Typeof _x
       | Not _x -> let _x = o#expression _x in Not _x
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x

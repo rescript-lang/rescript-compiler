@@ -374,7 +374,8 @@ module Exp = struct
    *)         
   let to_ocaml_boolean ?comment (e : t) : t = 
     match e.expression_desc with 
-    | Int_of_boolean _ ->  e
+    | Int_of_boolean _
+    | Number _ -> e 
     | _ -> {comment ; expression_desc = Int_of_boolean e}
 
   let true_  = int ~comment:"true" 1 (* var (Jident.create_js "true") *)
@@ -386,18 +387,35 @@ module Exp = struct
   let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
     match e0.expression_desc, e1.expression_desc with
     | Str (_,x), Str (_,y) ->  (* CF*)
-        if String.compare x y = 0 
-        then int ?comment 1 
-        else int ?comment 0
+        bool (Ext_string.equal x y)
     | Char_to_int a , Char_to_int b -> 
         triple_equal ?comment a b 
     | Char_to_int a , Number (Int {i; c = Some v}) 
     | Number (Int {i; c = Some v}), Char_to_int a  -> 
         triple_equal ?comment a (str (String.make 1 v))
+    | Number (Int {i = i0; _}), Number (Int {i = i1; _}) 
+      -> 
+      bool (i0 = i1)      
     | Char_of_int a , Char_of_int b -> 
         triple_equal ?comment a b 
     | _ -> 
-        to_ocaml_boolean @@ {expression_desc = Bin(EqEqEq, e0,e1); comment}
+        to_ocaml_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
+
+  let rec float_equal ?comment (e0 : t) (e1 : t) : t = 
+    match e0.expression_desc, e1.expression_desc with     
+    | Number (Int {i = i0 ; _}), Number (Int {i = i1; }) -> 
+      bool (i0 = i1)
+    | Number (Float {f = f0; _}), Number (Float {f = f1 ; }) when f0 = f1 -> 
+      true_
+    | _ -> 
+      to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
+  let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
+    match e0.expression_desc, e1.expression_desc with     
+    | Str (_, a0), Str(_, b0) 
+      -> bool  (Ext_string.equal a0 b0)
+    | _ , _ 
+      ->
+      to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
 
   let bin ?comment (op : J.binop) e0 e1 : t = 
     match op with 
@@ -414,13 +432,23 @@ module Exp = struct
 
 
 
-
-  let is_type_number ?comment (e : t) : t = 
+  (* Invariant: this is relevant to how we encode string
+  *)           
+  let typeof ?comment (e : t) : t = 
     match e.expression_desc with 
     | Number _ 
-    | Array_length _  | String_length _ ->  true_
-    | Str _ | Array _ -> false_
-    | _ ->  to_ocaml_boolean @@ {expression_desc = Is_type_number e ; comment }
+    | Array_length _ 
+    | String_length _ 
+      -> str ?comment "number"
+    | Str _ 
+      -> str ?comment "string" 
+
+    | Array _
+      -> str ?comment "object"
+    | _ -> {expression_desc = Typeof e ; comment }
+
+  let is_type_number ?comment (e : t) : t = 
+    string_equal ?comment (typeof e) (str "number")    
 
   (* TODO remove this comment ? *)
   (* let un ?comment op e : t  = {expression_desc = Un(op,e); comment} *)
@@ -447,6 +475,7 @@ module Exp = struct
     | Number (Int {i; _}) -> 
       if i != 0 then false_ else true_
     | Int_of_boolean  e -> not e
+    | Not e -> e 
     | x -> {expression_desc = Not e ; comment = None}
 
   let new_ ?comment e0 args : t = 

@@ -20,7 +20,7 @@
 
 
 
-module E = J_helper.Exp 
+module E = Js_helper.Exp 
 
 let make (args : J.expression list) =
   E.arr Immutable (E.int 0 :: args)

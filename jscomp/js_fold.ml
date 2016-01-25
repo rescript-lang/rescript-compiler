@@ -113,7 +113,10 @@ class virtual fold =
        uninitilized array is not as bad as in ocaml, 
        since GC does not rely on it
      *)
-                 (* For [caml_array_append]*) (* typeof v === "number"*)
+                 (* For [caml_array_append]*)
+                 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
                  (* !v *) (* String.fromCharCode.apply(null, args) *)
                  (* Convert JS boolean into OCaml boolean 
        like [+true], note this ast talks using js
@@ -307,7 +310,7 @@ class virtual fold =
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Int_of_boolean _x -> let o = o#expression _x in o
-      | Is_type_number _x -> let o = o#expression _x in o
+      | Typeof _x -> let o = o#expression _x in o
       | Not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o
       | Dump (_x, _x_i1) ->

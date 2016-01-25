@@ -20,7 +20,7 @@
 
 
 
-module E = J_helper.Exp 
+module E = Js_helper.Exp 
 
 (* TODO: add label to the comment *)
 let make  mutable_flag (args : (string * J.expression) list) =

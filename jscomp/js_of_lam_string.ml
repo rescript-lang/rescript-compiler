@@ -21,7 +21,7 @@
 
 
 
-module E = J_helper.Exp
+module E = Js_helper.Exp
 
 module A = struct 
 
@@ -67,10 +67,10 @@ module A = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call J_helper.string "bytes_to_string" [e]
+    E.runtime_call Js_helper.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call J_helper.string "bytes_of_string" [s]
+    E.runtime_call Js_helper.string "bytes_of_string" [s]
 end
 
 (* We use module B for string compilation, once the upstream can make changes to the 
@@ -120,10 +120,10 @@ module B = struct
  *)
 
   let bytes_to_string e = 
-    E.runtime_call J_helper.string "bytes_to_string" [e]
+    E.runtime_call Js_helper.string "bytes_to_string" [e]
 
   let bytes_of_string s =
-    E.runtime_call J_helper.string "bytes_of_string" [s]
+    E.runtime_call Js_helper.string "bytes_of_string" [s]
 end
 
 (* include A *)
