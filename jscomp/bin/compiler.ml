@@ -2355,7 +2355,10 @@ include
           val econd : ?comment:string -> t -> t -> t -> t
           val int : ?comment:string -> ?c:char -> int -> t
           val float : ?comment:string -> string -> t
-          val zero_float_lit : t
+          val zero_float_lit : t[@@ocaml.doc
+                                  " [is_out e range] is equivalent to [e > range or e <0]\n      \n  "]
+          val is_out : binary_op[@@ocaml.doc
+                                  " [is_out e range] is equivalent to [e > range or e <0]\n      \n  "]
           val dot : ?comment:string -> t -> string -> t
           val array_length : unary_op
           val string_length : unary_op
@@ -2376,8 +2379,10 @@ include
           val is_type_number : unary_op
           val to_int32 : unary_op
           val to_uint32 : unary_op
-          val int_plus : binary_op
-          val int_minus : binary_op
+          val int32_add : binary_op
+          val int32_minus : binary_op
+          val int32_mul : binary_op
+          val int32_div : binary_op
           val int32_lsl : binary_op
           val int32_lsr : binary_op
           val int32_asr : binary_op
@@ -2385,10 +2390,15 @@ include
           val int32_bxor : binary_op
           val int32_band : binary_op
           val int32_bor : binary_op
-          val float_plus : binary_op
+          val float_add : binary_op
           val float_minus : binary_op
+          val float_mul : binary_op
+          val float_div : binary_op
           val float_notequal : binary_op
           val float_mod : binary_op
+          val int_comp : Lambda.comparison -> binary_op
+          val string_comp : Js_op.binop -> binary_op
+          val float_comp : Lambda.comparison -> binary_op
           val not : t -> t
           val call :
             ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
@@ -2422,22 +2432,9 @@ include
           val to_ocaml_boolean : unary_op
           val and_ : binary_op
           val or_ : binary_op
-          val lt : binary_op
-          val le : binary_op
-          val gt : binary_op
-          val ge : binary_op
-          val intcomp : ?comment:string -> Lambda.comparison -> t -> t -> t
-          val stringcomp : ?comment:string -> Js_op.binop -> t -> t -> t
-          val float_add : binary_op
-          val float_minus : binary_op
-          val float_mul : binary_op
-          val float_div : binary_op
-          val int32_div : binary_op
-          val int32_add : binary_op
-          val int32_minus : binary_op
-          val int32_mul : binary_op
           val of_block :
-            ?comment:string -> J.statement list -> J.expression -> t
+            ?comment:string -> J.statement list -> J.expression -> t[@@ocaml.doc
+                                                                    " convert a block to expresion by using IIFE "]
         end
         module Stmt :
         sig
@@ -2617,6 +2614,7 @@ include
                           |Function_length _);_}
                        as pred),{ expression_desc = Number (Int { i = 0 }) }),_,_)
                    -> econd ?comment pred t f
+               | (Not e,_,_) -> econd ?comment e f t
                | (Int_of_boolean b,_,_) -> econd ?comment b t f
                | _ ->
                    if Js_analyzer.eq_expression t f
@@ -2723,25 +2721,6 @@ include
                | (_,_) ->
                    { comment; expression_desc = (String_append (e, el)) } : 
               t)
-            let int_plus ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Number (Int { i = a;_}),Number (Int { i = b;_})) ->
-                   int (a + b)
-               | (_,_) -> { comment; expression_desc = (Bin (Plus, e0, e1)) } : 
-              t)
-            let int_minus ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Number (Int { i = a;_}),Number (Int { i = b;_})) ->
-                   int (a - b)
-               | (_,_) ->
-                   { comment; expression_desc = (Bin (Minus, e0, e1)) } : 
-              t)
-            let float_plus ?comment  (e0 : t) (e1 : t) =
-              ({ comment; expression_desc = (Bin (Plus, e0, e1)) } : 
-              t)
-            let float_minus ?comment  (e0 : t) (e1 : t) =
-              ({ comment; expression_desc = (Bin (Minus, e0, e1)) } : 
-              t)
             let float_mod ?comment  e1 e2 =
               ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
             let obj ?comment  properties =
@@ -2797,12 +2776,6 @@ include
                | Number (Int { i = 0;_}) -> arr ?comment NA []
                | _ -> { comment; expression_desc = (Array_of_size e) } : 
               t)
-            let stringcomp ?comment  cmp e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment cmp e0 e1)[@@ocaml.doc
-                                                            " TODO: remove : ?? "]
-            let intcomp ?comment  cmp e0 e1 =
-              to_ocaml_boolean @@
-                (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
             let is_type_number ?comment  (e : t) =
               (match e.expression_desc with
                | Number _|Array_length _|String_length _ -> true_
@@ -2817,6 +2790,14 @@ include
                    { expression_desc = (Bin (NotEqEq, e0, e1)); comment }
                | Bin (NotEqEq ,e0,e1) ->
                    { expression_desc = (Bin (EqEqEq, e0, e1)); comment }
+               | Bin (Lt ,a,b) ->
+                   { e with expression_desc = (Bin (Ge, a, b)) }
+               | Bin (Ge ,a,b) ->
+                   { e with expression_desc = (Bin (Lt, a, b)) }
+               | Bin (Le ,a,b) ->
+                   { e with expression_desc = (Bin (Gt, a, b)) }
+               | Bin (Gt ,a,b) ->
+                   { e with expression_desc = (Bin (Le, a, b)) }
                | Number (Int { i;_}) -> if i != 0 then false_ else true_
                | Int_of_boolean e -> not e
                | x -> { expression_desc = (Not e); comment = None } : 
@@ -2870,14 +2851,6 @@ include
             let string_of_small_int_array ?comment  xs =
               ({ expression_desc = (String_of_small_int_array xs); comment } : 
               t)
-            let lt ?comment  e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment Lt e0 e1)
-            let le ?comment  e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment Le e0 e1)
-            let gt ?comment  e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment Gt e0 e1)
-            let ge ?comment  e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment Ge e0 e1)
             let dec ?comment  (e : t) =
               match e with
               | { expression_desc = Number (Int ({ i;_} as v));_} ->
@@ -2886,12 +2859,6 @@ include
                     expression_desc = (Number (Int { v with i = (i - 1) }))
                   }
               | _ -> bin ?comment Minus e (int 1)
-            let prefix_inc ?comment  (i : J.vident) =
-              let v: t = { expression_desc = (Var i); comment = None } in
-              assign ?comment v (int_plus v (int 1))
-            let prefix_dec ?comment  i =
-              let v: t = { expression_desc = (Var i); comment = None } in
-              assign ?comment v (int_minus v (int 1))
             let null ?comment  () = js_global ?comment "null"
             let tag ?comment  e = index ?comment e 0
             let rec to_int32 ?comment  (e : J.expression) =
@@ -2909,18 +2876,88 @@ include
             let rec to_uint32 ?comment  (e : J.expression) =
               ({ comment; expression_desc = (Bin (Lsr, e, (int 0))) } : 
               J.expression)
+            let string_comp cmp ?comment  e0 e1 =
+              to_ocaml_boolean @@ (bin ?comment cmp e0 e1)
+            let int_comp cmp ?comment  e0 e1 =
+              to_ocaml_boolean @@
+                (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
+            let float_comp cmp ?comment  e0 e1 =
+              to_ocaml_boolean @@
+                (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
+            let is_out ?comment  (e : t) (range : t) =
+              (match ((range.expression_desc), (e.expression_desc)) with
+               | (Number (Int { i = 1 }),Var _) ->
+                   not
+                     (or_ (triple_equal e (int 0)) (triple_equal e (int 1)))
+               | (Number (Int
+                  { i = 1 }),(Bin
+                              (Plus
+                               ,{ expression_desc = Number (Int { i;_}) },
+                               { expression_desc = Var _;_})|Bin
+                              (Plus
+                               ,{ expression_desc = Var _;_},{
+                                                               expression_desc
+                                                                 = Number
+                                                                 (Int 
+                                                                 { i;_})
+                                                               })))
+                   ->
+                   not
+                     (or_ (triple_equal e (int (- i)))
+                        (triple_equal e (int (1 - i))))
+               | (Number (Int { i = 1 }),Bin
+                  (Minus
+                   ,({ expression_desc = Var _;_} as x),{
+                                                          expression_desc =
+                                                            Number (Int
+                                                            { i;_})
+                                                          }))
+                   ->
+                   not
+                     (or_ (triple_equal x (int (i + 1)))
+                        (triple_equal x (int i)))
+               | (Number (Int { i = k }),Bin
+                  (Minus
+                   ,({ expression_desc = Var _;_} as x),{
+                                                          expression_desc =
+                                                            Number (Int
+                                                            { i;_})
+                                                          }))
+                   ->
+                   or_ (int_comp Cgt x (int (i + k)))
+                     (int_comp Clt x (int i))
+               | (Number (Int { i = k }),Var _) ->
+                   or_ (int_comp Cgt e (int k)) (int_comp Clt e (int 0))
+               | (_,_) -> int_comp ?comment Cgt (to_uint32 e) range : 
+              t)
             let rec float_add ?comment  (e1 : t) (e2 : t) =
               match ((e1.expression_desc), (e2.expression_desc)) with
               | (Number (Int { i;_}),Number (Int { i = j;_})) ->
                   int ?comment (i + j)
+              | (_,Number (Int { i = j; c })) when j < 0 ->
+                  float_minus ?comment e1
+                    {
+                      e2 with
+                      expression_desc = (Number (Int { i = (- j); c }))
+                    }
               | (Bin
                  (Plus ,a1,{ expression_desc = Number (Int { i = k;_}) }),Number
                  (Int { i = j;_})) -> bin ?comment Plus a1 (int (k + j))
               | _ -> bin ?comment Plus e1 e2
+            and float_minus ?comment  (e1 : t) (e2 : t) =
+              (match ((e1.expression_desc), (e2.expression_desc)) with
+               | (Number (Int { i;_}),Number (Int { i = j;_})) ->
+                   int ?comment (i - j)
+               | _ -> bin ?comment Minus e1 e2 : t)
             let int32_add ?comment  e1 e2 = float_add ?comment e1 e2
-            let float_minus ?comment  e1 e2 = bin ?comment Minus e1 e2
             let int32_minus ?comment  e1 e2 =
               (float_minus ?comment e1 e2 : J.expression)
+            let prefix_inc ?comment  (i : J.vident) =
+              let v: t = { expression_desc = (Var i); comment = None } in
+              assign ?comment v (int32_add v (int 1))
+            let prefix_dec ?comment  i =
+              let v: t = { expression_desc = (Var i); comment = None } in
+              assign ?comment v (int32_minus v (int 1))
             let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
             let float_div ?comment  e1 e2 = bin ?comment Div e1 e2
             let float_notequal ?comment  e1 e2 = bin ?comment NotEqEq e1 e2
@@ -3161,6 +3198,7 @@ include
                                                           a;_}::[])
                      -> (exp (Exp.econd e b a)) :: acc
                  | (_,[],[]) -> (exp e) :: acc
+                 | (Not e,_,_::_) -> aux ?comment e else_ then_ acc
                  | (_,[],_) -> aux ?comment (Exp.not e) else_ [] acc
                  | (_,y::ys,x::xs) when
                      let open Js_analyzer in
@@ -3975,7 +4013,7 @@ include
                  | "caml_acos_float" -> E.math "acos" args
                  | "caml_add_float" ->
                      (match args with
-                      | e0::e1::[] -> E.float_plus e0 e1
+                      | e0::e1::[] -> E.float_add e0 e1
                       | _ -> assert false)
                  | "caml_div_float" ->
                      (match args with
@@ -3991,11 +4029,11 @@ include
                       | _ -> assert false)
                  | "caml_ge_float" ->
                      (match args with
-                      | e0::e1::[] -> E.ge e0 e1
+                      | e0::e1::[] -> E.float_comp Cge e0 e1
                       | _ -> assert false)
                  | "caml_gt_float" ->
                      (match args with
-                      | e0::e1::[] -> E.gt e0 e1
+                      | e0::e1::[] -> E.float_comp Cgt e0 e1
                       | _ -> assert false)
                  | "caml_tan_float" -> E.math "tan" args
                  | "caml_tanh_float" -> E.math "tanh" args
@@ -4037,7 +4075,7 @@ include
                       | _ -> assert false)
                  | "caml_int32_add"|"caml_nativeint_add" ->
                      (match args with
-                      | e0::e1::[] -> E.int_plus e0 e1
+                      | e0::e1::[] -> E.int32_add e0 e1
                       | _ -> assert false)
                  | "caml_int32_div"|"caml_nativeint_div" ->
                      (match args with
@@ -4061,7 +4099,7 @@ include
                      (match args with | e::[] -> e | _ -> assert false)
                  | "caml_int32_sub"|"caml_nativeint_sub" ->
                      (match args with
-                      | e0::e1::[] -> E.int_minus e0 e1
+                      | e0::e1::[] -> E.int32_minus e0 e1
                       | _ -> assert false)
                  | "caml_int32_xor"|"caml_nativeint_xor" ->
                      (match args with
@@ -4077,15 +4115,15 @@ include
                       | _ -> assert false)
                  | "caml_le_float" ->
                      (match args with
-                      | e0::e1::[] -> E.le e0 e1
+                      | e0::e1::[] -> E.float_comp Cle e0 e1
                       | _ -> assert false)
                  | "caml_lt_float" ->
                      (match args with
-                      | e0::e1::[] -> E.lt e0 e1
+                      | e0::e1::[] -> E.float_comp Clt e0 e1
                       | _ -> assert false)
                  | "caml_neg_float" ->
                      (match args with
-                      | e::[] -> E.int_minus (E.int 0) e
+                      | e::[] -> E.int32_minus (E.int 0) e
                       | _ -> assert false)
                  | "caml_neq_float" ->
                      (match args with
@@ -4111,23 +4149,23 @@ include
                       | _ -> assert false)
                  | "caml_string_notequal" ->
                      (match args with
-                      | e0::e1::[] -> E.stringcomp NotEqEq e0 e1
+                      | e0::e1::[] -> E.string_comp NotEqEq e0 e1
                       | _ -> assert false)
                  | "caml_string_lessequal" ->
                      (match args with
-                      | e0::e1::[] -> E.stringcomp Le e0 e1
+                      | e0::e1::[] -> E.string_comp Le e0 e1
                       | _ -> assert false)
                  | "caml_string_lessthan" ->
                      (match args with
-                      | e0::e1::[] -> E.stringcomp Lt e0 e1
+                      | e0::e1::[] -> E.string_comp Lt e0 e1
                       | _ -> assert false)
                  | "caml_string_greaterequal" ->
                      (match args with
-                      | e0::e1::[] -> E.stringcomp Ge e0 e1
+                      | e0::e1::[] -> E.string_comp Ge e0 e1
                       | _ -> assert false)
                  | "caml_string_greaterthan" ->
                      (match args with
-                      | e0::e1::[] -> E.stringcomp Gt e0 e1
+                      | e0::e1::[] -> E.string_comp Gt e0 e1
                       | _ -> assert false)
                  | "caml_create_string" ->
                      (match args with
@@ -4838,7 +4876,7 @@ include
                 | _ -> E.unknown_primitive prim)
            | Pnegint |Pnegbint _|Pnegfloat  ->
                (match args with
-                | e::[] -> E.int_minus (E.int 0) e
+                | e::[] -> E.int32_minus (E.int 0) e
                 | _ -> E.unknown_primitive prim)
            | Pnot  ->
                (match args with
@@ -4846,13 +4884,13 @@ include
                 | _ -> E.unknown_primitive prim)
            | Poffsetint n ->
                (match args with
-                | e::[] -> E.int_plus (E.int n) e
+                | e::[] -> E.int32_add e (E.int n)
                 | _ -> E.unknown_primitive prim)
            | Poffsetref n ->
                (match args with
                 | e::[] ->
                     let v = Js_of_lam_block.field e 0 in
-                    E.assign v (E.int_plus v (E.int n))
+                    E.assign v (E.int32_add v (E.int n))
                 | _ -> E.unknown_primitive prim)
            | Paddint |Paddbint _ ->
                (match args with
@@ -4924,7 +4962,7 @@ include
                 | _ -> E.unknown_primitive prim)
            | Pisout  ->
                (match args with
-                | range::e::[] -> E.lt range (E.to_uint32 e)
+                | range::e::[] -> E.is_out e range
                 | _ -> E.unknown_primitive prim)
            | Pidentity  ->
                (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
@@ -4975,7 +5013,7 @@ include
                (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
            | Pbintcomp (_,cmp)|Pfloatcomp cmp|Pintcomp cmp ->
                (match args with
-                | e1::e2::[] -> E.intcomp cmp e1 e2
+                | e1::e2::[] -> E.int_comp cmp e1 e2
                 | _ -> E.unknown_primitive prim)
            | Pgetglobal i ->
                Lam_compile_global.get_exp (QueryGlobal (i, env, false))
@@ -5806,7 +5844,7 @@ include
                      ->
                      [S.exp
                         (E.assign (E.var id)
-                           (E.int_plus (E.var id) (E.int v)))]
+                           (E.int32_add (E.var id) (E.int v)))]
                  | _ ->
                      (match compile_lambda
                               {
@@ -8517,6 +8555,9 @@ include
             let plusplus = "++"
             let minusminus = "--"
             let semi = ";"
+            let else_ = "else"
+            let if_ = "if"
+            let while_ = "while"
             let empty_block = "empty_block"
             let start_block = "start_block"
             let end_block = "end_block"
@@ -9141,20 +9182,29 @@ include
                    (fun _  -> expression 0 cxt f e) in
                (semi f; cxt)
            | If (e,s1,s2) ->
-               let cxt =
-                 P.string f "if";
+               (P.string f L.if_;
+                P.space f;
+                (let cxt =
+                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
                  P.space f;
-                 (P.paren_group f 1) @@ ((fun _  -> expression 0 cxt f e)) in
-               (P.space f;
-                (let cxt = block cxt f s1 in
-                 match s2 with
-                 | None |Some []|Some ({ statement_desc = Block [] }::[]) ->
-                     (P.newline f; cxt)
-                 | Some s2 ->
-                     (P.newline f;
-                      P.string f "else";
-                      P.space f;
-                      block cxt f s2)))
+                 (let cxt = block cxt f s1 in
+                  match s2 with
+                  | None |Some []|Some ({ statement_desc = Block [] }::[]) ->
+                      (P.newline f; cxt)
+                  | Some (({ statement_desc = If _ } as nest)::[])|Some
+                    ({
+                       statement_desc = Block
+                         (({ statement_desc = If _;_} as nest)::[]);_}::[])
+                      ->
+                      (P.newline f;
+                       P.string f L.else_;
+                       P.space f;
+                       statement false cxt f nest)
+                  | Some s2 ->
+                      (P.newline f;
+                       P.string f L.else_;
+                       P.space f;
+                       block cxt f s2))))
            | While (label,e,s,_env) ->
                ((match label with
                  | Some i -> (P.string f i; P.string f L.colon; P.newline f)
@@ -9162,12 +9212,12 @@ include
                 (let cxt =
                    match e.expression_desc with
                    | Number (Int { i = 1 }) ->
-                       (P.string f "while";
+                       (P.string f L.while_;
                         P.string f "(true)";
                         P.space f;
                         cxt)
                    | _ ->
-                       (P.string f "while";
+                       (P.string f L.while_;
                         (let cxt =
                            (P.paren_group f 1) @@
                              (fun _  -> expression 0 cxt f e) in
