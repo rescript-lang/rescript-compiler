@@ -143,8 +143,6 @@ We plan to provide a Windows installer in the near future.
 
 The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). Refer to its copyright and license notices for information about its licensing.
 
-The `ocamlscript` backend relies on a patch [(js.diff)](./js.diff) to the OCaml compiler.
-
 This project reused and adapted parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 * Some small printing utilities in [pretty printer](./jscomp/js_dump.ml).
 * Part of the [Javascript runtime](./jscomp/runtime) support
