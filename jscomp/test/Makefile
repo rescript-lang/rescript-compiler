@@ -15,9 +15,9 @@ $(TESTS): $(CAMLC)
 
 all: $(TESTS)
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj
 
-TEST_JS = $(TESTS:.cmo=.js)
+TEST_JS = $(TESTS:.cmo=.cmj)
 
 clean::
 	rm -f *.cm*
@@ -28,16 +28,14 @@ clean::
 	rm arith_lexer.ml number_lexer.ml simple_lexer_test.ml
 
 .mli.cmi:
-	$(CAMLC) $(INCLUDES) $(COMPFLAGS) `./Compflags $@` -c $<
+	$(CAMLC) $(INCLUDES) $(COMPFLAGS) -c $<
 
 .ml.cmo:
-	$(CAMLC) $(INCLUDES) $(COMPFLAGS) `./Compflags $@` -c $<
+	$(CAMLC) $(INCLUDES) $(COMPFLAGS) -c $<
 
-.ml.cmx:
-	$(CAMLOPT) $(INCLUDES)  $(COMPFLAGS) `./Compflags $@` -c $<
+.ml.cmj:
+	$(CAMLC) $(INCLUDES)  $(COMPFLAGS) -c $<
 
-.ml.p.cmx:
-	$(CAMLOPT) $(INCLUDES) $(COMPFLAGS) `./Compflags $@` -p -c -o $*.p.cmx $<
 
 arith_lexer.ml: arith_lexer.mll
 	$(CAMLLEX) $<
@@ -50,5 +48,5 @@ simple_lexer_test.ml: simple_lexer_test.mll
 
 depend:
 	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmo/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
 

@@ -22,7 +22,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 ./bin/osc: _build/compiler.cmxa
 	echo "Linking"
-	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa $^ main.cmx 2>>build.compile
+	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
 # The motivation is to save compilation time and in the future, more freedom to add new
 # compilation flags (since we don't need bytecode anymore)
@@ -49,7 +49,7 @@ snapshotcmj:
 releasebuild:
 	@echo "Make release compiler"
 	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
+	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx
 
 stdlib:
 	cd stdlib && ./build.sh
