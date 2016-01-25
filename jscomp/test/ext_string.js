@@ -159,6 +159,10 @@ function repeat(n, s) {
   return Bytes.to_string(res);
 }
 
+function equal(x, y) {
+  return +(x === y);
+}
+
 exports.split_by    = split_by;
 exports.split       = split;
 exports.starts_with = starts_with;
@@ -167,4 +171,5 @@ exports.escaped     = escaped;
 exports.for_all     = for_all;
 exports.is_empty    = is_empty;
 exports.repeat      = repeat;
+exports.equal       = equal;
 /* No side effect */

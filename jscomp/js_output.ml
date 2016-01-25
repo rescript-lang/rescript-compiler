@@ -20,8 +20,8 @@
 
 
 
-module E = J_helper.Exp 
-module S = J_helper.Stmt 
+module E = Js_helper.Exp 
+module S = Js_helper.Stmt 
 
 type finished = 
   | True 
@@ -79,7 +79,7 @@ let handle_block_return (st : st) (should_return : Lam_compile_defs.return_type)
 let statement_of_opt_expr (x : J.expression option) : J.statement =
   match x with 
   | None -> S.empty ()
-  | Some x when J_helper.no_side_effect x -> S.empty ()
+  | Some x when Js_helper.no_side_effect x -> S.empty ()
         (* TODO, pure analysis in lambda instead *)
   | Some x -> S.exp x 
 
@@ -96,7 +96,7 @@ let to_block ( x : t)  : J.block =
       else 
         begin match opt with 
         | None -> block (* TODO, pure analysis in lambda instead *)
-        | Some x when J_helper.no_side_effect x -> block
+        | Some x when Js_helper.no_side_effect x -> block
         | Some x -> block @ [S.exp x ]
         end
 
@@ -123,7 +123,7 @@ let rec append  (x : t ) (y : t ) : t =
     | {block = []; value= None; _ }, y  -> y 
     | {block = []; value= Some _; _}, {block = []; value= None; _ } -> x 
     | {block = []; value =  Some e1; _}, ({block = []; value = Some e2; finished } as z) -> 
-        if J_helper.no_side_effect e1 
+        if Js_helper.no_side_effect e1 
         then z
             (* It would optimize cases like [module aliases]
                 Bigarray, List 

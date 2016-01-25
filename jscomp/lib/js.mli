@@ -18,8 +18,6 @@
 
 (* Author: Hongbo Zhang  *)
 
-module E = Js_helper.Exp 
+(** Common utils for js interoperation *)
 
-let get_double_feild e i = E.index e i 
-
-let set_double_field e  i e0 =  E.assign (E.index e i)  e0
+external typeof : 'a -> string = "js_typeof"

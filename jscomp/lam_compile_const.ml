@@ -20,7 +20,7 @@
 
 
 
-module E = J_helper.Exp
+module E = Js_helper.Exp
 
 let rec translate (x : Lambda.structured_constant ) : J.expression = 
   match x with 

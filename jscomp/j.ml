@@ -94,7 +94,10 @@ and expression_desc =
   | Tag_ml_obj of expression
   | String_append of expression * expression 
   | Int_of_boolean of expression 
-  | Is_type_number of expression (* typeof v === "number"*)
+  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
+     [typeof] is an operator     
+  *)
+  | Typeof of expression
   | Not of expression (* !v *)
   | String_of_small_int_array of expression 
     (* String.fromCharCode.apply(null, args) *)

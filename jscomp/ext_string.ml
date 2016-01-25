@@ -100,3 +100,5 @@ let repeat n s  =
     String.blit s 0 res (i * len) len
   done;
   Bytes.to_string res
+
+let equal (x : string) y  = x = y

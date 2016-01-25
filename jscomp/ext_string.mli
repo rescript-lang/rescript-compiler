@@ -39,3 +39,5 @@ val for_all : (char -> bool) -> string -> bool
 val is_empty : string -> bool
 
 val repeat : int -> string -> string 
+
+val equal : string -> string -> bool

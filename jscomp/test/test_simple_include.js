@@ -1,34 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var $$Array         = require("../stdlib/array");
-
-if (3 !== 3) {
-  throw [
-        0,
-        Caml_exceptions.Assert_failure,
-        [
-          0,
-          "test_simple_include.ml",
-          5,
-          5
-        ]
-      ];
-}
-
-if (3 !== 3) {
-  throw [
-        0,
-        Caml_exceptions.Assert_failure,
-        [
-          0,
-          "test_simple_include.ml",
-          13,
-          5
-        ]
-      ];
-}
+var $$Array = require("../stdlib/array");
 
 var a = 3;
 

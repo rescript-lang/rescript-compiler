@@ -65,6 +65,8 @@ empty_obj.cmo :
 empty_obj.cmx :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx
+equal_test.cmo :
+equal_test.cmx :
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -351,6 +353,8 @@ ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
+typeof_test.cmo : mt.cmo
+typeof_test.cmx : mt.cmx
 unitest_string.cmo :
 unitest_string.cmx :
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
@@ -409,6 +413,8 @@ empty_obj.cmo :
 empty_obj.cmj :
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
+equal_test.cmo :
+equal_test.cmj :
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -695,5 +701,7 @@ ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
+typeof_test.cmo : mt.cmo
+typeof_test.cmj : mt.cmj
 unitest_string.cmo :
 unitest_string.cmj :

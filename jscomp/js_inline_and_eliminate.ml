@@ -28,8 +28,8 @@
    it makes sense to inline it
 *)
 
-module S = J_helper.Stmt
-module E = J_helper.Exp
+module S = Js_helper.Stmt
+module E = Js_helper.Exp
 
 
 let count_collects () = 
@@ -72,14 +72,14 @@ let count_collects () =
               let pure = 
                 match v.value  with 
                 | None -> false  (* can not happen *)
-                | Some x -> J_helper.no_side_effect x  in
+                | Some x -> Js_helper.no_side_effect x  in
               Js_op_util.update_used_stats v.ident_info (if pure then Dead_pure else Dead_non_pure)
             | num -> 
               if !num = 1 then 
                 let pure = 
                   match v.value  with 
                   | None -> false  (* can not happen *)
-                  | Some x -> J_helper.no_side_effect x  in
+                  | Some x -> Js_helper.no_side_effect x  in
                 Js_op_util.update_used_stats v.ident_info (if pure then Once_pure else Used) 
           end
         ) defined_idents; defined_idents

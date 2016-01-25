@@ -20,8 +20,8 @@
 
 
 
-module E = J_helper.Exp 
-module S = J_helper.Stmt
+module E = Js_helper.Exp 
+module S = Js_helper.Stmt
 
 type module_id = Lam_module_ident.t
 

@@ -52,8 +52,8 @@
 
 (* module P = Ext_format *)
 module P = Ext_pp
-module E = J_helper.Exp 
-module S = J_helper.Stmt 
+module E = Js_helper.Exp 
+module S = Js_helper.Stmt 
 
 module L = struct
   let function_ = "function"
@@ -529,23 +529,11 @@ and
     if l > 13 
     then P.paren_group f 1 action 
     else action ()
-
-  | Is_type_number e 
-    ->
-    let action () = 
-      P.string f "typeof";
-      P.space f ;
-      let cxt = expression 13 cxt f e in
-      P.space f ;
-      P.string f "===";
-      P.space f ;
-      P.string f {|"number"|};
-      cxt 
-    in
-    let (out, _lft, _rght) = op_prec EqEqEq in
-    if l > out 
-    then P.paren_group f 1 action 
-    else action ()
+  | Typeof e 
+    -> 
+    P.string f "typeof"; 
+    P.space f;
+    expression 13 cxt f e     
   | Bin (Eq, {expression_desc = Var i },
          {expression_desc = 
             (
@@ -959,7 +947,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Str _ 
       | Array _ 
       | FlatCall _ 
-      | Is_type_number _
+      | Typeof _
       | Function_length _ 
       | Number _
       | Not _ 

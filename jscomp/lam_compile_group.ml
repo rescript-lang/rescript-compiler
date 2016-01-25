@@ -20,8 +20,8 @@
 
 
 
-module E = J_helper.Exp 
-module S = J_helper.Stmt  
+module E = Js_helper.Exp 
+module S = Js_helper.Stmt  
 
 open Js_output.Ops
 
@@ -39,7 +39,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
     Js_output.of_stmt @@ S.const_variable id
-      ~exp:(E.runtime_ref  J_helper.io id.name)
+      ~exp:(E.runtime_ref  Js_helper.io id.name)
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
          the motivation is to help dead code eliminatiion, it's helpful 
@@ -61,7 +61,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
   *) 
   | Single(_, ({name="^";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.const_variable id 
-      ~exp:(E.runtime_ref J_helper.string "add")
+      ~exp:(E.runtime_ref Js_helper.string "add")
 
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
@@ -77,7 +77,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
 
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.const_variable id ~exp:(E.runtime_ref
-                                                     J_helper.prim "string_of_int")
+                                                     Js_helper.prim "string_of_int")
 
   | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->
 
@@ -92,7 +92,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
   | Single(_, ({name="cat";_} as id) ,_ ),  "bytes.ml" ->
     Js_output.of_stmt @@ S.const_variable id
       ~exp:(E.runtime_ref
-              J_helper.string "bytes_cat")
+              Js_helper.string "bytes_cat")
 
   (** Special handling for values in [Sys] *)
   | Single(_, ({name="max_array_length" | "max_string_length";_} as id) ,_ ),  "sys.ml" ->
@@ -113,7 +113,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : L
   | Single (kind, id, lam), _ -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
-    (* ([J_helper.Stmt.comment (Gen_of_env.query_type id  env )], None)  ++ *)
+    (* ([Js_helper.Stmt.comment (Gen_of_env.query_type id  env )], None)  ++ *)
     Lam_compile.compile_let  kind { st = Declare (kind, id);
                                     should_return = False;
                                     jmp_table = Lam_compile_defs.empty_handler_map;
