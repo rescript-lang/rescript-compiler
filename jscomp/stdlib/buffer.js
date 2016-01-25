@@ -188,25 +188,21 @@ function advance_to_closing(opening, closing, k, s, start) {
     if (i >= lim) {
       throw Caml_exceptions.Not_found;
     }
-    else {
-      if (s.charCodeAt(i) === opening) {
+    else if (s.charCodeAt(i) === opening) {
+      _i = i + 1;
+      _k = k$1 + 1;
+    }
+    else if (s.charCodeAt(i) === closing) {
+      if (k$1) {
         _i = i + 1;
-        _k = k$1 + 1;
+        _k = k$1 - 1;
       }
       else {
-        if (s.charCodeAt(i) === closing) {
-          if (k$1) {
-            _i = i + 1;
-            _k = k$1 - 1;
-          }
-          else {
-            return i;
-          }
-        }
-        else {
-          _i = i + 1;
-        }
+        return i;
       }
+    }
+    else {
+      _i = i + 1;
     }
   };
 }
@@ -231,32 +227,26 @@ function advance_to_non_alpha(s, start) {
             exit = 1;
           }
         }
+        else if (match !== 95) {
+          return i;
+        }
         else {
-          if (match !== 95) {
-            return i;
-          }
-          else {
-            exit = 1;
-          }
+          exit = 1;
         }
       }
-      else {
-        if (match >= 58) {
-          if (match >= 65) {
-            exit = 1;
-          }
-          else {
-            return i;
-          }
+      else if (match >= 58) {
+        if (match >= 65) {
+          exit = 1;
         }
         else {
-          if (match >= 48) {
-            exit = 1;
-          }
-          else {
-            return i;
-          }
+          return i;
         }
+      }
+      else if (match >= 48) {
+        exit = 1;
+      }
+      else {
+        return i;
       }
       if (exit === 1) {
         _i = i + 1;
@@ -318,40 +308,34 @@ function add_substitute(b, f, s) {
           _i = i + 1;
           _previous = /* " " */32;
         }
-        else {
-          if (current !== 92) {
-            add_char(b, current);
-            _i = i + 1;
-            _previous = current;
-          }
-          else {
-            _i = i + 1;
-            _previous = current;
-          }
-        }
-      }
-      else {
-        if (previous === /* "\\" */92) {
+        else if (current !== 92) {
           add_char(b, current);
           _i = i + 1;
-          _previous = /* " " */32;
+          _previous = current;
         }
         else {
-          var j = i + 1;
-          var match = find_ident(s, j, lim);
-          add_string(b, f(match[1]));
-          _i = match[2];
-          _previous = /* " " */32;
+          _i = i + 1;
+          _previous = current;
         }
       }
-    }
-    else {
-      if (previous === /* "\\" */92) {
-        return add_char(b, previous);
+      else if (previous === /* "\\" */92) {
+        add_char(b, current);
+        _i = i + 1;
+        _previous = /* " " */32;
       }
       else {
-        return 0;
+        var j = i + 1;
+        var match = find_ident(s, j, lim);
+        add_string(b, f(match[1]));
+        _i = match[2];
+        _previous = /* " " */32;
       }
+    }
+    else if (previous === /* "\\" */92) {
+      return add_char(b, previous);
+    }
+    else {
+      return 0;
     }
   };
 }

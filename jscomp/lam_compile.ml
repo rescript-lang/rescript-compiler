@@ -935,13 +935,17 @@ and
           (* FIXME _kind unused *)
           Js_output.make (block @   [S.declare_unit x ])
         | Assign x, False  -> Js_output.make (block @ [S.assign_unit x ])
-        | NeedValue, _ ->  Js_output.make block ~value:(E.unit ()) (* TODO: fixme, here it's ok*)
+        | NeedValue, _ 
+          ->  
+          Js_output.make block ~value:(E.unit ())
+          (* TODO: fixme, here it's ok*)
       end
     | Lassign(id,lambda) -> 
       let block = 
         match lambda with
         | Lprim(Poffsetint  v, [Lvar id']) when Ident.same id id' ->
-          [ S.exp (E.assign (E.var id) (E.int_plus (E.var id) (E.int v)))
+          [ S.exp (E.assign (E.var id) 
+                     (E.int32_add (E.var id) (E.int v)))
           ]
         | _ ->
           begin 

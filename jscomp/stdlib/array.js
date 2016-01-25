@@ -12,7 +12,7 @@ function init(l, f) {
     }
     else {
       var res = Caml_array.caml_make_vect(l, f(0));
-      for(var i = 1 ,i_finish = -1 + l; i<= i_finish; ++i){
+      for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
         res[i] = f(i);
       }
       return res;
@@ -25,7 +25,7 @@ function init(l, f) {
 
 function make_matrix(sx, sy, init) {
   var res = Caml_array.caml_make_vect(sx, /* array */[]);
-  for(var x = 0 ,x_finish = -1 + sx; x<= x_finish; ++x){
+  for(var x = 0 ,x_finish = sx - 1; x<= x_finish; ++x){
     res[x] = Caml_array.caml_make_vect(sy, init);
   }
   return res;
@@ -154,7 +154,7 @@ function list_length(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[2];
-      _accu = 1 + accu;
+      _accu = accu + 1;
     }
     else {
       return accu;
@@ -220,22 +220,18 @@ function sort(cmp, a) {
       }
       return x;
     }
+    else if (i31 + 1 < l && cmp(a[i31], a[i31 + 1]) < 0) {
+      return i31 + 1;
+    }
+    else if (i31 < l) {
+      return i31;
+    }
     else {
-      if (i31 + 1 < l && cmp(a[i31], a[i31 + 1]) < 0) {
-        return i31 + 1;
-      }
-      else {
-        if (i31 < l) {
-          return i31;
-        }
-        else {
-          throw [
-                0,
-                Bottom,
-                i
-              ];
-        }
-      }
+      throw [
+            0,
+            Bottom,
+            i
+          ];
     }
   };
   var trickle = function (l, i, e) {

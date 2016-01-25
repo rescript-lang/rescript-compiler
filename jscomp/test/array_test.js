@@ -15,13 +15,11 @@ function is_sorted(x) {
     if (i >= len - 1) {
       return /* true */1;
     }
+    else if (Caml_primitive.caml_lessthan(x[i], x[i + 1])) {
+      _i = i + 1;
+    }
     else {
-      if (Caml_primitive.caml_lessthan(x[i], x[i + 1])) {
-        _i = i + 1;
-      }
-      else {
-        return /* false */0;
-      }
+      return /* false */0;
     }
   };
 }

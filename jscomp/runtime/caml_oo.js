@@ -28,14 +28,12 @@ function caml_get_public_method(obj, tag, cacheid) {
                 ]
               ];
         }
+        else if (meths[i] === tag) {
+          caml_methods_cache[cacheid] = i;
+          return i;
+        }
         else {
-          if (meths[i] === tag) {
-            caml_methods_cache[cacheid] = i;
-            return i;
-          }
-          else {
-            _i = i - 2;
-          }
+          _i = i - 2;
         }
       };
     };

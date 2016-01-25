@@ -179,6 +179,8 @@ test_demo.cmo : ../stdlib/list.cmi
 test_demo.cmx : ../stdlib/list.cmx
 test_dup_param.cmo :
 test_dup_param.cmx :
+test_eq.cmo :
+test_eq.cmx :
 test_exception.cmo : test_common.cmo
 test_exception.cmx : test_common.cmx
 test_exception_escape.cmo :
@@ -521,6 +523,8 @@ test_demo.cmo : ../stdlib/list.cmi
 test_demo.cmo : ../stdlib/list.cmo
 test_dup_param.cmo :
 test_dup_param.cmo :
+test_eq.cmo :
+test_eq.cmo :
 test_exception.cmo : test_common.cmo
 test_exception.cmo : test_common.cmo
 test_exception_escape.cmo :

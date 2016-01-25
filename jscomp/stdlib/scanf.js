@@ -79,13 +79,11 @@ function name_of_input(ib) {
       return "unnamed character string";
     }
   }
+  else if (match[0]) {
+    return "unnamed pervasives input channel";
+  }
   else {
-    if (match[0]) {
-      return "unnamed pervasives input channel";
-    }
-    else {
-      return match[1];
-    }
+    return match[1];
   }
 }
 
@@ -202,20 +200,18 @@ function from_ic(scan_close_ic, iname, ic) {
       ++ i[1];
       return c;
     }
+    else if (eof[1]) {
+      throw Caml_exceptions.End_of_file;
+    }
     else {
-      if (eof[1]) {
-        throw Caml_exceptions.End_of_file;
+      lim[1] = Pervasives.input(ic, buf, 0, len);
+      if (lim[1]) {
+        i[1] = 1;
+        return buf[0];
       }
       else {
-        lim[1] = Pervasives.input(ic, buf, 0, len);
-        if (lim[1]) {
-          i[1] = 1;
-          return buf[0];
-        }
-        else {
-          eof[1] = /* true */1;
-          return scan_close_ic(ic);
-        }
+        eof[1] = /* true */1;
+        return scan_close_ic(ic);
       }
     }
   };
@@ -299,13 +295,11 @@ function close_in(ib) {
   if (typeof match === "number") {
     return /* () */0;
   }
+  else if (match[0]) {
+    return Pervasives.close_in(match[1]);
+  }
   else {
-    if (match[0]) {
-      return Pervasives.close_in(match[1]);
-    }
-    else {
-      return Pervasives.close_in(match[2]);
-    }
+    return Pervasives.close_in(match[2]);
   }
 }
 
@@ -395,17 +389,12 @@ function check_char(ib, _c) {
       var ib$1 = ib;
       while(true) {
         var c$1 = peek_char(ib$1);
-        if (!eof(ib$1)) {
-          var switcher = -9 + c$1;
-          if (!(4 < (switcher >>> 0))) {
-            if (1 < (-2 + switcher >>> 0)) {
-              return invalidate_current_char(ib$1);
-            }
-            else {
-              return /* () */0;
-            }
-          }
-          else {
+        if (eof(ib$1)) {
+          return 0;
+        }
+        else {
+          var switcher = c$1 - 9;
+          if (switcher > 4 || switcher < 0) {
             if (switcher !== 23) {
               return /* () */0;
             }
@@ -413,9 +402,12 @@ function check_char(ib, _c) {
               return invalidate_current_char(ib$1);
             }
           }
-        }
-        else {
-          return 0;
+          else if (switcher === 3 || switcher === 2) {
+            return /* () */0;
+          }
+          else {
+            return invalidate_current_char(ib$1);
+          }
         }
       };
     }
@@ -424,19 +416,15 @@ function check_char(ib, _c) {
       if (ci === c) {
         return invalidate_current_char(ib);
       }
+      else if (ci !== 13) {
+        return character_mismatch(c, ci);
+      }
+      else if (c === /* "\n" */10) {
+        invalidate_current_char(ib);
+        _c = /* "\n" */10;
+      }
       else {
-        if (ci !== 13) {
-          return character_mismatch(c, ci);
-        }
-        else {
-          if (c === /* "\n" */10) {
-            invalidate_current_char(ib);
-            _c = /* "\n" */10;
-          }
-          else {
-            return character_mismatch(c, ci);
-          }
-        }
+        return character_mismatch(c, ci);
       }
     }
   };
@@ -473,8 +461,8 @@ function token_bool(ib) {
 function token_int_literal(conv, ib) {
   var tok;
   var exit = 0;
-  var switcher = -88 + conv;
-  if (32 < (switcher >>> 0)) {
+  var switcher = conv - 88;
+  if (switcher > 32 || switcher < 0) {
     exit = 1;
   }
   else {
@@ -566,25 +554,21 @@ function scan_decimal_digits(_width, ib) {
       if (eof(ib)) {
         return width;
       }
-      else {
-        if (c >= 58) {
-          if (c !== 95) {
-            return width;
-          }
-          else {
-            var width$1 = ignore_char(width, ib);
-            _width = width$1;
-          }
+      else if (c >= 58) {
+        if (c !== 95) {
+          return width;
         }
         else {
-          if (c >= 48) {
-            var width$2 = store_char(width, ib, c);
-            _width = width$2;
-          }
-          else {
-            return width;
-          }
+          var width$1 = ignore_char(width, ib);
+          _width = width$1;
         }
+      }
+      else if (c >= 48) {
+        var width$2 = store_char(width, ib, c);
+        _width = width$2;
+      }
+      else {
+        return width;
       }
     }
     else {
@@ -596,7 +580,7 @@ function scan_decimal_digits(_width, ib) {
 function scan_decimal_digits_plus(width, ib) {
   if (width) {
     var c = checked_peek_char(ib);
-    if (9 < (-48 + c >>> 0)) {
+    if (c > 57 || c < 48) {
       return bad_input(Printf.sprintf([
                         /* Format */0,
                         [
@@ -636,18 +620,14 @@ function scan_digits_plus(basis, digitp, width, ib) {
           if (eof(ib)) {
             return width$1;
           }
+          else if (digitp(c$1)) {
+            _width = store_char(width$1, ib, c$1);
+          }
+          else if (c$1 !== 95) {
+            return width$1;
+          }
           else {
-            if (digitp(c$1)) {
-              _width = store_char(width$1, ib, c$1);
-            }
-            else {
-              if (c$1 !== 95) {
-                return width$1;
-              }
-              else {
-                _width = ignore_char(width$1, ib);
-              }
-            }
+            _width = ignore_char(width$1, ib);
           }
         }
         else {
@@ -688,11 +668,11 @@ function scan_digits_plus(basis, digitp, width, ib) {
 }
 
 function is_binary_digit(param) {
-  if (1 < (-48 + param >>> 0)) {
-    return /* false */0;
+  if (param === 49 || param === 48) {
+    return /* true */1;
   }
   else {
-    return /* true */1;
+    return /* false */0;
   }
 }
 
@@ -701,7 +681,7 @@ function scan_binary_int(param, param$1) {
 }
 
 function is_octal_digit(param) {
-  if (7 < (-48 + param >>> 0)) {
+  if (param > 55 || param < 48) {
     return /* false */0;
   }
   else {
@@ -714,22 +694,20 @@ function scan_octal_int(param, param$1) {
 }
 
 function is_hexa_digit(param) {
-  var switcher = -48 + param;
-  if (22 < (switcher >>> 0)) {
-    if (5 < (-49 + switcher >>> 0)) {
+  var switcher = param - 48;
+  if (switcher > 22 || switcher < 0) {
+    if (switcher > 54 || switcher < 49) {
       return /* false */0;
     }
     else {
       return /* true */1;
     }
   }
+  else if (switcher > 16 || switcher < 10) {
+    return /* true */1;
+  }
   else {
-    if (6 < (-10 + switcher >>> 0)) {
-      return /* true */1;
-    }
-    else {
-      return /* false */0;
-    }
+    return /* false */0;
   }
 }
 
@@ -739,8 +717,8 @@ function scan_hexadecimal_int(param, param$1) {
 
 function scan_sign(width, ib) {
   var c = checked_peek_char(ib);
-  var switcher = -43 + c;
-  if (2 < (switcher >>> 0)) {
+  var switcher = c - 43;
+  if (switcher > 2 || switcher < 0) {
     return width;
   }
   else {
@@ -762,8 +740,8 @@ function scan_optionally_signed_decimal_int(width, ib) {
 
 function scan_int_conv(conv, width, ib) {
   var exit = 0;
-  var switcher = -88 + conv;
-  if (32 < (switcher >>> 0)) {
+  var switcher = conv - 88;
+  if (switcher > 32 || switcher < 0) {
     exit = 1;
   }
   else {
@@ -804,18 +782,16 @@ function scan_int_conv(conv, width, ib) {
                     return scan_octal_int(store_char(width$4, ib$2, c$1), ib$2);
                   }
                 }
-                else {
-                  if (c$1 !== 88) {
-                    if (c$1 >= 98) {
-                      return scan_binary_int(store_char(width$4, ib$2, c$1), ib$2);
-                    }
-                    else {
-                      return scan_decimal_digits(width$4, ib$2);
-                    }
+                else if (c$1 !== 88) {
+                  if (c$1 >= 98) {
+                    return scan_binary_int(store_char(width$4, ib$2, c$1), ib$2);
                   }
                   else {
-                    exit$1 = 1;
+                    return scan_decimal_digits(width$4, ib$2);
                   }
+                }
+                else {
+                  exit$1 = 1;
                 }
                 if (exit$1 === 1) {
                   return scan_hexadecimal_int(store_char(width$4, ib$2, c$1), ib$2);
@@ -886,13 +862,11 @@ function scan_frac_part(width, ib) {
     if (eof(ib)) {
       return width;
     }
+    else if (c > 57 || c < 48) {
+      return width;
+    }
     else {
-      if (9 < (-48 + c >>> 0)) {
-        return width;
-      }
-      else {
-        return scan_decimal_digits(store_char(width, ib, c), ib);
-      }
+      return scan_decimal_digits(store_char(width, ib, c), ib);
     }
   }
   else {
@@ -946,24 +920,22 @@ function scan_float(width, precision, ib) {
               precision
             ];
     }
+    else if (c !== 46) {
+      return [
+              /* tuple */0,
+              scan_exp_part(width$1, ib),
+              precision
+            ];
+    }
     else {
-      if (c !== 46) {
-        return [
-                /* tuple */0,
-                scan_exp_part(width$1, ib),
-                precision
-              ];
-      }
-      else {
-        var width$2 = store_char(width$1, ib, c);
-        var precision$1 = Pervasives.min(width$2, precision);
-        var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib));
-        return [
-                /* tuple */0,
-                scan_exp_part(width$3, ib),
-                precision$1
-              ];
-      }
+      var width$2 = store_char(width$1, ib, c);
+      var precision$1 = Pervasives.min(width$2, precision);
+      var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib));
+      return [
+              /* tuple */0,
+              scan_exp_part(width$3, ib),
+              precision$1
+            ];
     }
   }
   else {
@@ -983,16 +955,8 @@ function scan_caml_float(width, precision, ib) {
       return bad_float(/* () */0);
     }
     else {
-      var switcher = -69 + c;
-      if (!(32 < (switcher >>> 0))) {
-        if (30 < (-1 + switcher >>> 0)) {
-          return scan_exp_part(width$1, ib);
-        }
-        else {
-          return bad_float(/* () */0);
-        }
-      }
-      else {
+      var switcher = c - 69;
+      if (switcher > 32 || switcher < 0) {
         if (switcher !== -23) {
           return bad_float(/* () */0);
         }
@@ -1002,6 +966,12 @@ function scan_caml_float(width, precision, ib) {
           var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib));
           return scan_exp_part(width$3, ib);
         }
+      }
+      else if (switcher > 31 || switcher < 1) {
+        return scan_exp_part(width$1, ib);
+      }
+      else {
+        return bad_float(/* () */0);
       }
     }
   }
@@ -1019,39 +989,35 @@ function scan_string(stp, width, ib) {
       if (eof(ib)) {
         return width$1;
       }
-      else {
-        if (stp) {
-          if (c === stp[1]) {
-            return skip_char(width$1, ib);
-          }
-          else {
-            _width = store_char(width$1, ib, c);
-          }
+      else if (stp) {
+        if (c === stp[1]) {
+          return skip_char(width$1, ib);
         }
         else {
-          var exit = 0;
-          var switcher = -9 + c;
-          if (!(4 < (switcher >>> 0))) {
-            if (1 < (-2 + switcher >>> 0)) {
-              return width$1;
-            }
-            else {
-              exit = 1;
-            }
+          _width = store_char(width$1, ib, c);
+        }
+      }
+      else {
+        var exit = 0;
+        var switcher = c - 9;
+        if (switcher > 4 || switcher < 0) {
+          if (switcher !== 23) {
+            exit = 1;
           }
           else {
-            if (switcher !== 23) {
-              exit = 1;
-            }
-            else {
-              return width$1;
-            }
+            return width$1;
           }
-          if (exit === 1) {
-            _width = store_char(width$1, ib, c);
-          }
-          
         }
+        else if (switcher === 3 || switcher === 2) {
+          exit = 1;
+        }
+        else {
+          return width$1;
+        }
+        if (exit === 1) {
+          _width = store_char(width$1, ib, c);
+        }
+        
       }
     }
     else {
@@ -1070,7 +1036,7 @@ function char_for_backslash(c) {
       return c;
     }
     else {
-      switch (-110 + c) {
+      switch (c - 110) {
         case 0 : 
             return /* "\n" */10;
         case 4 : 
@@ -1086,13 +1052,11 @@ function char_for_backslash(c) {
       }
     }
   }
+  else if (c !== 98) {
+    return c;
+  }
   else {
-    if (c !== 98) {
-      return c;
-    }
-    else {
-      return /* "\b" */8;
-    }
+    return /* "\b" */8;
   }
 }
 
@@ -1131,13 +1095,11 @@ function hexadecimal_value_of_char(c) {
   if (c >= /* "a" */97) {
     return c - 87;
   }
+  else if (c >= /* "A" */65) {
+    return c - 55;
+  }
   else {
-    if (c >= /* "A" */65) {
-      return c - 55;
-    }
-    else {
-      return c - /* "0" */48;
-    }
+    return c - /* "0" */48;
   }
 }
 
@@ -1210,8 +1172,8 @@ function scan_backslash_char(width, ib) {
   var exit = 0;
   if (c >= 40) {
     if (c >= 58) {
-      var switcher = -92 + c;
-      if (28 < (switcher >>> 0)) {
+      var switcher = c - 92;
+      if (switcher > 28 || switcher < 0) {
         exit = 1;
       }
       else {
@@ -1251,22 +1213,20 @@ function scan_backslash_char(width, ib) {
           case 28 : 
               var get_digit = function () {
                 var c = next_char(ib);
-                var switcher = -48 + c;
-                if (22 < (switcher >>> 0)) {
-                  if (5 < (-49 + switcher >>> 0)) {
+                var switcher = c - 48;
+                if (switcher > 22 || switcher < 0) {
+                  if (switcher > 54 || switcher < 49) {
                     return bad_input_escape(c);
                   }
                   else {
                     return c;
                   }
                 }
+                else if (switcher > 16 || switcher < 10) {
+                  return c;
+                }
                 else {
-                  if (6 < (-10 + switcher >>> 0)) {
-                    return c;
-                  }
-                  else {
-                    return bad_input_escape(c);
-                  }
+                  return bad_input_escape(c);
                 }
               };
               var c1 = get_digit(/* () */0);
@@ -1276,24 +1236,22 @@ function scan_backslash_char(width, ib) {
         }
       }
     }
+    else if (c >= 48) {
+      var get_digit$1 = function () {
+        var c = next_char(ib);
+        if (c > 57 || c < 48) {
+          return bad_input_escape(c);
+        }
+        else {
+          return c;
+        }
+      };
+      var c1$1 = get_digit$1(/* () */0);
+      var c2$1 = get_digit$1(/* () */0);
+      return store_char(width - 2, ib, char_for_decimal_code(c, c1$1, c2$1));
+    }
     else {
-      if (c >= 48) {
-        var get_digit$1 = function () {
-          var c = next_char(ib);
-          if (9 < (-48 + c >>> 0)) {
-            return bad_input_escape(c);
-          }
-          else {
-            return c;
-          }
-        };
-        var c1$1 = get_digit$1(/* () */0);
-        var c2$1 = get_digit$1(/* () */0);
-        return store_char(width - 2, ib, char_for_decimal_code(c, c1$1, c2$1));
-      }
-      else {
-        exit = 1;
-      }
+      exit = 1;
     }
   }
   else {
@@ -1429,7 +1387,10 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
   if (scan_indic) {
     var c = scan_indic[1];
     scan_chars(width, c);
-    if (!eof(ib)) {
+    if (eof(ib)) {
+      return 0;
+    }
+    else {
       var ci = peek_char(ib);
       if (c === ci) {
         return invalidate_current_char(ib);
@@ -1437,9 +1398,6 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
       else {
         return character_mismatch(c, ci);
       }
-    }
-    else {
-      return 0;
     }
   }
   else {
@@ -1454,14 +1412,12 @@ function scanf_bad_input(ib, x) {
     s = x[2];
     exit = 1;
   }
+  else if (x[1] === Caml_exceptions.Failure) {
+    s = x[2];
+    exit = 1;
+  }
   else {
-    if (x[1] === Caml_exceptions.Failure) {
-      s = x[2];
-      exit = 1;
-    }
-    else {
-      throw x;
-    }
+    throw x;
   }
   if (exit === 1) {
     var i = char_count(ib);
@@ -1971,31 +1927,29 @@ function make_scanf(ib, _fmt, readers) {
             if (typeof rest$1 === "number") {
               exit$1 = 1;
             }
+            else if (rest$1[0] === 17) {
+              var match$6 = stopper_of_formatting_lit(rest$1[1]);
+              var width = width_of_pad_opt(width_opt);
+              scan_chars_in_char_set(char_set, [
+                    /* Some */0,
+                    match$6[1]
+                  ], width, ib);
+              var s$2 = token(ib);
+              var str_rest_001$1 = match$6[2];
+              var str_rest_002$1 = rest$1[2];
+              var str_rest$1 = [
+                /* String_literal */11,
+                str_rest_001$1,
+                str_rest_002$1
+              ];
+              return [
+                      /* Cons */0,
+                      s$2,
+                      make_scanf(ib, str_rest$1, readers)
+                    ];
+            }
             else {
-              if (rest$1[0] === 17) {
-                var match$6 = stopper_of_formatting_lit(rest$1[1]);
-                var width = width_of_pad_opt(width_opt);
-                scan_chars_in_char_set(char_set, [
-                      /* Some */0,
-                      match$6[1]
-                    ], width, ib);
-                var s$2 = token(ib);
-                var str_rest_001$1 = match$6[2];
-                var str_rest_002$1 = rest$1[2];
-                var str_rest$1 = [
-                  /* String_literal */11,
-                  str_rest_001$1,
-                  str_rest_002$1
-                ];
-                return [
-                        /* Cons */0,
-                        s$2,
-                        make_scanf(ib, str_rest$1, readers)
-                      ];
-              }
-              else {
-                exit$1 = 1;
-              }
+              exit$1 = 1;
             }
             if (exit$1 === 1) {
               var width$1 = width_of_pad_opt(width_opt);
@@ -2075,41 +2029,37 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
             ];
     }
   }
-  else {
-    if (pad[0]) {
-      return Pervasives.invalid_arg('scanf: bad conversion "%*"');
-    }
-    else {
-      if (pad[1] !== 0) {
-        var w = pad[2];
-        if (typeof prec === "number") {
-          if (prec !== 0) {
-            return Pervasives.invalid_arg('scanf: bad conversion "%*"');
-          }
-          else {
-            scan(w, Pervasives.max_int, ib);
-            var x$2 = token(ib);
-            return [
-                    /* Cons */0,
-                    x$2,
-                    make_scanf(ib, fmt, readers)
-                  ];
-          }
-        }
-        else {
-          scan(w, prec[1], ib);
-          var x$3 = token(ib);
-          return [
-                  /* Cons */0,
-                  x$3,
-                  make_scanf(ib, fmt, readers)
-                ];
-        }
+  else if (pad[0]) {
+    return Pervasives.invalid_arg('scanf: bad conversion "%*"');
+  }
+  else if (pad[1] !== 0) {
+    var w = pad[2];
+    if (typeof prec === "number") {
+      if (prec !== 0) {
+        return Pervasives.invalid_arg('scanf: bad conversion "%*"');
       }
       else {
-        return Pervasives.invalid_arg('scanf: bad conversion "%-"');
+        scan(w, Pervasives.max_int, ib);
+        var x$2 = token(ib);
+        return [
+                /* Cons */0,
+                x$2,
+                make_scanf(ib, fmt, readers)
+              ];
       }
     }
+    else {
+      scan(w, prec[1], ib);
+      var x$3 = token(ib);
+      return [
+              /* Cons */0,
+              x$3,
+              make_scanf(ib, fmt, readers)
+            ];
+    }
+  }
+  else {
+    return Pervasives.invalid_arg('scanf: bad conversion "%-"');
   }
 }
 
@@ -2130,23 +2080,17 @@ function kscanf(ib, ef, param) {
       if (exc[1] === Scan_failure) {
         exit = 1;
       }
+      else if (exc[1] === Caml_exceptions.Failure) {
+        exit = 1;
+      }
+      else if (exc === Caml_exceptions.End_of_file) {
+        exit = 1;
+      }
+      else if (exc[1] === Caml_exceptions.Invalid_argument) {
+        match = Pervasives.invalid_arg(exc[2] + (' in format "' + ($$String.escaped(str) + '"')));
+      }
       else {
-        if (exc[1] === Caml_exceptions.Failure) {
-          exit = 1;
-        }
-        else {
-          if (exc === Caml_exceptions.End_of_file) {
-            exit = 1;
-          }
-          else {
-            if (exc[1] === Caml_exceptions.Invalid_argument) {
-              match = Pervasives.invalid_arg(exc[2] + (' in format "' + ($$String.escaped(str) + '"')));
-            }
-            else {
-              throw exc;
-            }
-          }
-        }
+        throw exc;
       }
       if (exit === 1) {
         match = [

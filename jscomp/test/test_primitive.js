@@ -83,24 +83,22 @@ function is_lazy_force(x) {
   if (tag === 250) {
     return x[1];
   }
+  else if (tag === 246) {
+    return CamlinternalLazy.force_lazy_block(x);
+  }
   else {
-    if (tag === 246) {
-      return CamlinternalLazy.force_lazy_block(x);
-    }
-    else {
-      return x;
-    }
+    return x;
   }
 }
 
 function fib(n) {
-  if (1 < (n >>> 0)) {
+  if (n === 0 || n === 1) {
+    return 1;
+  }
+  else {
     var fib1 = fib(n - 1);
     var fib2 = fib(n - 2);
     return fib1 + fib2 + 3;
-  }
-  else {
-    return 1;
   }
 }
 

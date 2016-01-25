@@ -146,3 +146,5 @@ complex_test
 inline_edge_cases
 inline_regression_test
 primitive_reg_test
+test_eq
+

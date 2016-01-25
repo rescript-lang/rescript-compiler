@@ -75,20 +75,16 @@ function norm(x) {
   if (r === 0.0) {
     return i;
   }
+  else if (i === 0.0) {
+    return r;
+  }
+  else if (r >= i) {
+    var q = i / r;
+    return r * Math.sqrt(1.0 + q * q);
+  }
   else {
-    if (i === 0.0) {
-      return r;
-    }
-    else {
-      if (r >= i) {
-        var q = i / r;
-        return r * Math.sqrt(1.0 + q * q);
-      }
-      else {
-        var q$1 = r / i;
-        return i * Math.sqrt(1.0 + q$1 * q$1);
-      }
-    }
+    var q$1 = r / i;
+    return i * Math.sqrt(1.0 + q$1 * q$1);
   }
 }
 

@@ -23,28 +23,24 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
+      else if (is_dir_sep(name, n)) {
+        _n = n - 1;
+      }
       else {
-        if (is_dir_sep(name, n)) {
-          _n = n - 1;
-        }
-        else {
-          var _n$1 = n;
-          var p = n + 1;
-          while(true) {
-            var n$1 = _n$1;
-            if (n$1 < 0) {
-              return $$String.sub(name, 0, p);
-            }
-            else {
-              if (is_dir_sep(name, n$1)) {
-                return $$String.sub(name, n$1 + 1, p - n$1 - 1);
-              }
-              else {
-                _n$1 = n$1 - 1;
-              }
-            }
-          };
-        }
+        var _n$1 = n;
+        var p = n + 1;
+        while(true) {
+          var n$1 = _n$1;
+          if (n$1 < 0) {
+            return $$String.sub(name, 0, p);
+          }
+          else if (is_dir_sep(name, n$1)) {
+            return $$String.sub(name, n$1 + 1, p - n$1 - 1);
+          }
+          else {
+            _n$1 = n$1 - 1;
+          }
+        };
       }
     };
   }
@@ -61,41 +57,35 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
+      else if (is_dir_sep(name, n)) {
+        _n = n - 1;
+      }
       else {
-        if (is_dir_sep(name, n)) {
-          _n = n - 1;
-        }
-        else {
-          var _n$1 = n;
-          while(true) {
-            var n$1 = _n$1;
-            if (n$1 < 0) {
-              return current_dir_name;
-            }
-            else {
-              if (is_dir_sep(name, n$1)) {
-                var _n$2 = n$1;
-                while(true) {
-                  var n$2 = _n$2;
-                  if (n$2 < 0) {
-                    return $$String.sub(name, 0, 1);
-                  }
-                  else {
-                    if (is_dir_sep(name, n$2)) {
-                      _n$2 = n$2 - 1;
-                    }
-                    else {
-                      return $$String.sub(name, 0, n$2 + 1);
-                    }
-                  }
-                };
+        var _n$1 = n;
+        while(true) {
+          var n$1 = _n$1;
+          if (n$1 < 0) {
+            return current_dir_name;
+          }
+          else if (is_dir_sep(name, n$1)) {
+            var _n$2 = n$1;
+            while(true) {
+              var n$2 = _n$2;
+              if (n$2 < 0) {
+                return $$String.sub(name, 0, 1);
+              }
+              else if (is_dir_sep(name, n$2)) {
+                _n$2 = n$2 - 1;
               }
               else {
-                _n$1 = n$1 - 1;
+                return $$String.sub(name, 0, n$2 + 1);
               }
-            }
-          };
-        }
+            };
+          }
+          else {
+            _n$1 = n$1 - 1;
+          }
+        };
       }
     };
   }
@@ -206,13 +196,11 @@ function chop_extension(name) {
     if (i < 0 || is_dir_sep$1(name, i)) {
       return Pervasives.invalid_arg("Filename.chop_extension");
     }
+    else if (name[i] === ".") {
+      return $$String.sub(name, 0, i);
+    }
     else {
-      if (name[i] === ".") {
-        return $$String.sub(name, 0, i);
-      }
-      else {
-        _i = i - 1;
-      }
+      _i = i - 1;
     }
   };
 }

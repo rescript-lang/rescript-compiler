@@ -49,7 +49,7 @@ let translate
     end
   | (Pnegint | Pnegbint _ | Pnegfloat) ->
     begin match args with
-      | [ e ] -> E.int_minus (E.int 0)  e 
+      | [ e ] -> E.int32_minus (E.int 0)  e 
       | _ -> E.unknown_primitive prim
     end
   | Pnot ->
@@ -59,14 +59,14 @@ let translate
     end
   | Poffsetint n ->
     begin match args with
-      | [e] ->  E.int_plus   (E.int n) e
+      | [e] ->  E.int32_add  e (E.int n) 
       | _ -> E.unknown_primitive prim
     end
   | Poffsetref n ->
     begin match args with
       | [e] -> 
         let v = (Js_of_lam_block.field e 0) in
-        E.assign  v (E.int_plus v (E.int n))
+        E.assign  v (E.int32_add v (E.int n))
       | _ -> E.unknown_primitive prim
     end
   | Paddint | Paddbint _
@@ -177,14 +177,17 @@ let translate
     end
   | Pisout -> 
     begin match args with 
-      (* predicate: [x > range  and x < 0 ]
+      (* predicate: [x > range  or x < 0 ]
          can be simplified if x is positive , x > range
          if x is negative, fine, its uint is for sure larger than range,
          the output is not readable, we might change it back.
+
+         Note that if range is small like [1], then the negative of 
+         it can be more precise (given integer)
+         a normal case of the compiler is  that it will do a shift 
+         in the first step [ (x - 1) > 1 or ( x - 1 ) < 0 ]
       *)
-      | [range; e] -> 
-          (* E.and_ (E.lt) *)
-          E.lt range (E.to_uint32 e)
+      | [range; e] -> E.is_out e range
       | _ -> E.unknown_primitive prim
     end
   | Pidentity ->
@@ -278,7 +281,7 @@ let translate
          [Not_found] or [Invalid_argument] ?
       *)
       match args with 
-      | [e1;e2] -> E.intcomp cmp e1 e2
+      | [e1;e2] -> E.int_comp cmp e1 e2
       | _ -> E.unknown_primitive prim 
     end
         (* List --> stamp = 0 

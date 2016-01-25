@@ -75,7 +75,9 @@ module L = struct
   let plusplus = "++"
   let minusminus = "--"
   let semi = ";"
-
+  let else_ = "else"
+  let if_ = "if"
+  let while_ = "while"
   let empty_block = "empty_block"
   let start_block = "start_block"
   let end_block = "end_block"
@@ -976,23 +978,29 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     cxt 
 
   | If (e, s1,  s2) -> (* TODO: always brace those statements *)
-    let cxt = 
-      P.string f "if";
-      P.space f;
-      P.paren_group f 1 @@ fun _ -> expression 0 cxt f e
-    in
+    P.string f L.if_;
+    P.space f;
+    let cxt = P.paren_group f 1 @@ fun _ -> expression 0 cxt f e in
     P.space f;
     let cxt =
       block cxt f s1
     in
-    (match s2 with 
+    begin match s2 with 
      | None | (Some []) |Some [{statement_desc = Block []; }]
        -> P.newline f; cxt
+     | Some [{statement_desc = If _} as nest]
+     | Some [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
+       ->
+       P.newline f;
+       P.string f L.else_;
+       P.space f;
+       statement false cxt f nest 
      | Some s2 -> 
        P.newline f;
-       P.string f "else";
+       P.string f L.else_;
        P.space f ;
-       block  cxt f s2 )
+       block  cxt f s2 
+    end
 
   | While (label, e, s, _env) ->  (*  FIXME: print scope as well *)
       begin 
@@ -1005,12 +1013,12 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
         let cxt = 
           match e.expression_desc with
           | Number (Int {i = 1}) ->
-              P.string f "while";
+              P.string f L.while_;
               P.string f "(true)"; 
               P.space f ;
               cxt 
           | _ -> 
-              P.string f "while";
+              P.string f L.while_;
               let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e in
               P.space f ; 
               cxt 

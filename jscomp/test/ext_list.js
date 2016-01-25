@@ -41,13 +41,11 @@ function same_length(_xs, _ys) {
         return /* false */0;
       }
     }
+    else if (ys) {
+      return /* false */0;
+    }
     else {
-      if (ys) {
-        return /* false */0;
-      }
-      else {
-        return /* true */1;
-      }
+      return /* true */1;
     }
   };
 }
@@ -105,13 +103,11 @@ function filter_map2(f, _xs, _ys) {
         return Pervasives.invalid_arg("Ext_list.filter_map2");
       }
     }
+    else if (ys) {
+      return Pervasives.invalid_arg("Ext_list.filter_map2");
+    }
     else {
-      if (ys) {
-        return Pervasives.invalid_arg("Ext_list.filter_map2");
-      }
-      else {
-        return /* [] */0;
-      }
+      return /* [] */0;
     }
   };
 }
@@ -144,13 +140,11 @@ function filter_map2i(f, xs, ys) {
           return Pervasives.invalid_arg("Ext_list.filter_map2i");
         }
       }
+      else if (ys) {
+        return Pervasives.invalid_arg("Ext_list.filter_map2i");
+      }
       else {
-        if (ys) {
-          return Pervasives.invalid_arg("Ext_list.filter_map2i");
-        }
-        else {
-          return /* [] */0;
-        }
+        return /* [] */0;
       }
     };
   };
@@ -193,13 +187,11 @@ function flat_map2(f, lx, ly) {
         return Pervasives.invalid_arg("Ext_list.flat_map2");
       }
     }
+    else if (ly$1) {
+      return Pervasives.invalid_arg("Ext_list.flat_map2");
+    }
     else {
-      if (ly$1) {
-        return Pervasives.invalid_arg("Ext_list.flat_map2");
-      }
-      else {
-        return List.rev(acc);
-      }
+      return List.rev(acc);
     }
   };
 }
@@ -229,22 +221,20 @@ function map2_last(f, l1, l2) {
     if (l1$1) {
       exit$1 = 2;
     }
-    else {
-      if (l2) {
-        if (l2[2]) {
-          exit$1 = 2;
-        }
-        else {
-          return [
-                  /* :: */0,
-                  f(/* true */1, u, l2[1]),
-                  /* [] */0
-                ];
-        }
+    else if (l2) {
+      if (l2[2]) {
+        exit$1 = 2;
       }
       else {
-        exit = 1;
+        return [
+                /* :: */0,
+                f(/* true */1, u, l2[1]),
+                /* [] */0
+              ];
       }
+    }
+    else {
+      exit = 1;
     }
     if (exit$1 === 2) {
       if (l2) {
@@ -261,13 +251,11 @@ function map2_last(f, l1, l2) {
     }
     
   }
+  else if (l2) {
+    exit = 1;
+  }
   else {
-    if (l2) {
-      exit = 1;
-    }
-    else {
-      return /* [] */0;
-    }
+    return /* [] */0;
   }
   if (exit === 1) {
     return Pervasives.invalid_arg("List.map2_last");
@@ -405,19 +393,17 @@ function drop(_n, _h) {
     if (n < 0) {
       return Pervasives.invalid_arg("Ext_list.drop");
     }
-    else {
-      if (n) {
-        if (h) {
-          _h = List.tl(h);
-          _n = n - 1;
-        }
-        else {
-          return Pervasives.invalid_arg("Ext_list.drop");
-        }
+    else if (n) {
+      if (h) {
+        _h = List.tl(h);
+        _n = n - 1;
       }
       else {
-        return h;
+        return Pervasives.invalid_arg("Ext_list.drop");
       }
+    }
+    else {
+      return h;
     }
   };
 }

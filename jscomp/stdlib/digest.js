@@ -58,7 +58,7 @@ function input(chan) {
 
 function char_hex(n) {
   return n + (
-          n < 10 ? /* "0" */48 : /* "a" */97 - 10
+          n < 10 ? /* "0" */48 : 87
         );
 }
 
@@ -91,22 +91,18 @@ function from_hex(s) {
           return c - /* "a" */97 + 10;
         }
       }
-      else {
-        if (c >= 71) {
-          exit = 1;
-        }
-        else {
-          return c - /* "A" */65 + 10;
-        }
-      }
-    }
-    else {
-      if (9 < (-48 + c >>> 0)) {
+      else if (c >= 71) {
         exit = 1;
       }
       else {
-        return c - /* "0" */48;
+        return c - /* "A" */65 + 10;
       }
+    }
+    else if (c > 57 || c < 48) {
+      exit = 1;
+    }
+    else {
+      return c - /* "0" */48;
     }
     if (exit === 1) {
       throw [

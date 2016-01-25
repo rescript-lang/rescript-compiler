@@ -74,13 +74,11 @@ function power_2_above(_x, n) {
     if (x >= n) {
       return x;
     }
+    else if (x * 2 > Sys.max_array_length) {
+      return x;
+    }
     else {
-      if (x * 2 > Sys.max_array_length) {
-        return x;
-      }
-      else {
-        _x = x * 2;
-      }
+      _x = x * 2;
     }
   };
 }
@@ -504,44 +502,40 @@ function MakeSeeded(H) {
       if (H[1](key, match[1])) {
         return match[2];
       }
-      else {
-        if (rest1) {
-          var rest2 = rest1[3];
-          if (H[1](key, rest1[1])) {
-            return rest1[2];
+      else if (rest1) {
+        var rest2 = rest1[3];
+        if (H[1](key, rest1[1])) {
+          return rest1[2];
+        }
+        else if (rest2) {
+          if (H[1](key, rest2[1])) {
+            return rest2[2];
           }
           else {
-            if (rest2) {
-              if (H[1](key, rest2[1])) {
-                return rest2[2];
+            var key$1 = key;
+            var _param = rest2[3];
+            while(true) {
+              var param = _param;
+              if (param) {
+                if (H[1](key$1, param[1])) {
+                  return param[2];
+                }
+                else {
+                  _param = param[3];
+                }
               }
               else {
-                var key$1 = key;
-                var _param = rest2[3];
-                while(true) {
-                  var param = _param;
-                  if (param) {
-                    if (H[1](key$1, param[1])) {
-                      return param[2];
-                    }
-                    else {
-                      _param = param[3];
-                    }
-                  }
-                  else {
-                    throw Caml_exceptions.Not_found;
-                  }
-                };
+                throw Caml_exceptions.Not_found;
               }
-            }
-            else {
-              throw Caml_exceptions.Not_found;
-            }
+            };
           }
         }
         else {
           throw Caml_exceptions.Not_found;
         }
+      }
+      else {
+        throw Caml_exceptions.Not_found;
       }
     }
     else {
@@ -714,44 +708,40 @@ function Make(H) {
       if (equal(key, match[1])) {
         return match[2];
       }
-      else {
-        if (rest1) {
-          var rest2 = rest1[3];
-          if (equal(key, rest1[1])) {
-            return rest1[2];
+      else if (rest1) {
+        var rest2 = rest1[3];
+        if (equal(key, rest1[1])) {
+          return rest1[2];
+        }
+        else if (rest2) {
+          if (equal(key, rest2[1])) {
+            return rest2[2];
           }
           else {
-            if (rest2) {
-              if (equal(key, rest2[1])) {
-                return rest2[2];
+            var key$1 = key;
+            var _param = rest2[3];
+            while(true) {
+              var param = _param;
+              if (param) {
+                if (equal(key$1, param[1])) {
+                  return param[2];
+                }
+                else {
+                  _param = param[3];
+                }
               }
               else {
-                var key$1 = key;
-                var _param = rest2[3];
-                while(true) {
-                  var param = _param;
-                  if (param) {
-                    if (equal(key$1, param[1])) {
-                      return param[2];
-                    }
-                    else {
-                      _param = param[3];
-                    }
-                  }
-                  else {
-                    throw Caml_exceptions.Not_found;
-                  }
-                };
+                throw Caml_exceptions.Not_found;
               }
-            }
-            else {
-              throw Caml_exceptions.Not_found;
-            }
+            };
           }
         }
         else {
           throw Caml_exceptions.Not_found;
         }
+      }
+      else {
+        throw Caml_exceptions.Not_found;
       }
     }
     else {

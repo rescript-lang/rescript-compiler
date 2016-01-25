@@ -155,8 +155,8 @@ function concat(sep, l) {
 var cat = Caml_string.bytes_cat;
 
 function is_space(param) {
-  var switcher = -9 + param;
-  if (4 < (switcher >>> 0)) {
+  var switcher = param - 9;
+  if (switcher > 4 || switcher < 0) {
     if (switcher !== 23) {
       return /* false */0;
     }
@@ -164,13 +164,11 @@ function is_space(param) {
       return /* true */1;
     }
   }
+  else if (switcher !== 2) {
+    return /* true */1;
+  }
   else {
-    if (switcher !== 2) {
-      return /* true */1;
-    }
-    else {
-      return /* false */0;
-    }
+    return /* false */0;
   }
 }
 
@@ -211,23 +209,19 @@ function escaped(s) {
         $js = 2;
       }
     }
-    else {
-      if (c >= 11) {
-        if (c >= 13) {
-          $js = 2;
-        }
-        else {
-          exit = 1;
-        }
+    else if (c >= 11) {
+      if (c >= 13) {
+        $js = 2;
       }
       else {
-        if (c >= 8) {
-          $js = 2;
-        }
-        else {
-          exit = 1;
-        }
+        exit = 1;
       }
+    }
+    else if (c >= 8) {
+      $js = 2;
+    }
+    else {
+      exit = 1;
     }
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
@@ -243,23 +237,13 @@ function escaped(s) {
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
-      var switcher = -34 + c$1;
-      if (!(58 < (switcher >>> 0))) {
-        if (56 < (-1 + switcher >>> 0)) {
-          s$prime[n] = /* "\\" */92;
-          ++ n;
-          s$prime[n] = c$1;
-        }
-        else {
-          exit$1 = 1;
-        }
-      }
-      else {
+      var switcher = c$1 - 34;
+      if (switcher > 58 || switcher < 0) {
         if (switcher >= -20) {
           exit$1 = 1;
         }
         else {
-          switch (34 + switcher) {
+          switch (switcher + 34) {
             case 8 : 
                 s$prime[n] = /* "\\" */92;
                 ++ n;
@@ -295,6 +279,14 @@ function escaped(s) {
             
           }
         }
+      }
+      else if (switcher > 57 || switcher < 1) {
+        s$prime[n] = /* "\\" */92;
+        ++ n;
+        s$prime[n] = c$1;
+      }
+      else {
+        exit$1 = 1;
       }
       if (exit$1 === 1) {
         if (Caml_string.caml_is_printable(c$1)) {
@@ -377,13 +369,11 @@ function index_rec(s, lim, _i, c) {
     if (i >= lim) {
       throw Caml_exceptions.Not_found;
     }
+    else if (s[i] === c) {
+      return i;
+    }
     else {
-      if (s[i] === c) {
-        return i;
-      }
-      else {
-        _i = i + 1;
-      }
+      _i = i + 1;
     }
   };
 }
@@ -408,13 +398,11 @@ function rindex_rec(s, _i, c) {
     if (i < 0) {
       throw Caml_exceptions.Not_found;
     }
+    else if (s[i] === c) {
+      return i;
+    }
     else {
-      if (s[i] === c) {
-        return i;
-      }
-      else {
-        _i = i - 1;
-      }
+      _i = i - 1;
     }
   };
 }

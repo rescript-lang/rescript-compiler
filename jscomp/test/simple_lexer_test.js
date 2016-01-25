@@ -28,7 +28,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
   while(true) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
-    if (2 < (__ocaml_lex_state$1 >>> 0)) {
+    if (__ocaml_lex_state$1 > 2 || __ocaml_lex_state$1 < 0) {
       lexbuf[1](lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
     }

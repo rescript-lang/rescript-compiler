@@ -69,20 +69,7 @@ var locfmt = [
 
 function field(x, i) {
   var f = x[i];
-  if (!Caml_obj_runtime.caml_obj_is_block(f)) {
-    return Printf.sprintf([
-                  /* Format */0,
-                  [
-                    /* Int */4,
-                    /* Int_d */0,
-                    /* No_padding */0,
-                    /* No_precision */0,
-                    /* End_of_format */0
-                  ],
-                  "%d"
-                ])(f);
-  }
-  else {
+  if (Caml_obj_runtime.caml_obj_is_block(f)) {
     if (Caml_obj_runtime.caml_obj_tag(f) === Obj.string_tag) {
       return Printf.sprintf([
                     /* Format */0,
@@ -94,14 +81,25 @@ function field(x, i) {
                     "%S"
                   ])(f);
     }
-    else {
-      if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
-        return Pervasives.string_of_float(f);
-      }
-      else {
-        return "_";
-      }
+    else if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
+      return Pervasives.string_of_float(f);
     }
+    else {
+      return "_";
+    }
+  }
+  else {
+    return Printf.sprintf([
+                  /* Format */0,
+                  [
+                    /* Int */4,
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* End_of_format */0
+                  ],
+                  "%d"
+                ])(f);
   }
 }
 
@@ -132,7 +130,7 @@ function other_fields(x, i) {
 
 function fields(x) {
   var n = x.length;
-  if (2 < (n >>> 0)) {
+  if (n > 2 || n < 0) {
     return Printf.sprintf([
                   /* Format */0,
                   [
@@ -202,45 +200,33 @@ function to_string(x) {
         _param = param[2];
       }
     }
+    else if (x === Caml_exceptions.Out_of_memory) {
+      return "Out of memory";
+    }
+    else if (x === Caml_exceptions.Stack_overflow) {
+      return "Stack overflow";
+    }
+    else if (x[1] === Caml_exceptions.Match_failure) {
+      var match$1 = x[2];
+      var $$char = match$1[3];
+      return Printf.sprintf(locfmt)(match$1[1], match$1[2], $$char, $$char + 5, "Pattern matching failed");
+    }
+    else if (x[1] === Caml_exceptions.Assert_failure) {
+      var match$2 = x[2];
+      var $$char$1 = match$2[3];
+      return Printf.sprintf(locfmt)(match$2[1], match$2[2], $$char$1, $$char$1 + 6, "Assertion failed");
+    }
+    else if (x[1] === Caml_exceptions.Undefined_recursive_module) {
+      var match$3 = x[2];
+      var $$char$2 = match$3[3];
+      return Printf.sprintf(locfmt)(match$3[1], match$3[2], $$char$2, $$char$2 + 6, "Undefined recursive module");
+    }
+    else if (Caml_obj_runtime.caml_obj_tag(x) !== 0) {
+      return x[0];
+    }
     else {
-      if (x === Caml_exceptions.Out_of_memory) {
-        return "Out of memory";
-      }
-      else {
-        if (x === Caml_exceptions.Stack_overflow) {
-          return "Stack overflow";
-        }
-        else {
-          if (x[1] === Caml_exceptions.Match_failure) {
-            var match$1 = x[2];
-            var $$char = match$1[3];
-            return Printf.sprintf(locfmt)(match$1[1], match$1[2], $$char, $$char + 5, "Pattern matching failed");
-          }
-          else {
-            if (x[1] === Caml_exceptions.Assert_failure) {
-              var match$2 = x[2];
-              var $$char$1 = match$2[3];
-              return Printf.sprintf(locfmt)(match$2[1], match$2[2], $$char$1, $$char$1 + 6, "Assertion failed");
-            }
-            else {
-              if (x[1] === Caml_exceptions.Undefined_recursive_module) {
-                var match$3 = x[2];
-                var $$char$2 = match$3[3];
-                return Printf.sprintf(locfmt)(match$3[1], match$3[2], $$char$2, $$char$2 + 6, "Undefined recursive module");
-              }
-              else {
-                if (Caml_obj_runtime.caml_obj_tag(x) !== 0) {
-                  return x[0];
-                }
-                else {
-                  var constructor = x[0][0];
-                  return constructor + fields(x);
-                }
-              }
-            }
-          }
-        }
-      }
+      var constructor = x[0][0];
+      return constructor + fields(x);
     }
   };
 }
@@ -328,13 +314,11 @@ function format_backtrace_slot(pos, slot) {
         return "Raised at";
       }
     }
+    else if (pos) {
+      return "Called from";
+    }
     else {
-      if (pos) {
-        return "Called from";
-      }
-      else {
-        return "Raised by primitive operation at";
-      }
+      return "Raised by primitive operation at";
     }
   };
   if (slot[0]) {

@@ -78,13 +78,31 @@ function bal(l, x, d, r) {
       if (height(ll) >= height(lr)) {
         return create(ll, lv, ld, create(lr, x, d, r));
       }
+      else if (lr) {
+        return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
+      }
       else {
-        if (lr) {
-          return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
-        }
-        else {
-          return Pervasives.invalid_arg("Map.bal");
-        }
+        return Pervasives.invalid_arg("Map.bal");
+      }
+    }
+    else {
+      return Pervasives.invalid_arg("Map.bal");
+    }
+  }
+  else if (hr > hl + 2) {
+    if (r) {
+      var rr = r[4];
+      var rd = r[3];
+      var rv = r[2];
+      var rl = r[1];
+      if (height(rr) >= height(rl)) {
+        return create(create(l, x, d, rl), rv, rd, rr);
+      }
+      else if (rl) {
+        return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
+      }
+      else {
+        return Pervasives.invalid_arg("Map.bal");
       }
     }
     else {
@@ -92,38 +110,14 @@ function bal(l, x, d, r) {
     }
   }
   else {
-    if (hr > hl + 2) {
-      if (r) {
-        var rr = r[4];
-        var rd = r[3];
-        var rv = r[2];
-        var rl = r[1];
-        if (height(rr) >= height(rl)) {
-          return create(create(l, x, d, rl), rv, rd, rr);
-        }
-        else {
-          if (rl) {
-            return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
-          }
-          else {
-            return Pervasives.invalid_arg("Map.bal");
-          }
-        }
-      }
-      else {
-        return Pervasives.invalid_arg("Map.bal");
-      }
-    }
-    else {
-      return [
-              /* Node */0,
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 : hr + 1
-            ];
-    }
+    return [
+            /* Node */0,
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 : hr + 1
+          ];
   }
 }
 
@@ -235,13 +229,31 @@ function bal$1(l, x, d, r) {
       if (height$1(ll) >= height$1(lr)) {
         return create$1(ll, lv, ld, create$1(lr, x, d, r));
       }
+      else if (lr) {
+        return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
+      }
       else {
-        if (lr) {
-          return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
-        }
-        else {
-          return Pervasives.invalid_arg("Map.bal");
-        }
+        return Pervasives.invalid_arg("Map.bal");
+      }
+    }
+    else {
+      return Pervasives.invalid_arg("Map.bal");
+    }
+  }
+  else if (hr > hl + 2) {
+    if (r) {
+      var rr = r[4];
+      var rd = r[3];
+      var rv = r[2];
+      var rl = r[1];
+      if (height$1(rr) >= height$1(rl)) {
+        return create$1(create$1(l, x, d, rl), rv, rd, rr);
+      }
+      else if (rl) {
+        return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
+      }
+      else {
+        return Pervasives.invalid_arg("Map.bal");
       }
     }
     else {
@@ -249,38 +261,14 @@ function bal$1(l, x, d, r) {
     }
   }
   else {
-    if (hr > hl + 2) {
-      if (r) {
-        var rr = r[4];
-        var rd = r[3];
-        var rv = r[2];
-        var rl = r[1];
-        if (height$1(rr) >= height$1(rl)) {
-          return create$1(create$1(l, x, d, rl), rv, rd, rr);
-        }
-        else {
-          if (rl) {
-            return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
-          }
-          else {
-            return Pervasives.invalid_arg("Map.bal");
-          }
-        }
-      }
-      else {
-        return Pervasives.invalid_arg("Map.bal");
-      }
-    }
-    else {
-      return [
-              /* Node */0,
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 : hr + 1
-            ];
-    }
+    return [
+            /* Node */0,
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 : hr + 1
+          ];
   }
 }
 
@@ -360,13 +348,31 @@ function bal$2(l, x, d, r) {
       if (height$2(ll) >= height$2(lr)) {
         return create$2(ll, lv, ld, create$2(lr, x, d, r));
       }
+      else if (lr) {
+        return create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r));
+      }
       else {
-        if (lr) {
-          return create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r));
-        }
-        else {
-          return Pervasives.invalid_arg("Map.bal");
-        }
+        return Pervasives.invalid_arg("Map.bal");
+      }
+    }
+    else {
+      return Pervasives.invalid_arg("Map.bal");
+    }
+  }
+  else if (hr > hl + 2) {
+    if (r) {
+      var rr = r[4];
+      var rd = r[3];
+      var rv = r[2];
+      var rl = r[1];
+      if (height$2(rr) >= height$2(rl)) {
+        return create$2(create$2(l, x, d, rl), rv, rd, rr);
+      }
+      else if (rl) {
+        return create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr));
+      }
+      else {
+        return Pervasives.invalid_arg("Map.bal");
       }
     }
     else {
@@ -374,38 +380,14 @@ function bal$2(l, x, d, r) {
     }
   }
   else {
-    if (hr > hl + 2) {
-      if (r) {
-        var rr = r[4];
-        var rd = r[3];
-        var rv = r[2];
-        var rl = r[1];
-        if (height$2(rr) >= height$2(rl)) {
-          return create$2(create$2(l, x, d, rl), rv, rd, rr);
-        }
-        else {
-          if (rl) {
-            return create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr));
-          }
-          else {
-            return Pervasives.invalid_arg("Map.bal");
-          }
-        }
-      }
-      else {
-        return Pervasives.invalid_arg("Map.bal");
-      }
-    }
-    else {
-      return [
-              /* Node */0,
-              l,
-              x,
-              d,
-              r,
-              hl >= hr ? hl + 1 : hr + 1
-            ];
-    }
+    return [
+            /* Node */0,
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 : hr + 1
+          ];
   }
 }
 
@@ -999,20 +981,18 @@ function lookup_keys(i, keys, tables) {
       if (tables$1[1] === key) {
         return lookup_keys(i - 1, keys, tables$1[2]);
       }
+      else if (tables$1[3] !== /* Empty */0) {
+        _tables = tables$1[3];
+      }
       else {
-        if (tables$1[3] !== /* Empty */0) {
-          _tables = tables$1[3];
-        }
-        else {
-          var next = [
-            /* Cons */0,
-            key,
-            /* Empty */0,
-            /* Empty */0
-          ];
-          tables$1[3] = next;
-          return build_path(i - 1, keys, next);
-        }
+        var next = [
+          /* Cons */0,
+          key,
+          /* Empty */0,
+          /* Empty */0
+        ];
+        tables$1[3] = next;
+        return build_path(i - 1, keys, next);
       }
     };
   }

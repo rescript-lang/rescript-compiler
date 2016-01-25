@@ -70,18 +70,14 @@ function f8(_x, _y) {
     if (x > 10) {
       _y = y + 1;
     }
+    else if (x < 5) {
+      _x = x - 1;
+    }
+    else if (x > 6) {
+      _x = x - 2;
+    }
     else {
-      if (x < 5) {
-        _x = x - 1;
-      }
-      else {
-        if (x > 6) {
-          _x = x - 2;
-        }
-        else {
-          return f8(x, y + 1) + f8(x - 1, y);
-        }
-      }
+      return f8(x, y + 1) + f8(x - 1, y);
     }
   };
 }

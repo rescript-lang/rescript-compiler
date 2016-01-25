@@ -106,7 +106,10 @@ module Exp : sig
   val float : ?comment:string -> string -> t
 
   val zero_float_lit : t 
-
+  (** [is_out e range] is equivalent to [e > range or e <0]
+      
+  *)
+  val is_out : binary_op
   val dot : ?comment:string -> t -> string -> t
 
   val array_length : unary_op
@@ -149,8 +152,10 @@ module Exp : sig
   val to_int32 : unary_op
   val to_uint32 : unary_op
 
-  val int_plus : binary_op
-  val int_minus : binary_op
+  val int32_add : binary_op
+  val int32_minus : binary_op
+  val int32_mul : binary_op
+  val int32_div : binary_op
   val int32_lsl : binary_op
   val int32_lsr : binary_op
   val int32_asr : binary_op
@@ -158,11 +163,19 @@ module Exp : sig
   val int32_bxor : binary_op
   val int32_band : binary_op
   val int32_bor : binary_op
-  val float_plus : binary_op
-  val float_minus : binary_op
-  val float_notequal : binary_op
 
+  val float_add : binary_op
+  val float_minus : binary_op
+  val float_mul : binary_op
+  val float_div : binary_op
+  val float_notequal : binary_op
   val float_mod : binary_op  
+
+  val int_comp : Lambda.comparison -> binary_op
+  val string_comp : Js_op.binop -> binary_op
+  val float_comp :  Lambda.comparison -> binary_op
+  
+
   val not : t -> t
 
   val call : ?comment:string  -> ?info:Js_call_info.t -> t -> t list -> t 
@@ -220,28 +233,8 @@ module Exp : sig
   val and_ : binary_op
   
   val or_ : binary_op
-      
-  val lt : binary_op
-      
-  val le : binary_op
-      
-  val gt : binary_op
-
-  val ge : binary_op
-
-  val intcomp : ?comment:string -> Lambda.comparison -> t -> t -> t    
-
-  val stringcomp : ?comment:string -> Js_op.binop -> t -> t -> t
-
-
-  val float_add : binary_op
-  val float_minus : binary_op
-  val float_mul : binary_op
-  val float_div : binary_op
-  val int32_div : binary_op
-  val int32_add : binary_op
-  val int32_minus : binary_op
-  val int32_mul : binary_op
+  
+  (** convert a block to expresion by using IIFE *)    
   val of_block : ?comment:string -> J.statement list -> J.expression -> t
 end
 

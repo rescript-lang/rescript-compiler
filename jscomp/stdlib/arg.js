@@ -657,13 +657,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 exn$1[2]
               ]);
         }
+        else if (exn$1[1] === Stop) {
+          stop(exn$1[2]);
+        }
         else {
-          if (exn$1[1] === Stop) {
-            stop(exn$1[2]);
-          }
-          else {
-            throw exn$1;
-          }
+          throw exn$1;
         }
       }
       ++ current$1[1];
@@ -717,22 +715,20 @@ function parse(l, f, msg) {
             ])(exn[2]);
       return Pervasives.exit(2);
     }
+    else if (exn[1] === Help) {
+      Printf.printf([
+              /* Format */0,
+              [
+                /* String */2,
+                /* No_padding */0,
+                /* End_of_format */0
+              ],
+              "%s"
+            ])(exn[2]);
+      return Pervasives.exit(0);
+    }
     else {
-      if (exn[1] === Help) {
-        Printf.printf([
-                /* Format */0,
-                [
-                  /* String */2,
-                  /* No_padding */0,
-                  /* End_of_format */0
-                ],
-                "%s"
-              ])(exn[2]);
-        return Pervasives.exit(0);
-      }
-      else {
-        throw exn;
-      }
+      throw exn;
     }
   }
 }
@@ -754,22 +750,20 @@ function parse_dynamic(l, f, msg) {
             ])(exn[2]);
       return Pervasives.exit(2);
     }
+    else if (exn[1] === Help) {
+      Printf.printf([
+              /* Format */0,
+              [
+                /* String */2,
+                /* No_padding */0,
+                /* End_of_format */0
+              ],
+              "%s"
+            ])(exn[2]);
+      return Pervasives.exit(0);
+    }
     else {
-      if (exn[1] === Help) {
-        Printf.printf([
-                /* Format */0,
-                [
-                  /* String */2,
-                  /* No_padding */0,
-                  /* End_of_format */0
-                ],
-                "%s"
-              ])(exn[2]);
-        return Pervasives.exit(0);
-      }
-      else {
-        throw exn;
-      }
+      throw exn;
     }
   }
 }
@@ -783,13 +777,11 @@ function second_word(s) {
       if (n >= len) {
         return len;
       }
+      else if (s[n] === " ") {
+        _n = n + 1;
+      }
       else {
-        if (s[n] === " ") {
-          _n = n + 1;
-        }
-        else {
-          return n;
-        }
+        return n;
       }
     };
   }
@@ -826,42 +818,40 @@ function align($staropt$star, speclist) {
               if (ksd[3] === "") {
                 return ksd;
               }
+              else if (spec[0] === 11) {
+                var msg = ksd[3];
+                var cutcol = second_word(msg);
+                var spaces = $$String.make(Pervasives.max(0, len$2 - cutcol) + 3, /* " " */32);
+                return [
+                        /* tuple */0,
+                        kwd,
+                        spec,
+                        "\n" + (spaces + msg)
+                      ];
+              }
               else {
-                if (spec[0] === 11) {
-                  var msg = ksd[3];
-                  var cutcol = second_word(msg);
-                  var spaces = $$String.make(Pervasives.max(0, len$2 - cutcol) + 3, /* " " */32);
+                var msg$1 = ksd[3];
+                var cutcol$1 = second_word(msg$1);
+                var kwd_len = kwd.length;
+                var diff = len$2 - kwd_len - cutcol$1;
+                if (diff <= 0) {
                   return [
                           /* tuple */0,
                           kwd,
                           spec,
-                          "\n" + (spaces + msg)
+                          msg$1
                         ];
                 }
                 else {
-                  var msg$1 = ksd[3];
-                  var cutcol$1 = second_word(msg$1);
-                  var kwd_len = kwd.length;
-                  var diff = len$2 - kwd_len - cutcol$1;
-                  if (diff <= 0) {
-                    return [
-                            /* tuple */0,
-                            kwd,
-                            spec,
-                            msg$1
-                          ];
-                  }
-                  else {
-                    var spaces$1 = $$String.make(diff, /* " " */32);
-                    var prefix = $$String.sub(msg$1, 0, cutcol$1);
-                    var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
-                    return [
-                            /* tuple */0,
-                            kwd,
-                            spec,
-                            prefix + (spaces$1 + suffix)
-                          ];
-                  }
+                  var spaces$1 = $$String.make(diff, /* " " */32);
+                  var prefix = $$String.sub(msg$1, 0, cutcol$1);
+                  var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
+                  return [
+                          /* tuple */0,
+                          kwd,
+                          spec,
+                          prefix + (spaces$1 + suffix)
+                        ];
                 }
               }
             }, completed);

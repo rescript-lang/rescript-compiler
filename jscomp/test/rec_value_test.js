@@ -49,11 +49,11 @@ Caml_primitive.caml_update_dummy(xx, [
     ]);
 
 function naive(n) {
-  if (1 < (n >>> 0)) {
-    return n + naive(n - 1) + naive(n - 2);
+  if (n === 0 || n === 1) {
+    return 1;
   }
   else {
-    return 1;
+    return n + naive(n - 1) + naive(n - 2);
   }
 }
 
@@ -93,7 +93,7 @@ Caml_primitive.caml_update_dummy(h, [
     ]);
 
 function fib(n) {
-  if (3 < (n >>> 0)) {
+  if (n > 3 || n < 0) {
     return fib(n - 1) + fib(n - 2);
   }
   else {
@@ -170,20 +170,20 @@ Caml_primitive.caml_update_dummy(xs$1, [
 var two = 2;
 
 function fib2(n) {
-  if (1 < (n >>> 0)) {
-    return fib2(n - 1) + fib2(n - 2);
+  if (n === 0 || n === 1) {
+    return 1;
   }
   else {
-    return 1;
+    return fib2(n - 1) + fib2(n - 2);
   }
 }
 
 function fib3(n) {
-  if (1 < (n >>> 0)) {
-    return fib3(n - 1) + fib3(n - 2);
+  if (n === 0 || n === 1) {
+    return 1;
   }
   else {
-    return 1;
+    return fib3(n - 1) + fib3(n - 2);
   }
 }
 
@@ -219,13 +219,11 @@ function lazy_v() {
   if (tag === 250) {
     return lazy_v[1];
   }
+  else if (tag === 246) {
+    return CamlinternalLazy.force_lazy_block(lazy_v);
+  }
   else {
-    if (tag === 246) {
-      return CamlinternalLazy.force_lazy_block(lazy_v);
-    }
-    else {
-      return lazy_v;
-    }
+    return lazy_v;
   }
 }
 
