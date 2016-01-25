@@ -45,7 +45,7 @@ OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \
   arrayLabels.cmo listLabels.cmo bytesLabels.cmo \
   stringLabels.cmo moreLabels.cmo stdLabels.cmo
 
-all: $(OBJS) std_exit.cmo $(COMPILER)
+all: $(OBJS:.cmo=.cmj) std_exit.cmj $(COMPILER)
 # all: stdlib.cma std_exit.cmo 
 # all: stdlib.cma std_exit.cmo camlheader target_camlheader camlheader_ur
 
@@ -78,36 +78,34 @@ stdlib.cmxa: $(OBJS:.cmo=.cmx)
 clean::
 	rm -f camlheader target_camlheader camlheader_ur target_camlheaderd
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj 
 
 .mli.cmi:
 	$(CAMLC) $(COMPFLAGS) `./Compflags $@` -c $<
 
-.ml.cmo:
+.ml.cmj:
 	$(CAMLC) $(COMPFLAGS) `./Compflags $@` -c $<
 
-.ml.cmx:
-	$(CAMLOPT) $(COMPFLAGS) `./Compflags $@` -c $<
 
-.ml.p.cmx:
-	$(CAMLOPT) $(COMPFLAGS) `./Compflags $@` -p -c -o $*.p.cmx $<
+.ml.p.cmj:
+	$(CAMLC) $(COMPFLAGS) `./Compflags $@` -p -c -o $*.p.cmj $<
 
 # Dependencies on the compiler
 $(OBJS) std_exit.cmo: $(COMPILER)
 $(OBJS:.cmo=.cmi) std_exit.cmi: $(COMPILER)
-$(OBJS:.cmo=.cmx) std_exit.cmx: $(OPTCOMPILER)
-$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: $(OPTCOMPILER)
+$(OBJS:.cmo=.cmj) std_exit.cmj: $(OPTCOMPILER)
+$(OBJS:.cmo=.p.cmj) std_exit.p.cmj: $(OPTCOMPILER)
 
 # Dependencies on Pervasives (not tracked by ocamldep)
 $(OTHERS) std_exit.cmo: pervasives.cmi
 $(OTHERS:.cmo=.cmi) std_exit.cmi: pervasives.cmi
-$(OBJS:.cmo=.cmx) std_exit.cmx: pervasives.cmi
-$(OBJS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmi
-$(OTHERS:.cmo=.cmx) std_exit.cmx: pervasives.cmx
+$(OBJS:.cmo=.cmj) std_exit.cmj: pervasives.cmi
+$(OBJS:.cmo=.p.cmj) std_exit.p.cmj: pervasives.cmi
+$(OTHERS:.cmo=.cmj) std_exit.cmj: pervasives.cmj
 
 # Add missing dependencies
 $(OTHERS) std_exit.cmo: pervasives.cmo
-$(OTHERS:.cmo=.p.cmx) std_exit.p.cmx: pervasives.cmx
+$(OTHERS:.cmo=.p.cmj) std_exit.p.cmj: pervasives.cmj
 
 clean::
 	rm -f *.cm* *.$(O) *.$(A)
@@ -119,5 +117,5 @@ include .depend
 
 depend:
 	$(CAMLDEP) *.mli *.ml > .depend
-	$(CAMLDEP) *.ml | sed -e 's/\.cmx/.cmo/g' >>.depend
-	# $(CAMLDEP) *.ml | sed -e 's/\.cmx/.p.cmx/g' >>.depend
+	$(CAMLDEP) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	# $(CAMLDEP) *.ml | sed -e 's/\.cmx/.p.cmj/g' >>.depend

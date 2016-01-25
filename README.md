@@ -105,7 +105,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
   
   Then compile it with `osc`
   ```sh
-  OCAML_RAW_JS=1 osc -I . -I ../ -c hello.ml
+  osc -I . -I ../ -c hello.ml
   ```
   
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js
@@ -142,8 +142,6 @@ We plan to provide a Windows installer in the near future.
 # Licensing 
 
 The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). Refer to its copyright and license notices for information about its licensing.
-
-The `ocamlscript` backend relies on a patch [(js.diff)](./js.diff) to the OCaml compiler.
 
 This project reused and adapted parts of [js_of_ocaml](https://github.com/ocsigen/js_of_ocaml):
 * Some small printing utilities in [pretty printer](./jscomp/js_dump.ml).

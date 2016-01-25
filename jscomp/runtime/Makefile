@@ -4,7 +4,7 @@ CAMLC=../bin/osc
 # INCLUDES= -I ../stdlib
 SOURCE_LIST := $(shell cat runtime.mllib)
 
-RUNTIME := $(addsuffix .cmo, $(SOURCE_LIST))
+RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
 $(RUNTIME): $(CAMLC)
 
@@ -12,7 +12,7 @@ all: $(RUNTIME)
 
 
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+.SUFFIXES: .mli .ml .cmi .cmj .cmx .p.cmx .js
 
 clean::
 	rm -f *.cm*
@@ -23,12 +23,12 @@ clean::
 .mli.cmi:
 	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
 
-.ml.cmo:
+.ml.cmj:
 	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
 
 -include .depend
 
 depend:
 	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmo/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
 

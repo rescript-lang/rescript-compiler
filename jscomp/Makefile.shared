@@ -4,6 +4,6 @@ CAMLLEX=ocamllex.opt
 CAMLOPT=ocamlopt.opt
 
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj
 
 print-%  : ; @echo $* = $($*)

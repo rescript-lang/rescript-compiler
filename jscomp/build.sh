@@ -34,7 +34,7 @@ TARGET=a
 echo ">>EACH FILE TESTING" >> build.compile
 cd ./test/
 # ./build.sh 2>> ../build.compile
-make $TARGET.cmo 2>> ../build.compile
+make $TARGET.cmj 2>> ../build.compile
 
 cat $TARGET.js >> ../build.compile
 make -j30 all 2>>../build.compile
