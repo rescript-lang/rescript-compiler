@@ -91,15 +91,16 @@ render (
         <textarea id="jscode#1" style="background-color: #008803">
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
+
 var ReactDom = require("react-dom");
-var React = require("react");
+var React    = require("react");
 
 function fib(n) {
-  if (1 < (-1 + n >>> 0)) {
-    return fib(n - 1) + fib(n - 2);
+  if (n === 2 || n === 1) {
+    return 1;
   }
   else {
-    return 1;
+    return fib(n - 1) + fib(n - 2);
   }
 }
 
@@ -140,11 +141,11 @@ ReactDom.render(React.createClass({
           }
         }), document.getElementById("hi"));
 
-exports.fib = fib;
-exports.sum = sum;
-exports.map = map;
+exports.fib        = fib;
+exports.sum        = sum;
+exports.map        = map;
 exports.test_curry = test_curry;
-exports.f = f;
+exports.f          = f;
 /*  Not a pure module */
 </textarea>
     </div>
