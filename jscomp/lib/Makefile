@@ -24,6 +24,5 @@ CAMLC=../bin/osc
 -include .depend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
 
