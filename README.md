@@ -83,8 +83,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
   Assume that you have `ocamlopt.opt` in the `PATH`
   ```sh
   cd ./jscomp
-  ocamlopt.opt -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-  ocamlopt.opt -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx main.cmx
+  ocamlopt.opt -g -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/osc
   ```
 
   Now you have a binary called `osc` under `jscomp/bin` directory,
