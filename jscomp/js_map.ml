@@ -135,6 +135,10 @@ class virtual map =
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
      *)
+                 (* TODO: in the future, it might make sense to group primitivie by type,
+     which makes optimizations easier
+     {[ JSON.stringify(value, replacer[, space]) ]}
+  *)
                  (* to support 
        val log1 : 'a -> unit
        val log2 : 'a -> 'b -> unit 
@@ -347,6 +351,7 @@ class virtual map =
       | Not _x -> let _x = o#expression _x in Not _x
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x
+      | Json_stringify _x -> let _x = o#expression _x in Json_stringify _x
       | Dump (_x, _x_i1) ->
           let _x = o#unknown _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1

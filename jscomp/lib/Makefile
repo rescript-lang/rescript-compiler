@@ -1,7 +1,7 @@
 include ../Makefile.shared
 
 
-SOURCE_LIST := $(shell cat runtime.mllib)
+SOURCE_LIST := $(shell cat lib.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
@@ -24,6 +24,5 @@ CAMLC=../bin/osc
 -include .depend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
 

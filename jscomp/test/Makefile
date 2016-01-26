@@ -1,13 +1,11 @@
-CAMLDEP=ocamldep.opt
-CAMLLEX=ocamllex.opt
+include ../Makefile.shared
+
 CAMLC=../bin/osc
 
-CAMLOPT=
-INCLUDES= -I ../stdlib -I ../runtime
-
+INCLUDES= -I ../stdlib -I ../runtime -I ../lib
 
 SOURCE_LIST := $(shell cat test.mllib)
-TESTS := $(addsuffix .cmo, $(SOURCE_LIST) )
+TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
 COMPFLAGS+= -safe-string -w -40 
 
@@ -15,15 +13,11 @@ $(TESTS): $(CAMLC)
 
 all: $(TESTS)
 
-.SUFFIXES: .mli .ml .cmi .cmo .cmx .p.cmx .cmj
-
-TEST_JS = $(TESTS:.cmo=.cmj)
-
 clean::
 	rm -f *.cm*
 	rm -f *~
 	rm -f  *.annot
-	rm -f $(TEST_JS)
+	rm -f $(TESTS)
 	rm -f *.rawlambda *.lam *.lambda *.map
 	rm arith_lexer.ml number_lexer.ml simple_lexer_test.ml
 

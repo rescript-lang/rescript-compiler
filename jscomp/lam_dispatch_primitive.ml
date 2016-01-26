@@ -646,7 +646,23 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> assert false
       end
       
-    (* | "js_dump" *)
+    | "js_dump"
+      -> 
+      (* This primitive can accept any number of arguments 
+         {[
+           console.log(1,2,3)
+           1 2 3
+         ]}         
+      *)      
+      E.seq (E.dump Log args) (E.unit ())
+    | "js_json_stringify"      
+      -> 
+      begin match args with 
+      | [e] ->        
+        E.to_json_string e
+      | _ -> 
+        assert false      
+      end
     (* | "js_dump1" *)
     (* | "js_dump2" *)
     (* | "js_dump3" *)

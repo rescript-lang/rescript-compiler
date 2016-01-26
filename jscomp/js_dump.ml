@@ -81,6 +81,9 @@ module L = struct
   let empty_block = "empty_block"
   let start_block = "start_block"
   let end_block = "end_block"
+  let json = "JSON"
+  let stringify = "stringify"
+  let console = "console"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -439,10 +442,18 @@ and
       | Warn -> "warn"
       | Error -> "error" in
     P.group f 1 (fun _ -> 
-        P.string f "console.";
+        P.string f L.console;
+        P.string f L.dot;
         P.string f obj ;
         P.paren_group f 1 (fun _ -> arguments cxt f el))
-
+  | Json_stringify e 
+    -> 
+    P.group f 1 (fun _ -> 
+        P.string f L.json ;
+        P.string f L.dot;
+        P.string f L.stringify; 
+        P.paren_group f 1 (fun _ -> expression 0 cxt f e )        
+      )    
   | Char_to_int e -> 
     begin match e.expression_desc with 
       | String_access (a,b) -> 
@@ -942,6 +953,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Char_of_int _ 
       | Char_to_int _
       | Dump _
+      | Json_stringify _ 
       | Math _
       | Var _ 
       | Str _ 

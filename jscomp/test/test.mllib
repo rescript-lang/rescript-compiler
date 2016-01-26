@@ -149,3 +149,4 @@ primitive_reg_test
 test_eq
 equal_test
 typeof_test
+lib_js_test

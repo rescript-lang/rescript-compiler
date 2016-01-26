@@ -27,6 +27,9 @@ echo "Remaking standard library" >> build.compile
 cd ./stdlib; ./build.sh ; cd ../
 echo "Remaking standard library Finished" >> build.compile
 
+echo "Remaking thirdparty library" >> build.compile
+cd ./lib; ./build.sh ; cd ../
+echo "Remaking thirdparty library Finished" >> build.compile
 
 TARGET=a
 
