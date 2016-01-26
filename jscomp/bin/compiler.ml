@@ -453,9 +453,10 @@ include
           | Tag_ml_obj of expression
           | String_append of expression* expression
           | Int_of_boolean of expression
-          | Is_type_number of expression
+          | Typeof of expression
           | Not of expression
           | String_of_small_int_array of expression
+          | Json_stringify of expression
           | Dump of Js_op.level* expression list
           | Seq of expression* expression
           | Cond of expression* expression* expression
@@ -818,9 +819,10 @@ include
               | String_append (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
               | Int_of_boolean _x -> let o = o#expression _x in o
-              | Is_type_number _x -> let o = o#expression _x in o
+              | Typeof _x -> let o = o#expression _x in o
               | Not _x -> let o = o#expression _x in o
               | String_of_small_int_array _x -> let o = o#expression _x in o
+              | Json_stringify _x -> let o = o#expression _x in o
               | Dump (_x,_x_i1) ->
                   let o = o#unknown _x in
                   let o = o#list (fun o  -> o#expression) _x_i1 in o
@@ -1028,6 +1030,7 @@ include
         val for_all : (char -> bool) -> string -> bool
         val is_empty : string -> bool
         val repeat : int -> string -> string
+        val equal : string -> string -> bool
       end =
       struct
         let split_by ?(keep_empty= false)  is_delim str =
@@ -1097,6 +1100,7 @@ include
           let res = Bytes.create (n * len) in
           for i = 0 to pred n do String.blit s 0 res (i * len) len done;
           Bytes.to_string res
+        let equal (x : string) y = x = y
       end 
     module Ext_filename :
       sig
@@ -2312,7 +2316,7 @@ include
         let is_unused_ident i = (Ident.name i) = "_"
         let reset () = Hashtbl.clear js_module_table
       end 
-    module J_helper :
+    module Js_helper :
       sig
         [@@@ocaml.text " Creator utilities for the [J] module "]
         val prim : string
@@ -2376,7 +2380,10 @@ include
           val index : ?comment:string -> t -> int -> t
           val assign : binary_op
           val triple_equal : binary_op
+          val float_equal : binary_op
+          val string_equal : binary_op
           val is_type_number : unary_op
+          val typeof : unary_op
           val to_int32 : unary_op
           val to_uint32 : unary_op
           val int32_add : binary_op
@@ -2404,6 +2411,7 @@ include
             ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
           val flat_call : binary_op
           val dump : ?comment:string -> Js_op.level -> t list -> t
+          val to_json_string : unary_op
           val new_ :
             ?comment:string -> J.expression -> J.expression list -> t
           val arr :
@@ -2706,6 +2714,8 @@ include
               t)
             let dump ?comment  level el =
               ({ comment; expression_desc = (Dump (level, el)) } : t)
+            let to_json_string ?comment  e =
+              ({ comment; expression_desc = (Json_stringify e) } : t)
             let rec string_append ?comment  (e : t) (el : t) =
               (match ((e.expression_desc), (el.expression_desc)) with
                | (Str (_,a),String_append
@@ -2742,7 +2752,7 @@ include
               ({ expression_desc = (Bin (Eq, e0, e1)); comment } : t)
             let to_ocaml_boolean ?comment  (e : t) =
               (match e.expression_desc with
-               | Int_of_boolean _ -> e
+               | Int_of_boolean _|Number _ -> e
                | _ -> { comment; expression_desc = (Int_of_boolean e) } : 
               t)[@@ocaml.doc
                   " Convert a javascript boolean to ocaml boolean\n      It's necessary for return value\n       this should be optmized away for [if] ,[cond] to produce \n      more readable code\n   "]
@@ -2751,17 +2761,33 @@ include
             let bool v = if v then true_ else false_
             let rec triple_equal ?comment  (e0 : t) (e1 : t) =
               (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Str (_,x),Str (_,y)) ->
-                   if (String.compare x y) = 0
-                   then int ?comment 1
-                   else int ?comment 0
+               | (Str (_,x),Str (_,y)) -> bool (Ext_string.equal x y)
                | (Char_to_int a,Char_to_int b) -> triple_equal ?comment a b
                | (Char_to_int a,Number (Int { i; c = Some v }))
                  |(Number (Int { i; c = Some v }),Char_to_int a) ->
                    triple_equal ?comment a (str (String.make 1 v))
+               | (Number (Int { i = i0;_}),Number (Int { i = i1;_})) ->
+                   bool (i0 = i1)
                | (Char_of_int a,Char_of_int b) -> triple_equal ?comment a b
                | _ ->
-                   to_ocaml_boolean @@
+                   to_ocaml_boolean
+                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+              t)
+            let rec float_equal ?comment  (e0 : t) (e1 : t) =
+              (match ((e0.expression_desc), (e1.expression_desc)) with
+               | (Number (Int { i = i0;_}),Number (Int { i = i1 })) ->
+                   bool (i0 = i1)
+               | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
+                   f0 = f1 -> true_
+               | _ ->
+                   to_ocaml_boolean
+                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+              t)
+            let rec string_equal ?comment  (e0 : t) (e1 : t) =
+              (match ((e0.expression_desc), (e1.expression_desc)) with
+               | (Str (_,a0),Str (_,b0)) -> bool (Ext_string.equal a0 b0)
+               | (_,_) ->
+                   to_ocaml_boolean
                      { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
               t)
             let bin ?comment  (op : J.binop) e0 e1 =
@@ -2776,14 +2802,15 @@ include
                | Number (Int { i = 0;_}) -> arr ?comment NA []
                | _ -> { comment; expression_desc = (Array_of_size e) } : 
               t)
-            let is_type_number ?comment  (e : t) =
+            let typeof ?comment  (e : t) =
               (match e.expression_desc with
-               | Number _|Array_length _|String_length _ -> true_
-               | Str _|Array _ -> false_
-               | _ ->
-                   to_ocaml_boolean @@
-                     { expression_desc = (Is_type_number e); comment } : 
-              t)
+               | Number _|Array_length _|String_length _ ->
+                   str ?comment "number"
+               | Str _ -> str ?comment "string"
+               | Array _ -> str ?comment "object"
+               | _ -> { expression_desc = (Typeof e); comment } : t)
+            let is_type_number ?comment  (e : t) =
+              (string_equal ?comment (typeof e) (str "number") : t)
             let rec not (({ expression_desc; comment } as e) : t) =
               (match expression_desc with
                | Bin (EqEqEq ,e0,e1) ->
@@ -2800,6 +2827,7 @@ include
                    { e with expression_desc = (Bin (Le, a, b)) }
                | Number (Int { i;_}) -> if i != 0 then false_ else true_
                | Int_of_boolean e -> not e
+               | Not e -> e
                | x -> { expression_desc = (Not e); comment = None } : 
               t)
             let new_ ?comment  e0 args =
@@ -3353,8 +3381,8 @@ include
         val concat : t list -> t
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         type finished =
           | True
           | False
@@ -3406,7 +3434,7 @@ include
         let statement_of_opt_expr (x : J.expression option) =
           (match x with
            | None  -> S.empty ()
-           | Some x when J_helper.no_side_effect x -> S.empty ()
+           | Some x when Js_helper.no_side_effect x -> S.empty ()
            | Some x -> S.exp x : J.statement)
         let rec unroll_block (block : J.block) =
           match block with
@@ -3421,7 +3449,7 @@ include
                else
                  (match opt with
                   | None  -> block
-                  | Some x when J_helper.no_side_effect x -> block
+                  | Some x when Js_helper.no_side_effect x -> block
                   | Some x -> block @ [S.exp x]) : J.block)
         let to_break_block (x : t) =
           (match x with
@@ -3447,7 +3475,7 @@ include
                                                   value = Some e2; finished }
                                                   as z))
                ->
-               if J_helper.no_side_effect e1
+               if Js_helper.no_side_effect e1
                then z
                else { block = []; value = (Some (E.seq e1 e2)); finished }
            | ({ block = block1; value = opt_e1;_},{ block = block2;
@@ -3798,8 +3826,8 @@ include
               Lam_module_ident.t Hash_set.hashset -> Lam_module_ident.t list
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         type module_id = Lam_module_ident.t
         type ml_module_info =
           {
@@ -3935,7 +3963,7 @@ include
         val make : J.expression list -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let make (args : J.expression list) =
           E.arr Immutable ((E.int 0) :: args)
       end 
@@ -3946,7 +3974,7 @@ include
           J.mutable_flag -> (string* J.expression) list -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let make mutable_flag (args : (string* J.expression) list) =
           E.arr mutable_flag ((E.int 0) :: (List.map snd args))
       end 
@@ -3964,7 +3992,7 @@ include
         val ref_array : J.expression -> J.expression -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let make_array mt (kind : Lambda.array_kind) args =
           match kind with
           | Pgenarray |Paddrarray |Pintarray |Pfloatarray  ->
@@ -3982,8 +4010,8 @@ include
                                                " \n    @return None when the primitives are not handled in  pre-processing\n "]
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         let query (prim : Lam_compile_env.primitive_description)
           (args : J.expression list) =
           (let module X = struct exception NA end in
@@ -4025,7 +4053,7 @@ include
                       | _ -> assert false)
                  | "caml_eq_float" ->
                      (match args with
-                      | e0::e1::[] -> E.triple_equal e0 e1
+                      | e0::e1::[] -> E.float_equal e0 e1
                       | _ -> assert false)
                  | "caml_ge_float" ->
                      (match args with
@@ -4138,14 +4166,14 @@ include
                    |"caml_ldexp_float"|"caml_frexp_float"
                    |"caml_float_compare"|"caml_copysign_float"
                    |"caml_expm1_float"|"caml_hypot_float" ->
-                     E.runtime_call J_helper.float prim.prim_name args
+                     E.runtime_call Js_helper.float prim.prim_name args
                  | "caml_fmod_float" ->
                      (match args with
                       | e0::e1::[] -> E.float_mod e0 e1
                       | _ -> assert false)
                  | "caml_string_equal" ->
                      (match args with
-                      | e0::e1::[] -> E.triple_equal e0 e1
+                      | e0::e1::[] -> E.string_equal e0 e1
                       | _ -> assert false)
                  | "caml_string_notequal" ->
                      (match args with
@@ -4172,12 +4200,12 @@ include
                       | ({ expression_desc = Number (Int { i;_});_} as v)::[]
                           when i >= 0 -> E.uninitialized_array v
                       | _ ->
-                          E.runtime_call J_helper.string prim.prim_name args)
+                          E.runtime_call Js_helper.string prim.prim_name args)
                  | "caml_string_get"|"caml_string_compare"|"string_of_bytes"
                    |"bytes_of_string"|"caml_is_printable"
                    |"caml_string_of_char_array"|"caml_fill_string"
                    |"caml_blit_string"|"caml_blit_bytes" ->
-                     E.runtime_call J_helper.string prim.prim_name args
+                     E.runtime_call Js_helper.string prim.prim_name args
                  | "caml_register_named_value" -> E.unit ()
                  | "caml_gc_compaction"|"caml_gc_full_major"|"caml_gc_major"
                    |"caml_gc_major_slice"|"caml_gc_minor"|"caml_gc_set"
@@ -4216,11 +4244,11 @@ include
                                  ([tag;
                                   str;
                                   E.prefix_inc
-                                    (E.runtime_var_vid J_helper.exceptions
+                                    (E.runtime_var_vid Js_helper.exceptions
                                        "caml_oo_last_id")], flag))
                           }
                       | _ ->
-                          E.runtime_call J_helper.exceptions prim.prim_name
+                          E.runtime_call Js_helper.exceptions prim.prim_name
                             args)
                  | "caml_sys_const_big_endian" -> E.bool Sys.big_endian
                  | "caml_sys_const_word_size" -> E.int Sys.word_size
@@ -4237,22 +4265,22 @@ include
                      Js_of_lam_tuple.make [E.str "cmd"; E.arr NA []]
                  | "caml_sys_time"|"caml_sys_random_seed"|"caml_sys_getenv"
                    |"caml_sys_system_command" ->
-                     E.runtime_call J_helper.sys prim.prim_name args
+                     E.runtime_call Js_helper.sys prim.prim_name args
                  | "caml_lex_engine"|"caml_new_lex_engine"
                    |"caml_parse_engine"|"caml_set_parser_trace" ->
-                     E.runtime_call J_helper.lex_parse prim.prim_name args
+                     E.runtime_call Js_helper.lex_parse prim.prim_name args
                  | "caml_array_sub"|"caml_array_concat"|"caml_array_blit"
                    |"caml_make_vect" ->
-                     E.runtime_call J_helper.array prim.prim_name args
+                     E.runtime_call Js_helper.array prim.prim_name args
                  | "caml_ml_open_descriptor_in"|"caml_ml_open_descriptor_out"
                    |"caml_ml_output_char"|"caml_ml_output"
                    |"caml_ml_input_char" ->
-                     E.runtime_call J_helper.io prim.prim_name args
+                     E.runtime_call Js_helper.io prim.prim_name args
                  | "caml_obj_dup" ->
                      (match args with
-                      | a::[] when J_helper.is_constant a -> a
+                      | a::[] when Js_helper.is_constant a -> a
                       | _ ->
-                          E.runtime_call J_helper.obj_runtime prim.prim_name
+                          E.runtime_call Js_helper.obj_runtime prim.prim_name
                             args)
                  | "caml_obj_block" ->
                      (match args with
@@ -4260,16 +4288,16 @@ include
                           { expression_desc = Number (Int { i = 0;_});_}::[]
                           -> E.arr Immutable [E.int tag]
                       | _ ->
-                          E.runtime_call J_helper.obj_runtime prim.prim_name
+                          E.runtime_call Js_helper.obj_runtime prim.prim_name
                             args)
                  | "caml_obj_is_block"|"caml_obj_tag"|"caml_obj_set_tag"
                    |"caml_obj_truncate"|"caml_lazy_make_forward" ->
-                     E.runtime_call J_helper.obj_runtime prim.prim_name args
+                     E.runtime_call Js_helper.obj_runtime prim.prim_name args
                  | "caml_format_float"|"caml_format_int"
                    |"caml_nativeint_format"|"caml_int32_format"
                    |"caml_float_of_string"|"caml_int_of_string"
                    |"caml_int32_of_string"|"caml_nativeint_of_string" ->
-                     E.runtime_call J_helper.format prim.prim_name args
+                     E.runtime_call Js_helper.format prim.prim_name args
                  | "caml_update_dummy"|"caml_compare"|"caml_int_compare"
                    |"caml_int32_compare"|"caml_nativeint_compare"
                    |"caml_equal"|"caml_notequal"|"caml_greaterequal"
@@ -4277,9 +4305,9 @@ include
                    |"caml_convert_raw_backtrace_slot"|"caml_bswap16"
                    |"caml_int32_bswap"|"caml_nativeint_bswap"
                    |"caml_int64_bswap" ->
-                     E.runtime_call J_helper.prim prim.prim_name args
+                     E.runtime_call Js_helper.prim prim.prim_name args
                  | "caml_get_public_method" ->
-                     E.runtime_call J_helper.oo prim.prim_name args
+                     E.runtime_call Js_helper.oo prim.prim_name args
                  | "caml_install_signal_handler"
                    |"caml_output_value_to_buffer"|"caml_marshal_data_size"
                    |"caml_input_value_from_string"|"caml_output_value"
@@ -4298,7 +4326,7 @@ include
                    |"caml_ml_pos_in"|"caml_ml_seek_in"|"caml_ml_seek_in_64"
                    |"caml_ml_pos_out"|"caml_ml_pos_out_64"|"caml_ml_seek_out"
                    |"caml_ml_seek_out_64"|"caml_ml_set_binary_mode" ->
-                     E.runtime_call J_helper.prim prim.prim_name args
+                     E.runtime_call Js_helper.prim prim.prim_name args
                  | "js_function_length" ->
                      (match args with
                       | f::[] -> E.function_length f
@@ -4323,6 +4351,15 @@ include
                      (match args with
                       | e::[] -> E.string_of_small_int_array e
                       | _ -> assert false)
+                 | "js_typeof" ->
+                     (match args with
+                      | e::[] -> E.typeof e
+                      | _ -> assert false)
+                 | "js_dump" -> E.seq (E.dump Log args) (E.unit ())
+                 | "js_json_stringify" ->
+                     (match args with
+                      | e::[] -> E.to_json_string e
+                      | _ -> assert false)
                  | "js_apply1"|"js_apply2"|"js_apply3"|"js_apply4"
                    |"js_apply5"|"js_apply6"|"js_apply7"|"js_apply8" ->
                      (match args with
@@ -4334,7 +4371,8 @@ include
                         (Printf.sprintf "%s: %s\n" comment prim.prim_name);
                       E.str ~comment ~pure:false prim.prim_name) in
                v
-             with | X.NA  -> E.runtime_call J_helper.prim prim.prim_name args : 
+             with
+             | X.NA  -> E.runtime_call Js_helper.prim prim.prim_name args : 
           J.expression)[@@ocaml.doc
                          " \nThere are two things we need consider:\n1.  For some primitives we can replace caml-primitive with js primitives directly\n2.  For some standard library functions, we prefer to replace with javascript primitives\n    For example [Pervasives[\"^\"] -> ^]\n    We can collect all mli files in OCaml and replace it with an efficient javascript runtime\n"]
       end 
@@ -4348,8 +4386,8 @@ include
         val query_lambda : Ident.t -> Env.t -> Lambda.lambda
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         open Js_output.Ops
         let query_lambda id env =
           Lam_compile_env.query_and_add_if_not_exist
@@ -4379,7 +4417,7 @@ include
                            | _ -> E.ml_var_dot id name)
            | QueryGlobal (id,env,expand) ->
                if Ident.is_predef_exn id
-               then E.runtime_ref J_helper.exceptions id.name
+               then E.runtime_ref Js_helper.exceptions id.name
                else
                  Lam_compile_env.query_and_add_if_not_exist
                    (Lam_module_ident.of_ml id) env
@@ -4497,7 +4535,7 @@ include
               J.expression list -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         open Parsetree_util
         type external_module_name =
           | Single of string
@@ -4766,7 +4804,7 @@ include
         val bytes_of_string : J.expression -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         module A =
           struct
             let const_char (i : char) = E.str (String.make 1 i)
@@ -4778,9 +4816,9 @@ include
             let set_byte e e0 e1 =
               E.assign (E.access e e0) (E.char_to_int e1)
             let bytes_to_string e =
-              E.runtime_call J_helper.string "bytes_to_string" [e]
+              E.runtime_call Js_helper.string "bytes_to_string" [e]
             let bytes_of_string s =
-              E.runtime_call J_helper.string "bytes_of_string" [s]
+              E.runtime_call Js_helper.string "bytes_of_string" [s]
           end
         module B =
           struct
@@ -4797,10 +4835,10 @@ include
             [@@@ocaml.text
               "\n   Note that [String.fromCharCode] also works, but it only \n   work for small arrays, however, for {bytes_to_string} it is likely the bytes \n   will become big\n   {[\n   String.fromCharCode.apply(null,[87,97])\n   \"Wa\"\n   String.fromCharCode(87,97)\n   \"Wa\" \n   ]}\n   This does not work for large arrays\n   {[\n   String.fromCharCode.apply(null, prim = Array[1048576]) \n   Maxiume call stack size exceeded\n   ]}\n "]
             let bytes_to_string e =
-              E.runtime_call J_helper.string "bytes_to_string" [e][@@ocaml.text
+              E.runtime_call Js_helper.string "bytes_to_string" [e][@@ocaml.text
                                                                     "\n   Note that [String.fromCharCode] also works, but it only \n   work for small arrays, however, for {bytes_to_string} it is likely the bytes \n   will become big\n   {[\n   String.fromCharCode.apply(null,[87,97])\n   \"Wa\"\n   String.fromCharCode(87,97)\n   \"Wa\" \n   ]}\n   This does not work for large arrays\n   {[\n   String.fromCharCode.apply(null, prim = Array[1048576]) \n   Maxiume call stack size exceeded\n   ]}\n "]
             let bytes_of_string s =
-              E.runtime_call J_helper.string "bytes_of_string" [s]
+              E.runtime_call Js_helper.string "bytes_of_string" [s]
           end
         include B
       end 
@@ -4813,7 +4851,7 @@ include
         val get_double_feild : J.expression -> int -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let get_double_feild e i = E.index e i
         let set_double_field e i e0 = E.assign (E.index e i) e0
       end 
@@ -4828,7 +4866,7 @@ include
         val set_field : J.expression -> int -> J.expression -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let make_block mutable_flag (tag_info : Lambda.tag_info) tag args =
           match (mutable_flag, tag_info) with
           | (_,Array ) ->
@@ -4854,7 +4892,7 @@ include
             Lambda.primitive -> J.expression list -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let decorate_side_effect
           ({ st; should_return;_} : Lam_compile_defs.cxt) e =
           (match (st, should_return) with
@@ -5098,7 +5136,7 @@ include
         val translate : Lambda.structured_constant -> J.expression
       end =
       struct
-        module E = J_helper.Exp
+        module E = Js_helper.Exp
         let rec translate (x : Lambda.structured_constant) =
           (match x with
            | Const_base c ->
@@ -5136,8 +5174,8 @@ include
       end =
       struct
         open Js_output.Ops
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         let method_cache_id = ref 1
         let rec flat_catches acc (x : Lambda.lambda) =
           (match x with
@@ -5209,7 +5247,7 @@ include
                    ((Js_output.of_block
                        (b @
                           [S.exp
-                             (E.runtime_call J_helper.prim
+                             (E.runtime_call Js_helper.prim
                                 "caml_update_dummy" [E.var id; v])])), 
                      [id])
                | _ -> assert false)
@@ -5575,8 +5613,8 @@ include
                                                                out2
                                                              })
                          ->
-                         (match ((J_helper.extract_non_pure out1),
-                                  (J_helper.extract_non_pure out2))
+                         (match ((Js_helper.extract_non_pure out1),
+                                  (Js_helper.extract_non_pure out2))
                           with
                           | (None ,None ) -> Js_output.make b
                           | (Some out1,Some out2) ->
@@ -5588,7 +5626,7 @@ include
                                 (b @ [S.if_ (E.not e) [S.exp out2]]))
                      | (EffectCall ,False
                         ,{ block = []; value = Some out1 },_) ->
-                         if J_helper.no_side_effect out1
+                         if Js_helper.no_side_effect out1
                          then
                            Js_output.make
                              (b @
@@ -5606,7 +5644,7 @@ include
                      | (EffectCall ,False
                         ,_,{ block = []; value = Some out2 }) ->
                          let else_ =
-                           if J_helper.no_side_effect out2
+                           if Js_helper.no_side_effect out2
                            then None
                            else
                              Some
@@ -5802,7 +5840,7 @@ include
                                        should_return = False;
                                        st = EffectCall
                                      } body))]
-                      | (_,_) when J_helper.no_side_effect e1 ->
+                      | (_,_) when Js_helper.no_side_effect e1 ->
                           b1 @
                             (b2 @
                                [S.for_ (Some e1) e2 id direction
@@ -5913,7 +5951,7 @@ include
                            (obj' :: args))
                   | Cached |Public (None ) ->
                       let get =
-                        E.runtime_ref J_helper.oo "caml_get_public_method" in
+                        E.runtime_ref Js_helper.oo "caml_get_public_method" in
                       let cache = !method_cache_id in
                       let () = incr method_cache_id in
                       Js_output.handle_block_return st should_return lam
@@ -5965,7 +6003,7 @@ include
                            Js_output.handle_block_return st should_return lam
                              (List.concat args_code)
                              (E.call
-                                (E.runtime_call J_helper.oo
+                                (E.runtime_call Js_helper.oo
                                    "caml_get_public_method"
                                    [obj'; label; E.int cache]) (obj' :: args)))))
                [@warning "-8"])
@@ -5991,14 +6029,16 @@ include
       sig
         [@@@ocaml.text
           " Extension to standard library [Pervavives] module, safe to open \n  "]
+        external reraise : exn -> 'a = "%reraise"
         val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
         val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
         val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
       end =
       struct
+        external reraise : exn -> 'a = "%reraise"
         let finally v f action =
           match f v with
-          | exception e -> (action v; raise e)
+          | exception e -> (action v; reraise e)
           | e -> (action v; e)
         let with_file_as_chan filename f =
           let chan = open_out filename in finally chan f close_out
@@ -7292,8 +7332,8 @@ include
               Ident.t list -> Lam_module_ident.t list -> J.block -> J.program
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         type module_id = Lam_module_ident.t
         open Js_output.Ops
         let string_of_module_id (x : module_id) =
@@ -7754,11 +7794,12 @@ include
                   let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
               | Int_of_boolean _x ->
                   let _x = o#expression _x in Int_of_boolean _x
-              | Is_type_number _x ->
-                  let _x = o#expression _x in Is_type_number _x
+              | Typeof _x -> let _x = o#expression _x in Typeof _x
               | Not _x -> let _x = o#expression _x in Not _x
               | String_of_small_int_array _x ->
                   let _x = o#expression _x in String_of_small_int_array _x
+              | Json_stringify _x ->
+                  let _x = o#expression _x in Json_stringify _x
               | Dump (_x,_x_i1) ->
                   let _x = o#unknown _x in
                   let _x_i1 = o#list (fun o  -> o#expression) _x_i1 in
@@ -7842,8 +7883,8 @@ include
         val program : J.program -> J.program
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         class count var =
           object (self : 'self)
             val mutable appears = 0
@@ -7924,12 +7965,12 @@ include
                     | None  -> false
                     | Some x ->
                         (ignore (self#expression x);
-                         J_helper.no_side_effect x) in
+                         Js_helper.no_side_effect x) in
                   (self#scan pure ident ident_info; self)
           end
         let mark_dead_code js =
           let _ = mark_dead#program js in mark_dead#promote_dead; js
-        let subst_map =
+        let subst_map name =
           object (self)
             inherit  Js_map.map as super
             val mutable substitution = Hashtbl.create 17
@@ -8004,22 +8045,28 @@ include
                        (match List.nth ls i with
                         | { expression_desc = (J.Var _|Number _|Str _) } as x
                             -> x
+                        | exception _ ->
+                            (Ext_log.err __LOC__
+                               "suspcious code %s when compiling %s@."
+                               (Printf.sprintf "%s/%d" id.name id.stamp) name;
+                             super#expression x)
                         | _ -> super#expression x)
                    | _ -> super#expression x
                    | exception Not_found  -> super#expression x)
               | _ -> super#expression x
           end
-        let program js = (js |> subst_map#program) |> mark_dead_code
+        let program (js : J.program) =
+          (js |> (subst_map js.name)#program) |> mark_dead_code
       end 
     module Js_pass_flatten :
       sig
         [@@@ocaml.text
-          " A pass converting nested js statement into a flatten visual appearance \n\n    Note this module is used to convert some nested expressions to flat statements, \n    in general, it's more human readable, and since it generate flat statements, we can spot\n    some inline opportunities for the produced statemetns, \n    (inline) expressions inside a nested expression would generate ugly code.\n\n    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!J_helper}, \n    it  tries to spit out expression istead of statements if it can\n"]
+          " A pass converting nested js statement into a flatten visual appearance \n\n    Note this module is used to convert some nested expressions to flat statements, \n    in general, it's more human readable, and since it generate flat statements, we can spot\n    some inline opportunities for the produced statemetns, \n    (inline) expressions inside a nested expression would generate ugly code.\n\n    Since we are aiming to flatten expressions, we should avoid some smart constructors in {!Js_helper}, \n    it  tries to spit out expression istead of statements if it can\n"]
         val program : J.program -> J.program
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         let flatten_map =
           object (self)
             inherit  Js_map.map as super
@@ -8088,8 +8135,8 @@ include
         val inline_and_shake : J.program -> J.program
       end =
       struct
-        module S = J_helper.Stmt
-        module E = J_helper.Exp
+        module S = Js_helper.Stmt
+        module E = Js_helper.Exp
         let count_collects () =
           object (self)
             inherit  Js_fold.fold as super
@@ -8120,7 +8167,7 @@ include
                             let pure =
                               match v.value with
                               | None  -> false
-                              | Some x -> J_helper.no_side_effect x in
+                              | Some x -> Js_helper.no_side_effect x in
                             Js_op_util.update_used_stats v.ident_info
                               (if pure then Dead_pure else Dead_non_pure)
                         | num ->
@@ -8129,7 +8176,7 @@ include
                               let pure =
                                 match v.value with
                                 | None  -> false
-                                | Some x -> J_helper.no_side_effect x in
+                                | Some x -> Js_helper.no_side_effect x in
                               Js_op_util.update_used_stats v.ident_info
                                 (if pure then Once_pure else Used)))
                 defined_idents;
@@ -8532,8 +8579,8 @@ include
       end =
       struct
         module P = Ext_pp
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         module L =
           struct
             let function_ = "function"
@@ -8561,6 +8608,9 @@ include
             let empty_block = "empty_block"
             let start_block = "start_block"
             let end_block = "end_block"
+            let json = "JSON"
+            let stringify = "stringify"
+            let console = "console"
           end
         let return_indent = (String.length L.return) / Ext_pp.indent_length
         let throw_indent = (String.length L.throw) / Ext_pp.indent_length
@@ -8814,9 +8864,17 @@ include
                  | Error  -> "error" in
                P.group f 1
                  (fun _  ->
-                    P.string f "console.";
+                    P.string f L.console;
+                    P.string f L.dot;
                     P.string f obj;
                     P.paren_group f 1 (fun _  -> arguments cxt f el))
+           | Json_stringify e ->
+               P.group f 1
+                 (fun _  ->
+                    P.string f L.json;
+                    P.string f L.dot;
+                    P.string f L.stringify;
+                    P.paren_group f 1 (fun _  -> expression 0 cxt f e))
            | Char_to_int e ->
                (match e.expression_desc with
                 | String_access (a,b) ->
@@ -8870,18 +8928,8 @@ include
            | Not e ->
                let action () = P.string f "!"; expression 13 cxt f e in
                if l > 13 then P.paren_group f 1 action else action ()
-           | Is_type_number e ->
-               let action () =
-                 P.string f "typeof";
-                 P.space f;
-                 (let cxt = expression 13 cxt f e in
-                  P.space f;
-                  P.string f "===";
-                  P.space f;
-                  P.string f {|"number"|};
-                  cxt) in
-               let (out,_lft,_rght) = op_prec EqEqEq in
-               if l > out then P.paren_group f 1 action else action ()
+           | Typeof e ->
+               (P.string f "typeof"; P.space f; expression 13 cxt f e)
            | Bin
                (Eq
                 ,{ expression_desc = Var i },{
@@ -9174,9 +9222,9 @@ include
                    |Tag_ml_obj _|Seq _|Dot _|Cond _|Bin _|String_access _
                    |Access _|Array_of_size _|Array_length _|String_length _
                    |Bytes_length _|String_append _|Char_of_int _|Char_to_int
-                   _|Dump _|Math _|Var _|Str _|Array _|FlatCall _
-                   |Is_type_number _|Function_length _|Number _|Not _|New _
-                   |Int_of_boolean _ -> false in
+                   _|Dump _|Json_stringify _|Math _|Var _|Str _|Array _
+                   |FlatCall _|Typeof _|Function_length _|Number _|Not _|New
+                   _|Int_of_boolean _ -> false in
                let cxt =
                  (if need_paren e then P.paren_group f 1 else P.group f 0)
                    (fun _  -> expression 0 cxt f e) in
@@ -9575,11 +9623,11 @@ include
             Env.t -> Types.signature -> Lambda.lambda -> J.program[@@ocaml.doc
                                                                     " For toplevel, [filename] is [\"\"] which is the same as\n    {!Env.get_unit_name ()}\n "]
         val lambda_as_module :
-          bool -> Env.t -> Types.signature -> string -> Lambda.lambda -> unit
+          Env.t -> Types.signature -> string -> Lambda.lambda -> unit
       end =
       struct
-        module E = J_helper.Exp
-        module S = J_helper.Stmt
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
         open Js_output.Ops
         exception Not_a_module
         let compile_group
@@ -9591,7 +9639,7 @@ include
                ->
                Js_output.of_stmt @@
                  (S.const_variable id
-                    ~exp:(E.runtime_ref J_helper.io id.name))
+                    ~exp:(E.runtime_ref Js_helper.io id.name))
            | (Single (_,({ name = "infinity";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
                  (S.const_variable id ~exp:(E.js_global "Infinity"))
@@ -9605,7 +9653,7 @@ include
            | (Single (_,({ name = "^";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
                  (S.const_variable id
-                    ~exp:(E.runtime_ref J_helper.string "add"))
+                    ~exp:(E.runtime_ref Js_helper.string "add"))
            | (Single
               (_,({ name = "print_endline";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
@@ -9618,7 +9666,7 @@ include
               (_,({ name = "string_of_int";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
                  (S.const_variable id
-                    ~exp:(E.runtime_ref J_helper.prim "string_of_int"))
+                    ~exp:(E.runtime_ref Js_helper.prim "string_of_int"))
            | (Single (_,({ name = "max_float";_} as id),_),"pervasives.ml")
                ->
                Js_output.of_stmt @@
@@ -9637,7 +9685,7 @@ include
            | (Single (_,({ name = "cat";_} as id),_),"bytes.ml") ->
                Js_output.of_stmt @@
                  (S.const_variable id
-                    ~exp:(E.runtime_ref J_helper.string "bytes_cat"))
+                    ~exp:(E.runtime_ref Js_helper.string "bytes_cat"))
            | (Single
               (_,({ name = ("max_array_length"|"max_string_length");_} as id),_),"sys.ml")
                ->
@@ -9790,8 +9838,8 @@ include
            | _ -> raise Not_a_module : J.program)[@@ocaml.doc
                                                    " Actually simplify_lets is kind of global optimization since it requires you to know whether \n    it's used or not \n"]
         let current_file_name: string option ref = ref None
-        let lambda_as_module (raw : bool) env (sigs : Types.signature)
-          (filename : string) (lam : Lambda.lambda) =
+        let lambda_as_module env (sigs : Types.signature) (filename : string)
+          (lam : Lambda.lambda) =
           let () = current_file_name := (Some filename) in
           Ext_pervasives.with_file_as_chan
             ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^ ".js")
@@ -9815,12 +9863,11 @@ include
               List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty xs
           end
       end 
-    module Lam_register =
+    module Lam_register : sig  end =
       struct
         let () =
-          Printlambda.serialize_raw_js :=
-            (Lam_compile_group.lambda_as_module true)
-      end
+          Printlambda.serialize_raw_js := Lam_compile_group.lambda_as_module
+      end 
     module Ident_util =
       struct
         [@@@ocaml.text " Utilities for [ident] type "]
@@ -9899,8 +9946,21 @@ include
                    (print_if ppf Clflags.dump_rawlambda Printlambda.lambda))
                   |>
                   ((fun lambda  ->
-                      Lam_compile_group.lambda_as_module true finalenv
-                        current_signature sourcefile lambda));
+                      match Lam_compile_group.lambda_as_module finalenv
+                              current_signature sourcefile lambda
+                      with
+                      | e -> e
+                      | exception e ->
+                          let file = "osc.dump" in
+                          (Ext_pervasives.with_file_as_chan file
+                             (fun ch  ->
+                                (output_string ch) @@
+                                  (Printexc.raw_backtrace_to_string
+                                     (Printexc.get_raw_backtrace ())));
+                           Ext_log.err __LOC__
+                             "Compilation fatal error, stacktrace saved into %s"
+                             file;
+                           raise e)));
               Stypes.dump (Some (outputprefix ^ ".annot"))
             with
             | x -> (Stypes.dump (Some (outputprefix ^ ".annot")); raise x)))
