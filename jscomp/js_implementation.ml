@@ -49,9 +49,20 @@ let implementation ppf sourcefile outputprefix =
       |> Translmod.transl_implementation modulename
       |> print_if ppf Clflags.dump_rawlambda Printlambda.lambda
       |> (fun lambda -> 
-          Lam_compile_group.lambda_as_module true
+          match           
+          Lam_compile_group.lambda_as_module
             finalenv current_signature 
-            sourcefile  lambda);
+            sourcefile  lambda with
+          | e -> e 
+          | exception e -> 
+            (* Save to a file instead so that it will not scare user *)            
+            let file = "osc.dump" in
+            Ext_pervasives.with_file_as_chan file
+              (fun ch -> output_string ch @@             
+                Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
+            Ext_log.err __LOC__ "Compilation fatal error, stacktrace saved into %s" file ;             
+            raise e             
+        );
     end;
     Stypes.dump (Some (outputprefix ^ ".annot"));
   with x ->

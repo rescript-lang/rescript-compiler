@@ -297,7 +297,6 @@ let compile ~filename env sigs lam  : J.program  =
 let current_file_name : string option ref  = ref None;;
 
 let lambda_as_module 
-    (raw : bool) 
     env 
     (sigs : Types.signature)
     (filename : string) 

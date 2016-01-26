@@ -18,13 +18,13 @@
 
 (* Author: Hongbo Zhang  *)
 
-
+external reraise: exn -> 'a = "%reraise"
 
 let finally v f  action = 
   match f v with
   | exception e -> 
       action v ;
-      raise e 
+      reraise e 
   | e ->  action v ; e 
 
 let with_file_as_chan filename f = 
