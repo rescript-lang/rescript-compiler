@@ -143,8 +143,16 @@ let mark_dead_code js =
 
    Take away, it is really hard to change the code while collecting some information..
    we should always collect info in a single pass
+
+   Note that, we should avoid reuse object, i.e,
+   {[
+     let v = 
+       object 
+       end      
+   ]}   
+   Since user may use `osc -c xx.ml xy.ml xz.ml` and we need clean up state
  *)
-let subst_map = object (self)
+let subst_map name = object (self)
   inherit Js_map.map as super
 
   val mutable substitution = Hashtbl.create 17 
@@ -213,9 +221,19 @@ let subst_map = object (self)
       begin match Hashtbl.find self#get_substitution id with 
         | {expression_desc = Array (ls, Immutable) } 
           -> 
+          (* user program can be wrong, we should not 
+             turn a runtime crash into compile time crash : )
+          *)          
           begin match List.nth ls i with 
             | {expression_desc = J.Var _ | Number _ | Str _ } as x 
               -> x 
+            | exception _ ->
+              begin
+                Ext_log.err __LOC__ "suspcious code %s when compiling %s@."
+                  (Printf.sprintf "%s/%d" id.name id.stamp)
+                  name  ;
+                super#expression x ;
+              end
             | _ -> 
               (** we can do here, however, we should 
                   be careful that it can only be done 
@@ -266,9 +284,9 @@ end
     there is no need to add another pass
  *)
 
-let program  js = 
+let program  (js : J.program) = 
   js 
-  |> subst_map#program
+  |> (subst_map js.name )#program
   |> mark_dead_code
   (* |> mark_dead_code *)
   (* mark dead code twice does have effect in some cases, however, we disabled it 

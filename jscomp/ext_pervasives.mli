@@ -23,6 +23,7 @@
 (** Extension to standard library [Pervavives] module, safe to open 
   *)
 
+external reraise: exn -> 'a = "%reraise"
 val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
 
 val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
