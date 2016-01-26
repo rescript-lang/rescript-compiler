@@ -20,4 +20,17 @@
 
 (** Common utils for js interoperation *)
 
+(** [typeof x] is equivalent to [typeof x] in js *)
 external typeof : 'a -> string = "js_typeof"
+
+(** [to_json_string x] is equivalent to [JSON.stringify x] 
+    This function is provided for convenice, more complete features 
+    should be consulted to third party JSON bindings
+*)
+external to_json_string : 'a -> string = "js_json_stringify"
+
+(**
+   [log x] is equivalent to [console.log(x)] except that
+   the return value is [unit] instead of [undefined]
+*)
+external log : 'a -> unit = "js_dump"

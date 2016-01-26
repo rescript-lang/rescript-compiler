@@ -105,6 +105,11 @@ and expression_desc =
        like [+true], note this ast talks using js
        terminnology unless explicity stated                       
      *)
+  | Json_stringify of expression 
+  (* TODO: in the future, it might make sense to group primitivie by type,
+     which makes optimizations easier
+     {[ JSON.stringify(value, replacer[, space]) ]}
+  *)
   | Dump of Js_op.level * expression list
     (* to support 
        val log1 : 'a -> unit

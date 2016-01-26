@@ -1,7 +1,7 @@
 include ../Makefile.shared
 
 
-SOURCE_LIST := $(shell cat runtime.mllib)
+SOURCE_LIST := $(shell cat lib.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 

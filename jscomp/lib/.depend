@@ -1,0 +1,5 @@
+js.cmi :
+js.cmo : js.cmi
+js.cmx : js.cmi
+js.cmo : js.cmi
+js.cmj : js.cmi
