@@ -1,4 +1,6 @@
 [@@@warning "-a"]
+[@@@ocaml.doc
+  "\n OCamlScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
 include
   struct
     module Depend =
@@ -569,6 +571,25 @@ include
                             else []) @ acc)))
             | exception End_of_file  -> (close_in chan; acc) in
           loop []
+        let make_comment _loc str =
+          {
+            Parsetree.pstr_loc = _loc;
+            pstr_desc =
+              (Pstr_attribute
+                 (({ loc = _loc; txt = "ocaml.doc" },
+                    (PStr
+                       [{
+                          Parsetree.pstr_loc = _loc;
+                          pstr_desc =
+                            (Pstr_eval
+                               ({
+                                  pexp_loc = _loc;
+                                  pexp_desc =
+                                    (Pexp_constant (Const_string (str, None)));
+                                  pexp_attributes = []
+                                }, []))
+                        }])) : Parsetree.attribute))
+          }
         let _ =
           let _loc = Location.none in
           let argv = Sys.argv in
@@ -601,22 +622,8 @@ include
                                    }, []))
                            }])) : Parsetree.attribute))
              };
-            {
-              Parsetree.pstr_loc = _loc;
-              pstr_desc =
-                (Pstr_attribute
-                   (({ loc = _loc; txt = "ocaml.doc" },
-                      (PStr
-                         [{
-                            Parsetree.pstr_loc = _loc;
-                            pstr_desc =
-                              (Pstr_eval
-                                 ({
-                                    pexp_loc = _loc;
-                                    pexp_desc =
-                                      (Pexp_constant
-                                         (Const_string
-                                            ({|
+            make_comment _loc
+              {|
  OCamlScript compiler
  Copyright (C) 2015-2016 Bloomberg Finance L.P.
 
@@ -637,12 +644,11 @@ include
 
  Author: Hongbo Zhang  
 
-|},
-                                              None)));
-                                    pexp_attributes = []
-                                  }, []))
-                          }])) : Parsetree.attribute))
-            };
+|};
+            make_comment _loc
+              (let v = let open Unix in localtime (gettimeofday ()) in
+               Printf.sprintf "%02d/%02d-%02d:%02d" (v.tm_mon + 1) v.tm_mday
+                 v.tm_hour v.tm_min);
             str_item]
       end
   end

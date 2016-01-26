@@ -33,7 +33,26 @@ let read_lines file =
 
     | exception End_of_file -> close_in chan ; acc in
   loop []
-          
+let make_comment _loc str =           
+      {
+        Parsetree.pstr_loc = _loc;
+        pstr_desc =
+          (Pstr_attribute
+             (({ loc = _loc; txt =  "ocaml.doc"},
+               (PStr
+                  [{
+                    Parsetree.pstr_loc = _loc;
+                    pstr_desc =
+                      (Pstr_eval
+                         ({
+                           pexp_loc = _loc;
+                           pexp_desc =
+                             (Pexp_constant (** Copy right header *)
+                                (Const_string (str, None)));
+                           pexp_attributes = []
+                         }, []))
+                  }])) : Parsetree.attribute))
+      }
 let _ = 
   let _loc = Location.none in
   let argv = Sys.argv in
@@ -67,21 +86,7 @@ let _ =
                          }, []))
                   }])) : Parsetree.attribute))
       } ;
-      {
-        Parsetree.pstr_loc = _loc;
-        pstr_desc =
-          (Pstr_attribute
-             (({ loc = _loc; txt =  "ocaml.doc"},
-               (PStr
-                  [{
-                    Parsetree.pstr_loc = _loc;
-                    pstr_desc =
-                      (Pstr_eval
-                         ({
-                           pexp_loc = _loc;
-                           pexp_desc =
-                             (Pexp_constant (** Copy right header *)
-                                (Const_string ({|
+      make_comment _loc {|
  OCamlScript compiler
  Copyright (C) 2015-2016 Bloomberg Finance L.P.
 
@@ -102,11 +107,12 @@ let _ =
 
  Author: Hongbo Zhang  
 
-|}, None)));
-                           pexp_attributes = []
-                         }, []))
-                  }])) : Parsetree.attribute))
-      };
+|};
+      make_comment _loc
+        (let v = Unix.(localtime (gettimeofday ())) in
+         Printf.sprintf "%02d/%02d-%02d:%02d" 
+           (v.tm_mon + 1) v.tm_mday v.tm_hour v.tm_min)
+      ;
       str_item
     ] 
 

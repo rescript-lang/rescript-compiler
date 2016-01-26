@@ -48,8 +48,7 @@ snapshotcmj:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -I +compiler-libs -I bin -c bin/compiler.mli bin/compiler.ml
-	$(NATIVE) -g -linkall -o bin/osc -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa  bin/compiler.cmx
+	$(NATIVE) -g -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/osc
 
 stdlib:
 	cd stdlib && ./build.sh
