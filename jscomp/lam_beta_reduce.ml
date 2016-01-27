@@ -280,3 +280,8 @@ let propogate_beta_reduce
   lam
 
 
+let beta_reduce params body args =
+  List.fold_left2 
+    (fun l param arg ->
+       Lam_util.refine_let param arg l)
+    body params args

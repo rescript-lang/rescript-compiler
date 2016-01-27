@@ -18,35 +18,15 @@
 
 (* Author: Hongbo Zhang  *)
 
+(** A module which provides some basic analysis over lambda expression *)
 
+(** No side effect, but it might depend on data store *)
+val no_side_effects : Lambda.lambda -> bool 
 
-val string_of_lambda : Lambda.lambda -> string 
+val size : Lambda.lambda -> int
 
-val string_of_primitive : Lambda.primitive -> string
-
-val kind_of_lambda_block : Lambda.lambda list -> Lam_stats.kind
-
-val get : Lambda.lambda -> Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
-
-val add_required_module : Ident.t -> Lam_stats.meta -> unit
-
-val add_required_modules : Ident.t list -> Lam_stats.meta -> unit
-
-val alias : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
-
-
-val refine_let : 
-    ?kind:Lambda.let_kind ->
-      Ident.t -> Lambda.lambda -> Lambda.lambda -> Lambda.lambda
-
-
-val generate_label : ?name:string -> unit -> J.label
-
-val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
-(** if [a] depends on [b] a is ahead of [b] as [a::b]
-
-    TODO: make it a stable sort 
+val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
+(** a conservative version of comparing two lambdas, mostly 
+    for looking for similar cases in switch
  *)
 
-val dump : Env.t -> string ->  bool  -> Lambda.lambda -> Lambda.lambda

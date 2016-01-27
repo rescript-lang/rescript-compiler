@@ -24,4 +24,4 @@
 (** Dead code eliminatiion on the lambda layer 
 *)
 
-val remove : Ident.t list -> Lam_util.group list -> Lam_util.group list
+val remove : Ident.t list -> Lam_group.t list -> Lam_group.t list

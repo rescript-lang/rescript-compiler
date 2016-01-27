@@ -42,7 +42,7 @@ lam_compile_util
 lam_compile
 lam_compile_global
 lam_compile_primitive
-lam_pass_alpha_with_arity
+lam_beta_reduce
 lam_compile_external_call
 lam_compile_group
 lam_inline_util
@@ -54,6 +54,8 @@ lam_pass_eliminate_ref
 lam_map
 lam_fold
 lam_register
+lam_analysis
+lam_group
 
 j
 js_program_loader

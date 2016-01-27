@@ -230,7 +230,7 @@ and compile_general_cases :
       in
       let body = 
         table 
-        |> Ext_list.stable_group (fun (_,lam) (_,lam1) -> Lam_util.eq_lambda lam lam1)
+        |> Ext_list.stable_group (fun (_,lam) (_,lam1) -> Lam_analysis.eq_lambda lam lam1)
         |> Ext_list.flat_map 
           (fun group -> 
              group 

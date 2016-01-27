@@ -18,19 +18,17 @@
 
 (* Author: Hongbo Zhang  *)
 
+type t = 
+  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
+  | Recursive of (Ident.t * Lambda.lambda) list
+  | Nop of Lambda.lambda 
 
 
-(** Beta reduction of lambda IR *)
+val flatten : t list -> Lambda.lambda -> Lambda.lambda * t list
 
-(*
-   Refresh all the identifiers, 
-   otherwise the identifier property can not be preserved, 
-   the obvious example is parameter
- *)
+val lambda_of_groups : Lambda.lambda -> t list -> Lambda.lambda
 
-val propogate_beta_reduce : 
-  Lam_stats.meta -> 
-  Ident.t list -> 
-  Lambda.lambda -> 
-  Lambda.lambda list -> 
-  Lambda.lambda
+val deep_flatten : Lambda.lambda -> Lambda.lambda
+(** Tricky to be complete *)
+
+val pp_group : Env.t -> Format.formatter -> t -> unit

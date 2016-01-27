@@ -139,6 +139,8 @@ rec_value_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/lazy.cmx
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
+small_inline_test.cmo :
+small_inline_test.cmx :
 stack_test.cmo : ../stdlib/stack.cmi mt.cmo ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmo ../stdlib/list.cmi
@@ -489,6 +491,8 @@ rec_value_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
+small_inline_test.cmo :
+small_inline_test.cmj :
 stack_test.cmo : ../stdlib/stack.cmi mt.cmo ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmo ../stdlib/list.cmi
