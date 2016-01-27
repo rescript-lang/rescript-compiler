@@ -27,7 +27,8 @@ open Js_output.Ops
 
 exception Not_a_module
 
-let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) (x : Lam_util.group) : Js_output.t  = 
+let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta) 
+    (x : Lam_group.t) : Js_output.t  = 
   match x, file_name with 
   (* 
         We need
@@ -146,7 +147,7 @@ let compile ~filename env sigs lam  : J.program  =
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
 
-  let lam  = Lam_util.deep_flatten lam in
+  let lam  = Lam_group.deep_flatten lam in
   let _d   = Lam_util.dump env filename in
   let meta = Lam_pass_collect.count_alias_globals env filename  exports lam in
   (* TODO: remove [export_idents] from meta *)
@@ -156,10 +157,10 @@ let compile ~filename env sigs lam  : J.program  =
       lam
       |>  Lam_pass_exits.simplify_exits
       |>  Lam_pass_remove_alias.simplify_alias  meta in  (* Inling happens*)
-    let lam = Lam_util.deep_flatten lam in
+    let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
-    let lam = Lam_util.deep_flatten lam in
+    let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
 
     lam
@@ -180,7 +181,7 @@ let compile ~filename env sigs lam  : J.program  =
     match (lam : Lambda.lambda) with
     | Lprim(Psetglobal id, [biglambda])  (* ATT: might be wrong in toplevel *) ->
       begin 
-        match Lam_util.flatten [] biglambda with 
+        match Lam_group.flatten [] biglambda with 
         | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
           let coercion_groups, new_exports = 
             List.fold_right2 
@@ -202,7 +203,7 @@ let compile ~filename env sigs lam  : J.program  =
                             beginning since lots of optimizations depend on this
                             however
                         *)
-                   (Lam_util.Single(Strict ,eid,  lam) :: coercions, 
+                   (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
                     eid :: new_exports))
               meta.export_idents lambda_exports ([],[])in
           let () = meta.export_idents <- new_exports in
@@ -214,7 +215,7 @@ let compile ~filename env sigs lam  : J.program  =
                 Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
               Ext_pervasives.with_file_as_pp f @@ fun fmt ->
               Format.pp_print_list ~pp_sep:Format.pp_print_newline
-                (Lam_util.pp_group env) fmt rest ;
+                (Lam_group.pp_group env) fmt rest ;
           in
           (* Invariant: The last one is always [exports]
              Compile definitions
@@ -228,25 +229,25 @@ let compile ~filename env sigs lam  : J.program  =
           let module  E = struct exception  Not_pure of string end in
           (** Also need analyze its depenency is pure or not *)
           let no_side_effects rest = 
-            Ext_list.for_all_opt (fun (x : Lam_util.group) -> 
+            Ext_list.for_all_opt (fun (x : Lam_group.t) -> 
                 match x with 
                 | Single(kind,id,body) -> 
                   begin 
                     match kind with 
                     | Strict | Variable -> 
-                      if not @@ Lam_util.no_side_effects body 
+                      if not @@ Lam_analysis.no_side_effects body 
                       then Some  (Printf.sprintf "%s" id.name)
                       else None
                     | _ -> None
                   end
                 | Recursive bindings -> 
                   Ext_list.for_all_opt (fun (id,lam) -> 
-                      if not @@ Lam_util.no_side_effects lam 
+                      if not @@ Lam_analysis.no_side_effects lam 
                       then Some (Printf.sprintf "%s" id.Ident.name )
                       else None
                     ) bindings
                 | Nop lam -> 
-                  if not @@ Lam_util.no_side_effects lam 
+                  if not @@ Lam_analysis.no_side_effects lam 
                   then 
                     (*  (Lam_util.string_of_lambda lam) *)
                     Some ""

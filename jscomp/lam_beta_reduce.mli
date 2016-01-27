@@ -20,33 +20,27 @@
 
 
 
-val string_of_lambda : Lambda.lambda -> string 
-
-val string_of_primitive : Lambda.primitive -> string
-
-val kind_of_lambda_block : Lambda.lambda list -> Lam_stats.kind
-
-val get : Lambda.lambda -> Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
-
-val add_required_module : Ident.t -> Lam_stats.meta -> unit
-
-val add_required_modules : Ident.t list -> Lam_stats.meta -> unit
-
-val alias : Lam_stats.meta ->
-  Ident.t -> Ident.t -> Lam_stats.kind -> Lambda.let_kind -> unit 
+(** Beta reduction of lambda IR *)
 
 
-val refine_let : 
-    ?kind:Lambda.let_kind ->
-      Ident.t -> Lambda.lambda -> Lambda.lambda -> Lambda.lambda
+val beta_reduce : Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+(* Compile-time beta-reduction of functions immediately applied:
+      Lapply(Lfunction(Curried, params, body), args, loc) ->
+        let paramN = argN in ... let param1 = arg1 in body
+      Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock(args))], loc) ->
+        let paramN = argN in ... let param1 = arg1 in body
+   Assumes |args| = |params|.
+*)
 
-
-val generate_label : ?name:string -> unit -> J.label
-
-val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
-(** if [a] depends on [b] a is ahead of [b] as [a::b]
-
-    TODO: make it a stable sort 
+(*
+   Refresh all the identifiers, 
+   otherwise the identifier property can not be preserved, 
+   the obvious example is parameter
  *)
 
-val dump : Env.t -> string ->  bool  -> Lambda.lambda -> Lambda.lambda
+val propogate_beta_reduce : 
+  Lam_stats.meta -> 
+  Ident.t list -> 
+  Lambda.lambda -> 
+  Lambda.lambda list -> 
+  Lambda.lambda

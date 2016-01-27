@@ -87,7 +87,7 @@ let simplify_alias
                         |  _ -> true 
                       ) args) -> 
                 simpl @@
-                Lam_pass_alpha_with_arity.propogate_beta_reduce
+                Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> Lapply (simpl l1, List.map simpl args, info)
             )
@@ -113,20 +113,20 @@ let simplify_alias
           *)
           (* && false (\* Disable it yet *\) *)
           (***)
-          simpl @@ Lam_pass_alpha_with_arity.propogate_beta_reduce
+          simpl @@ Lam_beta_reduce.propogate_beta_reduce
             meta params body args
         | exception Not_found -> Lapply ( simpl l1, List.map simpl args, info)
         | _ -> Lapply ( simpl l1, List.map simpl args, info)
       end
     | Lapply(Lfunction(Curried, params, body), args, _)
       when  List.length params = List.length args ->
-      simpl (Lam_pass_alpha_with_arity.propogate_beta_reduce meta params body args)
+      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
     | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  List.length params = List.length args ->
-      simpl (Lam_pass_alpha_with_arity.propogate_beta_reduce meta params body args)
+      simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
     | Lapply (l1, ll, info) ->
       Lapply (simpl  l1, List.map simpl  ll,info)

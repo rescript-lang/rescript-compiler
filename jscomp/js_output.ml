@@ -52,7 +52,7 @@ let handle_name_tail (name : st) (should_return : Lam_compile_defs.return_type)
     lam (exp : J.expression) : t =
   begin match name, should_return with 
   | EffectCall, False -> 
-      if Lam_util.no_side_effects lam 
+      if Lam_analysis.no_side_effects lam 
       then dummy
       else {block = []; value  = Some exp ; finished = False}
   | EffectCall, True _ ->

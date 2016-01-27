@@ -186,7 +186,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       then
         let l1 = simplif l1 in
         let l2 = simplif l2 in
-        if Lam_util.no_side_effects l1 
+        if Lam_analysis.no_side_effects l1 
         then l2 
         else Lsequence(l1, l2)
       else Lam_util.refine_let ~kind v (simplif l1) (simplif l2)
@@ -203,13 +203,13 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 
     | Lapply(Lfunction(Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
-      simplif (Lam_util.beta_reduce  params body args)
+      simplif (Lam_beta_reduce.beta_reduce  params body args)
     | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params  args ->
-      simplif (Lam_util.beta_reduce params body args)
+      simplif (Lam_beta_reduce.beta_reduce params body args)
 
     | Lapply(l1, ll, loc) -> Lapply(simplif l1, List.map simplif ll, loc)
     | Lfunction(kind, params, l) -> Lfunction(kind, params, simplif l)
@@ -347,10 +347,10 @@ let collect_occurs  lam : occ_tbl =
       count bv body
     | Lapply(Lfunction(Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
-      count bv (Lam_util.beta_reduce  params body args)
+      count bv (Lam_beta_reduce.beta_reduce  params body args)
     | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       when  Ext_list.same_length params  args ->
-      count bv (Lam_util.beta_reduce   params body args)
+      count bv (Lam_beta_reduce.beta_reduce   params body args)
     | Lapply(l1, ll, _) ->
       count bv l1; List.iter (count bv) ll
     | Lassign(_, l) ->

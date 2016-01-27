@@ -231,7 +231,7 @@ let subst_helper (subst : subst_tbl) query lam =
 
               FIXME:   when inlining, need refresh local bound identifiers
           *)
-          let ok_to_inline = Lam_util.size l2 < 5  && i >=0 && j <=2 in 
+          let ok_to_inline = Lam_analysis.size l2 < 5  && i >=0 && j <=2 in 
           if ok_to_inline (* && false *) 
           then 
             begin 

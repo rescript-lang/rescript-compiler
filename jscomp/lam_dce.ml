@@ -22,11 +22,11 @@
 
 module I = Lambda.IdentSet
 
-let remove export_idents (rest : Lam_util.group list) : Lam_util.group list  = 
+let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  = 
   let ident_free_vars = Hashtbl.create 17 in
 
   let initial_idents =
-    Ext_list.flat_map (fun (x : Lam_util.group) ->
+    Ext_list.flat_map (fun (x : Lam_group.t) ->
       match x with
       | Single(kind, id,lam) -> (* assert false *)
           begin
@@ -46,7 +46,7 @@ let remove export_idents (rest : Lam_util.group list) : Lam_util.group list  =
               end)
           end
       | Nop lam ->
-          if Lam_util.no_side_effects lam then []
+          if Lam_analysis.no_side_effects lam then []
           else 
             (** its free varaibles here will be defined above *)
             I.elements ( Lambda.free_variables lam)) rest  @ export_idents
@@ -56,7 +56,7 @@ let remove export_idents (rest : Lam_util.group list) : Lam_util.group list  =
       initial_idents in
 
 
-  rest |> Ext_list.filter_map (fun ( x : Lam_util.group) ->
+  rest |> Ext_list.filter_map (fun ( x : Lam_group.t) ->
     match x with 
     | Single(_,id,_) -> 
         if I.mem id current_ident_sets then 
