@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Bytes    = require("../stdlib/bytes");
-var Mt       = require("./mt");
-var $$String = require("../stdlib/string");
+var Bytes           = require("../stdlib/bytes");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Mt              = require("./mt");
+var $$String        = require("../stdlib/string");
 
 function ff(x) {
   var a;
@@ -58,6 +59,37 @@ function gg(x) {
     }
   }
   return a + 3;
+}
+
+function rev_split_by_char(c, s) {
+  var _i = 0;
+  var _l = /* [] */0;
+  while(true) {
+    var l = _l;
+    var i = _i;
+    try {
+      var i$prime = $$String.index_from(s, i, c);
+      var s$prime = $$String.sub(s, i, i$prime - i);
+      _l = s$prime === "" ? l : [
+          /* :: */0,
+          s$prime,
+          l
+        ];
+      _i = i$prime + 1;
+    }
+    catch (exn){
+      if (exn === Caml_exceptions.Not_found) {
+        return [
+                /* :: */0,
+                $$String.sub(s, i, s.length - i),
+                l
+              ];
+      }
+      else {
+        throw exn;
+      }
+    }
+  };
 }
 
 Mt.from_pair_suites("string_test.ml", [
@@ -125,13 +157,40 @@ Mt.from_pair_suites("string_test.ml", [
                         ];
                 }
               ],
-              /* [] */0
+              [
+                /* :: */0,
+                [
+                  /* tuple */0,
+                  "rev_split_by_char",
+                  function () {
+                    return [
+                            /* Eq */0,
+                            [
+                              /* :: */0,
+                              "",
+                              [
+                                /* :: */0,
+                                "bbbb",
+                                [
+                                  /* :: */0,
+                                  "bbbb",
+                                  /* [] */0
+                                ]
+                              ]
+                            ],
+                            rev_split_by_char(/* "a" */97, "bbbbabbbba")
+                          ];
+                  }
+                ],
+                /* [] */0
+              ]
             ]
           ]
         ]
       ]
     ]);
 
-exports.ff = ff;
-exports.gg = gg;
+exports.ff                = ff;
+exports.gg                = gg;
+exports.rev_split_by_char = rev_split_by_char;
 /*  Not a pure module */
