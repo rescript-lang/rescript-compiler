@@ -128,6 +128,7 @@ module Exp : sig
 
   val array_append : ?comment:string -> t -> t list -> t
 
+  val array_copy : unary_op
   val string_append : binary_op
   (**
      When in ES6 mode, we can use Symbol to guarantee its uniquess,

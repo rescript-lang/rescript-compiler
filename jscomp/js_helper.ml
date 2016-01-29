@@ -315,6 +315,9 @@ module Exp = struct
   let array_append ?comment e el : t = 
     { comment ; expression_desc = Array_append (e, el)}
 
+  let array_copy ?comment e : t = 
+    { comment ; expression_desc = Array_copy e}
+ 
   (* Note that this return [undefined] in JS, 
       it should be wrapped to avoid leak [undefined] into 
       OCaml
