@@ -434,6 +434,12 @@ and
         P.string f ".concat";
         P.paren_group f 1 (fun _ -> arguments cxt f el))
 
+  | Array_copy e -> 
+    P.group f 1 (fun _ -> 
+        let cxt = expression 15 cxt f e in
+        P.string f ".slice";
+        P.paren_group f 1 (fun _ -> arguments cxt f [e]))
+
   | Dump (level, el) -> 
     let obj = 
       match level with 
@@ -938,6 +944,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | String_of_small_int_array _
       | Call _ 
       | Array_append _ 
+      | Array_copy _ 
       | Tag_ml_obj _
       | Seq _
       | Dot _

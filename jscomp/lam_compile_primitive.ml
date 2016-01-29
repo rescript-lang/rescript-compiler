@@ -402,7 +402,11 @@ let translate
       | _ -> E.unknown_primitive prim
     end
   | Psetglobal _  ->  E.unknown_primitive prim (* already handled *)
-  | Pduprecord (_, _)
+  | Pduprecord (_, _) -> 
+    begin match args with 
+    | [e] -> E.unknown_primitive prim
+    | _ -> assert false       
+    end
   | Plazyforce
   | Pbittest 
   | Pbigarrayref (_, _, _, _)
