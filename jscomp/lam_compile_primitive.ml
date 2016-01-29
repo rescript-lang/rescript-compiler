@@ -402,9 +402,12 @@ let translate
       | _ -> E.unknown_primitive prim
     end
   | Psetglobal _  ->  E.unknown_primitive prim (* already handled *)
-  | Pduprecord (_, _) -> 
+  | Pduprecord ( (Record_regular | Record_float),  _) -> 
+    (* this is due to we encode record as an array, it is going to change
+       if we have another encoding       
+    *)    
     begin match args with 
-    | [e] -> E.unknown_primitive prim
+    | [e] -> E.array_copy e
     | _ -> assert false       
     end
   | Plazyforce

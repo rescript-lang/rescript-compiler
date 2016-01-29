@@ -438,7 +438,9 @@ and
     P.group f 1 (fun _ -> 
         let cxt = expression 15 cxt f e in
         P.string f ".slice";
-        P.paren_group f 1 (fun _ -> arguments cxt f [e]))
+        P.string f "()" ;
+        cxt 
+      )
 
   | Dump (level, el) -> 
     let obj = 
