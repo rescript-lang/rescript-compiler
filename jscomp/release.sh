@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 watchman watch-del .
+. ./env.sh
+. ./build.sh
 make release
 
 # TODO: if $OCAMLSCRIPT_RELEASE is current dir, should still work, but 
@@ -9,6 +11,7 @@ make release
 
 rm -rf $OCAMLSCRIPT_RELEASE/jscomp/bin/compiler.ml
 cp bin/compiler.ml $OCAMLSCRIPT_RELEASE/jscomp/bin
+cp js_cmj_datasets.ml $OCAMLSCRIPT_RELEASE/jscomp
 cd $OCAMLSCRIPT_RELEASE/jscomp
 
 git clean -dfx
