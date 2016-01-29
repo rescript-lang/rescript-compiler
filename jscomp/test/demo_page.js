@@ -39,7 +39,7 @@ function test_curry(x, y) {
 }
 
 function f(param) {
-  return test_curry(32, param);
+  return 32 + param;
 }
 
 ReactDom.render(React.createClass({

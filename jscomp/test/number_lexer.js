@@ -42,33 +42,42 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             l("new line");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 1 : 
             l("number");
             l(Lexing.lexeme(lexbuf));
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 2 : 
             l("ident");
             l(Lexing.lexeme(lexbuf));
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 3 : 
             l("+");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 4 : 
             l("-");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 5 : 
             l("*");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 6 : 
             l("/");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 7 : 
             l("(");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 8 : 
             l(")");
-            return token(l, lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 9 : 
             return l("eof");
         

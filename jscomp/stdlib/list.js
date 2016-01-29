@@ -524,7 +524,7 @@ function find_all(p) {
         }
       }
       else {
-        return rev(accu);
+        return rev_append(accu, /* [] */0);
       }
     };
   };
@@ -561,8 +561,8 @@ function partition(p, l) {
     else {
       return [
               /* tuple */0,
-              rev(yes),
-              rev(no)
+              rev_append(yes, /* [] */0),
+              rev_append(no, /* [] */0)
             ];
     }
   };

@@ -9,29 +9,24 @@ function f(a, b, _) {
 }
 
 function f2(a) {
-  return function (param) {
-    return f(a, 1, param);
+  return function () {
+    return a + 1;
   };
 }
-
-var f3 = f2(100);
 
 var arr = $$Array.init(2, function () {
       return 0;
     });
 
 for(var i = 0; i<= 2; ++i){
-  var f3$1 = f2(i);
-  arr[i] = f3$1(2);
+  arr[i] = i + 1;
 }
 
-var match_001 = Pervasives.string_of_int(f(1, 2, 3));
-
-var match_002 = f3(2);
+var match_001 = Pervasives.string_of_int(3);
 
 var a = match_001;
 
-var b = match_002;
+var b = 101;
 
 var c = arr;
 

@@ -181,7 +181,6 @@ function isid(param) {
 function skip(_param) {
   while(true) {
     var ch = getch(/* () */0);
-    var exit = 0;
     if (ch >= 14) {
       if (ch !== 32) {
         if (ch !== 47) {
@@ -207,27 +206,23 @@ function skip(_param) {
         }
       }
       else {
-        exit = 1;
+        _param = /* () */0;
       }
     }
     else if (ch >= 11) {
       if (ch >= 13) {
-        exit = 1;
+        _param = /* () */0;
       }
       else {
         return ch;
       }
     }
     else if (ch >= 9) {
-      exit = 1;
+      _param = /* () */0;
     }
     else {
       return ch;
     }
-    if (exit === 1) {
-      _param = /* () */0;
-    }
-    
   };
 }
 
@@ -1813,20 +1808,18 @@ function top(_param) {
             var n = _n;
             var regs = _regs;
             var match = next$1(/* () */0);
-            var exit = 0;
             switch (match[0]) {
               case 0 : 
                   if (match[1] === ")") {
                     return stk;
                   }
                   else {
-                    exit = 1;
+                    return Pervasives.failwith("[var] or ) expected");
                   }
                   break;
               case 1 : 
               case 2 : 
-                  exit = 1;
-                  break;
+                  return Pervasives.failwith("[var] or ) expected");
               case 3 : 
                   var r = List.hd(regs);
                   push(r);
@@ -1852,10 +1845,6 @@ function top(_param) {
                   break;
               
             }
-            if (exit === 1) {
-              return Pervasives.failwith("[var] or ) expected");
-            }
-            
           };
         };
         next$1(/* () */0);

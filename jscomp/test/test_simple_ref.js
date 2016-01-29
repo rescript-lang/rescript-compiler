@@ -24,20 +24,16 @@ var c = [
   0
 ];
 
-function $$escape(v) {
-  return v;
-}
-
 var not_real_escape = a;
 
 function real_escape(f, _) {
   return f(c);
 }
 
-var u = $$escape(h);
+var u = h;
 
 exports.u               = u;
 exports.gen             = gen;
 exports.not_real_escape = not_real_escape;
 exports.real_escape     = real_escape;
-/* u Not a pure module */
+/* No side effect */

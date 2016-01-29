@@ -651,11 +651,8 @@ function MakeSeeded(H) {
 
 function Make(H) {
   var equal = H[1];
-  var hash = function (_, x) {
-    return H[2](x);
-  };
   var key_index = function (h, key) {
-    return hash(h[3], key) & h[2].length - 1;
+    return H[2](key) & h[2].length - 1;
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);

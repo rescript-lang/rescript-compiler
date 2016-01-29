@@ -18,25 +18,11 @@
 
 (* Author: Hongbo Zhang  *)
 
-(** A module which provides some basic analysis over lambda expression *)
+val set_file : string -> unit 
+val get_file : unit -> string
 
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
 
-val size : Lambda.lambda -> int
-
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
-
-val is_closed : Lambda.lambda -> bool
-
-
-val small_inline_size : int 
-val exit_inline_size : int 
+val is_same_file : unit -> bool 

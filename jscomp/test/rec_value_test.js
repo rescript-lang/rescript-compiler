@@ -315,13 +315,11 @@ var suites_002 = [
       var exit = 0;
       if (a) {
         if (b) {
-          var match = b[2];
-          if (match) {
-            var match$1 = match[2];
-            if (match$1) {
-              var match$2 = match$1[2];
-              if (match$2) {
-                $js = match$2[1];
+          if (c) {
+            if (a) {
+              var match = a[2];
+              if (match) {
+                $js = match[1];
               }
               else {
                 exit = 1;

@@ -96,26 +96,25 @@ function relative_path(file1, file2) {
     };
   };
   var ys = go(dir1, dir2);
-  var exit = 0;
   if (ys) {
     if (ys[1] === node_parent) {
       return $$String.concat(node_sep, ys);
     }
     else {
-      exit = 1;
+      return $$String.concat(node_sep, [
+                  /* :: */0,
+                  node_current,
+                  ys
+                ]);
     }
   }
   else {
-    exit = 1;
-  }
-  if (exit === 1) {
     return $$String.concat(node_sep, [
                 /* :: */0,
                 node_current,
                 ys
               ]);
   }
-  
 }
 
 function node_relative_path(path1, path2) {

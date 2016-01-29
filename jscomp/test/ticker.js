@@ -136,10 +136,6 @@ function print_all_composite(all_tickers) {
             }, all_tickers);
 }
 
-function compare(prim, prim$1) {
-  return Caml_primitive.caml_compare(prim, prim$1);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -243,7 +239,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -279,7 +275,8 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare(x, param[2]);
+      var prim = param[2];
+      var c = Caml_primitive.caml_compare(x, prim);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -295,7 +292,8 @@ function find(x, _param) {
 
 function mem(x, param) {
   if (param) {
-    var c = compare(x, param[2]);
+    var prim = param[2];
+    var c = Caml_primitive.caml_compare(x, prim);
     return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -368,7 +366,7 @@ function remove(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, d, r);
@@ -556,7 +554,7 @@ function split$1(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split$1(x, l);
@@ -719,7 +717,7 @@ function cons_enum(_m, _e) {
   };
 }
 
-function compare$1(cmp, m1, m2) {
+function compare(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
   while(true) {
@@ -727,7 +725,9 @@ function compare$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare(e1[1], e2[1]);
+        var prim = e2[1];
+        var prim$1 = e1[1];
+        var c = Caml_primitive.caml_compare(prim$1, prim);
         if (c !== 0) {
           return c;
         }
@@ -759,7 +759,9 @@ function equal(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        return +(compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        var prim = e2[1];
+        var prim$1 = e1[1];
+        return +(Caml_primitive.caml_compare(prim$1, prim) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
       }
       else {
         return /* false */0;
@@ -819,7 +821,7 @@ var Ticker_map = [
   singleton,
   remove,
   merge,
-  compare$1,
+  compare,
   equal,
   iter,
   fold,
@@ -999,7 +1001,6 @@ function process_input_line(ticker_map, all_tickers, line) {
           ];
   };
   var tokens = split(/* "|" */124, line);
-  var exit = 0;
   if (tokens) {
     switch (tokens[1]) {
       case "Q" : 
@@ -1008,7 +1009,7 @@ function process_input_line(ticker_map, all_tickers, line) {
             var match$1 = match[2];
             if (match$1) {
               if (match$1[2]) {
-                exit = 1;
+                return Pervasives.failwith("Invalid input line");
               }
               else {
                 var ticker_map$1 = ticker_map ? ticker_map[1] : compute_update_sequences(all_tickers);
@@ -1025,11 +1026,11 @@ function process_input_line(ticker_map, all_tickers, line) {
               }
             }
             else {
-              exit = 1;
+              return Pervasives.failwith("Invalid input line");
             }
           }
           else {
-            exit = 1;
+            return Pervasives.failwith("Invalid input line");
           }
           break;
       case "R" : 
@@ -1045,7 +1046,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$5 = match$4[2];
                       if (match$5) {
                         if (match$5[2]) {
-                          exit = 1;
+                          return Pervasives.failwith("Invalid input line");
                         }
                         else {
                           return [
@@ -1060,11 +1061,11 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        exit = 1;
+                        return Pervasives.failwith("Invalid input line");
                       }
                     }
                     else {
-                      exit = 1;
+                      return Pervasives.failwith("Invalid input line");
                     }
                     break;
                 case "-" : 
@@ -1073,7 +1074,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$7 = match$6[2];
                       if (match$7) {
                         if (match$7[2]) {
-                          exit = 1;
+                          return Pervasives.failwith("Invalid input line");
                         }
                         else {
                           return [
@@ -1088,16 +1089,16 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        exit = 1;
+                        return Pervasives.failwith("Invalid input line");
                       }
                     }
                     else {
-                      exit = 1;
+                      return Pervasives.failwith("Invalid input line");
                     }
                     break;
                 case "S" : 
                     if (match$3[2]) {
-                      exit = 1;
+                      return Pervasives.failwith("Invalid input line");
                     }
                     else {
                       return [
@@ -1116,30 +1117,25 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ticker_map
                             ];
                     }
-                    break;
                 default:
-                  exit = 1;
+                  return Pervasives.failwith("Invalid input line");
               }
             }
             else {
-              exit = 1;
+              return Pervasives.failwith("Invalid input line");
             }
           }
           else {
-            exit = 1;
+            return Pervasives.failwith("Invalid input line");
           }
           break;
       default:
-        exit = 1;
+        return Pervasives.failwith("Invalid input line");
     }
   }
   else {
-    exit = 1;
-  }
-  if (exit === 1) {
     return Pervasives.failwith("Invalid input line");
   }
-  
 }
 
 function loop(_lines, _param) {

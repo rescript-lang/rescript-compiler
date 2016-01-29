@@ -412,6 +412,7 @@ module Exp = struct
       true_
     | _ -> 
       to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
+  let int_equal = float_equal 
   let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
     match e0.expression_desc, e1.expression_desc with     
     | Str (_, a0), Str(_, b0) 
@@ -514,27 +515,44 @@ module Exp = struct
      bit different from Javascript, so that we can change it in the future
    *)
   let rec and_ ?comment (e1 : t) (e2 : t) = 
-    match e1, e2 with 
-    | {expression_desc = Int_of_boolean e1;_} , 
-      {expression_desc = Int_of_boolean e2;_} -> 
+    match e1.expression_desc, e2.expression_desc with 
+    |  Int_of_boolean e1 , Int_of_boolean e2 -> 
         and_ ?comment e1 e2
-    | {expression_desc = Int_of_boolean e1; _} , 
-      e2  -> and_ ?comment e1 e2
-    | e1, {expression_desc = Int_of_boolean e2;_}
+    |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
+    | _,  Int_of_boolean e2
       -> and_ ?comment e1 e2
-    | e1, e2 ->     
+    (* optimization if [e1 = e2], then and_ e1 e2 -> e2
+       be careful for side effect        
+    *)
+    | Var i, Var j when Js_op_util.same_vident  i j 
+      -> 
+      to_ocaml_boolean e1
+    | Var i, 
+      (Bin (And,   {expression_desc = Var j ; _}, _) 
+      | Bin (And ,  _, {expression_desc = Var j ; _}))
+      when Js_op_util.same_vident  i j 
+      ->
+      to_ocaml_boolean e2          
+    | _, _ ->     
         to_ocaml_boolean @@ bin ?comment And e1 e2 
 
   let rec or_ ?comment (e1 : t) (e2 : t) = 
-    match e1, e2 with 
-    | {expression_desc = Int_of_boolean e1;_} , 
-      {expression_desc = Int_of_boolean e2;_} -> 
+    match e1.expression_desc, e2.expression_desc with 
+    | Int_of_boolean e1 , Int_of_boolean e2
+      -> 
         or_ ?comment e1 e2
-    | {expression_desc = Int_of_boolean e1;_} , 
-      e2  -> or_ ?comment e1 e2
-    | e1, {expression_desc = Int_of_boolean e2;_}
+    | Int_of_boolean e1 , _  -> or_ ?comment e1 e2
+    | _,  Int_of_boolean e2
       -> or_ ?comment e1 e2
-    | e1, e2 ->     
+    | Var i, Var j when Js_op_util.same_vident  i j 
+      -> 
+      to_ocaml_boolean e1
+    | Var i, 
+      (Bin (Or,   {expression_desc = Var j ; _}, _) 
+      | Bin (Or ,  _, {expression_desc = Var j ; _}))
+      when Js_op_util.same_vident  i j 
+      -> to_ocaml_boolean e2          
+    | _, _ ->     
         to_ocaml_boolean @@ bin ?comment Or e1 e2 
 
   let string_of_small_int_array ?comment xs : t = 
@@ -594,8 +612,21 @@ module Exp = struct
 
   let string_comp cmp ?comment  e0 e1 = 
     to_ocaml_boolean @@ bin ?comment cmp e0 e1
-  let int_comp cmp ?comment  e0 e1 = 
-    to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
+
+  let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) = 
+    match cmp, e0.expression_desc, e1.expression_desc with
+    | _, Call ({
+        expression_desc = 
+          Var (Qualified 
+                 (_, Runtime, 
+                  Some ("caml_int_compare" | "caml_int32_compare"))); _}, 
+        [l;r], _), 
+      Number (Int {i = 0})
+      -> int_comp cmp l r (* = 0 > 0 < 0 *)
+    | _ ->          
+      to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
+
   let float_comp cmp ?comment  e0 e1 = 
     to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 

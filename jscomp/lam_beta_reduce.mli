@@ -44,3 +44,8 @@ val propogate_beta_reduce :
   Lambda.lambda -> 
   Lambda.lambda list -> 
   Lambda.lambda
+
+
+val refresh : 
+  Lambda.lambda -> 
+  Lambda.lambda 

@@ -14,7 +14,7 @@ function length(x) {
 }
 
 function fill(ar, ofs, len, x) {
-  if (ofs < 0 || len < 0 || ofs + len > length(ar)) {
+  if (ofs < 0 || len < 0 || ofs + len > ar.length - 1) {
     throw [
           0,
           Caml_exceptions.Invalid_argument,
@@ -30,10 +30,7 @@ function fill(ar, ofs, len, x) {
 }
 
 function Make(H) {
-  var weak_create = function (prim) {
-    return Caml_primitive.caml_weak_create(prim);
-  };
-  var emptybucket = weak_create(0);
+  var emptybucket = Caml_primitive.caml_weak_create(0);
   var get_index = function (t, h) {
     return (h & Pervasives.max_int) % t[1].length;
   };
@@ -68,7 +65,7 @@ function Make(H) {
                 while(true) {
                   var accu = _accu;
                   var i = _i;
-                  if (i >= length(b)) {
+                  if (i >= b.length - 1) {
                     return accu;
                   }
                   else {
@@ -90,7 +87,7 @@ function Make(H) {
                 var b = param;
                 while(true) {
                   var i = _i;
-                  if (i >= length(b)) {
+                  if (i >= b.length - 1) {
                     return /* () */0;
                   }
                   else {
@@ -113,7 +110,7 @@ function Make(H) {
                 var b = param$1;
                 while(true) {
                   var i = _i;
-                  if (i >= length(b)) {
+                  if (i >= b.length - 1) {
                     return /* () */0;
                   }
                   else {
@@ -133,7 +130,7 @@ function Make(H) {
     while(true) {
       var accu = _accu;
       var i = _i;
-      if (i >= length(b)) {
+      if (i >= b.length - 1) {
         return accu;
       }
       else {
@@ -158,7 +155,7 @@ function Make(H) {
   var test_shrink_bucket = function (t) {
     var bucket = t[1][t[5]];
     var hbucket = t[2][t[5]];
-    var len = length(bucket);
+    var len = bucket.length - 1;
     var prev_len = prev_sz(len);
     var live = count_bucket(0, bucket, 0);
     if (live <= prev_len) {
@@ -185,7 +182,7 @@ function Make(H) {
           }
         };
       };
-      loop(0, length(bucket) - 1);
+      loop(0, bucket.length - 1 - 1);
       if (prev_len) {
         Caml_obj_runtime.caml_obj_truncate(bucket, prev_len + 1);
         Caml_obj_runtime.caml_obj_truncate(hbucket, prev_len);
@@ -205,7 +202,7 @@ function Make(H) {
   var add_aux = function (t, setter, d, h, index) {
     var bucket = t[1][index];
     var hashes = t[2][index];
-    var sz = length(bucket);
+    var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
       var i = _i;
@@ -214,7 +211,7 @@ function Make(H) {
         if (newsz <= sz) {
           Pervasives.failwith("Weak.Make: hash bucket cannot grow more");
         }
-        var newbucket = weak_create(newsz);
+        var newbucket = Caml_primitive.caml_weak_create(newsz);
         var newhashes = Caml_array.caml_make_vect(newsz, 0);
         Caml_primitive.caml_weak_blit(bucket, 0, newbucket, 0, sz);
         $$Array.blit(hashes, 0, newhashes, 0, sz);
@@ -285,7 +282,7 @@ function Make(H) {
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
-    var sz = length(bucket);
+    var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
       var i = _i;
@@ -338,7 +335,7 @@ function Make(H) {
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
-    var sz = length(bucket);
+    var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
       var i = _i;
@@ -379,7 +376,7 @@ function Make(H) {
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
-    var sz = length(bucket);
+    var sz = bucket.length - 1;
     var _i = 0;
     var _accu = /* [] */0;
     while(true) {
@@ -390,7 +387,6 @@ function Make(H) {
       }
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
-        var exit = 0;
         if (match) {
           if (H[1](match[1], d)) {
             var match$1 = Caml_primitive.caml_weak_get(bucket, i);
@@ -407,16 +403,12 @@ function Make(H) {
             }
           }
           else {
-            exit = 1;
+            _i = i + 1;
           }
         }
         else {
-          exit = 1;
-        }
-        if (exit === 1) {
           _i = i + 1;
         }
-        
       }
       else {
         _i = i + 1;

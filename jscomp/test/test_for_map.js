@@ -5,10 +5,6 @@ var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_primitive  = require("../runtime/caml_primitive");
 
-function compare(x, y) {
-  return Caml_primitive.caml_int_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -112,7 +108,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -148,7 +144,8 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare(x, param[2]);
+      var y = param[2];
+      var c = Caml_primitive.caml_int_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -164,7 +161,8 @@ function find(x, _param) {
 
 function mem(x, param) {
   if (param) {
-    var c = compare(x, param[2]);
+    var y = param[2];
+    var c = Caml_primitive.caml_int_compare(x, y);
     return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -237,7 +235,7 @@ function remove(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, d, r);
@@ -425,7 +423,7 @@ function split(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -588,7 +586,7 @@ function cons_enum(_m, _e) {
   };
 }
 
-function compare$1(cmp, m1, m2) {
+function compare(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
   while(true) {
@@ -596,7 +594,9 @@ function compare$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare(e1[1], e2[1]);
+        var y = e2[1];
+        var x = e1[1];
+        var c = Caml_primitive.caml_int_compare(x, y);
         if (c !== 0) {
           return c;
         }
@@ -628,7 +628,9 @@ function equal(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        return +(compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        var y = e2[1];
+        var x = e1[1];
+        return +(x === y && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
       }
       else {
         return /* false */0;
@@ -688,7 +690,7 @@ var IntMap = [
   singleton,
   remove,
   merge,
-  compare$1,
+  compare,
   equal,
   iter,
   fold,

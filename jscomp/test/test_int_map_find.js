@@ -5,10 +5,6 @@ var Pervasives     = require("../stdlib/pervasives");
 var Caml_primitive = require("../runtime/caml_primitive");
 var List           = require("../stdlib/list");
 
-function compare(x, y) {
-  return Caml_primitive.caml_int_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -92,7 +88,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);

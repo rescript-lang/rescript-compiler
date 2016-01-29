@@ -50,22 +50,31 @@ function ui_layout(compile, lookup, appContext) {
   stackPanel.addChild(grid);
   stackPanel.addChild(inputCode);
   stackPanel.addChild(button);
-  var mk_titleRow = function (text) {
-    return {
-            "label": {
-              "text": text
-            }
-          };
-  };
   var u = {
     "width": 200
   };
   grid.minHeight = 300;
   grid.titleRows = /* array */[
-    mk_titleRow("Ticker"),
-    mk_titleRow("Bid"),
-    mk_titleRow("Ask"),
-    mk_titleRow("Result")
+    {
+      "label": {
+        "text": "Ticker"
+      }
+    },
+    {
+      "label": {
+        "text": "Bid"
+      }
+    },
+    {
+      "label": {
+        "text": "Ask"
+      }
+    },
+    {
+      "label": {
+        "text": "Result"
+      }
+    }
   ];
   grid.columns = /* array */[
     u,
@@ -91,9 +100,6 @@ function ui_layout(compile, lookup, appContext) {
           return /* () */0;
         }
       });
-  var fmt = function (v) {
-    return v.toFixed(2);
-  };
   Runtime.setInterval(function () {
         return grid.dataSource = Array.prototype.map.call(data, function (param) {
                     var price = param[2];
@@ -103,11 +109,30 @@ function ui_layout(compile, lookup, appContext) {
                           "bid": bid,
                           "ask": ask
                         });
+                    var text = bid.toFixed(2);
+                    var text$1 = ask.toFixed(2);
+                    var text$2 = result.toFixed(2);
                     return /* array */[
-                            mk_titleRow(param[1]),
-                            mk_titleRow(fmt(bid)),
-                            mk_titleRow(fmt(ask)),
-                            mk_titleRow(fmt(result))
+                            {
+                              "label": {
+                                "text": param[1]
+                              }
+                            },
+                            {
+                              "label": {
+                                "text": text
+                              }
+                            },
+                            {
+                              "label": {
+                                "text": text$1
+                              }
+                            },
+                            {
+                              "label": {
+                                "text": text$2
+                              }
+                            }
                           ];
                   });
       }, 100);

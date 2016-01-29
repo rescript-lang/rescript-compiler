@@ -210,24 +210,25 @@ function is_real_value(f) {
 }
 
 function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
-  var sqr = function (x) {
-    return x * x;
-  };
   var plp2 = function (x) {
     if (x <= 0 || x >= 1) {
       return 0;
     }
     else if (x < 0.2) {
-      return 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * sqr(x - 0.10);
+      var x$1 = x - 0.10;
+      return 0.468995593589281168 + 3.16992500144231215 * (x - 0.10) - 8.01497244938313 * (x$1 * x$1);
     }
     else if (x < 0.5) {
-      return 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * sqr(x - 0.35);
+      var x$2 = x - 0.35;
+      return 0.934068055375491091 + 0.893084796083488341 * (x - 0.35) - 3.17075833162409548 * (x$2 * x$2);
     }
     else if (x < 0.8) {
-      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * sqr(x - 0.65);
+      var x$3 = x - 0.65;
+      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.65) - 3.17075833162409548 * (x$3 * x$3);
     }
     else {
-      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * sqr(x - 0.90);
+      var x$4 = x - 0.90;
+      return 0.934068055375491091 - 0.893084796083488341 * (x - 0.90) - 3.17075833162409548 * (x$4 * x$4);
     }
   };
   var best = /* None */0;
@@ -346,7 +347,6 @@ function trim_tree_same(dt) {
       var n = l[1];
       var t = trim_tree_same$prime(n[2]);
       var f = trim_tree_same$prime(n[3]);
-      var exit = 0;
       if (t[0]) {
         var p1 = t[1];
         if (f[0]) {
@@ -354,9 +354,14 @@ function trim_tree_same(dt) {
           var tp = p1[0] / (p1[0] + p1[1]);
           var fp = p2[0] / (p2[0] + p2[1]);
           if (Math.abs(tp - fp) < 1e-6) {
+            var b = p1[1] + p2[1];
+            var a = p1[0] + p2[0];
             return [
                     /* Leaf */1,
-                    mkfp(p1[0] + p2[0], p1[1] + p2[1])
+                    /* array */[
+                      a,
+                      b
+                    ]
                   ];
           }
           else {
@@ -372,13 +377,18 @@ function trim_tree_same(dt) {
           }
         }
         else {
-          exit = 1;
+          return [
+                  /* Node */0,
+                  [
+                    /* record */0,
+                    n[1],
+                    t,
+                    f
+                  ]
+                ];
         }
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         return [
                 /* Node */0,
                 [
@@ -389,7 +399,6 @@ function trim_tree_same(dt) {
                 ]
               ];
       }
-      
     }
   };
   return trim_tree_same$prime(dt);
@@ -418,7 +427,10 @@ function build_dt(max_depth, leaf_acc, smooth, validExO, _F, _Y, _W) {
     if (c_t <= 0 || c_f <= 0 || Pervasives.min(p_t, p_f) < leaf_acc || depth >= max_depth) {
       return [
               /* Leaf */1,
-              mkfp(c_t, c_f)
+              /* array */[
+                c_t,
+                c_f
+              ]
             ];
     }
     else {
@@ -459,7 +471,10 @@ function build_dt(max_depth, leaf_acc, smooth, validExO, _F, _Y, _W) {
       else {
         return [
                 /* Leaf */1,
-                mkfp(c_t, c_f)
+                /* array */[
+                  c_t,
+                  c_f
+                ]
               ];
       }
     }
@@ -535,7 +550,10 @@ function build_boosted_dt(size, max_depth, leaf_acc, smooth, input_f, _F, _Y, _W
         0,
         [
           /* Leaf */1,
-          mkfp(0, 0)
+          /* array */[
+            0,
+            0
+          ]
         ]
       ]);
   var h = Pervasives.open_in(input_f);
@@ -1021,9 +1039,14 @@ function read_tree(h) {
                 exit = 1;
               }
               else {
+                var b = Caml_format.caml_float_of_string(match$2[1]);
+                var a = Caml_format.caml_float_of_string(match$1[1]);
                 return [
                         /* Leaf */1,
-                        mkfp(Caml_format.caml_float_of_string(match$1[1]), Caml_format.caml_float_of_string(match$2[1]))
+                        /* array */[
+                          a,
+                          b
+                        ]
                       ];
               }
             }
@@ -1081,7 +1104,10 @@ function load_model(fp) {
         0,
         [
           /* Leaf */1,
-          mkfp(0, 0)
+          /* array */[
+            0,
+            0
+          ]
         ]
       ]);
   for(var i = 0 ,i_finish = size - 1; i<= i_finish; ++i){

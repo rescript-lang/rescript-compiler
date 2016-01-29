@@ -81,37 +81,40 @@ function from_hex(s) {
         ];
   }
   var digit = function (c) {
-    var exit = 0;
     if (c >= 65) {
       if (c >= 97) {
         if (c >= 103) {
-          exit = 1;
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                "Digest.from_hex"
+              ];
         }
         else {
           return c - /* "a" */97 + 10;
         }
       }
       else if (c >= 71) {
-        exit = 1;
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Digest.from_hex"
+            ];
       }
       else {
         return c - /* "A" */65 + 10;
       }
     }
     else if (c > 57 || c < 48) {
-      exit = 1;
-    }
-    else {
-      return c - /* "0" */48;
-    }
-    if (exit === 1) {
       throw [
             0,
             Caml_exceptions.Invalid_argument,
             "Digest.from_hex"
           ];
     }
-    
+    else {
+      return c - /* "0" */48;
+    }
   };
   var $$byte = function (i) {
     return (digit(s.charCodeAt(i)) << 4) + digit(s.charCodeAt(i + 1));

@@ -216,6 +216,7 @@ let convert (name : string) =
      | '@' -> Buffer.add_string buffer "$at"
      | '^' -> Buffer.add_string buffer "$caret"
      | '/' -> Buffer.add_string buffer "$slash"
+     | '|' -> Buffer.add_string buffer "$pipe"
      | '.' -> Buffer.add_string buffer "$dot"
      | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
      | _ -> Buffer.add_string buffer "$unknown"

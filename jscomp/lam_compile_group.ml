@@ -47,7 +47,8 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
          to make those parts pure (not a function call), then it can be removed 
          if unused 
       *)                     
-  | Single(_, ({name="infinity";_} as id),_ ),  "pervasives.ml" -> (* TODO: check relative path to compiler*)
+  | Single(_, ({name="infinity";_} as id),_ ),  "pervasives.ml" 
+    -> (* TODO: check relative path to compiler*)
     Js_output.of_stmt @@ S.const_variable id ~exp:(E.js_global "Infinity")
   | Single(_, ({name="neg_infinity";_} as id),_ ), "pervasives.ml" ->
     Js_output.of_stmt @@ S.const_variable id ~exp:(E.js_global "-Infinity")
@@ -143,31 +144,43 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 *)
 let compile ~filename env sigs lam  : J.program  = 
 
-  let exports = Translmod.get_export_identifiers() in
+  let export_idents = Translmod.get_export_identifiers() in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
 
   let lam  = Lam_group.deep_flatten lam in
   let _d   = Lam_util.dump env filename in
-  let meta = Lam_pass_collect.count_alias_globals env filename  exports lam in
-  (* TODO: remove [export_idents] from meta *)
-
+  let meta = 
+    Lam_pass_collect.count_alias_globals env filename  export_idents lam in
   let lam = 
     let lam =  
       lam
       |>  Lam_pass_exits.simplify_exits
       |>  Lam_pass_remove_alias.simplify_alias  meta in  (* Inling happens*)
+    (* TODO: research how to combine those passes efficiently *)
     let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
 
+    let lam = 
+      lam
+      |> Lam_pass_alpha_conversion.alpha_conversion meta
+      |> Lam_pass_exits.simplify_exits in    
+    let () = Lam_pass_collect.collect_helper meta lam
+    in
     lam
-    |> Lam_pass_alpha_conversion.alpha_conversion meta
-    |> Lam_pass_exits.simplify_exits    (* we should investigate a better way to put different passes : )*)
-    |> Lam_pass_lets_dce.simplify_lets  (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam ; Lam_pass_remove_alias.simplify_alias meta lam) *)
+    |>  Lam_pass_remove_alias.simplify_alias meta 
+    |>  Lam_pass_alpha_conversion.alpha_conversion meta
+    (* we should investigate a better way to put different passes : )*)
+    |> Lam_pass_lets_dce.simplify_lets 
+    (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
+       ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     |> Lam_pass_exits.simplify_exits
+
+
+
   in
 
   (* Debug identifier table *)
@@ -205,8 +218,12 @@ let compile ~filename env sigs lam  : J.program  =
                         *)
                    (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
                     eid :: new_exports))
-              meta.export_idents lambda_exports ([],[])in
-          let () = meta.export_idents <- new_exports in
+              meta.exports lambda_exports ([],[])in
+
+          let meta = { meta with 
+                       export_idents = Lam_util.ident_set_of_list new_exports;
+                       exports = new_exports
+                     } in 
           let rest = List.rev_append rest coercion_groups in
           let () =
             if not @@ Ext_string.is_empty filename 
@@ -224,7 +241,7 @@ let compile ~filename env sigs lam  : J.program  =
              lambda_exports are pure
              compile each binding with a return value
           *)
-          let rest = Lam_dce.remove meta.export_idents rest 
+          let rest = Lam_dce.remove meta.exports rest 
           in
           let module  E = struct exception  Not_pure of string end in
           (** Also need analyze its depenency is pure or not *)
@@ -276,7 +293,7 @@ let compile ~filename env sigs lam  : J.program  =
             Js_cmj_format.to_file 
               (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
           let js = 
-            Js_program_loader.make_program filename v.pure meta.export_idents
+            Js_program_loader.make_program filename v.pure meta.exports
               external_module_ids body 
           in
           (* The file is not big at all compared with [cmo] *)
@@ -295,19 +312,20 @@ let compile ~filename env sigs lam  : J.program  =
     | _ -> raise Not_a_module end
 ;;
 
-let current_file_name : string option ref  = ref None;;
+
 
 let lambda_as_module 
     env 
     (sigs : Types.signature)
     (filename : string) 
     (lam : Lambda.lambda) = 
-
-  let () = current_file_name :=  Some filename in
-  Ext_pervasives.with_file_as_chan 
-    (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
-    (fun chan -> Js_dump.dump_program (compile ~filename env sigs lam) chan)
-
+  begin 
+    Lam_current_unit.set_file filename ;  
+    Lam_current_unit.set_debug_file "ari_regress_test.ml";
+    Ext_pervasives.with_file_as_chan 
+      (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
+      (fun chan -> Js_dump.dump_program (compile ~filename env sigs lam) chan)
+  end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 
     includes {!Pervasives.stdin, Pervasives.stdout, Pervasives.stderr}

@@ -46,10 +46,6 @@ function public_method_label(s) {
   }
 }
 
-function compare(x, y) {
-  return Caml_string.caml_string_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -153,7 +149,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -189,7 +185,8 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare(x, param[2]);
+      var y = param[2];
+      var c = Caml_string.caml_string_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -205,7 +202,8 @@ function find(x, _param) {
 
 function mem(x, param) {
   if (param) {
-    var c = compare(x, param[2]);
+    var y = param[2];
+    var c = Caml_string.caml_string_compare(x, y);
     return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -278,7 +276,7 @@ function remove(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, d, r);
@@ -466,7 +464,7 @@ function split(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -629,7 +627,7 @@ function cons_enum(_m, _e) {
   };
 }
 
-function compare$1(cmp, m1, m2) {
+function compare(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
   while(true) {
@@ -637,7 +635,9 @@ function compare$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare(e1[1], e2[1]);
+        var y = e2[1];
+        var x = e1[1];
+        var c = Caml_string.caml_string_compare(x, y);
         if (c !== 0) {
           return c;
         }
@@ -669,7 +669,9 @@ function equal(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        return +(compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        var y = e2[1];
+        var x = e1[1];
+        return +(Caml_string.caml_string_compare(x, y) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
       }
       else {
         return /* false */0;
@@ -729,7 +731,7 @@ var Vars = [
   singleton,
   remove,
   merge,
-  compare$1,
+  compare,
   equal,
   iter,
   fold,
@@ -747,10 +749,6 @@ var Vars = [
   map,
   mapi
 ];
-
-function compare$2(x, y) {
-  return Caml_string.caml_string_compare(x, y);
-}
 
 function height$1(param) {
   if (param) {
@@ -855,7 +853,7 @@ function add$1(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$2(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$1(x, data, l), v, d, r);
@@ -891,7 +889,8 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare$2(x, param[2]);
+      var y = param[2];
+      var c = Caml_string.caml_string_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -907,7 +906,8 @@ function find$1(x, _param) {
 
 function mem$1(x, param) {
   if (param) {
-    var c = compare$2(x, param[2]);
+    var y = param[2];
+    var c = Caml_string.caml_string_compare(x, y);
     return +(c === 0 || mem$1(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -980,7 +980,7 @@ function remove$1(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$2(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(remove$1(x, l), v, d, r);
@@ -1168,7 +1168,7 @@ function split$1(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$2(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split$1(x, l);
@@ -1331,7 +1331,7 @@ function cons_enum$1(_m, _e) {
   };
 }
 
-function compare$3(cmp, m1, m2) {
+function compare$1(cmp, m1, m2) {
   var _e1 = cons_enum$1(m1, /* End */0);
   var _e2 = cons_enum$1(m2, /* End */0);
   while(true) {
@@ -1339,7 +1339,9 @@ function compare$3(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare$2(e1[1], e2[1]);
+        var y = e2[1];
+        var x = e1[1];
+        var c = Caml_string.caml_string_compare(x, y);
         if (c !== 0) {
           return c;
         }
@@ -1371,7 +1373,9 @@ function equal$1(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        return +(compare$2(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$1(e1[3], e1[4]), cons_enum$1(e2[3], e2[4])));
+        var y = e2[1];
+        var x = e1[1];
+        return +(Caml_string.caml_string_compare(x, y) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$1(e1[3], e1[4]), cons_enum$1(e2[3], e2[4])));
       }
       else {
         return /* false */0;
@@ -1431,7 +1435,7 @@ var Meths = [
   singleton$1,
   remove$1,
   merge$1,
-  compare$3,
+  compare$1,
   equal$1,
   iter$1,
   fold$1,
@@ -1449,10 +1453,6 @@ var Meths = [
   map$1,
   mapi$1
 ];
-
-function compare$4(x, y) {
-  return Caml_primitive.caml_int_compare(x, y);
-}
 
 function height$2(param) {
   if (param) {
@@ -1557,7 +1557,7 @@ function add$2(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$4(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$2(add$2(x, data, l), v, d, r);
@@ -1593,7 +1593,8 @@ function find$2(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare$4(x, param[2]);
+      var y = param[2];
+      var c = Caml_primitive.caml_int_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -1609,7 +1610,8 @@ function find$2(x, _param) {
 
 function mem$2(x, param) {
   if (param) {
-    var c = compare$4(x, param[2]);
+    var y = param[2];
+    var c = Caml_primitive.caml_int_compare(x, y);
     return +(c === 0 || mem$2(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -1682,7 +1684,7 @@ function remove$2(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$4(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$2(remove$2(x, l), v, d, r);
@@ -1870,7 +1872,7 @@ function split$2(x, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$4(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         var match = split$2(x, l);
@@ -2033,7 +2035,7 @@ function cons_enum$2(_m, _e) {
   };
 }
 
-function compare$5(cmp, m1, m2) {
+function compare$2(cmp, m1, m2) {
   var _e1 = cons_enum$2(m1, /* End */0);
   var _e2 = cons_enum$2(m2, /* End */0);
   while(true) {
@@ -2041,7 +2043,9 @@ function compare$5(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare$4(e1[1], e2[1]);
+        var y = e2[1];
+        var x = e1[1];
+        var c = Caml_primitive.caml_int_compare(x, y);
         if (c !== 0) {
           return c;
         }
@@ -2073,7 +2077,9 @@ function equal$2(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        return +(compare$4(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$2(e1[3], e1[4]), cons_enum$2(e2[3], e2[4])));
+        var y = e2[1];
+        var x = e1[1];
+        return +(x === y && cmp(e1[2], e2[2]) && equal_aux(cons_enum$2(e1[3], e1[4]), cons_enum$2(e2[3], e2[4])));
       }
       else {
         return /* false */0;
@@ -2133,7 +2139,7 @@ var Labs = [
   singleton$2,
   remove$2,
   merge$2,
-  compare$5,
+  compare$2,
   equal$2,
   iter$2,
   fold$2,
@@ -2858,105 +2864,121 @@ function method_impl(table, i, arr) {
   if (typeof clo === "number") {
     switch (clo) {
       case 0 : 
-          return get_const(next(/* () */0));
+          var x = next(/* () */0);
+          return function () {
+            return x;
+          };
       case 1 : 
-          return get_var(next(/* () */0));
+          var n = next(/* () */0);
+          return function (obj) {
+            return obj[n];
+          };
       case 2 : 
           var e = next(/* () */0);
-          var n = next(/* () */0);
-          return get_env(e, n);
+          var n$1 = next(/* () */0);
+          return get_env(e, n$1);
       case 3 : 
           return get_meth(next(/* () */0));
       case 4 : 
-          return set_var(next(/* () */0));
+          var n$2 = next(/* () */0);
+          return function (obj, x) {
+            obj[n$2] = x;
+            return /* () */0;
+          };
       case 5 : 
           var f = next(/* () */0);
-          var x = next(/* () */0);
-          return app_const(f, x);
+          var x$1 = next(/* () */0);
+          return function () {
+            return f(x$1);
+          };
       case 6 : 
           var f$1 = next(/* () */0);
-          var n$1 = next(/* () */0);
-          return app_var(f$1, n$1);
+          var n$3 = next(/* () */0);
+          return function (obj) {
+            return f$1(obj[n$3]);
+          };
       case 7 : 
           var f$2 = next(/* () */0);
           var e$1 = next(/* () */0);
-          var n$2 = next(/* () */0);
-          return app_env(f$2, e$1, n$2);
+          var n$4 = next(/* () */0);
+          return app_env(f$2, e$1, n$4);
       case 8 : 
           var f$3 = next(/* () */0);
-          var n$3 = next(/* () */0);
-          return app_meth(f$3, n$3);
+          var n$5 = next(/* () */0);
+          return app_meth(f$3, n$5);
       case 9 : 
           var f$4 = next(/* () */0);
-          var x$1 = next(/* () */0);
+          var x$2 = next(/* () */0);
           var y = next(/* () */0);
-          return app_const_const(f$4, x$1, y);
+          return function () {
+            return f$4(x$2, y);
+          };
       case 10 : 
           var f$5 = next(/* () */0);
-          var x$2 = next(/* () */0);
-          var n$4 = next(/* () */0);
-          return app_const_var(f$5, x$2, n$4);
+          var x$3 = next(/* () */0);
+          var n$6 = next(/* () */0);
+          return app_const_var(f$5, x$3, n$6);
       case 11 : 
           var f$6 = next(/* () */0);
-          var x$3 = next(/* () */0);
+          var x$4 = next(/* () */0);
           var e$2 = next(/* () */0);
-          var n$5 = next(/* () */0);
-          return app_const_env(f$6, x$3, e$2, n$5);
+          var n$7 = next(/* () */0);
+          return app_const_env(f$6, x$4, e$2, n$7);
       case 12 : 
           var f$7 = next(/* () */0);
-          var x$4 = next(/* () */0);
-          var n$6 = next(/* () */0);
-          return app_const_meth(f$7, x$4, n$6);
+          var x$5 = next(/* () */0);
+          var n$8 = next(/* () */0);
+          return app_const_meth(f$7, x$5, n$8);
       case 13 : 
           var f$8 = next(/* () */0);
-          var n$7 = next(/* () */0);
-          var x$5 = next(/* () */0);
-          return app_var_const(f$8, n$7, x$5);
+          var n$9 = next(/* () */0);
+          var x$6 = next(/* () */0);
+          return app_var_const(f$8, n$9, x$6);
       case 14 : 
           var f$9 = next(/* () */0);
           var e$3 = next(/* () */0);
-          var n$8 = next(/* () */0);
-          var x$6 = next(/* () */0);
-          return app_env_const(f$9, e$3, n$8, x$6);
+          var n$10 = next(/* () */0);
+          var x$7 = next(/* () */0);
+          return app_env_const(f$9, e$3, n$10, x$7);
       case 15 : 
           var f$10 = next(/* () */0);
-          var n$9 = next(/* () */0);
-          var x$7 = next(/* () */0);
-          return app_meth_const(f$10, n$9, x$7);
-      case 16 : 
-          var n$10 = next(/* () */0);
-          var x$8 = next(/* () */0);
-          return meth_app_const(n$10, x$8);
-      case 17 : 
           var n$11 = next(/* () */0);
-          var m = next(/* () */0);
-          return meth_app_var(n$11, m);
-      case 18 : 
+          var x$8 = next(/* () */0);
+          return app_meth_const(f$10, n$11, x$8);
+      case 16 : 
           var n$12 = next(/* () */0);
+          var x$9 = next(/* () */0);
+          return meth_app_const(n$12, x$9);
+      case 17 : 
+          var n$13 = next(/* () */0);
+          var m = next(/* () */0);
+          return meth_app_var(n$13, m);
+      case 18 : 
+          var n$14 = next(/* () */0);
           var e$4 = next(/* () */0);
           var m$1 = next(/* () */0);
-          return meth_app_env(n$12, e$4, m$1);
+          return meth_app_env(n$14, e$4, m$1);
       case 19 : 
-          var n$13 = next(/* () */0);
+          var n$15 = next(/* () */0);
           var m$2 = next(/* () */0);
-          return meth_app_meth(n$13, m$2);
+          return meth_app_meth(n$15, m$2);
       case 20 : 
           var m$3 = next(/* () */0);
-          var x$9 = next(/* () */0);
-          return send_const(m$3, x$9, new_cache(table));
+          var x$10 = next(/* () */0);
+          return send_const(m$3, x$10, new_cache(table));
       case 21 : 
           var m$4 = next(/* () */0);
-          var n$14 = next(/* () */0);
-          return send_var(m$4, n$14, new_cache(table));
+          var n$16 = next(/* () */0);
+          return send_var(m$4, n$16, new_cache(table));
       case 22 : 
           var m$5 = next(/* () */0);
           var e$5 = next(/* () */0);
-          var n$15 = next(/* () */0);
-          return send_env(m$5, e$5, n$15, new_cache(table));
+          var n$17 = next(/* () */0);
+          return send_env(m$5, e$5, n$17, new_cache(table));
       case 23 : 
           var m$6 = next(/* () */0);
-          var n$16 = next(/* () */0);
-          return send_meth(m$6, n$16, new_cache(table));
+          var n$18 = next(/* () */0);
+          return send_meth(m$6, n$18, new_cache(table));
       
     }
   }

@@ -235,7 +235,7 @@ function int64$1(bound) {
 }
 
 function $$float$1(scale) {
-  return $$float($$default, scale);
+  return rawfloat($$default) * scale;
 }
 
 function bool$1() {

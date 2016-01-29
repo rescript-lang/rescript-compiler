@@ -2,12 +2,9 @@
 "use strict";
 
 
-function f(_x, _y) {
+function f(_, _$1) {
   while(true) {
-    var y = _y;
-    var x = _x;
-    _y = x;
-    _x = y;
+    
   };
 }
 

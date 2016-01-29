@@ -145,7 +145,10 @@ module Exp : sig
   val assign :  binary_op
 
   val triple_equal : binary_op
+  (* TODO: reduce [triple_equal] use *)    
+
   val float_equal : binary_op
+  val int_equal : binary_op
   val string_equal : binary_op    
   val is_type_number : unary_op
   val typeof : unary_op

@@ -63,10 +63,8 @@ var suites_002 = [
     /* tuple */0,
     "avoid_mutable_inline_test",
     function () {
-      var v = h(/* () */0);
-      var v2 = h(/* () */0);
-      v[0] = 3;
-      v2[1] = 4;
+      c[0] = 3;
+      c[1] = 4;
       return [
               /* Eq */0,
               /* array */[
@@ -77,7 +75,7 @@ var suites_002 = [
                 4,
                 5
               ],
-              v
+              c
             ];
     }
   ],

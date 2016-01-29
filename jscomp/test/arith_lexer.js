@@ -35,7 +35,8 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
-            return lexeme(lexbuf);
+            ___ocaml_lex_state = 0;
+            break;
         case 1 : 
             return [
                     /* NUMERAL */0,

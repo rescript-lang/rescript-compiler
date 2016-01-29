@@ -1,9 +1,9 @@
 export var f: (x : any) => any ;
 export var f1: (x : any, y : any) => any ;
 export var f3: (g : any, x : any) => any ;
-export var f2: (prim : any) => any ;
+export var f2: (param : any) => any ;
 export var g: any ;
-export var ff: (prim : any) => any ;
+export var ff: (param : any) => any ;
 export var fff: any ;
 export var length_aux: (len : any, param : any) => any ;
 export var length: (l : any) => any ;

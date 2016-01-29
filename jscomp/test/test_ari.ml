@@ -1,5 +1,18 @@
 let f x = (+) x 
-(** f = function (x){ function(x,y){x + y} (x) }*)
+(*
+{[
+ f = function (x){ function(x,y){x + y} (x) }
+]}
+  after optimization
+{[
+  f = \x -> \y -> ..
+]}
+actually will become 
+{[
+  f = \(x,y) ->  x + y 
+]}
+
+*)
 let f1 x y  = (+) x y 
 let f3 g x = g x 
 let f2 = (+) 3 

@@ -107,7 +107,7 @@ function make_lexer(keywords) {
                 case 13 : 
                 case 26 : 
                 case 32 : 
-                    exit = 2;
+                    Stream.junk(strm__);
                     break;
                 case 34 : 
                     Stream.junk(strm__);
@@ -138,10 +138,13 @@ function make_lexer(keywords) {
                       }
                     }
                     var match$1 = Stream.peek(strm__);
-                    var exit$1 = 0;
                     if (match$1) {
                       if (match$1[1] !== 39) {
-                        exit$1 = 6;
+                        throw [
+                              0,
+                              Stream.$$Error,
+                              ""
+                            ];
                       }
                       else {
                         Stream.junk(strm__);
@@ -155,9 +158,6 @@ function make_lexer(keywords) {
                       }
                     }
                     else {
-                      exit$1 = 6;
-                    }
-                    if (exit$1 === 6) {
                       throw [
                             0,
                             Stream.$$Error,
@@ -192,11 +192,12 @@ function make_lexer(keywords) {
                     Stream.junk(strm__);
                     var strm__$2 = strm__;
                     var match$3 = Stream.peek(strm__$2);
-                    var exit$2 = 0;
                     if (match$3) {
                       var c$2 = match$3[1];
                       if (c$2 > 57 || c$2 < 48) {
-                        exit$2 = 1;
+                        reset_buffer(/* () */0);
+                        store(/* "-" */45);
+                        return ident2(strm__$2);
                       }
                       else {
                         Stream.junk(strm__$2);
@@ -207,14 +208,11 @@ function make_lexer(keywords) {
                       }
                     }
                     else {
-                      exit$2 = 1;
-                    }
-                    if (exit$2 === 1) {
                       reset_buffer(/* () */0);
                       store(/* "-" */45);
                       return ident2(strm__$2);
                     }
-                    case 48 : 
+                case 48 : 
                 case 49 : 
                 case 50 : 
                 case 51 : 
@@ -224,7 +222,7 @@ function make_lexer(keywords) {
                 case 55 : 
                 case 56 : 
                 case 57 : 
-                    exit = 5;
+                    exit = 4;
                     break;
                 case 0 : 
                 case 1 : 
@@ -273,7 +271,7 @@ function make_lexer(keywords) {
                 case 62 : 
                 case 63 : 
                 case 64 : 
-                    exit = 4;
+                    exit = 3;
                     break;
                 
               }
@@ -282,16 +280,16 @@ function make_lexer(keywords) {
           else {
             var switcher$1 = switcher - 26;
             if (switcher$1 > 5 || switcher$1 < 0) {
-              exit = 3;
+              exit = 2;
             }
             else {
               switch (switcher$1) {
                 case 1 : 
                 case 3 : 
-                    exit = 4;
+                    exit = 3;
                     break;
                 case 4 : 
-                    exit = 3;
+                    exit = 2;
                     break;
                 case 0 : 
                 case 2 : 
@@ -305,9 +303,9 @@ function make_lexer(keywords) {
         }
         else {
           exit = c >= 127 ? (
-              c >= 192 ? 3 : 1
+              c >= 192 ? 2 : 1
             ) : (
-              c !== 125 ? 4 : 1
+              c !== 125 ? 3 : 1
             );
         }
         switch (exit) {
@@ -319,72 +317,76 @@ function make_lexer(keywords) {
                     ];
           case 2 : 
               Stream.junk(strm__);
-              break;
-          case 3 : 
-              Stream.junk(strm__);
               reset_buffer(/* () */0);
               store(c);
               var strm__$3 = strm__;
               while(true) {
                 var match$4 = Stream.peek(strm__$3);
-                var exit$3 = 0;
                 if (match$4) {
                   var c$3 = match$4[1];
-                  var exit$4 = 0;
+                  var exit$1 = 0;
                   if (c$3 >= 91) {
                     var switcher$2 = c$3 - 95;
                     if (switcher$2 > 27 || switcher$2 < 0) {
                       if (switcher$2 >= 97) {
-                        exit$4 = 2;
+                        exit$1 = 1;
                       }
                       else {
-                        exit$3 = 1;
+                        return [
+                                /* Some */0,
+                                ident_or_keyword(get_string(/* () */0))
+                              ];
                       }
                     }
                     else if (switcher$2 !== 1) {
-                      exit$4 = 2;
+                      exit$1 = 1;
                     }
                     else {
-                      exit$3 = 1;
+                      return [
+                              /* Some */0,
+                              ident_or_keyword(get_string(/* () */0))
+                            ];
                     }
                   }
                   else if (c$3 >= 48) {
                     if (c$3 > 64 || c$3 < 58) {
-                      exit$4 = 2;
+                      exit$1 = 1;
                     }
                     else {
-                      exit$3 = 1;
+                      return [
+                              /* Some */0,
+                              ident_or_keyword(get_string(/* () */0))
+                            ];
                     }
                   }
                   else if (c$3 !== 39) {
-                    exit$3 = 1;
+                    return [
+                            /* Some */0,
+                            ident_or_keyword(get_string(/* () */0))
+                          ];
                   }
                   else {
-                    exit$4 = 2;
+                    exit$1 = 1;
                   }
-                  if (exit$4 === 2) {
+                  if (exit$1 === 1) {
                     Stream.junk(strm__$3);
                     store(c$3);
                   }
                   
                 }
                 else {
-                  exit$3 = 1;
-                }
-                if (exit$3 === 1) {
                   return [
                           /* Some */0,
                           ident_or_keyword(get_string(/* () */0))
                         ];
                 }
-                
               };
-          case 4 : 
+          case 3 : 
               Stream.junk(strm__);
               reset_buffer(/* () */0);
               store(c);
               return ident2(strm__);
-          case 5 : 
+          case 4 : 
               Stream.junk(strm__);
               reset_buffer(/* () */0);
               store(c);
@@ -400,33 +402,41 @@ function make_lexer(keywords) {
   var ident2 = function (strm__) {
     while(true) {
       var match = Stream.peek(strm__);
-      var exit = 0;
       if (match) {
         var c = match[1];
-        var exit$1 = 0;
+        var exit = 0;
         if (c >= 94) {
           var switcher = c - 95;
           if (switcher > 30 || switcher < 0) {
             if (switcher >= 32) {
-              exit = 1;
+              return [
+                      /* Some */0,
+                      ident_or_keyword(get_string(/* () */0))
+                    ];
             }
             else {
-              exit$1 = 2;
+              exit = 1;
             }
           }
           else if (switcher !== 29) {
-            exit = 1;
+            return [
+                    /* Some */0,
+                    ident_or_keyword(get_string(/* () */0))
+                  ];
           }
           else {
-            exit$1 = 2;
+            exit = 1;
           }
         }
         else if (c >= 65) {
           if (c !== 92) {
-            exit = 1;
+            return [
+                    /* Some */0,
+                    ident_or_keyword(get_string(/* () */0))
+                  ];
           }
           else {
-            exit$1 = 2;
+            exit = 1;
           }
         }
         else if (c >= 33) {
@@ -448,8 +458,10 @@ function make_lexer(keywords) {
             case 23 : 
             case 24 : 
             case 26 : 
-                exit = 1;
-                break;
+                return [
+                        /* Some */0,
+                        ident_or_keyword(get_string(/* () */0))
+                      ];
             case 0 : 
             case 2 : 
             case 3 : 
@@ -465,30 +477,29 @@ function make_lexer(keywords) {
             case 29 : 
             case 30 : 
             case 31 : 
-                exit$1 = 2;
+                exit = 1;
                 break;
             
           }
         }
         else {
-          exit = 1;
+          return [
+                  /* Some */0,
+                  ident_or_keyword(get_string(/* () */0))
+                ];
         }
-        if (exit$1 === 2) {
+        if (exit === 1) {
           Stream.junk(strm__);
           store(c);
         }
         
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         return [
                 /* Some */0,
                 ident_or_keyword(get_string(/* () */0))
               ];
       }
-      
     };
   };
   var number = function (strm__) {
@@ -497,18 +508,21 @@ function make_lexer(keywords) {
       var exit = 0;
       if (match) {
         var c = match[1];
-        var exit$1 = 0;
         if (c >= 58) {
           if (c !== 69) {
             if (c !== 101) {
               exit = 1;
             }
             else {
-              exit$1 = 2;
+              Stream.junk(strm__);
+              store(/* "E" */69);
+              return exponent_part(strm__);
             }
           }
           else {
-            exit$1 = 2;
+            Stream.junk(strm__);
+            store(/* "E" */69);
+            return exponent_part(strm__);
           }
         }
         else if (c !== 46) {
@@ -526,13 +540,13 @@ function make_lexer(keywords) {
           var strm__$1 = strm__;
           while(true) {
             var match$1 = Stream.peek(strm__$1);
-            var exit$2 = 0;
+            var exit$1 = 0;
             if (match$1) {
               var c$1 = match$1[1];
               var switcher = c$1 - 69;
               if (switcher > 32 || switcher < 0) {
                 if ((switcher + 21 >>> 0) > 9) {
-                  exit$2 = 1;
+                  exit$1 = 1;
                 }
                 else {
                   Stream.junk(strm__$1);
@@ -545,13 +559,13 @@ function make_lexer(keywords) {
                 return exponent_part(strm__$1);
               }
               else {
-                exit$2 = 1;
+                exit$1 = 1;
               }
             }
             else {
-              exit$2 = 1;
+              exit$1 = 1;
             }
-            if (exit$2 === 1) {
+            if (exit$1 === 1) {
               return [
                       /* Some */0,
                       [
@@ -563,12 +577,6 @@ function make_lexer(keywords) {
             
           };
         }
-        if (exit$1 === 2) {
-          Stream.junk(strm__);
-          store(/* "E" */69);
-          return exponent_part(strm__);
-        }
-        
       }
       else {
         exit = 1;
@@ -589,24 +597,21 @@ function make_lexer(keywords) {
     var match = Stream.peek(strm__);
     if (match) {
       var c = match[1];
-      var exit = 0;
       if (c !== 43) {
         if (c !== 45) {
           return end_exponent_part(strm__);
         }
         else {
-          exit = 1;
+          Stream.junk(strm__);
+          store(c);
+          return end_exponent_part(strm__);
         }
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         Stream.junk(strm__);
         store(c);
         return end_exponent_part(strm__);
       }
-      
     }
     else {
       return end_exponent_part(strm__);
@@ -615,21 +620,23 @@ function make_lexer(keywords) {
   var end_exponent_part = function (strm__) {
     while(true) {
       var match = Stream.peek(strm__);
-      var exit = 0;
       if (match) {
         var c = match[1];
         if (c > 57 || c < 48) {
-          exit = 1;
+          return [
+                  /* Some */0,
+                  [
+                    /* Float */3,
+                    Caml_format.caml_float_of_string(get_string(/* () */0))
+                  ]
+                ];
         }
         else {
           Stream.junk(strm__);
-          store(c);
+          return store(c);
         }
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         return [
                 /* Some */0,
                 [
@@ -638,7 +645,6 @@ function make_lexer(keywords) {
                 ]
               ];
       }
-      
     };
   };
   var string = function (strm__) {
@@ -717,11 +723,11 @@ function make_lexer(keywords) {
     var match = Stream.peek(strm__);
     if (match) {
       var c1 = match[1];
-      var exit = 0;
       if (c1 >= 58) {
         var switcher = c1 - 110;
         if (switcher > 6 || switcher < 0) {
-          exit = 1;
+          Stream.junk(strm__);
+          return c1;
         }
         else {
           switch (switcher) {
@@ -735,8 +741,8 @@ function make_lexer(keywords) {
             case 2 : 
             case 3 : 
             case 5 : 
-                exit = 1;
-                break;
+                Stream.junk(strm__);
+                return c1;
             case 6 : 
                 Stream.junk(strm__);
                 return /* "\t" */9;
@@ -747,20 +753,26 @@ function make_lexer(keywords) {
       else if (c1 >= 48) {
         Stream.junk(strm__);
         var match$1 = Stream.peek(strm__);
-        var exit$1 = 0;
         if (match$1) {
           var c2 = match$1[1];
           if (c2 > 57 || c2 < 48) {
-            exit$1 = 2;
+            throw [
+                  0,
+                  Stream.$$Error,
+                  ""
+                ];
           }
           else {
             Stream.junk(strm__);
             var match$2 = Stream.peek(strm__);
-            var exit$2 = 0;
             if (match$2) {
               var c3 = match$2[1];
               if (c3 > 57 || c3 < 48) {
-                exit$2 = 3;
+                throw [
+                      0,
+                      Stream.$$Error,
+                      ""
+                    ];
               }
               else {
                 Stream.junk(strm__);
@@ -768,38 +780,26 @@ function make_lexer(keywords) {
               }
             }
             else {
-              exit$2 = 3;
-            }
-            if (exit$2 === 3) {
               throw [
                     0,
                     Stream.$$Error,
                     ""
                   ];
             }
-            
           }
         }
         else {
-          exit$1 = 2;
-        }
-        if (exit$1 === 2) {
           throw [
                 0,
                 Stream.$$Error,
                 ""
               ];
         }
-        
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         Stream.junk(strm__);
         return c1;
       }
-      
     }
     else {
       throw Stream.Failure;
@@ -809,10 +809,9 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var exit = 0;
         var switcher = match[1] - 40;
         if (switcher > 2 || switcher < 0) {
-          exit = 1;
+          Stream.junk(strm__);
         }
         else {
           switch (switcher) {
@@ -835,7 +834,7 @@ function make_lexer(keywords) {
                   throw Stream.Failure;
                 }
             case 1 : 
-                exit = 1;
+                Stream.junk(strm__);
                 break;
             case 2 : 
                 Stream.junk(strm__);
@@ -865,10 +864,6 @@ function make_lexer(keywords) {
             
           }
         }
-        if (exit === 1) {
-          Stream.junk(strm__);
-        }
-        
       }
       else {
         throw Stream.Failure;

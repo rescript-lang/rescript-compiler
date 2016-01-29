@@ -362,18 +362,18 @@ function xor(n1, n2) {
 function hwb(n) {
   var h = function (i, j) {
     if (i === j) {
-      return mkVar(i);
+      return mkNode(zero, i, one);
     }
     else {
-      return xor(and2(not(mkVar(j)), h(i, j - 1)), and2(mkVar(j), g(i, j - 1)));
+      return xor(and2(not(mkNode(zero, j, one)), h(i, j - 1)), and2(mkNode(zero, j, one), g(i, j - 1)));
     }
   };
   var g = function (i, j) {
     if (i === j) {
-      return mkVar(i);
+      return mkNode(zero, i, one);
     }
     else {
-      return xor(and2(not(mkVar(i)), h(i + 1, j)), and2(mkVar(i), g(i + 1, j)));
+      return xor(and2(not(mkNode(zero, i, one)), h(i + 1, j)), and2(mkNode(zero, i, one), g(i + 1, j)));
     }
   };
   return h(0, n - 1);

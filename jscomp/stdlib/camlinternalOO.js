@@ -40,10 +40,6 @@ function public_method_label(s) {
   }
 }
 
-function compare(x, y) {
-  return Caml_string.caml_string_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -127,7 +123,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -163,7 +159,8 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare(x, param[2]);
+      var y = param[2];
+      var c = Caml_string.caml_string_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -189,10 +186,6 @@ function fold(f, _m, _accu) {
       return accu;
     }
   };
-}
-
-function compare$1(x, y) {
-  return Caml_string.caml_string_compare(x, y);
 }
 
 function height$1(param) {
@@ -278,7 +271,7 @@ function add$1(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$1(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$1(x, data, l), v, d, r);
@@ -308,10 +301,6 @@ function add$1(x, data, param) {
             1
           ];
   }
-}
-
-function compare$2(x, y) {
-  return Caml_primitive.caml_int_compare(x, y);
 }
 
 function height$2(param) {
@@ -397,7 +386,7 @@ function add$2(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare$2(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$2(add$2(x, data, l), v, d, r);
@@ -433,7 +422,8 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare$2(x, param[2]);
+      var y = param[2];
+      var c = Caml_primitive.caml_int_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -533,7 +523,8 @@ function get_method_label(table, name) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = compare$1(x, param[2]);
+        var y = param[2];
+        var c = Caml_string.caml_string_compare(x, y);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
         }
@@ -1054,182 +1045,175 @@ function method_impl(table, i, arr) {
       case 5 : 
           var f = next(/* () */0);
           var x$1 = next(/* () */0);
-          var f$1 = f;
-          var x$2 = x$1;
           return function () {
-            return f$1(x$2);
+            return f(x$1);
           };
       case 6 : 
-          var f$2 = next(/* () */0);
+          var f$1 = next(/* () */0);
           var n$5 = next(/* () */0);
-          var f$3 = f$2;
-          var n$6 = n$5;
           return function (obj) {
-            return f$3(obj[n$6]);
+            return f$1(obj[n$5]);
           };
       case 7 : 
-          var f$4 = next(/* () */0);
+          var f$2 = next(/* () */0);
           var e$2 = next(/* () */0);
-          var n$7 = next(/* () */0);
-          var f$5 = f$4;
+          var n$6 = next(/* () */0);
+          var f$3 = f$2;
           var e$3 = e$2;
-          var n$8 = n$7;
+          var n$7 = n$6;
           return function (obj) {
-            return f$5(obj[e$3][n$8]);
+            return f$3(obj[e$3][n$7]);
           };
       case 8 : 
-          var f$6 = next(/* () */0);
-          var n$9 = next(/* () */0);
-          var f$7 = f$6;
-          var n$10 = n$9;
+          var f$4 = next(/* () */0);
+          var n$8 = next(/* () */0);
+          var f$5 = f$4;
+          var n$9 = n$8;
           return function (obj) {
-            return f$7(obj[1][n$10](obj));
+            return f$5(obj[1][n$9](obj));
           };
       case 9 : 
-          var f$8 = next(/* () */0);
-          var x$3 = next(/* () */0);
+          var f$6 = next(/* () */0);
+          var x$2 = next(/* () */0);
           var y = next(/* () */0);
-          var f$9 = f$8;
-          var x$4 = x$3;
-          var y$1 = y;
           return function () {
-            return f$9(x$4, y$1);
+            return f$6(x$2, y);
           };
       case 10 : 
-          var f$10 = next(/* () */0);
-          var x$5 = next(/* () */0);
-          var n$11 = next(/* () */0);
-          var f$11 = f$10;
-          var x$6 = x$5;
-          var n$12 = n$11;
+          var f$7 = next(/* () */0);
+          var x$3 = next(/* () */0);
+          var n$10 = next(/* () */0);
+          var f$8 = f$7;
+          var x$4 = x$3;
+          var n$11 = n$10;
           return function (obj) {
-            return f$11(x$6, obj[n$12]);
+            return f$8(x$4, obj[n$11]);
           };
       case 11 : 
-          var f$12 = next(/* () */0);
-          var x$7 = next(/* () */0);
+          var f$9 = next(/* () */0);
+          var x$5 = next(/* () */0);
           var e$4 = next(/* () */0);
-          var n$13 = next(/* () */0);
-          var f$13 = f$12;
-          var x$8 = x$7;
+          var n$12 = next(/* () */0);
+          var f$10 = f$9;
+          var x$6 = x$5;
           var e$5 = e$4;
-          var n$14 = n$13;
+          var n$13 = n$12;
           return function (obj) {
-            return f$13(x$8, obj[e$5][n$14]);
+            return f$10(x$6, obj[e$5][n$13]);
           };
       case 12 : 
-          var f$14 = next(/* () */0);
-          var x$9 = next(/* () */0);
-          var n$15 = next(/* () */0);
-          var f$15 = f$14;
-          var x$10 = x$9;
-          var n$16 = n$15;
+          var f$11 = next(/* () */0);
+          var x$7 = next(/* () */0);
+          var n$14 = next(/* () */0);
+          var f$12 = f$11;
+          var x$8 = x$7;
+          var n$15 = n$14;
           return function (obj) {
-            return f$15(x$10, obj[1][n$16](obj));
+            return f$12(x$8, obj[1][n$15](obj));
           };
       case 13 : 
-          var f$16 = next(/* () */0);
-          var n$17 = next(/* () */0);
-          var x$11 = next(/* () */0);
-          var f$17 = f$16;
-          var n$18 = n$17;
-          var x$12 = x$11;
+          var f$13 = next(/* () */0);
+          var n$16 = next(/* () */0);
+          var x$9 = next(/* () */0);
+          var f$14 = f$13;
+          var n$17 = n$16;
+          var x$10 = x$9;
           return function (obj) {
-            return f$17(obj[n$18], x$12);
+            return f$14(obj[n$17], x$10);
           };
       case 14 : 
-          var f$18 = next(/* () */0);
+          var f$15 = next(/* () */0);
           var e$6 = next(/* () */0);
-          var n$19 = next(/* () */0);
-          var x$13 = next(/* () */0);
-          var f$19 = f$18;
+          var n$18 = next(/* () */0);
+          var x$11 = next(/* () */0);
+          var f$16 = f$15;
           var e$7 = e$6;
-          var n$20 = n$19;
-          var x$14 = x$13;
+          var n$19 = n$18;
+          var x$12 = x$11;
           return function (obj) {
-            return f$19(obj[e$7][n$20], x$14);
+            return f$16(obj[e$7][n$19], x$12);
           };
       case 15 : 
-          var f$20 = next(/* () */0);
-          var n$21 = next(/* () */0);
-          var x$15 = next(/* () */0);
-          var f$21 = f$20;
-          var n$22 = n$21;
-          var x$16 = x$15;
+          var f$17 = next(/* () */0);
+          var n$20 = next(/* () */0);
+          var x$13 = next(/* () */0);
+          var f$18 = f$17;
+          var n$21 = n$20;
+          var x$14 = x$13;
           return function (obj) {
-            return f$21(obj[1][n$22](obj), x$16);
+            return f$18(obj[1][n$21](obj), x$14);
           };
       case 16 : 
-          var n$23 = next(/* () */0);
-          var x$17 = next(/* () */0);
-          var n$24 = n$23;
-          var x$18 = x$17;
+          var n$22 = next(/* () */0);
+          var x$15 = next(/* () */0);
+          var n$23 = n$22;
+          var x$16 = x$15;
           return function (obj) {
-            return obj[1][n$24](obj, x$18);
+            return obj[1][n$23](obj, x$16);
           };
       case 17 : 
-          var n$25 = next(/* () */0);
+          var n$24 = next(/* () */0);
           var m = next(/* () */0);
-          var n$26 = n$25;
+          var n$25 = n$24;
           var m$1 = m;
           return function (obj) {
-            return obj[1][n$26](obj, obj[m$1]);
+            return obj[1][n$25](obj, obj[m$1]);
           };
       case 18 : 
-          var n$27 = next(/* () */0);
+          var n$26 = next(/* () */0);
           var e$8 = next(/* () */0);
           var m$2 = next(/* () */0);
-          var n$28 = n$27;
+          var n$27 = n$26;
           var e$9 = e$8;
           var m$3 = m$2;
           return function (obj) {
-            return obj[1][n$28](obj, obj[e$9][m$3]);
+            return obj[1][n$27](obj, obj[e$9][m$3]);
           };
       case 19 : 
-          var n$29 = next(/* () */0);
+          var n$28 = next(/* () */0);
           var m$4 = next(/* () */0);
-          var n$30 = n$29;
+          var n$29 = n$28;
           var m$5 = m$4;
           return function (obj) {
-            return obj[1][n$30](obj, obj[1][m$5](obj));
+            return obj[1][n$29](obj, obj[1][m$5](obj));
           };
       case 20 : 
           var m$6 = next(/* () */0);
-          var x$19 = next(/* () */0);
+          var x$17 = next(/* () */0);
           var m$7 = m$6;
-          var x$20 = x$19;
+          var x$18 = x$17;
           new_cache(table);
           return function () {
-            return Caml_oo.caml_get_public_method(x$20, m$7, 1)(x$20);
+            return Caml_oo.caml_get_public_method(x$18, m$7, 1)(x$18);
           };
       case 21 : 
           var m$8 = next(/* () */0);
-          var n$31 = next(/* () */0);
+          var n$30 = next(/* () */0);
           var m$9 = m$8;
-          var n$32 = n$31;
+          var n$31 = n$30;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[n$32], m$9, 2)(obj[n$32]);
+            return Caml_oo.caml_get_public_method(obj[n$31], m$9, 2)(obj[n$31]);
           };
       case 22 : 
           var m$10 = next(/* () */0);
           var e$10 = next(/* () */0);
-          var n$33 = next(/* () */0);
+          var n$32 = next(/* () */0);
           var m$11 = m$10;
           var e$11 = e$10;
-          var n$34 = n$33;
+          var n$33 = n$32;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[e$11][n$34], m$11, 3)(obj[e$11][n$34]);
+            return Caml_oo.caml_get_public_method(obj[e$11][n$33], m$11, 3)(obj[e$11][n$33]);
           };
       case 23 : 
           var m$12 = next(/* () */0);
-          var n$35 = next(/* () */0);
+          var n$34 = next(/* () */0);
           var m$13 = m$12;
-          var n$36 = n$35;
+          var n$35 = n$34;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[1][n$36](obj), m$13, 4)(obj[1][n$36](obj));
+            return Caml_oo.caml_get_public_method(obj[1][n$35](obj), m$13, 4)(obj[1][n$35](obj));
           };
       
     }
