@@ -160,3 +160,5 @@ global_exception_regression_test
 printf_test
 format_regression
 loop_regression_test
+and_or_tailcall_test
+

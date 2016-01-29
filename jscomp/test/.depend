@@ -26,6 +26,8 @@ a_string_test.cmo : mt.cmo ../stdlib/list.cmi ext_string.cmo
 a_string_test.cmx : mt.cmx ../stdlib/list.cmx ext_string.cmx
 abstract_type.cmo : abstract_type.cmi
 abstract_type.cmx : abstract_type.cmi
+and_or_tailcall_test.cmo : mt.cmo
+and_or_tailcall_test.cmx : mt.cmx
 ari_regress_test.cmo : mt.cmo ari_regress_test.cmi
 ari_regress_test.cmx : mt.cmx ari_regress_test.cmi
 arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
@@ -390,6 +392,8 @@ a_string_test.cmo : mt.cmo ../stdlib/list.cmi ext_string.cmo
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string.cmj
 abstract_type.cmo : abstract_type.cmi
 abstract_type.cmj : abstract_type.cmi
+and_or_tailcall_test.cmo : mt.cmo
+and_or_tailcall_test.cmj : mt.cmj
 ari_regress_test.cmo : mt.cmo ari_regress_test.cmi
 ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
 arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
