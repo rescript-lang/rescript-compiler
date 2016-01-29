@@ -2,8 +2,8 @@
 "use strict";
 
 var VV   = require("VV");
-var U    = require("U");
 var List = require("../stdlib/list");
+var U    = require("U");
 
 function f(x) {
   return function (param) {
@@ -23,7 +23,7 @@ function f2(param) {
   return 3 + param;
 }
 
-var g = f(3)(4);
+var g = 7;
 
 function ff(param) {
   return U.test_primit(3, param);
@@ -185,4 +185,4 @@ exports.stable_sort  = stable_sort;
 exports.fast_sort    = fast_sort;
 exports.sort_uniq    = sort_uniq;
 exports.merge        = merge;
-/* g Not a pure module */
+/* fff Not a pure module */

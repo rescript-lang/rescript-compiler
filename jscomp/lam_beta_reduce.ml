@@ -21,41 +21,100 @@
 
 
 (*
-   [map] 
-   and 
+   Given an [map], rewrite all let bound variables into new variables, 
+   note that the [map] is changed
+   example    
+   {[
+     let a/112 = 3 in a/112      
+   ]}
+   would be converted into 
+   {[
+     let a/113 = 3 in a/113     
+   ]}   
+
    ATTENTION: [let] bound idents have to be renamed, 
-   note we rely on an invariant that parameter could not be rebound 
+   Note we rely on an invariant that parameter could not be rebound 
  *)
-let rename 
-    (map :   (Ident.t, Ident.t) Hashtbl.t) 
+
+(* 
+  Small function inline heuristics:
+  Even if a function is small, it does not mean it is good for inlining,
+  for example, in list.ml
+   {[
+     let rec length_aux len = function
+         [] -> len
+       | a::l -> length_aux (len + 1) l
+
+     let length l = length_aux 0 l
+   ]}   
+   if we inline [length], it will expose [length_aux] to the user, first, it make 
+   the code not very friendly, also since [length_aux] is used everywhere now, it 
+   may affect that we will not do the inlining of [length_aux] in [length]
+
+   Criteior for sure to inline   
+   1. small size, does not introduce extra symbols, non-exported and non-recursive   
+      non-recursive is required if we re-apply the strategy
+
+   Other Factors:   
+   2. number of invoked times
+   3. arguments are const or not   
+*)
+let rewrite (map :   (Ident.t, _) Hashtbl.t) 
     (lam : Lambda.lambda) : Lambda.lambda = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i i';
+    Hashtbl.add map i (Lambda.Lvar i');
     i' in
-
-  let rec aux (lam : Lambda.lambda) : Lambda.lambda = 
+  (* order matters, especially for let bindings *)
+  let rec 
+    option_map op = 
+    match op with 
+    | None -> None 
+    | Some x -> Some (aux x)
+  and aux (lam : Lambda.lambda) : Lambda.lambda = 
     match lam with 
     | Lvar v -> 
-      (try Lvar (Hashtbl.find map v) with Not_found -> lam)
-    | Lconst _ -> lam
+      begin 
+        try (* Lvar *) (Hashtbl.find map v) 
+        with Not_found -> lam 
+      end
     | Llet(str, v, l1, l2) ->
       let v = rebind v in
-      Llet(str, v, aux l1, aux l2 )
+      let l1 = aux l1 in      
+      let l2 = aux l2 in
+      Llet(str, v,  l1,  l2 )
     | Lletrec(bindings, body) ->
       let bindings = 
-        List.map (fun (k,l) ->  
-            let k = rebind k in (* order matters *)
+        bindings |> List.map (fun (k,l) ->  
+            let k = rebind k in
             (k, aux l)
-          ) bindings in 
-      Lletrec(bindings, aux body) 
-    | Lprim(prim, ll) -> Lprim(prim, List.map aux  ll)
-    | Lapply(l1, ll, info) ->
-      Lapply(aux  l1, List.map aux  ll,info)
-    | Lfunction(kind, params, l) -> 
+          )  in 
+      let body = aux body in       
+      Lletrec(bindings, body) 
+    | Lfunction(kind, params, body) -> 
       let params =  List.map rebind params in
-      Lfunction (kind, params, aux  l)
+      let body = aux body in      
+      Lfunction (kind, params, body)
+    | Lstaticcatch(l1, (i,xs), l2) -> 
+      let l1 = aux l1 in
+      let xs = List.map rebind xs in
+      let l2 = aux l2 in
+      Lstaticcatch(l1, (i,xs), l2)
+    | Lfor(ident, l1, l2, dir, l3) ->
+      let ident = rebind ident in 
+      let l1 = aux l1 in
+      let l2 = aux l2 in
+      let l3 = aux l3 in
+      Lfor(ident,aux  l1,  l2, dir,  l3)
+    | Lconst _ -> lam
+    | Lprim(prim, ll) ->
+      (* here it makes sure that global vars are not rebound *)      
+      Lprim(prim, List.map aux  ll)
+    | Lapply(fn, args, info) ->
+      let fn = aux fn in       
+      let args = List.map aux  args in 
+      Lapply(fn, args, info)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -69,27 +128,14 @@ let rename
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
-               sw_failaction = 
-                 begin 
-                   match sw_failaction with 
-                   | None -> None
-                   | Some x -> Some (aux x)
-                 end})
+               sw_failaction =  option_map sw_failaction
+              })
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lstringswitch( l ,
                      List.map (fun (i, l) -> i,aux  l) sw,
-                     begin 
-                       match d with
-                       | Some d -> Some (aux d )
-                       | None -> None
-                     end)
+                     option_map d)
     | Lstaticraise (i,ls) -> Lstaticraise(i, List.map aux  ls)
-    | Lstaticcatch(l1, (i,xs), l2) -> 
-      let l1 = aux l1 in
-      let xs = List.map rebind xs in
-      let l2 = aux l2 in
-      Lstaticcatch(l1, (i,xs), l2)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
@@ -108,16 +154,7 @@ let rename
       let l1 = aux l1 in
       let l2 = aux l2 in
       Lwhile(  l1,  l2)
-    | Lfor(ident, l1, l2, dir, l3) ->
-      let ident = rebind ident in 
-      let l1 = aux l1 in
-      let l2 = aux l2 in
-      let l3 = aux l3 in
-      Lfor(ident,aux  l1,  l2, dir,  l3)
-    | Lassign(v, l) ->
-      (* Lalias-bound variables are never assigned, so don't increase
-         v's refsimpl *)
-      Lassign(v,aux  l)
+    | Lassign(v, l) -> Lassign(v,aux  l)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
@@ -131,81 +168,7 @@ let rename
       Lifused(v,  l) in 
   aux lam
 
-let rec bounded_idents tbl lam = 
-  let rebind i = Hashtbl.add tbl i (Ident.rename i) in
-  let rec collect_introduced_idents  (lam : Lambda.lambda) = 
-    match lam with 
-    | Lvar  _ 
-    | Lconst _ -> ()
-    | Lapply ( f , ls, _) -> 
-        collect_introduced_idents f ; 
-        List.iter collect_introduced_idents ls 
-    | Lfunction (_, args, lam) -> 
-        List.iter (fun a -> rebind a) args; 
-        collect_introduced_idents lam
-    | Llet (_, id,arg,body) -> 
-        rebind id; 
-        collect_introduced_idents arg ; 
-        collect_introduced_idents body ; 
-    | Lletrec (bindings, body) -> 
-        List.iter (fun (i,arg) -> 
-          rebind i;
-          collect_introduced_idents arg) bindings;
-        collect_introduced_idents body
-    | Lprim (_, lams) -> 
-        List.iter collect_introduced_idents lams 
-    | Lswitch (lam ,switch) -> 
-        collect_introduced_idents lam ; 
-        assert false 
-   (* switch on strings, clauses are sorted by string order,
-      strings are pairwise distinct *)
-    | Lstringswitch _ -> assert false 
-    | Lstaticraise (_,ls) -> List.iter collect_introduced_idents ls 
-    | Lstaticcatch (lam, (_i, is), body) ->  
-        (** Note that [staticcatch] does not introduce idents?
-            double check?
-         *)
-        List.iter rebind is;
-        collect_introduced_idents lam; 
-        collect_introduced_idents body 
-    | Ltrywith (a,i,b) -> 
-        rebind i;
-        collect_introduced_idents a; 
-        collect_introduced_idents b 
-    | Lifthenelse (a,b,c) -> 
-        collect_introduced_idents a ; 
-        collect_introduced_idents b ; 
-        collect_introduced_idents c
-    | Lsequence (a,b) -> 
-        collect_introduced_idents a; 
-        collect_introduced_idents b ; 
-    | Lwhile (a,b) -> 
-        collect_introduced_idents a; 
-        collect_introduced_idents b ; 
-    | Lfor (i, a,b,_direction,l) -> 
-        rebind i;
-        collect_introduced_idents a ; 
-        collect_introduced_idents b ; 
-        collect_introduced_idents l ; 
-    | Lassign (_v, a) ->       collect_introduced_idents a 
-    | Lsend (_, a,b,ls, _location) -> 
-        collect_introduced_idents a ; 
-        collect_introduced_idents b ; 
-        List.iter collect_introduced_idents ls 
-    | Levent (a,_event) -> 
-        collect_introduced_idents a 
-    | Lifused (_id,a ) ->
-        collect_introduced_idents a 
-  in 
-  collect_introduced_idents lam
-
-let refresh_lambda (lam : Lambda.lambda ) : Lambda.lambda  = 
-  let map = Hashtbl.create 57 in 
-  begin
-    bounded_idents map lam ;
-    rename map lam
-  end
-
+let refresh lam = rewrite (Hashtbl.create 17 ) lam
 (* 
     A naive beta reduce would break the invariants of the optmization.
 
@@ -221,63 +184,51 @@ let refresh_lambda (lam : Lambda.lambda ) : Lambda.lambda  =
         if it's enclosed environment should be good enough
         so far, we only inline enclosed lambdas
     TODO: rename 
+
+   Optimizations:   
+   {[
+     (fun x y -> ...     ) 100 3 
+   ]}   
+   we can bound [x] to [100] in a single step     
  *)
 let propogate_beta_reduce 
     (meta : Lam_stats.meta) params body args =
-  let new_params = 
-    List.map Ident.rename params in 
-  let map = Hashtbl.create 51 in
-  let () = 
-    begin 
-      List.iter2 (fun k v -> 
-          Hashtbl.add map k v )
-        params new_params ;
-    end
-  in
+  let rest_bindings, rev_new_params  = 
+    List.fold_left2 
+      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+         match arg with          
+         | Lconst _
+         | Lvar _  -> rest_bindings , arg :: acc 
+         | _ -> 
+           let p = Ident.rename old_param in 
+           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+      )  ([],[]) params args in
+  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  List.fold_right
+    (fun (param, (arg : Lambda.lambda)) l -> 
+       let arg = 
+         match arg with 
+         | Lvar v -> 
+           begin 
+             match Hashtbl.find meta.ident_tbl v with 
+             | exception Not_found -> ()
+             | ident_info -> 
+               Hashtbl.add meta.ident_tbl param ident_info 
+           end;
+           arg 
+         | Lprim (Pgetglobal ident, []) -> 
+           (* It's not completeness, its to make it sound.. *)
+           Lam_compile_global.query_lambda ident meta.env 
+         (* alias meta param ident (Module (Global ident)) Strict *)
+         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+           Hashtbl.replace meta.ident_tbl param 
+             (Lam_util.kind_of_lambda_block ls ); (** *)
+           arg
+         | _ -> arg in
+       Lam_util.refine_let param arg l) 
+     rest_bindings new_body
 
-  let new_body = rename map body in
-  let lam = List.fold_left2 
-      (fun l param (arg : Lambda.lambda) -> 
-         begin 
-           let arg = 
-             (
-               match arg with 
-               | Lvar v -> 
-                 begin 
-                   match Hashtbl.find meta.ident_tbl v with 
-                   | exception Not_found -> 
-                     (* Ext_log.err "@[%a ++ @]@." Ident.print param; *)
-                     ()
-                   | ident_info -> 
-                     Hashtbl.add meta.ident_tbl param ident_info 
-                 end;
-                 arg 
-               | Lprim (Pgetglobal ident, []) -> 
-                 (* It's not completeness, its to make it sound.. *)
-                 Lam_compile_global.query_lambda ident meta.env 
-               (* alias meta param ident (Module (Global ident)) Strict *)
-               | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
-                 Hashtbl.replace meta.ident_tbl param 
-                   (Lam_util.kind_of_lambda_block ls ); (** *)
-                 arg
-               | _ -> 
-                 begin 
-                   (* Ext_log.err "@[%a -- %a @]@."  *)
-                   (*   Ident.print param  *)
-                   (*   Printlambda.lambda arg *)
-                   arg
-                 end
-             ) in
-           (** TODO: refactor mklet 
-               and to be improved later
-           *)
-           Lam_util.refine_let param arg l
-         end
-      ) 
-      new_body new_params args in
-  (* let lam = Lam_util.deep_flatten  lam in *)
-  (* Lam_pass_collect.collect_helper meta lam;  *)
-  lam
+
 
 
 let beta_reduce params body args =

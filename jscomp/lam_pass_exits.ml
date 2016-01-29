@@ -193,10 +193,10 @@ let subst_helper (subst : subst_tbl) query lam =
            {[
              var exit ;
 
-             exit = 11
-               exit = 11
+             exit = 11;
+             exit = 11;
 
-               switch(exit){
+             switch(exit){
                case exit = 11 : body ; break
              }
 
@@ -204,11 +204,8 @@ let subst_helper (subst : subst_tbl) query lam =
            the inline cost is 
 
            {[
-             the inline cost is 
-
-               body;
              body;
-
+             body;
            ]}
 
            when [i] is negative, we can not inline in general, 
@@ -231,11 +228,19 @@ let subst_helper (subst : subst_tbl) query lam =
 
               FIXME:   when inlining, need refresh local bound identifiers
           *)
-          let ok_to_inline = Lam_analysis.size l2 < 5  && i >=0 && j <=2 in 
+          let lam_size = Lam_analysis.size l2 in
+          let ok_to_inline = 
+             i >=0 && 
+             ( (j <= 2 && lam_size < Lam_analysis.exit_inline_size   )
+               || lam_size < 5)
+             (*TODO: when we do the case merging on the js side, 
+               the j is not very indicative                
+             *)             
+          in 
           if ok_to_inline (* && false *) 
           then 
             begin 
-              Hashtbl.add subst i (xs,simplif l2) ;
+              Hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
           else Lstaticcatch (simplif l1, (i,xs), simplif l2)

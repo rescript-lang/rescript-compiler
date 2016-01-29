@@ -61,7 +61,9 @@ function g1(x, y) {
 
 var x = g(3, 5)(6);
 
-var v = g1(3, 4)(6);
+function v(param) {
+  return g1(3, 4)(6, param);
+}
 
 var nil = /* Nil */0;
 

@@ -89,7 +89,11 @@ function $caret(s1, s2) {
 
 function char_of_int(n) {
   if (n < 0 || n > 255) {
-    return invalid_arg("char_of_int");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "char_of_int"
+        ];
   }
   else {
     return n;
@@ -112,7 +116,11 @@ function bool_of_string(param) {
     case "true" : 
         return /* true */1;
     default:
-      return invalid_arg("bool_of_string");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "bool_of_string"
+          ];
   }
 }
 
@@ -244,7 +252,11 @@ function output_string(oc, s) {
 
 function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return invalid_arg("output");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "output"
+        ];
   }
   else {
     return Caml_io.caml_ml_output(oc, s, ofs, len);
@@ -253,7 +265,11 @@ function output(oc, s, ofs, len) {
 
 function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return invalid_arg("output_substring");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "output_substring"
+        ];
   }
   else {
     return Caml_io.caml_ml_output(oc, s, ofs, len);
@@ -314,7 +330,11 @@ function open_in_bin(name) {
 
 function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return invalid_arg("input");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "input"
+        ];
   }
   else {
     return Caml_primitive.caml_ml_input(ic, s, ofs, len);
@@ -343,7 +363,11 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 
 function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return invalid_arg("really_input");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "really_input"
+        ];
   }
   else {
     return unsafe_really_input(ic, s, ofs, len);
@@ -438,11 +462,11 @@ function print_bytes(s) {
 }
 
 function print_int(i) {
-  return output_string(stdout, string_of_int(i));
+  return output_string(stdout, Caml_format.caml_format_int("%d", i));
 }
 
 function print_float(f) {
-  return output_string(stdout, string_of_float(f));
+  return output_string(stdout, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
 }
 
 function print_endline(s) {
@@ -469,11 +493,11 @@ function prerr_bytes(s) {
 }
 
 function prerr_int(i) {
-  return output_string(stderr, string_of_int(i));
+  return output_string(stderr, Caml_format.caml_format_int("%d", i));
 }
 
 function prerr_float(f) {
-  return output_string(stderr, string_of_float(f));
+  return output_string(stderr, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
 }
 
 function prerr_endline(s) {
@@ -493,11 +517,11 @@ function read_line() {
 }
 
 function read_int() {
-  return Caml_format.caml_int_of_string(read_line(/* () */0));
+  return Caml_format.caml_int_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
 }
 
 function read_float() {
-  return Caml_format.caml_float_of_string(read_line(/* () */0));
+  return Caml_format.caml_float_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
 }
 
 var LargeFile = [0];
@@ -533,7 +557,7 @@ function do_at_exit() {
 }
 
 function exit(retcode) {
-  do_at_exit(/* () */0);
+  exit_function[1](/* () */0);
   return Caml_primitive.caml_sys_exit(retcode);
 }
 

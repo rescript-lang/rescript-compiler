@@ -39,7 +39,7 @@ let simplify_alias
           since we aliased k, so it's safe to remove it?
       *)
       let v = simpl l in
-      if List.mem k meta.export_idents 
+      if Lambda.IdentSet.mem k meta.export_idents 
       then 
         Llet(kind, k, g, v) 
         (* in this case it is preserved, but will still be simplified 
@@ -100,37 +100,87 @@ let simplify_alias
         - code bloat 
     *)      
     | Lapply((Lvar v as l1), args, info) -> (* Check info for always inlining *)
+
+      (* Ext_log.dwarn __LOC__ "%s/%d@." v.name v.stamp;     *)
+
       begin 
         match Hashtbl.find meta.ident_tbl v with
-        | Function {lambda = Lfunction(Curried, params, body);
-                    arity = Determin(_, (n,_) ::_, _); _ }
-          when List.length args = n  && Lam_inline_util.maybe_functor v.name ->
+        | Function {lambda = (Lfunction(_, params, body) as _m);
+                    rec_flag;                     
+                    _ }
+          -> 
+          let lam_size = Lam_analysis.size body in            
+          if Ext_list.same_length args params 
+          then               
+            if Lam_inline_util.maybe_functor v.name  then 
+              (* && not (List.mem v meta.export_idents) *)
+              (* TODO: check l1 if it is exported, 
+                 if so, maybe not since in that case, 
+                 we are going to have two copy?
+              *)
 
-          (* && not (List.mem v meta.export_idents) *)
-          (* TODO: check l1 if it is exported, 
-             if so, maybe not since in that case, 
-             we are going to have two copy?
-          *)
-          (* && false (\* Disable it yet *\) *)
-          (***)
-          simpl @@ Lam_beta_reduce.propogate_beta_reduce
-            meta params body args
-        | exception Not_found -> Lapply ( simpl l1, List.map simpl args, info)
-        | _ -> Lapply ( simpl l1, List.map simpl args, info)
+              (* Check: recursive applying may result in non-termination *)
+              begin
+                (* Ext_log.dwarn __LOC__ "beta .. %s/%d@." v.name v.stamp ; *)
+                simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) 
+              end
+            else 
+            if lam_size < Lam_analysis.small_inline_size && 
+               (Lam_analysis.is_closed_by meta.export_idents _m
+                || not (Lambda.IdentSet.mem v meta.export_idents))
+
+            then 
+              if rec_flag = Rec then               
+                begin
+                  (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d@." v.name v.stamp ; *)
+                  Lam_beta_reduce.propogate_beta_reduce meta params body args
+                end
+              else 
+                begin
+                  (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d@."  *)
+                  (*   (List.length args)  *)
+                  (*   Printlambda.lambda body                      *)
+                  (*   v.name v.stamp ; *)
+                  simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
+
+                end
+            else 
+              begin
+                (* Ext_log.dwarn __LOC__ "%s/%d: %d @."  *)
+                (*   v.name v.stamp lam_size *)
+                (* ;     *)
+                Lapply ( simpl l1, List.map simpl args, info)
+              end
+          else
+            begin
+              (* Ext_log.dwarn __LOC__ "%d vs %d @." (List.length args) (List.length params); *)
+              Lapply ( simpl l1, List.map simpl args, info)
+            end
+
+        | _ -> 
+          begin
+            (* Ext_log.dwarn __LOC__ "%s/%d -- no source @." v.name v.stamp;     *)
+            Lapply ( simpl l1, List.map simpl args, info)
+          end
+        | exception Not_found -> 
+            (* Ext_log.dwarn __LOC__ "%s/%d -- not found @." v.name v.stamp;     *)
+          Lapply ( simpl l1, List.map simpl args, info)
       end
+
     | Lapply(Lfunction(Curried, params, body), args, _)
-      when  List.length params = List.length args ->
+      when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
     | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
-      when  List.length params = List.length args ->
+      when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
     | Lapply (l1, ll, info) ->
       Lapply (simpl  l1, List.map simpl  ll,info)
-    | Lfunction (kind, params, l) -> Lfunction (kind, params , simpl  l)
+    | Lfunction (kind, params, l) 
+      -> Lfunction (kind, params , simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

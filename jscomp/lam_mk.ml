@@ -18,25 +18,17 @@
 
 (* Author: Hongbo Zhang  *)
 
-(** A module which provides some basic analysis over lambda expression *)
 
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
+(* Note this function could change the arity of an lambda, 
+   we need update its meta data as well
+*)
 
-val size : Lambda.lambda -> int
-
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
-
-val is_closed : Lambda.lambda -> bool
+let lfunction kind params (body : Lambda.lambda) =
+  if params = [] then body else
+    match body with
+    | Lfunction (kind', params', body') when kind = kind' ->
+      Lfunction (kind', params @ params', body')
+    |  _ ->
+      Lfunction (kind, params, body)
 
 
-val small_inline_size : int 
-val exit_inline_size : int 

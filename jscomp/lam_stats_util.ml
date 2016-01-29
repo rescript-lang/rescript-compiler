@@ -252,7 +252,7 @@ let export_to_cmj
          let closed_lambda = 
            if Lam_inline_util.maybe_functor x.name 
            then
-             if Lambda.IdentSet.is_empty @@ Lambda.free_variables lambda 
+             if Lam_analysis.is_closed lambda 
              then Some lambda
              else None
            else None in 

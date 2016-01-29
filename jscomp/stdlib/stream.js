@@ -19,11 +19,6 @@ var $$Error = [
   ++ Caml_exceptions.caml_oo_last_id
 ];
 
-function set_data(s, d) {
-  s[1] = d;
-  return /* () */0;
-}
-
 function fill_buff(b) {
   b[3] = Pervasives.input(b[1], b[2], 0, b[2].length);
   b[4] = 0;
@@ -195,7 +190,7 @@ function peek(s) {
                   ];
             }
             else {
-              set_data(s, d);
+              s[1] = d;
               return [
                       /* Some */0,
                       d[1]
@@ -205,9 +200,10 @@ function peek(s) {
         case 2 : 
             var f = match[1];
             var tag = Caml_obj_runtime.caml_obj_tag(f);
-            set_data(s, tag === 250 ? f[1] : (
-                    tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
-                  ));
+            var d$1 = tag === 250 ? f[1] : (
+                tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
+              );
+            s[1] = d$1;
             break;
         case 3 : 
             var g = match[1];
@@ -236,7 +232,7 @@ function peek(s) {
                     ];
             }
             else {
-              set_data(s, /* Sempty */0);
+              s[1] = /* Sempty */0;
               return /* None */0;
             }
         
@@ -256,7 +252,8 @@ function junk(s) {
       switch (match[0]) {
         case 0 : 
             ++ s[1];
-            return set_data(s, match[2]);
+            s[1] = match[2];
+            return /* () */0;
         case 3 : 
             var g = match[1];
             var match$1 = g[1];
@@ -333,7 +330,7 @@ function nget(n, s) {
 function npeek(n, s) {
   var match = nget(n, s);
   s[1] -= match[3];
-  set_data(s, match[2]);
+  s[1] = match[2];
   return match[1];
 }
 

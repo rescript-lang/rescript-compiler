@@ -18,25 +18,16 @@
 
 (* Author: Hongbo Zhang  *)
 
-(** A module which provides some basic analysis over lambda expression *)
-
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
-
-val size : Lambda.lambda -> int
-
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
-
-val is_closed : Lambda.lambda -> bool
+let of_list kvs = 
+  let map = Hashtbl.create 51 in 
+  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
+  map
 
 
-val small_inline_size : int 
-val exit_inline_size : int 
+let of_list2 ks vs = 
+  let map = Hashtbl.create 51 in 
+  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
+  map
+
+let add_list map kvs =    
+  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 

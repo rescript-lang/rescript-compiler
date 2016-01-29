@@ -36,8 +36,16 @@ let ierr b str f v =
 let warn str f v =
   Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
 
+
+
 let iwarn b str f v = 
   if b then 
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+  else 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+
+let dwarn str f v = 
+  if Lam_current_unit.is_same_file () then   
     Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
   else 
     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 

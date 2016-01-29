@@ -1,5 +1,6 @@
 a_recursive_type.cmi :
 abstract_type.cmi :
+ari_regress_test.cmi :
 array_test.cmi :
 const_block_test.cmi :
 inline_edge_cases.cmi :
@@ -25,6 +26,8 @@ a_string_test.cmo : mt.cmo ../stdlib/list.cmi ext_string.cmo
 a_string_test.cmx : mt.cmx ../stdlib/list.cmx ext_string.cmx
 abstract_type.cmo : abstract_type.cmi
 abstract_type.cmx : abstract_type.cmi
+ari_regress_test.cmo : mt.cmo ari_regress_test.cmi
+ari_regress_test.cmx : mt.cmx ari_regress_test.cmi
 arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
 arith_lexer.cmx : ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx
 arith_parser.cmo : ../stdlib/parsing.cmi ../stdlib/obj.cmi \
@@ -377,6 +380,8 @@ a_string_test.cmo : mt.cmo ../stdlib/list.cmi ext_string.cmo
 a_string_test.cmj : mt.cmj ../stdlib/list.cmj ext_string.cmj
 abstract_type.cmo : abstract_type.cmi
 abstract_type.cmj : abstract_type.cmi
+ari_regress_test.cmo : mt.cmo ari_regress_test.cmi
+ari_regress_test.cmj : mt.cmj ari_regress_test.cmi
 arith_lexer.cmo : ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo
 arith_lexer.cmj : ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj
 arith_parser.cmo : ../stdlib/parsing.cmi ../stdlib/obj.cmi \

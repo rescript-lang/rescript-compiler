@@ -25,7 +25,9 @@ ext_pp_scope
 ext_array
 ext_bytes
 ext_map
+ext_hashtbl
 
+lam_mk
 lam_compile_env
 lam_dispatch_primitive
 lam_stats
@@ -56,6 +58,7 @@ lam_fold
 lam_register
 lam_analysis
 lam_group
+lam_current_unit
 
 j
 js_program_loader

@@ -53,13 +53,9 @@ CamlinternalOO.set_methods($$class, /* array */[
       }
     ]);
 
-function obj_init() {
-  return CamlinternalOO.create_object_opt(0, $$class);
-}
-
 CamlinternalOO.init_class($$class);
 
-var u = obj_init(0);
+var u = CamlinternalOO.create_object_opt(0, $$class);
 
 var $$class$1 = CamlinternalOO.create_table([
       0,
@@ -72,13 +68,9 @@ CamlinternalOO.set_method($$class$1, id, function () {
       return "uu";
     });
 
-function obj_init$1() {
-  return CamlinternalOO.create_object_opt(0, $$class$1);
-}
-
 CamlinternalOO.init_class($$class$1);
 
-var uu = obj_init$1(0);
+var uu = CamlinternalOO.create_object_opt(0, $$class$1);
 
 var $$class$2 = CamlinternalOO.create_table(shared);
 
@@ -88,13 +80,9 @@ CamlinternalOO.set_method($$class$2, add, function (_, x, y) {
       return x + y;
     });
 
-function obj_init$2() {
-  return CamlinternalOO.create_object_opt(0, $$class$2);
-}
-
 CamlinternalOO.init_class($$class$2);
 
-var uuu = obj_init$2(0);
+var uuu = CamlinternalOO.create_object_opt(0, $$class$2);
 
 var $$class$3 = CamlinternalOO.create_table(shared);
 
@@ -104,13 +92,9 @@ CamlinternalOO.set_method($$class$3, add$1, function (_, x, y) {
       return x + y;
     });
 
-function obj_init$3() {
-  return CamlinternalOO.create_object_opt(0, $$class$3);
-}
-
 CamlinternalOO.init_class($$class$3);
 
-var v = obj_init$3(0);
+var v = CamlinternalOO.create_object_opt(0, $$class$3);
 
 function test() {
   if (Caml_oo.caml_get_public_method(uu, 23515, 1)(uu) !== "uu") {

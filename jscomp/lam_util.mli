@@ -50,3 +50,9 @@ val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
  *)
 
 val dump : Env.t -> string ->  bool  -> Lambda.lambda -> Lambda.lambda
+
+val ident_set_of_list : Ident.t list -> Lambda.IdentSet.t
+
+val print_ident_set : Format.formatter -> Lambda.IdentSet.t -> unit
+
+val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info

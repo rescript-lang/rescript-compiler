@@ -5,10 +5,6 @@ var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_string     = require("../runtime/caml_string");
 
-function compare(x, y) {
-  return Caml_string.caml_string_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -92,7 +88,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -128,7 +124,8 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = compare(x, param[2]);
+      var y = param[2];
+      var c = Caml_string.caml_string_compare(x, y);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }

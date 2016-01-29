@@ -46,6 +46,10 @@ type function_kind =
   | Function
   | NA
 
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
 type function_id = {
   kind : function_kind ; 
   mutable arity : function_arities;
@@ -53,6 +57,7 @@ type function_id = {
   (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination
   *)
+  rec_flag : rec_flag
 }
 
 type element = 
@@ -85,7 +90,8 @@ type ident_info = {
 type meta = {
   env : Env.t;
   filename : string ;
-  mutable export_idents : Ident.t list;
+  export_idents : Lambda.IdentSet.t ;
+  exports : Ident.t list ;
   alias_tbl : alias_tbl; 
   exit_codes : int Hash_set.hashset;
 
@@ -93,6 +99,6 @@ type meta = {
   (** we don't need count arities for all identifiers, for identifiers
       for sure it's not a function, there is no need to count them
    *)
-  exports : Ident.t list ;
+
   mutable required_modules : Lam_module_ident.t list ;
 }

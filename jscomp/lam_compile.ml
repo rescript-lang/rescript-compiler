@@ -271,6 +271,18 @@ and
                   { cxt with st = EffectCall;  
                              should_return = True None; (* Refine*)
                              jmp_table = Lam_compile_defs.empty_handler_map}  body)))
+
+
+    | Lapply(
+        Lapply(an, args', ({apply_status = NA} as _info1)),
+        args, 
+        ({apply_status = NA} as _info2))
+      ->    
+      (* After inlining we can generate such code, 
+         see {!Ari_regress_test}         
+      *)      
+      compile_lambda  cxt  
+        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
     (* External function calll *)
     | Lapply(Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
       let [@warning "-8" (* non-exhaustive pattern*)] (args_code,args)   =

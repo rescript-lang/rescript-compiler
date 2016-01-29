@@ -11,10 +11,6 @@ var $$String         = require("../stdlib/string");
 var List             = require("../stdlib/list");
 var Test_inline_map  = require("./test_inline_map");
 
-function compare(x, y) {
-  return Caml_primitive.caml_int_compare(x, y);
-}
-
 function height(param) {
   if (param) {
     return param[5];
@@ -98,7 +94,7 @@ function add(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = compare(x, v);
+    var c = Caml_primitive.caml_int_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, data, l), v, d, r);
@@ -150,7 +146,7 @@ function cons_enum(_m, _e) {
   };
 }
 
-function compare$1(cmp, m1, m2) {
+function compare(cmp, m1, m2) {
   var _e1 = cons_enum(m1, /* End */0);
   var _e2 = cons_enum(m2, /* End */0);
   while(true) {
@@ -158,7 +154,9 @@ function compare$1(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = compare(e1[1], e2[1]);
+        var y = e2[1];
+        var x = e1[1];
+        var c = Caml_primitive.caml_int_compare(x, y);
         if (c !== 0) {
           return c;
         }
@@ -437,7 +435,7 @@ var int_map_suites_002 = [
               ]
             ]
           ]);
-      if (compare$1(function (prim, prim$1) {
+      if (compare(function (prim, prim$1) {
               return Caml_primitive.caml_compare(prim, prim$1);
             }, u, v)) {
         throw [

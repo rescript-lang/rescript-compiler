@@ -18,25 +18,9 @@
 
 (* Author: Hongbo Zhang  *)
 
-(** A module which provides some basic analysis over lambda expression *)
 
-(** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
+val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
 
-val size : Lambda.lambda -> int
+val of_list2 : 'a list -> 'b list -> ('a, 'b) Hashtbl.t
 
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
-(** a conservative version of comparing two lambdas, mostly 
-    for looking for similar cases in switch
- *)
-
-(** [is_closed_by map lam]
-    return [true] if all unbound variables
-    belongs to the given [map] *)
-val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
-
-val is_closed : Lambda.lambda -> bool
-
-
-val small_inline_size : int 
-val exit_inline_size : int 
+val add_list : ('a, 'b) Hashtbl.t -> ('a * 'b) list -> unit

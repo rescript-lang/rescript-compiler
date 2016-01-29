@@ -35,10 +35,10 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
     else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
-            return "." + translate(lexbuf);
+            return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
             var c = Lexing.sub_lexeme_char(lexbuf, lexbuf[5]);
-            return $$String.make(1, c) + translate(lexbuf);
+            return $$String.make(1, c) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";
         
@@ -51,7 +51,8 @@ var suites_001 = [
   /* tuple */0,
   "translate",
   function () {
-    return Mt.assert_equal(translate(Lexing.from_string("-- current_directory --")), "-- . --");
+    var lexbuf = Lexing.from_string("-- current_directory --");
+    return Mt.assert_equal(__ocaml_lex_translate_rec(lexbuf, 0), "-- . --");
   }
 ];
 

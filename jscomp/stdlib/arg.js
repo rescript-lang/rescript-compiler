@@ -401,7 +401,6 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
       try {
         var treat_action = (function(s){
         return function (param) {
-          var exit = 0;
           switch (param[0]) {
             case 0 : 
                 return param[1](/* () */0);
@@ -436,7 +435,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 2 : 
@@ -451,7 +457,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 5 : 
@@ -460,7 +473,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 6 : 
@@ -494,7 +514,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 7 : 
@@ -528,7 +555,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 8 : 
@@ -562,7 +596,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 9 : 
@@ -596,7 +637,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   return ++ current$1[1];
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 10 : 
@@ -623,7 +671,14 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   }
                 }
                 else {
-                  exit = 1;
+                  throw [
+                        0,
+                        Stop,
+                        [
+                          /* Missing */2,
+                          s
+                        ]
+                      ];
                 }
                 break;
             case 12 : 
@@ -635,17 +690,6 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 return /* () */0;
             
           }
-          if (exit === 1) {
-            throw [
-                  0,
-                  Stop,
-                  [
-                    /* Missing */2,
-                    s
-                  ]
-                ];
-          }
-          
         }
         }(s));
         treat_action(action);

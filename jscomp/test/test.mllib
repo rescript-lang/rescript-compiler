@@ -151,3 +151,4 @@ equal_test
 typeof_test
 lib_js_test
 small_inline_test
+ari_regress_test

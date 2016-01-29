@@ -8,14 +8,6 @@ var Buffer             = require("./buffer");
 var $$String           = require("./string");
 var CamlinternalFormat = require("./camlinternalFormat");
 
-function make_queue() {
-  return [
-          /* record */0,
-          /* Nil */0,
-          /* Nil */0
-        ];
-}
-
 function add_queue(x, q) {
   var c_001 = [
     /* record */0,
@@ -92,31 +84,19 @@ function pp_output_string(state, s) {
   return state[17](s, 0, s.length);
 }
 
-function pp_output_newline(state) {
-  return state[19](/* () */0);
-}
-
-function pp_output_spaces(state, n) {
-  return state[20](n);
-}
-
 function break_new_line(state, offset, width) {
-  pp_output_newline(state);
+  state[19](/* () */0);
   state[11] = /* true */1;
   var indent = state[6] - width + offset;
   var real_indent = Pervasives.min(state[8], indent);
   state[10] = real_indent;
   state[9] = state[6] - state[10];
-  return pp_output_spaces(state, state[10]);
-}
-
-function break_line(state, width) {
-  return break_new_line(state, 0, width);
+  return state[20](state[10]);
 }
 
 function break_same_line(state, width) {
   state[9] -= width;
-  return pp_output_spaces(state, width);
+  return state[20](width);
 }
 
 function pp_force_break_line(state) {
@@ -131,7 +111,7 @@ function pp_force_break_line(state) {
           return /* () */0;
         }
         else {
-          return break_line(state, width);
+          return break_new_line(state, 0, width);
         }
       }
       else {
@@ -143,7 +123,7 @@ function pp_force_break_line(state) {
     }
   }
   else {
-    return pp_output_newline(state);
+    return state[19](/* () */0);
   }
 }
 
@@ -208,10 +188,10 @@ function format_pp_token(state, size, param) {
       case 3 : 
           var match$3 = state[2];
           if (match$3) {
-            return break_line(state, match$3[1][2]);
+            return break_new_line(state, 0, match$3[1][2]);
           }
           else {
-            return pp_output_newline(state);
+            return state[19](/* () */0);
           }
       case 4 : 
           if (state[10] !== state[6] - state[9]) {
@@ -413,26 +393,28 @@ function enqueue_advance(state, tok) {
   return advance_left(state);
 }
 
-function make_queue_elem(size, tok, len) {
-  return [
-          /* record */0,
-          size,
-          tok,
-          len
-        ];
-}
-
 function enqueue_string_as(state, size, s) {
-  return enqueue_advance(state, make_queue_elem(size, [
-                  /* Pp_text */0,
-                  s
-                ], size));
+  var tok = [
+    /* Pp_text */0,
+    s
+  ];
+  return enqueue_advance(state, [
+              /* record */0,
+              size,
+              tok,
+              size
+            ]);
 }
 
-var q_elem = make_queue_elem(-1, [
-      /* Pp_text */0,
-      ""
-    ], 0);
+var q_elem = [
+  /* record */0,
+  -1,
+  [
+    /* Pp_text */0,
+    ""
+  ],
+  0
+];
 
 var scan_stack_bottom_001 = [
   /* Scan_elem */0,
@@ -446,11 +428,6 @@ var scan_stack_bottom = [
   /* [] */0
 ];
 
-function clear_scan_stack(state) {
-  state[1] = scan_stack_bottom;
-  return /* () */0;
-}
-
 function set_size(state, ty) {
   var match = state[1];
   if (match) {
@@ -459,7 +436,8 @@ function set_size(state, ty) {
     var size = queue_elem[1];
     var t = match[2];
     if (match$1[1] < state[12]) {
-      return clear_scan_stack(state);
+      state[1] = scan_stack_bottom;
+      return /* () */0;
     }
     else {
       var exit = 0;
@@ -524,11 +502,18 @@ function scan_push(state, b, tok) {
 function pp_open_box_gen(state, indent, br_ty) {
   ++ state[14];
   if (state[14] < state[15]) {
-    var elem = make_queue_elem(-state[13], [
-          /* Pp_begin */3,
-          indent,
-          br_ty
-        ], 0);
+    var tok = [
+      /* Pp_begin */3,
+      indent,
+      br_ty
+    ];
+    var size = -state[13];
+    var elem = [
+      /* record */0,
+      size,
+      tok,
+      0
+    ];
     return scan_push(state, /* false */0, elem);
   }
   else if (state[14] === state[15]) {
@@ -631,8 +616,9 @@ function pp_get_mark_tags(state, _) {
 }
 
 function pp_set_tags(state, b) {
-  pp_set_print_tags(state, b);
-  return pp_set_mark_tags(state, b);
+  state[21] = b;
+  state[22] = b;
+  return /* () */0;
 }
 
 function pp_get_formatter_tag_functions(state, _) {
@@ -655,7 +641,7 @@ function pp_set_formatter_tag_functions(state, param) {
 
 function pp_rinit(state) {
   pp_clear_queue(state);
-  clear_scan_stack(state);
+  state[1] = scan_stack_bottom;
   state[2] = /* [] */0;
   state[3] = /* [] */0;
   state[4] = /* [] */0;
@@ -663,8 +649,7 @@ function pp_rinit(state) {
   state[10] = 0;
   state[14] = 0;
   state[9] = state[6];
-  var state$1 = state;
-  return pp_open_box_gen(state$1, 0, /* Pp_hovbox */3);
+  return pp_open_box_gen(state, 0, /* Pp_hovbox */3);
 }
 
 function pp_flush_queue(state, b) {
@@ -674,7 +659,7 @@ function pp_flush_queue(state, b) {
   state[13] = pp_infinity;
   advance_left(state);
   if (b) {
-    pp_output_newline(state);
+    state[19](/* () */0);
   }
   return pp_rinit(state);
 }
@@ -744,7 +729,12 @@ function pp_print_flush(state, _) {
 
 function pp_force_newline(state, _) {
   if (state[14] < state[15]) {
-    return enqueue_advance(state, make_queue_elem(0, /* Pp_newline */3, 0));
+    return enqueue_advance(state, [
+                /* record */0,
+                0,
+                /* Pp_newline */3,
+                0
+              ]);
   }
   else {
     return 0;
@@ -753,7 +743,12 @@ function pp_force_newline(state, _) {
 
 function pp_print_if_newline(state, _) {
   if (state[14] < state[15]) {
-    return enqueue_advance(state, make_queue_elem(0, /* Pp_if_newline */4, 0));
+    return enqueue_advance(state, [
+                /* record */0,
+                0,
+                /* Pp_if_newline */4,
+                0
+              ]);
   }
   else {
     return 0;
@@ -762,11 +757,18 @@ function pp_print_if_newline(state, _) {
 
 function pp_print_break(state, width, offset) {
   if (state[14] < state[15]) {
-    var elem = make_queue_elem(-state[13], [
-          /* Pp_break */1,
-          width,
-          offset
-        ], width);
+    var tok = [
+      /* Pp_break */1,
+      width,
+      offset
+    ];
+    var size = -state[13];
+    var elem = [
+      /* record */0,
+      size,
+      tok,
+      width
+    ];
     return scan_push(state, /* true */1, elem);
   }
   else {
@@ -785,16 +787,23 @@ function pp_print_cut(state, _) {
 function pp_open_tbox(state, _) {
   ++ state[14];
   if (state[14] < state[15]) {
-    var elem = make_queue_elem(0, [
-          /* Pp_tbegin */4,
-          [
-            /* Pp_tbox */0,
-            [
-              0,
-              /* [] */0
-            ]
-          ]
-        ], 0);
+    var tok_001 = [
+      /* Pp_tbox */0,
+      [
+        0,
+        /* [] */0
+      ]
+    ];
+    var tok = [
+      /* Pp_tbegin */4,
+      tok_001
+    ];
+    var elem = [
+      /* record */0,
+      0,
+      tok,
+      0
+    ];
     return enqueue_advance(state, elem);
   }
   else {
@@ -805,7 +814,12 @@ function pp_open_tbox(state, _) {
 function pp_close_tbox(state, _) {
   if (state[14] > 1) {
     if (state[14] < state[15]) {
-      var elem = make_queue_elem(0, /* Pp_tend */2, 0);
+      var elem = [
+        /* record */0,
+        0,
+        /* Pp_tend */2,
+        0
+      ];
       enqueue_advance(state, elem);
       -- state[14];
       return /* () */0;
@@ -821,11 +835,18 @@ function pp_close_tbox(state, _) {
 
 function pp_print_tbreak(state, width, offset) {
   if (state[14] < state[15]) {
-    var elem = make_queue_elem(-state[13], [
-          /* Pp_tbreak */2,
-          width,
-          offset
-        ], width);
+    var tok = [
+      /* Pp_tbreak */2,
+      width,
+      offset
+    ];
+    var size = -state[13];
+    var elem = [
+      /* record */0,
+      size,
+      tok,
+      width
+    ];
     return scan_push(state, /* true */1, elem);
   }
   else {
@@ -839,7 +860,12 @@ function pp_print_tab(state, _) {
 
 function pp_set_tab(state, _) {
   if (state[14] < state[15]) {
-    var elem = make_queue_elem(0, /* Pp_stab */0, 0);
+    var elem = [
+      /* record */0,
+      0,
+      /* Pp_stab */0,
+      0
+    ];
     return enqueue_advance(state, elem);
   }
   else {
@@ -898,7 +924,7 @@ function pp_print_text(ppf, s) {
       }
       else {
         flush(/* () */0);
-        pp_print_space(ppf, /* () */0);
+        pp_print_break(ppf, 1, 0);
       }
     }
     else {
@@ -1090,12 +1116,21 @@ function default_pp_print_close_tag(prim) {
 }
 
 function pp_make_formatter(f, g, h, i) {
-  var pp_q = make_queue(/* () */0);
-  var sys_tok = make_queue_elem(-1, [
-        /* Pp_begin */3,
-        0,
-        /* Pp_hovbox */3
-      ], 0);
+  var pp_q = [
+    /* record */0,
+    /* Nil */0,
+    /* Nil */0
+  ];
+  var sys_tok = [
+    /* record */0,
+    -1,
+    [
+      /* Pp_begin */3,
+      0,
+      /* Pp_hovbox */3
+    ],
+    0
+  ];
   add_queue(sys_tok, pp_q);
   var sys_scan_stack_001 = [
     /* Scan_elem */0,
@@ -1233,11 +1268,11 @@ function print_string(param) {
 }
 
 function print_int(param) {
-  return pp_print_int(std_formatter, param);
+  return pp_print_string(std_formatter, Pervasives.string_of_int(param));
 }
 
 function print_float(param) {
-  return pp_print_float(std_formatter, param);
+  return pp_print_string(std_formatter, Pervasives.string_of_float(param));
 }
 
 function print_char(param) {
@@ -1245,19 +1280,19 @@ function print_char(param) {
 }
 
 function print_bool(param) {
-  return pp_print_bool(std_formatter, param);
+  return pp_print_string(std_formatter, Pervasives.string_of_bool(param));
 }
 
 function print_break(param, param$1) {
   return pp_print_break(std_formatter, param, param$1);
 }
 
-function print_cut(param) {
-  return pp_print_cut(std_formatter, param);
+function print_cut() {
+  return pp_print_break(std_formatter, 0, 0);
 }
 
-function print_space(param) {
-  return pp_print_space(std_formatter, param);
+function print_space() {
+  return pp_print_break(std_formatter, 1, 0);
 }
 
 function force_newline(param) {
@@ -1292,32 +1327,32 @@ function set_tab(param) {
   return pp_set_tab(std_formatter, param);
 }
 
-function print_tab(param) {
-  return pp_print_tab(std_formatter, param);
+function print_tab() {
+  return pp_print_tbreak(std_formatter, 0, 0);
 }
 
 function set_margin(param) {
   return pp_set_margin(std_formatter, param);
 }
 
-function get_margin(param) {
-  return pp_get_margin(std_formatter, param);
+function get_margin() {
+  return std_formatter[6];
 }
 
 function set_max_indent(param) {
   return pp_set_max_indent(std_formatter, param);
 }
 
-function get_max_indent(param) {
-  return pp_get_max_indent(std_formatter, param);
+function get_max_indent() {
+  return std_formatter[8];
 }
 
 function set_max_boxes(param) {
   return pp_set_max_boxes(std_formatter, param);
 }
 
-function get_max_boxes(param) {
-  return pp_get_max_boxes(std_formatter, param);
+function get_max_boxes() {
+  return std_formatter[15];
 }
 
 function over_max_boxes(param) {
@@ -1325,11 +1360,12 @@ function over_max_boxes(param) {
 }
 
 function set_ellipsis_text(param) {
-  return pp_set_ellipsis_text(std_formatter, param);
+  std_formatter[16] = param;
+  return /* () */0;
 }
 
-function get_ellipsis_text(param) {
-  return pp_get_ellipsis_text(std_formatter, param);
+function get_ellipsis_text() {
+  return std_formatter[16];
 }
 
 function set_formatter_out_channel(param) {
@@ -1369,19 +1405,21 @@ function get_formatter_tag_functions(param) {
 }
 
 function set_print_tags(param) {
-  return pp_set_print_tags(std_formatter, param);
+  std_formatter[21] = param;
+  return /* () */0;
 }
 
-function get_print_tags(param) {
-  return pp_get_print_tags(std_formatter, param);
+function get_print_tags() {
+  return std_formatter[21];
 }
 
 function set_mark_tags(param) {
-  return pp_set_mark_tags(std_formatter, param);
+  std_formatter[22] = param;
+  return /* () */0;
 }
 
-function get_mark_tags(param) {
-  return pp_get_mark_tags(std_formatter, param);
+function get_mark_tags() {
+  return std_formatter[22];
 }
 
 function set_tags(param) {
@@ -1444,10 +1482,6 @@ function output_acc(ppf, acc) {
   var p$1;
   var size$1;
   var c;
-  var p$2;
-  var s$1;
-  var p$3;
-  var c$1;
   if (typeof acc === "number") {
     return /* () */0;
   }
@@ -1458,8 +1492,8 @@ function output_acc(ppf, acc) {
           return output_formatting_lit(ppf, acc[2]);
       case 1 : 
           var match = acc[2];
-          var p$4 = acc[1];
-          output_acc(ppf, p$4);
+          var p$2 = acc[1];
+          output_acc(ppf, p$2);
           if (match[0]) {
             var match$1 = CamlinternalFormat.open_box_of_string(compute_tag(output_acc, match[1]));
             return pp_open_box_gen(ppf, match$1[1], match$1[2]);
@@ -1469,123 +1503,119 @@ function output_acc(ppf, acc) {
           }
           break;
       case 2 : 
-          var p$5 = acc[1];
+          var p$3 = acc[1];
           var exit$1 = 0;
-          if (typeof p$5 === "number") {
-            exit$1 = 5;
+          if (typeof p$3 === "number") {
+            exit$1 = 3;
           }
-          else if (p$5[0]) {
-            exit$1 = 5;
+          else if (p$3[0]) {
+            exit$1 = 3;
           }
           else {
-            var match$2 = p$5[2];
+            var match$2 = p$3[2];
             if (typeof match$2 === "number") {
-              exit$1 = 5;
+              exit$1 = 3;
             }
             else if (match$2[0] === 1) {
-              p = p$5[1];
+              p = p$3[1];
               size = match$2[2];
               s = acc[2];
               exit = 1;
             }
             else {
-              exit$1 = 5;
+              exit$1 = 3;
             }
           }
-          if (exit$1 === 5) {
-            p$2 = p$5;
-            s$1 = acc[2];
-            exit = 3;
+          if (exit$1 === 3) {
+            output_acc(ppf, p$3);
+            return pp_print_string(ppf, acc[2]);
           }
           break;
       case 3 : 
-          var p$6 = acc[1];
+          var p$4 = acc[1];
           var exit$2 = 0;
-          if (typeof p$6 === "number") {
-            exit$2 = 5;
+          if (typeof p$4 === "number") {
+            exit$2 = 3;
           }
-          else if (p$6[0]) {
-            exit$2 = 5;
+          else if (p$4[0]) {
+            exit$2 = 3;
           }
           else {
-            var match$3 = p$6[2];
+            var match$3 = p$4[2];
             if (typeof match$3 === "number") {
-              exit$2 = 5;
+              exit$2 = 3;
             }
             else if (match$3[0] === 1) {
-              p$1 = p$6[1];
+              p$1 = p$4[1];
               size$1 = match$3[2];
               c = acc[2];
               exit = 2;
             }
             else {
-              exit$2 = 5;
+              exit$2 = 3;
             }
           }
-          if (exit$2 === 5) {
-            p$3 = p$6;
-            c$1 = acc[2];
-            exit = 4;
+          if (exit$2 === 3) {
+            output_acc(ppf, p$4);
+            return pp_print_char(ppf, acc[2]);
           }
           break;
       case 4 : 
-          var p$7 = acc[1];
+          var p$5 = acc[1];
           var exit$3 = 0;
-          if (typeof p$7 === "number") {
-            exit$3 = 5;
+          if (typeof p$5 === "number") {
+            exit$3 = 3;
           }
-          else if (p$7[0]) {
-            exit$3 = 5;
+          else if (p$5[0]) {
+            exit$3 = 3;
           }
           else {
-            var match$4 = p$7[2];
+            var match$4 = p$5[2];
             if (typeof match$4 === "number") {
-              exit$3 = 5;
+              exit$3 = 3;
             }
             else if (match$4[0] === 1) {
-              p = p$7[1];
+              p = p$5[1];
               size = match$4[2];
               s = acc[2];
               exit = 1;
             }
             else {
-              exit$3 = 5;
+              exit$3 = 3;
             }
           }
-          if (exit$3 === 5) {
-            p$2 = p$7;
-            s$1 = acc[2];
-            exit = 3;
+          if (exit$3 === 3) {
+            output_acc(ppf, p$5);
+            return pp_print_string(ppf, acc[2]);
           }
           break;
       case 5 : 
-          var p$8 = acc[1];
+          var p$6 = acc[1];
           var exit$4 = 0;
-          if (typeof p$8 === "number") {
-            exit$4 = 5;
+          if (typeof p$6 === "number") {
+            exit$4 = 3;
           }
-          else if (p$8[0]) {
-            exit$4 = 5;
+          else if (p$6[0]) {
+            exit$4 = 3;
           }
           else {
-            var match$5 = p$8[2];
+            var match$5 = p$6[2];
             if (typeof match$5 === "number") {
-              exit$4 = 5;
+              exit$4 = 3;
             }
             else if (match$5[0] === 1) {
-              p$1 = p$8[1];
+              p$1 = p$6[1];
               size$1 = match$5[2];
               c = acc[2];
               exit = 2;
             }
             else {
-              exit$4 = 5;
+              exit$4 = 3;
             }
           }
-          if (exit$4 === 5) {
-            p$3 = p$8;
-            c$1 = acc[2];
-            exit = 4;
+          if (exit$4 === 3) {
+            output_acc(ppf, p$6);
+            return pp_print_char(ppf, acc[2]);
           }
           break;
       case 6 : 
@@ -1607,12 +1637,6 @@ function output_acc(ppf, acc) {
     case 2 : 
         output_acc(ppf, p$1);
         return pp_print_as_size(ppf, size$1, $$String.make(1, c));
-    case 3 : 
-        output_acc(ppf, p$2);
-        return pp_print_string(ppf, s$1);
-    case 4 : 
-        output_acc(ppf, p$3);
-        return pp_print_char(ppf, c$1);
     
   }
 }
@@ -1625,10 +1649,6 @@ function strput_acc(ppf, acc) {
   var p$1;
   var size$1;
   var c;
-  var p$2;
-  var s$1;
-  var p$3;
-  var c$1;
   if (typeof acc === "number") {
     return /* () */0;
   }
@@ -1639,8 +1659,8 @@ function strput_acc(ppf, acc) {
           return output_formatting_lit(ppf, acc[2]);
       case 1 : 
           var match = acc[2];
-          var p$4 = acc[1];
-          strput_acc(ppf, p$4);
+          var p$2 = acc[1];
+          strput_acc(ppf, p$2);
           if (match[0]) {
             var match$1 = CamlinternalFormat.open_box_of_string(compute_tag(strput_acc, match[1]));
             return pp_open_box_gen(ppf, match$1[1], match$1[2]);
@@ -1650,149 +1670,145 @@ function strput_acc(ppf, acc) {
           }
           break;
       case 2 : 
-          var p$5 = acc[1];
+          var p$3 = acc[1];
           var exit$1 = 0;
-          if (typeof p$5 === "number") {
-            exit$1 = 5;
+          if (typeof p$3 === "number") {
+            exit$1 = 3;
           }
-          else if (p$5[0]) {
-            exit$1 = 5;
+          else if (p$3[0]) {
+            exit$1 = 3;
           }
           else {
-            var match$2 = p$5[2];
+            var match$2 = p$3[2];
             if (typeof match$2 === "number") {
-              exit$1 = 5;
+              exit$1 = 3;
             }
             else if (match$2[0] === 1) {
-              p = p$5[1];
+              p = p$3[1];
               size = match$2[2];
               s = acc[2];
               exit = 1;
             }
             else {
-              exit$1 = 5;
+              exit$1 = 3;
             }
           }
-          if (exit$1 === 5) {
-            p$2 = p$5;
-            s$1 = acc[2];
-            exit = 3;
+          if (exit$1 === 3) {
+            strput_acc(ppf, p$3);
+            return pp_print_string(ppf, acc[2]);
           }
           break;
       case 3 : 
-          var p$6 = acc[1];
+          var p$4 = acc[1];
           var exit$2 = 0;
-          if (typeof p$6 === "number") {
-            exit$2 = 5;
+          if (typeof p$4 === "number") {
+            exit$2 = 3;
           }
-          else if (p$6[0]) {
-            exit$2 = 5;
+          else if (p$4[0]) {
+            exit$2 = 3;
           }
           else {
-            var match$3 = p$6[2];
+            var match$3 = p$4[2];
             if (typeof match$3 === "number") {
-              exit$2 = 5;
+              exit$2 = 3;
             }
             else if (match$3[0] === 1) {
-              p$1 = p$6[1];
+              p$1 = p$4[1];
               size$1 = match$3[2];
               c = acc[2];
               exit = 2;
             }
             else {
-              exit$2 = 5;
+              exit$2 = 3;
             }
           }
-          if (exit$2 === 5) {
-            p$3 = p$6;
-            c$1 = acc[2];
-            exit = 4;
+          if (exit$2 === 3) {
+            strput_acc(ppf, p$4);
+            return pp_print_char(ppf, acc[2]);
           }
           break;
       case 4 : 
-          var p$7 = acc[1];
+          var p$5 = acc[1];
           var exit$3 = 0;
-          if (typeof p$7 === "number") {
-            exit$3 = 5;
+          if (typeof p$5 === "number") {
+            exit$3 = 3;
           }
-          else if (p$7[0]) {
-            exit$3 = 5;
+          else if (p$5[0]) {
+            exit$3 = 3;
           }
           else {
-            var match$4 = p$7[2];
+            var match$4 = p$5[2];
             if (typeof match$4 === "number") {
-              exit$3 = 5;
+              exit$3 = 3;
             }
             else if (match$4[0] === 1) {
-              p = p$7[1];
+              p = p$5[1];
               size = match$4[2];
               s = acc[2];
               exit = 1;
             }
             else {
-              exit$3 = 5;
+              exit$3 = 3;
             }
           }
-          if (exit$3 === 5) {
-            p$2 = p$7;
-            s$1 = acc[2];
-            exit = 3;
+          if (exit$3 === 3) {
+            strput_acc(ppf, p$5);
+            return pp_print_string(ppf, acc[2]);
           }
           break;
       case 5 : 
-          var p$8 = acc[1];
+          var p$6 = acc[1];
           var exit$4 = 0;
-          if (typeof p$8 === "number") {
-            exit$4 = 5;
+          if (typeof p$6 === "number") {
+            exit$4 = 3;
           }
-          else if (p$8[0]) {
-            exit$4 = 5;
+          else if (p$6[0]) {
+            exit$4 = 3;
           }
           else {
-            var match$5 = p$8[2];
+            var match$5 = p$6[2];
             if (typeof match$5 === "number") {
-              exit$4 = 5;
+              exit$4 = 3;
             }
             else if (match$5[0] === 1) {
-              p$1 = p$8[1];
+              p$1 = p$6[1];
               size$1 = match$5[2];
               c = acc[2];
               exit = 2;
             }
             else {
-              exit$4 = 5;
+              exit$4 = 3;
             }
           }
-          if (exit$4 === 5) {
-            p$3 = p$8;
-            c$1 = acc[2];
-            exit = 4;
+          if (exit$4 === 3) {
+            strput_acc(ppf, p$6);
+            return pp_print_char(ppf, acc[2]);
           }
           break;
       case 6 : 
-          var p$9 = acc[1];
+          var p$7 = acc[1];
           var exit$5 = 0;
-          if (typeof p$9 === "number") {
-            exit$5 = 5;
+          if (typeof p$7 === "number") {
+            exit$5 = 3;
           }
-          else if (p$9[0]) {
-            exit$5 = 5;
+          else if (p$7[0]) {
+            exit$5 = 3;
           }
           else {
-            var match$6 = p$9[2];
+            var match$6 = p$7[2];
             if (typeof match$6 === "number") {
-              exit$5 = 5;
+              exit$5 = 3;
             }
             else if (match$6[0] === 1) {
-              strput_acc(ppf, p$9[1]);
+              strput_acc(ppf, p$7[1]);
               return pp_print_as_size(ppf, match$6[2], acc[2](/* () */0));
             }
             else {
-              exit$5 = 5;
+              exit$5 = 3;
             }
           }
-          if (exit$5 === 5) {
-            strput_acc(ppf, p$9);
+          if (exit$5 === 3) {
+            strput_acc(ppf, p$7);
             return pp_print_string(ppf, acc[2](/* () */0));
           }
           break;
@@ -1812,12 +1828,6 @@ function strput_acc(ppf, acc) {
     case 2 : 
         strput_acc(ppf, p$1);
         return pp_print_as_size(ppf, size$1, $$String.make(1, c));
-    case 3 : 
-        strput_acc(ppf, p$2);
-        return pp_print_string(ppf, s$1);
-    case 4 : 
-        strput_acc(ppf, p$3);
-        return pp_print_char(ppf, c$1);
     
   }
 }
@@ -2013,4 +2023,4 @@ exports.set_all_formatter_output_functions    = set_all_formatter_output_functio
 exports.get_all_formatter_output_functions    = get_all_formatter_output_functions;
 exports.pp_set_all_formatter_output_functions = pp_set_all_formatter_output_functions;
 exports.pp_get_all_formatter_output_functions = pp_get_all_formatter_output_functions;
-/* q_elem Not a pure module */
+/* blank_line Not a pure module */

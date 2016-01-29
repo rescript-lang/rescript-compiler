@@ -121,6 +121,15 @@ class virtual map =
        just print `A.length` - it's guarateed to be unique
        
        when the third one is None, it means the whole module 
+
+       TODO: 
+       invariant, when [kind] is [Runtime], then we can ignore [ident], 
+       since all [runtime] functions are unique, when do the 
+       pattern match we can ignore the first one for simplicity
+       for example       
+       {[
+         Qualified (_, Runtime, Some "caml_int_compare")         
+       ]}       
      *)
                  (* used in [js_create_array] primitive, note having
        uninitilized array is not as bad as in ocaml, 

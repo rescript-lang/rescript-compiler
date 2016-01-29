@@ -112,7 +112,11 @@ function copy(q) {
           ];
   }
   else {
-    return create(/* () */0);
+    return [
+            /* record */0,
+            0,
+            /* None */0
+          ];
   }
 }
 

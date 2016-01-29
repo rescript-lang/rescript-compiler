@@ -527,7 +527,7 @@ function find_all(p) {
         }
       }
       else {
-        return rev(accu);
+        return rev_append(accu, /* [] */0);
       }
     };
   };
@@ -564,8 +564,8 @@ function partition(p, l) {
     else {
       return [
               /* tuple */0,
-              rev(yes),
-              rev(no)
+              rev_append(yes, /* [] */0),
+              rev_append(no, /* [] */0)
             ];
     }
   };
@@ -1079,7 +1079,7 @@ function stable_sort(cmp, l) {
     }
     
   };
-  var len = length(l);
+  var len = length_aux(0, l);
   if (len < 2) {
     return l;
   }
@@ -1733,7 +1733,7 @@ function sort_uniq(cmp, l) {
     }
     
   };
-  var len = length(l);
+  var len = length_aux(0, l);
   if (len < 2) {
     return l;
   }

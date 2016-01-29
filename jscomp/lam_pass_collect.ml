@@ -21,10 +21,13 @@
 
 
 
-let annotate (meta : Lam_stats.meta) (k:Ident.t) (v : Lam_stats.function_arities) lambda = 
+let annotate (meta : Lam_stats.meta)
+    rec_flag    
+    (k:Ident.t) (v : Lam_stats.function_arities) lambda = 
+  (* Ext_log.dwarn  __LOC__ "%s/%d@." k.name k.stamp;     *)
   match Hashtbl.find  meta.ident_tbl k  with 
   | exception Not_found -> 
-      Hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda})
+      Hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
   |  Function old  ->  
       (** Check, it is shared across ident_tbl, 
           Only [Lassign] will break such invariant,
@@ -46,28 +49,29 @@ let annotate (meta : Lam_stats.meta) (k:Ident.t) (v : Lam_stats.function_arities
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
 let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  = 
-  let rec collect_bind
+  let rec collect_bind rec_flag
       (kind : Lambda.let_kind) 
       (ident : Ident.t)
       (lam : Lambda.lambda) = 
     match lam with 
     | Lconst v 
-        -> 
-        Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
+      -> 
+      Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
     | Lprim (Pmakeblock (_, _, Immutable ) , ls)
-        -> 
-        Hashtbl.replace meta.ident_tbl ident 
-            (Lam_util.kind_of_lambda_block ls);
+      -> 
+      Hashtbl.replace meta.ident_tbl ident 
+        (Lam_util.kind_of_lambda_block ls);
+      List.iter collect ls 
     | Lprim (Pgetglobal v,[]) 
       -> 
-        begin 
-          Lam_util.alias meta  ident v (Module  v) kind; 
-          begin match kind with 
+      begin 
+        Lam_util.alias meta  ident v (Module  v) kind; 
+        begin match kind with 
           | Alias -> ()
           | Strict | StrictOpt | Variable -> 
-              Lam_util.add_required_module v meta
-          end;
-        end
+            Lam_util.add_required_module v meta
+        end;
+      end
     | Lvar v 
       -> 
         (
@@ -83,15 +87,21 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
             -- since collect would iter everywhere,
             so -- it would still iterate internally
          *)
-        List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
-        annotate meta ident (Lam_stats_util.get_arity meta lam) lam;
-        collect l
+
+      List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
+      let arity = Lam_stats_util.get_arity meta lam in       
+      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected@."  *)
+      (*   ident.name ident.stamp  *)
+      (*   Printlambda.lambda lam *)
+      (*   Lam_stats_util.pp_arities arity *)
+      (* ; *)
+      annotate meta rec_flag ident  arity lam;
+      collect l
     | x -> 
         collect x ;
-        if List.mem ident meta.export_idents then 
-          begin
-            annotate meta ident (Lam_stats_util.get_arity meta x ) lam
-          end
+        if Lambda.IdentSet.mem ident meta.export_idents then 
+          annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
+
 
   and collect  (lam : Lambda.lambda)  =
     match lam with 
@@ -113,9 +123,9 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
         List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 
-        collect_bind kind ident arg ; collect body
+        collect_bind Non_rec kind ident arg ; collect body
     | Lletrec (bindings, body) -> 
-        List.iter (fun (ident,arg) -> collect_bind Strict ident arg ) bindings;
+        List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
     | Lprim(_p, ll) -> List.iter collect  ll
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
@@ -161,11 +171,11 @@ let count_alias_globals
     {alias_tbl = Hashtbl.create 31 ; 
      ident_tbl = Hashtbl.create 31;
      exit_codes = Hash_set.create 31 ;
-     exports = export_idents;
+     exports =  export_idents;
      required_modules = [] ;
      filename;
      env;
-     export_idents
+     export_idents = Lam_util.ident_set_of_list export_idents; 
    } in 
   collect_helper  meta lam ; 
   meta

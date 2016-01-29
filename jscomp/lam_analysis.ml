@@ -215,9 +215,13 @@ let rec size (lam : Lambda.lambda) =
   try 
     match lam with 
     | Lvar _ ->  1
-    | Lconst _ -> 1 (* Modify *)
+    | Lconst c -> size_constant c
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
+    | Lprim(Pfield _, [Lprim(Pgetglobal _, [  ])])
+      -> 1
+    | Lprim (Praise _, [l ]) 
+      -> size l
     | Lprim(_, ll) -> size_lams 1 ll
 
     (** complicated 
@@ -230,7 +234,8 @@ let rec size (lam : Lambda.lambda) =
      *)      
     | Lapply(f,
              args, _) -> size_lams (size f) args
-    | Lfunction(_, params, l) -> really_big ()
+    (* | Lfunction(_, params, l) -> really_big () *)
+    | Lfunction(_,_params,body) -> size body 
     | Lswitch(_, _) -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
@@ -246,11 +251,21 @@ let rec size (lam : Lambda.lambda) =
     | Levent(l, _) -> size l 
     | Lifused(v, l) -> size l 
   with Too_big_to_inline ->  1000 
+and size_constant x = 
+  match x with 
+  | Const_base _
+  | Const_immstring _
+  | Const_pointer _ 
+    -> 1 
+  | Const_block (_, _, str) 
+    ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
+  | Const_float_array xs  -> List.length xs
 
 and size_lams acc (lams : Lambda.lambda list) = 
   List.fold_left (fun acc l -> acc  + size l ) acc lams
 
-
+let exit_inline_size = 7 
+let small_inline_size = 5
 (* compared two lambdas in case analysis, note that we only compare some small lambdas
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
@@ -289,3 +304,12 @@ and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) =
   | _ , _ -> 
     (* FIXME: relies on structure equality *) 
     try p = p1 with _ -> false
+
+
+let is_closed_by map lam = 
+  Lambda.IdentSet.for_all Ident.global 
+    (Lambda.IdentSet.diff (Lambda.free_variables lam) map )
+
+
+let is_closed  lam = 
+  Lambda.IdentSet.for_all Ident.global (Lambda.free_variables lam)  

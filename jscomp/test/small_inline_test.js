@@ -2,34 +2,34 @@
 "use strict";
 
 
-function $unknown$great(x, f) {
+function $pipe$great(x, f) {
   return f(x);
 }
 
 function hello1(y, f) {
-  return $unknown$great(y, f);
+  return f(y);
 }
 
 function hello2(y, f) {
-  return $unknown$great(y, f);
+  return f(y);
 }
 
 function hello3(y, f) {
-  return $unknown$great(y, f);
+  return f(y);
 }
 
 function hello4(y, f) {
-  return $unknown$great(y, f);
+  return f(y);
 }
 
 function hello5(y, f) {
-  return hello1(y, f);
+  return f(y);
 }
 
-exports.$unknown$great = $unknown$great;
-exports.hello1         = hello1;
-exports.hello2         = hello2;
-exports.hello3         = hello3;
-exports.hello4         = hello4;
-exports.hello5         = hello5;
+exports.$pipe$great = $pipe$great;
+exports.hello1      = hello1;
+exports.hello2      = hello2;
+exports.hello3      = hello3;
+exports.hello4      = hello4;
+exports.hello5      = hello5;
 /* No side effect */

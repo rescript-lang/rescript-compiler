@@ -22,7 +22,7 @@ function from_pair_suites(name, suites) {
                           var code = param[2];
                           return it(param[1], function () {
                                       var match = code(/* () */0);
-                                      return assert_equal(match[1], match[2]);
+                                      return Assert.deepEqual(match[1], match[2]);
                                     });
                         }, suites);
             });

@@ -2,10 +2,6 @@
 "use strict";
 
 
-function test4(n) {
-  return n + 5;
-}
-
 function test3(_n) {
   while(true) {
     var n = _n;
@@ -13,7 +9,7 @@ function test3(_n) {
       _n = n - 1;
     }
     else {
-      return test4(n) + 4;
+      return n + 9;
     }
   };
 }
