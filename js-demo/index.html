@@ -18,6 +18,8 @@
 
     <div style="width: 50%;float:left">
         <textarea id="ocamlcode#1">
+external to_str : 'a -> string = "js_anything_to_string"
+let print x = print_endline (to_str x)
 let rec fib = function
   | 1 | 2 -> 1
   | n -> fib (n - 1 )  + fib (n - 2)
@@ -30,9 +32,9 @@ let sum n =
     !v
 let tail_sum n =
   let rec aux acc i =
-    if i <= n then 
+    if i <= n then
       aux (acc + i) (i + 1)
-    else acc 
+    else acc
   in aux 0 0
 
 (** List map *)
@@ -47,8 +49,7 @@ let rec map f = function
 (** Test curry and uncurry calling convention *)
 let test_curry x  y =  x + y
 let f = test_curry 32
-
-
+let () = print "hello world"
         </textarea>
     </div>
 
@@ -65,7 +66,7 @@ let f = test_curry 32
                 <!--Dead Code Elimination-->
             <!--</label>-->
             <label style="float:right" >
-                <input id="option-eval" type="checkbox" >
+                <input id="option-eval" type="checkbox" checked>
                 Eval
             </label>
         </form>
@@ -76,6 +77,11 @@ let f = test_curry 32
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
+
+function print(x) {
+  console.log("" + x);
+  return /* () */0;
+}
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -131,13 +137,16 @@ function f(param) {
   return 32 + param;
 }
 
+console.log("hello world");
+
+exports.print      = print;
 exports.fib        = fib;
 exports.sum        = sum;
 exports.tail_sum   = tail_sum;
 exports.map        = map;
 exports.test_curry = test_curry;
 exports.f          = f;
-/* No side effect */
+/*  Not a pure module */
         </textarea>
     </div>
 </div>
