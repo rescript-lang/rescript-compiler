@@ -149,6 +149,26 @@ class virtual map =
      which makes optimizations easier
      {[ JSON.stringify(value, replacer[, space]) ]}
   *)
+                 (* for debugging utitlites, 
+     TODO:  [Dump] is not necessary with this primitive 
+     Note that the semantics is slightly different from [JSON.stringify]     
+     {[
+       JSON.stringify("x")       
+     ]}
+     {[
+       ""x""       
+     ]}     
+     {[
+       JSON.stringify(undefined)       
+     ]}     
+     {[
+       undefined       
+     ]}
+     {[ '' + undefined
+     ]}     
+     {[ 'undefined'
+     ]}     
+  *)
                  (* to support 
        val log1 : 'a -> unit
        val log2 : 'a -> 'b -> unit 
@@ -363,6 +383,8 @@ class virtual map =
       | String_of_small_int_array _x ->
           let _x = o#expression _x in String_of_small_int_array _x
       | Json_stringify _x -> let _x = o#expression _x in Json_stringify _x
+      | Anything_to_string _x ->
+          let _x = o#expression _x in Anything_to_string _x
       | Dump (_x, _x_i1) ->
           let _x = o#unknown _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1

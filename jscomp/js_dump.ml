@@ -362,8 +362,8 @@ and expression l cxt  f (exp : J.expression) : Ext_pp_scope.t =
   expression_desc cxt l f exp.expression_desc
 
 and
-  expression_desc cxt (l:int) f expression_desc : Ext_pp_scope.t  =
-  match expression_desc with
+  expression_desc cxt (l:int) f x : Ext_pp_scope.t  =
+  match x with
   | Var v ->
     vident cxt f v 
 
@@ -655,6 +655,11 @@ and
         P.space f ; 
         expression 13 cxt  f delta
     end
+  | Anything_to_string e -> 
+    (* Note that we should not apply any smart construtor here, 
+       it's purely  a convenice for pretty-printing
+    *)    
+    expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
 
   | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float {f = "0."})}, e) 
       (* TODO:
@@ -943,6 +948,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Call ({expression_desc = Fun _; },_,_) -> true
 
       | Fun _ | Object _ -> true
+      | Anything_to_string _ 
       | String_of_small_int_array _
       | Call _ 
       | Array_append _ 

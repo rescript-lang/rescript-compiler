@@ -142,6 +142,11 @@ module Exp = struct
       
   let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
 
+  let any_to_string ?comment (e : t) : t =  
+    match e.expression_desc with 
+    | Str _ -> e 
+    | _ -> {expression_desc = Anything_to_string e ; comment}
+    
   (* Shared mutable state is evil 
       [Js_fun_env.empty] is a mutable state ..
    *)    

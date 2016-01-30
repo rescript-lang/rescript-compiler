@@ -188,6 +188,8 @@ module Exp : sig
   val flat_call : binary_op
 
   val dump : ?comment:string -> Js_op.level -> t list -> t
+
+  val any_to_string : unary_op
   val to_json_string : unary_op
 
   val new_ : ?comment:string -> J.expression -> J.expression list -> t

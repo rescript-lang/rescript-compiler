@@ -655,6 +655,16 @@ let query (prim : Lam_compile_env.primitive_description)
          ]}         
       *)      
       E.seq (E.dump Log args) (E.unit ())
+
+    | "caml_anything_to_string"
+    (* patched to compiler to support for convenience *)      
+    | "js_anything_to_string" 
+      ->
+      begin match args with 
+      | [e] -> E.any_to_string e 
+      | _ -> assert false
+      end
+      
     | "js_json_stringify"      
       -> 
       begin match args with 
