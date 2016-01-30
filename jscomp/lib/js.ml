@@ -24,3 +24,5 @@ external typeof : 'a -> string = "js_typeof"
 external to_json_string : 'a -> string = "js_json_stringify"
 
 external log : 'a -> unit = "js_dump"
+
+external anything_to_string : 'a -> string = "js_anything_to_string"

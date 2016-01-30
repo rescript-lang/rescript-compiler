@@ -106,8 +106,8 @@ lexer_test.cmo : number_lexer.cmo mt.cmo ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmx : number_lexer.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx arith_lexer.cmx
-lib_js_test.cmo : ../lib/js.cmi
-lib_js_test.cmx : ../lib/js.cmx
+lib_js_test.cmo : mt.cmo ../lib/js.cmi
+lib_js_test.cmx : mt.cmx ../lib/js.cmx
 list_test.cmo : ../stdlib/pervasives.cmi mt.cmo ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
@@ -462,8 +462,8 @@ lexer_test.cmo : number_lexer.cmo mt.cmo ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lib_js_test.cmo : ../lib/js.cmi
-lib_js_test.cmj : ../lib/js.cmj
+lib_js_test.cmo : mt.cmo ../lib/js.cmi
+lib_js_test.cmj : mt.cmj ../lib/js.cmj
 list_test.cmo : ../stdlib/pervasives.cmi mt.cmo ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
