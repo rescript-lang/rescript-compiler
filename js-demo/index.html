@@ -6,13 +6,18 @@
     <script src="mode/mllike/mllike.js"></script>
     <script src="mode/javascript/javascript.js"></script>
     <script src="addon/edit/matchbrackets.js"></script>
+    <link rel="stylesheet" type="text/css" href="theme.css">
+
     <title>OCaml to Javascript transplier playground</title>
 </head>
 
 <body>
+
 <div style="height: 10000px">
+
+
     <div style="width: 50%;float:left">
-<textarea id="ocamlcode#1">
+        <textarea id="ocamlcode#1">
 let rec fib = function
   | 1 | 2 -> 1
   | n -> fib (n - 1 )  + fib (n - 2)
@@ -23,6 +28,13 @@ let sum n =
        v := !v + i
     done;
     !v
+let tail_sum n =
+  let rec aux acc i =
+    if i <= n then 
+      aux (acc + i) (i + 1)
+    else acc 
+  in aux 0 0
+
 (** List map *)
 type 'a list =
   | Nil
@@ -36,64 +48,34 @@ let rec map f = function
 let test_curry x  y =  x + y
 let f = test_curry 32
 
-(** Create a typed binding for react *)
-type t
-type element
-external document : unit -> t = "" [@@js.global "document"] [@@js.scope "window"]
-external getElementById : t -> string -> element = "" [@@js.send "getElementById"]
 
-(** Phantom types *)
-type config
-type component
-type attrs
-type component_class
-
-external config :
-      ?display_name:string ->
-        render:(unit -> component) -> unit ->
-          config = "" [@@js.obj ] (** make a json object *)
-external attrs:
-        ?alt: string ->
-        ?autoPlay: bool ->
-          unit -> attrs = "" [@@js.obj]
-external str : string -> component = "%identity"
-external h1 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h1"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice] (** splice the last argument *)
-external h2 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h2"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice]
-external div : ?attrs:attrs -> component array ->  component = ""
-    [@@js.call "div"] [@@js.scope "DOM"] [@@js.module "react"]  [@@js.splice]
-external createClass :
-      config -> component_class = "createClass"
-        [@@js.call "createClass"]
-        [@@js.module "react"]
-external render : component_class -> element -> unit = ""
-    [@@js.call "render"]
-    [@@js.module "react-dom"]
-;;
-(** Do the rendering *)
-render (
-     createClass (
-     (config
-       ~render:(fun _ ->
-         div
-              ~attrs:(attrs ~alt:"pic" ())
-              [|
-                h1 [| str "hello react"|];
-                h2 [| str "type safe!" |];
-  |]
-               )
-        ()))) (getElementById (document ()) "hi")
-
-</textarea>
+        </textarea>
     </div>
-    <div style="width: 50%;float:right">
+
+    <div style="width: 50%; float:right">
+        <textarea id="output" style="background-color: #e0e0e0">
+
+        </textarea>
+    </div>
+
+    <div style="width:50%; float:right;  display: inline">
+        <form class="form repl-toolbar">
+            <!--<label for="option-non-export">-->
+                <!--<input id="option-non-export" type="checkbox">-->
+                <!--Dead Code Elimination-->
+            <!--</label>-->
+            <label style="float:right" >
+                <input id="option-eval" type="checkbox" >
+                Eval
+            </label>
+        </form>
+    </div>
+
+    <div style="width: 50%;float:right"; >
         <textarea id="jscode#1" style="background-color: #008803">
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var ReactDom = require("react-dom");
-var React    = require("react");
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -110,6 +92,22 @@ function sum(n) {
     v += i;
   }
   return v;
+}
+
+function tail_sum(n) {
+  var _acc = 0;
+  var _i = 0;
+  while(true) {
+    var i = _i;
+    var acc = _acc;
+    if (i <= n) {
+      _i = i + 1;
+      _acc = acc + i;
+    }
+    else {
+      return acc;
+    }
+  };
 }
 
 function map(f, param) {
@@ -130,70 +128,22 @@ function test_curry(x, y) {
 }
 
 function f(param) {
-  return test_curry(32, param);
+  return 32 + param;
 }
-
-ReactDom.render(React.createClass({
-          "render": function () {
-            return React.DOM.div({
-                        "alt": "pic"
-                      }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"));
-          }
-        }), document.getElementById("hi"));
 
 exports.fib        = fib;
 exports.sum        = sum;
+exports.tail_sum   = tail_sum;
 exports.map        = map;
 exports.test_curry = test_curry;
 exports.f          = f;
-/*  Not a pure module */
-</textarea>
+/* No side effect */
+        </textarea>
     </div>
 </div>
 <!--<p> can you  see me</p>-->
-<script>
-    var codeMirrorDefaultHeight = 10000;
-    var myCode1Mirror = CodeMirror.fromTextArea(
-            document.getElementById('ocamlcode#1'),
-            {
-                mode:'text/x-ocaml',
-                lineNumbers: true,
-                lineWrapping: true,
-                styleActiveLine:true,
-            } );
-    var jsCode1Mirror = CodeMirror.fromTextArea(
-            document.getElementById('jscode#1'),
-            { mode:'javascript',
-                lineNumbers:true,
-                readOnly: true,
-                lineWrapping: true
-            });
-    jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
-    myCode1Mirror.setSize(null,codeMirrorDefaultHeight);
-    myCode1Mirror.on("changes", function (cm, change) {
-        var raw = ocaml.compile(myCode1Mirror.getValue());
-        console.log(raw);
-        var rsp = JSON.parse(raw); // can we save this from parsing?
-        if (rsp.js_code !== undefined) {
-            jsCode1Mirror.setValue(rsp.js_code)
-        } else {
-            jsCode1Mirror.setValue(rsp.js_error_msg);
-        }
-
-    })
-
-//var editor = CodeMirror.fromTextArea(document.getElementById('ocamlCode'), {
-//    mode: 'text/x-ocaml',
-//    lineNumbers: true,
-//    matchBrackets: true
-//})
-
-//var jseditor = CodeMirror(document.getElementById('jsoutput')
-//        ,
-//        {
-//    mode: 'javascript',
-//    value: "var x= 3"
-//})
+<script type="text/javascript" src="./edit.js" >
 </script>
+
 <script type="text/javascript" src="./exports.js">    </script>
 </body>
