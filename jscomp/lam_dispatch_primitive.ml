@@ -34,20 +34,17 @@ There are two things we need consider:
 *)
 let query (prim : Lam_compile_env.primitive_description) 
     (args : J.expression list) : J.expression  =
-  let module X = struct exception NA end in 
-  try 
-    let v = 
-      begin match prim.prim_name  with 
-      | "caml_gc_stat" | "caml_gc_quick_stat"  -> 
-        (** 
-            external caml_gc_stat : unit -> stat 
-            external caml_gc_quick_stat : unit -> stat 
-            
-            Need check stat concrete representation 
-            all fields are either [float ]
-            It even does not make sense to have GC module 
-         *)
-          Js_of_lam_record.make Immutable E.[ 
+  begin match prim.prim_name  with 
+    | "caml_gc_stat" | "caml_gc_quick_stat"  -> 
+      (** 
+          external caml_gc_stat : unit -> stat 
+          external caml_gc_quick_stat : unit -> stat 
+
+          Need check stat concrete representation 
+          all fields are either [float ]
+          It even does not make sense to have GC module 
+      *)
+      Js_of_lam_record.make Immutable E.[ 
           "minor_words" , zero_float_lit;
           "promoted_words", zero_float_lit;
           "major_words", zero_float_lit;
@@ -64,196 +61,196 @@ let query (prim : Lam_compile_env.primitive_description)
           "compactions", int 0;
           "top_heap_words", int 0;
           "stack_size" , int 0;
-          ]
+        ]
 
-        
-        
+
+
     | "caml_abs_float" -> 
-        E.math "abs" args 
+      E.math "abs" args 
     | "caml_acos_float" -> 
-        E.math "acos" args 
+      E.math "acos" args 
     |  "caml_add_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_add e0 e1 (** TODO float plus*)
         | _ -> assert false
-        end
+      end
     |"caml_div_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_div e0 e1
         | _ -> assert false 
-        end
+      end
     |"caml_sub_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_minus e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_eq_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_equal e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_ge_float"  ->
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_comp Cge e0 e1
         | _ -> assert false 
-        end
+      end
     |"caml_gt_float"  ->
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_comp Cgt  e0 e1
         | _ -> assert false 
-        end
+      end
     | "caml_tan_float"  ->
-        E.math "tan" args 
+      E.math "tan" args 
     | "caml_tanh_float"  ->
-       E.math "tanh" args 
+      E.math "tanh" args 
     | "caml_asin_float"  -> 
-       E.math "asin" args 
+      E.math "asin" args 
     | "caml_atan2_float" -> 
-       E.math "atan2" args
+      E.math "atan2" args
     | "caml_atan_float" -> 
-       E.math "atan" args 
+      E.math "atan" args 
     | "caml_ceil_float" -> 
-       E.math "ceil" args 
+      E.math "ceil" args 
     | "caml_cos_float" -> 
-       E.math "cos" args 
+      E.math "cos" args 
     | "caml_cosh_float" -> 
-       E.math "cosh" args
+      E.math "cosh" args
     | "caml_exp_float" -> 
-       E.math "exp" args
+      E.math "exp" args
     | "caml_sin_float" -> 
-       E.math "sin" args
+      E.math "sin" args
     | "caml_sinh_float"-> 
-       E.math "sinh" args
+      E.math "sinh" args
     | "caml_sqrt_float" -> 
-       E.math "sqrt" args
+      E.math "sqrt" args
 
 
     | "caml_float_of_int" -> 
-        begin match args with 
+      begin match args with 
         | [e] -> e 
         | _ -> assert false 
-        end
+      end
     | "caml_floor_float" ->
-       E.math "floor" args 
+      E.math "floor" args 
     | "caml_log_float" -> 
-        E.math "log" args 
+      E.math "log" args 
     | "caml_log10_float" -> 
-       E.math "log10" args 
+      E.math "log10" args 
     | "caml_log1p_float" -> 
-       E.math "log1p" args 
+      E.math "log1p" args 
     | "caml_power_float"  -> 
-       E.math "pow" args
+      E.math "pow" args
     |  "caml_make_float_vect" -> 
-        E.new_ (E.js_global "Array") args 
+      E.new_ (E.js_global "Array") args 
 
 
     | "caml_array_append" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.array_append e0 e1
         | _ ->  assert false 
-        end
+      end
 
     | "caml_array_get"
     | "caml_array_get_addr"
     | "caml_array_get_float"
     | "caml_array_unsafe_get"
     | "caml_array_unsafe_get_float" -> 
-         begin match args with 
-         | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
-         | _ -> assert false
-         end
+      begin match args with 
+        | [e0;e1] -> Js_of_lam_array.ref_array e0 e1
+        | _ -> assert false
+      end
     | "caml_array_set"
     | "caml_array_set_addr"
     | "caml_array_set_float"
     | "caml_array_unsafe_set"
     | "caml_array_unsafe_set_addr"
     | "caml_array_unsafe_set_float" -> 
-         begin match args with 
-         | [e0;e1;e2] -> 
-             Js_of_lam_array.set_array e0 e1 e2
-         | _ -> assert false
-         end
+      begin match args with 
+        | [e0;e1;e2] -> 
+          Js_of_lam_array.set_array e0 e1 e2
+        | _ -> assert false
+      end
 
     | "caml_int32_add"|"caml_nativeint_add" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.int32_add e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_int32_div"| "caml_nativeint_div" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.int32_div e0 e1
         | _ -> assert false 
-        end
+      end
     | "caml_int32_mul" | "caml_nativeint_mul"  -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.int32_mul e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_int32_of_int" | "caml_nativeint_of_int" 
-       | "caml_nativeint_of_int32" -> 
-         begin match args with 
-         | [e] -> e 
-         | _ -> assert false 
-         end
-    |  "caml_int32_of_float" | "caml_int_of_float"|"caml_nativeint_of_float" -> 
-        begin match args with 
-        | [e] -> E.to_int32 e 
-        | _ -> assert false 
-        end
-    | "caml_int32_to_float" | "caml_int32_to_int" | "caml_nativeint_to_int" 
-    |  "caml_nativeint_to_float"| "caml_nativeint_to_int32" -> 
-        begin match args with 
+    | "caml_nativeint_of_int32" -> 
+      begin match args with 
         | [e] -> e 
         | _ -> assert false 
-        end
+      end
+    |  "caml_int32_of_float" | "caml_int_of_float"|"caml_nativeint_of_float" -> 
+      begin match args with 
+        | [e] -> E.to_int32 e 
+        | _ -> assert false 
+      end
+    | "caml_int32_to_float" | "caml_int32_to_int" | "caml_nativeint_to_int" 
+    |  "caml_nativeint_to_float"| "caml_nativeint_to_int32" -> 
+      begin match args with 
+        | [e] -> e 
+        | _ -> assert false 
+      end
     | "caml_int32_sub"|"caml_nativeint_sub" ->
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.int32_minus e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_int32_xor" | "caml_nativeint_xor" -> 
-        begin match args with 
+      begin match args with 
         | [e0; e1] -> E.int32_bxor e0 e1 
         | _ -> assert false 
-        end
-          
+      end
+
     | "caml_int32_and" | "caml_nativeint_and" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.int32_band e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_int32_or" | "caml_nativeint_or" ->
-        begin match args with
+      begin match args with
         | [e0;e1] -> E.int32_bor e0 e1 
         | _ -> assert false  
-        end
+      end
     | "caml_le_float" ->
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_comp Cle e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_lt_float" ->
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_comp Clt e0 e1 
         | _ -> assert false 
-        end
+      end
     |  "caml_neg_float" -> 
-        begin match args with 
+      begin match args with 
         | [e] -> 
-            (** TODO: use float.. *)
-            E.int32_minus (E.int 0) e 
+          (** TODO: use float.. *)
+          E.int32_minus (E.int 0) e 
         | _ -> assert false
-        end
+      end
     | "caml_neq_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0;e1] -> E.float_notequal e0 e1
         | _ -> assert false 
-        end
+      end
     | "caml_mul_float" -> 
-        begin match args with 
+      begin match args with 
         | [e0; e1] -> E.float_mul e0 e1 
         | _ -> assert false  
-        end
+      end
     | "caml_int64_bits_of_float"
     | "caml_int64_float_of_bits"
     | "caml_classify_float"
@@ -265,75 +262,75 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_expm1_float"
     | "caml_hypot_float"
 
-     ->
-        E.runtime_call Js_helper.float prim.prim_name args
+      ->
+      E.runtime_call Js_helper.float prim.prim_name args
     | "caml_fmod_float" 
-        (* float module like js number module *)      
-        ->      
-        begin match args with 
+      (* float module like js number module *)      
+      ->      
+      begin match args with 
         | [e0;e1] -> E.float_mod e0 e1
         | _ -> assert false 
-        end
-        
+      end
+
     | "caml_string_equal" 
       -> 
-        begin match args with 
+      begin match args with 
         | [e0; e1] -> E.string_equal e0 e1 
         | _ -> assert false 
-        end
+      end
     | "caml_string_notequal"
       -> 
-        begin match args with 
+      begin match args with 
         | [e0; e1] -> E.string_comp NotEqEq e0 e1
-              (** TODO: convert to ocaml ones*)
+        (** TODO: convert to ocaml ones*)
         | _ -> assert false 
-        end
+      end
     | "caml_string_lessequal"
-        -> 
-          begin 
-            match args with 
-            | [e0; e1] 
-              -> 
-                E.string_comp Le e0 e1
-            | _ -> assert false 
-          end
+      -> 
+      begin 
+        match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Le e0 e1
+        | _ -> assert false 
+      end
     | "caml_string_lessthan"
-        -> 
-          begin match args with 
-          | [e0; e1] 
-            -> 
-              E.string_comp Lt e0 e1
-          | _ -> assert false 
-          end
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Lt e0 e1
+        | _ -> assert false 
+      end
     | "caml_string_greaterequal"
-        -> 
-          begin match args with 
-          | [e0; e1] 
-            -> 
-              E.string_comp Ge  e0 e1
-          | _ -> assert false 
-          end
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Ge  e0 e1
+        | _ -> assert false 
+      end
     | "caml_string_greaterthan"
-        -> 
-          begin match args with 
-          | [e0; e1] 
-            -> 
-              E.string_comp Gt  e0 e1
-          | _ -> assert false 
-          end
+      -> 
+      begin match args with 
+        | [e0; e1] 
+          -> 
+          E.string_comp Gt  e0 e1
+        | _ -> assert false 
+      end
     | "caml_create_string" -> 
-        (* Note that for invalid range, JS raise an Exception RangeError, 
-          here in OCaml it's [Invalid_argument], we have to preserve this semantics.
-            Also, it's creating a [bytes] which is a js array actually.
-         *)
-        begin match args with
+      (* Note that for invalid range, JS raise an Exception RangeError, 
+         here in OCaml it's [Invalid_argument], we have to preserve this semantics.
+          Also, it's creating a [bytes] which is a js array actually.
+      *)
+      begin match args with
         | [{expression_desc = Number (Int {i; _}); _} as v] 
           when i >= 0 -> 
-            E.uninitialized_array v 
-              (* TODO: inline and spits out a warning when i is negative *)
+          E.uninitialized_array v 
+        (* TODO: inline and spits out a warning when i is negative *)
         | _ -> 
-            E.runtime_call Js_helper.string prim.prim_name args
-        end
+          E.runtime_call Js_helper.string prim.prim_name args
+      end
 
     | "caml_string_get"
     | "caml_string_compare"
@@ -346,31 +343,31 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_blit_string" 
     | "caml_blit_bytes"
       -> 
-        E.runtime_call Js_helper.string prim.prim_name args
+      E.runtime_call Js_helper.string prim.prim_name args
 
     | "caml_register_named_value" -> 
-        (**
-           callback.ml
-           {[ external register_named_value : string -> Obj.t -> unit
-                              = "caml_register_named_value" ]}
+      (**
+         callback.ml
+         {[ external register_named_value : string -> Obj.t -> unit
+           = "caml_register_named_value" ]}
 
-           See the manual chap19, Interfacing C with OCaml
+         See the manual chap19, Interfacing C with OCaml
 
-           {[
+         {[
            let f x = print_string "f is applied to "; print_int x; print_newline()
            let _ = Callback.register "test function" f
-           ]}
+         ]}
 
-           On the C side 
-           {[
+         On the C side 
+         {[
            let f x = print_string "f is applied to "; print_int x; print_newline()
            let _ = Callback.register "test function" f
-           ]}
+         ]}
 
-           [caml_named_value] is a c primitive but not OCaml/runtimedef.ml, so we don't needs
-           handle it 
-         *)
-        E.unit ()
+         [caml_named_value] is a c primitive but not OCaml/runtimedef.ml, so we don't needs
+         handle it 
+      *)
+      E.unit ()
     | "caml_gc_compaction" 
     | "caml_gc_full_major" 
     | "caml_gc_major" 
@@ -388,91 +385,91 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_convert_raw_backtrace" 
     | "caml_get_current_callstack"
       -> E.unit ()
-             (* unit -> unit 
-                _ -> unit  
-                major_slice : int -> int 
-              *)
+    (* unit -> unit 
+       _ -> unit  
+       major_slice : int -> int 
+    *)
     |"caml_gc_counters" ->
-        Js_of_lam_tuple.make E.[ zero_float_lit; zero_float_lit; zero_float_lit]
-          (* unit -> (float * float * float) *)
+      Js_of_lam_tuple.make E.[ zero_float_lit; zero_float_lit; zero_float_lit]
+    (* unit -> (float * float * float) *)
 
     |  "caml_gc_get" ->  
-        (* unit -> Gc.control*)
-        E.arr NA [E.int 0; 
-                  E.int ~comment:"minor_heap_size" 0 ;
-                  E.int ~comment:"major_heap_increment" 0 ;
-                  E.int ~comment:"space_overhead" 0; 
-                  E.int ~comment:"verbose" 0; (* TODO*)
-                  E.int ~comment:"max_overhead" 0;
-                  E.int ~comment:"stack_limit" 0;
-                  E.int ~comment:"allocation_policy" 0]
+      (* unit -> Gc.control*)
+      E.arr NA [E.int 0; 
+                E.int ~comment:"minor_heap_size" 0 ;
+                E.int ~comment:"major_heap_increment" 0 ;
+                E.int ~comment:"space_overhead" 0; 
+                E.int ~comment:"verbose" 0; (* TODO*)
+                E.int ~comment:"max_overhead" 0;
+                E.int ~comment:"stack_limit" 0;
+                E.int ~comment:"allocation_policy" 0]
     | "caml_set_oo_id" 
       ->
-        (** ATT: relevant to how exception is encoded in OCaml 
-            IDea: maybe we can delay compile primitive into js?
-            benefit: 
-            less code side when serialzation, and more knowledge in jsir
-         *)
+      (** ATT: relevant to how exception is encoded in OCaml 
+          IDea: maybe we can delay compile primitive into js?
+          benefit: 
+          less code side when serialzation, and more knowledge in jsir
+      *)
 
-        begin match args with 
+      begin match args with 
         | [  { expression_desc  = Array (
-               [ tag; str; {expression_desc = J.Number (Int { i = 0; _}); _} ],flag);
-               _} as v 
-           ] 
+            [ tag; str; {expression_desc = J.Number (Int { i = 0; _}); _} ],flag);
+            _} as v 
+          ] 
           -> 
-            (* Caml_exceptions.caml_oo_last_id++*)
-             {v with expression_desc  =
-              J.Array
-                ([ tag; str ; 
-                  E.prefix_inc
-                    (E.runtime_var_vid
-                       Js_helper.exceptions
-                       "caml_oo_last_id") 
-                   ], flag)
-            }
+          (* Caml_exceptions.caml_oo_last_id++*)
+          {v with expression_desc  =
+                    J.Array
+                      ([ tag; str ; 
+                         E.prefix_inc
+                           (E.runtime_var_vid
+                              Js_helper.exceptions
+                              "caml_oo_last_id") 
+                       ], flag)
+          }
         | _ ->  
-            E.runtime_call Js_helper.exceptions prim.prim_name args 
-        end
+          E.runtime_call Js_helper.exceptions prim.prim_name args 
+      end
 
     | "caml_sys_const_big_endian" -> 
-        (** return false *)
-        E.bool Sys.big_endian
+      (** return false *)
+      E.bool Sys.big_endian
     | "caml_sys_const_word_size" -> 
-        E.int Sys.word_size
-         (** TODO: How it will affect program behavior *)
+      E.int Sys.word_size
+    (** TODO: How it will affect program behavior *)
     | "caml_sys_const_ostype_cygwin" -> E.false_ 
     | "caml_sys_const_ostype_win32" -> E.false_ 
     | "caml_sys_const_ostype_unix" -> E.true_
     | "caml_is_js" -> E.true_
     | "caml_sys_get_config" ->
-        (** No cross compilation *)
-        Js_of_lam_tuple.make [E.str Sys.os_type; E.int Sys.word_size; 
-                              E.bool Sys.big_endian ]
+      (** No cross compilation *)
+      Js_of_lam_tuple.make [E.str Sys.os_type; E.int Sys.word_size; 
+                            E.bool Sys.big_endian ]
     | "caml_sys_get_argv" -> 
-        (** TODO: refine
-            Inlined here is helpful for DCE
-         *)
-        Js_of_lam_tuple.make [E.str "cmd"; E.arr NA [] ]
+      (** TODO: refine
+          Inlined here is helpful for DCE
+      *)
+      Js_of_lam_tuple.make [E.str "cmd"; E.arr NA [] ]
     | "caml_sys_time"
 
     | "caml_sys_random_seed"
     | "caml_sys_getenv"
     | "caml_sys_system_command" -> 
-        E.runtime_call Js_helper.sys prim.prim_name args 
+      E.runtime_call Js_helper.sys prim.prim_name args 
     | "caml_lex_engine"
     | "caml_new_lex_engine"
     | "caml_parse_engine"
     | "caml_set_parser_trace" -> 
-        E.runtime_call Js_helper.lex_parse prim.prim_name args 
+      E.runtime_call Js_helper.lex_parse prim.prim_name args 
 
     | "caml_array_sub"
     | "caml_array_concat"
-        (*external concat: 'a array list -> 'a array 
-          Not good for inline *)
+    (*external concat: 'a array list -> 'a array 
+      Not good for inline *)
 
     | "caml_array_blit"
     | "caml_make_vect" -> 
-        E.runtime_call Js_helper.array prim.prim_name args 
+      E.runtime_call Js_helper.array prim.prim_name args 
 
     | "caml_ml_open_descriptor_in" 
     | "caml_ml_open_descriptor_out"
@@ -480,35 +477,35 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_ml_output" 
     | "caml_ml_input_char"
       -> 
-        E.runtime_call Js_helper.io prim.prim_name args 
+      E.runtime_call Js_helper.io prim.prim_name args 
 
     | "caml_obj_dup" -> 
-          (** Note currently is an Array copy function, this is tightly coupled with 
-              how record, tuple encoded in JS.
-              Here we only inline constant cases, since this semantics should be preserved 
-              no matter how we represent objects, we don't inline it just for future
-           *)
-        begin 
-          match args with 
-          | [ a ] when Js_helper.is_constant a ->  a 
-          | _ -> 
-              E.runtime_call Js_helper.obj_runtime prim.prim_name args 
-        end
+      (** Note currently is an Array copy function, this is tightly coupled with 
+          how record, tuple encoded in JS.
+          Here we only inline constant cases, since this semantics should be preserved 
+          no matter how we represent objects, we don't inline it just for future
+      *)
+      begin 
+        match args with 
+        | [ a ] when Js_helper.is_constant a ->  a 
+        | _ -> 
+          E.runtime_call Js_helper.obj_runtime prim.prim_name args 
+      end
     | "caml_obj_block" -> 
-        (** TODO: Optimize  for [CamlinternalOO] input 
-            external new_block : tag:int -> size:int  -> t = "caml_obj_block"
-            Note that we don't need initialize its content anyway
-            TODO: more optimizations later
-            ATTENTION: This optmization is coupled with memory layout
-         *)
-        begin match args with 
-          | [ {expression_desc = Number (Int { i = tag; _}); _ }; 
-              {expression_desc = Number (Int { i = 0;_}); _} ] ->
-              E.arr Immutable [E.int tag] (** size 0*)
-          | _ -> 
-              E.runtime_call Js_helper.obj_runtime prim.prim_name args 
+      (** TODO: Optimize  for [CamlinternalOO] input 
+          external new_block : tag:int -> size:int  -> t = "caml_obj_block"
+          Note that we don't need initialize its content anyway
+          TODO: more optimizations later
+          ATTENTION: This optmization is coupled with memory layout
+      *)
+      begin match args with 
+        | [ {expression_desc = Number (Int { i = tag; _}); _ }; 
+            {expression_desc = Number (Int { i = 0;_}); _} ] ->
+          E.arr Immutable [E.int tag] (** size 0*)
+        | _ -> 
+          E.runtime_call Js_helper.obj_runtime prim.prim_name args 
 
-        end
+      end
     | "caml_obj_is_block"
     | "caml_obj_tag"
     | "caml_obj_set_tag"
@@ -516,7 +513,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
     | "caml_obj_truncate"
     | "caml_lazy_make_forward" -> 
-        E.runtime_call Js_helper.obj_runtime prim.prim_name args 
+      E.runtime_call Js_helper.obj_runtime prim.prim_name args 
 
     | "caml_format_float"
     | "caml_format_int"
@@ -526,7 +523,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_int_of_string" (* what is the semantics?*)
     | "caml_int32_of_string"
     | "caml_nativeint_of_string" -> 
-        E.runtime_call Js_helper.format prim.prim_name args
+      E.runtime_call Js_helper.format prim.prim_name args
 
 
     (*   "caml_alloc_dummy"; *)
@@ -551,7 +548,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_int32_bswap"
     | "caml_nativeint_bswap"
     | "caml_int64_bswap"
-        -> E.runtime_call Js_helper.prim prim.prim_name args 
+      -> E.runtime_call Js_helper.prim prim.prim_name args 
     | "caml_get_public_method"
       ->
       E.runtime_call Js_helper.oo prim.prim_name args      
@@ -597,61 +594,62 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_ml_seek_out"
     | "caml_ml_seek_out_64"
     | "caml_ml_set_binary_mode"
-        ->  E.runtime_call Js_helper.prim prim.prim_name args 
+    | "caml_sys_getcwd" (* check browser or nodejs *)
+      ->  E.runtime_call Js_helper.prim prim.prim_name args 
 
 
     | "js_function_length"
-      
-        -> begin
+
+      -> begin
           match args with 
           | [f ] -> E.function_length f 
           | _ -> assert false
         end
     | "js_create_array" 
-        -> 
-          begin match args with 
-          | [e] -> E.uninitialized_array e 
-          | _ -> assert false
-          end
+      -> 
+      begin match args with 
+        | [e] -> E.uninitialized_array e 
+        | _ -> assert false
+      end
     | "js_array_append" 
       -> 
-        begin match args with 
+      begin match args with 
         | [a;b] -> 
-            E.array_append a b 
+          E.array_append a b 
         | _ -> assert false 
-        end
+      end
     | "js_string_append"
-        -> 
-          begin match args with 
-          | [a ; b] -> E.string_append a b 
-          | _ -> assert false
-          end
+      -> 
+      begin match args with 
+        | [a ; b] -> E.string_append a b 
+        | _ -> assert false
+      end
     | "js_apply" 
       -> 
-        begin match args with 
+      begin match args with 
         | [f ;  args] -> 
-            E.flat_call f args
+          E.flat_call f args
         | _ -> assert false 
-        end
+      end
     | "js_string_of_small_int_array"
       ->
-        begin match args with 
+      begin match args with 
         | [e] -> E.string_of_small_int_array e 
         | _ -> assert false
-        end
+      end
     | "js_typeof"
       -> 
       begin match args with 
-      | [e] -> E.typeof e         
-      | _ -> assert false
+        | [e] -> E.typeof e         
+        | _ -> assert false
       end
-      
+
     | "js_dump"
       -> 
       (* This primitive can accept any number of arguments 
          {[
            console.log(1,2,3)
-           1 2 3
+             1 2 3
          ]}         
       *)      
       E.seq (E.dump Log args) (E.unit ())
@@ -661,17 +659,17 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_anything_to_string" 
       ->
       begin match args with 
-      | [e] -> E.anything_to_string e 
-      | _ -> assert false
+        | [e] -> E.anything_to_string e 
+        | _ -> assert false
       end
-      
+
     | "js_json_stringify"      
       -> 
       begin match args with 
-      | [e] ->        
-        E.to_json_string e
-      | _ -> 
-        assert false      
+        | [e] ->        
+          E.to_json_string e
+        | _ -> 
+          assert false      
       end
     (* | "js_dump1" *)
     (* | "js_dump2" *)
@@ -690,23 +688,20 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_apply6"
     | "js_apply7"
     | "js_apply8" -> 
-        begin match args with 
+      begin match args with 
         | fn :: rest -> 
-            E.call ~info:{arity=Full} fn rest 
+          E.call ~info:{arity=Full} fn rest 
         | _ -> assert false
-        end
+      end
     | _ -> 
 
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__ "%s" (Printf.sprintf  "%s: %s\n" comment prim.prim_name) ;
-      E.str ~comment ~pure:false  prim.prim_name;
-      (* raise X.NA *) (* Fall back, maybe spit out a warning*)
-    end in 
-     v 
-  with X.NA ->
-    E.runtime_call Js_helper.prim prim.prim_name args 
-    (*TODO check arity *)
-   
+      (*we dont use [throw] here, since [throw] is an statement  *)        
+      E.dump ~comment Error [( E.str ~comment ~pure:false  prim.prim_name)];
+
+  end 
+
 
 
 ;;

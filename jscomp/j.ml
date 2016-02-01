@@ -142,6 +142,10 @@ and expression_desc =
      ]}     
   *)      
   | Dump of Js_op.level * expression list
+  (* TODO: 
+     add 
+     {[ Assert of bool * expression ]}     
+  *)              
     (* to support 
        val log1 : 'a -> unit
        val log2 : 'a -> 'b -> unit 

@@ -31,6 +31,12 @@
 
 type ('a,'b) logging =   ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
 
+(* FIXM: below does not work 
+   {[
+     err __LOC__ "hi"     
+   ]}   
+   
+*)
 val err : string -> ('a,'b) logging
 val ierr : bool -> string -> ('a,'b) logging 
 val warn : string -> ('a,'b) logging

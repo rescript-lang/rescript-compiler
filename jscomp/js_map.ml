@@ -169,6 +169,10 @@ class virtual map =
      {[ 'undefined'
      ]}     
   *)
+                 (* TODO: 
+     add 
+     {[ Assert of bool * expression ]}     
+  *)
                  (* to support 
        val log1 : 'a -> unit
        val log2 : 'a -> 'b -> unit 

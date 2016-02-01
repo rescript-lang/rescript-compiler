@@ -297,3 +297,8 @@ function caml_hash(count, limit, seed, o) {
     return hashCode(JSON.stringify(o));
 }
 exports.caml_hash = caml_hash;
+// TODO: Check NodeJS and browser
+function caml_sys_getcwd(unit) {
+    return "/";
+}
+exports.caml_sys_getcwd = caml_sys_getcwd;
