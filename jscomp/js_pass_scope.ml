@@ -196,10 +196,10 @@ let scope_pass  =
       | { ident ; value; property  }  -> 
         let obj = 
           (match self#get_in_loop, property with 
-           | true, Mutable 
+           | true, Variable 
              -> 
              self#add_loop_mutable_variable ident 
-           | true, Immutable
+           | true, (Strict | StrictOpt | Alias)
            (* Not real true immutable in javascript 
                since it's in the loop 
 
@@ -235,10 +235,10 @@ let scope_pass  =
                    (* else  *)
                    self#add_loop_mutable_variable ident
              end
-           | false, Mutable
+           | false, Variable
              -> 
              self#add_mutable_variable ident      
-           | false, Immutable
+           | false, (Strict | StrictOpt | Alias)
              -> self
           )#add_defined_ident ident
         in

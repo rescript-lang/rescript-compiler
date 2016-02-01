@@ -1,5 +1,4 @@
 export var add: (prim : any, prim : any) => any ;
-export var bytes_cat: (a : any, b : any) => any ;
 export var bytes_of_string: (s : any) => any ;
 export var bytes_to_string: (a : any) => any ;
 export var caml_is_printable: (c : any) => any ;

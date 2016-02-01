@@ -491,10 +491,10 @@ var int_map_suites_002 = [
                 var m = /* Empty */0;
                 var count = 10000;
                 for(var i = 0; i<= count; ++i){
-                  m = add$1(Pervasives.string_of_int(i), Pervasives.string_of_int(i), m);
+                  m = add$1("" + i, "" + i, m);
                 }
                 for(var i$1 = 0; i$1<= count; ++i$1){
-                  Mt.assert_equal(find(Pervasives.string_of_int(i$1), m), Pervasives.string_of_int(i$1));
+                  Mt.assert_equal(find("" + i$1, m), "" + i$1);
                 }
                 return /* () */0;
               }

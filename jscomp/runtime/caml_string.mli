@@ -21,9 +21,6 @@
 
 
 val add : string -> string -> string
-
-
-val bytes_cat : bytes -> bytes -> bytes
 val bytes_of_string : string -> bytes
 val bytes_to_string : bytes -> string
 

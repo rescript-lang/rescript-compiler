@@ -339,8 +339,7 @@ class virtual fold =
       | Array_of_size _x -> let o = o#expression _x in o
       | Array_copy _x -> let o = o#expression _x in o
       | Array_append (_x, _x_i1) ->
-          let o = o#expression _x in
-          let o = o#list (fun o -> o#expression) _x_i1 in o
+          let o = o#expression _x in let o = o#expression _x_i1 in o
       | Tag_ml_obj _x -> let o = o#expression _x in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o

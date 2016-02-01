@@ -166,7 +166,7 @@ let subst name export_set stats  =
             ->  self#statement st :: self#block rest 
 
           | { value = Some {expression_desc = Fun (params, block, _env) ; comment = _}; 
-              property = Immutable;
+              property = (Alias | StrictOpt | Strict);
               ident_info = {used_stats = Once_pure };
               ident = _
             } as v

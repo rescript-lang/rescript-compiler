@@ -90,7 +90,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
               jmp_table = Lam_compile_defs.empty_handler_map}  body in
         if ret.triggered then 
           let body_block = Js_output.to_block output in
-          E.efun (* TODO:  save computation of length several times *)
+          E.fun_ (* TODO:  save computation of length several times *)
             ~immutable_mask:ret.immutable_mask
             (List.map (fun x -> 
                  try Ident_map.find x ret.new_params with  Not_found -> x)
@@ -107,7 +107,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
             ]
 
         else            (* TODO:  save computation of length several times *)
-          E.efun params (Js_output.to_block output )
+          E.fun_ params (Js_output.to_block output )
       ), [] 
   | (Lprim(Pmakeblock _ , _) )  -> 
     (* Lconst should not appear here if we do [scc]
@@ -261,7 +261,7 @@ and
     match lam with 
     | Lfunction(kind, params, body) ->
       Js_output.handle_name_tail st should_return lam 
-        (E.efun
+        (E.fun_
            params
            (* Invariant:  jmp_table can not across function boundary,
               here we share env
@@ -918,11 +918,11 @@ and
                 (*   | String_length e  *)
                 (*     ->  *)
                 (*       let len = Ext_ident.create "_length" in *)
-                (*       b2 @ [ S.const_variable len ~exp:e2 ],  J.Finish (Id len ) *)
+                (*       b2 @ [ S.alias_variable len ~exp:e2 ],  J.Finish (Id len ) *)
                 (*   | _ ->  *)
                 (*       (\* TODO: guess a better name when possible*\) *)
                 (*       let len = Ext_ident.create "_finish" in *)
-                (*       b2 @ [S.const_variable len ~exp:e2],  J.Finish (Id len) *)
+                (*       b2 @ [S.alias_variable len ~exp:e2],  J.Finish (Id len) *)
                 (* in  *)
 
                 b1 @ (S.define ~kind:Variable id e1 :: b2 ) @ ([

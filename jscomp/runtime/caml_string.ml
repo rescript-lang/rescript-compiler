@@ -31,8 +31,6 @@ external bytes_of_int_array : int array -> bytes = "%identity"
 external new_uninitialized_bytes : int -> bytes = "js_create_array" 
 
 let add = append 
-let bytes_cat a b =  
-  bytes_of_int_array (array_append (bytes_to_int_array a) (bytes_to_int_array b))
 
 let caml_string_get s i= 
   if i >= String.length s || i < 0  then

@@ -296,46 +296,24 @@ function caml_hash(count,limit, seed, o) {
 }
 
 
-
-
-
-
-/**
- * @see {Caml_format.caml_format_int}
- * Note that in {Pervasives.string_of_int = format_int "%d"}, we do the inline
- * manually here
- * We would expect more robust code specialization in the future
- * @param {number} x
- * @returns {string}
- */
-function string_of_int( x : number) : string{
-    return "" + x;
-}
-
 export {
-
     caml_update_dummy,
     caml_compare,
     caml_hash,
     caml_int_compare, // Inline?
     caml_int_compare as caml_int32_compare,
     caml_int_compare as caml_nativeint_compare,
-
     caml_equal,
     caml_notequal,
     caml_greaterequal,
     caml_greaterthan,
     caml_lessequal,
     caml_lessthan,
-
-
     caml_convert_raw_backtrace_slot,
-
     caml_bswap16,
     caml_int32_bswap,
     caml_int32_bswap as caml_nativeint_bswap,
-    caml_int64_bswap,
-    string_of_int
+    caml_int64_bswap
 }
 
 

@@ -1,13 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
 
 var v = 0;
 
 ++ v;
 
-console.log(Pervasives.string_of_int(v));
+console.log("" + v);
 
 function unuse_v() {
   return 35;

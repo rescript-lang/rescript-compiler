@@ -142,15 +142,26 @@ module Exp = struct
       
   let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
 
-  let any_to_string ?comment (e : t) : t =  
+  let anything_to_string ?comment (e : t) : t =  
     match e.expression_desc with 
     | Str _ -> e 
     | _ -> {expression_desc = Anything_to_string e ; comment}
-    
+
+  (* we can do constant folding here, but need to make sure the result is consistent
+     {[
+       let f x = string_of_int x        
+       ;; f 3            
+     ]}     
+     {[
+       string_of_int 3
+     ]}
+  *)
+  let int_to_string ?comment (e : t) : t = 
+    anything_to_string ?comment e 
   (* Shared mutable state is evil 
       [Js_fun_env.empty] is a mutable state ..
    *)    
-  let efun ?comment  ?immutable_mask
+  let fun_ ?comment  ?immutable_mask
       params block  : t = 
     let len = List.length params in
     {
@@ -308,6 +319,8 @@ module Exp = struct
         String_append ({expression_desc = Str(_,c)} ,d) ->
         string_append ?comment (string_append a (str (b ^ c))) d 
     | Str (_,a), Str (_,b) -> str ?comment (a ^ b)
+    | _, Anything_to_string b -> string_append ?comment e b 
+    | Anything_to_string b, _ -> string_append ?comment b el
     | _, _ -> {comment ; expression_desc = String_append(e,el)}
 
 
@@ -911,12 +924,7 @@ module Stmt = struct
         { statement_desc = Exp e; comment}
 
   let declare_variable ?comment  ?ident_info  ~kind (v:Ident.t)  : t=
-    let property : J.property = 
-      match (kind : Lambda.let_kind ) with 
-      | (Alias | Strict | StrictOpt )
-        -> Immutable 
-      | Variable -> Mutable 
-    in
+    let property : J.property =  kind in
     let ident_info  : J.ident_info  = 
       match ident_info with
       | None ->  {used_stats = NA}
@@ -927,12 +935,7 @@ module Stmt = struct
      comment}
 
   let define ?comment  ?ident_info ~kind (v:Ident.t) exp    : t=
-    let property : J.property = 
-      match (kind : Lambda.let_kind ) with 
-      | (Alias | Strict | StrictOpt )
-        -> Immutable 
-      | Variable -> Mutable 
-    in
+    let property : J.property =  kind in
     let ident_info  : J.ident_info  = 
       match ident_info with
       | None ->  {used_stats = NA}
@@ -1130,10 +1133,10 @@ module Stmt = struct
 
 
 
-  let const_variable ?comment  ?exp (v:Ident.t)  : t=
+  let alias_variable ?comment  ?exp (v:Ident.t)  : t=
     {statement_desc = 
      Variable {
-     ident = v; value = exp; property = Immutable;
+     ident = v; value = exp; property = Alias;
      ident_info = {used_stats = NA }   };
      comment}
 
@@ -1152,7 +1155,7 @@ module Stmt = struct
       statement_desc = 
       J.Variable { ident =  id; 
                    value = Some (Exp.unit ()) ;
-                   property = Mutable;
+                   property = Variable;
                    ident_info = {used_stats = NA}
                  };
       comment

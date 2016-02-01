@@ -1,14 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
 
 function odd(_z) {
   while(true) {
     var z = _z;
     var even = z * z;
     var a = even + 4 + even;
-    console.log(Pervasives.string_of_int(a));
+    console.log("" + a);
     _z = 32;
   };
 }

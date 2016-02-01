@@ -491,7 +491,7 @@ function bprint_ignored_flag(buf, ign_flag) {
 
 function bprint_pad_opt(buf, pad_opt) {
   if (pad_opt) {
-    return buffer_add_string(buf, Pervasives.string_of_int(pad_opt[1]));
+    return buffer_add_string(buf, "" + pad_opt[1]);
   }
   else {
     return /* () */0;
@@ -508,7 +508,7 @@ function bprint_padding(buf, pad) {
       return buffer_add_char(buf, /* "*" */42);
     }
     else {
-      return buffer_add_string(buf, Pervasives.string_of_int(pad[2]));
+      return buffer_add_string(buf, "" + pad[2]);
     }
   }
 }
@@ -524,7 +524,7 @@ function bprint_precision(buf, prec) {
   }
   else {
     buffer_add_char(buf, /* "." */46);
-    return buffer_add_string(buf, Pervasives.string_of_int(prec[1]));
+    return buffer_add_string(buf, "" + prec[1]);
   }
 }
 
@@ -3608,7 +3608,7 @@ function format_of_fconv(fconv, prec) {
     buffer_add_char(buf, /* "%" */37);
     bprint_fconv_flag(buf, fconv);
     buffer_add_char(buf, /* "." */46);
-    buffer_add_string(buf, Pervasives.string_of_int(prec$1));
+    buffer_add_string(buf, "" + prec$1);
     buffer_add_char(buf, symb);
     return buffer_contents(buf);
   }

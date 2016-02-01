@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_array      = require("../runtime/caml_array");
 var $$Array         = require("../stdlib/array");
@@ -38,7 +37,7 @@ $$Array.iter(function (x) {
       return x(/* () */0);
     }, arr);
 
-console.log(Pervasives.string_of_int(v[1]));
+console.log("" + v[1]);
 
 if (v[1] !== 45) {
   throw [

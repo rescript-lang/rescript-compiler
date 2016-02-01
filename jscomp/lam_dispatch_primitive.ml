@@ -149,7 +149,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
     | "caml_array_append" -> 
         begin match args with 
-        | [e0;e1] -> E.array_append e0 [e1] 
+        | [e0;e1] -> E.array_append e0 e1
         | _ ->  assert false 
         end
 
@@ -617,7 +617,7 @@ let query (prim : Lam_compile_env.primitive_description)
       -> 
         begin match args with 
         | [a;b] -> 
-            E.array_append a [b] 
+            E.array_append a b 
         | _ -> assert false 
         end
     | "js_string_append"
@@ -661,7 +661,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_anything_to_string" 
       ->
       begin match args with 
-      | [e] -> E.any_to_string e 
+      | [e] -> E.anything_to_string e 
       | _ -> assert false
       end
       

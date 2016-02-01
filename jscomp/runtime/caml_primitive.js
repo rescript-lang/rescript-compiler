@@ -297,15 +297,3 @@ function caml_hash(count, limit, seed, o) {
     return hashCode(JSON.stringify(o));
 }
 exports.caml_hash = caml_hash;
-/**
- * @see {Caml_format.caml_format_int}
- * Note that in {Pervasives.string_of_int = format_int "%d"}, we do the inline
- * manually here
- * We would expect more robust code specialization in the future
- * @param {number} x
- * @returns {string}
- */
-function string_of_int(x) {
-    return "" + x;
-}
-exports.string_of_int = string_of_int;

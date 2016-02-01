@@ -152,7 +152,9 @@ function concat(sep, l) {
   }
 }
 
-var cat = Caml_string.bytes_cat;
+function cat(a, b) {
+  return a.concat(b);
+}
 
 function is_space(param) {
   var switcher = param - 9;
