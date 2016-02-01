@@ -11,13 +11,8 @@ function escaped(s) {
     var $js;
     var exit = 0;
     if (c >= 14) {
-      if (c !== 34) {
-        if (c !== 92) {
-          exit = 1;
-        }
-        else {
-          $js = 2;
-        }
+      if (c !== 34 && c !== 92) {
+        exit = 1;
       }
       else {
         $js = 2;

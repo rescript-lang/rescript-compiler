@@ -848,10 +848,7 @@ function scan_int_conv(conv, width, ib) {
 function scan_frac_part(width, ib) {
   if (width) {
     var c = peek_char(ib);
-    if (ib[1]) {
-      return width;
-    }
-    else if (c > 57 || c < 48) {
+    if (ib[1] || c > 57 || c < 48) {
       return width;
     }
     else {
@@ -866,16 +863,8 @@ function scan_frac_part(width, ib) {
 function scan_exp_part(width, ib) {
   if (width) {
     var c = peek_char(ib);
-    if (ib[1]) {
+    if (ib[1] || c !== 69 && c !== 101) {
       return width;
-    }
-    else if (c !== 69) {
-      if (c !== 101) {
-        return width;
-      }
-      else {
-        return scan_optionally_signed_decimal_int(store_char(width, ib, c), ib);
-      }
     }
     else {
       return scan_optionally_signed_decimal_int(store_char(width, ib, c), ib);
