@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
 
 function f() {
   var n = 0;
@@ -16,7 +15,7 @@ function f() {
         };
         return +(fib(n) > 10);
       }()) {
-    console.log(Pervasives.string_of_int(n));
+    console.log("" + n);
     ++ n;
   };
   return /* () */0;

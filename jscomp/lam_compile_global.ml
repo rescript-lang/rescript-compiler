@@ -115,10 +115,13 @@ let get_exp_with_args (id : Ident.t) (pos : int) env (args : J.expression list) 
                             id.flags
                             pos
                          ))
+
     ~found:(fun {id; name;arity; _} -> 
         match id, name,  args with 
         | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
           E.string_append e0 e1 
+        | {name = "Pervasives"; _}, "string_of_int", [e] 
+          -> E.int_to_string e 
         | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
           E.seq (E.dump Log args) (E.unit ())
         | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  

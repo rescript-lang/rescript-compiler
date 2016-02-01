@@ -2,7 +2,6 @@
 "use strict";
 
 var Hashtbl        = require("../stdlib/hashtbl");
-var Pervasives     = require("../stdlib/pervasives");
 var Mt             = require("./mt");
 var Caml_primitive = require("../runtime/caml_primitive");
 var $$Array        = require("../stdlib/array");
@@ -34,10 +33,10 @@ function f() {
 function g(count) {
   var tbl = Hashtbl.create(/* None */0, 17);
   for(var i = 0; i<= count; ++i){
-    Hashtbl.replace(tbl, i * 2, Pervasives.string_of_int(i));
+    Hashtbl.replace(tbl, i * 2, "" + i);
   }
   for(var i$1 = 0; i$1<= count; ++i$1){
-    Hashtbl.replace(tbl, i$1 * 2, Pervasives.string_of_int(i$1));
+    Hashtbl.replace(tbl, i$1 * 2, "" + i$1);
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort(function (param, param$1) {
@@ -86,7 +85,7 @@ var suites_002 = [
                     return [
                             /* tuple */0,
                             2 * i,
-                            Pervasives.string_of_int(i)
+                            "" + i
                           ];
                   }),
               g(count)

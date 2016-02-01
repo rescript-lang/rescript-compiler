@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
 var Caml_array = require("../runtime/caml_array");
 
 function f(_n, _acc) {
@@ -11,7 +10,7 @@ function f(_n, _acc) {
     if (n) {
       _acc = (function(n,acc){
       return function () {
-        console.log(Pervasives.string_of_int(n));
+        console.log("" + n);
         return acc(/* () */0);
       }
       }(n,acc));

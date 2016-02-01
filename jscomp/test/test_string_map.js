@@ -153,13 +153,13 @@ function assertion_test() {
   var count = 1000000;
   timing("building", function () {
         for(var i = 0; i<= count; ++i){
-          m[1] = add(Pervasives.string_of_int(i), Pervasives.string_of_int(i), m[1]);
+          m[1] = add("" + i, "" + i, m[1]);
         }
         return /* () */0;
       });
   return timing("querying", function () {
               for(var i = 0; i<= count; ++i){
-                find(Pervasives.string_of_int(i), m[1]);
+                find("" + i, m[1]);
               }
               return /* () */0;
             });

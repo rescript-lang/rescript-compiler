@@ -36,10 +36,11 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
         2. [E.builtin_dot] for javascript builtin
         3. [E.mldot]
      *)
+  (* ATTENTION: check {!Lam_compile_global} for consistency  *)      
   (** Special handling for values in [Pervasives] *)
   | Single(_, ({name="stdout"|"stderr"|"stdin";_} as id),_ ),
     "pervasives.ml" -> 
-    Js_output.of_stmt @@ S.const_variable id
+    Js_output.of_stmt @@ S.alias_variable id
       ~exp:(E.runtime_ref  Js_helper.io id.name)
   (* 
          we delegate [stdout, stderr, and stdin] into [caml_io] module, 
@@ -49,11 +50,11 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
       *)                     
   | Single(_, ({name="infinity";_} as id),_ ),  "pervasives.ml" 
     -> (* TODO: check relative path to compiler*)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.js_global "Infinity")
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "Infinity")
   | Single(_, ({name="neg_infinity";_} as id),_ ), "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.js_global "-Infinity")
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "-Infinity")
   | Single(_, ({name="nan";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.js_global "NaN")
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.js_global "NaN")
 
   (* TODO: 
       Make it more safe, we should rewrite the last one...
@@ -62,39 +63,47 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
         [Lam_dispatch_primitive], here it makes an exception since this function is not a primitive
   *) 
   | Single(_, ({name="^";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id 
-      ~exp:(E.runtime_ref Js_helper.string "add")
+    Js_output.of_stmt @@ S.alias_variable id 
+      ~exp:(let a = Ext_ident.create "a" in 
+            let b = Ext_ident.create "b" in
+            E.fun_ [a;b] [S.return (E.string_append (E.var a) (E.var b))]
+            )
 
   (* QUICK hack to make hello world example nicer,
      Note the arity of [print_endline] is already analyzed before, 
      so it should be safe
   *)
   | Single(_, ({name="print_endline";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id 
+    Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(E.js_global "console.log")
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id 
+    Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(E.js_global "console.error")
 
 
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.runtime_ref
-                                                     Js_helper.prim "string_of_int")
+    Js_output.of_stmt @@ S.alias_variable id
+      ~exp:( 
+        let arg = Ext_ident.create "param" in
+        E.fun_ [arg] [S.return (E.anything_to_string (E.var arg))]
+      )
 
   | Single(_, ({name="max_float";_} as id),_ ),  "pervasives.ml" ->
 
-    Js_output.of_stmt @@ S.const_variable id 
+    Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(E.js_global_dot "Number" "MAX_VALUE")
   | Single(_, ({name="min_float";_} as id) ,_ ), "pervasives.ml" ->
-    Js_output.of_stmt @@  S.const_variable id
+    Js_output.of_stmt @@  S.alias_variable id
       ~exp:(E.js_global_dot  "Number" "MIN_VALUE")
   | Single(_, ({name="epsilon_float";_} as id) ,_ ),  "pervasives.ml" ->
-    Js_output.of_stmt @@ S.const_variable id 
+    Js_output.of_stmt @@ S.alias_variable id 
       ~exp:(E.js_global_dot  "Number" "EPSILON")
   | Single(_, ({name="cat";_} as id) ,_ ),  "bytes.ml" ->
-    Js_output.of_stmt @@ S.const_variable id
-      ~exp:(E.runtime_ref
-              Js_helper.string "bytes_cat")
+    Js_output.of_stmt @@ S.alias_variable id
+      ~exp:(let a = Ext_ident.create "a" in 
+            let b = Ext_ident.create "b" in
+            E.fun_ [a;b] [S.return (E.array_append (E.var a) (E.var b))]
+           )
 
   (** Special handling for values in [Sys] *)
   | Single(_, ({name="max_array_length" | "max_string_length";_} as id) ,_ ),  "sys.ml" ->
@@ -102,15 +111,15 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
        note that casual handling of {!Sys.max_string_length} could result into 
        negative value which could cause wrong behavior of {!Buffer.create}
      *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float "4_294_967_295.") 
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "4_294_967_295.") 
                            
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;) can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float "9007199254740991.") 
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "9007199254740991.") 
 
   | Single(_, ({name="min_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
     (* See [js_knowledge] Max int section, -. (2. ** 53. -. 1.);; can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.const_variable id ~exp:(E.float ("-9007199254740991.")) 
+    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float ("-9007199254740991.")) 
 
   | Single (kind, id, lam), _ -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)

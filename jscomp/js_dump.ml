@@ -432,7 +432,7 @@ and
     P.group f 1 (fun _ -> 
         let cxt = expression 15 cxt f e in
         P.string f ".concat";
-        P.paren_group f 1 (fun _ -> arguments cxt f el))
+        P.paren_group f 1 (fun _ -> arguments cxt f [el]))
 
   | Array_copy e -> 
     P.group f 1 (fun _ -> 

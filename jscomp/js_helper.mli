@@ -96,7 +96,7 @@ module Exp : sig
 
   val str : ?pure:bool -> ?comment:string -> string -> t 
 
-  val efun : ?comment:string ->
+  val fun_ : ?comment:string ->
     ?immutable_mask:bool array -> J.ident list -> J.block -> t
 
   val econd : ?comment:string -> t -> t -> t -> t
@@ -126,7 +126,7 @@ module Exp : sig
 
   val char_to_int : unary_op
 
-  val array_append : ?comment:string -> t -> t list -> t
+  val array_append : binary_op
 
   val array_copy : unary_op
   val string_append : binary_op
@@ -189,7 +189,8 @@ module Exp : sig
 
   val dump : ?comment:string -> Js_op.level -> t list -> t
 
-  val any_to_string : unary_op
+  val anything_to_string : unary_op
+  val int_to_string : unary_op
   val to_json_string : unary_op
 
   val new_ : ?comment:string -> J.expression -> J.expression list -> t
@@ -285,7 +286,7 @@ module Stmt : sig
     ?ident_info:J.ident_info ->
     kind:Lambda.let_kind -> Ident.t -> J.expression  -> t
 
-  val const_variable :
+  val alias_variable :
       ?comment:string -> ?exp:J.expression -> Ident.t -> t
   val assign : ?comment:string  -> J.ident -> J.expression -> t
 

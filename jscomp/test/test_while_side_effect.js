@@ -1,14 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
 
 var v = [
   0,
   0
 ];
 
-while(console.log(Pervasives.string_of_int(v[1])), ++ v[1], +(v[1] < 10)) {
+while(console.log("" + v[1]), ++ v[1], +(v[1] < 10)) {
   
 };
 
@@ -28,12 +27,12 @@ var x = [
 
 while(function () {
       var y = 3;
-      console.log(Pervasives.string_of_int(x[1]));
+      console.log("" + x[1]);
       ++ y;
       ++ x[1];
       return +(fib(x[1]) + fib(x[1]) < 20);
     }()) {
-  console.log(Pervasives.string_of_int(3));
+  console.log("" + 3);
 };
 
 exports.v   = v;

@@ -3,7 +3,6 @@
 
 var Bytes           = require("../stdlib/bytes");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("../stdlib/pervasives");
 var Mt              = require("./mt");
 var Buffer          = require("../stdlib/buffer");
 
@@ -79,7 +78,7 @@ var suites_002 = [
     function () {
       var v = Buffer.create(30);
       for(var i = 0; i<= 10; ++i){
-        Buffer.add_string(v, Pervasives.string_of_int(i));
+        Buffer.add_string(v, "" + i);
       }
       return Mt.assert_equal(Buffer.contents(v), "012345678910");
     }

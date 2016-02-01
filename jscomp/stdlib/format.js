@@ -666,7 +666,7 @@ function pp_print_string(state, s) {
 }
 
 function pp_print_int(state, i) {
-  return pp_print_string(state, Pervasives.string_of_int(i));
+  return pp_print_string(state, "" + i);
 }
 
 function pp_print_float(state, f) {
@@ -1252,7 +1252,7 @@ function print_string(param) {
 }
 
 function print_int(param) {
-  return pp_print_string(std_formatter, Pervasives.string_of_int(param));
+  return pp_print_string(std_formatter, "" + param);
 }
 
 function print_float(param) {

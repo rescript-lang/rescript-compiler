@@ -7,10 +7,6 @@ function add(prim, prim$1) {
   return prim + prim$1;
 }
 
-function bytes_cat(a, b) {
-  return a.concat(b);
-}
-
 function caml_string_get(s, i) {
   if (i >= s.length || i < 0) {
     throw [
@@ -157,7 +153,6 @@ function caml_is_printable(c) {
 }
 
 exports.add                       = add;
-exports.bytes_cat                 = bytes_cat;
 exports.bytes_of_string           = bytes_of_string;
 exports.bytes_to_string           = bytes_to_string;
 exports.caml_is_printable         = caml_is_printable;

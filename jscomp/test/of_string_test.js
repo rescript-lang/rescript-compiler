@@ -25,7 +25,7 @@ var suites_002 = [
       return [
               /* Eq */0,
               "10",
-              Pervasives.string_of_int(10)
+              "" + 10
             ];
     }
   ],

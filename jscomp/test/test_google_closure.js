@@ -1,8 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 "use strict";
 
-var Pervasives = require("../stdlib/pervasives");
-var $$Array    = require("../stdlib/array");
+var $$Array = require("../stdlib/array");
 
 function f(a, b, _) {
   return a + b;
@@ -22,7 +21,7 @@ for(var i = 0; i<= 2; ++i){
   arr[i] = i + 1;
 }
 
-var match_001 = Pervasives.string_of_int(3);
+var match_001 = "" + 3;
 
 var a = match_001;
 

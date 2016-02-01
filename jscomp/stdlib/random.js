@@ -26,7 +26,7 @@ function assign(st1, st2) {
 
 function full_init(s, seed) {
   var combine = function (accu, x) {
-    return Digest.string(accu + Pervasives.string_of_int(x));
+    return Digest.string(accu + x);
   };
   var extract = function (d) {
     return d.charCodeAt(0) + (d.charCodeAt(1) << 8) + (d.charCodeAt(2) << 16) + (d.charCodeAt(3) << 24);

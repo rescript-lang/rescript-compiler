@@ -77,7 +77,9 @@ var min_float = Number.MIN_VALUE;
 
 var epsilon_float = Number.EPSILON;
 
-var $caret = Caml_string.add;
+function $caret(a, b) {
+  return a + b;
+}
 
 function char_of_int(n) {
   if (n < 0 || n > 255) {
@@ -116,7 +118,9 @@ function bool_of_string(param) {
   }
 }
 
-var string_of_int = Caml_primitive.string_of_int;
+function string_of_int(param) {
+  return "" + param;
+}
 
 function valid_float_lexem(s) {
   var l = s.length;

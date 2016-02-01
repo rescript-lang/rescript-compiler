@@ -172,7 +172,7 @@ let subst_map name = object (self)
       {v with statement_desc =  (Exp x)}
 
     | Variable ({ ident ; 
-                  property = Immutable;
+                  property = (Strict | StrictOpt | Alias);
                   value = Some ({expression_desc = (Array ( _:: _ :: _ as ls, Immutable))} as array)
                 } as variable) -> 
       (** If we do this, we should prevent incorrect inlning to inline it into an array :) 

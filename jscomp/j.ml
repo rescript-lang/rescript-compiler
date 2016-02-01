@@ -100,7 +100,7 @@ and expression_desc =
        since GC does not rely on it
      *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
-  | Array_append of expression * expression list (* For [caml_array_append]*)
+  | Array_append of expression * expression (* For [caml_array_append]*)
   | Tag_ml_obj of expression
   | String_append of expression * expression 
   | Int_of_boolean of expression 

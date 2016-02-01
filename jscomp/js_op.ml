@@ -127,9 +127,11 @@ type kind =
   | Runtime 
   | External of string
 
-type property = 
-  | Mutable
-  | Immutable
+type property = Lambda.let_kind = 
+  | Strict
+  | Alias
+  | StrictOpt 
+  | Variable
 
 type int_or_char = 
     { i :  int;

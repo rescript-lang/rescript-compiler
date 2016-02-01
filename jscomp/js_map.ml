@@ -371,8 +371,7 @@ class virtual map =
       | Array_copy _x -> let _x = o#expression _x in Array_copy _x
       | Array_append (_x, _x_i1) ->
           let _x = o#expression _x in
-          let _x_i1 = o#list (fun o -> o#expression) _x_i1
-          in Array_append (_x, _x_i1)
+          let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
       | Tag_ml_obj _x -> let _x = o#expression _x in Tag_ml_obj _x
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
