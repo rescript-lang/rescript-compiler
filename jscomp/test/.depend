@@ -50,8 +50,8 @@ buffer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi \
     ../stdlib/buffer.cmi
 buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
     ../stdlib/buffer.cmx
-complex_if.cmo :
-complex_if.cmx :
+complex_if_test.cmo : mt.cmo ../stdlib/bytes.cmi
+complex_if_test.cmx : mt.cmx ../stdlib/bytes.cmx
 complex_test.cmo : mt.cmo ../stdlib/complex.cmi
 complex_test.cmx : mt.cmx ../stdlib/complex.cmx
 complex_while_loop.cmo :
@@ -408,8 +408,8 @@ buffer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/bytes.cmi \
     ../stdlib/buffer.cmi
 buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
-complex_if.cmo :
-complex_if.cmj :
+complex_if_test.cmo : mt.cmo ../stdlib/bytes.cmi
+complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
 complex_test.cmo : mt.cmo ../stdlib/complex.cmi
 complex_test.cmj : mt.cmj ../stdlib/complex.cmj
 complex_while_loop.cmo :
