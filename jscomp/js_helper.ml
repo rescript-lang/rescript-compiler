@@ -177,41 +177,6 @@ module Exp = struct
     | _ -> 
       {expression_desc = Seq(e0,e1); comment}
 
-  let rec econd ?comment (b : t) (t : t) (f : t) : t = 
-    match b.expression_desc , t.expression_desc, f.expression_desc with
-    | Number ((Int { i = 0; _}) ), _, _ 
-      -> f  (* TODO: constant folding: could be refined *)
-    | (Number _ | Array _), _, _ 
-      -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
-
-    | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
-       | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
-      -> 
-      econd ?comment x f t 
-
-    | (Bin (Ge, 
-            ({expression_desc = 
-                (String_length _ 
-                | Array_length _ | Bytes_length _ | Function_length _ );
-              _}), {expression_desc = Number (Int { i = 0 ; _})})), _, _ 
-      -> f
-
-    | (Bin (Gt, 
-            ({expression_desc = 
-                (String_length _ 
-                | Array_length _ | Bytes_length _ | Function_length _ );
-              _} as pred ), {expression_desc = Number (Int {i = 0; })})), _, _
-      ->
-      (** Add comment when simplified *)
-      econd ?comment pred t f 
-    | Not e, _, _ -> econd ?comment e f t 
-    | Int_of_boolean  b, _, _  -> econd ?comment  b t f
-
-    | _ -> 
-      if Js_analyzer.eq_expression t f then
-        if no_side_effect b then t else seq  ?comment b t
-      else
-        {expression_desc = Cond(b,t,f); comment}
 
   let int ?comment ?c  i : t = 
     {expression_desc = Number (Int {i; c}) ; comment}
@@ -378,6 +343,7 @@ module Exp = struct
 
   let assign ?comment e0 e1 : t = {expression_desc = Bin(Eq, e0,e1); comment}
 
+
   (** Convert a javascript boolean to ocaml boolean
       It's necessary for return value
        this should be optmized away for [if] ,[cond] to produce 
@@ -411,6 +377,158 @@ module Exp = struct
         triple_equal ?comment a b 
     | _ -> 
         to_ocaml_boolean  {expression_desc = Bin(EqEqEq, e0,e1); comment}
+  let bin ?comment (op : J.binop) e0 e1 : t = 
+    match op with 
+    | EqEqEq -> triple_equal ?comment e0 e1
+    | _ -> {expression_desc = Bin(op,e0,e1); comment}
+
+  (* TODO: Constant folding, Google Closure will do that?,
+     Even if Google Clsoure can do that, we will see how it interact with other
+     optimizations
+     We wrap all boolean functions here, since OCaml boolean is a 
+     bit different from Javascript, so that we can change it in the future
+  *)
+  let rec and_ ?comment (e1 : t) (e2 : t) = 
+    match e1.expression_desc, e2.expression_desc with 
+    |  Int_of_boolean e1 , Int_of_boolean e2 -> 
+      and_ ?comment e1 e2
+    |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
+    | _,  Int_of_boolean e2
+      -> and_ ?comment e1 e2
+    (* optimization if [e1 = e2], then and_ e1 e2 -> e2
+       be careful for side effect        
+    *)
+    | Var i, Var j when Js_op_util.same_vident  i j 
+      -> 
+      to_ocaml_boolean e1
+    | Var i, 
+      (Bin (And,   {expression_desc = Var j ; _}, _) 
+      | Bin (And ,  _, {expression_desc = Var j ; _}))
+      when Js_op_util.same_vident  i j 
+      ->
+      to_ocaml_boolean e2          
+    | _, _ ->     
+      to_ocaml_boolean @@ bin ?comment And e1 e2 
+
+  let rec or_ ?comment (e1 : t) (e2 : t) = 
+    match e1.expression_desc, e2.expression_desc with 
+    | Int_of_boolean e1 , Int_of_boolean e2
+      -> 
+      or_ ?comment e1 e2
+    | Int_of_boolean e1 , _  -> or_ ?comment e1 e2
+    | _,  Int_of_boolean e2
+      -> or_ ?comment e1 e2
+    | Var i, Var j when Js_op_util.same_vident  i j 
+      -> 
+      to_ocaml_boolean e1
+    | Var i, 
+      (Bin (Or,   {expression_desc = Var j ; _}, _) 
+      | Bin (Or ,  _, {expression_desc = Var j ; _}))
+      when Js_op_util.same_vident  i j 
+      -> to_ocaml_boolean e2          
+    | _, _ ->     
+      to_ocaml_boolean @@ bin ?comment Or e1 e2 
+
+  (* return a value of type boolean *)
+  (* TODO: 
+       when comparison with Int
+       it is right that !(x > 3 ) -> x <= 3 *)
+  let rec not ({expression_desc; comment} as e : t) : t =
+    match expression_desc with 
+    | Bin(EqEqEq , e0,e1)
+      -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
+    | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
+
+    (* Note here the compiled js use primtive comparison only 
+       for *primitive types*, so it is safe to do such optimization,
+       for generic comparison, this does not hold        
+    *)
+    | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
+    | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}          
+    | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
+    | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
+
+    | Number (Int {i; _}) -> 
+      if i != 0 then false_ else true_
+    | Int_of_boolean  e -> not e
+    | Not e -> e 
+    | x -> {expression_desc = Not e ; comment = None}
+
+  let rec econd ?comment (b : t) (t : t) (f : t) : t = 
+    match b.expression_desc , t.expression_desc, f.expression_desc with
+    | Number ((Int { i = 0; _}) ), _, _ 
+      -> f  (* TODO: constant folding: could be refined *)
+    | (Number _ | Array _), _, _ 
+      -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
+
+    | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
+       | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
+      -> 
+      econd ?comment x f t 
+
+    | (Bin (Ge, 
+            ({expression_desc = 
+                (String_length _ 
+                | Array_length _ | Bytes_length _ | Function_length _ );
+              _}), {expression_desc = Number (Int { i = 0 ; _})})), _, _ 
+      -> f
+
+    | (Bin (Gt, 
+            ({expression_desc = 
+                (String_length _ 
+                | Array_length _ | Bytes_length _ | Function_length _ );
+              _} as pred ), {expression_desc = Number (Int {i = 0; })})), _, _
+      ->
+      (** Add comment when simplified *)
+      econd ?comment pred t f 
+
+    | _, (Cond (p1, branch_code0, branch_code1)), _
+      when Js_analyzer.eq_expression branch_code1 f
+      ->
+      (* {[
+           if b then (if p1 then branch_code0 else branch_code1)
+           else branch_code1         
+         ]}
+         is equivalent to         
+         {[
+           if b && p1 then branch_code0 else branch_code1           
+         ]}         
+      *)      
+      econd (and_ b p1) branch_code0 f
+    | _, (Cond (p1, branch_code0, branch_code1)), _
+      when Js_analyzer.eq_expression branch_code0 f
+      ->
+      (* the same as above except we revert the [cond] expression *)      
+      econd (and_ b (not p1)) branch_code1 f
+
+    | _, _, (Cond (p1', branch_code0, branch_code1))
+      when Js_analyzer.eq_expression t branch_code0 
+      (*
+         {[
+           if b then branch_code0 else (if p1' then branch_code0 else branch_code1)           
+         ]}         
+         is equivalent to         
+         {[
+           if b or p1' then branch_code0 else branch_code1           
+         ]}         
+      *)
+      ->
+      econd (or_ b p1') t branch_code1
+    | _, _, (Cond (p1', branch_code0, branch_code1))
+      when Js_analyzer.eq_expression t branch_code1
+      ->
+      (* the same as above except we revert the [cond] expression *)      
+      econd (or_ b (not p1')) t branch_code0
+
+    | Not e, _, _ -> econd ?comment e f t 
+    | Int_of_boolean  b, _, _  -> econd ?comment  b t f
+
+    | _ -> 
+      if Js_analyzer.eq_expression t f then
+        if no_side_effect b then t else seq  ?comment b t
+      else
+        {expression_desc = Cond(b,t,f); comment}
+
 
   let rec float_equal ?comment (e0 : t) (e1 : t) : t = 
     match e0.expression_desc, e1.expression_desc with     
@@ -429,10 +547,6 @@ module Exp = struct
       ->
       to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
 
-  let bin ?comment (op : J.binop) e0 e1 : t = 
-    match op with 
-    | EqEqEq -> triple_equal ?comment e0 e1
-    | _ -> {expression_desc = Bin(op,e0,e1); comment}
 
   let arr ?comment mt es : t  = 
     {expression_desc = Array (es,mt) ; comment}
@@ -462,33 +576,7 @@ module Exp = struct
   let is_type_number ?comment (e : t) : t = 
     string_equal ?comment (typeof e) (str "number")    
 
-  (* TODO remove this comment ? *)
-  (* let un ?comment op e : t  = {expression_desc = Un(op,e); comment} *)
 
-  (* return a value of type boolean *)
-  (* TODO: 
-       when comparison with Int
-       it is right that !(x > 3 ) -> x <= 3 *)
-  let rec not ({expression_desc; comment} as e : t) : t =
-    match expression_desc with 
-    | Bin(EqEqEq , e0,e1)
-      -> {expression_desc = Bin(NotEqEq, e0,e1); comment}
-    | Bin(NotEqEq , e0,e1) -> {expression_desc = Bin(EqEqEq, e0,e1); comment}
-
-    (* Note here the compiled js use primtive comparison only 
-       for *primitive types*, so it is safe to do such optimization,
-       for generic comparison, this does not hold        
-    *)
-    | Bin(Lt, a, b) -> {e with expression_desc = Bin (Ge,a,b)}
-    | Bin(Ge,a,b) -> {e with expression_desc = Bin (Lt,a,b)}          
-    | Bin(Le,a,b) -> {e with expression_desc = Bin (Gt,a,b)}
-    | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
-
-    | Number (Int {i; _}) -> 
-      if i != 0 then false_ else true_
-    | Int_of_boolean  e -> not e
-    | Not e -> e 
-    | x -> {expression_desc = Not e ; comment = None}
 
   let new_ ?comment e0 args : t = 
     { expression_desc = New (e0,  Some args ); comment}
@@ -516,52 +604,6 @@ module Exp = struct
     | _ -> bin ?comment Plus e (int 1 )
 
 
-  (* TODO: Constant folding, Google Closure will do that?,
-     Even if Google Clsoure can do that, we will see how it interact with other
-     optimizations
-     We wrap all boolean functions here, since OCaml boolean is a 
-     bit different from Javascript, so that we can change it in the future
-   *)
-  let rec and_ ?comment (e1 : t) (e2 : t) = 
-    match e1.expression_desc, e2.expression_desc with 
-    |  Int_of_boolean e1 , Int_of_boolean e2 -> 
-        and_ ?comment e1 e2
-    |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
-    | _,  Int_of_boolean e2
-      -> and_ ?comment e1 e2
-    (* optimization if [e1 = e2], then and_ e1 e2 -> e2
-       be careful for side effect        
-    *)
-    | Var i, Var j when Js_op_util.same_vident  i j 
-      -> 
-      to_ocaml_boolean e1
-    | Var i, 
-      (Bin (And,   {expression_desc = Var j ; _}, _) 
-      | Bin (And ,  _, {expression_desc = Var j ; _}))
-      when Js_op_util.same_vident  i j 
-      ->
-      to_ocaml_boolean e2          
-    | _, _ ->     
-        to_ocaml_boolean @@ bin ?comment And e1 e2 
-
-  let rec or_ ?comment (e1 : t) (e2 : t) = 
-    match e1.expression_desc, e2.expression_desc with 
-    | Int_of_boolean e1 , Int_of_boolean e2
-      -> 
-        or_ ?comment e1 e2
-    | Int_of_boolean e1 , _  -> or_ ?comment e1 e2
-    | _,  Int_of_boolean e2
-      -> or_ ?comment e1 e2
-    | Var i, Var j when Js_op_util.same_vident  i j 
-      -> 
-      to_ocaml_boolean e1
-    | Var i, 
-      (Bin (Or,   {expression_desc = Var j ; _}, _) 
-      | Bin (Or ,  _, {expression_desc = Var j ; _}))
-      when Js_op_util.same_vident  i j 
-      -> to_ocaml_boolean e2          
-    | _, _ ->     
-        to_ocaml_boolean @@ bin ?comment Or e1 e2 
 
   let string_of_small_int_array ?comment xs : t = 
     {expression_desc = String_of_small_int_array xs; comment}

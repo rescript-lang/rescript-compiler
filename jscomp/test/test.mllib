@@ -153,3 +153,4 @@ lib_js_test
 small_inline_test
 ari_regress_test
 record_with_test
+complex_if

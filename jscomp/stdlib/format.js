@@ -105,18 +105,8 @@ function pp_force_break_line(state) {
     var match$1 = match[1];
     var width = match$1[2];
     var bl_ty = match$1[1];
-    if (width > state[9]) {
-      if (bl_ty !== 0) {
-        if (bl_ty >= 5) {
-          return /* () */0;
-        }
-        else {
-          return break_new_line(state, 0, width);
-        }
-      }
-      else {
-        return /* () */0;
-      }
+    if (width > state[9] && bl_ty !== 0 && bl_ty < 5) {
+      return break_new_line(state, 0, width);
     }
     else {
       return 0;
@@ -246,17 +236,11 @@ function format_pp_token(state, size, param) {
                     return break_same_line(state, n);
                   }
               case 4 : 
-                  if (state[11]) {
+                  if (state[11] || !(size > state[9] || state[10] > state[6] - width + off)) {
                     return break_same_line(state, n);
-                  }
-                  else if (size > state[9]) {
-                    return break_new_line(state, off, width);
-                  }
-                  else if (state[10] > state[6] - width + off) {
-                    return break_new_line(state, off, width);
                   }
                   else {
-                    return break_same_line(state, n);
+                    return break_new_line(state, off, width);
                   }
               case 0 : 
               case 5 : 

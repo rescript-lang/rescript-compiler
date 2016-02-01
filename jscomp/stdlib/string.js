@@ -96,14 +96,11 @@ function is_space(param) {
 }
 
 function trim(s) {
-  if (s === "") {
+  if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1)))) {
     return s;
-  }
-  else if (is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1))) {
-    return bts(Bytes.trim(bos(s)));
   }
   else {
-    return s;
+    return bts(Bytes.trim(bos(s)));
   }
 }
 

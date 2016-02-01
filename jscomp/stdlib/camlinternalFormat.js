@@ -2255,31 +2255,23 @@ function fmtty_of_custom(arity, fmtty) {
 }
 
 function fmtty_of_padding_fmtty(pad, fmtty) {
-  if (typeof pad === "number") {
+  if (typeof pad === "number" || !pad[0]) {
     return fmtty;
   }
-  else if (pad[0]) {
+  else {
     return [
             /* Int_ty */2,
             fmtty
           ];
   }
-  else {
-    return fmtty;
-  }
 }
 
 function fmtty_of_precision_fmtty(prec, fmtty) {
-  if (typeof prec === "number") {
-    if (prec !== 0) {
-      return [
-              /* Int_ty */2,
-              fmtty
-            ];
-    }
-    else {
-      return fmtty;
-    }
+  if (typeof prec === "number" && prec !== 0) {
+    return [
+            /* Int_ty */2,
+            fmtty
+          ];
   }
   else {
     return fmtty;
@@ -5884,13 +5876,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             prec_used[1] = /* true */1;
             var pad$3;
             var exit$1 = 0;
-            if (typeof prec === "number") {
-              if (prec !== 0) {
-                exit$1 = 9;
-              }
-              else {
-                pad$3 = pad;
-              }
+            if (typeof prec === "number" && prec === 0) {
+              pad$3 = pad;
             }
             else {
               exit$1 = 9;

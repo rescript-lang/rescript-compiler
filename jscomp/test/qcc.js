@@ -148,15 +148,12 @@ var s = new Array(100);
 
 function getq() {
   var c = getch(/* () */0);
-  if (c !== 92) {
+  if (c !== 92 || peekch(/* () */0) !== /* "n" */110) {
     return c;
-  }
-  else if (peekch(/* () */0) === /* "n" */110) {
-    getch(/* () */0);
-    return /* "\n" */10;
   }
   else {
-    return c;
+    getch(/* () */0);
+    return /* "\n" */10;
   }
 }
 
@@ -183,10 +180,10 @@ function skip(_param) {
     var ch = getch(/* () */0);
     if (ch >= 14) {
       if (ch !== 32) {
-        if (ch !== 47) {
+        if (ch !== 47 || peekch(/* () */0) !== /* "*" */42) {
           return ch;
         }
-        else if (peekch(/* () */0) === /* "*" */42) {
+        else {
           var _param$1 = getch(/* () */0);
           while(true) {
             var match = getch(/* () */0);
@@ -200,9 +197,6 @@ function skip(_param) {
               _param$1 = /* () */0;
             }
           };
-        }
-        else {
-          return ch;
         }
       }
       else {
