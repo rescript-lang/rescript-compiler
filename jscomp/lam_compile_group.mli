@@ -30,9 +30,12 @@
  *)
 val compile :  
   filename : string -> 
+  bool -> 
   Env.t -> 
   Types.signature -> 
   Lambda.lambda -> 
   J.program
 
-val lambda_as_module :  Env.t -> Types.signature -> string -> Lambda.lambda -> unit
+val lambda_as_module :  
+  Env.t ->
+  Types.signature -> string -> Lambda.lambda -> unit
