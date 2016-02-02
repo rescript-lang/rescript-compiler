@@ -30,7 +30,7 @@
      *  }
 *)
 
-let implementation ppf str  =
+let implementation non_export ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
   (* Compmisc.init_path false; *)
@@ -51,7 +51,7 @@ let implementation ppf str  =
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
       let () = Js_dump.(pp_program 
-                          (Lam_compile_group.compile ~filename:""
+                          (Lam_compile_group.compile ~filename:"" non_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in
       let v = Buffer.contents buffer in 
@@ -88,8 +88,8 @@ let string_of_fmt (f : Format.formatter -> 'a -> unit) v =
     Format.pp_print_flush fmt () in
   Buffer.contents buf 
 
-let compile  : string -> string = string_of_fmt implementation
-
+let compile  : string -> string = string_of_fmt (implementation false)
+let shake_compile : string -> string = string_of_fmt (implementation true)
 
 
 (* local variables: *)

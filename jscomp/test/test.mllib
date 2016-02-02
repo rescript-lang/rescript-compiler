@@ -13,7 +13,7 @@ test_order
 test_trywith
 arith_parser
 test_array_primitive
-test_fastdt
+# test_fastdt
 test_js_ffi
 test_pack
 test_seq

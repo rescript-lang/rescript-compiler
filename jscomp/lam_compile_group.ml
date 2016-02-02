@@ -151,9 +151,13 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
 *)
-let compile ~filename env sigs lam  : J.program  = 
+let compile  ~filename non_export env _sigs lam  : J.program  = 
 
-  let export_idents = Translmod.get_export_identifiers() in
+  let export_idents = 
+    if non_export then
+      []    
+    else  Translmod.get_export_identifiers()  
+  in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
 
@@ -206,28 +210,32 @@ let compile ~filename env sigs lam  : J.program  =
         match Lam_group.flatten [] biglambda with 
         | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
           let coercion_groups, new_exports = 
-            List.fold_right2 
-              (fun  eid lam (coercions, new_exports) ->
-                 match (lam : Lambda.lambda) with 
-                 | Lvar id when Ident.name id = Ident.name eid -> 
-                   (coercions, id :: new_exports)
-                 | _ -> (** TODO : bug 
-                            check [map.ml] here coercion, we introduced 
-                            rebound which is not corrrect 
-                            {[
-                              let Make/identifier = function (funarg){
-                                  var $$let = Make/identifier(funarg);
-                                    return [0, ..... ]
-                                }
-                            ]}
-                            Possible fix ? 
-                            change export identifier, we should do this in the very 
-                            beginning since lots of optimizations depend on this
-                            however
-                        *)
-                   (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-                    eid :: new_exports))
-              meta.exports lambda_exports ([],[])in
+            if non_export then 
+              [], []
+            else
+              List.fold_right2 
+                (fun  eid lam (coercions, new_exports) ->
+                   match (lam : Lambda.lambda) with 
+                   | Lvar id when Ident.name id = Ident.name eid -> 
+                     (coercions, id :: new_exports)
+                   | _ -> (** TODO : bug 
+                              check [map.ml] here coercion, we introduced 
+                              rebound which is not corrrect 
+                              {[
+                                let Make/identifier = function (funarg){
+                                    var $$let = Make/identifier(funarg);
+                                            return [0, ..... ]
+                                  }
+                              ]}
+                              Possible fix ? 
+                              change export identifier, we should do this in the very 
+                              beginning since lots of optimizations depend on this
+                              however
+                          *)
+                     (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
+                      eid :: new_exports))
+                meta.exports lambda_exports ([],[])
+          in
 
           let meta = { meta with 
                        export_idents = Lam_util.ident_set_of_list new_exports;
@@ -297,7 +305,8 @@ let compile ~filename env sigs lam  : J.program  =
           (* Exporting ... *)
           let v = 
             Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
-              lambda_exports  in
+              (if non_export then [] else lambda_exports) 
+          in
           (if not @@ Ext_string.is_empty filename then
             Js_cmj_format.to_file 
               (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
@@ -333,7 +342,7 @@ let lambda_as_module
     Lam_current_unit.set_debug_file "ari_regress_test.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
-      (fun chan -> Js_dump.dump_program (compile ~filename env sigs lam) chan)
+      (fun chan -> Js_dump.dump_program (compile ~filename false env sigs lam) chan)
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

@@ -33,12 +33,19 @@ let () = JsooTop.initialize()
 let _ =
   export "ocaml"
     (Js.Unsafe.(obj
-         [|"compile",
-             inject @@ 
-             Js.wrap_meth_callback
-                (fun _ code ->
-                  Js.string (Jsoo_driver.compile (Js.to_string code)))
-             |]))
+                  [|"compile",
+                    inject @@ 
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         Js.string (Jsoo_driver.compile (Js.to_string code)));
+                    "shake_compile",
+                    inject @@ 
+                    Js.wrap_meth_callback
+                      (fun _ code ->
+                         Js.string (Jsoo_driver.shake_compile (Js.to_string code)))
+                  |]))
+
+
 (* local variables: *)
 (* compile-command: "ocamlbuild -cflags -dsource -use-ocamlfind -no-hygiene  -pkgs js_of_ocaml,js_of_ocaml.toplevel exports.cmo" *)
 (* end: *)
