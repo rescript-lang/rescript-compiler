@@ -598,8 +598,6 @@ module Exp = struct
   let unknown_lambda ?(comment="unknown")  (lam : Lambda.lambda ) : t = 
        str ~pure:false ~comment (Lam_util.string_of_lambda lam)
 
-  let unknown_primitive ?(comment="unknown") (p : Lambda.primitive) : t = 
-    str ~pure:false ~comment (Lam_util.string_of_primitive p) 
 
   let unit  () = int ~comment:"()" 0;; (* TODO: add a comment *)
 

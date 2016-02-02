@@ -236,8 +236,8 @@ function find_split_feature(c_t, c_f, _F, _Y, _W, used, validEx) {
     if (!Hashtbl.mem(used, f)) {
       var c_1t = 0;
       var c_1f = 0;
-      for(var i = 0 ,i_finish = /* unknown */"Bigarray.dim_1" - 1; i<= i_finish; ++i){
-        var n = /* unknown */"Bigarray.get[generic,unknown]";
+      for(var i = 0 ,i_finish = console.error("Missing primitve: Bigarray.dim_1\n") - 1; i<= i_finish; ++i){
+        var n = console.error("Missing primitve: Bigarray.get[generic,unknown]\n");
         if (validEx[n] > 0) {
           if (_Y[n]) {
             c_1t += _W[n];
@@ -440,19 +440,19 @@ function build_dt(max_depth, leaf_acc, smooth, validExO, _F, _Y, _W) {
         var f = match$1[3];
         var match$2 = match$1[2];
         Hashtbl.replace(used, f, /* () */0);
-        for(var m = 0 ,m_finish = /* unknown */"Bigarray.dim_1" - 1; m<= m_finish; ++m){
-          validEx[/* unknown */"Bigarray.get[camlint,C]"] = validEx[/* unknown */"Bigarray.get[camlint,C]"] - 1;
+        for(var m = 0 ,m_finish = console.error("Missing primitve: Bigarray.dim_1\n") - 1; m<= m_finish; ++m){
+          validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] = validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] - 1;
         }
         var r = build_dt$prime(depth + 1, match$2[1], match$2[2]);
-        for(var m$1 = 0 ,m_finish$1 = /* unknown */"Bigarray.dim_1" - 1; m$1<= m_finish$1; ++m$1){
-          validEx[/* unknown */"Bigarray.get[camlint,C]"] = validEx[/* unknown */"Bigarray.get[camlint,C]"] + 2;
+        for(var m$1 = 0 ,m_finish$1 = console.error("Missing primitve: Bigarray.dim_1\n") - 1; m$1<= m_finish$1; ++m$1){
+          validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] = validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] + 2;
         }
         for(var n = 0 ,n_finish = _N - 1; n<= n_finish; ++n){
           validEx[n] = validEx[n] - 1;
         }
         var l = build_dt$prime(depth + 1, match$2[3], match$2[4]);
-        for(var m$2 = 0 ,m_finish$2 = /* unknown */"Bigarray.dim_1" - 1; m$2<= m_finish$2; ++m$2){
-          validEx[/* unknown */"Bigarray.get[camlint,C]"] = validEx[/* unknown */"Bigarray.get[camlint,C]"] - 1;
+        for(var m$2 = 0 ,m_finish$2 = console.error("Missing primitve: Bigarray.dim_1\n") - 1; m$2<= m_finish$2; ++m$2){
+          validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] = validEx[console.error("Missing primitve: Bigarray.get[camlint,C]\n")] - 1;
         }
         for(var n$1 = 0 ,n_finish$1 = _N - 1; n$1<= n_finish$1; ++n$1){
           validEx[n$1] = validEx[n$1] + 1;

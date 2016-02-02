@@ -211,8 +211,6 @@ module Exp : sig
 
   val unknown_lambda : ?comment:string -> Lambda.lambda -> t
 
-  val unknown_primitive : ?comment:string -> Lambda.primitive -> t
-  
   val unit :  unit -> t
   (** [unit] in ocaml will be compiled into [0]  in js *)
 

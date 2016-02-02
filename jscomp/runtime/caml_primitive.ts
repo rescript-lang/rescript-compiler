@@ -296,7 +296,13 @@ function caml_hash(count,limit, seed, o) {
 }
 
 
+// TODO: Check NodeJS and browser
+function caml_sys_getcwd(unit : number) : string  { 
+    return "/"; 
+}
+
 export {
+    caml_sys_getcwd,
     caml_update_dummy,
     caml_compare,
     caml_hash,
