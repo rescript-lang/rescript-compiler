@@ -36,20 +36,30 @@ function get_log_output(){
   reset_log_output();
   return old;
 }
-
+var compile_code ;
 var evalButton = document.getElementById('option-eval');
+var shakeButton = document.getElementById('option-non-export');
 
 function shouldEval(){
   return evalButton.checked;
 }
-
-evalButton.addEventListener('change',function(){
+function onEvalButtonChange(){
   if(!shouldEval()){
     outputMirror.setValue(PROMPT);
   }
-});
+}
+evalButton.addEventListener('change', onEvalButtonChange);
 
+function onShakeButtonChange(){
+  if(shakeButton.checked){
+    compile_code = ocaml.shake_compile;
+  }else{
+    compile_code = ocaml.compile;
+  }
+  onEditChanges();
+}
 
+shakeButton.addEventListener('change', onShakeButtonChange);
 var original_log = console.log;
 
 /**
@@ -77,8 +87,13 @@ function evalCode(js){
   }
 
 }
-myCode1Mirror.on("changes", function (cm, change) {
-  var raw = ocaml.compile(myCode1Mirror.getValue());
+
+function onEditChanges(cm, change) {
+  if(typeof compile_code === 'undefined'){
+    console.log('init....');
+    compile_code = ocaml.compile;
+  }
+  var raw = compile_code(myCode1Mirror.getValue());
   console.log(raw);
   var rsp = JSON.parse(raw); // can we save this from parsing?
   if (rsp.js_code !== undefined) {
@@ -92,7 +107,8 @@ myCode1Mirror.on("changes", function (cm, change) {
 
   }
 
-});
+}
+myCode1Mirror.on("changes", onEditChanges);
 
 jsCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 
