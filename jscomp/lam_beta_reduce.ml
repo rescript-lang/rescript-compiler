@@ -228,6 +228,61 @@ let propogate_beta_reduce
        Lam_util.refine_let param arg l) 
      rest_bindings new_body
 
+let propogate_beta_reduce_with_map  
+    (meta : Lam_stats.meta) (map : Lam_analysis.stats Ident_map.t ) params body args =
+  let rest_bindings, rev_new_params  = 
+    List.fold_left2 
+      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+         match arg with          
+         | Lconst _
+         | Lvar _  -> rest_bindings , arg :: acc 
+         | Lprim (Pgetglobal ident, [])
+           (* TODO: we can pass Global, but you also need keep track of it*)
+           ->
+           let p = Ident.rename old_param in 
+           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+
+         | _ -> 
+           if  Lam_analysis.no_side_effects arg then
+             begin match Ident_map.find old_param map with 
+               | exception Not_found -> assert false 
+               | {top = true ; times = 0 }
+               | {top = true ; times = 1 } 
+                 -> 
+                 rest_bindings, arg :: acc                
+               | _  ->  
+                 let p = Ident.rename old_param in 
+                 (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+             end
+           else
+             let p = Ident.rename old_param in 
+             (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+      )  ([],[]) params args in
+  let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
+  List.fold_right
+    (fun (param, (arg : Lambda.lambda)) l -> 
+       let arg = 
+         match arg with 
+         | Lvar v -> 
+           begin 
+             match Hashtbl.find meta.ident_tbl v with 
+             | exception Not_found -> ()
+             | ident_info -> 
+               Hashtbl.add meta.ident_tbl param ident_info 
+           end;
+           arg 
+         | Lprim (Pgetglobal ident, []) -> 
+           (* It's not completeness, its to make it sound.. *)
+           Lam_compile_global.query_lambda ident meta.env 
+         (* alias meta param ident (Module (Global ident)) Strict *)
+         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+           Hashtbl.replace meta.ident_tbl param 
+             (Lam_util.kind_of_lambda_block ls ); (** *)
+           arg
+         | _ -> arg in
+       Lam_util.refine_let param arg l) 
+     rest_bindings new_body
+
 
 
 

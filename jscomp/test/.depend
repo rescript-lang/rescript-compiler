@@ -122,6 +122,8 @@ map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \
 map_test.cmx : test_map_find.cmx test_inline_map2.cmx test_inline_map.cmx \
     ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx ../stdlib/map.cmx \
     ../stdlib/list.cmx map_test.cmi
+module_parameter_test.cmo : ../stdlib/string.cmi mt.cmo
+module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmo : ../stdlib/list.cmi
 mt.cmx : ../stdlib/list.cmx
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
@@ -474,6 +476,8 @@ map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \
 map_test.cmj : test_map_find.cmj test_inline_map2.cmj test_inline_map.cmj \
     ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj ../stdlib/map.cmj \
     ../stdlib/list.cmj map_test.cmi
+module_parameter_test.cmo : ../stdlib/string.cmi mt.cmo
+module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi
 mt.cmj : ../stdlib/list.cmj
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi

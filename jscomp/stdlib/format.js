@@ -378,14 +378,13 @@ function enqueue_advance(state, tok) {
 }
 
 function enqueue_string_as(state, size, s) {
-  var tok = [
-    /* Pp_text */0,
-    s
-  ];
   return enqueue_advance(state, [
               /* record */0,
               size,
-              tok,
+              [
+                /* Pp_text */0,
+                s
+              ],
               size
             ]);
 }
@@ -486,16 +485,14 @@ function scan_push(state, b, tok) {
 function pp_open_box_gen(state, indent, br_ty) {
   ++ state[14];
   if (state[14] < state[15]) {
-    var tok = [
-      /* Pp_begin */3,
-      indent,
-      br_ty
-    ];
-    var size = -state[13];
     var elem = [
       /* record */0,
-      size,
-      tok,
+      -state[13],
+      [
+        /* Pp_begin */3,
+        indent,
+        br_ty
+      ],
       0
     ];
     return scan_push(state, /* false */0, elem);
@@ -741,16 +738,14 @@ function pp_print_if_newline(state, _) {
 
 function pp_print_break(state, width, offset) {
   if (state[14] < state[15]) {
-    var tok = [
-      /* Pp_break */1,
-      width,
-      offset
-    ];
-    var size = -state[13];
     var elem = [
       /* record */0,
-      size,
-      tok,
+      -state[13],
+      [
+        /* Pp_break */1,
+        width,
+        offset
+      ],
       width
     ];
     return scan_push(state, /* true */1, elem);
@@ -771,21 +766,19 @@ function pp_print_cut(state, _) {
 function pp_open_tbox(state, _) {
   ++ state[14];
   if (state[14] < state[15]) {
-    var tok_001 = [
-      /* Pp_tbox */0,
-      [
-        0,
-        /* [] */0
-      ]
-    ];
-    var tok = [
-      /* Pp_tbegin */4,
-      tok_001
-    ];
     var elem = [
       /* record */0,
       0,
-      tok,
+      [
+        /* Pp_tbegin */4,
+        [
+          /* Pp_tbox */0,
+          [
+            0,
+            /* [] */0
+          ]
+        ]
+      ],
       0
     ];
     return enqueue_advance(state, elem);
@@ -819,16 +812,14 @@ function pp_close_tbox(state, _) {
 
 function pp_print_tbreak(state, width, offset) {
   if (state[14] < state[15]) {
-    var tok = [
-      /* Pp_tbreak */2,
-      width,
-      offset
-    ];
-    var size = -state[13];
     var elem = [
       /* record */0,
-      size,
-      tok,
+      -state[13],
+      [
+        /* Pp_tbreak */2,
+        width,
+        offset
+      ],
       width
     ];
     return scan_push(state, /* true */1, elem);

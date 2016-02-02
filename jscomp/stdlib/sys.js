@@ -41,14 +41,12 @@ var Break = [
 
 function catch_break(on) {
   if (on) {
-    var sig_beh_001 = function () {
-      throw Break;
-    };
-    var sig_beh = [
-      /* Signal_handle */0,
-      sig_beh_001
-    ];
-    return Caml_primitive.caml_install_signal_handler(sigint, sig_beh);
+    return Caml_primitive.caml_install_signal_handler(sigint, [
+                /* Signal_handle */0,
+                function () {
+                  throw Break;
+                }
+              ]);
   }
   else {
     return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_default */0);

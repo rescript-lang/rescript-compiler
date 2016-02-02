@@ -88,7 +88,7 @@ type ident_info = {
 type meta = {
   env : Env.t;
   filename : string ;
-  export_idents : Lambda.IdentSet.t ;
+  export_idents : Ident_set.t ;
   exports : Ident.t list ;
 
   alias_tbl : alias_tbl; 

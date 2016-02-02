@@ -6773,8 +6773,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         var sub_str = $$String.sub(str, str_ind, ind - str_ind + 1);
         var beg_ind = ind + 1;
         var match$1 = parse_literal(beg_ind, beg_ind, end_ind);
-        var end_ind$1 = ind + 1;
-        var match$2 = parse_literal(str_ind, str_ind, end_ind$1);
+        var match$2 = parse_literal(str_ind, str_ind, ind + 1);
         var sub_fmt = match$2[1];
         var sub_format = [
           /* Format */0,
@@ -7823,8 +7822,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   "invalid format %S: at character number %d, %s is incompatible with '%c' in sub-format %S"
                 ])(str, pct_ind, option, symb, subfmt);
   };
-  var end_ind = str.length;
-  return parse_literal(0, 0, end_ind);
+  return parse_literal(0, 0, str.length);
 }
 
 function format_of_string_fmtty(str, fmtty) {

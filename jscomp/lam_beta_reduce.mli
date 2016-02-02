@@ -49,3 +49,9 @@ val propogate_beta_reduce :
 val refresh : 
   Lambda.lambda -> 
   Lambda.lambda 
+
+val propogate_beta_reduce_with_map : 
+  Lam_stats.meta ->
+  Lam_analysis.stats Ident_map.t ->
+  Ident_map.key list ->
+  Lambda.lambda -> Lambda.lambda list -> Lambda.lambda

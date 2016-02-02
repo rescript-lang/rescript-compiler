@@ -252,7 +252,7 @@ let export_to_cmj
          let closed_lambda = 
            if Lam_inline_util.maybe_functor x.name 
            then
-             if Lam_analysis.is_closed lambda 
+             if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
              then Some lambda
              else None
            else None in 
