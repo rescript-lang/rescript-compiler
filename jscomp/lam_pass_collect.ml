@@ -99,7 +99,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
       collect l
     | x -> 
         collect x ;
-        if Lambda.IdentSet.mem ident meta.export_idents then 
+        if Ident_set.mem ident meta.export_idents then 
           annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
 
 

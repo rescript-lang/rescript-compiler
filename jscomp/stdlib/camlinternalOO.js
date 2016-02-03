@@ -159,8 +159,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var y = param[2];
-      var c = Caml_string.caml_string_compare(x, y);
+      var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -422,8 +421,7 @@ function find$1(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var y = param[2];
-      var c = Caml_primitive.caml_int_compare(x, y);
+      var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -523,8 +521,7 @@ function get_method_label(table, name) {
     while(true) {
       var param = _param;
       if (param) {
-        var y = param[2];
-        var c = Caml_string.caml_string_compare(x, y);
+        var c = Caml_string.caml_string_compare(x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
         }

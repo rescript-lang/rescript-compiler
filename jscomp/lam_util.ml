@@ -208,7 +208,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
   *)
   begin match let_kind with 
     | Alias -> 
-      if not @@ Lambda.IdentSet.mem k meta.export_idents 
+      if not @@ Ident_set.mem k meta.export_idents 
       then
         Hashtbl.add meta.alias_tbl k v 
     (** For [export_idents], we don't want to do such simplification
@@ -290,13 +290,13 @@ let dump  env filename   pred lam =
 
 let ident_set_of_list ls = 
   List.fold_left
-    (fun acc k -> Lambda.IdentSet.add k acc ) 
-    Lambda.IdentSet.empty ls 
+    (fun acc k -> Ident_set.add k acc ) 
+    Ident_set.empty ls 
 
 let print_ident_set fmt s = 
   Format.fprintf fmt   "@[<v>{%a}@]@."
     (fun fmt s   -> 
-       Lambda.IdentSet.iter (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
+       Ident_set.iter (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
     )
     s     
 

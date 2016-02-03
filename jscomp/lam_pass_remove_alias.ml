@@ -39,7 +39,7 @@ let simplify_alias
           since we aliased k, so it's safe to remove it?
       *)
       let v = simpl l in
-      if Lambda.IdentSet.mem k meta.export_idents 
+      if Ident_set.mem k meta.export_idents 
       then 
         Llet(kind, k, g, v) 
         (* in this case it is preserved, but will still be simplified 
@@ -125,32 +125,43 @@ let simplify_alias
                 simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) 
               end
             else 
-            if lam_size < Lam_analysis.small_inline_size && 
-               (Lam_analysis.is_closed_by meta.export_idents _m
-                || not (Lambda.IdentSet.mem v meta.export_idents))
+              if lam_size < Lam_analysis.small_inline_size then 
+                let param_fresh_map = Lam_analysis.param_map_of_list params in
+                let param_map = 
+                  Lam_analysis.free_variables meta.export_idents param_fresh_map body in
+                let old_count = List.length params in
+                let new_count = Ident_map.cardinal param_map in
+                if  
+                  (
+                    not (Ident_set.mem v meta.export_idents)
+                    || old_count = new_count
+                  )
 
-            then 
-              if rec_flag = Rec then               
-                begin
-                  (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d@." v.name v.stamp ; *)
-                  Lam_beta_reduce.propogate_beta_reduce meta params body args
-                end
+                then 
+                  if rec_flag = Rec then               
+                    begin
+                      (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d@." v.name v.stamp ; *)
+                      (* Lam_beta_reduce.propogate_beta_reduce meta params body args *)
+                      Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
+                    end
+                  else 
+                    begin
+                      (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d@."  *)
+                      (*   (List.length args)  *)
+                      (*   Printlambda.lambda body                      *)
+                      (*   v.name v.stamp ; *)
+                      simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
+
+                    end
+                else 
+                  Lapply ( simpl l1, List.map simpl args, info)
               else 
                 begin
-                  (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d@."  *)
-                  (*   (List.length args)  *)
-                  (*   Printlambda.lambda body                      *)
-                  (*   v.name v.stamp ; *)
-                  simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-
+                  (* Ext_log.dwarn __LOC__ "%s/%d: %d @."  *)
+                  (*   v.name v.stamp lam_size *)
+                  (* ;     *)
+                  Lapply ( simpl l1, List.map simpl args, info)
                 end
-            else 
-              begin
-                (* Ext_log.dwarn __LOC__ "%s/%d: %d @."  *)
-                (*   v.name v.stamp lam_size *)
-                (* ;     *)
-                Lapply ( simpl l1, List.map simpl args, info)
-              end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d @." (List.length args) (List.length params); *)

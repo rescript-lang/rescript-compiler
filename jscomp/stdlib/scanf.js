@@ -214,12 +214,11 @@ function open_in(fname) {
   }
   else {
     var ic = Pervasives.open_in(fname);
-    var param = [
-      /* From_file */0,
-      fname,
-      ic
-    ];
-    return from_ic(scan_close_at_end, param, ic);
+    return from_ic(scan_close_at_end, [
+                /* From_file */0,
+                fname,
+                ic
+              ], ic);
   }
 }
 
@@ -229,12 +228,11 @@ function open_in_bin(fname) {
   }
   else {
     var ic = Pervasives.open_in_bin(fname);
-    var param = [
-      /* From_file */0,
-      fname,
-      ic
-    ];
-    return from_ic(scan_close_at_end, param, ic);
+    return from_ic(scan_close_at_end, [
+                /* From_file */0,
+                fname,
+                ic
+              ], ic);
   }
 }
 
@@ -1870,11 +1868,10 @@ function make_scanf(ib, _fmt, readers) {
             }
             catch (exn){
               if (exn[1] === Caml_exceptions.Failure) {
-                var s$1 = exn[2];
                 throw [
                       0,
                       Scan_failure,
-                      s$1
+                      exn[2]
                     ];
               }
               else {
@@ -1889,11 +1886,11 @@ function make_scanf(ib, _fmt, readers) {
         case 14 : 
             var fmtty = fmt[2];
             scan_caml_string(width_of_pad_opt(fmt[1]), ib);
-            var s$2 = token(ib);
+            var s$1 = token(ib);
             var match$2;
             try {
-              var match$3 = CamlinternalFormat.fmt_ebb_of_string(/* None */0, s$2);
-              var match$4 = CamlinternalFormat.fmt_ebb_of_string(/* None */0, s$2);
+              var match$3 = CamlinternalFormat.fmt_ebb_of_string(/* None */0, s$1);
+              var match$4 = CamlinternalFormat.fmt_ebb_of_string(/* None */0, s$1);
               match$2 = [
                 /* tuple */0,
                 CamlinternalFormat.type_format(match$3[1], CamlinternalFormatBasics.erase_rel(fmtty)),
@@ -1902,11 +1899,10 @@ function make_scanf(ib, _fmt, readers) {
             }
             catch (exn$1){
               if (exn$1[1] === Caml_exceptions.Failure) {
-                var s$3 = exn$1[2];
                 throw [
                       0,
                       Scan_failure,
-                      s$3
+                      exn$1[2]
                     ];
               }
               else {
@@ -1918,7 +1914,7 @@ function make_scanf(ib, _fmt, readers) {
                     [
                       /* Format */0,
                       match$2[1],
-                      s$2
+                      s$1
                     ],
                     make_scanf(ib, CamlinternalFormatBasics.concat_fmt(match$2[2], fmt[3]), readers)
                   ];
@@ -1966,7 +1962,7 @@ function make_scanf(ib, _fmt, readers) {
                     /* Some */0,
                     match$6[1]
                   ], width, ib);
-              var s$4 = token(ib);
+              var s$2 = token(ib);
               var str_rest_001$1 = match$6[2];
               var str_rest_002$1 = rest$1[2];
               var str_rest$1 = [
@@ -1976,7 +1972,7 @@ function make_scanf(ib, _fmt, readers) {
               ];
               return [
                       /* Cons */0,
-                      s$4,
+                      s$2,
                       make_scanf(ib, str_rest$1, readers)
                     ];
             }
@@ -1986,10 +1982,10 @@ function make_scanf(ib, _fmt, readers) {
             if (exit$1 === 1) {
               var width$1 = width_of_pad_opt(width_opt);
               scan_chars_in_char_set(char_set, /* None */0, width$1, ib);
-              var s$5 = token(ib);
+              var s$3 = token(ib);
               return [
                       /* Cons */0,
-                      s$5,
+                      s$3,
                       make_scanf(ib, rest$1, readers)
                     ];
             }
@@ -2188,11 +2184,10 @@ function bscanf_format(ib, format, f) {
   }
   catch (exn){
     if (exn[1] === Caml_exceptions.Failure) {
-      var s = exn[2];
       throw [
             0,
             Scan_failure,
-            s
+            exn[2]
           ];
     }
     else {

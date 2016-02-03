@@ -275,8 +275,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var prim = param[2];
-      var c = Caml_primitive.caml_compare(x, prim);
+      var c = Caml_primitive.caml_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
       }
@@ -292,8 +291,7 @@ function find(x, _param) {
 
 function mem(x, param) {
   if (param) {
-    var prim = param[2];
-    var c = Caml_primitive.caml_compare(x, prim);
+    var c = Caml_primitive.caml_compare(x, param[2]);
     return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
   }
   else {
@@ -725,9 +723,7 @@ function compare(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var prim = e2[1];
-        var prim$1 = e1[1];
-        var c = Caml_primitive.caml_compare(prim$1, prim);
+        var c = Caml_primitive.caml_compare(e1[1], e2[1]);
         if (c !== 0) {
           return c;
         }
@@ -759,9 +755,7 @@ function equal(cmp, m1, m2) {
   var equal_aux = function (e1, e2) {
     if (e1) {
       if (e2) {
-        var prim = e2[1];
-        var prim$1 = e1[1];
-        return +(Caml_primitive.caml_compare(prim$1, prim) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        return +(Caml_primitive.caml_compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
       }
       else {
         return /* false */0;

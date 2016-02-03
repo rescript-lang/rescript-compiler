@@ -106,7 +106,8 @@ let count_helper  (lam : Lambda.lambda) : (int, int ref) Hashtbl.t  =
     | Levent(l, _) -> count l
     | Lifused(_, l) -> count l 
 
-  and count_default sw = match sw.sw_failaction with
+  and count_default sw =
+    match sw.sw_failaction with
     | None -> ()
     | Some al ->
       let nconsts = List.length sw.sw_consts

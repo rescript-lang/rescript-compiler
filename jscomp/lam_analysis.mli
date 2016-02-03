@@ -33,10 +33,31 @@ val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool
 (** [is_closed_by map lam]
     return [true] if all unbound variables
     belongs to the given [map] *)
-val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
+val is_closed_by : (* Lambda. *) Ident_set.t -> Lambda.lambda -> bool
 
 val is_closed : Lambda.lambda -> bool
 
+
+
+
+
+type stats = 
+  { 
+    mutable top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    mutable times : int ; 
+  }
+
+val param_map_of_list : Ident.t list -> stats Ident_map.t
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
 
 val small_inline_size : int 
 val exit_inline_size : int 

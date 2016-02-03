@@ -306,10 +306,149 @@ and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) =
     try p = p1 with _ -> false
 
 
-let is_closed_by map lam = 
-  Lambda.IdentSet.for_all Ident.global 
-    (Lambda.IdentSet.diff (Lambda.free_variables lam) map )
+
+type stats = 
+  { 
+    mutable top : bool ; 
+    (* all appearances are in the top,  substitution is fine 
+       whether it is pure or not
+       {[
+         (fun x y          
+           ->  x + y + (f x )) (32) (console.log('hi'), 33)
+       ]}       
+       since in ocaml, the application order is intentionally undefined, 
+       note if [times] is not one, this field does not make sense       
+    *)    
+    mutable times : int ; 
+  }
+type env = 
+  { top  : bool ; 
+    loop : bool 
+  }
+
+let no_substitute = { top = false; loop = true }
+let fresh_env = {top = true; loop = false }
+let fresh_stats () = { top = true; times = 0 }
+
+let param_map_of_list lst = 
+  List.fold_left  (fun acc l -> Ident_map.add l (fresh_stats ()) acc) Ident_map.empty  lst 
+
+(** Sanity check, remove all varaibles in [local_set] in the last pass *)  
+
+let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) lam = 
+  let fv = ref params in
+  let local_set = ref export_idents in
+
+  let local_add k =
+    local_set := Ident_set.add k !local_set in
+  let local_add_list ks = 
+    local_set :=  
+      List.fold_left (fun acc k -> Ident_set.add k acc) !local_set ks 
+  in    
+  let loop_use = 100 in
+  let map_use {top; loop} v = 
+    (* relies on [identifier] uniquely bound *)    
+    let times = if loop then loop_use else 1 in
+    if Ident_set.mem v !local_set then ()    
+    else begin match Ident_map.find v !fv with 
+      | exception Not_found
+        -> fv := Ident_map.add v { top ; times } !fv
+      | v ->
+        v.times <- v.times + times ; 
+        v.top <- v.top && top          
+    end
+  in
+  let new_env lam (env : env) = 
+    if env.top then 
+      if no_side_effects lam 
+      then env 
+      else { env with top = false}
+    else env      
+  in    
+  let rec iter (top : env) (lam : Lambda.lambda) =
+    match lam with 
+    | Lvar v -> map_use top v 
+    | Lconst _ -> ()
+    | Lapply(fn, args, _) ->
+      iter top  fn; 
+      let top = new_env fn top in
+      List.iter (iter top ) args  
+    | Lprim(_p, args) -> 
+      (* Check: can top be propoaged for all primitives *)
+      List.iter (iter top) args
+    | Lfunction(_kind, params, body) ->
+      local_add_list params;
+      iter no_substitute body 
+    | Llet(_let_kind, id, arg, body) ->
+      local_add id ;  
+      iter top  arg; iter no_substitute body
+    | Lletrec(decl, body) ->
+      local_set := List.fold_left (fun acc (id, _) -> 
+          Ident_set.add id acc) !local_set decl;        
+      List.iter (fun (_, exp) -> iter no_substitute exp) decl;
+      iter no_substitute body
+    | Lswitch(arg, sw) ->
+      iter top arg; 
+      let top = new_env arg top  in       
+      List.iter (fun (key, case) -> iter top case) sw.sw_consts;
+      List.iter (fun (key, case) -> iter top  case) sw.sw_blocks;
+  
+      begin match sw.sw_failaction with 
+        | None -> ()
+        | Some x ->
+          let nconsts = List.length sw.sw_consts in
+          let nblocks = List.length sw.sw_blocks in
+
+          if nconsts < sw.sw_numconsts  && nblocks < sw.sw_numblocks then
+            iter no_substitute x
+          else
+            iter top x
+      end
+
+    | Lstringswitch (arg,cases,default) ->
+      iter top arg ;
+      let top = new_env arg top  in       
+      List.iter (fun (_,act) -> iter top  act) cases ;
+      begin match default with 
+      | None -> ()
+      | Some x -> iter top x 
+      end
+    | Lstaticraise (_,args) ->
+      List.iter (iter no_substitute ) args
+    | Lstaticcatch(e1, (_,vars), e2) ->
+      iter no_substitute  e1; 
+      local_add_list vars;       
+      iter no_substitute e2
+    | Ltrywith(e1, exn, e2) ->
+      iter top  e1; iter no_substitute  e2
+    | Lifthenelse(e1, e2, e3) ->
+      iter top e1; 
+      let top = new_env e1 top  in
+      iter top e2; iter top e3
+    | Lsequence(e1, e2) ->
+      iter top e1; iter no_substitute e2
+    | Lwhile(e1, e2) ->
+      iter no_substitute e1; iter no_substitute e2 (* in the loop, no substitution any way *)
+    | Lfor(v, e1, e2, dir, e3) ->
+      local_add v ; 
+      iter no_substitute e1; iter no_substitute e2; iter no_substitute e3
+    | Lassign(id, e) ->
+      map_use top  id ; 
+      iter top e
+    | Lsend (_k, met, obj, args, _) ->
+      iter no_substitute met ; 
+      iter no_substitute obj;
+      List.iter (iter no_substitute) args
+    | Levent (lam, evt) ->
+      iter top  lam
+    | Lifused (v, e) ->
+      iter no_substitute e in
+  iter fresh_env  lam ; !fv 
+
+
+let is_closed_by set lam = 
+  Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
 
 
 let is_closed  lam = 
-  Lambda.IdentSet.for_all Ident.global (Lambda.free_variables lam)  
+  Ident_map.is_empty (free_variables Ident_set.empty Ident_map.empty lam)  

@@ -154,9 +154,7 @@ function compare(cmp, m1, m2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var y = e2[1];
-        var x = e1[1];
-        var c = Caml_primitive.caml_int_compare(x, y);
+        var c = Caml_primitive.caml_int_compare(e1[1], e2[1]);
         if (c !== 0) {
           return c;
         }
