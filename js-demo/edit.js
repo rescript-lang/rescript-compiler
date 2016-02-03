@@ -72,7 +72,7 @@ function redirect() { log_output = log_output + Array.prototype.slice.apply(argu
 
 myCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 outputMirror.setSize(null,50);
-outputMirror.setValue(PROMPT + "hello world");
+outputMirror.setValue(PROMPT + "h,e,l,l,o,o,c,a,m,l");
 
 function evalCode(js){
   console.log = redirect;

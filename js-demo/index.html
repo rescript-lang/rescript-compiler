@@ -19,7 +19,9 @@
     <div style="width: 50%;float:left">
         <textarea id="ocamlcode#1">
 external to_str : 'a -> string = "js_anything_to_string"
-let print x = print_endline (to_str x)
+external to_json_string : 'a -> string = "js_json_stringify"
+let debug x = print_endline (to_str x )
+let pprint x = print_endline (to_json_string x)
 let rec fib = function
   | 1 | 2 -> 1
   | n -> fib (n - 1 )  + fib (n - 2)
@@ -49,7 +51,10 @@ let rec map f = function
 (** Test curry and uncurry calling convention *)
 let test_curry x  y =  x + y
 let f = test_curry 32
-let () = print "hello world"
+
+let () =
+ let hello_ocaml = [|"h";"e";"l";"l";"o";"o";"c";"a";"m";"l"|] in
+ hello_ocaml |> Array.to_list |> String.concat "," |> pprint  
         </textarea>
     </div>
 
@@ -63,7 +68,7 @@ let () = print "hello world"
         <form class="form repl-toolbar">
             <label for="option-non-export">
                 <input id="option-non-export" type="checkbox">
-                Shake
+                Remove unused code
             </label>
             <label style="float:right" >
                 <input id="option-eval" type="checkbox" checked>
@@ -75,11 +80,18 @@ let () = print "hello world"
     <div style="width: 50%;float:right"; >
         <textarea id="jscode#1" style="background-color: #008803">
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
+var $$Array  = require("./stdlib/array.js");
+var $$String = require("./stdlib/string.js");
 
-function print(x) {
+function debug(x) {
   console.log("" + x);
+  return /* () */0;
+}
+
+function pprint(x) {
+  console.log(JSON.stringify(x));
   return /* () */0;
 }
 
@@ -137,17 +149,33 @@ function f(param) {
   return 32 + param;
 }
 
-console.log("hello world");
+var hello_ocaml = /* array */[
+  "h",
+  "e",
+  "l",
+  "l",
+  "o",
+  "o",
+  "c",
+  "a",
+  "m",
+  "l"
+];
 
-exports.print      = print;
+var x = $$String.concat(",", $$Array.to_list(hello_ocaml));
+
+console.log(JSON.stringify(x));
+
+exports.debug      = debug;
+exports.pprint     = pprint;
 exports.fib        = fib;
 exports.sum        = sum;
 exports.tail_sum   = tail_sum;
 exports.map        = map;
 exports.test_curry = test_curry;
 exports.f          = f;
-/*  Not a pure module */
-        </textarea>
+/* x Not a pure module */
+</textarea>
     </div>
 </div>
 <!--<p> can you  see me</p>-->
@@ -155,4 +183,7 @@ exports.f          = f;
 </script>
 
 <script type="text/javascript" src="./exports.js">    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.js"></script>
+<script src="./pre_load.js"></script>
+<!-- <script src="./require.js"></script> -->
 </body>
