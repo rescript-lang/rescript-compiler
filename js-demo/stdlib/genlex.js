@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["./bytes","./hashtbl","../runtime/caml_exceptions","./stream","../runtime/caml_format","./char","./string","../runtime/caml_string","./list"],
   function(Bytes,Hashtbl,Caml_exceptions,Stream,Caml_format,Char,$$String,Caml_string,List){
     'use strict';

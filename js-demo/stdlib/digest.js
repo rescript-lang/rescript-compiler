@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["./bytes","./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_primitive","./string"],
   function(Bytes,Pervasives,Caml_exceptions,Char,Caml_primitive,$$String){
     'use strict';

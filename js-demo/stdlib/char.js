@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["./pervasives","../runtime/caml_string"],
   function(Pervasives,Caml_string){
     'use strict';

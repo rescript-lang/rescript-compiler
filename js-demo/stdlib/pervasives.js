@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_format","../runtime/caml_primitive","./camlinternalFormatBasics","../runtime/caml_string"],
   function(Caml_io,Caml_exceptions,Caml_format,Caml_primitive,CamlinternalFormatBasics,Caml_string){
     'use strict';

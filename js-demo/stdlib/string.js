@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["./bytes","./list","../runtime/caml_string"],
   function(Bytes,List,Caml_string){
     'use strict';

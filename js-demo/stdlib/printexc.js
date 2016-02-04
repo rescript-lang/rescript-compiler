@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["../runtime/caml_obj_runtime","./obj","./pervasives","../runtime/caml_exceptions","./printf","../runtime/caml_primitive","./array","./buffer"],
   function(Caml_obj_runtime,Obj,Pervasives,Caml_exceptions,Printf,Caml_primitive,$$Array,Buffer){
     'use strict';

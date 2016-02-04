@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["../runtime/caml_obj_runtime","./obj"],
   function(Caml_obj_runtime,Obj){
     'use strict';

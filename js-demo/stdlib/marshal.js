@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+"use strict";
 define(["./bytes","./pervasives","../runtime/caml_primitive"],
   function(Bytes,Pervasives,Caml_primitive){
     'use strict';
