@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Test_global_print = require("./test_global_print");
 var List              = require("../stdlib/list");

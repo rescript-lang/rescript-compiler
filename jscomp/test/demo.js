@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var BUI     = require("@blp/ui");
 var UI      = require("@ui");

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Bytes                    = require("./bytes");
 var Caml_float               = require("../runtime/caml_float");

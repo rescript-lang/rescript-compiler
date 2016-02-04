@@ -35,6 +35,23 @@ let rev_split_by_char c s =
   in 
   loop 0 []
 
+let xsplit ~delim s =
+  let rec loop l = function
+    | 0 -> l
+    | i -> (
+        match String.rindex_from s (i-1) delim  with
+        | i' ->
+          let l  = String.sub s (i'+1) (i - i'- 1) :: l in
+          let l  = if i' = 0 then  ""::l else l in
+          loop l i'
+        | exception Not_found -> String.sub s 0 i :: l
+      )
+  in
+  let len = String.length s in
+  match len with
+  | 0 -> []
+  | _ -> loop [] len
+
 open Mt
 
 ;; from_pair_suites __FILE__ [
@@ -48,5 +65,7 @@ open Mt
   "escape_quote", (fun _ ->
       Eq ("\\\"\\\"", String.escaped {|""|}));
   "rev_split_by_char", (fun _ -> 
-      Eq ([""; "bbbb"; "bbbb"], rev_split_by_char 'a' "bbbbabbbba"))
+      Eq ([""; "bbbb"; "bbbb"], rev_split_by_char 'a' "bbbbabbbba"));
+
+  "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") )
 ]

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Test_order = require("./test_order");
 var $$String   = require("../stdlib/string");

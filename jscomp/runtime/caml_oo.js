@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Caml_exceptions = require("./caml_exceptions");
 var Caml_array      = require("./caml_array");

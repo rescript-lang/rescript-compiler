@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Caml_sys   = require("../runtime/caml_sys");
 var Pervasives = require("./pervasives");

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Obj              = require("./obj");

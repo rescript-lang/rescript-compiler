@@ -85,6 +85,8 @@ module L = struct
   let stringify = "stringify"
   let console = "console"
   let define = "define"
+  let break = "break"
+  let strict_directive = "'use strict';"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -267,7 +269,10 @@ let rec pp_function
     (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
     let action return = 
 
-      (if return then P.string f "return " else ());
+      (if return then begin 
+          P.string f L.return ;
+          P.space f
+        end else ());
       P.string f L.function_;
       P.space f ;
       (match name with None  -> () | Some x -> ignore (ident inner_cxt f x));
@@ -289,7 +294,9 @@ let rec pp_function
             P.string f L.return ; 
             P.space f
           end else ());
-        P.string f "(function(";
+        P.string f "(";
+        P.string f L.function_; 
+        P.string f "(";
         ignore @@ aux inner_cxt f lexical;
         P.string f ")";
         P.brace_vgroup f 0  (fun _ -> action true);
@@ -331,7 +338,7 @@ and output_one : 'a .
         (if break then 
           begin
             P.newline f ;
-            P.string f "break";
+            P.string f L.break;
             semi f;
           end) ;
         cxt
@@ -355,7 +362,7 @@ and vident cxt f  (v : J.vident) =
       ident cxt f v
   | Qualified (id,_, Some name) ->
       let cxt = ident cxt f id in
-      P.string f ".";
+      P.string f L.dot;
       P.string f (Ext_ident.convert name);
       cxt
   end
@@ -1366,7 +1373,7 @@ let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.prog
   let cxt = aux cxt f modules in
   P.string f ")";
   P.brace_vgroup f 1 @@ (fun _ -> 
-      let () = P.string f "'use strict';" in 
+      let () = P.string f L.strict_directive in 
       let () = P.newline f in
       let cxt =  statement_list true cxt f  b in 
       (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
@@ -1404,7 +1411,7 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
   begin
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
-    P.string f "\"use strict\";"; (* TODO: use single quote in another commit*)
+    P.string f L.strict_directive; 
     P.newline f ;    
     (match Js_config.get_env () with 
      | Browser ->

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Pervasives = require("../stdlib/pervasives");
 var Parsing    = require("../stdlib/parsing");
