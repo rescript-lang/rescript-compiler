@@ -88,6 +88,8 @@ for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmx : mt.cmx
+global_exception_regression_test.cmo : mt.cmo
+global_exception_regression_test.cmx : mt.cmx
 google_closure_test.cmo : test_google_closure.cmo mt.cmo
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
 hashtbl_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
@@ -444,6 +446,8 @@ for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmj : mt.cmj
+global_exception_regression_test.cmo : mt.cmo
+global_exception_regression_test.cmj : mt.cmj
 google_closure_test.cmo : test_google_closure.cmo mt.cmo
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 hashtbl_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
