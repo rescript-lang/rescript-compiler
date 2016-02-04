@@ -10,6 +10,10 @@ external eq : 'a -> 'a -> unit = ""
     [@@js.call "deepEqual"]
     [@@js.module "assert"]
 
+external neq : 'a -> 'a -> unit = "" 
+    [@@js.call "notDeepEqual"]
+    [@@js.module "assert"]
+
 (* external dump : 'a array -> unit = "js_dump" [@@js.splice] *)
 
 external dump : 'a array -> unit = "" [@@js.call "console.log"] [@@js.splice]
@@ -18,6 +22,7 @@ external dump : 'a array -> unit = "" [@@js.call "console.log"] [@@js.splice]
  *)
 
 let assert_equal = eq 
+let assert_notequal = neq
 (* assert -- raises an AssertionError which mocha handls better
 *)
 let from_suites name (suite :  (string * ('a -> unit)) list) = 
@@ -26,12 +31,16 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
 
 type _ eq = 
   | Eq :  'a *'a  -> _ eq
-
+  | Neq : 'a * 'a -> _ eq
 
 type 'a pair_suites = (string * (unit -> 'a eq)) list
 let from_pair_suites name (suites : 'a pair_suites) = 
   describe name (fun _ -> 
     List.iter (fun (name, code) -> 
-      it name (fun _ -> let (Eq (a,b)) = code () in assert_equal a b)
+      it name (fun _ -> 
+              match code () with 
+              | Eq(a,b) -> assert_equal a b 
+              | Neq(a,b) -> assert_notequal a b 
+            )
               ) suites
                 ) 

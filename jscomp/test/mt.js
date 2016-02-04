@@ -8,6 +8,10 @@ function assert_equal(prim, prim$1) {
   return Assert.deepEqual(prim, prim$1);
 }
 
+function assert_notequal(prim, prim$1) {
+  return Assert.notDeepEqual(prim, prim$1);
+}
+
 function from_suites(name, suite) {
   return describe(name, function () {
               return List.iter(function (param) {
@@ -22,13 +26,19 @@ function from_pair_suites(name, suites) {
                           var code = param[2];
                           return it(param[1], function () {
                                       var match = code(/* () */0);
-                                      return Assert.deepEqual(match[1], match[2]);
+                                      if (match[0]) {
+                                        return Assert.notDeepEqual(match[1], match[2]);
+                                      }
+                                      else {
+                                        return Assert.deepEqual(match[1], match[2]);
+                                      }
                                     });
                         }, suites);
             });
 }
 
 exports.assert_equal     = assert_equal;
+exports.assert_notequal  = assert_notequal;
 exports.from_suites      = from_suites;
 exports.from_pair_suites = from_pair_suites;
 /* assert Not a pure module */
