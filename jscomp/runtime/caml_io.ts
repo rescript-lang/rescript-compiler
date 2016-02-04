@@ -381,12 +381,13 @@ var stdout;
 var stderr;
 
 export {
-   stdin,
-   stdout,
-   stderr,
-   caml_ml_open_descriptor_in,
-   caml_ml_open_descriptor_out,
-   caml_ml_output_char,
-   caml_ml_output,
-   caml_ml_input_char
+    stdin,
+    stdout,
+    stderr,
+    caml_ml_open_descriptor_in,
+    caml_ml_open_descriptor_out,
+    caml_ml_output_char,
+    caml_ml_output,
+    caml_ml_input_char,
+    caml_ml_out_channels_list
 }

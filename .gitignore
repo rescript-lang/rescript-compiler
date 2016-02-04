@@ -49,3 +49,4 @@ jscomp/bench/*.js
 *.bak
 .vscode
 osc
+jscomp/pre_load.js

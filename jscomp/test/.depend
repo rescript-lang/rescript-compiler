@@ -146,6 +146,8 @@ rec_value_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/lazy.cmx
 record_with_test.cmo : mt.cmo
 record_with_test.cmx : mt.cmx
+regression_print.cmo :
+regression_print.cmx :
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
 small_inline_test.cmo :
@@ -500,6 +502,8 @@ rec_value_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/lazy.cmi
 rec_value_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/lazy.cmj
 record_with_test.cmo : mt.cmo
 record_with_test.cmj : mt.cmj
+regression_print.cmo :
+regression_print.cmj :
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmo ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
 small_inline_test.cmo :

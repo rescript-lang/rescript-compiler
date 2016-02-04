@@ -224,7 +224,7 @@ function open_out_bin(name) {
 }
 
 function flush_all() {
-  var _param = Caml_primitive.caml_ml_out_channels_list(/* () */0);
+  var _param = Caml_io.caml_ml_out_channels_list(/* () */0);
   while(true) {
     var param = _param;
     if (param) {

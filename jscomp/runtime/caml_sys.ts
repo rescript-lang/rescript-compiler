@@ -26,7 +26,7 @@ import {caml_raise_not_found, caml_invalid_argument} from './caml_exceptions'
 
 function caml_sys_getenv (n : string) {
   //nodejs env
-  if(typeof process !== undefined
+  if(typeof process !== 'undefined'
      && process.env
      && process.env[n] != undefined)
     return process.env[n];
@@ -49,7 +49,7 @@ function caml_sys_exit (code) {
     // process resides in global variable of
     // nodejs
 
-    if(IS_NODE_JS && process !== 'undefined'){
+    if(IS_NODE_JS && typeof process !== 'undefined'){
         process["exit"](code);
     }
 

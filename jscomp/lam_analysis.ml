@@ -59,9 +59,6 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
       | Pbytes_of_string 
       | Pchar_to_int (* might throw .. *)
       | Pchar_of_int  
-      | Pignore 
-      | Prevapply _
-      | Pdirapply _
       | Ploc _
 
       | Pgetglobal _ 
@@ -120,6 +117,11 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
       | Pint_as_pointer
       | Poffsetint _
         -> true
+
+      | Pignore 
+      | Prevapply _
+      | Pdirapply _
+
       | Pstringsetu
       | Pstringsets
       | Pbytessetu 

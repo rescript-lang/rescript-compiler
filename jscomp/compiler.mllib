@@ -61,6 +61,7 @@ lam_group
 lam_current_unit
 
 j
+js_config
 js_program_loader
 js_output
 js_dump

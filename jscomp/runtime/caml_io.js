@@ -109,6 +109,7 @@ function caml_ml_out_channels_list() {
     }
     return l;
 }
+exports.caml_ml_out_channels_list = caml_ml_out_channels_list;
 function caml_std_output(chan, s) {
     var str = s;
     var slen = str.length;

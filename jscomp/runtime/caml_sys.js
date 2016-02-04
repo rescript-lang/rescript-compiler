@@ -23,7 +23,7 @@ var caml_array_1 = require('./caml_array');
 var caml_exceptions_1 = require('./caml_exceptions');
 function caml_sys_getenv(n) {
     //nodejs env
-    if (typeof process !== undefined
+    if (typeof process !== 'undefined'
         && process.env
         && process.env[n] != undefined)
         return process.env[n];
@@ -42,7 +42,7 @@ var IS_NODE_JS = true;
 function caml_sys_exit(code) {
     // process resides in global variable of
     // nodejs
-    if (IS_NODE_JS && process !== 'undefined') {
+    if (IS_NODE_JS && typeof process !== 'undefined') {
         process["exit"](code);
     }
     caml_exceptions_1.caml_invalid_argument("Function 'exit' not implemented");

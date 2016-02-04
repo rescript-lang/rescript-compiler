@@ -29,7 +29,7 @@
      *    type: "error" // or "warning" or "info"
      *  }
 *)
-
+let () = Js_config.set_env Browser
 let implementation non_export ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
