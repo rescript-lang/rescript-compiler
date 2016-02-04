@@ -38,7 +38,12 @@ function c(x, y) {
 var v = 2;
 
 function h(s, b) {
-  return +(s[0] === "a" && b[0] === /* "b" */98 && s.charCodeAt(1) === b[2]);
+  if (s[0] === "a" && b[0] === /* "b" */98) {
+    return +(s.charCodeAt(1) === b[2]);
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 exports.f = f;

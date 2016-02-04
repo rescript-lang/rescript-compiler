@@ -55,11 +55,16 @@ function split(keep_empty, str, on) {
 function starts_with(s, beg) {
   var beg_len = beg.length;
   var s_len = s.length;
-  var i = 0;
-  while(i < beg_len && s[i] === beg[i]) {
-    ++ i;
-  };
-  return +(beg_len <= s_len && i === beg_len);
+  if (beg_len <= s_len) {
+    var i = 0;
+    while(i < beg_len && s[i] === beg[i]) {
+      ++ i;
+    };
+    return +(i === beg_len);
+  }
+  else {
+    return /* false */0;
+  }
 }
 
 function ends_with(s, beg) {
@@ -135,15 +140,19 @@ function escaped(s) {
 
 function for_all(p, s) {
   var len = s.length;
-  var aux = function (i) {
+  var _i = 0;
+  while(true) {
+    var i = _i;
     if (i >= len) {
       return /* true */1;
     }
+    else if (p(s.charCodeAt(i))) {
+      _i = i + 1;
+    }
     else {
-      return +(p(s.charCodeAt(i)) && aux(i + 1));
+      return /* false */0;
     }
   };
-  return aux(0);
 }
 
 function is_empty(s) {

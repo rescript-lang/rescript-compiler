@@ -151,14 +151,22 @@ function Make(funarg) {
       }
     };
   };
-  var mem = function (x, param) {
-    if (param) {
-      var c = funarg[1](x, param[2]);
-      return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
-    }
-    else {
-      return /* false */0;
-    }
+  var mem = function (x, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        var c = funarg[1](x, param[2]);
+        if (c) {
+          _param = c < 0 ? param[1] : param[4];
+        }
+        else {
+          return /* true */1;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    };
   };
   var min_binding = function (_param) {
     while(true) {
@@ -315,21 +323,45 @@ function Make(funarg) {
       }
     };
   };
-  var for_all = function (p, param) {
-    if (param) {
-      return +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4]));
-    }
-    else {
-      return /* true */1;
-    }
+  var for_all = function (p, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        if (p(param[2], param[3])) {
+          if (for_all(p, param[1])) {
+            _param = param[4];
+          }
+          else {
+            return /* false */0;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* true */1;
+      }
+    };
   };
-  var exists = function (p, param) {
-    if (param) {
-      return +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4]));
-    }
-    else {
-      return /* false */0;
-    }
+  var exists = function (p, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        if (p(param[2], param[3])) {
+          return /* true */1;
+        }
+        else if (exists(p, param[1])) {
+          return /* true */1;
+        }
+        else {
+          _param = param[4];
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    };
   };
   var add_min_binding = function (k, v, param) {
     if (param) {
@@ -592,10 +624,23 @@ function Make(funarg) {
     };
   };
   var equal = function (cmp, m1, m2) {
-    var equal_aux = function (e1, e2) {
+    var _e1 = cons_enum(m1, /* End */0);
+    var _e2 = cons_enum(m2, /* End */0);
+    while(true) {
+      var e2 = _e2;
+      var e1 = _e1;
       if (e1) {
         if (e2) {
-          return +(funarg[1](e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+          if (funarg[1](e1[1], e2[1])) {
+            return /* false */0;
+          }
+          else if (cmp(e1[2], e2[2])) {
+            _e2 = cons_enum(e2[3], e2[4]);
+            _e1 = cons_enum(e1[3], e1[4]);
+          }
+          else {
+            return /* false */0;
+          }
         }
         else {
           return /* false */0;
@@ -608,7 +653,6 @@ function Make(funarg) {
         return /* true */1;
       }
     };
-    return equal_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
   };
   var cardinal = function (param) {
     if (param) {

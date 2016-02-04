@@ -361,15 +361,21 @@ function replace(h, key, info) {
 }
 
 function mem(h, key) {
-  var mem_in_bucket = function (param) {
+  var _param = h[2][key_index(h, key)];
+  while(true) {
+    var param = _param;
     if (param) {
-      return +(Caml_primitive.caml_compare(param[1], key) === 0 || mem_in_bucket(param[3]));
+      if (Caml_primitive.caml_compare(param[1], key)) {
+        _param = param[3];
+      }
+      else {
+        return /* true */1;
+      }
     }
     else {
       return /* false */0;
     }
   };
-  return mem_in_bucket(h[2][key_index(h, key)]);
 }
 
 function iter(f, h) {
@@ -620,15 +626,21 @@ function MakeSeeded(H) {
     }
   };
   var mem = function (h, key) {
-    var mem_in_bucket = function (param) {
+    var _param = h[2][key_index(h, key)];
+    while(true) {
+      var param = _param;
       if (param) {
-        return +(H[1](param[1], key) || mem_in_bucket(param[3]));
+        if (H[1](param[1], key)) {
+          return /* true */1;
+        }
+        else {
+          _param = param[3];
+        }
       }
       else {
         return /* false */0;
       }
     };
-    return mem_in_bucket(h[2][key_index(h, key)]);
   };
   return [
           0,
@@ -823,15 +835,21 @@ function Make(H) {
     }
   };
   var mem = function (h, key) {
-    var mem_in_bucket = function (param) {
+    var _param = h[2][key_index(h, key)];
+    while(true) {
+      var param = _param;
       if (param) {
-        return +(equal(param[1], key) || mem_in_bucket(param[3]));
+        if (equal(param[1], key)) {
+          return /* true */1;
+        }
+        else {
+          _param = param[3];
+        }
       }
       else {
         return /* false */0;
       }
     };
-    return mem_in_bucket(h[2][key_index(h, key)]);
   };
   var create$1 = function (sz) {
     return create([

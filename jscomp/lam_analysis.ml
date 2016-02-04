@@ -454,3 +454,4 @@ let is_closed_by set lam =
 
 let is_closed  lam = 
   Ident_map.is_empty (free_variables Ident_set.empty Ident_map.empty lam)  
+

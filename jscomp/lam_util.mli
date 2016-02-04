@@ -58,3 +58,6 @@ val ident_set_of_list : Ident.t list -> Ident_set.t
 val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
 val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
+
+val lam_true : Lambda.lambda
+val lam_false : Lambda.lambda

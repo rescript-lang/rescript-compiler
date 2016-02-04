@@ -20,6 +20,11 @@ let int_map_suites = Int_map.[
     let u = of_list [ 2,'3';3,'4'; 1,'1'] in
     assert (compare Pervasives.compare u v = 0)
            );
+  "equal2", (fun _ -> 
+    let v = of_list [ 1,'1';2,'3';3,'4'] in
+    let u = of_list [ 2,'3';3,'4'; 1,'1'] in
+    assert (equal (fun x y -> x = y) u v     )
+    );
   "test_inline_map", Test_inline_map.assertions;
   "test_inline_map2", Test_inline_map2.assertions1; 
   "test_inline_map2_1", Test_inline_map2.assertions2; 
