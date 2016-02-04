@@ -18,16 +18,16 @@
 
 (* Author: Hongbo Zhang  *)
 
+type env = 
+  | Browser
+  | NodeJS
 
-let file = ref ""
-let debug_file = ref ""
 
-let set_file f  = file := f 
-let get_file () = !file
+val get_env : unit -> env
 
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
+val set_env : env -> unit
 
-let is_same_file () = 
-  !debug_file != "" &&  !debug_file = !file
+val runtime_set : String_set.t
+val stdlib_set : String_set.t
+
+

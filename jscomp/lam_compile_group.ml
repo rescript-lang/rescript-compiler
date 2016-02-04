@@ -160,31 +160,40 @@ let compile  ~filename non_export env _sigs lam  : J.program  =
   in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
-
-  let lam  = Lam_group.deep_flatten lam in
   let _d   = Lam_util.dump env filename in
+  let lam = _d  lam in
+  let lam  = Lam_group.deep_flatten lam in
+  let lam = _d  lam in
   let meta = 
     Lam_pass_collect.count_alias_globals env filename  export_idents lam in
   let lam = 
     let lam =  
       lam
+      |> _d
       |>  Lam_pass_exits.simplify_exits
+      |> _d
       |>  Lam_pass_remove_alias.simplify_alias  meta in  (* Inling happens*)
     (* TODO: research how to combine those passes efficiently *)
+    let () = ignore @@ _d lam in
     let lam = Lam_group.deep_flatten lam in
+    let () = ignore @@ _d lam  in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
+    let () = ignore @@ _d lam  in
 
     let lam = 
       lam
       |> Lam_pass_alpha_conversion.alpha_conversion meta
       |> Lam_pass_exits.simplify_exits in    
-    let () = Lam_pass_collect.collect_helper meta lam
-    in
+    let () = Lam_pass_collect.collect_helper meta lam in
+
+
     lam
+    |> _d 
     |>  Lam_pass_remove_alias.simplify_alias meta 
+    |> _d 
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
@@ -339,7 +348,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.set_debug_file "ari_regress_test.ml";
+    Lam_current_unit.iset_debug_file "ari_regress_test.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
       (fun chan -> Js_dump.dump_program (compile ~filename false env sigs lam) chan)

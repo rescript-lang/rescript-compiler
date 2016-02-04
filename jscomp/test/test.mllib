@@ -155,3 +155,4 @@ ari_regress_test
 record_with_test
 complex_if_test
 module_parameter_test
+regression_print

@@ -471,6 +471,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_make_vect" -> 
       E.runtime_call Js_helper.array prim.prim_name args 
 
+    | "caml_ml_out_channels_list"
     | "caml_ml_open_descriptor_in" 
     | "caml_ml_open_descriptor_out"
     | "caml_ml_output_char"
@@ -582,7 +583,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_ml_close_channel"
     | "caml_ml_output_int"
     | "caml_sys_exit"
-    | "caml_ml_out_channels_list"
+
     | "caml_ml_channel_size_64"
     | "caml_ml_channel_size"
     | "caml_ml_pos_in_64"

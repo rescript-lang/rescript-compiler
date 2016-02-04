@@ -33,40 +33,51 @@ let string_of_module_id (x : module_id) : string =
   | Ml  -> 
     let id = x.id in
     let file = Printf.sprintf "%s.js" id.name in
-    if Ext_string.starts_with id.name "Caml_" then 
-      let path = 
-        (* For the runtime, only [JS] files are needed, and 
-           unlike the stdlib, [osc] have some pre-built knowledge 
-           about where it is, since in general, [runtime] 
-           is *transparent* to the user
-        *)        
-        match Sys.getenv "OCAML_JS_RUNTIME_PATH" with 
-        | exception Not_found -> 
-            Filename.concat 
-              (Filename.dirname (Filename.dirname Sys.executable_name))
-              "runtime"
-        | f ->  f  in
-      Ext_filename.node_relative_path !Location.input_name
-        (Filename.concat path (String.uncapitalize id.name))        
-    else 
-    begin match Config_util.find file with   
-      (* for some primitive files, no cmj support *)
-    | exception Not_found ->
-        Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] @."
-          file !Location.input_name ;
-        Printf.sprintf "%s" 
-          (String.uncapitalize id.name) 
-        (* maybe from third party library*)
-        (* Check: be consistent when generating js files
-           A.ml -> a.js
-           a.ml -> a.js
-           check generated [js] file if it's capital or not
-           Actually, we can not tell its original name just from [id], 
-           so we just always general litte_case.js
-         *)
-    | path ->
-        Ext_filename.node_relative_path !Location.input_name path
+    begin match Js_config.get_env () with 
+      | Browser 
+        (* In browser *)
+        ->  
+        let target = String.uncapitalize file in
+        if String_set.mem target Js_config.runtime_set   then
+          "./runtime/" ^ target
+        else
+          "./stdlib/" ^ target 
+      | NodeJS -> 
+        if Ext_string.starts_with id.name "Caml_" then 
+          let path = 
+            (* For the runtime, only [JS] files are needed, and 
+               unlike the stdlib, [osc] have some pre-built knowledge 
+               about where it is, since in general, [runtime] 
+               is *transparent* to the user
+            *)        
+            match Sys.getenv "OCAML_JS_RUNTIME_PATH" with 
+            | exception Not_found -> 
+              Filename.concat 
+                (Filename.dirname (Filename.dirname Sys.executable_name))
+                "runtime"
+            | f ->  f  in
+          Ext_filename.node_relative_path !Location.input_name
+            (Filename.concat path (String.uncapitalize id.name))        
+        else 
+          begin match Config_util.find file with   
+            (* for some primitive files, no cmj support *)
+            | exception Not_found ->
+              Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] @."
+                file !Location.input_name ;
+              Printf.sprintf "%s" 
+                (String.uncapitalize id.name) 
+            (* maybe from third party library*)
+            (* Check: be consistent when generating js files
+               A.ml -> a.js
+               a.ml -> a.js
+               check generated [js] file if it's capital or not
+               Actually, we can not tell its original name just from [id], 
+               so we just always general litte_case.js
+            *)
+            | path ->
+              Ext_filename.node_relative_path !Location.input_name path
 
+          end
     end
   | External name -> name
 

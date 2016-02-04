@@ -84,6 +84,7 @@ module L = struct
   let json = "JSON"
   let stringify = "stringify"
   let console = "console"
+  let define = "define"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -284,8 +285,10 @@ let rec pp_function
         action return 
       else
         let lexical = Ident_set.elements lexical in
-
-        (if return then P.string f "return " else ());
+        (if return then begin 
+            P.string f L.return ; 
+            P.space f
+          end else ());
         P.string f "(function(";
         ignore @@ aux inner_cxt f lexical;
         P.string f ")";
@@ -1350,69 +1353,76 @@ let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.prog
       list ~pp_sep pp_v ppf vs in
 
   P.vgroup f 1 @@ fun _ -> 
-    P.string f "define([";
-    list ~pp_sep:(fun f _ -> P.string f L.comma)
-      (fun f (_,s) -> 
-         pp_string f ~utf:true ~quote:(best_string_quote s) s; ) f modules;
-    P.string f "]";
-    P.string f L.comma;
-    P.newline f;
-    P.string f L.function_;
-    P.string f "(";
-    let cxt = aux cxt f modules in
-    P.string f ")";
+  P.string f L.define;
+  P.string f "([";
+  list ~pp_sep:(fun f _ -> P.string f L.comma)
+    (fun f (_,s) -> 
+       pp_string f ~utf:true ~quote:(best_string_quote s) s; ) f modules;
+  P.string f "]";
+  P.string f L.comma;
+  P.newline f;
+  P.string f L.function_;
+  P.string f "(";
+  let cxt = aux cxt f modules in
+  P.string f ")";
+  P.brace_vgroup f 1 @@ (fun _ -> 
+      let () = P.string f "'use strict';" in 
+      let () = P.newline f in
+      let cxt =  statement_list true cxt f  b in 
+      (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
+      P.newline f;
+      P.string f L.return;
+      P.space f;
+      P.brace_vgroup f 1 @@ fun _ -> 
+      let rec aux cxt f (idents : Ident.t list) = 
+        match idents with
+        | [] -> cxt 
+        | [id] -> 
+          P.string f (Ext_ident.convert id.name);
+          P.space f ;
+          P.string f L.colon;
+          P.space f ;
+          ident cxt f id
+        | id :: rest 
+          -> 
+          P.string f (Ext_ident.convert id.name);
+          P.space f ;
+          P.string f L.colon;
+          P.space f;
+          let cxt = ident cxt f id  in
+          P.string f L.comma;
+          P.space f ;
+          P.newline f ;
+          aux cxt f rest 
 
-    P.brace_vgroup f 1 @@ (fun _ -> 
-        let cxt =  statement_list true cxt f  b in 
-        (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
-        P.newline f;
-        P.string f L.return;
-        P.space f;
-        P.brace_vgroup f 1 @@ fun _ -> 
-          let rec aux cxt f (idents : Ident.t list) = 
-            match idents with
-            | [] -> cxt 
-            | [id] -> 
-              P.string f (Ext_ident.convert id.name);
-              P.space f ;
-              P.string f L.colon;
-              P.space f ;
-              ident cxt f id
-            | id :: rest 
-              -> 
-              P.string f (Ext_ident.convert id.name);
-              P.space f ;
-              P.string f L.colon;
-              P.space f;
-              let cxt = ident cxt f id  in
-              P.string f L.comma;
-              P.space f ;
-              P.newline f ;
-              aux cxt f rest 
-
-          in
-          ignore @@ aux cxt f exp);
-    P.string f ")";
+      in
+      ignore @@ aux cxt f exp);
+  P.string f ")";
 ;;
 
 let pp_program (program : J.program) (f : Ext_pp.t) = 
-  let () = 
+  begin
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
-    P.string f {|"use strict";|};
+    P.string f "\"use strict\";"; (* TODO: use single quote in another commit*)
     P.newline f ;    
-  in
-  (match Sys.getenv "OCAML_AMD_MODULE" with 
-   | exception Not_found -> 
-    ignore (node_program f program)
-   | _ -> amd_program f program ) ;
-  P.string f (
-    match program.side_effect with
-    | None -> "/* No side effect */"
-    | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
-  P.newline f;
-  P.flush f ()
-
+    (match Js_config.get_env () with 
+     | Browser ->
+       ignore (node_program f program)
+     | NodeJS -> 
+       begin match Sys.getenv "OCAML_AMD_MODULE" with 
+         | exception Not_found -> 
+           ignore (node_program f program)
+         | _ -> amd_program f program
+       end ) ;
+    P.newline f ;
+    P.string f (
+      match program.side_effect with
+      | None -> "/* No side effect */"
+      | Some v -> Printf.sprintf "/* %s Not a pure module */" v );
+    P.newline f;
+    P.flush f ()
+  end
 let dump_program 
     (program : J.program)
     (oc : out_channel) = 
