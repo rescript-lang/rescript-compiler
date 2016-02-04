@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var VV   = require("VV");
 var List = require("../stdlib/list");

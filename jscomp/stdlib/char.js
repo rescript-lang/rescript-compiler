@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Pervasives  = require("./pervasives");
 var Caml_string = require("../runtime/caml_string");

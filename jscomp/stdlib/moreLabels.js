@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var $$Map   = require("./map");
 var Hashtbl = require("./hashtbl");

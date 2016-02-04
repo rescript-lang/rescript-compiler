@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Bytes       = require("./bytes");
 var List        = require("./list");

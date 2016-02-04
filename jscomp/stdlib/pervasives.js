@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Caml_io                  = require("../runtime/caml_io");
 var Caml_exceptions          = require("../runtime/caml_exceptions");

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Mt                  = require("./mt");
 var Test_google_closure = require("./test_google_closure");

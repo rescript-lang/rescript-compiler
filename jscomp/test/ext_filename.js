@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Filename        = require("../stdlib/filename");
 var Caml_exceptions = require("../runtime/caml_exceptions");

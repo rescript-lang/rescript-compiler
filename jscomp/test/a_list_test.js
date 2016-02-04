@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Mt       = require("./mt");
 var Ext_list = require("./ext_list");

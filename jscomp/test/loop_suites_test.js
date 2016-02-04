@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var For_loop_test = require("./for_loop_test");
 var Mt            = require("./mt");

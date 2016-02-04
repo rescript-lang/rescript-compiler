@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Mt             = require("./mt");
 var Caml_primitive = require("../runtime/caml_primitive");

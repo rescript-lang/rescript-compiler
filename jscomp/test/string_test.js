@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 
 var Bytes           = require("../stdlib/bytes");
 var Caml_exceptions = require("../runtime/caml_exceptions");
@@ -92,6 +92,60 @@ function rev_split_by_char(c, s) {
   };
 }
 
+function xsplit(delim, s) {
+  var len = s.length;
+  if (len !== 0) {
+    var _l = /* [] */0;
+    var _i = len;
+    while(true) {
+      var i = _i;
+      var l = _l;
+      if (i !== 0) {
+        var exit = 0;
+        var i$prime;
+        try {
+          i$prime = $$String.rindex_from(s, i - 1, delim);
+          exit = 1;
+        }
+        catch (exn){
+          if (exn === Caml_exceptions.Not_found) {
+            return [
+                    /* :: */0,
+                    $$String.sub(s, 0, i),
+                    l
+                  ];
+          }
+          else {
+            throw exn;
+          }
+        }
+        if (exit === 1) {
+          var l_001 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
+          var l$1 = [
+            /* :: */0,
+            l_001,
+            l
+          ];
+          var l$2 = i$prime ? l$1 : [
+              /* :: */0,
+              "",
+              l$1
+            ];
+          _i = i$prime;
+          _l = l$2;
+        }
+        
+      }
+      else {
+        return l;
+      }
+    };
+  }
+  else {
+    return /* [] */0;
+  }
+}
+
 Mt.from_pair_suites("string_test.ml", [
       /* :: */0,
       [
@@ -182,7 +236,33 @@ Mt.from_pair_suites("string_test.ml", [
                           ];
                   }
                 ],
-                /* [] */0
+                [
+                  /* :: */0,
+                  [
+                    /* tuple */0,
+                    "xsplit",
+                    function () {
+                      return [
+                              /* Eq */0,
+                              [
+                                /* :: */0,
+                                "a",
+                                [
+                                  /* :: */0,
+                                  "b",
+                                  [
+                                    /* :: */0,
+                                    "c",
+                                    /* [] */0
+                                  ]
+                                ]
+                              ],
+                              xsplit(/* "." */46, "a.b.c")
+                            ];
+                    }
+                  ],
+                  /* [] */0
+                ]
               ]
             ]
           ]
@@ -193,4 +273,5 @@ Mt.from_pair_suites("string_test.ml", [
 exports.ff                = ff;
 exports.gg                = gg;
 exports.rev_split_by_char = rev_split_by_char;
+exports.xsplit            = xsplit;
 /*  Not a pure module */
