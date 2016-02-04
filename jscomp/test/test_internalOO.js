@@ -199,14 +199,22 @@ function find(x, _param) {
   };
 }
 
-function mem(x, param) {
-  if (param) {
-    var c = Caml_string.caml_string_compare(x, param[2]);
-    return +(c === 0 || mem(x, c < 0 ? param[1] : param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function mem(x, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      var c = Caml_string.caml_string_compare(x, param[2]);
+      if (c) {
+        _param = c < 0 ? param[1] : param[4];
+      }
+      else {
+        return /* true */1;
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function min_binding(_param) {
@@ -372,22 +380,46 @@ function fold(f, _m, _accu) {
   };
 }
 
-function for_all(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) && for_all(p, param[1]) && for_all(p, param[4]));
-  }
-  else {
-    return /* true */1;
-  }
+function for_all(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        if (for_all(p, param[1])) {
+          _param = param[4];
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      return /* true */1;
+    }
+  };
 }
 
-function exists(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) || exists(p, param[1]) || exists(p, param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function exists(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        return /* true */1;
+      }
+      else if (exists(p, param[1])) {
+        return /* true */1;
+      }
+      else {
+        _param = param[4];
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function add_min_binding(k, v, param) {
@@ -662,10 +694,23 @@ function compare(cmp, m1, m2) {
 }
 
 function equal(cmp, m1, m2) {
-  var equal_aux = function (e1, e2) {
+  var _e1 = cons_enum(m1, /* End */0);
+  var _e2 = cons_enum(m2, /* End */0);
+  while(true) {
+    var e2 = _e2;
+    var e1 = _e1;
     if (e1) {
       if (e2) {
-        return +(Caml_string.caml_string_compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum(e1[3], e1[4]), cons_enum(e2[3], e2[4])));
+        if (Caml_string.caml_string_compare(e1[1], e2[1])) {
+          return /* false */0;
+        }
+        else if (cmp(e1[2], e2[2])) {
+          _e2 = cons_enum(e2[3], e2[4]);
+          _e1 = cons_enum(e1[3], e1[4]);
+        }
+        else {
+          return /* false */0;
+        }
       }
       else {
         return /* false */0;
@@ -678,7 +723,6 @@ function equal(cmp, m1, m2) {
       return /* true */1;
     }
   };
-  return equal_aux(cons_enum(m1, /* End */0), cons_enum(m2, /* End */0));
 }
 
 function cardinal(param) {
@@ -897,14 +941,22 @@ function find$1(x, _param) {
   };
 }
 
-function mem$1(x, param) {
-  if (param) {
-    var c = Caml_string.caml_string_compare(x, param[2]);
-    return +(c === 0 || mem$1(x, c < 0 ? param[1] : param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function mem$1(x, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      var c = Caml_string.caml_string_compare(x, param[2]);
+      if (c) {
+        _param = c < 0 ? param[1] : param[4];
+      }
+      else {
+        return /* true */1;
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function min_binding$1(_param) {
@@ -1070,22 +1122,46 @@ function fold$1(f, _m, _accu) {
   };
 }
 
-function for_all$1(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) && for_all$1(p, param[1]) && for_all$1(p, param[4]));
-  }
-  else {
-    return /* true */1;
-  }
+function for_all$1(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        if (for_all$1(p, param[1])) {
+          _param = param[4];
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      return /* true */1;
+    }
+  };
 }
 
-function exists$1(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) || exists$1(p, param[1]) || exists$1(p, param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function exists$1(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        return /* true */1;
+      }
+      else if (exists$1(p, param[1])) {
+        return /* true */1;
+      }
+      else {
+        _param = param[4];
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function add_min_binding$1(k, v, param) {
@@ -1360,10 +1436,23 @@ function compare$1(cmp, m1, m2) {
 }
 
 function equal$1(cmp, m1, m2) {
-  var equal_aux = function (e1, e2) {
+  var _e1 = cons_enum$1(m1, /* End */0);
+  var _e2 = cons_enum$1(m2, /* End */0);
+  while(true) {
+    var e2 = _e2;
+    var e1 = _e1;
     if (e1) {
       if (e2) {
-        return +(Caml_string.caml_string_compare(e1[1], e2[1]) === 0 && cmp(e1[2], e2[2]) && equal_aux(cons_enum$1(e1[3], e1[4]), cons_enum$1(e2[3], e2[4])));
+        if (Caml_string.caml_string_compare(e1[1], e2[1])) {
+          return /* false */0;
+        }
+        else if (cmp(e1[2], e2[2])) {
+          _e2 = cons_enum$1(e2[3], e2[4]);
+          _e1 = cons_enum$1(e1[3], e1[4]);
+        }
+        else {
+          return /* false */0;
+        }
       }
       else {
         return /* false */0;
@@ -1376,7 +1465,6 @@ function equal$1(cmp, m1, m2) {
       return /* true */1;
     }
   };
-  return equal_aux(cons_enum$1(m1, /* End */0), cons_enum$1(m2, /* End */0));
 }
 
 function cardinal$1(param) {
@@ -1595,14 +1683,22 @@ function find$2(x, _param) {
   };
 }
 
-function mem$2(x, param) {
-  if (param) {
-    var c = Caml_primitive.caml_int_compare(x, param[2]);
-    return +(c === 0 || mem$2(x, c < 0 ? param[1] : param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function mem$2(x, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      var c = Caml_primitive.caml_int_compare(x, param[2]);
+      if (c) {
+        _param = c < 0 ? param[1] : param[4];
+      }
+      else {
+        return /* true */1;
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function min_binding$2(_param) {
@@ -1768,22 +1864,46 @@ function fold$2(f, _m, _accu) {
   };
 }
 
-function for_all$2(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) && for_all$2(p, param[1]) && for_all$2(p, param[4]));
-  }
-  else {
-    return /* true */1;
-  }
+function for_all$2(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        if (for_all$2(p, param[1])) {
+          _param = param[4];
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      return /* true */1;
+    }
+  };
 }
 
-function exists$2(p, param) {
-  if (param) {
-    return +(p(param[2], param[3]) || exists$2(p, param[1]) || exists$2(p, param[4]));
-  }
-  else {
-    return /* false */0;
-  }
+function exists$2(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      if (p(param[2], param[3])) {
+        return /* true */1;
+      }
+      else if (exists$2(p, param[1])) {
+        return /* true */1;
+      }
+      else {
+        _param = param[4];
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function add_min_binding$2(k, v, param) {
@@ -2058,10 +2178,25 @@ function compare$2(cmp, m1, m2) {
 }
 
 function equal$2(cmp, m1, m2) {
-  var equal_aux = function (e1, e2) {
+  var _e1 = cons_enum$2(m1, /* End */0);
+  var _e2 = cons_enum$2(m2, /* End */0);
+  while(true) {
+    var e2 = _e2;
+    var e1 = _e1;
     if (e1) {
       if (e2) {
-        return +(e1[1] === e2[1] && cmp(e1[2], e2[2]) && equal_aux(cons_enum$2(e1[3], e1[4]), cons_enum$2(e2[3], e2[4])));
+        if (e1[1] === e2[1]) {
+          if (cmp(e1[2], e2[2])) {
+            _e2 = cons_enum$2(e2[3], e2[4]);
+            _e1 = cons_enum$2(e1[3], e1[4]);
+          }
+          else {
+            return /* false */0;
+          }
+        }
+        else {
+          return /* false */0;
+        }
       }
       else {
         return /* false */0;
@@ -2074,7 +2209,6 @@ function equal$2(cmp, m1, m2) {
       return /* true */1;
     }
   };
-  return equal_aux(cons_enum$2(m1, /* End */0), cons_enum$2(m2, /* End */0));
 }
 
 function cardinal$2(param) {

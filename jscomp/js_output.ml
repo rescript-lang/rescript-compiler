@@ -48,7 +48,9 @@ let of_block ?value ?(finished = False) block =
 
 let dummy = {value = None; block = []; finished = Dummy }
 
-let handle_name_tail (name : st) (should_return : Lam_compile_defs.return_type)
+let handle_name_tail 
+    (name : st)
+    (should_return : Lam_compile_defs.return_type)
     lam (exp : J.expression) : t =
   begin match name, should_return with 
   | EffectCall, False -> 
@@ -66,10 +68,13 @@ let handle_name_tail (name : st) (should_return : Lam_compile_defs.return_type)
   | NeedValue, _ -> {block = []; value = Some exp; finished = False }
   end
 
-let handle_block_return (st : st) (should_return : Lam_compile_defs.return_type) (lam : Lambda.lambda) (block : J.block) exp : t = 
+let handle_block_return 
+    (st : st) 
+    (should_return : Lam_compile_defs.return_type)
+    (lam : Lambda.lambda) (block : J.block) exp : t = 
   match st, should_return with 
   | Declare (kind,n), False -> 
-      make (block @ [ S.define ~kind  n exp])
+    make (block @ [ S.define ~kind  n exp])
   | Assign n, False -> make (block @ [S.assign n exp])
   | (Declare _ | Assign _), True _ -> make [S.unknown_lambda lam] ~finished:True
   | EffectCall, False -> make block ~value:exp

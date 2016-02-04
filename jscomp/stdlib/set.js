@@ -266,14 +266,22 @@ function Make(funarg) {
       return /* true */1;
     }
   };
-  var mem = function (x, param) {
-    if (param) {
-      var c = funarg[1](x, param[2]);
-      return +(c === 0 || mem(x, c < 0 ? param[1] : param[3]));
-    }
-    else {
-      return /* false */0;
-    }
+  var mem = function (x, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        var c = funarg[1](x, param[2]);
+        if (c) {
+          _param = c < 0 ? param[1] : param[3];
+        }
+        else {
+          return /* true */1;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    };
   };
   var remove = function (x, param) {
     if (param) {
@@ -437,46 +445,62 @@ function Make(funarg) {
   var equal = function (s1, s2) {
     return +(compare(s1, s2) === 0);
   };
-  var subset = function (s1, s2) {
-    if (s1) {
-      if (s2) {
-        var r2 = s2[3];
-        var l2 = s2[1];
-        var r1 = s1[3];
-        var v1 = s1[2];
-        var l1 = s1[1];
-        var c = funarg[1](v1, s2[2]);
-        if (c) {
-          if (c < 0) {
-            return +(subset([
-                          /* Node */0,
-                          l1,
-                          v1,
-                          /* Empty */0,
-                          0
-                        ], l2) && subset(r1, s2));
+  var subset = function (_s1, _s2) {
+    while(true) {
+      var s2 = _s2;
+      var s1 = _s1;
+      if (s1) {
+        if (s2) {
+          var r2 = s2[3];
+          var l2 = s2[1];
+          var r1 = s1[3];
+          var v1 = s1[2];
+          var l1 = s1[1];
+          var c = funarg[1](v1, s2[2]);
+          if (c) {
+            if (c < 0) {
+              if (subset([
+                      /* Node */0,
+                      l1,
+                      v1,
+                      /* Empty */0,
+                      0
+                    ], l2)) {
+                _s1 = r1;
+              }
+              else {
+                return /* false */0;
+              }
+            }
+            else if (subset([
+                    /* Node */0,
+                    /* Empty */0,
+                    v1,
+                    r1,
+                    0
+                  ], r2)) {
+              _s1 = l1;
+            }
+            else {
+              return /* false */0;
+            }
+          }
+          else if (subset(l1, l2)) {
+            _s2 = r2;
+            _s1 = r1;
           }
           else {
-            return +(subset([
-                          /* Node */0,
-                          /* Empty */0,
-                          v1,
-                          r1,
-                          0
-                        ], r2) && subset(l1, s2));
+            return /* false */0;
           }
         }
         else {
-          return +(subset(l1, l2) && subset(r1, r2));
+          return /* false */0;
         }
       }
       else {
-        return /* false */0;
+        return /* true */1;
       }
-    }
-    else {
-      return /* true */1;
-    }
+    };
   };
   var iter = function (f, _param) {
     while(true) {
@@ -504,21 +528,45 @@ function Make(funarg) {
       }
     };
   };
-  var for_all = function (p, param) {
-    if (param) {
-      return +(p(param[2]) && for_all(p, param[1]) && for_all(p, param[3]));
-    }
-    else {
-      return /* true */1;
-    }
+  var for_all = function (p, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        if (p(param[2])) {
+          if (for_all(p, param[1])) {
+            _param = param[3];
+          }
+          else {
+            return /* false */0;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* true */1;
+      }
+    };
   };
-  var exists = function (p, param) {
-    if (param) {
-      return +(p(param[2]) || exists(p, param[1]) || exists(p, param[3]));
-    }
-    else {
-      return /* false */0;
-    }
+  var exists = function (p, _param) {
+    while(true) {
+      var param = _param;
+      if (param) {
+        if (p(param[2])) {
+          return /* true */1;
+        }
+        else if (exists(p, param[1])) {
+          return /* true */1;
+        }
+        else {
+          _param = param[3];
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    };
   };
   var filter = function (p, param) {
     if (param) {

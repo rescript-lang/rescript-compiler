@@ -182,6 +182,40 @@ function compare(cmp, m1, m2) {
   };
 }
 
+function equal(cmp, m1, m2) {
+  var _e1 = cons_enum(m1, /* End */0);
+  var _e2 = cons_enum(m2, /* End */0);
+  while(true) {
+    var e2 = _e2;
+    var e1 = _e1;
+    if (e1) {
+      if (e2) {
+        if (e1[1] === e2[1]) {
+          if (cmp(e1[2], e2[2])) {
+            _e2 = cons_enum(e2[3], e2[4]);
+            _e1 = cons_enum(e1[3], e1[4]);
+          }
+          else {
+            return /* false */0;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else if (e2) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  };
+}
+
 function cardinal(param) {
   if (param) {
     return cardinal(param[1]) + 1 + cardinal(param[4]);
@@ -456,48 +490,124 @@ var int_map_suites_002 = [
     /* :: */0,
     [
       /* tuple */0,
-      "test_inline_map",
-      Test_inline_map.assertions
+      "equal2",
+      function () {
+        var v = of_list([
+              /* :: */0,
+              [
+                /* tuple */0,
+                1,
+                /* "1" */49
+              ],
+              [
+                /* :: */0,
+                [
+                  /* tuple */0,
+                  2,
+                  /* "3" */51
+                ],
+                [
+                  /* :: */0,
+                  [
+                    /* tuple */0,
+                    3,
+                    /* "4" */52
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]);
+        var u = of_list([
+              /* :: */0,
+              [
+                /* tuple */0,
+                2,
+                /* "3" */51
+              ],
+              [
+                /* :: */0,
+                [
+                  /* tuple */0,
+                  3,
+                  /* "4" */52
+                ],
+                [
+                  /* :: */0,
+                  [
+                    /* tuple */0,
+                    1,
+                    /* "1" */49
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]);
+        if (equal(function (x, y) {
+                return +(x === y);
+              }, u, v)) {
+          return 0;
+        }
+        else {
+          throw [
+                0,
+                Caml_exceptions.Assert_failure,
+                [
+                  0,
+                  "map_test.ml",
+                  26,
+                  4
+                ]
+              ];
+        }
+      }
     ],
     [
       /* :: */0,
       [
         /* tuple */0,
-        "test_inline_map2",
-        Test_inline_map2.assertions1
+        "test_inline_map",
+        Test_inline_map.assertions
       ],
       [
         /* :: */0,
         [
           /* tuple */0,
-          "test_inline_map2_1",
-          Test_inline_map2.assertions2
+          "test_inline_map2",
+          Test_inline_map2.assertions1
         ],
         [
           /* :: */0,
           [
             /* tuple */0,
-            "test_map_find",
-            Test_map_find.assert_test
+            "test_inline_map2_1",
+            Test_inline_map2.assertions2
           ],
           [
             /* :: */0,
             [
               /* tuple */0,
-              "iteration",
-              function () {
-                var m = /* Empty */0;
-                var count = 10000;
-                for(var i = 0; i<= count; ++i){
-                  m = add$1("" + i, "" + i, m);
-                }
-                for(var i$1 = 0; i$1<= count; ++i$1){
-                  Mt.assert_equal(find("" + i$1, m), "" + i$1);
-                }
-                return /* () */0;
-              }
+              "test_map_find",
+              Test_map_find.assert_test
             ],
-            /* [] */0
+            [
+              /* :: */0,
+              [
+                /* tuple */0,
+                "iteration",
+                function () {
+                  var m = /* Empty */0;
+                  var count = 10000;
+                  for(var i = 0; i<= count; ++i){
+                    m = add$1("" + i, "" + i, m);
+                  }
+                  for(var i$1 = 0; i$1<= count; ++i$1){
+                    Mt.assert_equal(find("" + i$1, m), "" + i$1);
+                  }
+                  return /* () */0;
+                }
+              ],
+              /* [] */0
+            ]
           ]
         ]
       ]

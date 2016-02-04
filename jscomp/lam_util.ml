@@ -311,3 +311,8 @@ let print_ident_set fmt s =
 
 let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
   { apply_loc = loc; apply_status }
+
+
+let lam_true : Lambda.lambda = Lconst (Const_pointer ( 1, NullConstructor "true")) 
+
+let lam_false : Lambda.lambda = Lconst (Const_pointer( 0, NullConstructor "false"))

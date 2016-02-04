@@ -53,11 +53,45 @@ function f5(_x, _y, z) {
 }
 
 function f6(b) {
-  return +(b && f6(b));
+  while(true) {
+    if (b) {
+      if (b) {
+        if (b) {
+          if (!b) {
+            return /* false */0;
+          }
+          
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else {
+      return /* false */0;
+    }
+  };
 }
 
 function f7(b) {
-  return +(b || f7(b));
+  while(true) {
+    if (b) {
+      return /* true */1;
+    }
+    else if (b) {
+      return /* true */1;
+    }
+    else if (b) {
+      return /* true */1;
+    }
+    else if (b) {
+      return /* true */1;
+    }
+    
+  };
 }
 
 function f8(_x, _y) {

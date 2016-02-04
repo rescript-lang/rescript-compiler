@@ -98,7 +98,12 @@ var suites_002 = [
             return Mt.assert_equal(List.filter(function (s) {
                               return +(s !== "");
                             })(split_by(/* None */0, function (x) {
-                                return +(x === /* " " */32 || x === /* "\t" */9);
+                                if (x === /* " " */32) {
+                                  return /* true */1;
+                                }
+                                else {
+                                  return +(x === /* "\t" */9);
+                                }
                               }, "h hgso hgso \t hi")), [
                         /* :: */0,
                         "h",

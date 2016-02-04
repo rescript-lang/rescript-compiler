@@ -453,6 +453,53 @@ and
         *)
         | {value =  None; _} -> assert false 
       end
+    | Lprim(Psequand , [l;r] )
+      ->
+      begin match cxt with 
+        | {should_return = True _ } 
+          (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
+          ->
+          compile_lambda cxt (Lifthenelse (l, r, Lam_util.lam_false))
+        | _ -> 
+          let l_block,l_expr = 
+            match compile_lambda {cxt with st = NeedValue; should_return = False} l with 
+            | {block = a; value = Some b} -> a, b
+            | _ -> assert false 
+          in
+          let r_block, r_expr = 
+            match compile_lambda {cxt with st = NeedValue; should_return = False} r with
+            | {block = a; value = Some b} -> a, b
+            | _ -> assert false 
+          in
+          let args_code =  l_block @ r_block  in
+          let exp =  E.and_ l_expr r_expr  in
+          Js_output.handle_block_return st should_return lam args_code exp           
+      end
+
+    | Lprim(Psequor, [l;r])
+      ->
+      begin match cxt with
+        | {should_return = True _ }
+          (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
+          ->
+          compile_lambda cxt (Lifthenelse (l, Lam_util.lam_true, r))
+        | _ ->
+          let l_block,l_expr =
+            match compile_lambda {cxt with st = NeedValue; should_return = False} l with
+            | {block = a; value = Some b} -> a, b
+            | _ -> assert false
+          in
+          let r_block, r_expr =
+            match compile_lambda {cxt with st = NeedValue; should_return = False} r with
+            | {block = a; value = Some b} -> a, b
+            | _ -> assert false
+          in
+          let args_code =  l_block @ r_block  in
+          let exp =  E.or_ l_expr r_expr  in
+          Js_output.handle_block_return st should_return lam args_code exp
+      end
+
+ 
     | Lprim (prim, args_lambda)  ->
       begin
         let args_block, args_expr =

@@ -339,7 +339,12 @@ function bprint_char_set(buf, char_set) {
     var is_alone = function (c) {
       var match_001 = Char.chr(c - 1);
       var match_002 = Char.chr(c + 1);
-      return +(is_in_char_set(set, c) && !(is_in_char_set(set, match_001) && is_in_char_set(set, match_002)));
+      if (is_in_char_set(set, c)) {
+        return !(is_in_char_set(set, match_001) && is_in_char_set(set, match_002));
+      }
+      else {
+        return /* false */0;
+      }
     };
     if (is_alone(/* "]" */93)) {
       buffer_add_char(buf, /* "]" */93);

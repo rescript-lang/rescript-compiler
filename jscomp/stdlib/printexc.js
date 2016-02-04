@@ -509,13 +509,21 @@ function backtrace_slots(raw_backtrace) {
         return /* true */1;
       }
     };
-    var exists_usable = function (i) {
-      if (i !== -1) {
-        return +(usable_slot(backtrace[i]) || exists_usable(i - 1));
-      }
-      else {
-        return /* false */0;
-      }
+    var exists_usable = function (_i) {
+      while(true) {
+        var i = _i;
+        if (i !== -1) {
+          if (usable_slot(backtrace[i])) {
+            return /* true */1;
+          }
+          else {
+            _i = i - 1;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
     };
     if (exists_usable(backtrace.length - 1)) {
       return [
