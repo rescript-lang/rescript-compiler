@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_exceptions","./list"],
   function(Caml_exceptions,List){
     'use strict';

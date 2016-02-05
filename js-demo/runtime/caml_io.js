@@ -279,6 +279,7 @@ define(["require", "exports", './caml_string', './caml_exceptions'], function (r
         oc.buffer = "";
         return 0;
     }
+    exports.caml_ml_flush = caml_ml_flush;
     function caml_ml_output(oc, buffer, offset, len) {
         if (!oc.opened)
             caml_exceptions_1.caml_raise_sys_error("Cannot output to a closed channel");

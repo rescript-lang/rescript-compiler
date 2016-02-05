@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./map","./hashtbl","./set"],
   function($$Map,Hashtbl,$$Set){
     'use strict';

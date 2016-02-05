@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./pervasives"],
   function(Pervasives){
     'use strict';

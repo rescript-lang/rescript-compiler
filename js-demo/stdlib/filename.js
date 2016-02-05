@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys","../runtime/caml_exceptions","./pervasives","./printf","../runtime/caml_primitive","./buffer","./string","./random"],
   function(Caml_obj_runtime,CamlinternalLazy,Caml_sys,Caml_exceptions,Pervasives,Printf,Caml_primitive,Buffer,$$String,Random){
     'use strict';
@@ -89,15 +89,35 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     }
     
     function is_relative(n) {
-      return +(n.length < 1 || n.charCodeAt(0) !== /* "/" */47);
+      if (n.length < 1) {
+        return /* true */1;
+      }
+      else {
+        return +(n.charCodeAt(0) !== /* "/" */47);
+      }
     }
     
     function is_implicit(n) {
-      return +(is_relative(n) && (n.length < 2 || $$String.sub(n, 0, 2) !== "./") && (n.length < 3 || $$String.sub(n, 0, 3) !== "../"));
+      if (is_relative(n) && (n.length < 2 || $$String.sub(n, 0, 2) !== "./")) {
+        if (n.length < 3) {
+          return /* true */1;
+        }
+        else {
+          return +($$String.sub(n, 0, 3) !== "../");
+        }
+      }
+      else {
+        return /* false */0;
+      }
     }
     
     function check_suffix(name, suff) {
-      return +(name.length >= suff.length && $$String.sub(name, name.length - suff.length, suff.length) === suff);
+      if (name.length >= suff.length) {
+        return +($$String.sub(name, name.length - suff.length, suff.length) === suff);
+      }
+      else {
+        return /* false */0;
+      }
     }
     
     var temp_dir_name;

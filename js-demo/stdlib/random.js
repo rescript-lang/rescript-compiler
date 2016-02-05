@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest","./int64","../runtime/caml_array","./array"],
   function(Caml_sys,Pervasives,Nativeint,Int32,Digest,Int64,Caml_array,$$Array){
     'use strict';

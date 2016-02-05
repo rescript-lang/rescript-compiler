@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys","../runtime/caml_exceptions","./pervasives","./sys","../runtime/caml_primitive","../runtime/caml_array","./array","./string","./random"],
   function(Caml_obj_runtime,CamlinternalLazy,Caml_sys,Caml_exceptions,Pervasives,Sys,Caml_primitive,Caml_array,$$Array,$$String,Random){
     'use strict';
@@ -351,15 +351,21 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     }
     
     function mem(h, key) {
-      var mem_in_bucket = function (param) {
+      var _param = h[2][key_index(h, key)];
+      while(true) {
+        var param = _param;
         if (param) {
-          return +(Caml_primitive.caml_compare(param[1], key) === 0 || mem_in_bucket(param[3]));
+          if (Caml_primitive.caml_compare(param[1], key)) {
+            _param = param[3];
+          }
+          else {
+            return /* true */1;
+          }
         }
         else {
           return /* false */0;
         }
       };
-      return mem_in_bucket(h[2][key_index(h, key)]);
     }
     
     function iter(f, h) {
@@ -610,15 +616,21 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
         }
       };
       var mem = function (h, key) {
-        var mem_in_bucket = function (param) {
+        var _param = h[2][key_index(h, key)];
+        while(true) {
+          var param = _param;
           if (param) {
-            return +(H[1](param[1], key) || mem_in_bucket(param[3]));
+            if (H[1](param[1], key)) {
+              return /* true */1;
+            }
+            else {
+              _param = param[3];
+            }
           }
           else {
             return /* false */0;
           }
         };
-        return mem_in_bucket(h[2][key_index(h, key)]);
       };
       return [
               0,
@@ -813,15 +825,21 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
         }
       };
       var mem = function (h, key) {
-        var mem_in_bucket = function (param) {
+        var _param = h[2][key_index(h, key)];
+        while(true) {
+          var param = _param;
           if (param) {
-            return +(equal(param[1], key) || mem_in_bucket(param[3]));
+            if (equal(param[1], key)) {
+              return /* true */1;
+            }
+            else {
+              _param = param[3];
+            }
           }
           else {
             return /* false */0;
           }
         };
-        return mem_in_bucket(h[2][key_index(h, key)]);
       };
       var create$1 = function (sz) {
         return create([

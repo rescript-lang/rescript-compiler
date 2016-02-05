@@ -82,7 +82,7 @@ function evalCode(js){
     console.log = original_log;
   }
   catch(e){
-    outputMirror.setValue(get_log_output());
+    outputMirror.setValue(get_log_output() + "\n" + e);
     console.log = original_log;
   }
 

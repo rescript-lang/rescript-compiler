@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_format","../runtime/caml_primitive","./camlinternalFormatBasics","../runtime/caml_string"],
   function(Caml_io,Caml_exceptions,Caml_format,Caml_primitive,CamlinternalFormatBasics,Caml_string){
     'use strict';
@@ -218,7 +218,7 @@ define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_forma
         var param = _param;
         if (param) {
           try {
-            Caml_primitive.caml_ml_flush(param[1]);
+            Caml_io.caml_ml_flush(param[1]);
           }
           catch (exn){
             
@@ -270,13 +270,13 @@ define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_forma
     }
     
     function close_out(oc) {
-      Caml_primitive.caml_ml_flush(oc);
+      Caml_io.caml_ml_flush(oc);
       return Caml_primitive.caml_ml_close_channel(oc);
     }
     
     function close_out_noerr(oc) {
       try {
-        Caml_primitive.caml_ml_flush(oc);
+        Caml_io.caml_ml_flush(oc);
       }
       catch (exn){
         
@@ -463,7 +463,7 @@ define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_forma
     
     function print_newline() {
       Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
-      return Caml_primitive.caml_ml_flush(stdout);
+      return Caml_io.caml_ml_flush(stdout);
     }
     
     function prerr_char(c) {
@@ -490,20 +490,20 @@ define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_forma
     
     function prerr_newline() {
       Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
-      return Caml_primitive.caml_ml_flush(stderr);
+      return Caml_io.caml_ml_flush(stderr);
     }
     
     function read_line() {
-      Caml_primitive.caml_ml_flush(stdout);
+      Caml_io.caml_ml_flush(stdout);
       return input_line(stdin);
     }
     
     function read_int() {
-      return Caml_format.caml_int_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
+      return Caml_format.caml_int_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
     }
     
     function read_float() {
-      return Caml_format.caml_float_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
+      return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
     }
     
     function string_of_format(param) {
@@ -542,7 +542,7 @@ define(["../runtime/caml_io","../runtime/caml_exceptions","../runtime/caml_forma
     }
     
     function flush(prim) {
-      return Caml_primitive.caml_ml_flush(prim);
+      return Caml_io.caml_ml_flush(prim);
     }
     
     function output_char(prim, prim$1) {

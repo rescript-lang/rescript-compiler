@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./sys","./printf"],
   function(Sys,Printf){
     'use strict';

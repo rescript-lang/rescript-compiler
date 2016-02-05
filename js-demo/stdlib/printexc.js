@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_obj_runtime","./obj","./pervasives","../runtime/caml_exceptions","./printf","../runtime/caml_primitive","./array","./buffer"],
   function(Caml_obj_runtime,Obj,Pervasives,Caml_exceptions,Printf,Caml_primitive,$$Array,Buffer){
     'use strict';
@@ -502,13 +502,21 @@ define(["../runtime/caml_obj_runtime","./obj","./pervasives","../runtime/caml_ex
             return /* true */1;
           }
         };
-        var exists_usable = function (i) {
-          if (i !== -1) {
-            return +(usable_slot(backtrace[i]) || exists_usable(i - 1));
-          }
-          else {
-            return /* false */0;
-          }
+        var exists_usable = function (_i) {
+          while(true) {
+            var i = _i;
+            if (i !== -1) {
+              if (usable_slot(backtrace[i])) {
+                return /* true */1;
+              }
+              else {
+                _i = i - 1;
+              }
+            }
+            else {
+              return /* false */0;
+            }
+          };
         };
         if (exists_usable(backtrace.length - 1)) {
           return [

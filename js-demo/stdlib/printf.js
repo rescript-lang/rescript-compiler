@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./pervasives","./buffer","./camlinternalFormat"],
   function(Pervasives,Buffer,CamlinternalFormat){
     'use strict';

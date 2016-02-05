@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["../runtime/caml_obj_runtime","./obj","../runtime/caml_exceptions"],
   function(Caml_obj_runtime,Obj,Caml_exceptions){
     'use strict';

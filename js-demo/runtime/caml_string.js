@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./caml_exceptions"],
   function(Caml_exceptions){
     'use strict';
@@ -149,7 +149,12 @@ define(["./caml_exceptions"],
     
     function caml_is_printable(c) {
       var code = c;
-      return +(code > 31 && code < 127);
+      if (code > 31) {
+        return +(code < 127);
+      }
+      else {
+        return /* false */0;
+      }
     }
     return {
       add : add, 

@@ -1,5 +1,5 @@
 // Generated CODE, PLEASE EDIT WITH CARE
-"use strict";
+'use strict';
 define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"],
   function(Pervasives,Caml_exceptions,Caml_primitive){
     'use strict';
@@ -317,74 +317,126 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       }
     }
     
-    function for_all(p, param) {
-      if (param) {
-        return +(p(param[1]) && for_all(p, param[2]));
-      }
-      else {
-        return /* true */1;
-      }
-    }
-    
-    function exists(p, param) {
-      if (param) {
-        return +(p(param[1]) || exists(p, param[2]));
-      }
-      else {
-        return /* false */0;
-      }
-    }
-    
-    function for_all2(p, l1, l2) {
-      if (l1) {
-        if (l2) {
-          return +(p(l1[1], l2[1]) && for_all2(p, l1[2], l2[2]));
+    function for_all(p, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (p(param[1])) {
+            _param = param[2];
+          }
+          else {
+            return /* false */0;
+          }
         }
         else {
+          return /* true */1;
+        }
+      };
+    }
+    
+    function exists(p, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (p(param[1])) {
+            return /* true */1;
+          }
+          else {
+            _param = param[2];
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
+    }
+    
+    function for_all2(p, _l1, _l2) {
+      while(true) {
+        var l2 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2) {
+            if (p(l1[1], l2[1])) {
+              _l2 = l2[2];
+              _l1 = l1[2];
+            }
+            else {
+              return /* false */0;
+            }
+          }
+          else {
+            return Pervasives.invalid_arg("List.for_all2");
+          }
+        }
+        else if (l2) {
           return Pervasives.invalid_arg("List.for_all2");
         }
-      }
-      else if (l2) {
-        return Pervasives.invalid_arg("List.for_all2");
-      }
-      else {
-        return /* true */1;
-      }
+        else {
+          return /* true */1;
+        }
+      };
     }
     
-    function exists2(p, l1, l2) {
-      if (l1) {
-        if (l2) {
-          return +(p(l1[1], l2[1]) || exists2(p, l1[2], l2[2]));
+    function exists2(p, _l1, _l2) {
+      while(true) {
+        var l2 = _l2;
+        var l1 = _l1;
+        if (l1) {
+          if (l2) {
+            if (p(l1[1], l2[1])) {
+              return /* true */1;
+            }
+            else {
+              _l2 = l2[2];
+              _l1 = l1[2];
+            }
+          }
+          else {
+            return Pervasives.invalid_arg("List.exists2");
+          }
         }
-        else {
+        else if (l2) {
           return Pervasives.invalid_arg("List.exists2");
         }
-      }
-      else if (l2) {
-        return Pervasives.invalid_arg("List.exists2");
-      }
-      else {
-        return /* false */0;
-      }
+        else {
+          return /* false */0;
+        }
+      };
     }
     
-    function mem(x, param) {
-      if (param) {
-        return +(Caml_primitive.caml_compare(param[1], x) === 0 || mem(x, param[2]));
-      }
-      else {
-        return /* false */0;
-      }
+    function mem(x, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (Caml_primitive.caml_compare(param[1], x)) {
+            _param = param[2];
+          }
+          else {
+            return /* true */1;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
     }
     
-    function memq(x, param) {
-      if (param) {
-        return +(param[1] === x || memq(x, param[2]));
-      }
-      else {
-        return /* false */0;
-      }
+    function memq(x, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (param[1] === x) {
+            return /* true */1;
+          }
+          else {
+            _param = param[2];
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
     }
     
     function assoc(x, _param) {
@@ -423,22 +475,38 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       };
     }
     
-    function mem_assoc(x, param) {
-      if (param) {
-        return +(Caml_primitive.caml_compare(param[1][1], x) === 0 || mem_assoc(x, param[2]));
-      }
-      else {
-        return /* false */0;
-      }
+    function mem_assoc(x, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (Caml_primitive.caml_compare(param[1][1], x)) {
+            _param = param[2];
+          }
+          else {
+            return /* true */1;
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
     }
     
-    function mem_assq(x, param) {
-      if (param) {
-        return +(param[1][1] === x || mem_assq(x, param[2]));
-      }
-      else {
-        return /* false */0;
-      }
+    function mem_assq(x, _param) {
+      while(true) {
+        var param = _param;
+        if (param) {
+          if (param[1][1] === x) {
+            return /* true */1;
+          }
+          else {
+            _param = param[2];
+          }
+        }
+        else {
+          return /* false */0;
+        }
+      };
     }
     
     function remove_assoc(x, param) {
