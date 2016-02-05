@@ -1,10 +1,10 @@
 
 let std_files = 
   String_set.elements Js_config.stdlib_set
-  |> List.map (fun x -> "./stdlib/" ^ x ) 
+  |> List.map (fun x -> "./stdlib/" ^ Filename.chop_extension x ) 
 let runtime_files = 
   String_set.elements Js_config.runtime_set 
-  |> List.map (fun x -> "./runtime/" ^ x) 
+  |> List.map (fun x -> "./runtime/" ^ Filename.chop_extension x) 
 
 let () = 
   Ext_pervasives.with_file_as_chan "./pre_load.js" (fun chan -> 
