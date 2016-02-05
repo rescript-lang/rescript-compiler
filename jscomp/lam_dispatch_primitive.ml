@@ -470,7 +470,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_array_blit"
     | "caml_make_vect" -> 
       E.runtime_call Js_helper.array prim.prim_name args 
-
+    | "caml_ml_flush"
     | "caml_ml_out_channels_list"
     | "caml_ml_open_descriptor_in" 
     | "caml_ml_open_descriptor_out"
@@ -576,7 +576,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_sys_close"
     | "caml_int64_of_string"
     | "caml_sys_open"
-    | "caml_ml_flush"
+
     | "caml_ml_input"
     | "caml_ml_input_scan_line"
     | "caml_ml_input_int"

@@ -229,7 +229,7 @@ function flush_all() {
     var param = _param;
     if (param) {
       try {
-        Caml_primitive.caml_ml_flush(param[1]);
+        Caml_io.caml_ml_flush(param[1]);
       }
       catch (exn){
         
@@ -281,13 +281,13 @@ function output_value(chan, v) {
 }
 
 function close_out(oc) {
-  Caml_primitive.caml_ml_flush(oc);
+  Caml_io.caml_ml_flush(oc);
   return Caml_primitive.caml_ml_close_channel(oc);
 }
 
 function close_out_noerr(oc) {
   try {
-    Caml_primitive.caml_ml_flush(oc);
+    Caml_io.caml_ml_flush(oc);
   }
   catch (exn){
     
@@ -472,12 +472,12 @@ function print_float(f) {
 function print_endline(s) {
   output_string(stdout, s);
   Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
-  return Caml_primitive.caml_ml_flush(stdout);
+  return Caml_io.caml_ml_flush(stdout);
 }
 
 function print_newline() {
   Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
-  return Caml_primitive.caml_ml_flush(stdout);
+  return Caml_io.caml_ml_flush(stdout);
 }
 
 function prerr_char(c) {
@@ -503,25 +503,25 @@ function prerr_float(f) {
 function prerr_endline(s) {
   output_string(stderr, s);
   Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
-  return Caml_primitive.caml_ml_flush(stderr);
+  return Caml_io.caml_ml_flush(stderr);
 }
 
 function prerr_newline() {
   Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
-  return Caml_primitive.caml_ml_flush(stderr);
+  return Caml_io.caml_ml_flush(stderr);
 }
 
 function read_line() {
-  Caml_primitive.caml_ml_flush(stdout);
+  Caml_io.caml_ml_flush(stdout);
   return input_line(stdin);
 }
 
 function read_int() {
-  return Caml_format.caml_int_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
+  return Caml_format.caml_int_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
 function read_float() {
-  return Caml_format.caml_float_of_string((Caml_primitive.caml_ml_flush(stdout), input_line(stdin)));
+  return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
 var LargeFile = [0];
