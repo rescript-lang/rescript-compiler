@@ -1420,6 +1420,7 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 
            ignore (node_program f program)
+           (* amd_program f program *)
          | _ -> amd_program f program
        end ) ;
     P.newline f ;

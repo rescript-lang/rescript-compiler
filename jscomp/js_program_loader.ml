@@ -39,9 +39,9 @@ let string_of_module_id (x : module_id) : string =
         ->  
         let target = String.uncapitalize file in
         if String_set.mem target Js_config.runtime_set   then
-          "./runtime/" ^ target
+          "./runtime/" ^ Filename.chop_extension target
         else
-          "./stdlib/" ^ target 
+          "./stdlib/" ^ Filename.chop_extension target 
       | NodeJS -> 
         if Ext_string.starts_with id.name "Caml_" then 
           let path = 
