@@ -150,9 +150,9 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
 
 (** Actually simplify_lets is kind of global optimization since it requires you to know whether 
     it's used or not 
+    [non_export] is only used in playground
 *)
-let compile  ~filename non_export env _sigs lam  : J.program  = 
-
+let compile  ~filename non_export env _sigs lam   = 
   let export_idents = 
     if non_export then
       []    
@@ -305,27 +305,12 @@ let compile  ~filename non_export env _sigs lam  : J.program  =
             |> Js_output.concat
             |> Js_output.to_block
           in
-          let external_module_ids = 
-            Lam_compile_env.get_requried_modules  
-              meta.env
-              meta.required_modules  
-              (Js_fold_basic.calculate_hard_dependencies body)
-          in
-          (* Exporting ... *)
-          let v = 
-            Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
-              (if non_export then [] else lambda_exports) 
-          in
-          (if not @@ Ext_string.is_empty filename then
-            Js_cmj_format.to_file 
-              (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
-          let js = 
-            Js_program_loader.make_program filename v.pure meta.exports
-              external_module_ids body 
-          in
           (* The file is not big at all compared with [cmo] *)
           (* Ext_marshal.to_file (Ext_filename.chop_extension filename ^ ".mj")  js; *)
-
+          let js = 
+            Js_program_loader.make_program filename meta.exports
+              body 
+          in
           js 
           |> Js_pass_flatten.program
           |> Js_inline_and_eliminate.inline_and_shake
@@ -333,7 +318,28 @@ let compile  ~filename non_export env _sigs lam  : J.program  =
           |> Js_pass_flatten_and_mark_dead.program
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
           |> Js_shake.shake_program
+          |> ( fun (js:  J.program) -> 
+            let external_module_ids = 
+              Lam_compile_env.get_requried_modules  
+                meta.env
+                meta.required_modules  
+                (Js_fold_basic.calculate_hard_dependencies js.block)
+            in
+            let required_modules =
+              List.map 
+                (fun id -> Lam_module_ident.id id, Js_program_loader.string_of_module_id id )
+                external_module_ids in
 
+            (* Exporting ... *)
+            let v = 
+              Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
+                (if non_export then [] else lambda_exports) 
+            in
+            (if not @@ Ext_string.is_empty filename then
+               Js_cmj_format.to_file 
+                 (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
+            Js_program_loader.decorate_deps required_modules v.pure js
+          )
         | _ -> raise Not_a_module
       end
     | _ -> raise Not_a_module end

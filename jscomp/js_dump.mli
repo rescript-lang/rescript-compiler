@@ -25,6 +25,6 @@
 (** Print JS IR to vanilla Javascript code *)
 
 
-val pp_program : J.program -> Ext_pp.t -> unit
+val pp_program : J.deps_program -> Ext_pp.t -> unit
 
-val dump_program : J.program -> out_channel -> unit
+val dump_program : J.deps_program -> out_channel -> unit

@@ -1300,7 +1300,7 @@ let exports cxt f (idents : Ident.t list) =
   outer_cxt  
 
 
-let node_program f ( program : J.program) = 
+let node_program f ( {program ; modules ; } : J.deps_program) = 
   let cxt = Ext_pp_scope.empty in
   (* Node style *)
   let requires cxt f (modules : (Ident.t * string) list ) =
@@ -1330,7 +1330,7 @@ let node_program f ( program : J.program) =
     outer_cxt
   in
 
-  let cxt = requires cxt  f program.modules in
+  let cxt = requires cxt  f modules in
 
   let () = P.force_newline f in
   let cxt =  statement_list true cxt f program.block  in
@@ -1339,7 +1339,7 @@ let node_program f ( program : J.program) =
 
 
 let amd_program f 
-    ({modules; block = b ; exports = exp ; side_effect  } as program : J.program)
+    ( {program ; modules ; _} : J.deps_program)
   = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
@@ -1371,7 +1371,7 @@ let amd_program f
   P.brace_vgroup f 1 @@ (fun _ -> 
       let () = P.string f L.strict_directive in 
       let () = P.newline f in
-      let cxt =  statement_list true cxt f  b in 
+      let cxt =  statement_list true cxt f  program.block in 
       (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
       P.newline f;
       P.force_newline f;
@@ -1379,7 +1379,7 @@ let amd_program f
   P.string f ")";
 ;;
 
-let pp_program (program : J.program) (f : Ext_pp.t) = 
+let pp_program ( program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
@@ -1404,6 +1404,6 @@ let pp_program (program : J.program) (f : Ext_pp.t) =
     P.flush f ()
   end
 let dump_program 
-    (program : J.program)
+    (program : J.deps_program)
     (oc : out_channel) = 
   pp_program program (P.from_channel oc)

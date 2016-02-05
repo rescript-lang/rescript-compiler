@@ -30,5 +30,11 @@
 
 val make_program : 
     string -> 
-    string option -> 
-    Ident.t list -> Lam_module_ident.t list -> J.block -> J.program
+    Ident.t list -> J.block -> J.program
+
+val decorate_deps : 
+  J.required_modules ->
+  string option ->
+  J.program -> J.deps_program
+
+val string_of_module_id : Lam_module_ident.t -> string

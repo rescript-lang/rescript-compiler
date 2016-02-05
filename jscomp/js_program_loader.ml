@@ -95,17 +95,17 @@ let string_of_module_id (x : module_id) : string =
    FIXME: the module order matters?
 *)
 
-let make_program name side_effect export_idents external_module_ids block : J.program = 
-  let modules = 
-    List.map (fun id -> Lam_module_ident.id id, string_of_module_id id )
-      external_module_ids in
+let make_program name  export_idents block : J.program = 
 
   {
     name;
-    modules; 
+
     exports = export_idents ; 
     export_set = Ident_set.of_list export_idents;
     block = block;
-    side_effect ; 
+
   }
-    
+let decorate_deps modules side_effect program : J.deps_program = 
+
+  { program ; modules ; side_effect }
+

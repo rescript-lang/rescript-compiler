@@ -301,21 +301,11 @@ class virtual fold =
            let o = o#property_name _x in let o = o#expression _x_i1 in o)
     method property : property -> 'self_type = o#unknown
     method program : program -> 'self_type =
-      fun
-        {
-          name = _x;
-          modules = _x_i1;
-          block = _x_i2;
-          exports = _x_i3;
-          export_set = _x_i4;
-          side_effect = _x_i5
-        } ->
+      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
+        ->
         let o = o#string _x in
-        let o = o#required_modules _x_i1 in
-        let o = o#block _x_i2 in
-        let o = o#exports _x_i3 in
-        let o = o#unknown _x_i4 in
-        let o = o#option (fun o -> o#string) _x_i5 in o
+        let o = o#block _x_i1 in
+        let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
     method number : number -> 'self_type = o#unknown
     method mutable_flag : mutable_flag -> 'self_type = o#unknown
     method label : label -> 'self_type = o#string
@@ -397,6 +387,11 @@ class virtual fold =
         let o = o#option (fun o -> o#string) _x_i1 in o
     method exports : exports -> 'self_type = o#unknown
     method exception_ident : exception_ident -> 'self_type = o#ident
+    method deps_program : deps_program -> 'self_type =
+      fun { program = _x; modules = _x_i1; side_effect = _x_i2 } ->
+        let o = o#program _x in
+        let o = o#required_modules _x_i1 in
+        let o = o#option (fun o -> o#string) _x_i2 in o
     method case_clause :
       (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 

@@ -4,8 +4,8 @@
 var Caml_string = require("../runtime/caml_string");
 var Mt          = require("./mt");
 var $$String    = require("../stdlib/string");
-var Caml_string = require("../runtime/caml_string");
 var List        = require("../stdlib/list");
+var Caml_string = require("../runtime/caml_string");
 
 var suites_001 = [
   /* tuple */0,
