@@ -41,6 +41,7 @@ val is_closed : Lambda.lambda -> bool
 
 
 
+
 type stats = 
   { 
     mutable top : bool ; 
@@ -57,6 +58,7 @@ type stats =
   }
 
 val param_map_of_list : Ident.t list -> stats Ident_map.t
+
 val free_variables : Ident_set.t -> stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
 
 val small_inline_size : int 

@@ -5,8 +5,8 @@ var Bytes           = require("./bytes");
 var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Sys             = require("./sys");
-var Caml_curry      = require("../runtime/caml_curry");
 var $$String        = require("./string");
+var Caml_curry      = require("../runtime/caml_curry");
 var Caml_string     = require("../runtime/caml_string");
 
 function create(n) {
@@ -118,7 +118,7 @@ function add_substring(b, s, offset, len) {
 }
 
 function add_subbytes(b, s, offset, len) {
-  return add_substring(b, Caml_curry.app1(Bytes.unsafe_to_string, s), offset, len);
+  return add_substring(b, Caml_string.bytes_to_string(s), offset, len);
 }
 
 function add_string(b, s) {
@@ -133,7 +133,7 @@ function add_string(b, s) {
 }
 
 function add_bytes(b, s) {
-  return add_string(b, Caml_curry.app1(Bytes.unsafe_to_string, s));
+  return add_string(b, Caml_string.bytes_to_string(s));
 }
 
 function add_buffer(b, bs) {

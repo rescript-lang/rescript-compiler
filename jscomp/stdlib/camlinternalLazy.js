@@ -2,7 +2,6 @@
 'use strict';
 
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj              = require("./obj");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
 var Caml_curry       = require("../runtime/caml_curry");
 
@@ -22,7 +21,7 @@ function force_lazy_block(blk) {
   try {
     var result = Caml_curry.app1(closure, /* () */0);
     blk[0] = result;
-    Caml_obj_runtime.caml_obj_set_tag(blk, Obj.forward_tag);
+    Caml_obj_runtime.caml_obj_set_tag(blk, 250);
     return result;
   }
   catch (e){
@@ -38,16 +37,16 @@ function force_val_lazy_block(blk) {
   blk[0] = raise_undefined;
   var result = Caml_curry.app1(closure, /* () */0);
   blk[0] = result;
-  Caml_obj_runtime.caml_obj_set_tag(blk, Obj.forward_tag);
+  Caml_obj_runtime.caml_obj_set_tag(blk, 250);
   return result;
 }
 
 function force(lzv) {
   var t = Caml_obj_runtime.caml_obj_tag(lzv);
-  if (t === Obj.forward_tag) {
+  if (t === 250) {
     return lzv[0];
   }
-  else if (t !== Obj.lazy_tag) {
+  else if (t !== 246) {
     return lzv;
   }
   else {
@@ -57,10 +56,10 @@ function force(lzv) {
 
 function force_val(lzv) {
   var t = Caml_obj_runtime.caml_obj_tag(lzv);
-  if (t === Obj.forward_tag) {
+  if (t === 250) {
     return lzv[0];
   }
-  else if (t !== Obj.lazy_tag) {
+  else if (t !== 246) {
     return lzv;
   }
   else {

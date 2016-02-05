@@ -250,12 +250,36 @@ let export_to_cmj
       (fun acc (x : Ident.t)  (lambda : Lambda.lambda) ->
          let arity =  get_arity meta (Lvar x) in
          let closed_lambda = 
-           if Lam_inline_util.maybe_functor x.name 
+           if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
            then
              if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
              then Some lambda
              else None
-           else None in 
+           else 
+             let lam_size = Lam_analysis.size lambda in
+             let free_variables =
+               Lam_analysis.free_variables Ident_set.empty Ident_map.empty 
+                 lambda in
+             if  lam_size < Lam_analysis.small_inline_size && 
+                 Ident_map.is_empty free_variables
+             (* TODO:
+                1. global need re-assocate when do the beta reduction 
+                2. [lambda_exports] is not precise
+             *)
+             then 
+               begin
+                 (* Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ; *)
+                 Some lambda
+               end
+             else 
+               begin
+                 (* Ext_log.dwarn __LOC__ "%s : %d : {%s} not inlined @."  *)
+                 (*   x.name lam_size   *)
+                 (*   (String.concat ", " @@  *)
+                 (*    List.map (fun x -> x.Ident.name) @@ Ident_map.keys free_variables) ; *)
+                 None 
+               end
+         in 
          String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
       )
       String_map.empty

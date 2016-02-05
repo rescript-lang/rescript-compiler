@@ -46,9 +46,9 @@ type module_info = {
 type primitive_description = Types.type_expr option Primitive.description
 
 type key = 
-  | GetGlobal of Ident.t * int * Env.t 
-  | QueryGlobal of Ident.t * Env.t  * bool (** we need register which global variable is an dependency *)
-  | CamlRuntimePrimitive of primitive_description * J.expression list
+
+  Ident.t * Env.t  * bool (** we need register which global variable is an dependency *)
+
 
 type ident_info = {
   id : Ident.t;

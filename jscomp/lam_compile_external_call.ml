@@ -288,7 +288,7 @@ let translate
           in 
           E.obj kvs 
         | None -> assert false 
-        (* Lam_compile_global.get_exp (CamlRuntimePrimitive (prim, args))  *)
+
       end
     | Js_call{ external_module_name = module_name; 
                txt = { name = fn; splice = js_splice ; 
@@ -375,8 +375,8 @@ let translate
         | _ -> assert false 
       end
 
-    | Normal -> 
-      Lam_compile_global.get_exp (CamlRuntimePrimitive (prim, args))
+    | Normal -> Lam_dispatch_primitive.query prim args 
+
 
   end
 

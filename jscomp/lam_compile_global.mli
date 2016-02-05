@@ -24,12 +24,6 @@
 
 val get_exp : Lam_compile_env.key  -> J.expression
 
-(*
-   @param id external module id 
-   @param number the index of the external function 
-   @param env typing environment
-   @param args arguments 
- *)
-val get_exp_with_args : Ident.t  ->  int ->  Env.t -> J.expression list -> J.expression
+
 
 val query_lambda : Ident.t -> Env.t -> Lambda.lambda

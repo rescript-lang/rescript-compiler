@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Bytes    = require("../stdlib/bytes");
 var Mt       = require("./mt");
 var $$String = require("../stdlib/string");
 
@@ -14,8 +15,8 @@ var s = [
   $$String.init,
   $$String.copy,
   $$String.sub,
-  $$String.fill,
-  $$String.blit,
+  Bytes.fill,
+  Bytes.blit_string,
   $$String.concat,
   $$String.iter,
   $$String.iteri,

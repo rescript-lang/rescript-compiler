@@ -2712,7 +2712,7 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   narrow(cla, vals, virt_meths, concr_meths);
   var init = top ? Caml_curry.app2($$super, cla, param[4]) : Caml_curry.app1($$super, cla);
   widen(cla);
-  return Caml_curry.app1($$Array.concat, [
+  return Caml_array.caml_array_concat([
               /* :: */0,
               /* array */[init],
               [

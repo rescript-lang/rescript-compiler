@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_io          = require("../runtime/caml_io");
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Obj              = require("./obj");
 var Pervasives       = require("./pervasives");
@@ -82,7 +83,7 @@ function field(x, i) {
                       "%S"
                     ]), f);
     }
-    else if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
+    else if (Caml_obj_runtime.caml_obj_tag(f) === 253) {
       return Pervasives.string_of_float(f);
     }
     else {
@@ -256,7 +257,7 @@ function print(fct, arg) {
               ],
               "Uncaught exception: %s\n"
             ]), to_string(x));
-    Caml_curry.app1(Pervasives.flush, Pervasives.stderr);
+    Caml_io.caml_ml_flush(Pervasives.stderr);
     throw x;
   }
 }
@@ -266,7 +267,7 @@ function $$catch(fct, arg) {
     return Caml_curry.app1(fct, arg);
   }
   catch (x){
-    Caml_curry.app1(Pervasives.flush, Pervasives.stdout);
+    Caml_io.caml_ml_flush(Pervasives.stdout);
     Caml_curry.app1(Printf.eprintf([
               /* Format */0,
               [

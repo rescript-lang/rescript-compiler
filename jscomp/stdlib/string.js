@@ -55,7 +55,7 @@ function concat(sep, l) {
           pos[1] += s.length;
           return /* () */0;
         }, l[2]);
-    return Caml_curry.app1(Bytes.unsafe_to_string, r);
+    return Caml_string.bytes_to_string(r);
   }
   else {
     return "";

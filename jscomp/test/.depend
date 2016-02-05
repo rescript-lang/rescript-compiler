@@ -60,6 +60,10 @@ complex_while_loop.cmo :
 complex_while_loop.cmx :
 const_block_test.cmo : mt.cmo ../stdlib/array.cmi const_block_test.cmi
 const_block_test.cmx : mt.cmx ../stdlib/array.cmx const_block_test.cmi
+const_defs.cmo :
+const_defs.cmx :
+const_defs_test.cmo : const_defs.cmo
+const_defs_test.cmx : const_defs.cmx
 cont_int_fold_test.cmo :
 cont_int_fold_test.cmx :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi
@@ -426,6 +430,10 @@ complex_while_loop.cmo :
 complex_while_loop.cmj :
 const_block_test.cmo : mt.cmo ../stdlib/array.cmi const_block_test.cmi
 const_block_test.cmj : mt.cmj ../stdlib/array.cmj const_block_test.cmi
+const_defs.cmo :
+const_defs.cmj :
+const_defs_test.cmo : const_defs.cmo
+const_defs_test.cmj : const_defs.cmj
 cont_int_fold_test.cmo :
 cont_int_fold_test.cmj :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi

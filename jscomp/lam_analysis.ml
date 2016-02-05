@@ -452,6 +452,8 @@ let is_closed_by set lam =
   Ident_map.is_empty (free_variables set (Ident_map.empty ) lam   )
 
 
+(** A bit consverative , it should be empty *)
 let is_closed  lam = 
-  Ident_map.is_empty (free_variables Ident_set.empty Ident_map.empty lam)  
+  Ident_map.for_all (fun k _ -> Ident.global k)
+    (free_variables Ident_set.empty Ident_map.empty lam)  
 

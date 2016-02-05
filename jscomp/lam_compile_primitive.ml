@@ -298,7 +298,7 @@ let translate
         1. include Array --> let include  = Array 
         2. get exception
     *)
-    Lam_compile_global.get_exp (QueryGlobal (i,env,false))
+    Lam_compile_global.get_exp (i,env,false)
   
     (** only when Lapply -> expand = true*)
   | Praise _raise_kind -> assert false (* handled before here *)

@@ -1,20 +1,19 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("./bytes");
 var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Char            = require("./char");
 var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_curry      = require("../runtime/caml_curry");
 var $$String        = require("./string");
+var Caml_string     = require("../runtime/caml_string");
 
 function string(str) {
   return Caml_primitive.caml_md5_string(str, 0, str.length);
 }
 
 function bytes(b) {
-  return string(Caml_curry.app1(Bytes.unsafe_to_string, b));
+  return string(Caml_string.bytes_to_string(b));
 }
 
 function substring(str, ofs, len) {
@@ -27,7 +26,7 @@ function substring(str, ofs, len) {
 }
 
 function subbytes(b, ofs, len) {
-  return substring(Caml_curry.app1(Bytes.unsafe_to_string, b), ofs, len);
+  return substring(Caml_string.bytes_to_string(b), ofs, len);
 }
 
 function file(filename) {
@@ -39,11 +38,11 @@ function file(filename) {
     exit = 1;
   }
   catch (e){
-    Caml_curry.app1(Pervasives.close_in, ic);
+    Caml_primitive.caml_ml_close_channel(ic);
     throw e;
   }
   if (exit === 1) {
-    Caml_curry.app1(Pervasives.close_in, ic);
+    Caml_primitive.caml_ml_close_channel(ic);
     return d;
   }
   
@@ -70,7 +69,7 @@ function to_hex(d) {
     result[i * 2] = char_hex((x >>> 4));
     result[i * 2 + 1] = char_hex(x & 15);
   }
-  return Caml_curry.app1(Bytes.unsafe_to_string, result);
+  return Caml_string.bytes_to_string(result);
 }
 
 function from_hex(s) {
@@ -124,7 +123,7 @@ function from_hex(s) {
   for(var i = 0; i<= 15; ++i){
     result[i] = Char.chr($$byte(2 * i));
   }
-  return Caml_curry.app1(Bytes.unsafe_to_string, result);
+  return Caml_string.bytes_to_string(result);
 }
 
 var compare = $$String.compare;

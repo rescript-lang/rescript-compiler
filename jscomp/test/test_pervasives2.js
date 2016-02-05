@@ -16,7 +16,7 @@ var List$1 = [
   List.tl,
   List.nth,
   List.rev,
-  List.append,
+  Pervasives.$at,
   List.rev_append,
   List.concat,
   List.flatten,
