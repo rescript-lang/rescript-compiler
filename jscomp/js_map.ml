@@ -322,30 +322,13 @@ class virtual map =
            let _x_i1 = o#expression _x_i1 in (_x, _x_i1))
     method property : property -> property = o#unknown
     method program : program -> program =
-      fun
-        {
-          name = _x;
-          modules = _x_i1;
-          block = _x_i2;
-          exports = _x_i3;
-          export_set = _x_i4;
-          side_effect = _x_i5
-        } ->
+      fun { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3 }
+        ->
         let _x = o#string _x in
-        let _x_i1 = o#required_modules _x_i1 in
-        let _x_i2 = o#block _x_i2 in
-        let _x_i3 = o#exports _x_i3 in
-        let _x_i4 = o#unknown _x_i4 in
-        let _x_i5 = o#option (fun o -> o#string) _x_i5
-        in
-          {
-            name = _x;
-            modules = _x_i1;
-            block = _x_i2;
-            exports = _x_i3;
-            export_set = _x_i4;
-            side_effect = _x_i5;
-          }
+        let _x_i1 = o#block _x_i1 in
+        let _x_i2 = o#exports _x_i2 in
+        let _x_i3 = o#unknown _x_i3
+        in { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3; }
     method number : number -> number = o#unknown
     method mutable_flag : mutable_flag -> mutable_flag = o#unknown
     method label : label -> label = o#string
@@ -444,6 +427,12 @@ class virtual map =
         in { expression_desc = _x; comment = _x_i1; }
     method exports : exports -> exports = o#unknown
     method exception_ident : exception_ident -> exception_ident = o#ident
+    method deps_program : deps_program -> deps_program =
+      fun { program = _x; modules = _x_i1; side_effect = _x_i2 } ->
+        let _x = o#program _x in
+        let _x_i1 = o#required_modules _x_i1 in
+        let _x_i2 = o#option (fun o -> o#string) _x_i2
+        in { program = _x; modules = _x_i1; side_effect = _x_i2; }
     method case_clause :
       (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 

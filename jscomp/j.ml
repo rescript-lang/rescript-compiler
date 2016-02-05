@@ -341,9 +341,15 @@ and block =  statement list
 
 and program = {
   name :  string;
-  modules : required_modules ;
+
   block : block ;
   exports : exports ;
   export_set : Ident_set.t ;
-  side_effect : string option (* None: no, Some reason  *)
+
 }
+and deps_program = 
+  {
+    program : program ; 
+    modules : required_modules ;
+    side_effect : string option (* None: no, Some reason  *)
+  }

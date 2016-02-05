@@ -34,7 +34,7 @@ val compile :
   Env.t -> 
   Types.signature -> 
   Lambda.lambda -> 
-  J.program
+  J.deps_program
 
 val lambda_as_module :  
   Env.t ->
