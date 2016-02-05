@@ -1,10 +1,4 @@
 {
-  "compilerOptions": {
-    "module": "commonjs"
-
-
-  },
-
   "exclude": [
     "node_modules",
     "jscomp/runtime/caml_marshal.ts",

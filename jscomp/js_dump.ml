@@ -1338,39 +1338,35 @@ let node_program f ( program : J.program) =
   exports cxt f program.exports
 
 
-let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.program)
+let amd_program f 
+    ({modules; block = b ; exports = exp ; side_effect  } as program : J.program)
   = 
-  let rec aux cxt f modules = 
-    match modules with
-    | [] -> cxt 
-    | [(id,_)] -> ident cxt f id
-    | (id,_) :: rest -> 
-      let cxt = ident cxt f id in
-      P.string f L.comma;
-      aux cxt f rest 
-  in
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
-  let rec list ~pp_sep pp_v ppf = function
-    | [] -> ()
-    | [v] -> pp_v ppf v
-    | v :: vs ->
-      pp_v ppf v;
-      pp_sep ppf ();
-      list ~pp_sep pp_v ppf vs in
-
   P.vgroup f 1 @@ fun _ -> 
   P.string f L.define;
   P.string f "([";
-  list ~pp_sep:(fun f _ -> P.string f L.comma)
-    (fun f (_,s) -> 
-       pp_string f ~utf:true ~quote:(best_string_quote s) s; ) f modules;
+  P.string f (Printf.sprintf "%S" L.exports);
+
+  List.iter (fun (_,s) ->
+      P.string f L.comma ;
+      P.space f; 
+      pp_string f ~utf:true ~quote:(best_string_quote s) s;
+    ) modules ;
   P.string f "]";
   P.string f L.comma;
   P.newline f;
   P.string f L.function_;
   P.string f "(";
-  let cxt = aux cxt f modules in
+  P.string f L.exports;
+
+  let cxt = 
+    List.fold_left (fun cxt (id,_) ->         
+        P.string f L.comma;
+        P.space f ; 
+        ident cxt f id
+      ) cxt modules     
+  in
   P.string f ")";
   P.brace_vgroup f 1 @@ (fun _ -> 
       let () = P.string f L.strict_directive in 
@@ -1378,32 +1374,8 @@ let amd_program f ({modules; block = b ; exports = exp ; side_effect  } : J.prog
       let cxt =  statement_list true cxt f  b in 
       (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
       P.newline f;
-      P.string f L.return;
-      P.space f;
-      P.brace_vgroup f 1 @@ fun _ -> 
-      let rec aux cxt f (idents : Ident.t list) = 
-        match idents with
-        | [] -> cxt 
-        | [id] -> 
-          P.string f (Ext_ident.convert id.name);
-          P.space f ;
-          P.string f L.colon;
-          P.space f ;
-          ident cxt f id
-        | id :: rest 
-          -> 
-          P.string f (Ext_ident.convert id.name);
-          P.space f ;
-          P.string f L.colon;
-          P.space f;
-          let cxt = ident cxt f id  in
-          P.string f L.comma;
-          P.space f ;
-          P.newline f ;
-          aux cxt f rest 
-
-      in
-      ignore @@ aux cxt f exp);
+      P.force_newline f;
+      ignore (exports cxt f program.exports));
   P.string f ")";
 ;;
 
