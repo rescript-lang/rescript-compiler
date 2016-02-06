@@ -10,13 +10,13 @@ Caml_curry.app1(console.log, "hey");
 
 Caml_curry.app1(doc.getElementById, "haha");
 
-var v = Caml_curry.app1(console.log, 32);
+var v = console.log(32);
 
-Caml_curry.app2(ReactDom.render, Caml_curry.app1(React.createClass, {
+ReactDom.render(React.createClass({
           "render": function () {
-            return Caml_curry.app4(React.DOM.div, {
+            return React.DOM.div({
                         "alt": "pic"
-                      }, Caml_curry.app2(React.DOM.h1, null, "hello react"), Caml_curry.app2(React.DOM.h2, null, "type safe!"), Caml_curry.app2(React.DOM.h3, null, "type safe!"));
+                      }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"), React.DOM.h3(null, "type safe!"));
           }
         }), Caml_curry.app1(document.getElementById, "hi"));
 

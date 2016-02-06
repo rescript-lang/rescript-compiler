@@ -27,10 +27,10 @@ function f2(param) {
 var g = 7;
 
 function ff(param) {
-  return Caml_curry.app2(U.test_primit, 3, param);
+  return U.test_primit(3, param);
 }
 
-var fff = Caml_curry.app1(VV.test_primit2, 3);
+var fff = VV.test_primit2(3);
 
 function length_aux(_len, _param) {
   while(true) {

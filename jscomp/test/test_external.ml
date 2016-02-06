@@ -6,6 +6,13 @@ external (~~) : 'a -> 'b = "%identity"
 type document
 external doc : unit -> document = "" [@@js.call "document"]
 external alert : string -> unit = "" [@@js.call "alert"]
+
+type v  = int -> int
+external f : string -> v = "x" [@@js.call "ff"]
+
+
 let xx = doc ()
 
 let () = alert "hehha"
+
+let b = f "x" 3 

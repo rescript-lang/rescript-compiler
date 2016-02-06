@@ -140,9 +140,9 @@ function find(x, _param) {
 }
 
 function timing(label, f) {
-  Caml_curry.app1(console.time, label);
+  console.time(label);
   Caml_curry.app1(f, /* () */0);
-  return Caml_curry.app1(console.timeEnd, label);
+  return console.timeEnd(label);
 }
 
 function assertion_test() {

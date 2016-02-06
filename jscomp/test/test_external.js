@@ -3,9 +3,12 @@
 
 var Caml_curry = require("../runtime/caml_curry");
 
-var xx = Caml_curry.app0(document);
+var xx = document();
 
-Caml_curry.app1(alert, "hehha");
+alert("hehha");
+
+var b = Caml_curry.app1(ff("x"), 3);
 
 exports.xx = xx;
+exports.b  = b;
 /* xx Not a pure module */

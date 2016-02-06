@@ -87,6 +87,8 @@ module L = struct
   let define = "define"
   let break = "break"
   let strict_directive = "'use strict';"
+
+  let curry = "curry" (* curry arbitrary args *)
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -393,24 +395,27 @@ and
   | Call (e, el, info) ->
     let action () = 
       P.group f 1 (fun _ -> 
+          match info, el  with
+          | {arity  = Full }, _ 
+          | _, [] -> 
+            let cxt = expression 15 cxt f e in 
+            P.paren_group f 1 (fun _ -> arguments cxt  f el )  
 
-          match info with
-          | {arity = NA } -> 
+          | _ , _ -> 
             (* ipp_comment f (Some "!") *)
             P.string f  Js_config.curry; 
             P.string f L.dot;
             let len = List.length el in
-            if len <= 8 then  
+            if 1 <= len && len <= 8 then  
               begin
                 P.string f (Printf.sprintf "app%d" len);
                 P.paren_group f 1 (fun _ -> arguments cxt f (e::el))
               end
-            else assert false (* TODO *)
-           (* let cxt = expression 15 cxt f e in  *)
-            (* P.paren_group f 1 (fun _ -> arguments cxt  f el ) )  *)
-          | _ -> 
-            let cxt = expression 15 cxt f e in 
-            P.paren_group f 1 (fun _ -> arguments cxt  f el ) ) 
+            else 
+              begin 
+                P.string f  L.curry;                
+                P.paren_group f 1 (fun _ -> arguments cxt f [ e ; E.arr Mutable el])
+              end)
     in
     if l > 15 then P.paren_group f 1 action   
     else action ()

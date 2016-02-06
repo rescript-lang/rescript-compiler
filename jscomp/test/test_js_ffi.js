@@ -1,11 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
-var $$String   = require("../stdlib/string");
+var $$String = require("../stdlib/string");
 
 function v() {
-  return Caml_curry.app1(t, [
+  return t([
               0,
               $$String.compare
             ]);

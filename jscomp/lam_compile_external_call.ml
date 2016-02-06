@@ -316,7 +316,7 @@ let translate
                 | _ -> assert false
               end
           in
-          E.call fn args
+          E.call ~info:{arity=Full} fn args
         | None -> assert false 
       end
     | Js_new { external_module_name = module_name; 

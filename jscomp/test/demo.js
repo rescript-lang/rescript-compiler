@@ -101,11 +101,11 @@ function ui_layout(compile, lookup, appContext) {
           return /* () */0;
         }
       });
-  Caml_curry.app2(Runtime.setInterval, function () {
-        return grid.dataSource = Caml_curry.app2(Array.prototype.map.call, data, function (param) {
+  Runtime.setInterval(function () {
+        return grid.dataSource = Array.prototype.map.call(data, function (param) {
                     var price = param[2];
-                    var bid = price + 20 * Caml_curry.app0(Math.random);
-                    var ask = price + 20 * Caml_curry.app0(Math.random);
+                    var bid = price + 20 * Math.random();
+                    var ask = price + 20 * Math.random();
                     var result = Caml_curry.app1(computeFunction[1], {
                           "bid": bid,
                           "ask": ask

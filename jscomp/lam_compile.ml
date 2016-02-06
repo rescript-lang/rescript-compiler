@@ -405,9 +405,9 @@ and
           | _ -> 
 
             Js_output.handle_block_return st should_return lam (List.concat args_code ) 
-              (E.call ~info:(match info with 
-                   | { apply_status = Full} -> {arity = Full }
-                   | { apply_status = NA} -> {arity = NA} ) fn_code args) 
+              (E.call ~info:(match fn, info with 
+                   | _, { apply_status = Full} -> {arity = Full }
+                   | _,  { apply_status = NA} -> {arity = NA} ) fn_code args) 
         end;
       end
 
