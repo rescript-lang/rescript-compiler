@@ -8,6 +8,7 @@ var Sys              = require("./sys");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("./array");
+var Caml_curry       = require("../runtime/caml_curry");
 
 function length(x) {
   return x.length - 1;
@@ -71,7 +72,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_get(b, i);
                     if (match) {
-                      _accu = f(match[1], accu);
+                      _accu = Caml_curry.app2(f, match[1], accu);
                       _i = i + 1;
                     }
                     else {
@@ -93,7 +94,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_get(b, i);
                     if (match) {
-                      f(match[1]);
+                      Caml_curry.app1(f, match[1]);
                       _i = i + 1;
                     }
                     else {
@@ -116,7 +117,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_check(b, i);
                     if (match !== 0) {
-                      f(b, t[2][j], i);
+                      Caml_curry.app3(f, b, t[2][j], i);
                       _i = i + 1;
                     }
                     else {
@@ -215,7 +216,7 @@ function Make(H) {
         var newhashes = Caml_array.caml_make_vect(newsz, 0);
         Caml_primitive.caml_weak_blit(bucket, 0, newbucket, 0, sz);
         $$Array.blit(hashes, 0, newhashes, 0, sz);
-        setter(newbucket, sz, d);
+        Caml_curry.app3(setter, newbucket, sz, d);
         newhashes[sz] = h;
         t[1][index] = newbucket;
         t[2][index] = newhashes;
@@ -262,14 +263,14 @@ function Make(H) {
         _i = i + 1;
       }
       else {
-        setter(bucket, i, d);
+        Caml_curry.app3(setter, bucket, i, d);
         hashes[i] = h;
         return /* () */0;
       }
     };
   };
   var add = function (t, d) {
-    var h = H[2](d);
+    var h = Caml_curry.app1(H[2], d);
     return add_aux(t, function (prim, prim$1, prim$2) {
                 return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
               }, [
@@ -278,7 +279,7 @@ function Make(H) {
               ], h, get_index(t, h));
   };
   var find_or = function (t, d, ifnotfound) {
-    var h = H[2](d);
+    var h = Caml_curry.app1(H[2], d);
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
@@ -287,12 +288,12 @@ function Make(H) {
     while(true) {
       var i = _i;
       if (i >= sz) {
-        return ifnotfound(h, index);
+        return Caml_curry.app2(ifnotfound, h, index);
       }
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (H[1](match[1], d)) {
+          if (Caml_curry.app2(H[1], match[1], d)) {
             var match$1 = Caml_primitive.caml_weak_get(bucket, i);
             if (match$1) {
               return match$1[1];
@@ -331,7 +332,7 @@ function Make(H) {
               });
   };
   var find_shadow = function (t, d, iffound, ifnotfound) {
-    var h = H[2](d);
+    var h = Caml_curry.app1(H[2], d);
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
@@ -345,8 +346,8 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (H[1](match[1], d)) {
-            return iffound(bucket, i);
+          if (Caml_curry.app2(H[1], match[1], d)) {
+            return Caml_curry.app2(iffound, bucket, i);
           }
           else {
             _i = i + 1;
@@ -372,7 +373,7 @@ function Make(H) {
               }, /* false */0);
   };
   var find_all = function (t, d) {
-    var h = H[2](d);
+    var h = Caml_curry.app1(H[2], d);
     var index = get_index(t, h);
     var bucket = t[1][index];
     var hashes = t[2][index];
@@ -388,7 +389,7 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (H[1](match[1], d)) {
+          if (Caml_curry.app2(H[1], match[1], d)) {
             var match$1 = Caml_primitive.caml_weak_get(bucket, i);
             if (match$1) {
               _accu = [

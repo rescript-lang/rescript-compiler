@@ -2,10 +2,11 @@
 'use strict';
 
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_curry      = require("../runtime/caml_curry");
 
 function f(g, x) {
   try {
-    return g(x);
+    return Caml_curry.app1(g, x);
   }
   catch (exn){
     if (exn === Caml_exceptions.Not_found) {

@@ -4,6 +4,7 @@
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Pervasives      = require("../stdlib/pervasives");
 var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_curry      = require("../runtime/caml_curry");
 
 var Bad = [
   248,
@@ -58,7 +59,7 @@ function v(speclist) {
 }
 
 function f(g, speclist) {
-  return g(assoc3("-help", speclist));
+  return Caml_curry.app1(g, assoc3("-help", speclist));
 }
 
 function add_help(speclist) {

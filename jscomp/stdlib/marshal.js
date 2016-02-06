@@ -4,6 +4,7 @@
 var Bytes          = require("./bytes");
 var Pervasives     = require("./pervasives");
 var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_curry     = require("../runtime/caml_curry");
 
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > buff.length - len) {
@@ -45,7 +46,7 @@ function from_bytes(buff, ofs) {
 }
 
 function from_string(buff, ofs) {
-  return from_bytes(Bytes.unsafe_of_string(buff), ofs);
+  return from_bytes(Caml_curry.app1(Bytes.unsafe_of_string, buff), ofs);
 }
 
 function to_channel(prim, prim$1, prim$2) {

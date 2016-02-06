@@ -4,6 +4,7 @@
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Obj              = require("./obj");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Caml_curry       = require("../runtime/caml_curry");
 
 var Undefined = [
   248,
@@ -19,7 +20,7 @@ function force_lazy_block(blk) {
   var closure = blk[0];
   blk[0] = raise_undefined;
   try {
-    var result = closure(/* () */0);
+    var result = Caml_curry.app1(closure, /* () */0);
     blk[0] = result;
     Caml_obj_runtime.caml_obj_set_tag(blk, Obj.forward_tag);
     return result;
@@ -35,7 +36,7 @@ function force_lazy_block(blk) {
 function force_val_lazy_block(blk) {
   var closure = blk[0];
   blk[0] = raise_undefined;
-  var result = closure(/* () */0);
+  var result = Caml_curry.app1(closure, /* () */0);
   blk[0] = result;
   Caml_obj_runtime.caml_obj_set_tag(blk, Obj.forward_tag);
   return result;

@@ -7,6 +7,7 @@ var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("../stdlib/camlinternalFormatBasics");
+var Caml_curry               = require("../runtime/caml_curry");
 var Caml_string              = require("../runtime/caml_string");
 
 function failwith(s) {
@@ -546,18 +547,18 @@ var exit_function = [
 function at_exit(f) {
   var g = exit_function[1];
   exit_function[1] = function () {
-    f(/* () */0);
-    return g(/* () */0);
+    Caml_curry.app1(f, /* () */0);
+    return Caml_curry.app1(g, /* () */0);
   };
   return /* () */0;
 }
 
 function do_at_exit() {
-  return exit_function[1](/* () */0);
+  return Caml_curry.app1(exit_function[1], /* () */0);
 }
 
 function exit(retcode) {
-  exit_function[1](/* () */0);
+  Caml_curry.app1(exit_function[1], /* () */0);
   return Caml_primitive.caml_sys_exit(retcode);
 }
 

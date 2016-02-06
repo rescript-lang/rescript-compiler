@@ -11,6 +11,7 @@ var Sys                      = require("./sys");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
+var Caml_curry               = require("../runtime/caml_curry");
 var $$String                 = require("./string");
 var Caml_string              = require("../runtime/caml_string");
 
@@ -34,7 +35,7 @@ function rev_char_set(char_set) {
   for(var i = 0; i<= 31; ++i){
     char_set$prime[i] = Pervasives.char_of_int(char_set.charCodeAt(i) ^ 255);
   }
-  return Bytes.unsafe_to_string(char_set$prime);
+  return Caml_curry.app1(Bytes.unsafe_to_string, char_set$prime);
 }
 
 function is_in_char_set(char_set, c) {
@@ -1053,11 +1054,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa(/* Refl */0);
+                    Caml_curry.app1(fa, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af(/* Refl */0);
+                    Caml_curry.app1(af, /* Refl */0);
                     return /* Refl */0;
                   },
                   match[3],
@@ -1070,11 +1071,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$1(/* Refl */0);
+                    Caml_curry.app1(fa$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$1(/* Refl */0);
+                    Caml_curry.app1(af$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$1[3],
@@ -1087,11 +1088,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$2(/* Refl */0);
+                    Caml_curry.app1(fa$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$2(/* Refl */0);
+                    Caml_curry.app1(af$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$2[3],
@@ -1104,11 +1105,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$3(/* Refl */0);
+                    Caml_curry.app1(fa$3, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$3(/* Refl */0);
+                    Caml_curry.app1(af$3, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$3[3],
@@ -1121,11 +1122,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$4(/* Refl */0);
+                    Caml_curry.app1(fa$4, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$4(/* Refl */0);
+                    Caml_curry.app1(af$4, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$4[3],
@@ -1138,11 +1139,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$5(/* Refl */0);
+                    Caml_curry.app1(fa$5, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$5(/* Refl */0);
+                    Caml_curry.app1(af$5, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$5[3],
@@ -1155,11 +1156,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$6(/* Refl */0);
+                    Caml_curry.app1(fa$6, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$6(/* Refl */0);
+                    Caml_curry.app1(af$6, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$6[3],
@@ -1172,11 +1173,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$7(/* Refl */0);
+                    Caml_curry.app1(fa$7, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$7(/* Refl */0);
+                    Caml_curry.app1(af$7, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$7[3],
@@ -1189,11 +1190,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$8(/* Refl */0);
+                    Caml_curry.app1(fa$8, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$8(/* Refl */0);
+                    Caml_curry.app1(af$8, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$8[3],
@@ -1214,23 +1215,23 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$9(/* Refl */0);
-                    ag(/* Refl */0);
+                    Caml_curry.app1(fa$9, /* Refl */0);
+                    Caml_curry.app1(ag, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    ga(/* Refl */0);
-                    af$9(/* Refl */0);
+                    Caml_curry.app1(ga, /* Refl */0);
+                    Caml_curry.app1(af$9, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    ed(/* Refl */0);
-                    dj(/* Refl */0);
+                    Caml_curry.app1(ed, /* Refl */0);
+                    Caml_curry.app1(dj, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    jd(/* Refl */0);
-                    de(/* Refl */0);
+                    Caml_curry.app1(jd, /* Refl */0);
+                    Caml_curry.app1(de, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1241,11 +1242,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$10(/* Refl */0);
+                    Caml_curry.app1(fa$10, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$10(/* Refl */0);
+                    Caml_curry.app1(af$10, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$11[3],
@@ -1258,11 +1259,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$11(/* Refl */0);
+                    Caml_curry.app1(fa$11, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$11(/* Refl */0);
+                    Caml_curry.app1(af$11, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$12[3],
@@ -1275,11 +1276,11 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$12(/* Refl */0);
+                    Caml_curry.app1(fa$12, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$12(/* Refl */0);
+                    Caml_curry.app1(af$12, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$13[3],
@@ -1294,19 +1295,19 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$13(/* Refl */0);
+                    Caml_curry.app1(fa$13, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$13(/* Refl */0);
+                    Caml_curry.app1(af$13, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    ed$1(/* Refl */0);
+                    Caml_curry.app1(ed$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    de$1(/* Refl */0);
+                    Caml_curry.app1(de$1, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1319,19 +1320,19 @@ function fmtty_rel_det(param) {
           return [
                   /* tuple */0,
                   function () {
-                    fa$14(/* Refl */0);
+                    Caml_curry.app1(fa$14, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    af$14(/* Refl */0);
+                    Caml_curry.app1(af$14, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    ed$2(/* Refl */0);
+                    Caml_curry.app1(ed$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    de$2(/* Refl */0);
+                    Caml_curry.app1(de$2, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1758,8 +1759,8 @@ function trans(ty1, ty2) {
               case 9 : 
                   var ty = trans(symm(ty1[2]), ty2[1]);
                   var match = fmtty_rel_det(ty);
-                  match[2](/* Refl */0);
-                  match[4](/* Refl */0);
+                  Caml_curry.app1(match[2], /* Refl */0);
+                  Caml_curry.app1(match[4], /* Refl */0);
                   return [
                           /* Format_subst_ty */9,
                           ty1[1],
@@ -3171,8 +3172,8 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
             }
             var sub_fmtty$prime = trans(symm(sub1_fmtty$prime), sub2_fmtty$prime$1);
             var match$9 = fmtty_rel_det(sub_fmtty$prime);
-            match$9[2](/* Refl */0);
-            match$9[4](/* Refl */0);
+            Caml_curry.app1(match$9[2], /* Refl */0);
+            Caml_curry.app1(match$9[4], /* Refl */0);
             var match$10 = type_ignored_format_substitution(CamlinternalFormatBasics.erase_rel(sub_fmtty[3]), fmt, fmtty[3]);
             return [
                     /* Fmtty_fmt_EBB */0,
@@ -3309,7 +3310,7 @@ function fix_padding(padty, width, str) {
           break;
       
     }
-    return Bytes.unsafe_to_string(res);
+    return Caml_curry.app1(Bytes.unsafe_to_string, res);
   }
 }
 
@@ -3350,7 +3351,7 @@ function fix_int_precision(prec, str) {
               var res = Bytes.make(prec$1 + 2, /* "0" */48);
               res[1] = str.charCodeAt(1);
               $$String.blit(str, 2, res, prec$1 - len + 4, len - 2);
-              return Bytes.unsafe_to_string(res);
+              return Caml_curry.app1(Bytes.unsafe_to_string, res);
             }
             else {
               exit = 2;
@@ -3383,7 +3384,7 @@ function fix_int_precision(prec, str) {
           var res$1 = Bytes.make(prec$1 + 1, /* "0" */48);
           res$1[0] = c;
           $$String.blit(str, 1, res$1, prec$1 - len + 2, len - 1);
-          return Bytes.unsafe_to_string(res$1);
+          return Caml_curry.app1(Bytes.unsafe_to_string, res$1);
         }
         else {
           return str;
@@ -3393,7 +3394,7 @@ function fix_int_precision(prec, str) {
         if (prec$1 > len) {
           var res$2 = Bytes.make(prec$1, /* "0" */48);
           $$String.blit(str, 0, res$2, prec$1 - len, len);
-          return Bytes.unsafe_to_string(res$2);
+          return Caml_curry.app1(Bytes.unsafe_to_string, res$2);
         }
         else {
           return str;
@@ -3718,7 +3719,7 @@ function make_printf(_k, o, _acc, _fmt) {
     var acc = _acc;
     var k = _k;
     if (typeof fmt === "number") {
-      return k(o, acc);
+      return Caml_curry.app2(k, o, acc);
     }
     else {
       switch (fmt[0]) {
@@ -3959,7 +3960,7 @@ function make_printf(_k, o, _acc, _fmt) {
                           /* Acc_delay */6,
                           acc,
                           function (o) {
-                            return f(o, x);
+                            return Caml_curry.app2(f, o, x);
                           }
                         ], rest$5);
             }
@@ -4116,7 +4117,7 @@ function make_printf(_k, o, _acc, _fmt) {
               }
             }
         case 24 : 
-            return make_custom(k, o, acc, fmt[3], fmt[1], fmt[2](/* () */0));
+            return make_custom(k, o, acc, fmt[3], fmt[1], Caml_curry.app1(fmt[2], /* () */0));
         
       }
     }
@@ -4233,7 +4234,7 @@ function make_invalid_arg(k, o, acc, fmt) {
 function make_string_padding(k, o, acc, fmt, pad, trans) {
   if (typeof pad === "number") {
     return function (x) {
-      var new_acc_002 = trans(x);
+      var new_acc_002 = Caml_curry.app1(trans, x);
       var new_acc = [
         /* Acc_data_string */4,
         acc,
@@ -4245,7 +4246,7 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
   else if (pad[0]) {
     var padty = pad[1];
     return function (w, x) {
-      var new_acc_002 = fix_padding(padty, w, trans(x));
+      var new_acc_002 = fix_padding(padty, w, Caml_curry.app1(trans, x));
       var new_acc = [
         /* Acc_data_string */4,
         acc,
@@ -4258,7 +4259,7 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
     var width = pad[2];
     var padty$1 = pad[1];
     return function (x) {
-      var new_acc_002 = fix_padding(padty$1, width, trans(x));
+      var new_acc_002 = fix_padding(padty$1, width, Caml_curry.app1(trans, x));
       var new_acc = [
         /* Acc_data_string */4,
         acc,
@@ -4274,7 +4275,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (p, x) {
-          var str = fix_int_precision(p, trans(iconv, x));
+          var str = fix_int_precision(p, Caml_curry.app2(trans, iconv, x));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4284,7 +4285,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (x) {
-          var str = trans(iconv, x);
+          var str = Caml_curry.app2(trans, iconv, x);
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4296,7 +4297,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p = prec[1];
       return function (x) {
-        var str = fix_int_precision(p, trans(iconv, x));
+        var str = fix_int_precision(p, Caml_curry.app2(trans, iconv, x));
         return make_printf(k, o, [
                     /* Acc_data_string */4,
                     acc,
@@ -4310,7 +4311,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (w, p, x) {
-          var str = fix_padding(padty, w, fix_int_precision(p, trans(iconv, x)));
+          var str = fix_padding(padty, w, fix_int_precision(p, Caml_curry.app2(trans, iconv, x)));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4320,7 +4321,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (w, x) {
-          var str = fix_padding(padty, w, trans(iconv, x));
+          var str = fix_padding(padty, w, Caml_curry.app2(trans, iconv, x));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4332,7 +4333,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p$1 = prec[1];
       return function (w, x) {
-        var str = fix_padding(padty, w, fix_int_precision(p$1, trans(iconv, x)));
+        var str = fix_padding(padty, w, fix_int_precision(p$1, Caml_curry.app2(trans, iconv, x)));
         return make_printf(k, o, [
                     /* Acc_data_string */4,
                     acc,
@@ -4347,7 +4348,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (p, x) {
-          var str = fix_padding(padty$1, w, fix_int_precision(p, trans(iconv, x)));
+          var str = fix_padding(padty$1, w, fix_int_precision(p, Caml_curry.app2(trans, iconv, x)));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4357,7 +4358,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (x) {
-          var str = fix_padding(padty$1, w, trans(iconv, x));
+          var str = fix_padding(padty$1, w, Caml_curry.app2(trans, iconv, x));
           return make_printf(k, o, [
                       /* Acc_data_string */4,
                       acc,
@@ -4369,7 +4370,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p$2 = prec[1];
       return function (x) {
-        var str = fix_padding(padty$1, w, fix_int_precision(p$2, trans(iconv, x)));
+        var str = fix_padding(padty$1, w, fix_int_precision(p$2, Caml_curry.app2(trans, iconv, x)));
         return make_printf(k, o, [
                     /* Acc_data_string */4,
                     acc,
@@ -4384,7 +4385,7 @@ function make_custom(k, o, acc, rest, arity, f) {
   if (arity) {
     var arity$1 = arity[1];
     return function (x) {
-      return make_custom(k, o, acc, rest, arity$1, f(x));
+      return make_custom(k, o, acc, rest, arity$1, Caml_curry.app1(f, x));
     };
   }
   else {
@@ -4432,10 +4433,10 @@ function output_acc(o, _acc) {
             break;
         case 6 : 
             output_acc(o, acc[1]);
-            return acc[2](o);
+            return Caml_curry.app1(acc[2], o);
         case 7 : 
             output_acc(o, acc[1]);
-            return Pervasives.flush(o);
+            return Caml_curry.app1(Pervasives.flush, o);
         case 8 : 
             output_acc(o, acc[1]);
             return Pervasives.invalid_arg(acc[2]);
@@ -4448,7 +4449,7 @@ function output_acc(o, _acc) {
           return Pervasives.output_string(o, acc[2]);
       case 2 : 
           output_acc(o, acc[1]);
-          return Pervasives.output_char(o, acc[2]);
+          return Caml_curry.app2(Pervasives.output_char, o, acc[2]);
       
     }
   };
@@ -4490,7 +4491,7 @@ function bufput_acc(b, _acc) {
             break;
         case 6 : 
             bufput_acc(b, acc[1]);
-            return acc[2](b);
+            return Caml_curry.app1(acc[2], b);
         case 7 : 
             _acc = acc[1];
             break;
@@ -4548,7 +4549,7 @@ function strput_acc(b, _acc) {
             break;
         case 6 : 
             strput_acc(b, acc[1]);
-            return Buffer.add_string(b, acc[2](/* () */0));
+            return Buffer.add_string(b, Caml_curry.app1(acc[2], /* () */0));
         case 7 : 
             _acc = acc[1];
             break;
@@ -4590,19 +4591,19 @@ function open_box_of_string(str) {
   else {
     var len = str.length;
     var invalid_box = function () {
-      return failwith_message([
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "invalid box description ",
+      return Caml_curry.app1(failwith_message([
+                      /* Format */0,
                       [
-                        /* Caml_string */3,
-                        /* No_padding */0,
-                        /* End_of_format */0
-                      ]
-                    ],
-                    "invalid box description %S"
-                  ])(str);
+                        /* String_literal */11,
+                        "invalid box description ",
+                        [
+                          /* Caml_string */3,
+                          /* No_padding */0,
+                          /* End_of_format */0
+                        ]
+                      ],
+                      "invalid box description %S"
+                    ]), str);
     };
     var parse_spaces = function (_i) {
       while(true) {
@@ -4823,117 +4824,117 @@ function make_padprec_fmt_ebb(pad, prec, fmt) {
 function fmt_ebb_of_string(legacy_behavior, str) {
   var legacy_behavior$1 = legacy_behavior ? legacy_behavior[1] : /* true */1;
   var invalid_format_message = function (str_ind, msg) {
-    return failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+    return Caml_curry.app3(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ", ",
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* String */2,
-                              /* No_padding */0,
-                              /* End_of_format */0
+                              /* String_literal */11,
+                              ", ",
+                              [
+                                /* String */2,
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ]
                             ]
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  "invalid format %S: at character number %d, %s"
-                ])(str, str_ind, msg);
+                    ],
+                    "invalid format %S: at character number %d, %s"
+                  ]), str, str_ind, msg);
   };
   var invalid_format_without = function (str_ind, c, s) {
-    return failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+    return Caml_curry.app4(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ", '",
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* Char */0,
+                              /* String_literal */11,
+                              ", '",
                               [
-                                /* String_literal */11,
-                                "' without ",
+                                /* Char */0,
                                 [
-                                  /* String */2,
-                                  /* No_padding */0,
-                                  /* End_of_format */0
+                                  /* String_literal */11,
+                                  "' without ",
+                                  [
+                                    /* String */2,
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ]
                                 ]
                               ]
                             ]
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  "invalid format %S: at character number %d, '%c' without %s"
-                ])(str, str_ind, c, s);
+                    ],
+                    "invalid format %S: at character number %d, '%c' without %s"
+                  ]), str, str_ind, c, s);
   };
   var expected_character = function (str_ind, expected, read) {
-    return failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+    return Caml_curry.app4(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ", ",
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* String */2,
-                              /* No_padding */0,
+                              /* String_literal */11,
+                              ", ",
                               [
-                                /* String_literal */11,
-                                " expected, read ",
+                                /* String */2,
+                                /* No_padding */0,
                                 [
-                                  /* Caml_char */1,
-                                  /* End_of_format */0
+                                  /* String_literal */11,
+                                  " expected, read ",
+                                  [
+                                    /* Caml_char */1,
+                                    /* End_of_format */0
+                                  ]
                                 ]
                               ]
                             ]
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  "invalid format %S: at character number %d, %s expected, read %C"
-                ])(str, str_ind, expected, read);
+                    ],
+                    "invalid format %S: at character number %d, %s expected, read %C"
+                  ]), str, str_ind, expected, read);
   };
   var parse_literal = function (lit_start, _str_ind, end_ind) {
     while(true) {
@@ -4997,36 +4998,36 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     ];
     var set_flag = function (str_ind, flag) {
       if (flag[1] && !legacy_behavior$1) {
-        failwith_message([
-                /* Format */0,
-                [
-                  /* String_literal */11,
-                  "invalid format ",
+        Caml_curry.app3(failwith_message([
+                  /* Format */0,
                   [
-                    /* Caml_string */3,
-                    /* No_padding */0,
+                    /* String_literal */11,
+                    "invalid format ",
                     [
-                      /* String_literal */11,
-                      ": at character number ",
+                      /* Caml_string */3,
+                      /* No_padding */0,
                       [
-                        /* Int */4,
-                        /* Int_d */0,
-                        /* No_padding */0,
-                        /* No_precision */0,
+                        /* String_literal */11,
+                        ": at character number ",
                         [
-                          /* String_literal */11,
-                          ", duplicate flag ",
+                          /* Int */4,
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
                           [
-                            /* Caml_char */1,
-                            /* End_of_format */0
+                            /* String_literal */11,
+                            ", duplicate flag ",
+                            [
+                              /* Caml_char */1,
+                              /* End_of_format */0
+                            ]
                           ]
                         ]
                       ]
                     ]
-                  ]
-                ],
-                "invalid format %S: at character number %d, duplicate flag %C"
-              ])(str, str_ind, str.charCodeAt(str_ind));
+                  ],
+                  "invalid format %S: at character number %d, duplicate flag %C"
+                ]), str, str_ind, str.charCodeAt(str_ind));
       }
       flag[1] = /* true */1;
       return /* () */0;
@@ -6023,37 +6024,38 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           ];
           break;
       case 6 : 
-          fmt_result = failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+          fmt_result = Caml_curry.app3(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ", flag ",
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* Caml_char */1,
+                              /* String_literal */11,
+                              ", flag ",
                               [
-                                /* String_literal */11,
-                                " is only allowed after the '",
+                                /* Caml_char */1,
                                 [
-                                  /* Char_literal */12,
-                                  /* "%" */37,
+                                  /* String_literal */11,
+                                  " is only allowed after the '",
                                   [
-                                    /* String_literal */11,
-                                    "', before padding and precision",
-                                    /* End_of_format */0
+                                    /* Char_literal */12,
+                                    /* "%" */37,
+                                    [
+                                      /* String_literal */11,
+                                      "', before padding and precision",
+                                      /* End_of_format */0
+                                    ]
                                   ]
                                 ]
                               ]
@@ -6061,10 +6063,9 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  "invalid format %S: at character number %d, flag %C is only allowed after the '%%', before padding and precision"
-                ])(str, pct_ind, symb);
+                    ],
+                    "invalid format %S: at character number %d, flag %C is only allowed after the '%%', before padding and precision"
+                  ]), str, pct_ind, symb);
           break;
       case 7 : 
           if (symb >= 108) {
@@ -6205,44 +6206,44 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           }
           break;
       case 8 : 
-          fmt_result = failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+          fmt_result = Caml_curry.app3(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ', invalid conversion "',
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* Char_literal */12,
-                              /* "%" */37,
+                              /* String_literal */11,
+                              ', invalid conversion "',
                               [
-                                /* Char */0,
+                                /* Char_literal */12,
+                                /* "%" */37,
                                 [
-                                  /* Char_literal */12,
-                                  /* "\"" */34,
-                                  /* End_of_format */0
+                                  /* Char */0,
+                                  [
+                                    /* Char_literal */12,
+                                    /* "\"" */34,
+                                    /* End_of_format */0
+                                  ]
                                 ]
                               ]
                             ]
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  'invalid format %S: at character number %d, invalid conversion "%%%c"'
-                ])(str, str_ind - 1, symb);
+                    ],
+                    'invalid format %S: at character number %d, invalid conversion "%%%c"'
+                  ]), str, str_ind - 1, symb);
           break;
       
     }
@@ -6843,41 +6844,42 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return /* () */0;
     };
     var fail_single_percent = function (str_ind) {
-      return failwith_message([
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "invalid format ",
+      return Caml_curry.app2(failwith_message([
+                      /* Format */0,
                       [
-                        /* Caml_string */3,
-                        /* No_padding */0,
+                        /* String_literal */11,
+                        "invalid format ",
                         [
-                          /* String_literal */11,
-                          ": '",
+                          /* Caml_string */3,
+                          /* No_padding */0,
                           [
-                            /* Char_literal */12,
-                            /* "%" */37,
+                            /* String_literal */11,
+                            ": '",
                             [
-                              /* String_literal */11,
-                              "' alone is not accepted in character sets, use ",
+                              /* Char_literal */12,
+                              /* "%" */37,
                               [
-                                /* Char_literal */12,
-                                /* "%" */37,
+                                /* String_literal */11,
+                                "' alone is not accepted in character sets, use ",
                                 [
                                   /* Char_literal */12,
                                   /* "%" */37,
                                   [
-                                    /* String_literal */11,
-                                    " instead at position ",
+                                    /* Char_literal */12,
+                                    /* "%" */37,
                                     [
-                                      /* Int */4,
-                                      /* Int_d */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
+                                      /* String_literal */11,
+                                      " instead at position ",
                                       [
-                                        /* Char_literal */12,
-                                        /* "." */46,
-                                        /* End_of_format */0
+                                        /* Int */4,
+                                        /* Int_d */0,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        [
+                                          /* Char_literal */12,
+                                          /* "." */46,
+                                          /* End_of_format */0
+                                        ]
                                       ]
                                     ]
                                   ]
@@ -6886,10 +6888,9 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                             ]
                           ]
                         ]
-                      ]
-                    ],
-                    "invalid format %S: '%%' alone is not accepted in character sets, use %%%% instead at position %d."
-                  ])(str, str_ind);
+                      ],
+                      "invalid format %S: '%%' alone is not accepted in character sets, use %%%% instead at position %d."
+                    ]), str, str_ind);
     };
     var parse_char_set_start = function (str_ind, end_ind) {
       if (str_ind === end_ind) {
@@ -7068,39 +7069,39 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       else {
         var new_acc = acc * 10 + (c - /* "0" */48);
         if (new_acc > Sys.max_string_length) {
-          return failwith_message([
-                        /* Format */0,
-                        [
-                          /* String_literal */11,
-                          "invalid format ",
+          return Caml_curry.app3(failwith_message([
+                          /* Format */0,
                           [
-                            /* Caml_string */3,
-                            /* No_padding */0,
+                            /* String_literal */11,
+                            "invalid format ",
                             [
-                              /* String_literal */11,
-                              ": integer ",
+                              /* Caml_string */3,
+                              /* No_padding */0,
                               [
-                                /* Int */4,
-                                /* Int_d */0,
-                                /* No_padding */0,
-                                /* No_precision */0,
+                                /* String_literal */11,
+                                ": integer ",
                                 [
-                                  /* String_literal */11,
-                                  " is greater than the limit ",
+                                  /* Int */4,
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
                                   [
-                                    /* Int */4,
-                                    /* Int_d */0,
-                                    /* No_padding */0,
-                                    /* No_precision */0,
-                                    /* End_of_format */0
+                                    /* String_literal */11,
+                                    " is greater than the limit ",
+                                    [
+                                      /* Int */4,
+                                      /* Int_d */0,
+                                      /* No_padding */0,
+                                      /* No_precision */0,
+                                      /* End_of_format */0
+                                    ]
                                   ]
                                 ]
                               ]
                             ]
-                          ]
-                        ],
-                        "invalid format %S: integer %d is greater than the limit %d"
-                      ])(str, new_acc, Sys.max_string_length);
+                          ],
+                          "invalid format %S: integer %d is greater than the limit %d"
+                        ]), str, new_acc, Sys.max_string_length);
         }
         else {
           _acc = new_acc;
@@ -7196,40 +7197,40 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
-        failwith_message([
-                /* Format */0,
-                [
-                  /* String_literal */11,
-                  "invalid format ",
+        Caml_curry.app3(failwith_message([
+                  /* Format */0,
                   [
-                    /* Caml_string */3,
-                    /* No_padding */0,
+                    /* String_literal */11,
+                    "invalid format ",
                     [
-                      /* String_literal */11,
-                      ': unclosed sub-format, expected "',
+                      /* Caml_string */3,
+                      /* No_padding */0,
                       [
-                        /* Char_literal */12,
-                        /* "%" */37,
+                        /* String_literal */11,
+                        ': unclosed sub-format, expected "',
                         [
-                          /* Char */0,
+                          /* Char_literal */12,
+                          /* "%" */37,
                           [
-                            /* String_literal */11,
-                            '" at character number ',
+                            /* Char */0,
                             [
-                              /* Int */4,
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
-                              /* End_of_format */0
+                              /* String_literal */11,
+                              '" at character number ',
+                              [
+                                /* Int */4,
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ]
                             ]
                           ]
                         ]
                       ]
                     ]
-                  ]
-                ],
-                'invalid format %S: unclosed sub-format, expected "%%%c" at character number %d'
-              ])(str, c, end_ind);
+                  ],
+                  'invalid format %S: unclosed sub-format, expected "%%%c" at character number %d'
+                ]), str, c, end_ind);
       }
       var match = str.charCodeAt(str_ind);
       if (match !== 37) {
@@ -7780,40 +7781,41 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   };
   var incompatible_flag = function (pct_ind, str_ind, symb, option) {
     var subfmt = $$String.sub(str, pct_ind, str_ind - pct_ind);
-    return failwith_message([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    "invalid format ",
+    return Caml_curry.app5(failwith_message([
+                    /* Format */0,
                     [
-                      /* Caml_string */3,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      "invalid format ",
                       [
-                        /* String_literal */11,
-                        ": at character number ",
+                        /* Caml_string */3,
+                        /* No_padding */0,
                         [
-                          /* Int */4,
-                          /* Int_d */0,
-                          /* No_padding */0,
-                          /* No_precision */0,
+                          /* String_literal */11,
+                          ": at character number ",
                           [
-                            /* String_literal */11,
-                            ", ",
+                            /* Int */4,
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
                             [
-                              /* String */2,
-                              /* No_padding */0,
+                              /* String_literal */11,
+                              ", ",
                               [
-                                /* String_literal */11,
-                                " is incompatible with '",
+                                /* String */2,
+                                /* No_padding */0,
                                 [
-                                  /* Char */0,
+                                  /* String_literal */11,
+                                  " is incompatible with '",
                                   [
-                                    /* String_literal */11,
-                                    "' in sub-format ",
+                                    /* Char */0,
                                     [
-                                      /* Caml_string */3,
-                                      /* No_padding */0,
-                                      /* End_of_format */0
+                                      /* String_literal */11,
+                                      "' in sub-format ",
+                                      [
+                                        /* Caml_string */3,
+                                        /* No_padding */0,
+                                        /* End_of_format */0
+                                      ]
                                     ]
                                   ]
                                 ]
@@ -7822,10 +7824,9 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                           ]
                         ]
                       ]
-                    ]
-                  ],
-                  "invalid format %S: at character number %d, %s is incompatible with '%c' in sub-format %S"
-                ])(str, pct_ind, option, symb, subfmt);
+                    ],
+                    "invalid format %S: at character number %d, %s is incompatible with '%c' in sub-format %S"
+                  ]), str, pct_ind, option, symb, subfmt);
   };
   return parse_literal(0, 0, str.length);
 }
@@ -7841,27 +7842,27 @@ function format_of_string_fmtty(str, fmtty) {
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return failwith_message([
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "bad input: format type mismatch between ",
+      return Caml_curry.app2(failwith_message([
+                      /* Format */0,
                       [
-                        /* Caml_string */3,
-                        /* No_padding */0,
+                        /* String_literal */11,
+                        "bad input: format type mismatch between ",
                         [
-                          /* String_literal */11,
-                          " and ",
+                          /* Caml_string */3,
+                          /* No_padding */0,
                           [
-                            /* Caml_string */3,
-                            /* No_padding */0,
-                            /* End_of_format */0
+                            /* String_literal */11,
+                            " and ",
+                            [
+                              /* Caml_string */3,
+                              /* No_padding */0,
+                              /* End_of_format */0
+                            ]
                           ]
                         ]
-                      ]
-                    ],
-                    "bad input: format type mismatch between %S and %S"
-                  ])(str, string_of_fmtty(fmtty));
+                      ],
+                      "bad input: format type mismatch between %S and %S"
+                    ]), str, string_of_fmtty(fmtty));
     }
     else {
       throw exn;
@@ -7880,27 +7881,27 @@ function format_of_string_format(str, param) {
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return failwith_message([
-                    /* Format */0,
-                    [
-                      /* String_literal */11,
-                      "bad input: format type mismatch between ",
+      return Caml_curry.app2(failwith_message([
+                      /* Format */0,
                       [
-                        /* Caml_string */3,
-                        /* No_padding */0,
+                        /* String_literal */11,
+                        "bad input: format type mismatch between ",
                         [
-                          /* String_literal */11,
-                          " and ",
+                          /* Caml_string */3,
+                          /* No_padding */0,
                           [
-                            /* Caml_string */3,
-                            /* No_padding */0,
-                            /* End_of_format */0
+                            /* String_literal */11,
+                            " and ",
+                            [
+                              /* Caml_string */3,
+                              /* No_padding */0,
+                              /* End_of_format */0
+                            ]
                           ]
                         ]
-                      ]
-                    ],
-                    "bad input: format type mismatch between %S and %S"
-                  ])(str, param[2]);
+                      ],
+                      "bad input: format type mismatch between %S and %S"
+                    ]), str, param[2]);
     }
     else {
       throw exn;

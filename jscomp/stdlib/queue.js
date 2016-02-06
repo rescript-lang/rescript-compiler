@@ -3,6 +3,7 @@
 
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_curry      = require("../runtime/caml_curry");
 
 var Empty = [
   248,
@@ -134,7 +135,7 @@ function iter(f, q) {
     var _cell = tail[2];
     while(true) {
       var cell = _cell;
-      f(cell[1]);
+      Caml_curry.app1(f, cell[1]);
       if (cell !== tail) {
         _cell = cell[2];
       }
@@ -156,7 +157,7 @@ function fold(f, accu, q) {
     while(true) {
       var cell = _cell;
       var accu$1 = _accu;
-      var accu$2 = f(accu$1, cell[1]);
+      var accu$2 = Caml_curry.app2(f, accu$1, cell[1]);
       if (cell === tail) {
         return accu$2;
       }

@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var List = require("../stdlib/list");
+var Caml_curry = require("../runtime/caml_curry");
+var List       = require("../stdlib/list");
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -24,7 +25,7 @@ function map(f, param) {
   if (param) {
     return [
             /* Cons */0,
-            f(param[1]),
+            Caml_curry.app1(f, param[1]),
             map(f, param[2])
           ];
   }

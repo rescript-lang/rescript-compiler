@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Filename = require("../stdlib/filename");
-var Mt       = require("./mt");
-var $$String = require("../stdlib/string");
+var Filename   = require("../stdlib/filename");
+var Mt         = require("./mt");
+var $$String   = require("../stdlib/string");
+var Caml_curry = require("../runtime/caml_curry");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
   if (name === "") {
@@ -16,7 +17,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
-      else if (is_dir_sep(name, n)) {
+      else if (Caml_curry.app2(is_dir_sep, name, n)) {
         _n = n - 1;
       }
       else {
@@ -27,7 +28,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
           if (n$1 < 0) {
             return $$String.sub(name, 0, p);
           }
-          else if (is_dir_sep(name, n$1)) {
+          else if (Caml_curry.app2(is_dir_sep, name, n$1)) {
             return $$String.sub(name, n$1 + 1, p - n$1 - 1);
           }
           else {

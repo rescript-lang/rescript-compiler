@@ -3,6 +3,7 @@
 
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
+var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
 function for_3(x) {
@@ -23,7 +24,7 @@ function for_3(x) {
     }(j));
   }
   $$Array.iter(function (x) {
-        return x(/* () */0);
+        return Caml_curry.app1(x, /* () */0);
       }, arr);
   return v[1];
 }
@@ -47,7 +48,7 @@ function for_4(x) {
     }(k));
   }
   $$Array.iter(function (x) {
-        return x(/* () */0);
+        return Caml_curry.app1(x, /* () */0);
       }, arr);
   return v[1];
 }
@@ -70,7 +71,7 @@ function for_5(x, u) {
     }(k));
   }
   $$Array.iter(function (x) {
-        return x(/* () */0);
+        return Caml_curry.app1(x, /* () */0);
       }, arr);
   return v[1];
 }
@@ -115,7 +116,7 @@ function for_6(x, u) {
     inspect_3 = v2[1];
   }
   $$Array.iter(function (x) {
-        return x(/* () */0);
+        return Caml_curry.app1(x, /* () */0);
       }, arr);
   return /* array */[
           v[1],
@@ -148,7 +149,7 @@ function for_7() {
     }(i));
   }
   $$Array.iter(function (f) {
-        return f(/* () */0);
+        return Caml_curry.app1(f, /* () */0);
       }, arr);
   return v[1];
 }
@@ -178,7 +179,7 @@ function for_8() {
     }(i,k));
   }
   $$Array.iter(function (f) {
-        return f(/* () */0);
+        return Caml_curry.app1(f, /* () */0);
       }, arr);
   return v[1];
 }
@@ -225,7 +226,7 @@ function for_9() {
     (function(v$1){
     for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
       ++ v$1[1];
-      collect(v$1[1]);
+      Caml_curry.app1(collect, v$1[1]);
       arr[i * j_len + j] = function () {
         vv[1] += v$1[1];
         return /* () */0;
@@ -240,15 +241,15 @@ function for_9() {
     }(v$1));
   }
   $$Array.iter(function (f) {
-        return f(/* () */0);
+        return Caml_curry.app1(f, /* () */0);
       }, arr);
   $$Array.iter(function (f) {
-        return f(/* () */0);
+        return Caml_curry.app1(f, /* () */0);
       }, arr2);
   return /* array */[[
             /* tuple */0,
             vv[1],
-            match_002(/* () */0),
+            Caml_curry.app1(match_002, /* () */0),
             vv2[1]
           ]];
 }

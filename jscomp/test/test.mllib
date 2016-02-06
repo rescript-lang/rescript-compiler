@@ -157,3 +157,4 @@ complex_if_test
 module_parameter_test
 regression_print
 global_exception_regression_test
+printf_test

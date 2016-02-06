@@ -4,6 +4,7 @@
 var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_curry      = require("../runtime/caml_curry");
 var List            = require("../stdlib/list");
 
 function length_aux(_len, _param) {
@@ -101,7 +102,7 @@ function flatten(param) {
 
 function map(f, param) {
   if (param) {
-    var r = f(param[1]);
+    var r = Caml_curry.app1(f, param[1]);
     return [
             /* :: */0,
             r,
@@ -115,7 +116,7 @@ function map(f, param) {
 
 function mapi(i, f, param) {
   if (param) {
-    var r = f(i, param[1]);
+    var r = Caml_curry.app2(f, i, param[1]);
     return [
             /* :: */0,
             r,
@@ -141,7 +142,7 @@ function rev_map(f, l) {
       _param = param[2];
       _accu = [
         /* :: */0,
-        f(param[1]),
+        Caml_curry.app1(f, param[1]),
         accu
       ];
     }
@@ -155,7 +156,7 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      f(param[1]);
+      Caml_curry.app1(f, param[1]);
       _param = param[2];
     }
     else {
@@ -172,7 +173,7 @@ function iteri(f, l) {
     var param = _param;
     var i = _i;
     if (param) {
-      f$1(i, param[1]);
+      Caml_curry.app2(f$1, i, param[1]);
       _param = param[2];
       _i = i + 1;
     }
@@ -188,7 +189,7 @@ function fold_left(f, _accu, _l) {
     var accu = _accu;
     if (l) {
       _l = l[2];
-      _accu = f(accu, l[1]);
+      _accu = Caml_curry.app2(f, accu, l[1]);
     }
     else {
       return accu;
@@ -198,7 +199,7 @@ function fold_left(f, _accu, _l) {
 
 function fold_right(f, l, accu) {
   if (l) {
-    return f(l[1], fold_right(f, l[2], accu));
+    return Caml_curry.app2(f, l[1], fold_right(f, l[2], accu));
   }
   else {
     return accu;
@@ -208,7 +209,7 @@ function fold_right(f, l, accu) {
 function map2(f, l1, l2) {
   if (l1) {
     if (l2) {
-      var r = f(l1[1], l2[1]);
+      var r = Caml_curry.app2(f, l1[1], l2[1]);
       return [
               /* :: */0,
               r,
@@ -241,7 +242,7 @@ function rev_map2(f, l1, l2) {
         _l1 = l1$1[2];
         _accu = [
           /* :: */0,
-          f(l1$1[1], l2$1[1]),
+          Caml_curry.app2(f, l1$1[1], l2$1[1]),
           accu
         ];
       }
@@ -264,7 +265,7 @@ function iter2(f, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        f(l1[1], l2[1]);
+        Caml_curry.app2(f, l1[1], l2[1]);
         _l2 = l2[2];
         _l1 = l1[2];
       }
@@ -290,7 +291,7 @@ function fold_left2(f, _accu, _l1, _l2) {
       if (l2) {
         _l2 = l2[2];
         _l1 = l1[2];
-        _accu = f(accu, l1[1], l2[1]);
+        _accu = Caml_curry.app3(f, accu, l1[1], l2[1]);
       }
       else {
         return Pervasives.invalid_arg("List.fold_left2");
@@ -308,7 +309,7 @@ function fold_left2(f, _accu, _l1, _l2) {
 function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
-      return f(l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
+      return Caml_curry.app3(f, l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
     }
     else {
       return Pervasives.invalid_arg("List.fold_right2");
@@ -326,7 +327,7 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[1])) {
+      if (Caml_curry.app1(p, param[1])) {
         _param = param[2];
       }
       else {
@@ -343,7 +344,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[1])) {
+      if (Caml_curry.app1(p, param[1])) {
         return /* true */1;
       }
       else {
@@ -362,7 +363,7 @@ function for_all2(p, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        if (p(l1[1], l2[1])) {
+        if (Caml_curry.app2(p, l1[1], l2[1])) {
           _l2 = l2[2];
           _l1 = l1[2];
         }
@@ -389,7 +390,7 @@ function exists2(p, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        if (p(l1[1], l2[1])) {
+        if (Caml_curry.app2(p, l1[1], l2[1])) {
           return /* true */1;
         }
         else {
@@ -559,7 +560,7 @@ function find(p, _param) {
     var param = _param;
     if (param) {
       var x = param[1];
-      if (p(x)) {
+      if (Caml_curry.app1(p, x)) {
         return x;
       }
       else {
@@ -582,7 +583,7 @@ function find_all(p) {
       if (param$1) {
         var l = param$1[2];
         var x = param$1[1];
-        if (p(x)) {
+        if (Caml_curry.app1(p, x)) {
           _param = l;
           _accu = [
             /* :: */0,
@@ -612,7 +613,7 @@ function partition(p, l) {
     if (param) {
       var l$1 = param[2];
       var x = param[1];
-      if (p(x)) {
+      if (Caml_curry.app1(p, x)) {
         _param = l$1;
         _yes = [
           /* :: */0,
@@ -696,7 +697,7 @@ function merge(cmp, l1, l2) {
     if (l2) {
       var h2 = l2[1];
       var h1 = l1[1];
-      if (cmp(h1, h2) <= 0) {
+      if (Caml_curry.app2(cmp, h1, h2) <= 0) {
         return [
                 /* :: */0,
                 h1,
@@ -763,8 +764,8 @@ function stable_sort(cmp, l) {
             var x3 = match$1[1];
             var x2 = match[1];
             var x1 = l[1];
-            if (cmp(x1, x2) <= 0) {
-              if (cmp(x2, x3) <= 0) {
+            if (Caml_curry.app2(cmp, x1, x2) <= 0) {
+              if (Caml_curry.app2(cmp, x2, x3) <= 0) {
                 return [
                         /* :: */0,
                         x1,
@@ -779,7 +780,7 @@ function stable_sort(cmp, l) {
                         ]
                       ];
               }
-              else if (cmp(x1, x3) <= 0) {
+              else if (Caml_curry.app2(cmp, x1, x3) <= 0) {
                 return [
                         /* :: */0,
                         x1,
@@ -810,7 +811,7 @@ function stable_sort(cmp, l) {
                       ];
               }
             }
-            else if (cmp(x1, x3) <= 0) {
+            else if (Caml_curry.app2(cmp, x1, x3) <= 0) {
               return [
                       /* :: */0,
                       x2,
@@ -825,7 +826,7 @@ function stable_sort(cmp, l) {
                       ]
                     ];
             }
-            else if (cmp(x2, x3) <= 0) {
+            else if (Caml_curry.app2(cmp, x2, x3) <= 0) {
               return [
                       /* :: */0,
                       x2,
@@ -873,7 +874,7 @@ function stable_sort(cmp, l) {
       if (match$2) {
         var x2$1 = match$2[1];
         var x1$1 = l[1];
-        if (cmp(x1$1, x2$1) <= 0) {
+        if (Caml_curry.app2(cmp, x1$1, x2$1) <= 0) {
           return [
                   /* :: */0,
                   x1$1,
@@ -920,7 +921,7 @@ function stable_sort(cmp, l) {
           if (l2$1) {
             var h2 = l2$1[1];
             var h1 = l1[1];
-            if (cmp(h1, h2) > 0) {
+            if (Caml_curry.app2(cmp, h1, h2) > 0) {
               _accu = [
                 /* :: */0,
                 h1,
@@ -962,8 +963,8 @@ function stable_sort(cmp, l) {
             var x3 = match$1[1];
             var x2 = match[1];
             var x1 = l[1];
-            if (cmp(x1, x2) > 0) {
-              if (cmp(x2, x3) > 0) {
+            if (Caml_curry.app2(cmp, x1, x2) > 0) {
+              if (Caml_curry.app2(cmp, x2, x3) > 0) {
                 return [
                         /* :: */0,
                         x1,
@@ -978,7 +979,7 @@ function stable_sort(cmp, l) {
                         ]
                       ];
               }
-              else if (cmp(x1, x3) > 0) {
+              else if (Caml_curry.app2(cmp, x1, x3) > 0) {
                 return [
                         /* :: */0,
                         x1,
@@ -1009,7 +1010,7 @@ function stable_sort(cmp, l) {
                       ];
               }
             }
-            else if (cmp(x1, x3) > 0) {
+            else if (Caml_curry.app2(cmp, x1, x3) > 0) {
               return [
                       /* :: */0,
                       x2,
@@ -1024,7 +1025,7 @@ function stable_sort(cmp, l) {
                       ]
                     ];
             }
-            else if (cmp(x2, x3) > 0) {
+            else if (Caml_curry.app2(cmp, x2, x3) > 0) {
               return [
                       /* :: */0,
                       x2,
@@ -1072,7 +1073,7 @@ function stable_sort(cmp, l) {
       if (match$2) {
         var x2$1 = match$2[1];
         var x1$1 = l[1];
-        if (cmp(x1$1, x2$1) > 0) {
+        if (Caml_curry.app2(cmp, x1$1, x2$1) > 0) {
           return [
                   /* :: */0,
                   x1$1,
@@ -1119,7 +1120,7 @@ function stable_sort(cmp, l) {
           if (l2$1) {
             var h2 = l2$1[1];
             var h1 = l1[1];
-            if (cmp(h1, h2) <= 0) {
+            if (Caml_curry.app2(cmp, h1, h2) <= 0) {
               _accu = [
                 /* :: */0,
                 h1,
@@ -1171,10 +1172,10 @@ function sort_uniq(cmp, l) {
             var x3 = match$1[1];
             var x2 = match[1];
             var x1 = l[1];
-            var c = cmp(x1, x2);
+            var c = Caml_curry.app2(cmp, x1, x2);
             if (c) {
               if (c < 0) {
-                var c$1 = cmp(x2, x3);
+                var c$1 = Caml_curry.app2(cmp, x2, x3);
                 if (c$1) {
                   if (c$1 < 0) {
                     return [
@@ -1192,7 +1193,7 @@ function sort_uniq(cmp, l) {
                           ];
                   }
                   else {
-                    var c$2 = cmp(x1, x3);
+                    var c$2 = Caml_curry.app2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 < 0) {
                         return [
@@ -1251,7 +1252,7 @@ function sort_uniq(cmp, l) {
                 }
               }
               else {
-                var c$3 = cmp(x1, x3);
+                var c$3 = Caml_curry.app2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 < 0) {
                     return [
@@ -1269,7 +1270,7 @@ function sort_uniq(cmp, l) {
                           ];
                   }
                   else {
-                    var c$4 = cmp(x2, x3);
+                    var c$4 = Caml_curry.app2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 < 0) {
                         return [
@@ -1329,7 +1330,7 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              var c$5 = cmp(x2, x3);
+              var c$5 = Caml_curry.app2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 < 0) {
                   return [
@@ -1380,7 +1381,7 @@ function sort_uniq(cmp, l) {
       if (match$2) {
         var x2$1 = match$2[1];
         var x1$1 = l[1];
-        var c$6 = cmp(x1$1, x2$1);
+        var c$6 = Caml_curry.app2(cmp, x1$1, x2$1);
         if (c$6) {
           if (c$6 < 0) {
             return [
@@ -1439,7 +1440,7 @@ function sort_uniq(cmp, l) {
             var h2 = l2$1[1];
             var t1 = l1[2];
             var h1 = l1[1];
-            var c$7 = cmp(h1, h2);
+            var c$7 = Caml_curry.app2(cmp, h1, h2);
             if (c$7) {
               if (c$7 > 0) {
                 _accu = [
@@ -1493,10 +1494,10 @@ function sort_uniq(cmp, l) {
             var x3 = match$1[1];
             var x2 = match[1];
             var x1 = l[1];
-            var c = cmp(x1, x2);
+            var c = Caml_curry.app2(cmp, x1, x2);
             if (c) {
               if (c > 0) {
-                var c$1 = cmp(x2, x3);
+                var c$1 = Caml_curry.app2(cmp, x2, x3);
                 if (c$1) {
                   if (c$1 > 0) {
                     return [
@@ -1514,7 +1515,7 @@ function sort_uniq(cmp, l) {
                           ];
                   }
                   else {
-                    var c$2 = cmp(x1, x3);
+                    var c$2 = Caml_curry.app2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 > 0) {
                         return [
@@ -1573,7 +1574,7 @@ function sort_uniq(cmp, l) {
                 }
               }
               else {
-                var c$3 = cmp(x1, x3);
+                var c$3 = Caml_curry.app2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 > 0) {
                     return [
@@ -1591,7 +1592,7 @@ function sort_uniq(cmp, l) {
                           ];
                   }
                   else {
-                    var c$4 = cmp(x2, x3);
+                    var c$4 = Caml_curry.app2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 > 0) {
                         return [
@@ -1651,7 +1652,7 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              var c$5 = cmp(x2, x3);
+              var c$5 = Caml_curry.app2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 > 0) {
                   return [
@@ -1702,7 +1703,7 @@ function sort_uniq(cmp, l) {
       if (match$2) {
         var x2$1 = match$2[1];
         var x1$1 = l[1];
-        var c$6 = cmp(x1$1, x2$1);
+        var c$6 = Caml_curry.app2(cmp, x1$1, x2$1);
         if (c$6) {
           if (c$6 > 0) {
             return [
@@ -1761,7 +1762,7 @@ function sort_uniq(cmp, l) {
             var h2 = l2$1[1];
             var t1 = l1[2];
             var h1 = l1[1];
-            var c$7 = cmp(h1, h2);
+            var c$7 = Caml_curry.app2(cmp, h1, h2);
             if (c$7) {
               if (c$7 < 0) {
                 _accu = [

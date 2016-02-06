@@ -102,3 +102,27 @@ let runtime_set = String_set.of_list [
     "caml_lexer.js";
     "caml_string.js"
 ]
+
+
+let prim = "Caml_primitive" 
+
+let exceptions = "Caml_exceptions"
+
+let io = "Caml_io"
+
+let sys = "Caml_sys"
+
+let lex_parse = "Caml_lexer"
+
+let obj_runtime = "Caml_obj_runtime"
+
+let array = "Caml_array"
+
+let format = "Caml_format"
+
+let string = "Caml_string"
+
+let float = "Caml_float"
+
+let oo = "Caml_oo"
+let curry = "Caml_curry"

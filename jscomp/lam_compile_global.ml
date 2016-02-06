@@ -66,7 +66,7 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
     if Ident.is_predef_exn id 
     then 
       begin 
-        E.runtime_ref Js_helper.exceptions id.name
+        E.runtime_ref Js_config.exceptions id.name
       end
     else 
       Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) env

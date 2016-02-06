@@ -18,30 +18,6 @@
 
 (* Author: Hongbo Zhang  *)
 
-
-
-let prim = "Caml_primitive" 
-
-let exceptions = "Caml_exceptions"
-
-let io = "Caml_io"
-
-let sys = "Caml_sys"
-
-let lex_parse = "Caml_lexer"
-
-let obj_runtime = "Caml_obj_runtime"
-
-let array = "Caml_array"
-
-let format = "Caml_format"
-
-let string = "Caml_string"
-
-let float = "Caml_float"
-
-let oo = "Caml_oo"
-
 let no_side_effect = Js_analyzer.no_side_effect_expression
 
 type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 

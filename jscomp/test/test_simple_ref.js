@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_curry = require("../runtime/caml_curry");
 
 var v = [
   0,
@@ -27,7 +28,7 @@ var c = [
 var not_real_escape = a;
 
 function real_escape(f, _) {
-  return f(c);
+  return Caml_curry.app1(f, c);
 }
 
 var u = h;

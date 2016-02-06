@@ -393,12 +393,24 @@ and
   | Call (e, el, info) ->
     let action () = 
       P.group f 1 (fun _ -> 
-          let () =
-            match info with
-            | {arity = NA } -> ipp_comment f (Some "!")
-            | _ -> () in
-          let cxt = expression 15 cxt f e in 
-          P.paren_group f 1 (fun _ -> arguments cxt  f el ) ) 
+
+          match info with
+          | {arity = NA } -> 
+            (* ipp_comment f (Some "!") *)
+            P.string f  Js_config.curry; 
+            P.string f L.dot;
+            let len = List.length el in
+            if len <= 8 then  
+              begin
+                P.string f (Printf.sprintf "app%d" len);
+                P.paren_group f 1 (fun _ -> arguments cxt f (e::el))
+              end
+            else assert false (* TODO *)
+           (* let cxt = expression 15 cxt f e in  *)
+            (* P.paren_group f 1 (fun _ -> arguments cxt  f el ) )  *)
+          | _ -> 
+            let cxt = expression 15 cxt f e in 
+            P.paren_group f 1 (fun _ -> arguments cxt  f el ) ) 
     in
     if l > 15 then P.paren_group f 1 action   
     else action ()

@@ -1,29 +1,30 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_curry = require("../runtime/caml_curry");
 
 function $pipe$great(x, f) {
-  return f(x);
+  return Caml_curry.app1(f, x);
 }
 
 function hello1(y, f) {
-  return f(y);
+  return Caml_curry.app1(f, y);
 }
 
 function hello2(y, f) {
-  return f(y);
+  return Caml_curry.app1(f, y);
 }
 
 function hello3(y, f) {
-  return f(y);
+  return Caml_curry.app1(f, y);
 }
 
 function hello4(y, f) {
-  return f(y);
+  return Caml_curry.app1(f, y);
 }
 
 function hello5(y, f) {
-  return f(y);
+  return Caml_curry.app1(f, y);
 }
 
 function f(_x) {

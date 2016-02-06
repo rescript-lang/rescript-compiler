@@ -4,6 +4,7 @@
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_array      = require("../runtime/caml_array");
 var $$Array         = require("../stdlib/array");
+var Caml_curry      = require("../runtime/caml_curry");
 
 var v = [
   0,
@@ -28,7 +29,7 @@ function f() {
 var u = f(/* () */0);
 
 $$Array.iter(function (x) {
-      return x(/* () */0);
+      return Caml_curry.app1(x, /* () */0);
     }, u);
 
 if (v[1] !== 45) {

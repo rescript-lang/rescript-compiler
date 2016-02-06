@@ -122,7 +122,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
             could be improved for simple cases
         *)
         Js_output.of_block  (
-          b  @ [S.exp(E.runtime_call Js_helper.prim "caml_update_dummy" [ E.var id;  v])]),
+          b  @ [S.exp(E.runtime_call Js_config.prim "caml_update_dummy" [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false 
@@ -1143,7 +1143,7 @@ and
 
         | Cached | Public None  (* TODO: check -- 1. js object propagate 2. js object create  *)
           -> 
-          let get = E.runtime_ref  Js_helper.oo "caml_get_public_method" in
+          let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
           let cache = !method_cache_id in
           let () = 
             begin 
@@ -1207,7 +1207,7 @@ and
               end in
               (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
               Js_output.handle_block_return st should_return lam (List.concat args_code)
-                (E.call (E.runtime_call Js_helper.oo "caml_get_public_method"
+                (E.call (E.runtime_call Js_config.oo "caml_get_public_method"
                            [obj'; label; E.int cache]) (obj'::args))
                 (* avoid duplicated compuattion *)
           end

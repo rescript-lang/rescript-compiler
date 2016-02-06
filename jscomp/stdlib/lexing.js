@@ -5,6 +5,7 @@ var Bytes       = require("./bytes");
 var Pervasives  = require("./pervasives");
 var Caml_lexer  = require("../runtime/caml_lexer");
 var Sys         = require("./sys");
+var Caml_curry  = require("../runtime/caml_curry");
 var Caml_string = require("../runtime/caml_string");
 
 function engine(tbl, state, buf) {
@@ -54,7 +55,7 @@ function from_function(f) {
             var read_fun = f;
             var aux_buffer = new Array(512);
             var lexbuf = param;
-            var read = read_fun(aux_buffer, aux_buffer.length);
+            var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
             var n = read > 0 ? read : (lexbuf[9] = /* true */1, 0);
             if (lexbuf[3] + n > lexbuf[2].length) {
               if (lexbuf[3] - lexbuf[5] + n <= lexbuf[2].length) {

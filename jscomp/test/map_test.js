@@ -7,6 +7,7 @@ var Test_inline_map2 = require("./test_inline_map2");
 var Mt               = require("./mt");
 var Test_map_find    = require("./test_map_find");
 var Caml_primitive   = require("../runtime/caml_primitive");
+var Caml_curry       = require("../runtime/caml_curry");
 var $$String         = require("../stdlib/string");
 var List             = require("../stdlib/list");
 var Test_inline_map  = require("./test_inline_map");
@@ -159,7 +160,7 @@ function compare(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = cmp(e1[2], e2[2]);
+          var c$1 = Caml_curry.app2(cmp, e1[2], e2[2]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -191,7 +192,7 @@ function equal(cmp, m1, m2) {
     if (e1) {
       if (e2) {
         if (e1[1] === e2[1]) {
-          if (cmp(e1[2], e2[2])) {
+          if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
           }

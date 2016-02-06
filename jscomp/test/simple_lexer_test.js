@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt       = require("./mt");
-var Lexing   = require("../stdlib/lexing");
-var $$String = require("../stdlib/string");
+var Mt         = require("./mt");
+var Lexing     = require("../stdlib/lexing");
+var Caml_curry = require("../runtime/caml_curry");
+var $$String   = require("../stdlib/string");
 
 var __ocaml_lex_tables = [
   /* record */0,
@@ -29,7 +30,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 2 || __ocaml_lex_state$1 < 0) {
-      lexbuf[1](lexbuf);
+      Caml_curry.app1(lexbuf[1], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
     }
     else {

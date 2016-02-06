@@ -9,6 +9,7 @@ var Digest     = require("./digest");
 var Int64      = require("./int64");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("./array");
+var Caml_curry = require("../runtime/caml_curry");
 
 function new_state() {
   return [
@@ -227,7 +228,7 @@ function int32$1(bound) {
 }
 
 function nativeint$1(bound) {
-  return nativeint($$default, bound);
+  return Caml_curry.app2(nativeint, $$default, bound);
 }
 
 function int64$1(bound) {

@@ -4,6 +4,7 @@
 var Caml_oo        = require("../runtime/caml_oo");
 var Mt             = require("./mt");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
+var Caml_curry     = require("../runtime/caml_curry");
 
 var shared = [
   0,
@@ -32,7 +33,7 @@ CamlinternalOO.set_methods($$class, /* array */[
       },
       hello,
       function (self$neg1, z) {
-        return self$neg1[1][hi](self$neg1, 10, z);
+        return Caml_curry.app3(self$neg1[1][hi], self$neg1, 10, z);
       }
     ]);
 
@@ -163,7 +164,7 @@ CamlinternalOO.set_methods($$class$5, /* array */[
       },
       hi$2,
       function (self$neg6, x) {
-        return self$neg6[1][add$1](self$neg6, x, 32);
+        return Caml_curry.app3(self$neg6[1][add$1], self$neg6, x, 32);
       }
     ]);
 
@@ -182,8 +183,8 @@ var suites_001 = [
               32
             ],
             /* array */[
-              Caml_oo.caml_get_public_method(v, 120, 1)(v),
-              Caml_oo.caml_get_public_method(v, 121, 2)(v)
+              Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 1), v),
+              Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 2), v)
             ]
           ];
   }
@@ -202,8 +203,8 @@ var suites_002 = [
                 32
               ],
               /* array */[
-                Caml_oo.caml_get_public_method(v, 120, 3)(v),
-                Caml_oo.caml_get_public_method(v, 121, 4)(v)
+                Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 3), v),
+                Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 4), v)
               ]
             ];
     }
@@ -217,7 +218,7 @@ var suites_002 = [
         return [
                 /* Eq */0,
                 13,
-                Caml_oo.caml_get_public_method(vv, 616641298, 5)(vv, 3)
+                Caml_curry.app2(Caml_oo.caml_get_public_method(vv, 616641298, 5), vv, 3)
               ];
       }
     ],
@@ -230,7 +231,7 @@ var suites_002 = [
           return [
                   /* Eq */0,
                   "uu",
-                  Caml_oo.caml_get_public_method(uu, 23515, 6)(uu)
+                  Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 6), uu)
                 ];
         }
       ],
@@ -242,7 +243,7 @@ var suites_002 = [
           function () {
             return [
                     /* Eq */0,
-                    Caml_oo.caml_get_public_method(uuu, 4846113, 7)(uuu, 1, 20),
+                    Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 7), uuu, 1, 20),
                     21
                   ];
           }
@@ -255,7 +256,7 @@ var suites_002 = [
             function () {
               return [
                       /* Eq */0,
-                      Caml_oo.caml_get_public_method(vvvv, 4846113, 8)(vvvv, 3, 7),
+                      Caml_curry.app3(Caml_oo.caml_get_public_method(vvvv, 4846113, 8), vvvv, 3, 7),
                       10
                     ];
             }
@@ -268,7 +269,7 @@ var suites_002 = [
               function () {
                 return [
                         /* Eq */0,
-                        Caml_oo.caml_get_public_method(u, 5243894, 9)(u),
+                        Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 9), u),
                         3
                       ];
               }
@@ -281,7 +282,7 @@ var suites_002 = [
                 function () {
                   return [
                           /* Eq */0,
-                          Caml_oo.caml_get_public_method(u, 5243895, 10)(u),
+                          Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 10), u),
                           4
                         ];
                 }
@@ -294,7 +295,7 @@ var suites_002 = [
                   function () {
                     return [
                             /* Eq */0,
-                            Caml_oo.caml_get_public_method(u, 23297, 11)(u, 1, 2),
+                            Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 11), u, 1, 2),
                             3
                           ];
                   }
@@ -307,7 +308,7 @@ var suites_002 = [
                     function () {
                       return [
                               /* Eq */0,
-                              Caml_oo.caml_get_public_method(u, 616641298, 12)(u, 32),
+                              Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 12), u, 32),
                               32
                             ];
                     }
@@ -320,7 +321,7 @@ var suites_002 = [
                       function () {
                         return [
                                 /* Eq */0,
-                                Caml_oo.caml_get_public_method(vvvv, 23297, 13)(vvvv, 31),
+                                Caml_curry.app2(Caml_oo.caml_get_public_method(vvvv, 23297, 13), vvvv, 31),
                                 63
                               ];
                       }
@@ -333,7 +334,7 @@ var suites_002 = [
                         function () {
                           return [
                                   /* Eq */0,
-                                  Caml_oo.caml_get_public_method(uuu, 4846113, 14)(uuu, 3, 4),
+                                  Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 14), uuu, 3, 4),
                                   7
                                 ];
                         }
@@ -346,7 +347,7 @@ var suites_002 = [
                           function () {
                             return [
                                     /* Eq */0,
-                                    Caml_oo.caml_get_public_method(v, 120, 15)(v),
+                                    Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 15), v),
                                     3
                                   ];
                           }

@@ -8,6 +8,7 @@ var Caml_lexer       = require("../runtime/caml_lexer");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("./array");
+var Caml_curry       = require("../runtime/caml_curry");
 
 var YYexit = [
   248,
@@ -93,7 +94,7 @@ function yyparse(tables, start, lexer, lexbuf) {
       var match = Caml_lexer.caml_parse_engine(tables, env, cmd, arg);
       switch (match) {
         case 0 : 
-            var t = lexer(lexbuf);
+            var t = Caml_curry.app1(lexer, lexbuf);
             env[9] = lexbuf[11];
             env[10] = lexbuf[12];
             _arg = t;
@@ -117,7 +118,7 @@ function yyparse(tables, start, lexer, lexbuf) {
               match$1 = [
                 /* tuple */0,
                 /* Semantic_action_computed */4,
-                tables[1][env[13]](env)
+                Caml_curry.app1(tables[1][env[13]], env)
               ];
             }
             catch (exn){
@@ -136,7 +137,7 @@ function yyparse(tables, start, lexer, lexbuf) {
             _cmd = match$1[1];
             break;
         case 5 : 
-            tables[14]("syntax error");
+            Caml_curry.app1(tables[14], "syntax error");
             _arg = /* () */0;
             _cmd = /* Error_detected */5;
             break;
@@ -223,7 +224,7 @@ function rhs_end(n) {
 }
 
 function is_current_lookahead(tok) {
-  return current_lookahead_fun[1](tok);
+  return Caml_curry.app1(current_lookahead_fun[1], tok);
 }
 
 function parse_error() {

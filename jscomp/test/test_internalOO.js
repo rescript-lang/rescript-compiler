@@ -10,6 +10,7 @@ var Sys              = require("../stdlib/sys");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("../stdlib/array");
+var Caml_curry       = require("../runtime/caml_curry");
 var Caml_string      = require("../runtime/caml_string");
 var List             = require("../stdlib/list");
 
@@ -318,7 +319,7 @@ function iter(f, _param) {
     var param = _param;
     if (param) {
       iter(f, param[1]);
-      f(param[2], param[3]);
+      Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
     }
     else {
@@ -330,7 +331,7 @@ function iter(f, _param) {
 function map(f, param) {
   if (param) {
     var l$prime = map(f, param[1]);
-    var d$prime = f(param[3]);
+    var d$prime = Caml_curry.app1(f, param[3]);
     var r$prime = map(f, param[4]);
     return [
             /* Node */0,
@@ -350,7 +351,7 @@ function mapi(f, param) {
   if (param) {
     var v = param[2];
     var l$prime = mapi(f, param[1]);
-    var d$prime = f(v, param[3]);
+    var d$prime = Caml_curry.app2(f, v, param[3]);
     var r$prime = mapi(f, param[4]);
     return [
             /* Node */0,
@@ -371,7 +372,7 @@ function fold(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = f(m[2], m[3], fold(f, m[1], accu));
+      _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
       _m = m[4];
     }
     else {
@@ -384,7 +385,7 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all(p, param[1])) {
           _param = param[4];
         }
@@ -406,7 +407,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         return /* true */1;
       }
       else if (exists(p, param[1])) {
@@ -543,7 +544,7 @@ function merge(f, s1, s2) {
     var v1 = s1[2];
     if (s1[5] >= height(s2)) {
       var match = split(v1, s2);
-      return concat_or_join(merge(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join(merge(f, s1[1], match[1]), v1, Caml_curry.app3(f, v1, [
                       /* Some */0,
                       s1[3]
                     ], match[2]), merge(f, s1[4], match[3]));
@@ -562,7 +563,7 @@ function merge(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split(v2, s1);
-      return concat_or_join(merge(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join(merge(f, match$1[1], s2[1]), v2, Caml_curry.app3(f, v2, match$1[2], [
                       /* Some */0,
                       s2[3]
                     ]), merge(f, match$1[3], s2[4]));
@@ -588,7 +589,7 @@ function filter(p, param) {
     var d = param[3];
     var v = param[2];
     var l$prime = filter(p, param[1]);
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var r$prime = filter(p, param[4]);
     if (pvd) {
       return join(l$prime, v, d, r$prime);
@@ -609,7 +610,7 @@ function partition(p, param) {
     var match = partition(p, param[1]);
     var lf = match[2];
     var lt = match[1];
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var match$1 = partition(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
@@ -670,7 +671,7 @@ function compare(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = cmp(e1[2], e2[2]);
+          var c$1 = Caml_curry.app2(cmp, e1[2], e2[2]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -704,7 +705,7 @@ function equal(cmp, m1, m2) {
         if (Caml_string.caml_string_compare(e1[1], e2[1])) {
           return /* false */0;
         }
-        else if (cmp(e1[2], e2[2])) {
+        else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
           _e2 = cons_enum(e2[3], e2[4]);
           _e1 = cons_enum(e1[3], e1[4]);
         }
@@ -1060,7 +1061,7 @@ function iter$1(f, _param) {
     var param = _param;
     if (param) {
       iter$1(f, param[1]);
-      f(param[2], param[3]);
+      Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
     }
     else {
@@ -1072,7 +1073,7 @@ function iter$1(f, _param) {
 function map$1(f, param) {
   if (param) {
     var l$prime = map$1(f, param[1]);
-    var d$prime = f(param[3]);
+    var d$prime = Caml_curry.app1(f, param[3]);
     var r$prime = map$1(f, param[4]);
     return [
             /* Node */0,
@@ -1092,7 +1093,7 @@ function mapi$1(f, param) {
   if (param) {
     var v = param[2];
     var l$prime = mapi$1(f, param[1]);
-    var d$prime = f(v, param[3]);
+    var d$prime = Caml_curry.app2(f, v, param[3]);
     var r$prime = mapi$1(f, param[4]);
     return [
             /* Node */0,
@@ -1113,7 +1114,7 @@ function fold$1(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = f(m[2], m[3], fold$1(f, m[1], accu));
+      _accu = Caml_curry.app3(f, m[2], m[3], fold$1(f, m[1], accu));
       _m = m[4];
     }
     else {
@@ -1126,7 +1127,7 @@ function for_all$1(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all$1(p, param[1])) {
           _param = param[4];
         }
@@ -1148,7 +1149,7 @@ function exists$1(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         return /* true */1;
       }
       else if (exists$1(p, param[1])) {
@@ -1285,7 +1286,7 @@ function merge$1(f, s1, s2) {
     var v1 = s1[2];
     if (s1[5] >= height$1(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join$1(merge$1(f, s1[1], match[1]), v1, Caml_curry.app3(f, v1, [
                       /* Some */0,
                       s1[3]
                     ], match[2]), merge$1(f, s1[4], match[3]));
@@ -1304,7 +1305,7 @@ function merge$1(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$1(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join$1(merge$1(f, match$1[1], s2[1]), v2, Caml_curry.app3(f, v2, match$1[2], [
                       /* Some */0,
                       s2[3]
                     ]), merge$1(f, match$1[3], s2[4]));
@@ -1330,7 +1331,7 @@ function filter$1(p, param) {
     var d = param[3];
     var v = param[2];
     var l$prime = filter$1(p, param[1]);
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var r$prime = filter$1(p, param[4]);
     if (pvd) {
       return join$1(l$prime, v, d, r$prime);
@@ -1351,7 +1352,7 @@ function partition$1(p, param) {
     var match = partition$1(p, param[1]);
     var lf = match[2];
     var lt = match[1];
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var match$1 = partition$1(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
@@ -1412,7 +1413,7 @@ function compare$1(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = cmp(e1[2], e2[2]);
+          var c$1 = Caml_curry.app2(cmp, e1[2], e2[2]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -1446,7 +1447,7 @@ function equal$1(cmp, m1, m2) {
         if (Caml_string.caml_string_compare(e1[1], e2[1])) {
           return /* false */0;
         }
-        else if (cmp(e1[2], e2[2])) {
+        else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
           _e2 = cons_enum$1(e2[3], e2[4]);
           _e1 = cons_enum$1(e1[3], e1[4]);
         }
@@ -1802,7 +1803,7 @@ function iter$2(f, _param) {
     var param = _param;
     if (param) {
       iter$2(f, param[1]);
-      f(param[2], param[3]);
+      Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
     }
     else {
@@ -1814,7 +1815,7 @@ function iter$2(f, _param) {
 function map$2(f, param) {
   if (param) {
     var l$prime = map$2(f, param[1]);
-    var d$prime = f(param[3]);
+    var d$prime = Caml_curry.app1(f, param[3]);
     var r$prime = map$2(f, param[4]);
     return [
             /* Node */0,
@@ -1834,7 +1835,7 @@ function mapi$2(f, param) {
   if (param) {
     var v = param[2];
     var l$prime = mapi$2(f, param[1]);
-    var d$prime = f(v, param[3]);
+    var d$prime = Caml_curry.app2(f, v, param[3]);
     var r$prime = mapi$2(f, param[4]);
     return [
             /* Node */0,
@@ -1855,7 +1856,7 @@ function fold$2(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = f(m[2], m[3], fold$2(f, m[1], accu));
+      _accu = Caml_curry.app3(f, m[2], m[3], fold$2(f, m[1], accu));
       _m = m[4];
     }
     else {
@@ -1868,7 +1869,7 @@ function for_all$2(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all$2(p, param[1])) {
           _param = param[4];
         }
@@ -1890,7 +1891,7 @@ function exists$2(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (p(param[2], param[3])) {
+      if (Caml_curry.app2(p, param[2], param[3])) {
         return /* true */1;
       }
       else if (exists$2(p, param[1])) {
@@ -2027,7 +2028,7 @@ function merge$2(f, s1, s2) {
     var v1 = s1[2];
     if (s1[5] >= height$2(s2)) {
       var match = split$2(v1, s2);
-      return concat_or_join$2(merge$2(f, s1[1], match[1]), v1, f(v1, [
+      return concat_or_join$2(merge$2(f, s1[1], match[1]), v1, Caml_curry.app3(f, v1, [
                       /* Some */0,
                       s1[3]
                     ], match[2]), merge$2(f, s1[4], match[3]));
@@ -2046,7 +2047,7 @@ function merge$2(f, s1, s2) {
     if (s2) {
       var v2 = s2[2];
       var match$1 = split$2(v2, s1);
-      return concat_or_join$2(merge$2(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+      return concat_or_join$2(merge$2(f, match$1[1], s2[1]), v2, Caml_curry.app3(f, v2, match$1[2], [
                       /* Some */0,
                       s2[3]
                     ]), merge$2(f, match$1[3], s2[4]));
@@ -2072,7 +2073,7 @@ function filter$2(p, param) {
     var d = param[3];
     var v = param[2];
     var l$prime = filter$2(p, param[1]);
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var r$prime = filter$2(p, param[4]);
     if (pvd) {
       return join$2(l$prime, v, d, r$prime);
@@ -2093,7 +2094,7 @@ function partition$2(p, param) {
     var match = partition$2(p, param[1]);
     var lf = match[2];
     var lt = match[1];
-    var pvd = p(v, d);
+    var pvd = Caml_curry.app2(p, v, d);
     var match$1 = partition$2(p, param[4]);
     var rf = match$1[2];
     var rt = match$1[1];
@@ -2154,7 +2155,7 @@ function compare$2(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = cmp(e1[2], e2[2]);
+          var c$1 = Caml_curry.app2(cmp, e1[2], e2[2]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -2186,7 +2187,7 @@ function equal$2(cmp, m1, m2) {
     if (e1) {
       if (e2) {
         if (e1[1] === e2[1]) {
-          if (cmp(e1[2], e2[2])) {
+          if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum$2(e2[3], e2[4]);
             _e1 = cons_enum$2(e1[3], e1[4]);
           }
@@ -2637,9 +2638,9 @@ function init_class(table) {
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   var $$super = param[2];
   narrow(cla, vals, virt_meths, concr_meths);
-  var init = top ? $$super(cla, param[4]) : $$super(cla);
+  var init = top ? Caml_curry.app2($$super, cla, param[4]) : Caml_curry.app1($$super, cla);
   widen(cla);
-  return $$Array.concat([
+  return Caml_curry.app1($$Array.concat, [
               /* :: */0,
               /* array */[init],
               [
@@ -2660,11 +2661,11 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
 
 function make_class(pub_meths, class_init) {
   var table = create_table(pub_meths);
-  var env_init = class_init(table);
+  var env_init = Caml_curry.app1(class_init, table);
   init_class(table);
   return [
           /* tuple */0,
-          env_init(0),
+          Caml_curry.app1(env_init, 0),
           class_init,
           env_init,
           0
@@ -2673,7 +2674,7 @@ function make_class(pub_meths, class_init) {
 
 function make_class_store(pub_meths, class_init, init_table) {
   var table = create_table(pub_meths);
-  var env_init = class_init(table);
+  var env_init = Caml_curry.app1(class_init, table);
   init_class(table);
   init_table[2] = class_init;
   init_table[1] = env_init;
@@ -2718,7 +2719,7 @@ function iter_f(obj, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      param[1](obj);
+      Caml_curry.app1(param[1], obj);
       _param = param[2];
     }
     else {
@@ -2839,7 +2840,7 @@ function get_env(e, n) {
 
 function get_meth(n) {
   return function (obj) {
-    return obj[1][n](obj);
+    return Caml_curry.app1(obj[1][n], obj);
   };
 }
 
@@ -2852,115 +2853,115 @@ function set_var(n) {
 
 function app_const(f, x) {
   return function () {
-    return f(x);
+    return Caml_curry.app1(f, x);
   };
 }
 
 function app_var(f, n) {
   return function (obj) {
-    return f(obj[n]);
+    return Caml_curry.app1(f, obj[n]);
   };
 }
 
 function app_env(f, e, n) {
   return function (obj) {
-    return f(obj[e][n]);
+    return Caml_curry.app1(f, obj[e][n]);
   };
 }
 
 function app_meth(f, n) {
   return function (obj) {
-    return f(obj[1][n](obj));
+    return Caml_curry.app1(f, Caml_curry.app1(obj[1][n], obj));
   };
 }
 
 function app_const_const(f, x, y) {
   return function () {
-    return f(x, y);
+    return Caml_curry.app2(f, x, y);
   };
 }
 
 function app_const_var(f, x, n) {
   return function (obj) {
-    return f(x, obj[n]);
+    return Caml_curry.app2(f, x, obj[n]);
   };
 }
 
 function app_const_meth(f, x, n) {
   return function (obj) {
-    return f(x, obj[1][n](obj));
+    return Caml_curry.app2(f, x, Caml_curry.app1(obj[1][n], obj));
   };
 }
 
 function app_var_const(f, n, x) {
   return function (obj) {
-    return f(obj[n], x);
+    return Caml_curry.app2(f, obj[n], x);
   };
 }
 
 function app_meth_const(f, n, x) {
   return function (obj) {
-    return f(obj[1][n](obj), x);
+    return Caml_curry.app2(f, Caml_curry.app1(obj[1][n], obj), x);
   };
 }
 
 function app_const_env(f, x, e, n) {
   return function (obj) {
-    return f(x, obj[e][n]);
+    return Caml_curry.app2(f, x, obj[e][n]);
   };
 }
 
 function app_env_const(f, e, n, x) {
   return function (obj) {
-    return f(obj[e][n], x);
+    return Caml_curry.app2(f, obj[e][n], x);
   };
 }
 
 function meth_app_const(n, x) {
   return function (obj) {
-    return obj[1][n](obj, x);
+    return Caml_curry.app2(obj[1][n], obj, x);
   };
 }
 
 function meth_app_var(n, m) {
   return function (obj) {
-    return obj[1][n](obj, obj[m]);
+    return Caml_curry.app2(obj[1][n], obj, obj[m]);
   };
 }
 
 function meth_app_env(n, e, m) {
   return function (obj) {
-    return obj[1][n](obj, obj[e][m]);
+    return Caml_curry.app2(obj[1][n], obj, obj[e][m]);
   };
 }
 
 function meth_app_meth(n, m) {
   return function (obj) {
-    return obj[1][n](obj, obj[1][m](obj));
+    return Caml_curry.app2(obj[1][n], obj, Caml_curry.app1(obj[1][m], obj));
   };
 }
 
 function send_const(m, x, _) {
   return function () {
-    return Caml_oo.caml_get_public_method(x, m, 1)(x);
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, x, m, 1), x);
   };
 }
 
 function send_var(m, n, _) {
   return function (obj) {
-    return Caml_oo.caml_get_public_method(obj[n], m, 2)(obj[n]);
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[n], m, 2), obj[n]);
   };
 }
 
 function send_env(m, e, n, _) {
   return function (obj) {
-    return Caml_oo.caml_get_public_method(obj[e][n], m, 3)(obj[e][n]);
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[e][n], m, 3), obj[e][n]);
   };
 }
 
 function send_meth(m, n, _) {
   return function (obj) {
-    return Caml_oo.caml_get_public_method(obj[1][n](obj), m, 4)(obj[1][n](obj));
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, Caml_curry.app1(obj[1][n], obj), m, 4), Caml_curry.app1(obj[1][n], obj));
   };
 }
 
@@ -3005,13 +3006,13 @@ function method_impl(table, i, arr) {
           var f = next(/* () */0);
           var x$1 = next(/* () */0);
           return function () {
-            return f(x$1);
+            return Caml_curry.app1(f, x$1);
           };
       case 6 : 
           var f$1 = next(/* () */0);
           var n$3 = next(/* () */0);
           return function (obj) {
-            return f$1(obj[n$3]);
+            return Caml_curry.app1(f$1, obj[n$3]);
           };
       case 7 : 
           var f$2 = next(/* () */0);
@@ -3027,7 +3028,7 @@ function method_impl(table, i, arr) {
           var x$2 = next(/* () */0);
           var y = next(/* () */0);
           return function () {
-            return f$4(x$2, y);
+            return Caml_curry.app2(f$4, x$2, y);
           };
       case 10 : 
           var f$5 = next(/* () */0);

@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt         = require("./mt");
+var Caml_curry = require("../runtime/caml_curry");
 
 var g = 7;
 
@@ -46,7 +47,7 @@ var suites_002 = [
       return [
               /* Eq */0,
               14,
-              v(1)
+              Caml_curry.app1(v, 1)
             ];
     }
   ],

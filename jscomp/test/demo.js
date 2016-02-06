@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var BUI     = require("@blp/ui");
-var UI      = require("@ui");
-var Runtime = require("@runtime");
+var BUI        = require("@blp/ui");
+var UI         = require("@ui");
+var Runtime    = require("@runtime");
+var Caml_curry = require("../runtime/caml_curry");
 
 var data = /* array */[
   [
@@ -24,12 +25,12 @@ var data = /* array */[
 ];
 
 function ui_layout(compile, lookup, appContext) {
-  var init = compile("bid  - ask");
+  var init = Caml_curry.app1(compile, "bid  - ask");
   var computeFunction = [
     0,
     function (env) {
-      return init(function (key) {
-                  return lookup(env, key);
+      return Caml_curry.app1(init, function (key) {
+                  return Caml_curry.app2(lookup, env, key);
                 });
     }
   ];
@@ -47,9 +48,9 @@ function ui_layout(compile, lookup, appContext) {
   stackPanel.orientation = "vertical";
   stackPanel.minHeight = 10000;
   stackPanel.minWidth = 4000;
-  stackPanel.addChild(grid);
-  stackPanel.addChild(inputCode);
-  stackPanel.addChild(button);
+  Caml_curry.app1(stackPanel.addChild, grid);
+  Caml_curry.app1(stackPanel.addChild, inputCode);
+  Caml_curry.app1(stackPanel.addChild, button);
   var u = {
     "width": 200
   };
@@ -86,12 +87,12 @@ function ui_layout(compile, lookup, appContext) {
   inputCode.minHeight = 100;
   button.text = "update formula";
   button.minHeight = 20;
-  button.on("click", function () {
+  Caml_curry.app2(button.on, "click", function () {
         try {
-          var hot_function = compile(inputCode.text);
+          var hot_function = Caml_curry.app1(compile, inputCode.text);
           computeFunction[1] = function (env) {
-            return hot_function(function (key) {
-                        return lookup(env, key);
+            return Caml_curry.app1(hot_function, function (key) {
+                        return Caml_curry.app2(lookup, env, key);
                       });
           };
           return /* () */0;
@@ -100,18 +101,18 @@ function ui_layout(compile, lookup, appContext) {
           return /* () */0;
         }
       });
-  Runtime.setInterval(function () {
-        return grid.dataSource = Array.prototype.map.call(data, function (param) {
+  Caml_curry.app2(Runtime.setInterval, function () {
+        return grid.dataSource = Caml_curry.app2(Array.prototype.map.call, data, function (param) {
                     var price = param[2];
-                    var bid = price + 20 * Math.random();
-                    var ask = price + 20 * Math.random();
-                    var result = computeFunction[1]({
+                    var bid = price + 20 * Caml_curry.app0(Math.random);
+                    var ask = price + 20 * Caml_curry.app0(Math.random);
+                    var result = Caml_curry.app1(computeFunction[1], {
                           "bid": bid,
                           "ask": ask
                         });
-                    var text = bid.toFixed(2);
-                    var text$1 = ask.toFixed(2);
-                    var text$2 = result.toFixed(2);
+                    var text = Caml_curry.app1(bid.toFixed, 2);
+                    var text$1 = Caml_curry.app1(ask.toFixed, 2);
+                    var text$2 = Caml_curry.app1(result.toFixed, 2);
                     return /* array */[
                             {
                               "label": {

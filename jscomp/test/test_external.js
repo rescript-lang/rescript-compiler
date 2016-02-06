@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_curry = require("../runtime/caml_curry");
 
-var xx = document();
+var xx = Caml_curry.app0(document);
 
-alert("hehha");
+Caml_curry.app1(alert, "hehha");
 
 exports.xx = xx;
 /* xx Not a pure module */

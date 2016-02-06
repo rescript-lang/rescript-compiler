@@ -1,65 +1,66 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_curry = require("../runtime/caml_curry");
 
 function f0(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f1(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 var X = [0];
 
 function f2(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f3(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f4(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f5(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f6(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f7(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 var X0 = [0];
 
 function f8(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f9(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f10(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f11(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f12(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 function f13(g, x) {
-  return g(x);
+  return Caml_curry.app1(g, x);
 }
 
 var X2 = [
@@ -68,7 +69,7 @@ var X2 = [
 ];
 
 function f14(h, g, x) {
-  return h(g, x);
+  return Caml_curry.app2(h, g, x);
 }
 
 exports.f0  = f0;

@@ -4,9 +4,10 @@
 var Pervasives = require("../stdlib/pervasives");
 var Lexing     = require("../stdlib/lexing");
 var Sys        = require("../stdlib/sys");
+var Caml_curry = require("../runtime/caml_curry");
 
 var l = Sys.is_js ? function (prim) {
-    return console.log(prim);
+    return Caml_curry.app1(console.log, prim);
   } : function (param) {
     return Pervasives.output_string(Pervasives.stdout, param);
   };
@@ -35,51 +36,51 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 9 || __ocaml_lex_state$1 < 0) {
-      lexbuf[1](lexbuf);
+      Caml_curry.app1(lexbuf[1], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
     }
     else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
-            l("new line");
+            Caml_curry.app1(l, "new line");
             ___ocaml_lex_state = 0;
             break;
         case 1 : 
-            l("number");
-            l(Lexing.lexeme(lexbuf));
+            Caml_curry.app1(l, "number");
+            Caml_curry.app1(l, Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 0;
             break;
         case 2 : 
-            l("ident");
-            l(Lexing.lexeme(lexbuf));
+            Caml_curry.app1(l, "ident");
+            Caml_curry.app1(l, Lexing.lexeme(lexbuf));
             ___ocaml_lex_state = 0;
             break;
         case 3 : 
-            l("+");
+            Caml_curry.app1(l, "+");
             ___ocaml_lex_state = 0;
             break;
         case 4 : 
-            l("-");
+            Caml_curry.app1(l, "-");
             ___ocaml_lex_state = 0;
             break;
         case 5 : 
-            l("*");
+            Caml_curry.app1(l, "*");
             ___ocaml_lex_state = 0;
             break;
         case 6 : 
-            l("/");
+            Caml_curry.app1(l, "/");
             ___ocaml_lex_state = 0;
             break;
         case 7 : 
-            l("(");
+            Caml_curry.app1(l, "(");
             ___ocaml_lex_state = 0;
             break;
         case 8 : 
-            l(")");
+            Caml_curry.app1(l, ")");
             ___ocaml_lex_state = 0;
             break;
         case 9 : 
-            return l("eof");
+            return Caml_curry.app1(l, "eof");
         
       }
     }

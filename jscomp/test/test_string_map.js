@@ -3,6 +3,7 @@
 
 var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_curry      = require("../runtime/caml_curry");
 var Caml_string     = require("../runtime/caml_string");
 
 function height(param) {
@@ -139,9 +140,9 @@ function find(x, _param) {
 }
 
 function timing(label, f) {
-  console.time(label);
-  f(/* () */0);
-  return console.timeEnd(label);
+  Caml_curry.app1(console.time, label);
+  Caml_curry.app1(f, /* () */0);
+  return Caml_curry.app1(console.timeEnd, label);
 }
 
 function assertion_test() {

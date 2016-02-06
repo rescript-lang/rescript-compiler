@@ -22,27 +22,7 @@
 
 (** Creator utilities for the [J] module *) 
 
-val prim : string 
 
-val exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lex_parse : string 
-
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
 
 val no_side_effect : J.expression -> bool
 
