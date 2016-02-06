@@ -4,6 +4,39 @@
 var Mt         = require("./mt");
 var Printf     = require("../stdlib/printf");
 var Caml_curry = require("../runtime/caml_curry");
+var Format     = require("../stdlib/format");
+
+function print_pair(fmt, param) {
+  return Caml_curry.app2(Format.fprintf(fmt, [
+                  /* Format */0,
+                  [
+                    /* Char_literal */12,
+                    /* "(" */40,
+                    [
+                      /* Int */4,
+                      /* Int_d */0,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      [
+                        /* Char_literal */12,
+                        /* "," */44,
+                        [
+                          /* Int */4,
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          [
+                            /* Char_literal */12,
+                            /* ")" */41,
+                            /* End_of_format */0
+                          ]
+                        ]
+                      ]
+                    ]
+                  ],
+                  "(%d,%d)"
+                ]), param[1], param[2]);
+}
 
 var suites_001 = [
   /* tuple */0,
@@ -31,13 +64,41 @@ var suites_001 = [
   }
 ];
 
+var suites_002 = [
+  /* :: */0,
+  [
+    /* tuple */0,
+    "print_pair",
+    function () {
+      return [
+              /* Eq */0,
+              "(1,2)",
+              Caml_curry.app2(Format.asprintf([
+                        /* Format */0,
+                        [
+                          /* Alpha */15,
+                          /* End_of_format */0
+                        ],
+                        "%a"
+                      ]), print_pair, [
+                    /* tuple */0,
+                    1,
+                    2
+                  ])
+            ];
+    }
+  ],
+  /* [] */0
+];
+
 var suites = [
   /* :: */0,
   suites_001,
-  /* [] */0
+  suites_002
 ];
 
 Mt.from_pair_suites("printf_test.ml", suites);
 
-exports.suites = suites;
+exports.print_pair = print_pair;
+exports.suites     = suites;
 /*  Not a pure module */
