@@ -4,6 +4,7 @@
 var Pervasives  = require("../stdlib/pervasives");
 var Caml_format = require("../runtime/caml_format");
 var Lexing      = require("../stdlib/lexing");
+var Caml_curry  = require("../runtime/caml_curry");
 
 var __ocaml_lex_tables = [
   /* record */0,
@@ -29,15 +30,17 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 9 || __ocaml_lex_state$1 < 0) {
-      lexbuf[1](lexbuf);
+      Caml_curry.app1(lexbuf[1], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
+      continue ;
+      
     }
     else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             ___ocaml_lex_state = 0;
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             return [
                     /* NUMERAL */0,
                     Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))

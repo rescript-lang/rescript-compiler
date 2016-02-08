@@ -21,41 +21,42 @@
 
 
 
-type ('a,'b) logging =  
-  ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
 
-let err str f v =
-  Format.fprintf Format.err_formatter ("%s " ^^ f) str  v 
+type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
-let ierr b str f v =
+let err str f  =
+  Format.fprintf Format.err_formatter ("%s " ^^ f) str  
+
+let ierr b str f  =
   if b then 
-    Format.fprintf Format.err_formatter ("%s " ^^ f) str  v 
+    Format.fprintf Format.err_formatter ("%s " ^^ f) str  
   else
-    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  v 
+    Format.ifprintf Format.err_formatter ("%s " ^^ f) str  
 
-let warn str f v =
-  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+let warn str f  =
+  Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
 
 
 
-let iwarn b str f v = 
+let iwarn b str f  = 
   if b then 
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  
   else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
 
-let dwarn str f v = 
+(* TODO: add {[@.]} later for all *)
+let dwarn str f  = 
   if Lam_current_unit.is_same_file () then   
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
   else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str  v 
+    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
 
-let info str f v =
-  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
+let info str f  =
+  Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
 
-let iinfo b str f v =
+let iinfo b str f  =
   if b then 
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
   else
-    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  v 
+    Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
 

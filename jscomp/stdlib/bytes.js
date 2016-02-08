@@ -5,6 +5,7 @@ var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Char            = require("./char");
 var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_curry      = require("../runtime/caml_curry");
 var Caml_string     = require("../runtime/caml_string");
 var List            = require("./list");
 
@@ -17,7 +18,7 @@ function make(n, c) {
 function init(n, f) {
   var s = Caml_string.caml_create_string(n);
   for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
-    s[i] = f(i);
+    s[i] = Caml_curry.app1(f, i);
   }
   return s;
 }
@@ -104,14 +105,14 @@ function blit_string(s1, ofs1, s2, ofs2, len) {
 
 function iter(f, a) {
   for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-    f(a[i]);
+    Caml_curry.app1(f, a[i]);
   }
   return /* () */0;
 }
 
 function iteri(f, a) {
   for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-    f(i, a[i]);
+    Caml_curry.app2(f, i, a[i]);
   }
   return /* () */0;
 }
@@ -310,7 +311,7 @@ function map(f, s) {
   if (l) {
     var r = Caml_string.caml_create_string(l);
     for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
-      r[i] = f(s[i]);
+      r[i] = Caml_curry.app1(f, s[i]);
     }
     return r;
   }
@@ -324,7 +325,7 @@ function mapi(f, s) {
   if (l) {
     var r = Caml_string.caml_create_string(l);
     for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
-      r[i] = f(i, s[i]);
+      r[i] = Caml_curry.app2(f, i, s[i]);
     }
     return r;
   }
@@ -344,7 +345,7 @@ function lowercase(s) {
 function apply1(f, s) {
   if (s.length) {
     var r = copy(s);
-    r[0] = f(s[0]);
+    r[0] = Caml_curry.app1(f, s[0]);
     return r;
   }
   else {
@@ -371,6 +372,8 @@ function index_rec(s, lim, _i, c) {
     }
     else {
       _i = i + 1;
+      continue ;
+      
     }
   };
 }
@@ -400,6 +403,8 @@ function rindex_rec(s, _i, c) {
     }
     else {
       _i = i - 1;
+      continue ;
+      
     }
   };
 }

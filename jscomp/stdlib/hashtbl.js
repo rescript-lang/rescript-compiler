@@ -11,6 +11,7 @@ var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("./array");
 var $$String         = require("./string");
+var Caml_curry       = require("../runtime/caml_curry");
 var Random           = require("./random");
 
 function hash(x) {
@@ -64,7 +65,7 @@ function randomize() {
 var prng = [
   246,
   function () {
-    return Random.State[2](/* () */0);
+    return Caml_curry.app1(Random.State[2], /* () */0);
   }
 ];
 
@@ -79,6 +80,8 @@ function power_2_above(_x, n) {
     }
     else {
       _x = x * 2;
+      continue ;
+      
     }
   };
 }
@@ -89,7 +92,7 @@ function create($staropt$star, initial_size) {
   var seed;
   if (random) {
     var tag = Caml_obj_runtime.caml_obj_tag(prng);
-    seed = Random.State[4](tag === 250 ? prng[1] : (
+    seed = Caml_curry.app1(Random.State[4], tag === 250 ? prng[1] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
           ));
   }
@@ -151,7 +154,7 @@ function resize(indexfun, h) {
       if (param) {
         var key = param[1];
         insert_bucket(param[3]);
-        var nidx = indexfun(h, key);
+        var nidx = Caml_curry.app2(indexfun, h, key);
         ndata[nidx] = [
           /* Cons */0,
           key,
@@ -246,6 +249,8 @@ function find(h, key) {
                 if (param) {
                   if (Caml_primitive.caml_compare(key$1, param[1])) {
                     _param = param[3];
+                    continue ;
+                    
                   }
                   else {
                     return param[2];
@@ -289,6 +294,8 @@ function find_all(h, key) {
         var rest = param[3];
         if (Caml_primitive.caml_compare(param[1], key)) {
           _param = rest;
+          continue ;
+          
         }
         else {
           return [
@@ -367,6 +374,8 @@ function mem(h, key) {
     if (param) {
       if (Caml_primitive.caml_compare(param[1], key)) {
         _param = param[3];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -383,8 +392,10 @@ function iter(f, h) {
     while(true) {
       var param = _param;
       if (param) {
-        f(param[1], param[2]);
+        Caml_curry.app2(f, param[1], param[2]);
         _param = param[3];
+        continue ;
+        
       }
       else {
         return /* () */0;
@@ -404,8 +415,10 @@ function fold(f, h, init) {
       var accu = _accu;
       var b = _b;
       if (b) {
-        _accu = f(b[1], b[2], accu);
+        _accu = Caml_curry.app3(f, b[1], b[2], accu);
         _b = b[3];
+        continue ;
+        
       }
       else {
         return accu;
@@ -427,6 +440,8 @@ function bucket_length(_accu, _param) {
     if (param) {
       _param = param[3];
       _accu = accu + 1;
+      continue ;
+      
     }
     else {
       return accu;
@@ -455,7 +470,7 @@ function stats(h) {
 
 function MakeSeeded(H) {
   var key_index = function (h, key) {
-    return H[2](h[3], key) & h[2].length - 1;
+    return Caml_curry.app2(H[2], h[3], key) & h[2].length - 1;
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
@@ -480,7 +495,7 @@ function MakeSeeded(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        if (H[1](k, key)) {
+        if (Caml_curry.app2(H[1], k, key)) {
           -- h[1];
           return next;
         }
@@ -505,16 +520,16 @@ function MakeSeeded(H) {
     var match = h[2][key_index(h, key)];
     if (match) {
       var rest1 = match[3];
-      if (H[1](key, match[1])) {
+      if (Caml_curry.app2(H[1], key, match[1])) {
         return match[2];
       }
       else if (rest1) {
         var rest2 = rest1[3];
-        if (H[1](key, rest1[1])) {
+        if (Caml_curry.app2(H[1], key, rest1[1])) {
           return rest1[2];
         }
         else if (rest2) {
-          if (H[1](key, rest2[1])) {
+          if (Caml_curry.app2(H[1], key, rest2[1])) {
             return rest2[2];
           }
           else {
@@ -523,11 +538,13 @@ function MakeSeeded(H) {
             while(true) {
               var param = _param;
               if (param) {
-                if (H[1](key$1, param[1])) {
+                if (Caml_curry.app2(H[1], key$1, param[1])) {
                   return param[2];
                 }
                 else {
                   _param = param[3];
+                  continue ;
+                  
                 }
               }
               else {
@@ -554,7 +571,7 @@ function MakeSeeded(H) {
         var param = _param;
         if (param) {
           var rest = param[3];
-          if (H[1](param[1], key)) {
+          if (Caml_curry.app2(H[1], param[1], key)) {
             return [
                     /* :: */0,
                     param[2],
@@ -563,6 +580,8 @@ function MakeSeeded(H) {
           }
           else {
             _param = rest;
+            continue ;
+            
           }
         }
         else {
@@ -577,7 +596,7 @@ function MakeSeeded(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        if (H[1](k, key)) {
+        if (Caml_curry.app2(H[1], k, key)) {
           return [
                   /* Cons */0,
                   key,
@@ -630,11 +649,13 @@ function MakeSeeded(H) {
     while(true) {
       var param = _param;
       if (param) {
-        if (H[1](param[1], key)) {
+        if (Caml_curry.app2(H[1], param[1], key)) {
           return /* true */1;
         }
         else {
           _param = param[3];
+          continue ;
+          
         }
       }
       else {
@@ -664,7 +685,7 @@ function MakeSeeded(H) {
 function Make(H) {
   var equal = H[1];
   var key_index = function (h, key) {
-    return H[2](key) & h[2].length - 1;
+    return Caml_curry.app1(H[2], key) & h[2].length - 1;
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
@@ -689,7 +710,7 @@ function Make(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        if (equal(k, key)) {
+        if (Caml_curry.app2(equal, k, key)) {
           -- h[1];
           return next;
         }
@@ -714,16 +735,16 @@ function Make(H) {
     var match = h[2][key_index(h, key)];
     if (match) {
       var rest1 = match[3];
-      if (equal(key, match[1])) {
+      if (Caml_curry.app2(equal, key, match[1])) {
         return match[2];
       }
       else if (rest1) {
         var rest2 = rest1[3];
-        if (equal(key, rest1[1])) {
+        if (Caml_curry.app2(equal, key, rest1[1])) {
           return rest1[2];
         }
         else if (rest2) {
-          if (equal(key, rest2[1])) {
+          if (Caml_curry.app2(equal, key, rest2[1])) {
             return rest2[2];
           }
           else {
@@ -732,11 +753,13 @@ function Make(H) {
             while(true) {
               var param = _param;
               if (param) {
-                if (equal(key$1, param[1])) {
+                if (Caml_curry.app2(equal, key$1, param[1])) {
                   return param[2];
                 }
                 else {
                   _param = param[3];
+                  continue ;
+                  
                 }
               }
               else {
@@ -763,7 +786,7 @@ function Make(H) {
         var param = _param;
         if (param) {
           var rest = param[3];
-          if (equal(param[1], key)) {
+          if (Caml_curry.app2(equal, param[1], key)) {
             return [
                     /* :: */0,
                     param[2],
@@ -772,6 +795,8 @@ function Make(H) {
           }
           else {
             _param = rest;
+            continue ;
+            
           }
         }
         else {
@@ -786,7 +811,7 @@ function Make(H) {
       if (param) {
         var next = param[3];
         var k = param[1];
-        if (equal(k, key)) {
+        if (Caml_curry.app2(equal, k, key)) {
           return [
                   /* Cons */0,
                   key,
@@ -839,11 +864,13 @@ function Make(H) {
     while(true) {
       var param = _param;
       if (param) {
-        if (equal(param[1], key)) {
+        if (Caml_curry.app2(equal, param[1], key)) {
           return /* true */1;
         }
         else {
           _param = param[3];
+          continue ;
+          
         }
       }
       else {

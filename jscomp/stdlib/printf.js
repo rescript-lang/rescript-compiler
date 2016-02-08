@@ -3,25 +3,26 @@
 
 var Pervasives         = require("./pervasives");
 var Buffer             = require("./buffer");
+var Caml_curry         = require("../runtime/caml_curry");
 var CamlinternalFormat = require("./camlinternalFormat");
 
 function kfprintf(k, o, param) {
   return CamlinternalFormat.make_printf(function (o, acc) {
               CamlinternalFormat.output_acc(o, acc);
-              return k(o);
+              return Caml_curry.app1(k, o);
             }, o, /* End_of_acc */0, param[1]);
 }
 
 function kbprintf(k, b, param) {
   return CamlinternalFormat.make_printf(function (b, acc) {
               CamlinternalFormat.bufput_acc(b, acc);
-              return k(b);
+              return Caml_curry.app1(k, b);
             }, b, /* End_of_acc */0, param[1]);
 }
 
 function ikfprintf(k, oc, param) {
   return CamlinternalFormat.make_printf(function (oc, _) {
-              return k(oc);
+              return Caml_curry.app1(k, oc);
             }, oc, /* End_of_acc */0, param[1]);
 }
 
@@ -55,7 +56,7 @@ function ksprintf(k, param) {
   var k$prime = function (_, acc) {
     var buf = Buffer.create(64);
     CamlinternalFormat.strput_acc(buf, acc);
-    return k(Buffer.contents(buf));
+    return Caml_curry.app1(k, Buffer.contents(buf));
   };
   return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[1]);
 }

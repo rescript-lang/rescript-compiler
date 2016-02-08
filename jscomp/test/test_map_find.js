@@ -130,6 +130,8 @@ function find(x, _param) {
       var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -299,6 +301,8 @@ function find$1(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];

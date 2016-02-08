@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var React    = require("react");
-var ReactDom = require("react-dom");
+var React      = require("react");
+var Caml_curry = require("../runtime/caml_curry");
+var ReactDom   = require("react-dom");
 
 function fib(n) {
   if (n === 2 || n === 1) {
@@ -25,7 +26,7 @@ function map(f, param) {
   if (param) {
     return [
             /* Cons */0,
-            f(param[1]),
+            Caml_curry.app1(f, param[1]),
             map(f, param[2])
           ];
   }

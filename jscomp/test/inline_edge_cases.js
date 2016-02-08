@@ -7,6 +7,8 @@ function test3(_n) {
     var n = _n;
     if (n) {
       _n = n - 1;
+      continue ;
+      
     }
     else {
       return n + 9;
@@ -19,6 +21,8 @@ function test2(_n) {
     var n = _n;
     if (n) {
       _n = n - 1;
+      continue ;
+      
     }
     else {
       return test3(n) + 3;
@@ -31,6 +35,8 @@ function test0(_n) {
     var n = _n;
     if (n) {
       _n = n - 1;
+      continue ;
+      
     }
     else {
       var _n$1 = n;
@@ -38,6 +44,8 @@ function test0(_n) {
         var n$1 = _n$1;
         if (n$1) {
           _n$1 = n$1 - 1;
+          continue ;
+          
         }
         else {
           return test2(n$1) + 2;

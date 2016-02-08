@@ -8,6 +8,7 @@ var Caml_lexer       = require("../runtime/caml_lexer");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("./array");
+var Caml_curry       = require("../runtime/caml_curry");
 
 var YYexit = [
   248,
@@ -93,31 +94,31 @@ function yyparse(tables, start, lexer, lexbuf) {
       var match = Caml_lexer.caml_parse_engine(tables, env, cmd, arg);
       switch (match) {
         case 0 : 
-            var t = lexer(lexbuf);
+            var t = Caml_curry.app1(lexer, lexbuf);
             env[9] = lexbuf[11];
             env[10] = lexbuf[12];
             _arg = t;
             _cmd = /* Token_read */1;
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             throw Parse_error;
         case 2 : 
             grow_stacks(/* () */0);
             _arg = /* () */0;
             _cmd = /* Stacks_grown_1 */2;
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             grow_stacks(/* () */0);
             _arg = /* () */0;
             _cmd = /* Stacks_grown_2 */3;
-            break;
-        case 4 : 
+            continue ;
+            case 4 : 
             var match$1;
             try {
               match$1 = [
                 /* tuple */0,
                 /* Semantic_action_computed */4,
-                tables[1][env[13]](env)
+                Caml_curry.app1(tables[1][env[13]], env)
               ];
             }
             catch (exn){
@@ -134,13 +135,13 @@ function yyparse(tables, start, lexer, lexbuf) {
             }
             _arg = match$1[2];
             _cmd = match$1[1];
-            break;
-        case 5 : 
-            tables[14]("syntax error");
+            continue ;
+            case 5 : 
+            Caml_curry.app1(tables[14], "syntax error");
             _arg = /* () */0;
             _cmd = /* Error_detected */5;
-            break;
-        
+            continue ;
+            
       }
     };
   }
@@ -189,6 +190,8 @@ function symbol_start_pos() {
       }
       else {
         _i = i - 1;
+        continue ;
+        
       }
     }
   };
@@ -223,7 +226,7 @@ function rhs_end(n) {
 }
 
 function is_current_lookahead(tok) {
-  return current_lookahead_fun[1](tok);
+  return Caml_curry.app1(current_lookahead_fun[1], tok);
 }
 
 function parse_error() {

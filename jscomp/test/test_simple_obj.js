@@ -4,6 +4,7 @@
 var Caml_oo         = require("../runtime/caml_oo");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var CamlinternalOO  = require("../stdlib/camlinternalOO");
+var Caml_curry      = require("../runtime/caml_curry");
 
 var shared = [
   0,
@@ -97,7 +98,7 @@ CamlinternalOO.init_class($$class$3);
 var v = CamlinternalOO.create_object_opt(0, $$class$3);
 
 function test() {
-  if (Caml_oo.caml_get_public_method(uu, 23515, 1)(uu) !== "uu") {
+  if (Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 1), uu) !== "uu") {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -109,7 +110,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(uuu, 4846113, 2)(uuu, 1, 20) !== 21) {
+  if (Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 2), uuu, 1, 20) !== 21) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -121,7 +122,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(v, 4846113, 3)(v, 3, 7) !== 10) {
+  if (Caml_curry.app3(Caml_oo.caml_get_public_method(v, 4846113, 3), v, 3, 7) !== 10) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -133,7 +134,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(u, 5243894, 4)(u) !== 3) {
+  if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 4), u) !== 3) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -145,7 +146,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(u, 5243895, 5)(u) !== 4) {
+  if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 5), u) !== 4) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -157,7 +158,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(u, 23297, 6)(u, 1, 2) !== 3) {
+  if (Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 6), u, 1, 2) !== 3) {
     throw [
           0,
           Caml_exceptions.Assert_failure,
@@ -169,7 +170,7 @@ function test() {
           ]
         ];
   }
-  if (Caml_oo.caml_get_public_method(u, 616641298, 7)(u, 32) === 32) {
+  if (Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 7), u, 32) === 32) {
     return 0;
   }
   else {

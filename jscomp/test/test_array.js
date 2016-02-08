@@ -3,6 +3,7 @@
 
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
+var Caml_curry = require("../runtime/caml_curry");
 
 var v = Caml_array.caml_make_vect(6, 5);
 
@@ -22,7 +23,7 @@ var hhh = $$Array.append(/* array */[
       5
     ]);
 
-var u = $$Array.concat([
+var u = Caml_curry.app1($$Array.concat, [
       /* :: */0,
       /* array */[
         1,

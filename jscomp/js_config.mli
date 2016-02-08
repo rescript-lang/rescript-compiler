@@ -30,4 +30,29 @@ val set_env : env -> unit
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 
+val prim : string 
+
+val exceptions : string
+
+val io : string
+
+val oo : string
+
+val sys : string
+
+val lex_parse : string 
+
+val obj_runtime : string
+
+val array : string
+
+val format : string
+
+val string : string 
+
+val float : string 
+
+val curry : string 
+
+
 

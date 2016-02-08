@@ -13,6 +13,8 @@ function f() {
       if (n > 0) {
         _n = n - 1;
         _acc = acc + n;
+        continue ;
+        
       }
       else {
         return acc;

@@ -9,6 +9,7 @@ var Digest     = require("./digest");
 var Int64      = require("./int64");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("./array");
+var Caml_curry = require("../runtime/caml_curry");
 
 function new_state() {
   return [
@@ -82,10 +83,13 @@ function $$int(s, bound) {
     while(true) {
       var r = bits(s$1);
       var v = r % n;
-      if (r - v <= 1073741823 - n + 1) {
+      if (r - v > 1073741823 - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }
@@ -102,10 +106,13 @@ function int32(s, bound) {
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
       var v = r % n;
-      if (r - v <= Int32.max_int - n + 1) {
+      if (r - v > Int32.max_int - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }
@@ -123,10 +130,13 @@ function int64(s, bound) {
       var b3 = ((bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if (r - v <= Int64.max_int - n + 1) {
+      if (r - v > Int64.max_int - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }
@@ -227,7 +237,7 @@ function int32$1(bound) {
 }
 
 function nativeint$1(bound) {
-  return nativeint($$default, bound);
+  return Caml_curry.app2(nativeint, $$default, bound);
 }
 
 function int64$1(bound) {

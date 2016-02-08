@@ -25,6 +25,12 @@
 (** Print JS IR to vanilla Javascript code *)
 
 
-val pp_program : J.deps_program -> Ext_pp.t -> unit
 
-val dump_program : J.deps_program -> out_channel -> unit
+
+
+val dump_deps_program : J.deps_program -> out_channel -> unit
+
+(** 2 functions Only used for debugging *)
+val string_of_block : J.block -> string
+
+val dump_program : J.program -> out_channel -> unit

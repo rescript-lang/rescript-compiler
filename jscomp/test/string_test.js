@@ -76,6 +76,8 @@ function rev_split_by_char(c, s) {
           l
         ];
       _i = i$prime + 1;
+      continue ;
+      
     }
     catch (exn){
       if (exn === Caml_exceptions.Not_found) {
@@ -133,6 +135,8 @@ function xsplit(delim, s) {
             ];
           _i = i$prime;
           _l = l$2;
+          continue ;
+          
         }
         
       }

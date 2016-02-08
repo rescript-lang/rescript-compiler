@@ -10,6 +10,7 @@ var Sys              = require("./sys");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
 var $$Array          = require("./array");
+var Caml_curry       = require("../runtime/caml_curry");
 var Caml_string      = require("../runtime/caml_string");
 var List             = require("./list");
 
@@ -162,6 +163,8 @@ function find(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -178,8 +181,10 @@ function fold(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = f(m[2], m[3], fold(f, m[1], accu));
+      _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -424,6 +429,8 @@ function find$1(x, _param) {
       var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -524,6 +531,8 @@ function get_method_label(table, name) {
         var c = Caml_string.caml_string_compare(x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return param[3];
@@ -813,9 +822,9 @@ function init_class(table) {
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
   var $$super = param[2];
   narrow(cla, vals, virt_meths, concr_meths);
-  var init = top ? $$super(cla, param[4]) : $$super(cla);
+  var init = top ? Caml_curry.app2($$super, cla, param[4]) : Caml_curry.app1($$super, cla);
   widen(cla);
-  return $$Array.concat([
+  return Caml_curry.app1($$Array.concat, [
               /* :: */0,
               /* array */[init],
               [
@@ -836,11 +845,11 @@ function inherits(cla, vals, virt_meths, concr_meths, param, top) {
 
 function make_class(pub_meths, class_init) {
   var table = create_table(pub_meths);
-  var env_init = class_init(table);
+  var env_init = Caml_curry.app1(class_init, table);
   init_class(table);
   return [
           /* tuple */0,
-          env_init(0),
+          Caml_curry.app1(env_init, 0),
           class_init,
           env_init,
           0
@@ -849,7 +858,7 @@ function make_class(pub_meths, class_init) {
 
 function make_class_store(pub_meths, class_init, init_table) {
   var table = create_table(pub_meths);
-  var env_init = class_init(table);
+  var env_init = Caml_curry.app1(class_init, table);
   init_class(table);
   init_table[2] = class_init;
   init_table[1] = env_init;
@@ -894,8 +903,10 @@ function iter_f(obj, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      param[1](obj);
+      Caml_curry.app1(param[1], obj);
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -971,6 +982,8 @@ function lookup_keys(i, keys, tables) {
       }
       else if (tables$1[3] !== /* Empty */0) {
         _tables = tables$1[3];
+        continue ;
+        
       }
       else {
         var next = [
@@ -1031,7 +1044,7 @@ function method_impl(table, i, arr) {
       case 3 : 
           var n$3 = next(/* () */0);
           return function (obj) {
-            return obj[1][n$3](obj);
+            return Caml_curry.app1(obj[1][n$3], obj);
           };
       case 4 : 
           var n$4 = next(/* () */0);
@@ -1043,13 +1056,13 @@ function method_impl(table, i, arr) {
           var f = next(/* () */0);
           var x$1 = next(/* () */0);
           return function () {
-            return f(x$1);
+            return Caml_curry.app1(f, x$1);
           };
       case 6 : 
           var f$1 = next(/* () */0);
           var n$5 = next(/* () */0);
           return function (obj) {
-            return f$1(obj[n$5]);
+            return Caml_curry.app1(f$1, obj[n$5]);
           };
       case 7 : 
           var f$2 = next(/* () */0);
@@ -1059,7 +1072,7 @@ function method_impl(table, i, arr) {
           var e$3 = e$2;
           var n$7 = n$6;
           return function (obj) {
-            return f$3(obj[e$3][n$7]);
+            return Caml_curry.app1(f$3, obj[e$3][n$7]);
           };
       case 8 : 
           var f$4 = next(/* () */0);
@@ -1067,14 +1080,14 @@ function method_impl(table, i, arr) {
           var f$5 = f$4;
           var n$9 = n$8;
           return function (obj) {
-            return f$5(obj[1][n$9](obj));
+            return Caml_curry.app1(f$5, Caml_curry.app1(obj[1][n$9], obj));
           };
       case 9 : 
           var f$6 = next(/* () */0);
           var x$2 = next(/* () */0);
           var y = next(/* () */0);
           return function () {
-            return f$6(x$2, y);
+            return Caml_curry.app2(f$6, x$2, y);
           };
       case 10 : 
           var f$7 = next(/* () */0);
@@ -1084,7 +1097,7 @@ function method_impl(table, i, arr) {
           var x$4 = x$3;
           var n$11 = n$10;
           return function (obj) {
-            return f$8(x$4, obj[n$11]);
+            return Caml_curry.app2(f$8, x$4, obj[n$11]);
           };
       case 11 : 
           var f$9 = next(/* () */0);
@@ -1096,7 +1109,7 @@ function method_impl(table, i, arr) {
           var e$5 = e$4;
           var n$13 = n$12;
           return function (obj) {
-            return f$10(x$6, obj[e$5][n$13]);
+            return Caml_curry.app2(f$10, x$6, obj[e$5][n$13]);
           };
       case 12 : 
           var f$11 = next(/* () */0);
@@ -1106,7 +1119,7 @@ function method_impl(table, i, arr) {
           var x$8 = x$7;
           var n$15 = n$14;
           return function (obj) {
-            return f$12(x$8, obj[1][n$15](obj));
+            return Caml_curry.app2(f$12, x$8, Caml_curry.app1(obj[1][n$15], obj));
           };
       case 13 : 
           var f$13 = next(/* () */0);
@@ -1116,7 +1129,7 @@ function method_impl(table, i, arr) {
           var n$17 = n$16;
           var x$10 = x$9;
           return function (obj) {
-            return f$14(obj[n$17], x$10);
+            return Caml_curry.app2(f$14, obj[n$17], x$10);
           };
       case 14 : 
           var f$15 = next(/* () */0);
@@ -1128,7 +1141,7 @@ function method_impl(table, i, arr) {
           var n$19 = n$18;
           var x$12 = x$11;
           return function (obj) {
-            return f$16(obj[e$7][n$19], x$12);
+            return Caml_curry.app2(f$16, obj[e$7][n$19], x$12);
           };
       case 15 : 
           var f$17 = next(/* () */0);
@@ -1138,7 +1151,7 @@ function method_impl(table, i, arr) {
           var n$21 = n$20;
           var x$14 = x$13;
           return function (obj) {
-            return f$18(obj[1][n$21](obj), x$14);
+            return Caml_curry.app2(f$18, Caml_curry.app1(obj[1][n$21], obj), x$14);
           };
       case 16 : 
           var n$22 = next(/* () */0);
@@ -1146,7 +1159,7 @@ function method_impl(table, i, arr) {
           var n$23 = n$22;
           var x$16 = x$15;
           return function (obj) {
-            return obj[1][n$23](obj, x$16);
+            return Caml_curry.app2(obj[1][n$23], obj, x$16);
           };
       case 17 : 
           var n$24 = next(/* () */0);
@@ -1154,7 +1167,7 @@ function method_impl(table, i, arr) {
           var n$25 = n$24;
           var m$1 = m;
           return function (obj) {
-            return obj[1][n$25](obj, obj[m$1]);
+            return Caml_curry.app2(obj[1][n$25], obj, obj[m$1]);
           };
       case 18 : 
           var n$26 = next(/* () */0);
@@ -1164,7 +1177,7 @@ function method_impl(table, i, arr) {
           var e$9 = e$8;
           var m$3 = m$2;
           return function (obj) {
-            return obj[1][n$27](obj, obj[e$9][m$3]);
+            return Caml_curry.app2(obj[1][n$27], obj, obj[e$9][m$3]);
           };
       case 19 : 
           var n$28 = next(/* () */0);
@@ -1172,7 +1185,7 @@ function method_impl(table, i, arr) {
           var n$29 = n$28;
           var m$5 = m$4;
           return function (obj) {
-            return obj[1][n$29](obj, obj[1][m$5](obj));
+            return Caml_curry.app2(obj[1][n$29], obj, Caml_curry.app1(obj[1][m$5], obj));
           };
       case 20 : 
           var m$6 = next(/* () */0);
@@ -1181,7 +1194,7 @@ function method_impl(table, i, arr) {
           var x$18 = x$17;
           new_cache(table);
           return function () {
-            return Caml_oo.caml_get_public_method(x$18, m$7, 1)(x$18);
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, x$18, m$7, 1), x$18);
           };
       case 21 : 
           var m$8 = next(/* () */0);
@@ -1190,7 +1203,7 @@ function method_impl(table, i, arr) {
           var n$31 = n$30;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[n$31], m$9, 2)(obj[n$31]);
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[n$31], m$9, 2), obj[n$31]);
           };
       case 22 : 
           var m$10 = next(/* () */0);
@@ -1201,7 +1214,7 @@ function method_impl(table, i, arr) {
           var n$33 = n$32;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[e$11][n$33], m$11, 3)(obj[e$11][n$33]);
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[e$11][n$33], m$11, 3), obj[e$11][n$33]);
           };
       case 23 : 
           var m$12 = next(/* () */0);
@@ -1210,7 +1223,7 @@ function method_impl(table, i, arr) {
           var n$35 = n$34;
           new_cache(table);
           return function (obj) {
-            return Caml_oo.caml_get_public_method(obj[1][n$35](obj), m$13, 4)(obj[1][n$35](obj));
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, Caml_curry.app1(obj[1][n$35], obj), m$13, 4), Caml_curry.app1(obj[1][n$35], obj));
           };
       
     }

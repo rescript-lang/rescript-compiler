@@ -24,7 +24,7 @@
 let annotate (meta : Lam_stats.meta)
     rec_flag    
     (k:Ident.t) (v : Lam_stats.function_arities) lambda = 
-  (* Ext_log.dwarn  __LOC__ "%s/%d@." k.name k.stamp;     *)
+  (* Ext_log.dwarn  __LOC__ "%s/%d" k.name k.stamp;     *)
   match Hashtbl.find  meta.ident_tbl k  with 
   | exception Not_found -> 
       Hashtbl.add meta.ident_tbl k (Function {kind = NA; arity = v; lambda; rec_flag})
@@ -90,7 +90,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
 
       List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
       let arity = Lam_stats_util.get_arity meta lam in       
-      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected@."  *)
+      (* Ext_log.dwarn __LOC__ "%s/%d : %a : %a function collected"  *)
       (*   ident.name ident.stamp  *)
       (*   Printlambda.lambda lam *)
       (*   Lam_stats_util.pp_arities arity *)

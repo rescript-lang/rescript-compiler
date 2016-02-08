@@ -22,27 +22,7 @@
 
 (** Creator utilities for the [J] module *) 
 
-val prim : string 
 
-val exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lex_parse : string 
-
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
 
 val no_side_effect : J.expression -> bool
 
@@ -318,6 +298,7 @@ module Stmt : sig
 
   val break : ?comment:string  -> unit -> t
 
-  val continue : ?comment:string  -> J.label -> t
+  (** if [label] is not set, it will default to empty *)  
+  val continue : ?comment:string  -> ?label:J.label -> unit  -> t
 end
 

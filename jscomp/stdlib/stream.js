@@ -5,6 +5,7 @@ var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("./camlinternalLazy");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
 var Pervasives       = require("./pervasives");
+var Caml_curry       = require("../runtime/caml_curry");
 var List             = require("./list");
 
 var Failure = [
@@ -53,6 +54,8 @@ function get_data(count, _d) {
               }
               else {
                 _d = d2;
+                continue ;
+                
               }
             }
             else if (match[0]) {
@@ -85,8 +88,8 @@ function get_data(count, _d) {
             _d = tag === 250 ? f[1] : (
                 tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
               );
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             var g = d[1];
             var match$1 = g[1];
             if (match$1) {
@@ -104,7 +107,7 @@ function get_data(count, _d) {
               }
             }
             else {
-              var match$3 = g[2](count);
+              var match$3 = Caml_curry.app1(g[2], count);
               if (match$3) {
                 return [
                         /* Scons */0,
@@ -204,15 +207,15 @@ function peek(s) {
                 tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
               );
             s[1] = d$1;
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             var g = match[1];
             var match$1 = g[1];
             if (match$1) {
               return match$1[1];
             }
             else {
-              var x = g[2](s[1]);
+              var x = Caml_curry.app1(g[2], s[1]);
               g[1] = [
                 /* Some */0,
                 x
@@ -277,10 +280,13 @@ function junk(s) {
     }
     if (exit === 1) {
       var match$2 = peek(s);
-      if (!match$2) {
+      if (match$2) {
+        continue ;
+        
+      }
+      else {
         return /* () */0;
       }
-      
     }
     
   };
@@ -361,8 +367,10 @@ function iter(f, strm) {
     var match = peek(strm);
     if (match) {
       junk(strm);
-      f(match[1]);
+      Caml_curry.app1(f, match[1]);
       _param = /* () */0;
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -503,7 +511,7 @@ function lapp(f, s) {
               function () {
                 return [
                         /* Sapp */1,
-                        f(/* () */0)[2],
+                        Caml_curry.app1(f, /* () */0)[2],
                         s[2]
                       ];
               }
@@ -523,7 +531,7 @@ function lcons(f, s) {
               function () {
                 return [
                         /* Scons */0,
-                        f(/* () */0),
+                        Caml_curry.app1(f, /* () */0),
                         s[2]
                       ];
               }
@@ -543,7 +551,7 @@ function lsing(f) {
               function () {
                 return [
                         /* Scons */0,
-                        f(/* () */0),
+                        Caml_curry.app1(f, /* () */0),
                         /* Sempty */0
                       ];
               }
@@ -561,7 +569,7 @@ function slazy(f) {
             [
               246,
               function () {
-                return f(/* () */0)[2];
+                return Caml_curry.app1(f, /* () */0)[2];
               }
             ]
           ]
@@ -585,7 +593,7 @@ function dump_data(f, param) {
     switch (param[0]) {
       case 0 : 
           Pervasives.print_string("Scons (");
-          f(param[1]);
+          Caml_curry.app1(f, param[1]);
           Pervasives.print_string(", ");
           dump_data(f, param[2]);
           return Pervasives.print_string(")");

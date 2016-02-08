@@ -7,6 +7,7 @@ var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("../stdlib/camlinternalFormatBasics");
+var Caml_curry               = require("../runtime/caml_curry");
 var Caml_string              = require("../runtime/caml_string");
 
 function failwith(s) {
@@ -144,6 +145,8 @@ function valid_float_lexem(s) {
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else if (match !== 45) {
@@ -151,6 +154,8 @@ function valid_float_lexem(s) {
       }
       else {
         _i = i + 1;
+        continue ;
+        
       }
     }
   };
@@ -235,6 +240,8 @@ function flush_all() {
         
       }
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -353,6 +360,8 @@ function unsafe_really_input(ic, s, _ofs, _len) {
       if (r) {
         _len = len - r;
         _ofs = ofs + r;
+        continue ;
+        
       }
       else {
         throw Caml_exceptions.End_of_file;
@@ -391,6 +400,8 @@ function input_line(chan) {
         Caml_string.caml_blit_string(hd, 0, buf, pos - len, len);
         _param = param[2];
         _pos = pos - len;
+        continue ;
+        
       }
       else {
         return buf;
@@ -429,6 +440,8 @@ function input_line(chan) {
           beg,
           accu
         ];
+        continue ;
+        
       }
     }
     else if (accu) {
@@ -546,18 +559,18 @@ var exit_function = [
 function at_exit(f) {
   var g = exit_function[1];
   exit_function[1] = function () {
-    f(/* () */0);
-    return g(/* () */0);
+    Caml_curry.app1(f, /* () */0);
+    return Caml_curry.app1(g, /* () */0);
   };
   return /* () */0;
 }
 
 function do_at_exit() {
-  return exit_function[1](/* () */0);
+  return Caml_curry.app1(exit_function[1], /* () */0);
 }
 
 function exit(retcode) {
-  exit_function[1](/* () */0);
+  Caml_curry.app1(exit_function[1], /* () */0);
   return Caml_primitive.caml_sys_exit(retcode);
 }
 

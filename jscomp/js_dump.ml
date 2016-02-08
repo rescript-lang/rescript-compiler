@@ -87,6 +87,8 @@ module L = struct
   let define = "define"
   let break = "break"
   let strict_directive = "'use strict';"
+
+  let curry = "curry" (* curry arbitrary args *)
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -393,12 +395,27 @@ and
   | Call (e, el, info) ->
     let action () = 
       P.group f 1 (fun _ -> 
-          let () =
-            match info with
-            | {arity = NA } -> ipp_comment f (Some "!")
-            | _ -> () in
-          let cxt = expression 15 cxt f e in 
-          P.paren_group f 1 (fun _ -> arguments cxt  f el ) ) 
+          match info, el  with
+          | {arity  = Full }, _ 
+          | _, [] -> 
+            let cxt = expression 15 cxt f e in 
+            P.paren_group f 1 (fun _ -> arguments cxt  f el )  
+
+          | _ , _ -> 
+            (* ipp_comment f (Some "!") *)
+            P.string f  Js_config.curry; 
+            P.string f L.dot;
+            let len = List.length el in
+            if 1 <= len && len <= 8 then  
+              begin
+                P.string f (Printf.sprintf "app%d" len);
+                P.paren_group f 1 (fun _ -> arguments cxt f (e::el))
+              end
+            else 
+              begin 
+                P.string f  L.curry;                
+                P.paren_group f 1 (fun _ -> arguments cxt f [ e ; E.arr Mutable el])
+              end)
     in
     if l > 15 then P.paren_group f 1 action   
     else action ()
@@ -1300,46 +1317,46 @@ let exports cxt f (idents : Ident.t list) =
   outer_cxt  
 
 
-let node_program f ( {program ; modules ; } : J.deps_program) = 
-  let cxt = Ext_pp_scope.empty in
-  (* Node style *)
-  let requires cxt f (modules : (Ident.t * string) list ) =
-    P.newline f ; 
-    (* the context used to print the following program *)  
-    let outer_cxt, reversed_list, margin  =
-      List.fold_left
-        (fun (cxt, acc, len) (id,s) ->
-           let str, cxt = str_of_ident cxt id  in
-           cxt, ((str,s) :: acc), (max len (String.length str))
-        )
-        (cxt, [], 0)  modules in
-    P.force_newline f ;    
-    Ext_list.rev_iter (fun (s,file) ->
-        P.string f L.var;
-        P.space f ;
-        P.string f s ;
-        P.nspace f (margin - String.length s + 1) ;
-        P.string f L.eq;
-        P.space f;
-        P.string f L.require;
-        P.paren_group f 0 @@ (fun _ ->
-            pp_string f ~utf:true ~quote:(best_string_quote s) file  );
-        semi f ;
-        P.newline f ;
-      ) reversed_list;
-    outer_cxt
-  in
+(* Node style *)
+let requires cxt f (modules : (Ident.t * string) list ) =
+  P.newline f ; 
+  (* the context used to print the following program *)  
+  let outer_cxt, reversed_list, margin  =
+    List.fold_left
+      (fun (cxt, acc, len) (id,s) ->
+         let str, cxt = str_of_ident cxt id  in
+         cxt, ((str,s) :: acc), (max len (String.length str))
+      )
+      (cxt, [], 0)  modules in
+  P.force_newline f ;    
+  Ext_list.rev_iter (fun (s,file) ->
+      P.string f L.var;
+      P.space f ;
+      P.string f s ;
+      P.nspace f (margin - String.length s + 1) ;
+      P.string f L.eq;
+      P.space f;
+      P.string f L.require;
+      P.paren_group f 0 @@ (fun _ ->
+          pp_string f ~utf:true ~quote:(best_string_quote s) file  );
+      semi f ;
+      P.newline f ;
+    ) reversed_list;
+  outer_cxt
 
-  let cxt = requires cxt  f modules in
-
+let program f cxt   ( x : J.program ) = 
   let () = P.force_newline f in
-  let cxt =  statement_list true cxt f program.block  in
+  let cxt =  statement_list true cxt f x.block  in
   let () = P.force_newline f in
-  exports cxt f program.exports
+  exports cxt f x.exports
 
+let node_program f ( x : J.deps_program) = 
+  let cxt = requires ( Ext_pp_scope.empty)  f x.modules in
+  program f cxt x.program  
+  
 
 let amd_program f 
-    ( {program ; modules ; _} : J.deps_program)
+    (  x : J.deps_program)
   = 
   P.newline f ; 
   let cxt = Ext_pp_scope.empty in
@@ -1352,7 +1369,7 @@ let amd_program f
       P.string f L.comma ;
       P.space f; 
       pp_string f ~utf:true ~quote:(best_string_quote s) s;
-    ) modules ;
+    ) x.modules ;
   P.string f "]";
   P.string f L.comma;
   P.newline f;
@@ -1365,33 +1382,30 @@ let amd_program f
         P.string f L.comma;
         P.space f ; 
         ident cxt f id
-      ) cxt modules     
+      ) cxt x.modules     
   in
   P.string f ")";
-  P.brace_vgroup f 1 @@ (fun _ -> 
+  let v = P.brace_vgroup f 1 @@ (fun _ -> 
       let () = P.string f L.strict_directive in 
-      let () = P.newline f in
-      let cxt =  statement_list true cxt f  program.block in 
-      (* FIXME AMD : use {[ function xx ]} or {[ var x = function ..]} *)
-      P.newline f;
-      P.force_newline f;
-      ignore (exports cxt f program.exports));
+      program f cxt x.program
+    ) in
   P.string f ")";
+  v
 ;;
 
-let pp_program ( program  : J.deps_program) (f : Ext_pp.t) = 
+let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) = 
   begin
     P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
     P.newline f; 
     P.string f L.strict_directive; 
     P.newline f ;    
-    (match Js_config.get_env () with 
+    ignore (match Js_config.get_env () with 
      | Browser ->
-       ignore (node_program f program)
+        (node_program f program)
      | NodeJS -> 
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 
-           ignore (node_program f program)
+            (node_program f program)
            (* amd_program f program *)
          | _ -> amd_program f program
        end ) ;
@@ -1403,7 +1417,25 @@ let pp_program ( program  : J.deps_program) (f : Ext_pp.t) =
     P.newline f;
     P.flush f ()
   end
-let dump_program 
-    (program : J.deps_program)
+
+let dump_program (x : J.program) oc = 
+  ignore (program (P.from_channel oc)  Ext_pp_scope.empty  x )
+
+let dump_deps_program 
+    x 
     (oc : out_channel) = 
-  pp_program program (P.from_channel oc)
+  pp_deps_program x (P.from_channel oc)
+
+let string_of_block  block  
+  = 
+  let buffer  = Buffer.create 50 in
+  begin
+    let f = P.from_buffer buffer in
+    let _scope =  statement_list true Ext_pp_scope.empty  f block in
+    P.flush  f ();
+    Buffer.contents buffer     
+  end
+
+
+
+ 

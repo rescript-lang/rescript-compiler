@@ -4,6 +4,7 @@
 var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_array      = require("../runtime/caml_array");
+var Caml_curry      = require("../runtime/caml_curry");
 
 function init(l, f) {
   if (l) {
@@ -11,9 +12,9 @@ function init(l, f) {
       return Pervasives.invalid_arg("Array.init");
     }
     else {
-      var res = Caml_array.caml_make_vect(l, f(0));
+      var res = Caml_array.caml_make_vect(l, Caml_curry.app1(f, 0));
       for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-        res[i] = f(i);
+        res[i] = Caml_curry.app1(f, i);
       }
       return res;
     }
@@ -88,7 +89,7 @@ function blit(a1, ofs1, a2, ofs2, len) {
 
 function iter(f, a) {
   for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-    f(a[i]);
+    Caml_curry.app1(f, a[i]);
   }
   return /* () */0;
 }
@@ -96,9 +97,9 @@ function iter(f, a) {
 function map(f, a) {
   var l = a.length;
   if (l) {
-    var r = Caml_array.caml_make_vect(l, f(a[0]));
+    var r = Caml_array.caml_make_vect(l, Caml_curry.app1(f, a[0]));
     for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-      r[i] = f(a[i]);
+      r[i] = Caml_curry.app1(f, a[i]);
     }
     return r;
   }
@@ -109,7 +110,7 @@ function map(f, a) {
 
 function iteri(f, a) {
   for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-    f(i, a[i]);
+    Caml_curry.app2(f, i, a[i]);
   }
   return /* () */0;
 }
@@ -117,9 +118,9 @@ function iteri(f, a) {
 function mapi(f, a) {
   var l = a.length;
   if (l) {
-    var r = Caml_array.caml_make_vect(l, f(0, a[0]));
+    var r = Caml_array.caml_make_vect(l, Caml_curry.app2(f, 0, a[0]));
     for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-      r[i] = f(i, a[i]);
+      r[i] = Caml_curry.app2(f, i, a[i]);
     }
     return r;
   }
@@ -144,6 +145,8 @@ function to_list(a) {
         res
       ];
       _i = i - 1;
+      continue ;
+      
     }
   };
 }
@@ -155,6 +158,8 @@ function list_length(_accu, _param) {
     if (param) {
       _param = param[2];
       _accu = accu + 1;
+      continue ;
+      
     }
     else {
       return accu;
@@ -174,6 +179,8 @@ function of_list(l) {
         a[i] = param[1];
         _param = param[2];
         _i = i + 1;
+        continue ;
+        
       }
       else {
         return a;
@@ -188,7 +195,7 @@ function of_list(l) {
 function fold_left(f, x, a) {
   var r = x;
   for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-    r = f(r, a[i]);
+    r = Caml_curry.app2(f, r, a[i]);
   }
   return r;
 }
@@ -196,7 +203,7 @@ function fold_left(f, x, a) {
 function fold_right(f, a, x) {
   var r = x;
   for(var i = a.length - 1; i>= 0; --i){
-    r = f(a[i], r);
+    r = Caml_curry.app2(f, a[i], r);
   }
   return r;
 }
@@ -212,15 +219,15 @@ function sort(cmp, a) {
     var i31 = i + i + i + 1;
     var x = i31;
     if (i31 + 2 < l) {
-      if (cmp(a[i31], a[i31 + 1]) < 0) {
+      if (Caml_curry.app2(cmp, a[i31], a[i31 + 1]) < 0) {
         x = i31 + 1;
       }
-      if (cmp(a[x], a[i31 + 2]) < 0) {
+      if (Caml_curry.app2(cmp, a[x], a[i31 + 2]) < 0) {
         x = i31 + 2;
       }
       return x;
     }
-    else if (i31 + 1 < l && cmp(a[i31], a[i31 + 1]) < 0) {
+    else if (i31 + 1 < l && Caml_curry.app2(cmp, a[i31], a[i31 + 1]) < 0) {
       return i31 + 1;
     }
     else if (i31 < l) {
@@ -242,9 +249,11 @@ function sort(cmp, a) {
       while(true) {
         var i$1 = _i;
         var j = maxson(l$1, i$1);
-        if (cmp(a[j], e$1) > 0) {
+        if (Caml_curry.app2(cmp, a[j], e$1) > 0) {
           a[i$1] = a[j];
           _i = j;
+          continue ;
+          
         }
         else {
           a[i$1] = e$1;
@@ -271,6 +280,8 @@ function sort(cmp, a) {
         var j = maxson(l$1, i$1);
         a[i$1] = a[j];
         _i = j;
+        continue ;
+        
       };
     }
     catch (exn){
@@ -298,10 +309,12 @@ function sort(cmp, a) {
               ]
             ];
       }
-      if (cmp(a[father], e) < 0) {
+      if (Caml_curry.app2(cmp, a[father], e) < 0) {
         a[i] = a[father];
         if (father > 0) {
           _i = father;
+          continue ;
+          
         }
         else {
           a[0] = e;
@@ -351,13 +364,15 @@ function stable_sort(cmp, a) {
       var i2 = _i2;
       var s1 = _s1;
       var i1 = _i1;
-      if (cmp(s1, s2) <= 0) {
+      if (Caml_curry.app2(cmp, s1, s2) <= 0) {
         dst[d] = s1;
         var i1$1 = i1 + 1;
         if (i1$1 < src1r) {
           _d = d + 1;
           _s1 = a[i1$1];
           _i1 = i1$1;
+          continue ;
+          
         }
         else {
           return blit(src2, i2, dst, d + 1, src2r - i2);
@@ -370,6 +385,8 @@ function stable_sort(cmp, a) {
           _d = d + 1;
           _s2 = src2[i2$1];
           _i2 = i2$1;
+          continue ;
+          
         }
         else {
           return blit(a, i1, dst, d + 1, src1r - i1);
@@ -381,7 +398,7 @@ function stable_sort(cmp, a) {
     for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
       var e = a[srcofs + i];
       var j = dstofs + i - 1;
-      while(j >= dstofs && cmp(dst[j], e) > 0) {
+      while(j >= dstofs && Caml_curry.app2(cmp, dst[j], e) > 0) {
         dst[j + 1] = dst[j];
         -- j;
       };

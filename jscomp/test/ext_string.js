@@ -4,6 +4,7 @@
 var Bytes       = require("../stdlib/bytes");
 var Ext_bytes   = require("./ext_bytes");
 var $$String    = require("../stdlib/string");
+var Caml_curry  = require("../runtime/caml_curry");
 var Caml_string = require("../runtime/caml_string");
 
 function split_by($staropt$star, is_delim, str) {
@@ -23,7 +24,7 @@ function split_by($staropt$star, is_delim, str) {
               acc
             ];
     }
-    else if (is_delim(str.charCodeAt(pos))) {
+    else if (Caml_curry.app1(is_delim, str.charCodeAt(pos))) {
       var new_len = last_pos - pos - 1;
       if (new_len !== 0 || keep_empty) {
         var v = $$String.sub(str, pos + 1, new_len);
@@ -34,14 +35,20 @@ function split_by($staropt$star, is_delim, str) {
           v,
           acc
         ];
+        continue ;
+        
       }
       else {
         _pos = pos - 1;
         _last_pos = pos;
+        continue ;
+        
       }
     }
     else {
       _pos = pos - 1;
+      continue ;
+      
     }
   };
 }
@@ -85,6 +92,8 @@ function ends_with(s, beg) {
       else if (s[j] === beg[k]) {
         _k = k - 1;
         _j = j - 1;
+        continue ;
+        
       }
       else {
         return /* false */0;
@@ -110,6 +119,8 @@ function escaped(s) {
             }
             else {
               _i = i + 1;
+              continue ;
+              
             }
           }
           else if (switcher > 57 || switcher < 1) {
@@ -117,6 +128,8 @@ function escaped(s) {
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
         else if (match >= 11) {
@@ -131,7 +144,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Bytes.unsafe_to_string(Ext_bytes.escaped(Bytes.unsafe_of_string(s)));
+    return Caml_curry.app1(Bytes.unsafe_to_string, Ext_bytes.escaped(Caml_curry.app1(Bytes.unsafe_of_string, s)));
   }
   else {
     return s;
@@ -146,8 +159,10 @@ function for_all(p, s) {
     if (i >= len) {
       return /* true */1;
     }
-    else if (p(s.charCodeAt(i))) {
+    else if (Caml_curry.app1(p, s.charCodeAt(i))) {
       _i = i + 1;
+      continue ;
+      
     }
     else {
       return /* false */0;

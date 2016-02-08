@@ -9,6 +9,7 @@ var Printf           = require("./printf");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var $$Array          = require("./array");
 var Buffer           = require("./buffer");
+var Caml_curry       = require("../runtime/caml_curry");
 
 var printers = [
   0,
@@ -71,15 +72,15 @@ function field(x, i) {
   var f = x[i];
   if (Caml_obj_runtime.caml_obj_is_block(f)) {
     if (Caml_obj_runtime.caml_obj_tag(f) === Obj.string_tag) {
-      return Printf.sprintf([
-                    /* Format */0,
-                    [
-                      /* Caml_string */3,
-                      /* No_padding */0,
-                      /* End_of_format */0
-                    ],
-                    "%S"
-                  ])(f);
+      return Caml_curry.app1(Printf.sprintf([
+                      /* Format */0,
+                      [
+                        /* Caml_string */3,
+                        /* No_padding */0,
+                        /* End_of_format */0
+                      ],
+                      "%S"
+                    ]), f);
     }
     else if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
       return Pervasives.string_of_float(f);
@@ -89,17 +90,17 @@ function field(x, i) {
     }
   }
   else {
-    return Printf.sprintf([
-                  /* Format */0,
-                  [
-                    /* Int */4,
-                    /* Int_d */0,
-                    /* No_padding */0,
-                    /* No_precision */0,
-                    /* End_of_format */0
-                  ],
-                  "%d"
-                ])(f);
+    return Caml_curry.app1(Printf.sprintf([
+                    /* Format */0,
+                    [
+                      /* Int */4,
+                      /* Int_d */0,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      /* End_of_format */0
+                    ],
+                    "%d"
+                  ]), f);
   }
 }
 
@@ -108,50 +109,50 @@ function other_fields(x, i) {
     return "";
   }
   else {
-    return Printf.sprintf([
-                  /* Format */0,
-                  [
-                    /* String_literal */11,
-                    ", ",
+    return Caml_curry.app2(Printf.sprintf([
+                    /* Format */0,
                     [
-                      /* String */2,
-                      /* No_padding */0,
+                      /* String_literal */11,
+                      ", ",
                       [
                         /* String */2,
                         /* No_padding */0,
-                        /* End_of_format */0
+                        [
+                          /* String */2,
+                          /* No_padding */0,
+                          /* End_of_format */0
+                        ]
                       ]
-                    ]
-                  ],
-                  ", %s%s"
-                ])(field(x, i), other_fields(x, i + 1));
+                    ],
+                    ", %s%s"
+                  ]), field(x, i), other_fields(x, i + 1));
   }
 }
 
 function fields(x) {
   var n = x.length;
   if (n > 2 || n < 0) {
-    return Printf.sprintf([
-                  /* Format */0,
-                  [
-                    /* Char_literal */12,
-                    /* "(" */40,
+    return Caml_curry.app2(Printf.sprintf([
+                    /* Format */0,
                     [
-                      /* String */2,
-                      /* No_padding */0,
+                      /* Char_literal */12,
+                      /* "(" */40,
                       [
                         /* String */2,
                         /* No_padding */0,
                         [
-                          /* Char_literal */12,
-                          /* ")" */41,
-                          /* End_of_format */0
+                          /* String */2,
+                          /* No_padding */0,
+                          [
+                            /* Char_literal */12,
+                            /* ")" */41,
+                            /* End_of_format */0
+                          ]
                         ]
                       ]
-                    ]
-                  ],
-                  "(%s%s)"
-                ])(field(x, 1), other_fields(x, 2));
+                    ],
+                    "(%s%s)"
+                  ]), field(x, 1), other_fields(x, 2));
   }
   else {
     switch (n) {
@@ -159,23 +160,23 @@ function fields(x) {
       case 1 : 
           return "";
       case 2 : 
-          return Printf.sprintf([
-                        /* Format */0,
-                        [
-                          /* Char_literal */12,
-                          /* "(" */40,
+          return Caml_curry.app1(Printf.sprintf([
+                          /* Format */0,
                           [
-                            /* String */2,
-                            /* No_padding */0,
+                            /* Char_literal */12,
+                            /* "(" */40,
                             [
-                              /* Char_literal */12,
-                              /* ")" */41,
-                              /* End_of_format */0
+                              /* String */2,
+                              /* No_padding */0,
+                              [
+                                /* Char_literal */12,
+                                /* ")" */41,
+                                /* End_of_format */0
+                              ]
                             ]
-                          ]
-                        ],
-                        "(%s)"
-                      ])(field(x, 1));
+                          ],
+                          "(%s)"
+                        ]), field(x, 1));
       
     }
   }
@@ -188,7 +189,7 @@ function to_string(x) {
     if (param) {
       var match;
       try {
-        match = param[1](x);
+        match = Caml_curry.app1(param[1], x);
       }
       catch (exn){
         match = /* None */0;
@@ -198,6 +199,8 @@ function to_string(x) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else if (x === Caml_exceptions.Out_of_memory) {
@@ -209,17 +212,17 @@ function to_string(x) {
     else if (x[1] === Caml_exceptions.Match_failure) {
       var match$1 = x[2];
       var $$char = match$1[3];
-      return Printf.sprintf(locfmt)(match$1[1], match$1[2], $$char, $$char + 5, "Pattern matching failed");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$1[1], match$1[2], $$char, $$char + 5, "Pattern matching failed");
     }
     else if (x[1] === Caml_exceptions.Assert_failure) {
       var match$2 = x[2];
       var $$char$1 = match$2[3];
-      return Printf.sprintf(locfmt)(match$2[1], match$2[2], $$char$1, $$char$1 + 6, "Assertion failed");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$2[1], match$2[2], $$char$1, $$char$1 + 6, "Assertion failed");
     }
     else if (x[1] === Caml_exceptions.Undefined_recursive_module) {
       var match$3 = x[2];
       var $$char$2 = match$3[3];
-      return Printf.sprintf(locfmt)(match$3[1], match$3[2], $$char$2, $$char$2 + 6, "Undefined recursive module");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$3[1], match$3[2], $$char$2, $$char$2 + 6, "Undefined recursive module");
     }
     else if (Caml_obj_runtime.caml_obj_tag(x) !== 0) {
       return x[0];
@@ -233,54 +236,54 @@ function to_string(x) {
 
 function print(fct, arg) {
   try {
-    return fct(arg);
+    return Caml_curry.app1(fct, arg);
   }
   catch (x){
-    Printf.eprintf([
-            /* Format */0,
-            [
-              /* String_literal */11,
-              "Uncaught exception: ",
+    Caml_curry.app1(Printf.eprintf([
+              /* Format */0,
               [
-                /* String */2,
-                /* No_padding */0,
+                /* String_literal */11,
+                "Uncaught exception: ",
                 [
-                  /* Char_literal */12,
-                  /* "\n" */10,
-                  /* End_of_format */0
+                  /* String */2,
+                  /* No_padding */0,
+                  [
+                    /* Char_literal */12,
+                    /* "\n" */10,
+                    /* End_of_format */0
+                  ]
                 ]
-              ]
-            ],
-            "Uncaught exception: %s\n"
-          ])(to_string(x));
-    Pervasives.flush(Pervasives.stderr);
+              ],
+              "Uncaught exception: %s\n"
+            ]), to_string(x));
+    Caml_curry.app1(Pervasives.flush, Pervasives.stderr);
     throw x;
   }
 }
 
 function $$catch(fct, arg) {
   try {
-    return fct(arg);
+    return Caml_curry.app1(fct, arg);
   }
   catch (x){
-    Pervasives.flush(Pervasives.stdout);
-    Printf.eprintf([
-            /* Format */0,
-            [
-              /* String_literal */11,
-              "Uncaught exception: ",
+    Caml_curry.app1(Pervasives.flush, Pervasives.stdout);
+    Caml_curry.app1(Printf.eprintf([
+              /* Format */0,
               [
-                /* String */2,
-                /* No_padding */0,
+                /* String_literal */11,
+                "Uncaught exception: ",
                 [
-                  /* Char_literal */12,
-                  /* "\n" */10,
-                  /* End_of_format */0
+                  /* String */2,
+                  /* No_padding */0,
+                  [
+                    /* Char_literal */12,
+                    /* "\n" */10,
+                    /* End_of_format */0
+                  ]
                 ]
-              ]
-            ],
-            "Uncaught exception: %s\n"
-          ])(to_string(x));
+              ],
+              "Uncaught exception: %s\n"
+            ]), to_string(x));
     return Pervasives.exit(2);
   }
 }
@@ -328,61 +331,62 @@ function format_backtrace_slot(pos, slot) {
     else {
       return [
               /* Some */0,
-              Printf.sprintf([
-                      /* Format */0,
-                      [
-                        /* String */2,
-                        /* No_padding */0,
+              Caml_curry.app1(Printf.sprintf([
+                        /* Format */0,
                         [
-                          /* String_literal */11,
-                          " unknown location",
-                          /* End_of_format */0
-                        ]
-                      ],
-                      "%s unknown location"
-                    ])(info(/* false */0))
+                          /* String */2,
+                          /* No_padding */0,
+                          [
+                            /* String_literal */11,
+                            " unknown location",
+                            /* End_of_format */0
+                          ]
+                        ],
+                        "%s unknown location"
+                      ]), info(/* false */0))
             ];
     }
   }
   else {
     return [
             /* Some */0,
-            Printf.sprintf([
-                    /* Format */0,
-                    [
-                      /* String */2,
-                      /* No_padding */0,
+            Caml_curry.app5(Printf.sprintf([
+                      /* Format */0,
                       [
-                        /* String_literal */11,
-                        ' file "',
+                        /* String */2,
+                        /* No_padding */0,
                         [
-                          /* String */2,
-                          /* No_padding */0,
+                          /* String_literal */11,
+                          ' file "',
                           [
-                            /* String_literal */11,
-                            '", line ',
+                            /* String */2,
+                            /* No_padding */0,
                             [
-                              /* Int */4,
-                              /* Int_d */0,
-                              /* No_padding */0,
-                              /* No_precision */0,
+                              /* String_literal */11,
+                              '", line ',
                               [
-                                /* String_literal */11,
-                                ", characters ",
+                                /* Int */4,
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
                                 [
-                                  /* Int */4,
-                                  /* Int_d */0,
-                                  /* No_padding */0,
-                                  /* No_precision */0,
+                                  /* String_literal */11,
+                                  ", characters ",
                                   [
-                                    /* Char_literal */12,
-                                    /* "-" */45,
+                                    /* Int */4,
+                                    /* Int_d */0,
+                                    /* No_padding */0,
+                                    /* No_precision */0,
                                     [
-                                      /* Int */4,
-                                      /* Int_d */0,
-                                      /* No_padding */0,
-                                      /* No_precision */0,
-                                      /* End_of_format */0
+                                      /* Char_literal */12,
+                                      /* "-" */45,
+                                      [
+                                        /* Int */4,
+                                        /* Int_d */0,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* End_of_format */0
+                                      ]
                                     ]
                                   ]
                                 ]
@@ -390,10 +394,9 @@ function format_backtrace_slot(pos, slot) {
                             ]
                           ]
                         ]
-                      ]
-                    ],
-                    '%s file "%s", line %d, characters %d-%d'
-                  ])(info(slot[1]), slot[2], slot[3], slot[4], slot[5])
+                      ],
+                      '%s file "%s", line %d, characters %d-%d'
+                    ]), info(slot[1]), slot[2], slot[3], slot[4], slot[5])
           ];
   }
 }
@@ -406,19 +409,19 @@ function print_raw_backtrace(outchan, raw_backtrace) {
     for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Printf.fprintf(outchan$1, [
-                /* Format */0,
-                [
-                  /* String */2,
-                  /* No_padding */0,
+        Caml_curry.app1(Printf.fprintf(outchan$1, [
+                  /* Format */0,
                   [
-                    /* Char_literal */12,
-                    /* "\n" */10,
-                    /* End_of_format */0
-                  ]
-                ],
-                "%s\n"
-              ])(match[1]);
+                    /* String */2,
+                    /* No_padding */0,
+                    [
+                      /* Char_literal */12,
+                      /* "\n" */10,
+                      /* End_of_format */0
+                    ]
+                  ],
+                  "%s\n"
+                ]), match[1]);
       }
       
     }
@@ -448,19 +451,19 @@ function backtrace_to_string(backtrace) {
     for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Printf.bprintf(b, [
-                /* Format */0,
-                [
-                  /* String */2,
-                  /* No_padding */0,
+        Caml_curry.app1(Printf.bprintf(b, [
+                  /* Format */0,
                   [
-                    /* Char_literal */12,
-                    /* "\n" */10,
-                    /* End_of_format */0
-                  ]
-                ],
-                "%s\n"
-              ])(match[1]);
+                    /* String */2,
+                    /* No_padding */0,
+                    [
+                      /* Char_literal */12,
+                      /* "\n" */10,
+                      /* End_of_format */0
+                    ]
+                  ],
+                  "%s\n"
+                ]), match[1]);
       }
       
     }
@@ -518,6 +521,8 @@ function backtrace_slots(raw_backtrace) {
           }
           else {
             _i = i - 1;
+            continue ;
+            
           }
         }
         else {

@@ -73,7 +73,7 @@ js_fun_env
 js_pass_flatten_and_mark_dead
 js_pass_scope
 js_call_info
-
+js_pass_debug
 js_of_lam_float_record
 js_of_lam_record
 js_of_lam_tuple

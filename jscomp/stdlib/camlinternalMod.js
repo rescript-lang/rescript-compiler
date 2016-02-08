@@ -6,6 +6,7 @@ var Obj              = require("./obj");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
 var CamlinternalOO   = require("./camlinternalOO");
 var $$Array          = require("./array");
+var Caml_curry       = require("../runtime/caml_curry");
 
 function init_mod(loc, shape) {
   if (typeof shape === "number") {
@@ -73,7 +74,7 @@ function update_mod(shape, o, n) {
           }
           else {
             return overwrite(o, function (x) {
-                        return n(x);
+                        return Caml_curry.app1(n, x);
                       });
           }
       case 1 : 

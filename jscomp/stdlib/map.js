@@ -3,6 +3,7 @@
 
 var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_curry      = require("../runtime/caml_curry");
 
 function Make(funarg) {
   var height = function (param) {
@@ -103,7 +104,7 @@ function Make(funarg) {
       var d = param[3];
       var v = param[2];
       var l = param[1];
-      var c = funarg[1](x, v);
+      var c = Caml_curry.app2(funarg[1], x, v);
       if (c) {
         if (c < 0) {
           return bal(add(x, data, l), v, d, r);
@@ -138,9 +139,11 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = funarg[1](x, param[2]);
+        var c = Caml_curry.app2(funarg[1], x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return param[3];
@@ -155,9 +158,11 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = funarg[1](x, param[2]);
+        var c = Caml_curry.app2(funarg[1], x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return /* true */1;
@@ -175,6 +180,8 @@ function Make(funarg) {
         var l = param[1];
         if (l) {
           _param = l;
+          continue ;
+          
         }
         else {
           return [
@@ -196,6 +203,8 @@ function Make(funarg) {
         var r = param[4];
         if (r) {
           _param = r;
+          continue ;
+          
         }
         else {
           return [
@@ -230,7 +239,7 @@ function Make(funarg) {
       var d = param[3];
       var v = param[2];
       var l = param[1];
-      var c = funarg[1](x, v);
+      var c = Caml_curry.app2(funarg[1], x, v);
       if (c) {
         if (c < 0) {
           return bal(remove(x, l), v, d, r);
@@ -265,8 +274,10 @@ function Make(funarg) {
       var param = _param;
       if (param) {
         iter(f, param[1]);
-        f(param[2], param[3]);
+        Caml_curry.app2(f, param[2], param[3]);
         _param = param[4];
+        continue ;
+        
       }
       else {
         return /* () */0;
@@ -276,7 +287,7 @@ function Make(funarg) {
   var map = function (f, param) {
     if (param) {
       var l$prime = map(f, param[1]);
-      var d$prime = f(param[3]);
+      var d$prime = Caml_curry.app1(f, param[3]);
       var r$prime = map(f, param[4]);
       return [
               /* Node */0,
@@ -295,7 +306,7 @@ function Make(funarg) {
     if (param) {
       var v = param[2];
       var l$prime = mapi(f, param[1]);
-      var d$prime = f(v, param[3]);
+      var d$prime = Caml_curry.app2(f, v, param[3]);
       var r$prime = mapi(f, param[4]);
       return [
               /* Node */0,
@@ -315,8 +326,10 @@ function Make(funarg) {
       var accu = _accu;
       var m = _m;
       if (m) {
-        _accu = f(m[2], m[3], fold(f, m[1], accu));
+        _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
         _m = m[4];
+        continue ;
+        
       }
       else {
         return accu;
@@ -327,9 +340,11 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        if (p(param[2], param[3])) {
+        if (Caml_curry.app2(p, param[2], param[3])) {
           if (for_all(p, param[1])) {
             _param = param[4];
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -348,7 +363,7 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        if (p(param[2], param[3])) {
+        if (Caml_curry.app2(p, param[2], param[3])) {
           return /* true */1;
         }
         else if (exists(p, param[1])) {
@@ -356,6 +371,8 @@ function Make(funarg) {
         }
         else {
           _param = param[4];
+          continue ;
+          
         }
       }
       else {
@@ -430,7 +447,7 @@ function Make(funarg) {
       var d = param[3];
       var v = param[2];
       var l = param[1];
-      var c = funarg[1](x, v);
+      var c = Caml_curry.app2(funarg[1], x, v);
       if (c) {
         if (c < 0) {
           var match = split(x, l);
@@ -478,7 +495,7 @@ function Make(funarg) {
       var v1 = s1[2];
       if (s1[5] >= height(s2)) {
         var match = split(v1, s2);
-        return concat_or_join(merge(f, s1[1], match[1]), v1, f(v1, [
+        return concat_or_join(merge(f, s1[1], match[1]), v1, Caml_curry.app3(f, v1, [
                         /* Some */0,
                         s1[3]
                       ], match[2]), merge(f, s1[4], match[3]));
@@ -497,7 +514,7 @@ function Make(funarg) {
       if (s2) {
         var v2 = s2[2];
         var match$1 = split(v2, s1);
-        return concat_or_join(merge(f, match$1[1], s2[1]), v2, f(v2, match$1[2], [
+        return concat_or_join(merge(f, match$1[1], s2[1]), v2, Caml_curry.app3(f, v2, match$1[2], [
                         /* Some */0,
                         s2[3]
                       ]), merge(f, match$1[3], s2[4]));
@@ -522,7 +539,7 @@ function Make(funarg) {
       var d = param[3];
       var v = param[2];
       var l$prime = filter(p, param[1]);
-      var pvd = p(v, d);
+      var pvd = Caml_curry.app2(p, v, d);
       var r$prime = filter(p, param[4]);
       if (pvd) {
         return join(l$prime, v, d, r$prime);
@@ -542,7 +559,7 @@ function Make(funarg) {
       var match = partition(p, param[1]);
       var lf = match[2];
       var lt = match[1];
-      var pvd = p(v, d);
+      var pvd = Caml_curry.app2(p, v, d);
       var match$1 = partition(p, param[4]);
       var rf = match$1[2];
       var rt = match$1[1];
@@ -582,6 +599,8 @@ function Make(funarg) {
           e
         ];
         _m = m[1];
+        continue ;
+        
       }
       else {
         return e;
@@ -596,18 +615,20 @@ function Make(funarg) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = funarg[1](e1[1], e2[1]);
+          var c = Caml_curry.app2(funarg[1], e1[1], e2[1]);
           if (c !== 0) {
             return c;
           }
           else {
-            var c$1 = cmp(e1[2], e2[2]);
+            var c$1 = Caml_curry.app2(cmp, e1[2], e2[2]);
             if (c$1 !== 0) {
               return c$1;
             }
             else {
               _e2 = cons_enum(e2[3], e2[4]);
               _e1 = cons_enum(e1[3], e1[4]);
+              continue ;
+              
             }
           }
         }
@@ -631,12 +652,14 @@ function Make(funarg) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          if (funarg[1](e1[1], e2[1])) {
+          if (Caml_curry.app2(funarg[1], e1[1], e2[1])) {
             return /* false */0;
           }
-          else if (cmp(e1[2], e2[2])) {
+          else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -677,6 +700,8 @@ function Make(funarg) {
           ],
           bindings_aux(accu, param[4])
         ];
+        continue ;
+        
       }
       else {
         return accu;

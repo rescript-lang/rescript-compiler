@@ -34,6 +34,8 @@ function caml_get_public_method(obj, tag, cacheid) {
         }
         else {
           _i = i - 2;
+          continue ;
+          
         }
       };
     };

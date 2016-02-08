@@ -48,5 +48,6 @@ ocaml/man
 jscomp/bench/*.js
 *.bak
 .vscode
+*.jsx
 osc
 jscomp/pre_load.js

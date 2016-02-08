@@ -2,6 +2,7 @@
 'use strict';
 
 var Bytes       = require("./bytes");
+var Caml_curry  = require("../runtime/caml_curry");
 var List        = require("./list");
 var Caml_string = require("../runtime/caml_string");
 
@@ -10,19 +11,19 @@ var bts = Bytes.unsafe_to_string;
 var bos = Bytes.unsafe_of_string;
 
 function make(n, c) {
-  return bts(Bytes.make(n, c));
+  return Caml_curry.app1(bts, Bytes.make(n, c));
 }
 
 function init(n, f) {
-  return bts(Bytes.init(n, f));
+  return Caml_curry.app1(bts, Bytes.init(n, f));
 }
 
 function copy(s) {
-  return bts(Bytes.copy(bos(s)));
+  return Caml_curry.app1(bts, Bytes.copy(Caml_curry.app1(bos, s)));
 }
 
 function sub(s, ofs, len) {
-  return bts(Bytes.sub(bos(s), ofs, len));
+  return Caml_curry.app1(bts, Bytes.sub(Caml_curry.app1(bos, s), ofs, len));
 }
 
 function concat(sep, l) {
@@ -54,7 +55,7 @@ function concat(sep, l) {
           pos[1] += s.length;
           return /* () */0;
         }, l[2]);
-    return Bytes.unsafe_to_string(r);
+    return Caml_curry.app1(Bytes.unsafe_to_string, r);
   }
   else {
     return "";
@@ -62,19 +63,19 @@ function concat(sep, l) {
 }
 
 function iter(f, s) {
-  return Bytes.iter(f, bos(s));
+  return Bytes.iter(f, Caml_curry.app1(bos, s));
 }
 
 function iteri(f, s) {
-  return Bytes.iteri(f, bos(s));
+  return Bytes.iteri(f, Caml_curry.app1(bos, s));
 }
 
 function map(f, s) {
-  return bts(Bytes.map(f, bos(s)));
+  return Caml_curry.app1(bts, Bytes.map(f, Caml_curry.app1(bos, s)));
 }
 
 function mapi(f, s) {
-  return bts(Bytes.mapi(f, bos(s)));
+  return Caml_curry.app1(bts, Bytes.mapi(f, Caml_curry.app1(bos, s)));
 }
 
 function is_space(param) {
@@ -100,7 +101,7 @@ function trim(s) {
     return s;
   }
   else {
-    return bts(Bytes.trim(bos(s)));
+    return Caml_curry.app1(bts, Bytes.trim(Caml_curry.app1(bos, s)));
   }
 }
 
@@ -144,6 +145,8 @@ function escaped(s) {
         if (exit === 1) {
           if (Caml_string.caml_is_printable(c)) {
             _i = i + 1;
+            continue ;
+            
           }
           else {
             return /* true */1;
@@ -154,7 +157,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return bts(Bytes.escaped(bos(s)));
+    return Caml_curry.app1(bts, Bytes.escaped(Caml_curry.app1(bos, s)));
   }
   else {
     return s;
@@ -162,47 +165,47 @@ function escaped(s) {
 }
 
 function index(s, c) {
-  return Bytes.index(bos(s), c);
+  return Bytes.index(Caml_curry.app1(bos, s), c);
 }
 
 function rindex(s, c) {
-  return Bytes.rindex(bos(s), c);
+  return Bytes.rindex(Caml_curry.app1(bos, s), c);
 }
 
 function index_from(s, i, c) {
-  return Bytes.index_from(bos(s), i, c);
+  return Bytes.index_from(Caml_curry.app1(bos, s), i, c);
 }
 
 function rindex_from(s, i, c) {
-  return Bytes.rindex_from(bos(s), i, c);
+  return Bytes.rindex_from(Caml_curry.app1(bos, s), i, c);
 }
 
 function contains(s, c) {
-  return Bytes.contains(bos(s), c);
+  return Bytes.contains(Caml_curry.app1(bos, s), c);
 }
 
 function contains_from(s, i, c) {
-  return Bytes.contains_from(bos(s), i, c);
+  return Bytes.contains_from(Caml_curry.app1(bos, s), i, c);
 }
 
 function rcontains_from(s, i, c) {
-  return Bytes.rcontains_from(bos(s), i, c);
+  return Bytes.rcontains_from(Caml_curry.app1(bos, s), i, c);
 }
 
 function uppercase(s) {
-  return bts(Bytes.uppercase(bos(s)));
+  return Caml_curry.app1(bts, Bytes.uppercase(Caml_curry.app1(bos, s)));
 }
 
 function lowercase(s) {
-  return bts(Bytes.lowercase(bos(s)));
+  return Caml_curry.app1(bts, Bytes.lowercase(Caml_curry.app1(bos, s)));
 }
 
 function capitalize(s) {
-  return bts(Bytes.capitalize(bos(s)));
+  return Caml_curry.app1(bts, Bytes.capitalize(Caml_curry.app1(bos, s)));
 }
 
 function uncapitalize(s) {
-  return bts(Bytes.uncapitalize(bos(s)));
+  return Caml_curry.app1(bts, Bytes.uncapitalize(Caml_curry.app1(bos, s)));
 }
 
 function compare(x, y) {

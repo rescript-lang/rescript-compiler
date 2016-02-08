@@ -166,3 +166,5 @@ end
 let concat (xs : t list) : t = 
   List.fold_right (fun x acc -> append x  acc) xs dummy
 
+let to_string x   = 
+  Js_dump.string_of_block (to_block x)

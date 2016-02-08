@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Assert = require("assert");
-var List   = require("../stdlib/list");
+var Assert     = require("assert");
+var Caml_curry = require("../runtime/caml_curry");
+var List       = require("../stdlib/list");
 
 function assert_equal(prim, prim$1) {
   return Assert.deepEqual(prim, prim$1);
@@ -25,7 +26,7 @@ function from_pair_suites(name, suites) {
               return List.iter(function (param) {
                           var code = param[2];
                           return it(param[1], function () {
-                                      var match = code(/* () */0);
+                                      var match = Caml_curry.app1(code, /* () */0);
                                       if (match[0]) {
                                         return Assert.notDeepEqual(match[1], match[2]);
                                       }

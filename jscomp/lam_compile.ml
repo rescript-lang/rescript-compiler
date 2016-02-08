@@ -122,7 +122,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
             could be improved for simple cases
         *)
         Js_output.of_block  (
-          b  @ [S.exp(E.runtime_call Js_helper.prim "caml_update_dummy" [ E.var id;  v])]),
+          b  @ [S.exp(E.runtime_call Js_config.prim "caml_update_dummy" [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false 
@@ -355,30 +355,36 @@ and
                 http://caml.inria.fr/pub/ml-archives/caml-list/2005/02/fe9bc4e23e6dc8c932c8ab34240ff195.en.html
 
             *)
-            Js_output.of_block (* ~finished:true *)
-              (
-                (List.concat args_code @
-                 (
-                   let (_,assigned_params,new_params) = 
-                     List.fold_left2 (fun (i,assigns,new_params) param (arg : J.expression) ->
-                         match arg with
-                         | {expression_desc = Var (Id x); _} when Ident.same x param ->
-                           (i + 1, assigns, new_params)
-                         | _ ->
-                           let new_param, m  = 
-                             match Ident_map.find  param ret.new_params with 
-                             | exception Not_found -> 
-                               ret.immutable_mask.(i)<- false;
-                               let v = Ext_ident.create ("_"^param.Ident.name) in
-                               v, (Ident_map.add param v new_params) 
-                             | v -> v, new_params  in
-                           (i+1, (new_param, arg) :: assigns, m)
-                       ) (0, [], Ident_map.empty) params args  in 
-                   let () = ret.new_params <- Ident_map.(merge_disjoint new_params ret.new_params) in
-                   assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
-                 (*  @ *)
-                 (* [S.continue label] *)
-                ))
+            (* TODO: use [fold]*)            
+            let block = List.concat args_code @
+                        (
+                          let (_,assigned_params,new_params) = 
+                            List.fold_left2 (fun (i,assigns,new_params) param (arg : J.expression) ->
+                                match arg with
+                                | {expression_desc = Var (Id x); _} when Ident.same x param ->
+                                  (i + 1, assigns, new_params)
+                                | _ ->
+                                  let new_param, m  = 
+                                    match Ident_map.find  param ret.new_params with 
+                                    | exception Not_found -> 
+                                      ret.immutable_mask.(i)<- false;
+                                      let v = Ext_ident.create ("_"^param.Ident.name) in
+                                      v, (Ident_map.add param v new_params) 
+                                    | v -> v, new_params  in
+                                  (i+1, (new_param, arg) :: assigns, m)
+                              ) (0, [], Ident_map.empty) params args  in 
+                          let () = ret.new_params <- Ident_map.(merge_disjoint new_params ret.new_params) in
+                          assigned_params |> List.map (fun (param, arg) -> S.assign param arg))
+                         @
+                        [S.continue ()(* label *)]
+                         (* Note true and continue needed to be handled together*)
+            in
+            begin
+              (* Ext_log.dwarn __LOC__ "size : %d" (List.length block); *)
+              Js_output.of_block  ~finished:True block 
+            end
+
+ 
 
           (* match assigned_params with *)
           (* | [] ->  [] *)
@@ -405,9 +411,9 @@ and
           | _ -> 
 
             Js_output.handle_block_return st should_return lam (List.concat args_code ) 
-              (E.call ~info:(match info with 
-                   | { apply_status = Full} -> {arity = Full }
-                   | { apply_status = NA} -> {arity = NA} ) fn_code args) 
+              (E.call ~info:(match fn, info with 
+                   | _, { apply_status = Full} -> {arity = Full }
+                   | _,  { apply_status = NA} -> {arity = NA} ) fn_code args) 
         end;
       end
 
@@ -521,7 +527,15 @@ and
         compile_lambda {cxt with st = EffectCall; should_return =  False} l1 in
       let output_l2 = 
         compile_lambda cxt l2  in
-      output_l1 ++ output_l2 
+      let result = output_l1 ++ output_l2  in
+      (* let () = *)
+      (*   Ext_log.dwarn __LOC__ *)
+      (*     "@ @[l1:%a@ js-l1(%d):%s@ l2:@ %a@ js-l2(%d):%s@ js-l:@ %s@]" *)
+      (*     Printlambda.lambda l1 (List.length output_l1.block) (Js_output.to_string output_l1) *)
+      (*     Printlambda.lambda l2 (List.length output_l2.block) (Js_output.to_string output_l2) *)
+      (*     (Js_output.to_string result ) in  *)
+      result      
+
     (* begin
        match cxt.st, cxt.should_return with  *)
     (* | NeedValue, False  ->  *)
@@ -593,7 +607,7 @@ and
             {block = []; value =  Some out1}, 
             {block = []; value =  Some out2} ->
             Js_output.make [S.return  (E.econd e  out1 out2)] ~finished:True
-
+              (* see PR#83 *)
           | EffectCall, False , {block = []; value =  Some out1}, 
             {block = []; value =  Some out2} ->
             begin
@@ -1143,7 +1157,7 @@ and
 
         | Cached | Public None  (* TODO: check -- 1. js object propagate 2. js object create  *)
           -> 
-          let get = E.runtime_ref  Js_helper.oo "caml_get_public_method" in
+          let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
           let cache = !method_cache_id in
           let () = 
             begin 
@@ -1207,7 +1221,7 @@ and
               end in
               (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
               Js_output.handle_block_return st should_return lam (List.concat args_code)
-                (E.call (E.runtime_call Js_helper.oo "caml_get_public_method"
+                (E.call (E.runtime_call Js_config.oo "caml_get_public_method"
                            [obj'; label; E.int cache]) (obj'::args))
                 (* avoid duplicated compuattion *)
           end

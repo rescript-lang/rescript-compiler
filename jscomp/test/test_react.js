@@ -1,13 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var React    = require("@");
-var React    = require("react");
-var ReactDom = require("react-dom");
+var React      = require("@");
+var React      = require("react");
+var Caml_curry = require("../runtime/caml_curry");
+var ReactDom   = require("react-dom");
 
-console.log("hey");
+Caml_curry.app1(console.log, "hey");
 
-doc.getElementById("haha");
+Caml_curry.app1(doc.getElementById, "haha");
 
 var v = console.log(32);
 

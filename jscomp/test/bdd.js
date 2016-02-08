@@ -15,8 +15,15 @@ function $$eval(_bdd, vars) {
         return /* true */1;
       }
     }
+    else if (vars[bdd[2]]) {
+      _bdd = bdd[4];
+      continue ;
+      
+    }
     else {
-      _bdd = vars[bdd[2]] ? bdd[4] : bdd[1];
+      _bdd = bdd[1];
+      continue ;
+      
     }
   };
 }
@@ -90,6 +97,8 @@ function resize(newSize) {
             newArr[ind]
           ];
           _bucket = bucket[2];
+          continue ;
+          
         }
       }
       else {
@@ -165,6 +174,8 @@ function mkNode(low, v, high) {
         }
         else {
           _b = b[2];
+          continue ;
+          
         }
       }
       else {

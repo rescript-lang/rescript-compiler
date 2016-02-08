@@ -5,6 +5,7 @@ var Bytes           = require("./bytes");
 var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Sys             = require("./sys");
+var Caml_curry      = require("../runtime/caml_curry");
 var $$String        = require("./string");
 var Caml_string     = require("../runtime/caml_string");
 
@@ -117,7 +118,7 @@ function add_substring(b, s, offset, len) {
 }
 
 function add_subbytes(b, s, offset, len) {
-  return add_substring(b, Bytes.unsafe_to_string(s), offset, len);
+  return add_substring(b, Caml_curry.app1(Bytes.unsafe_to_string, s), offset, len);
 }
 
 function add_string(b, s) {
@@ -132,7 +133,7 @@ function add_string(b, s) {
 }
 
 function add_bytes(b, s) {
-  return add_string(b, Bytes.unsafe_to_string(s));
+  return add_string(b, Caml_curry.app1(Bytes.unsafe_to_string, s));
 }
 
 function add_buffer(b, bs) {
@@ -191,11 +192,15 @@ function advance_to_closing(opening, closing, k, s, start) {
     else if (s.charCodeAt(i) === opening) {
       _i = i + 1;
       _k = k$1 + 1;
+      continue ;
+      
     }
     else if (s.charCodeAt(i) === closing) {
       if (k$1) {
         _i = i + 1;
         _k = k$1 - 1;
+        continue ;
+        
       }
       else {
         return i;
@@ -203,6 +208,8 @@ function advance_to_closing(opening, closing, k, s, start) {
     }
     else {
       _i = i + 1;
+      continue ;
+      
     }
   };
 }
@@ -250,6 +257,8 @@ function advance_to_non_alpha(s, start) {
       }
       if (exit === 1) {
         _i = i + 1;
+        continue ;
+        
       }
       
     }
@@ -307,28 +316,38 @@ function add_substitute(b, f, s) {
           add_char(b, current);
           _i = i + 1;
           _previous = /* " " */32;
+          continue ;
+          
         }
         else if (current !== 92) {
           add_char(b, current);
           _i = i + 1;
           _previous = current;
+          continue ;
+          
         }
         else {
           _i = i + 1;
           _previous = current;
+          continue ;
+          
         }
       }
       else if (previous === /* "\\" */92) {
         add_char(b, current);
         _i = i + 1;
         _previous = /* " " */32;
+        continue ;
+        
       }
       else {
         var j = i + 1;
         var match = find_ident(s, j, lim);
-        add_string(b, f(match[1]));
+        add_string(b, Caml_curry.app1(f, match[1]));
         _i = match[2];
         _previous = /* " " */32;
+        continue ;
+        
       }
     }
     else if (previous === /* "\\" */92) {
