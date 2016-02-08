@@ -97,7 +97,7 @@ let runtime_set = String_set.of_list [
     "caml_utils.js";
     "caml_exceptions.js";
     (* "caml_io.js"; *)
-    "curry.js";
+    "caml_curry.js";
     "caml_file.js";
     "caml_lexer.js";
     "caml_string.js"
