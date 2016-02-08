@@ -25,15 +25,14 @@
 type primitive_description = Types.type_expr option Primitive.description
 
 type key = 
-  | GetGlobal of Ident.t * int * Env.t 
-  | QueryGlobal of Ident.t * Env.t * bool 
+  Ident.t * Env.t * bool 
   (** the boolean is expand or not
       when it's passed as module, it should be expanded, 
       otherwise for alias, [include Array], it's okay to return an identifier
       TODO: be more clear about its concept
   *)
   (** we need register which global variable is an dependency *)
-  | CamlRuntimePrimitive of primitive_description * J.expression list  
+
 
 type ident_info = {
   id : Ident.t;

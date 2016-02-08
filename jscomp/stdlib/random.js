@@ -4,9 +4,7 @@
 var Caml_sys   = require("../runtime/caml_sys");
 var Pervasives = require("./pervasives");
 var Nativeint  = require("./nativeint");
-var Int32      = require("./int32");
 var Digest     = require("./digest");
-var Int64      = require("./int64");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("./array");
 var Caml_curry = require("../runtime/caml_curry");
@@ -106,7 +104,7 @@ function int32(s, bound) {
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
       var v = r % n;
-      if (r - v > Int32.max_int - n + 1) {
+      if (r - v > 2147483647 - n + 1) {
         continue ;
         
       }
@@ -130,7 +128,7 @@ function int64(s, bound) {
       var b3 = ((bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if (r - v > Int64.max_int - n + 1) {
+      if (r - v > 9223372036854775807 - n + 1) {
         continue ;
         
       }

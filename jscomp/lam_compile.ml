@@ -51,8 +51,140 @@ type default_case =
   | Complete
   | NonComplete
 
+
 let rec  
-  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js_output.t =
+  get_exp_with_index (cxt : Lam_compile_defs.cxt) lam 
+    ((id : Ident.t), (pos : int),env) : Js_output.t = 
+  let f =   Js_output.handle_name_tail cxt.st cxt.should_return lam in    
+  Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
+    ~not_found:(fun id -> 
+        f (E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos))
+        (* E.index m (pos + 1) *) (** shift by one *)
+        (** This can not happen since this id should be already consulted by type checker *)
+      )
+    ~found:(fun {id; name; closed_lambda } ->
+        match id, name, closed_lambda with 
+        | {name = "Sys"; _}, "os_type" , _
+          (** We drop the ability of cross-compiling
+              the compiler has to be the same running 
+          *)
+          ->  f (E.str Sys.os_type)
+        | _, _, Some lam when Lam_util.not_function lam
+          (* since it's only for alias, there is no arguments, 
+             we should not inline function definition here, even though
+             it is very small             
+             TODO: add comment here, we should try to add comment for 
+             cross module inlining             
+          *)              
+          ->  
+          compile_lambda cxt lam
+        | _ -> 
+          f (E.ml_var_dot id name)
+      ) 
+(* TODO: how nested module call would behave,
+   In the future, we should keep in track  of if 
+   it is fully applied from [Lapply]
+   Seems that the module dependency is tricky..
+   should we depend on [Pervasives] or not?
+
+   we can not do this correctly for the return value, 
+   however we can inline the definition in Pervasives
+   TODO:
+   [Pervasives.print_endline]
+   [Pervasives.prerr_endline]
+   @param id external module id 
+   @param number the index of the external function 
+   @param env typing environment
+   @param args arguments 
+ *)
+
+and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
+    (id : Ident.t) (pos : int) env : Js_output.t = 
+  let args_code, args = 
+    List.fold_right 
+      (fun (x : Lambda.lambda) (args_code, args)  ->
+         match x with 
+         | Lprim (Pgetglobal i, [] ) -> 
+           (* when module is passed as an argument - unpack to an array
+               for the function, generative module or functor can be a function,
+               however it can not be global -- global can only module
+           *)
+
+           args_code, (Lam_compile_global.get_exp (i, env, true) :: args)
+         | _ -> 
+           begin match compile_lambda {cxt with st = NeedValue; should_return = False} x with
+             | {block = a; value = Some b} -> 
+               (a @ args_code), (b :: args )
+             | _ -> assert false
+           end
+      ) args_lambda ([], []) in
+
+  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
+      (** This can not happen since this id should be already consulted by type checker 
+          Worst case 
+          {[
+            E.index m (pos + 1)
+          ]}
+          shift by one (due to module encoding)
+      *)
+      Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
+      E.str ~pure:false  (Printf.sprintf "Err %s %d %d"
+                            id.name
+                            id.flags
+                            pos
+                         ))
+
+    ~found:(fun {id; name;arity; closed_lambda ; _} -> 
+        match closed_lambda with 
+        | Some (Lfunction (_, params, body)) 
+          when Ext_list.same_length params args_lambda -> 
+          compile_lambda cxt 
+            (Lam_beta_reduce.propogate_beta_reduce cxt.meta params body args_lambda)
+        | _ ->  
+          Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
+          (match id, name,  args with 
+           | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
+             E.string_append e0 e1 
+           | {name = "Pervasives"; _}, "string_of_int", [e] 
+             -> E.int_to_string e 
+           | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
+             E.seq (E.dump Log args) (E.unit ())
+           | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
+             E.seq (E.dump Error args) (E.unit ())
+           | _ -> 
+
+
+             let rec aux (acc : J.expression)
+                 (arity : Lam_stats.function_arities) args (len : int)  =
+               match arity, len with
+               | _, 0 -> 
+                 acc (** All arguments consumed so far *)
+               | Determin (a, (x,_) :: rest, b), len   ->
+                 let x = 
+                   if x = 0 
+                   then 1 
+                   else x in (* Relax when x = 0 *)
+                 if  len >= x 
+                 then
+                   let first_part, continue =  (Ext_list.take x args) in
+                   aux
+                     (E.call ~info:{arity=Full} acc first_part)
+                     (Determin (a, rest, b))
+                     continue (len - x)
+                 else  acc 
+               (* alpha conversion now? --
+                  Since we did an alpha conversion before so it is not here
+               *)
+               | Determin (a, [], b ), _ ->
+                 (* can not happen, unless it's an exception ? *)
+                 E.call acc args
+               | NA, _ ->
+                 E.call acc args
+             in
+             aux (E.ml_var_dot id name) arity args (List.length args ))
+      )
+
+and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js_output.t =
 
 
   match flag, arg  with 
@@ -285,28 +417,8 @@ and
         (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
     (* External function calll *)
     | Lapply(Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
-      let [@warning "-8" (* non-exhaustive pattern*)] (args_code,args)   =
-        args_lambda
-        |> List.map
-          (
-            fun (x : Lambda.lambda) ->
-              match x with
-              | Lprim (Pgetglobal i, []) ->
-                (* when module is passed as an argument - unpack to an array
-                    for the function, generative module or functor can be a function,
-                    however it can not be global -- global can only module
-                *)
-                [], Lam_compile_global.get_exp (QueryGlobal (i, env,true))
-              | _ ->
-                begin
-                  match compile_lambda
-                          {cxt with st = NeedValue ; should_return =  False} x with
-                  | {block = a; value =  Some b} -> a,b
-                  | _ -> assert false
-                end)
-        |> List.split   in
-      Js_output.handle_block_return st should_return lam (List.concat args_code )
-        (Lam_compile_global.get_exp_with_args id n  env args)
+
+      get_exp_with_args cxt lam  args_lambda(* args_code *) id n  env (* args *)
 
 
     | Lapply(fn,args_lambda,  info) -> 
@@ -326,7 +438,7 @@ and
                       for the function, generative module or functor can be a function, 
                       however it can not be global -- global can only module 
                   *)
-                  [], Lam_compile_global.get_exp (QueryGlobal (ident, env,true))
+                  [], Lam_compile_global.get_exp  (ident, env,true)
                 | _ ->
                   begin
                     match compile_lambda 
@@ -444,8 +556,7 @@ and
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
     | Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]) -> (* should be before Pgetglobal *)
-      Js_output.handle_name_tail st should_return lam 
-        (Lam_compile_global.get_exp (GetGlobal (id,n, env)))
+        get_exp_with_index cxt lam  (id,n, env)
 
     | Lprim(Praise _raise_kind, [ e ]) -> 
       begin
@@ -1089,7 +1200,7 @@ and
         |> List.map (fun (x : Lambda.lambda) -> 
             match x with 
             | Lprim (Pgetglobal i, []) -> 
-              [], Lam_compile_global.get_exp (QueryGlobal (i, env, true))
+              [], Lam_compile_global.get_exp  (i, env, true)
             | _ -> 
               begin
                 match compile_lambda {cxt with st = NeedValue; should_return = False}

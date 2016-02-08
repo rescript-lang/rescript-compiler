@@ -144,7 +144,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Caml_curry.app1(Bytes.unsafe_to_string, Ext_bytes.escaped(Caml_curry.app1(Bytes.unsafe_of_string, s)));
+    return Caml_string.bytes_to_string(Ext_bytes.escaped(Caml_string.bytes_of_string(s)));
   }
   else {
     return s;

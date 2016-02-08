@@ -156,7 +156,7 @@ var file_buffer_size = [
 ];
 
 function scan_close_at_end(ic) {
-  Caml_curry.app1(Pervasives.close_in, ic);
+  Caml_primitive.caml_ml_close_channel(ic);
   throw Caml_exceptions.End_of_file;
 }
 
@@ -279,10 +279,10 @@ function close_in(ib) {
     return /* () */0;
   }
   else if (match[0]) {
-    return Caml_curry.app1(Pervasives.close_in, match[1]);
+    return Caml_primitive.caml_ml_close_channel(match[1]);
   }
   else {
-    return Caml_curry.app1(Pervasives.close_in, match[2]);
+    return Caml_primitive.caml_ml_close_channel(match[2]);
   }
 }
 

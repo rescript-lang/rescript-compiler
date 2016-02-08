@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_io            = require("../runtime/caml_io");
 var Caml_exceptions    = require("../runtime/caml_exceptions");
 var Pervasives         = require("./pervasives");
 var Caml_primitive     = require("../runtime/caml_primitive");
@@ -1072,7 +1073,7 @@ function pp_set_formatter_out_channel(state, os) {
     return Pervasives.output_substring(os, param, param$1, param$2);
   };
   state[18] = function () {
-    return Caml_curry.app1(Pervasives.flush, os);
+    return Caml_io.caml_ml_flush(os);
   };
   state[19] = function (param) {
     return display_newline(state, param);
@@ -1177,7 +1178,7 @@ function formatter_of_out_channel(oc) {
   return make_formatter(function (param, param$1, param$2) {
               return Pervasives.output_substring(oc, param, param$1, param$2);
             }, function () {
-              return Caml_curry.app1(Pervasives.flush, oc);
+              return Caml_io.caml_ml_flush(oc);
             });
 }
 

@@ -41,28 +41,11 @@ let query_lambda id env =
                            Lambda.Lprim(Pfield i, [Lprim(Pgetglobal id,[])])))
                         sigs))
 
+
 (* Given an module name and position, find its corresponding name  *)  
 let get_exp (key : Lam_compile_env.key) : J.expression = 
   match key with 
-  | GetGlobal ((id : Ident.t), (pos : int),env) -> 
-    Lam_compile_env.find_and_add_if_not_exist (id,pos) env 
-      ~not_found:(fun id -> 
-          E.str ~pure:false (Printf.sprintf "Err %s %d %d" id.name id.flags pos)
-          (* E.index m (pos + 1) *) (** shift by one *)
-          (** This can not happen since this id should be already consulted by type checker *)
-        )
-      ~found:(fun {id; name;_} ->
-          match id, name with 
-          | {name = "Sys"; _}, "os_type" 
-            (** We drop the ability of cross-compiling
-                the compiler has to be the same running 
-            *)
-            ->  E.str Sys.os_type
-          | _ -> 
-            E.ml_var_dot id name
-        ) 
-
-  | QueryGlobal (id, env, expand) -> 
+   (id, env, expand) -> 
     if Ident.is_predef_exn id 
     then 
       begin 
@@ -83,9 +66,7 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
             else 
               E.ml_var id)
 
-  | CamlRuntimePrimitive (prim, args)    -> 
-    Lam_dispatch_primitive.query prim args
-
+  
 
 (* TODO: how nested module call would behave,
    In the future, we should keep in track  of if 

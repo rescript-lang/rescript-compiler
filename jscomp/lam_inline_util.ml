@@ -24,6 +24,10 @@
 let maybe_functor (name : string) = 
   name.[0] >= 'A' && name.[0] <= 'Z'
 
+
+let should_be_functor (name : string) lam = 
+  maybe_functor name  && (function | Lambda.Lfunction _ -> true | _ -> false) lam
+
 (* TODO: add a context, like 
     [args]
     [Lfunction(params,body)]

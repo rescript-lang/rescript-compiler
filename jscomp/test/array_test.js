@@ -5,7 +5,6 @@ var Mt             = require("./mt");
 var Caml_primitive = require("../runtime/caml_primitive");
 var Caml_array     = require("../runtime/caml_array");
 var $$Array        = require("../stdlib/array");
-var Caml_curry     = require("../runtime/caml_curry");
 var List           = require("../stdlib/list");
 
 function is_sorted(x) {
@@ -98,7 +97,7 @@ var array_suites_002 = [
                   4,
                   5
                 ],
-                Caml_curry.app1($$Array.concat, [
+                Caml_array.caml_array_concat([
                       /* :: */0,
                       /* array */[
                         0,

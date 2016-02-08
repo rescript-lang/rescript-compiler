@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Pervasives = require("../stdlib/pervasives");
 var VV         = require("VV");
 var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
@@ -58,7 +59,7 @@ var nth = List.nth;
 
 var rev = List.rev;
 
-var append = List.append;
+var append = Pervasives.$at;
 
 var rev_append = List.rev_append;
 

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_io         = require("../runtime/caml_io");
 var Bytes           = require("../stdlib/bytes");
 var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
@@ -63,7 +64,7 @@ function bufferize(f) {
 }
 
 var match = bufferize(function () {
-      return Caml_curry.app1(Pervasives.input_char, inch[1]);
+      return Caml_io.caml_ml_input_char(inch[1]);
     });
 
 var ungetch = match[2];

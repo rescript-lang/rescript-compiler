@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Pervasives = require("../stdlib/pervasives");
 var Test_order = require("./test_order");
 var $$String   = require("../stdlib/string");
 var List       = require("../stdlib/list");
@@ -44,7 +45,7 @@ var nth = List.nth;
 
 var rev = List.rev;
 
-var append = List.append;
+var append = Pervasives.$at;
 
 var rev_append = List.rev_append;
 

@@ -2,6 +2,7 @@
 'use strict';
 
 var Bytes                    = require("./bytes");
+var Caml_io                  = require("../runtime/caml_io");
 var Caml_float               = require("../runtime/caml_float");
 var Pervasives               = require("./pervasives");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
@@ -11,8 +12,8 @@ var Sys                      = require("./sys");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
-var Caml_curry               = require("../runtime/caml_curry");
 var $$String                 = require("./string");
+var Caml_curry               = require("../runtime/caml_curry");
 var Caml_string              = require("../runtime/caml_string");
 
 function create_char_set() {
@@ -35,7 +36,7 @@ function rev_char_set(char_set) {
   for(var i = 0; i<= 31; ++i){
     char_set$prime[i] = Pervasives.char_of_int(char_set.charCodeAt(i) ^ 255);
   }
-  return Caml_curry.app1(Bytes.unsafe_to_string, char_set$prime);
+  return Caml_string.bytes_to_string(char_set$prime);
 }
 
 function is_in_char_set(char_set, c) {
@@ -3314,7 +3315,7 @@ function fix_padding(padty, width, str) {
           break;
       
     }
-    return Caml_curry.app1(Bytes.unsafe_to_string, res);
+    return Caml_string.bytes_to_string(res);
   }
 }
 
@@ -3355,7 +3356,7 @@ function fix_int_precision(prec, str) {
               var res = Bytes.make(prec$1 + 2, /* "0" */48);
               res[1] = str.charCodeAt(1);
               $$String.blit(str, 2, res, prec$1 - len + 4, len - 2);
-              return Caml_curry.app1(Bytes.unsafe_to_string, res);
+              return Caml_string.bytes_to_string(res);
             }
             else {
               exit = 2;
@@ -3388,7 +3389,7 @@ function fix_int_precision(prec, str) {
           var res$1 = Bytes.make(prec$1 + 1, /* "0" */48);
           res$1[0] = c;
           $$String.blit(str, 1, res$1, prec$1 - len + 2, len - 1);
-          return Caml_curry.app1(Bytes.unsafe_to_string, res$1);
+          return Caml_string.bytes_to_string(res$1);
         }
         else {
           return str;
@@ -3398,7 +3399,7 @@ function fix_int_precision(prec, str) {
         if (prec$1 > len) {
           var res$2 = Bytes.make(prec$1, /* "0" */48);
           $$String.blit(str, 0, res$2, prec$1 - len, len);
-          return Caml_curry.app1(Bytes.unsafe_to_string, res$2);
+          return Caml_string.bytes_to_string(res$2);
         }
         else {
           return str;
@@ -4452,7 +4453,7 @@ function output_acc(o, _acc) {
             return Caml_curry.app1(acc[2], o);
         case 7 : 
             output_acc(o, acc[1]);
-            return Caml_curry.app1(Pervasives.flush, o);
+            return Caml_io.caml_ml_flush(o);
         case 8 : 
             output_acc(o, acc[1]);
             return Pervasives.invalid_arg(acc[2]);
@@ -4465,7 +4466,8 @@ function output_acc(o, _acc) {
           return Pervasives.output_string(o, acc[2]);
       case 2 : 
           output_acc(o, acc[1]);
-          return Caml_curry.app2(Pervasives.output_char, o, acc[2]);
+          var prim = acc[2];
+          return Caml_io.caml_ml_output_char(o, prim);
       
     }
   };

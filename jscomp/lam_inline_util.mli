@@ -23,3 +23,5 @@
 (** Utilities for lambda inlining *)
 
 val maybe_functor : string -> bool
+
+val should_be_functor : string -> Lambda.lambda -> bool 
