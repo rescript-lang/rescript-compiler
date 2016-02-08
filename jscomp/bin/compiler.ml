@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n OCamlScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "01/29-14:47"]
+[@@@ocaml.doc "02/08-09:29"]
 include
   struct
     module Js_op =
@@ -50,9 +50,11 @@ include
           | Ml
           | Runtime
           | External of string
-        type property =
-          | Mutable
-          | Immutable
+        type property = Lambda.let_kind =
+          | Strict
+          | Alias
+          | StrictOpt
+          | Variable
         type int_or_char = {
           i: int;
           c: char option;}
@@ -451,7 +453,7 @@ include
           | Char_to_int of expression
           | Array_of_size of expression
           | Array_copy of expression
-          | Array_append of expression* expression list
+          | Array_append of expression* expression
           | Tag_ml_obj of expression
           | String_append of expression* expression
           | Int_of_boolean of expression
@@ -459,6 +461,7 @@ include
           | Not of expression
           | String_of_small_int_array of expression
           | Json_stringify of expression
+          | Anything_to_string of expression
           | Dump of Js_op.level* expression list
           | Seq of expression* expression
           | Cond of expression* expression* expression
@@ -516,10 +519,13 @@ include
         and program =
           {
           name: string;
-          modules: required_modules;
           block: block;
           exports: exports;
-          export_set: Ident_set.t;
+          export_set: Ident_set.t;}
+        and deps_program =
+          {
+          program: program;
+          modules: required_modules;
           side_effect: string option;}
       end
     module Lam_module_ident :
@@ -624,7 +630,7 @@ include
           {
           env: Env.t;
           filename: string;
-          export_idents: Lambda.IdentSet.t;
+          export_idents: Ident_set.t;
           exports: Ident.t list;
           alias_tbl: alias_tbl;
           exit_codes: int Hash_set.hashset;
@@ -679,7 +685,7 @@ include
           {
           env: Env.t;
           filename: string;
-          export_idents: Lambda.IdentSet.t;
+          export_idents: Ident_set.t;
           exports: Ident.t list;
           alias_tbl: alias_tbl;
           exit_codes: int Hash_set.hashset;
@@ -688,6 +694,52 @@ include
                        " we don't need count arities for all identifiers, for identifiers\n      for sure it's not a function, there is no need to count them\n  "];
           mutable required_modules: Lam_module_ident.t list;}
       end 
+    module Lam_current_unit :
+      sig
+        val set_file : string -> unit
+        val get_file : unit -> string
+        val iset_debug_file : string -> unit
+        val set_debug_file : string -> unit
+        val get_debug_file : unit -> string
+        val is_same_file : unit -> bool
+      end =
+      struct
+        let file = ref ""
+        let debug_file = ref ""
+        let set_file f = file := f
+        let get_file () = !file
+        let iset_debug_file _ = ()
+        let set_debug_file f = debug_file := f
+        let get_debug_file () = !debug_file
+        let is_same_file () =
+          ((!debug_file) != "") && ((!debug_file) = (!file))
+      end 
+    module Ident_map =
+      struct
+        [@@@ocaml.text
+          " Map with key specialized as [Ident] type, enhanced with some utilities "]
+        include
+          Map.Make(struct
+                     type t = Ident.t
+                     let compare = Pervasives.compare[@@ocaml.doc
+                                                       "TODO: fix me"]
+                   end)
+        let of_list lst =
+          List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty lst
+        let keys map = fold (fun k  -> fun _  -> fun acc  -> k :: acc) map []
+        let add_if_not_exist key v m = if mem key m then m else add key v m
+        let merge_disjoint m1 m2 =
+          merge
+            (fun k  ->
+               fun x0  ->
+                 fun y0  ->
+                   match (x0, y0) with
+                   | (None ,None ) -> None
+                   | (None ,Some v)|(Some v,None ) -> Some v
+                   | (_,_) ->
+                       invalid_arg "merge_disjoint: maps are not disjoint")
+            m1 m2
+      end
     module Lam_analysis :
       sig
         [@@@ocaml.text
@@ -697,10 +749,16 @@ include
         val size : Lambda.lambda -> int
         val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool[@@ocaml.doc
                                                                 " a conservative version of comparing two lambdas, mostly \n    for looking for similar cases in switch\n "]
-        val is_closed_by : Lambda.IdentSet.t -> Lambda.lambda -> bool
-        [@@ocaml.doc
-          " [is_closed_by map lam]\n    return [true] if all unbound variables\n    belongs to the given [map] "]
+        val is_closed_by : Ident_set.t -> Lambda.lambda -> bool[@@ocaml.doc
+                                                                 " [is_closed_by map lam]\n    return [true] if all unbound variables\n    belongs to the given [map] "]
         val is_closed : Lambda.lambda -> bool
+        type stats = {
+          mutable top: bool;
+          mutable times: int;}
+        val param_map_of_list : Ident.t list -> stats Ident_map.t
+        val free_variables :
+          Ident_set.t ->
+            stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
         val small_inline_size : int
         val exit_inline_size : int
       end =
@@ -724,23 +782,24 @@ include
                            (Const_int (1|2))))::[]) -> true
                         | (_,_) -> false)
                    | Pidentity |Pbytes_to_string |Pbytes_of_string 
-                     |Pchar_to_int |Pchar_of_int |Pignore |Prevapply _
-                     |Pdirapply _|Ploc _|Pgetglobal _|Pmakeblock _|Pfield _
-                     |Pfloatfield _|Pduprecord _|Psequand |Psequor |Pnot 
-                     |Pnegint |Paddint |Psubint |Pmulint |Pdivint |Pmodint 
-                     |Pandint |Porint |Pxorint |Plslint |Plsrint |Pasrint 
-                     |Pintcomp _|Pintoffloat |Pfloatofint |Pnegfloat 
-                     |Pabsfloat |Paddfloat |Psubfloat |Pmulfloat |Pdivfloat 
-                     |Pfloatcomp _|Pstringlength |Pstringrefu |Pstringrefs 
-                     |Pbyteslength |Pbytesrefu |Pbytesrefs |Pmakearray _
-                     |Parraylength _|Parrayrefu _|Parrayrefs _|Pisint |Pisout 
-                     |Pbintofint _|Pintofbint _|Pcvtbint _|Pnegbint _
-                     |Paddbint _|Psubbint _|Pmulbint _|Pdivbint _|Pmodbint _
-                     |Pandbint _|Porbint _|Pxorbint _|Plslbint _|Plsrbint _
-                     |Pasrbint _|Pbintcomp _|Pbigarrayref _|Pctconst _
-                     |Pint_as_pointer |Poffsetint _ -> true
-                   | Pstringsetu |Pstringsets |Pbytessetu |Pbytessets 
-                     |Pbittest |Parraysets _|Pbigarrayset _|Pbigarraydim _
+                     |Pchar_to_int |Pchar_of_int |Ploc _|Pgetglobal _
+                     |Pmakeblock _|Pfield _|Pfloatfield _|Pduprecord _
+                     |Psequand |Psequor |Pnot |Pnegint |Paddint |Psubint 
+                     |Pmulint |Pdivint |Pmodint |Pandint |Porint |Pxorint 
+                     |Plslint |Plsrint |Pasrint |Pintcomp _|Pintoffloat 
+                     |Pfloatofint |Pnegfloat |Pabsfloat |Paddfloat |Psubfloat 
+                     |Pmulfloat |Pdivfloat |Pfloatcomp _|Pstringlength 
+                     |Pstringrefu |Pstringrefs |Pbyteslength |Pbytesrefu 
+                     |Pbytesrefs |Pmakearray _|Parraylength _|Parrayrefu _
+                     |Parrayrefs _|Pisint |Pisout |Pbintofint _|Pintofbint _
+                     |Pcvtbint _|Pnegbint _|Paddbint _|Psubbint _|Pmulbint _
+                     |Pdivbint _|Pmodbint _|Pandbint _|Porbint _|Pxorbint _
+                     |Plslbint _|Plsrbint _|Pasrbint _|Pbintcomp _
+                     |Pbigarrayref _|Pctconst _|Pint_as_pointer |Poffsetint _
+                       -> true
+                   | Pignore |Prevapply _|Pdirapply _|Pstringsetu 
+                     |Pstringsets |Pbytessetu |Pbytessets |Pbittest 
+                     |Parraysets _|Pbigarrayset _|Pbigarraydim _
                      |Pstring_load_16 _|Pstring_load_32 _|Pstring_load_64 _
                      |Pstring_set_16 _|Pstring_set_32 _|Pstring_set_64 _
                      |Pbigstring_load_16 _|Pbigstring_load_32 _
@@ -855,11 +914,115 @@ include
           match (p, p1) with
           | (Pccall { prim_name = n0 },Pccall { prim_name = n1 }) -> n0 = n1
           | (_,_) -> (try p = p1 with | _ -> false)
-        let is_closed_by map lam =
-          Lambda.IdentSet.for_all Ident.global
-            (Lambda.IdentSet.diff (Lambda.free_variables lam) map)
+        type stats = {
+          mutable top: bool;
+          mutable times: int;}
+        type env = {
+          top: bool;
+          loop: bool;}
+        let no_substitute = { top = false; loop = true }
+        let fresh_env = { top = true; loop = false }
+        let fresh_stats () = { top = true; times = 0 }
+        let param_map_of_list lst =
+          List.fold_left
+            (fun acc  -> fun l  -> Ident_map.add l (fresh_stats ()) acc)
+            Ident_map.empty lst
+        [@@@ocaml.text
+          " Sanity check, remove all varaibles in [local_set] in the last pass "]
+        let free_variables (export_idents : Ident_set.t)
+          (params : stats Ident_map.t) lam =
+          let fv = ref params in
+          let local_set = ref export_idents in
+          let local_add k = local_set := (Ident_set.add k (!local_set)) in
+          let local_add_list ks =
+            local_set :=
+              (List.fold_left (fun acc  -> fun k  -> Ident_set.add k acc)
+                 (!local_set) ks) in
+          let loop_use = 100 in
+          let map_use { top; loop } v =
+            let times = if loop then loop_use else 1 in
+            if Ident_set.mem v (!local_set)
+            then ()
+            else
+              (match Ident_map.find v (!fv) with
+               | exception Not_found  ->
+                   fv := (Ident_map.add v { top; times } (!fv))
+               | v -> (v.times <- v.times + times; v.top <- v.top && top)) in
+          let new_env lam (env : env) =
+            if env.top
+            then
+              (if no_side_effects lam then env else { env with top = false })
+            else env in
+          let rec iter (top : env) (lam : Lambda.lambda) =
+            match lam with
+            | Lvar v -> map_use top v
+            | Lconst _ -> ()
+            | Lapply (fn,args,_) ->
+                (iter top fn;
+                 (let top = new_env fn top in List.iter (iter top) args))
+            | Lprim (_p,args) -> List.iter (iter top) args
+            | Lfunction (_kind,params,body) ->
+                (local_add_list params; iter no_substitute body)
+            | Llet (_let_kind,id,arg,body) ->
+                (local_add id; iter top arg; iter no_substitute body)
+            | Lletrec (decl,body) ->
+                (local_set :=
+                   (List.fold_left
+                      (fun acc  -> fun (id,_)  -> Ident_set.add id acc)
+                      (!local_set) decl);
+                 List.iter (fun (_,exp)  -> iter no_substitute exp) decl;
+                 iter no_substitute body)
+            | Lswitch (arg,sw) ->
+                (iter top arg;
+                 (let top = new_env arg top in
+                  List.iter (fun (key,case)  -> iter top case) sw.sw_consts;
+                  List.iter (fun (key,case)  -> iter top case) sw.sw_blocks;
+                  (match sw.sw_failaction with
+                   | None  -> ()
+                   | Some x ->
+                       let nconsts = List.length sw.sw_consts in
+                       let nblocks = List.length sw.sw_blocks in
+                       if
+                         (nconsts < sw.sw_numconsts) &&
+                           (nblocks < sw.sw_numblocks)
+                       then iter no_substitute x
+                       else iter top x)))
+            | Lstringswitch (arg,cases,default) ->
+                (iter top arg;
+                 (let top = new_env arg top in
+                  List.iter (fun (_,act)  -> iter top act) cases;
+                  (match default with | None  -> () | Some x -> iter top x)))
+            | Lstaticraise (_,args) -> List.iter (iter no_substitute) args
+            | Lstaticcatch (e1,(_,vars),e2) ->
+                (iter no_substitute e1;
+                 local_add_list vars;
+                 iter no_substitute e2)
+            | Ltrywith (e1,exn,e2) -> (iter top e1; iter no_substitute e2)
+            | Lifthenelse (e1,e2,e3) ->
+                (iter top e1;
+                 (let top = new_env e1 top in iter top e2; iter top e3))
+            | Lsequence (e1,e2) -> (iter top e1; iter no_substitute e2)
+            | Lwhile (e1,e2) ->
+                (iter no_substitute e1; iter no_substitute e2)
+            | Lfor (v,e1,e2,dir,e3) ->
+                (local_add v;
+                 iter no_substitute e1;
+                 iter no_substitute e2;
+                 iter no_substitute e3)
+            | Lassign (id,e) -> (map_use top id; iter top e)
+            | Lsend (_k,met,obj,args,_) ->
+                (iter no_substitute met;
+                 iter no_substitute obj;
+                 List.iter (iter no_substitute) args)
+            | Levent (lam,evt) -> iter top lam
+            | Lifused (v,e) -> iter no_substitute e in
+          iter fresh_env lam; !fv[@@ocaml.text
+                                   " Sanity check, remove all varaibles in [local_set] in the last pass "]
+        let is_closed_by set lam =
+          Ident_map.is_empty (free_variables set Ident_map.empty lam)
         let is_closed lam =
-          Lambda.IdentSet.for_all Ident.global (Lambda.free_variables lam)
+          Ident_map.is_empty
+            (free_variables Ident_set.empty Ident_map.empty lam)
       end 
     module Js_fold =
       struct
@@ -959,15 +1122,12 @@ include
             method property : property -> 'self_type= o#unknown
             method program : program -> 'self_type=
               fun
-                { name = _x; modules = _x_i1; block = _x_i2; exports = _x_i3;
-                  export_set = _x_i4; side_effect = _x_i5 }
+                { name = _x; block = _x_i1; exports = _x_i2;
+                  export_set = _x_i3 }
                  ->
                 let o = o#string _x in
-                let o = o#required_modules _x_i1 in
-                let o = o#block _x_i2 in
-                let o = o#exports _x_i3 in
-                let o = o#unknown _x_i4 in
-                let o = o#option (fun o  -> o#string) _x_i5 in o
+                let o = o#block _x_i1 in
+                let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
             method number : number -> 'self_type= o#unknown
             method mutable_flag : mutable_flag -> 'self_type= o#unknown
             method label : label -> 'self_type= o#string
@@ -995,8 +1155,7 @@ include
               | Array_of_size _x -> let o = o#expression _x in o
               | Array_copy _x -> let o = o#expression _x in o
               | Array_append (_x,_x_i1) ->
-                  let o = o#expression _x in
-                  let o = o#list (fun o  -> o#expression) _x_i1 in o
+                  let o = o#expression _x in let o = o#expression _x_i1 in o
               | Tag_ml_obj _x -> let o = o#expression _x in o
               | String_append (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
@@ -1005,6 +1164,7 @@ include
               | Not _x -> let o = o#expression _x in o
               | String_of_small_int_array _x -> let o = o#expression _x in o
               | Json_stringify _x -> let o = o#expression _x in o
+              | Anything_to_string _x -> let o = o#expression _x in o
               | Dump (_x,_x_i1) ->
                   let o = o#unknown _x in
                   let o = o#list (fun o  -> o#expression) _x_i1 in o
@@ -1054,6 +1214,11 @@ include
                 let o = o#option (fun o  -> o#string) _x_i1 in o
             method exports : exports -> 'self_type= o#unknown
             method exception_ident : exception_ident -> 'self_type= o#ident
+            method deps_program : deps_program -> 'self_type=
+              fun { program = _x; modules = _x_i1; side_effect = _x_i2 }  ->
+                let o = o#program _x in
+                let o = o#required_modules _x_i1 in
+                let o = o#option (fun o  -> o#string) _x_i2 in o
             method case_clause :
               'a .
                 ('self_type -> 'a -> 'self_type) ->
@@ -1071,71 +1236,118 @@ include
             method unknown : 'a . 'a -> 'self_type= fun _  -> o
           end
       end
-    module Js_fold_basic :
+    module String_set : sig include (Set.S with type  elt =  string) end =
+      struct include Set.Make(String) end 
+    module Js_config :
       sig
-        [@@@ocaml.text
-          " A module to calculate hard dependency based on JS IR in module [J] "]
-        val depends_j : J.expression -> Ident_set.t -> Ident_set.t
-        val calculate_hard_dependencies :
-          J.block -> Lam_module_ident.t Hash_set.hashset
+        type env =
+          | Browser
+          | NodeJS
+        val get_env : unit -> env
+        val set_env : env -> unit
+        val runtime_set : String_set.t
+        val stdlib_set : String_set.t
+        val prim : string
+        val exceptions : string
+        val io : string
+        val oo : string
+        val sys : string
+        val lex_parse : string
+        val obj_runtime : string
+        val array : string
+        val format : string
+        val string : string
+        val float : string
+        val curry : string
       end =
       struct
-        class count_deps (add : Ident.t -> unit) =
-          object (self)
-            inherit  Js_fold.fold as super
-            method! expression lam =
-              match lam.expression_desc with
-              | Fun (_,block,_) -> self#block block
-              | _ -> super#expression lam
-            method! ident x = add x; self
-          end
-        class count_hard_dependencies =
-          object (self)
-            inherit  Js_fold.fold as super
-            val hard_dependencies = Hash_set.create 17
-            method! vident vid =
-              match vid with
-              | Qualified (id,kind,_) ->
-                  (Hash_set.add hard_dependencies
-                     (Lam_module_ident.mk kind id);
-                   self)
-              | Id id -> self
-            method get_hard_dependencies = hard_dependencies
-          end
-        let calculate_hard_dependencies block =
-          ((new count_hard_dependencies)#block block)#get_hard_dependencies
-        let depends_j (lam : J.expression) (variables : Ident_set.t) =
-          let v = ref Ident_set.empty in
-          let add id =
-            if Ident_set.mem id variables then v := (Ident_set.add id (!v)) in
-          ignore @@ (((new count_deps) add)#expression lam); !v
+        type env =
+          | Browser
+          | NodeJS
+        let default_env = ref NodeJS
+        let get_env () = !default_env
+        let set_env env = default_env := env
+        let stdlib_set =
+          String_set.of_list
+            ["arg.js";
+            "gc.js";
+            "printexc.js";
+            "array.js";
+            "genlex.js";
+            "printf.js";
+            "arrayLabels.js";
+            "hashtbl.js";
+            "queue.js";
+            "buffer.js";
+            "int32.js";
+            "random.js";
+            "bytes.js";
+            "int64.js";
+            "scanf.js";
+            "bytesLabels.js";
+            "lazy.js";
+            "set.js";
+            "callback.js";
+            "lexing.js";
+            "sort.js";
+            "camlinternalFormat.js";
+            "list.js";
+            "stack.js";
+            "camlinternalFormatBasics.js";
+            "listLabels.js";
+            "stdLabels.js";
+            "camlinternalLazy.js";
+            "map.js";
+            "std_exit.js";
+            "camlinternalMod.js";
+            "marshal.js";
+            "stream.js";
+            "camlinternalOO.js";
+            "moreLabels.js";
+            "string.js";
+            "char.js";
+            "nativeint.js";
+            "stringLabels.js";
+            "complex.js";
+            "obj.js";
+            "sys.js";
+            "digest.js";
+            "oo.js";
+            "weak.js";
+            "filename.js";
+            "parsing.js";
+            "format.js";
+            "pervasives.js"]
+        let runtime_set =
+          String_set.of_list
+            ["caml_array.js";
+            "caml_float.js";
+            "caml_obj_runtime.js";
+            "caml_bigarray.js";
+            "caml_format.js";
+            "caml_oo.js";
+            "caml_c_ffi.js";
+            "caml_int64.js";
+            "caml_primitive.js";
+            "caml_utils.js";
+            "caml_exceptions.js";
+            "caml_curry.js";
+            "caml_file.js";
+            "caml_lexer.js";
+            "caml_string.js"]
+        let prim = "Caml_primitive"
+        let exceptions = "Caml_exceptions"
+        let io = "Caml_io"
+        let sys = "Caml_sys"
+        let lex_parse = "Caml_lexer"
+        let obj_runtime = "Caml_obj_runtime"
+        let array = "Caml_array"
+        let format = "Caml_format"
+        let string = "Caml_string"
+        let float = "Caml_float"
+        let oo = "Caml_oo"
+        let curry = "Caml_curry"
       end 
-    module Ident_map =
-      struct
-        [@@@ocaml.text
-          " Map with key specialized as [Ident] type, enhanced with some utilities "]
-        include
-          Map.Make(struct
-                     type t = Ident.t
-                     let compare = Pervasives.compare[@@ocaml.doc
-                                                       "TODO: fix me"]
-                   end)
-        let of_list lst =
-          List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty lst
-        let keys map = fold (fun k  -> fun _  -> fun acc  -> k :: acc) map []
-        let add_if_not_exist key v m = if mem key m then m else add key v m
-        let merge_disjoint m1 m2 =
-          merge
-            (fun k  ->
-               fun x0  ->
-                 fun y0  ->
-                   match (x0, y0) with
-                   | (None ,None ) -> None
-                   | (None ,Some v)|(Some v,None ) -> Some v
-                   | (_,_) ->
-                       invalid_arg "merge_disjoint: maps are not disjoint")
-            m1 m2
-      end
     module Ext_bytes :
       sig
         [@@@ocaml.text
@@ -1284,6 +1496,246 @@ include
           Bytes.to_string res
         let equal (x : string) y = x = y
       end 
+    module Ext_ident :
+      sig
+        [@@@ocaml.text " A wrapper around [Ident] module in compiler-libs"]
+        val is_js : Ident.t -> bool
+        val is_js_object : Ident.t -> bool
+        val create_js : string -> Ident.t
+        val create : string -> Ident.t
+        val create_js_module : string -> Ident.t
+        val make_js_object : Ident.t -> unit
+        val reset : unit -> unit
+        val gen_js : ?name:string -> unit -> Ident.t
+        val make_unused : unit -> Ident.t
+        val is_unused_ident : Ident.t -> bool
+        val convert : string -> string
+      end =
+      struct
+        let js_flag = 8
+        let js_module_flag = 16
+        let js_object_flag = 32
+        let is_js (i : Ident.t) = (i.flags land js_flag) <> 0
+        let is_js_module (i : Ident.t) = (i.flags land js_module_flag) <> 0
+        let is_js_object (i : Ident.t) = (i.flags land js_object_flag) <> 0
+        let make_js_object (i : Ident.t) =
+          i.flags <- i.flags lor js_object_flag
+        let create_js (name : string) =
+          ({ name; flags = js_flag; stamp = 0 } : Ident.t)
+        let js_module_table = Hashtbl.create 31
+        let create_js_module (name : string) =
+          (let name =
+             (String.concat "") @@
+               ((List.map String.capitalize) @@ (Ext_string.split name '-')) in
+           match Hashtbl.find js_module_table name with
+           | exception Not_found  ->
+               let v = Ident.create name in
+               let ans = { v with flags = js_module_flag } in
+               (Hashtbl.add js_module_table name ans; ans)
+           | v -> v : Ident.t)
+        let create = Ident.create
+        let gen_js ?(name= "$js")  () = create name
+        let reserved_words =
+          ["break";
+          "case";
+          "catch";
+          "continue";
+          "debugger";
+          "default";
+          "delete";
+          "do";
+          "else";
+          "finally";
+          "for";
+          "function";
+          "if";
+          "in";
+          "instanceof";
+          "new";
+          "return";
+          "switch";
+          "this";
+          "throw";
+          "try";
+          "typeof";
+          "var";
+          "void";
+          "while";
+          "with";
+          "class";
+          "enum";
+          "export";
+          "extends";
+          "import";
+          "super";
+          "implements";
+          "interface";
+          "let";
+          "package";
+          "private";
+          "protected";
+          "public";
+          "static";
+          "yield";
+          "null";
+          "true";
+          "false";
+          "NaN";
+          "undefined";
+          "this";
+          "abstract";
+          "boolean";
+          "byte";
+          "char";
+          "const";
+          "double";
+          "final";
+          "float";
+          "goto";
+          "int";
+          "long";
+          "native";
+          "short";
+          "synchronized";
+          "throws";
+          "transient";
+          "volatile";
+          "await";
+          "event";
+          "location";
+          "window";
+          "document";
+          "eval";
+          "navigator";
+          "Array";
+          "Date";
+          "Math";
+          "JSON";
+          "Object";
+          "RegExp";
+          "String";
+          "Boolean";
+          "Number";
+          "Map";
+          "Set";
+          "Infinity";
+          "isFinite";
+          "ActiveXObject";
+          "XMLHttpRequest";
+          "XDomainRequest";
+          "DOMException";
+          "Error";
+          "SyntaxError";
+          "arguments";
+          "decodeURI";
+          "decodeURIComponent";
+          "encodeURI";
+          "encodeURIComponent";
+          "escape";
+          "unescape";
+          "isNaN";
+          "parseFloat";
+          "parseInt";
+          "require";
+          "exports";
+          "module"]
+        let reserved_map =
+          List.fold_left (fun acc  -> fun x  -> String_set.add x acc)
+            String_set.empty reserved_words
+        let convert (name : string) =
+          let module E = struct exception Not_normal_letter of int end in
+            let len = String.length name in
+            if String_set.mem name reserved_map
+            then "$$" ^ name
+            else
+              (try
+                 for i = 0 to len - 1 do
+                   (let c = String.unsafe_get name i in
+                    if
+                      not
+                        (((c >= 'a') && (c <= 'z')) ||
+                           (((c >= 'A') && (c <= 'Z')) ||
+                              ((c = '_') || (c = '$'))))
+                    then raise (E.Not_normal_letter i)
+                    else ())
+                 done;
+                 name
+               with
+               | E.Not_normal_letter i ->
+                   (String.sub name 0 i) ^
+                     (let buffer = Buffer.create len in
+                      (for j = i to len - 1 do
+                         (let c = String.unsafe_get name j in
+                          match c with
+                          | '*' -> Buffer.add_string buffer "$star"
+                          | '\'' -> Buffer.add_string buffer "$prime"
+                          | '!' -> Buffer.add_string buffer "$bang"
+                          | '>' -> Buffer.add_string buffer "$great"
+                          | '<' -> Buffer.add_string buffer "$less"
+                          | '=' -> Buffer.add_string buffer "$eq"
+                          | '+' -> Buffer.add_string buffer "$plus"
+                          | '-' -> Buffer.add_string buffer "$neg"
+                          | '@' -> Buffer.add_string buffer "$at"
+                          | '^' -> Buffer.add_string buffer "$caret"
+                          | '/' -> Buffer.add_string buffer "$slash"
+                          | '|' -> Buffer.add_string buffer "$pipe"
+                          | '.' -> Buffer.add_string buffer "$dot"
+                          | 'a'..'z'|'A'..'Z'|'_'|'$'|'0'..'9' ->
+                              Buffer.add_char buffer c
+                          | _ -> Buffer.add_string buffer "$unknown")
+                       done;
+                       Buffer.contents buffer)))
+        let make_unused () = create "_"
+        let is_unused_ident i = (Ident.name i) = "_"
+        let reset () = Hashtbl.clear js_module_table
+      end 
+    module Js_fold_basic :
+      sig
+        [@@@ocaml.text
+          " A module to calculate hard dependency based on JS IR in module [J] "]
+        val depends_j : J.expression -> Ident_set.t -> Ident_set.t
+        val calculate_hard_dependencies :
+          J.block -> Lam_module_ident.t Hash_set.hashset
+      end =
+      struct
+        class count_deps (add : Ident.t -> unit) =
+          object (self)
+            inherit  Js_fold.fold as super
+            method! expression lam =
+              match lam.expression_desc with
+              | Fun (_,block,_) -> self#block block
+              | _ -> super#expression lam
+            method! ident x = add x; self
+          end
+        class count_hard_dependencies =
+          object (self)
+            inherit  Js_fold.fold as super
+            val hard_dependencies = Hash_set.create 17
+            method! vident vid =
+              match vid with
+              | Qualified (id,kind,_) ->
+                  (Hash_set.add hard_dependencies
+                     (Lam_module_ident.mk kind id);
+                   self)
+              | Id id -> self
+            method! expression x =
+              match x with
+              | { expression_desc = Call (_,_,{ arity = NA  });_} ->
+                  (Hash_set.add hard_dependencies
+                     (Lam_module_ident.of_runtime
+                        (Ext_ident.create_js Js_config.curry));
+                   super#expression x)
+              | _ -> super#expression x
+            method get_hard_dependencies = hard_dependencies
+          end
+        let calculate_hard_dependencies block =
+          ((new count_hard_dependencies)#block block)#get_hard_dependencies
+        let depends_j (lam : J.expression) (variables : Ident_set.t) =
+          let v = ref Ident_set.empty in
+          let add id =
+            if Ident_set.mem id variables then v := (Ident_set.add id (!v)) in
+          ignore @@ (((new count_deps) add)#expression lam); !v
+      end 
     module Ext_filename :
       sig
         [@@@ocaml.text
@@ -1365,11 +1817,14 @@ include
         val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
         [@@ocaml.doc
           " if [a] depends on [b] a is ahead of [b] as [a::b]\n\n    TODO: make it a stable sort \n "]
-        val dump : Env.t -> string -> bool -> Lambda.lambda -> Lambda.lambda
-        val ident_set_of_list : Ident.t list -> Lambda.IdentSet.t
-        val print_ident_set : Format.formatter -> Lambda.IdentSet.t -> unit
+        val dump : Env.t -> string -> Lambda.lambda -> Lambda.lambda[@@ocaml.doc
+                                                                    " [dump] when {!Lam_current_unit.is_same_file}"]
+        val ident_set_of_list : Ident.t list -> Ident_set.t
+        val print_ident_set : Format.formatter -> Ident_set.t -> unit
         val mk_apply_info :
           ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
+        val lam_true : Lambda.lambda
+        val lam_false : Lambda.lambda
       end =
       struct
         let string_of_lambda = Format.asprintf "%a" Printlambda.lambda
@@ -1406,12 +1861,19 @@ include
             Some (toplogical (fun k  -> Ident_map.find k dependencies) todos)
           with | Cyclic  -> None
         let add_required_module (x : Ident.t) (meta : Lam_stats.meta) =
-          meta.required_modules <- (Lam_module_ident.of_ml x) ::
-            (meta.required_modules)
+          if not @@ (Ident.is_predef_exn x)
+          then
+            meta.required_modules <- (Lam_module_ident.of_ml x) ::
+              (meta.required_modules)
         let add_required_modules (x : Ident.t list) (meta : Lam_stats.meta) =
-          meta.required_modules <-
-            (List.map (fun x  -> Lam_module_ident.of_ml x) x) @
-              meta.required_modules
+          let required_modules =
+            (Ext_list.filter_map
+               (fun x  ->
+                  if Ident.is_predef_exn x
+                  then None
+                  else Some (Lam_module_ident.of_ml x)) x)
+              @ meta.required_modules in
+          meta.required_modules <- required_modules
         let subst_lambda s lam =
           let rec subst (x : Lambda.lambda) =
             match x with
@@ -1493,7 +1955,7 @@ include
            | ident_info -> Hashtbl.add meta.ident_tbl k ident_info);
           (match let_kind with
            | Alias  ->
-               if not @@ (Lambda.IdentSet.mem k meta.export_idents)
+               if not @@ (Ident_set.mem k meta.export_idents)
                then Hashtbl.add meta.alias_tbl k v
            | Strict |StrictOpt |Variable  -> ())
         let element_of_lambda (lam : Lambda.lambda) =
@@ -1517,26 +1979,32 @@ include
         let generate_label ?(name= "")  () =
           incr count; Printf.sprintf "%s_tailcall_%04d" name (!count)
         let log_counter = ref 0
-        let dump env filename pred lam =
+        let dump env filename lam =
           incr log_counter;
-          if pred
+          if
+            ((Js_config.get_env ()) != Browser) &&
+              (Lam_current_unit.is_same_file ())
           then
             Printlambda.seriaize env
               ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^
                  (Printf.sprintf ".%02d.lam" (!log_counter))) lam;
           lam
         let ident_set_of_list ls =
-          List.fold_left (fun acc  -> fun k  -> Lambda.IdentSet.add k acc)
-            Lambda.IdentSet.empty ls
+          List.fold_left (fun acc  -> fun k  -> Ident_set.add k acc)
+            Ident_set.empty ls
         let print_ident_set fmt s =
           Format.fprintf fmt "@[<v>{%a}@]@."
             (fun fmt  ->
                fun s  ->
-                 Lambda.IdentSet.iter
+                 Ident_set.iter
                    (fun e  -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e)
                    s) s
         let mk_apply_info ?(loc= Location.none)  apply_status =
           ({ apply_loc = loc; apply_status } : Lambda.apply_info)
+        let lam_true: Lambda.lambda =
+          Lconst (Const_pointer (1, (NullConstructor "true")))
+        let lam_false: Lambda.lambda =
+          Lconst (Const_pointer (0, (NullConstructor "false")))
       end 
     module Lam_group :
       sig
@@ -1796,64 +2264,49 @@ include
                        (match b with | [] -> None | _ -> Some (Recursive b)))) : 
           Lam_group.t list)
       end 
-    module Lam_current_unit :
-      sig
-        val set_file : string -> unit
-        val get_file : unit -> string
-        val iset_debug_file : string -> unit
-        val set_debug_file : string -> unit
-        val get_debug_file : unit -> string
-        val is_same_file : unit -> bool
-      end =
-      struct
-        let file = ref ""
-        let debug_file = ref ""
-        let set_file f = file := f
-        let get_file () = !file
-        let iset_debug_file _ = ()
-        let set_debug_file f = debug_file := f
-        let get_debug_file () = !debug_file
-        let is_same_file () = (!debug_file) = (!file)
-      end 
     module Ext_log :
       sig
         [@@@ocaml.text
           " A Poor man's logging utility\n    \n    Example:\n    {[ \n    err __LOC__ \"xx\"\n    ]}\n "]
-        type ('a,'b) logging =
-          ('a -> 'b,Format.formatter,unit,unit,unit,unit) format6 -> 'a -> 'b
-        val err : string -> ('a,'b) logging
-        val ierr : bool -> string -> ('a,'b) logging
-        val warn : string -> ('a,'b) logging
-        val iwarn : bool -> string -> ('a,'b) logging
-        val dwarn : string -> ('a,'b) logging
-        val info : string -> ('a,'b) logging
-        val iinfo : bool -> string -> ('a,'b) logging
+        type 'a logging =
+          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
+        val err : string -> 'a logging
+        val ierr : bool -> string -> 'a logging
+        val warn : string -> 'a logging
+        val iwarn : bool -> string -> 'a logging
+        val dwarn : string -> 'a logging
+        val info : string -> 'a logging
+        val iinfo : bool -> string -> 'a logging
       end =
       struct
-        type ('a,'b) logging =
-          ('a -> 'b,Format.formatter,unit,unit,unit,unit) format6 -> 'a -> 'b
-        let err str f v =
-          Format.fprintf Format.err_formatter ("%s " ^^ f) str v
-        let ierr b str f v =
+        type 'a logging =
+          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
+        let err str f = Format.fprintf Format.err_formatter ("%s " ^^ f) str
+        let ierr b str f =
           if b
-          then Format.fprintf Format.err_formatter ("%s " ^^ f) str v
-          else Format.ifprintf Format.err_formatter ("%s " ^^ f) str v
-        let warn str f v =
-          Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str v
-        let iwarn b str f v =
+          then Format.fprintf Format.err_formatter ("%s " ^^ f) str
+          else Format.ifprintf Format.err_formatter ("%s " ^^ f) str
+        let warn str f =
+          Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+            str
+        let iwarn b str f =
           if b
-          then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str v
-          else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str v
-        let dwarn str f v =
+          then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str
+          else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str
+        let dwarn str f =
           if Lam_current_unit.is_same_file ()
-          then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str v
-          else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str v
-        let info str f v =
-          Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str v
-        let iinfo b str f v =
+          then
+            Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+              str
+          else
+            Format.ifprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+              str
+        let info str f =
+          Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+        let iinfo b str f =
           if b
-          then Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str v
-          else Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str v
+          then Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+          else Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
       end 
     module Type_util :
       sig
@@ -2298,215 +2751,9 @@ include
              | x::xs -> aux (x :: acc) xs : J.block) in
           aux [] block
       end 
-    module String_set : sig include (Set.S with type  elt =  string) end =
-      struct include Set.Make(String) end 
-    module Ext_ident :
-      sig
-        [@@@ocaml.text " A wrapper around [Ident] module in compiler-libs"]
-        val is_js : Ident.t -> bool
-        val is_js_object : Ident.t -> bool
-        val create_js : string -> Ident.t
-        val create : string -> Ident.t
-        val create_js_module : string -> Ident.t
-        val make_js_object : Ident.t -> unit
-        val reset : unit -> unit
-        val gen_js : ?name:string -> unit -> Ident.t
-        val make_unused : unit -> Ident.t
-        val is_unused_ident : Ident.t -> bool
-        val convert : string -> string
-      end =
-      struct
-        let js_flag = 8
-        let js_module_flag = 16
-        let js_object_flag = 32
-        let is_js (i : Ident.t) = (i.flags land js_flag) <> 0
-        let is_js_module (i : Ident.t) = (i.flags land js_module_flag) <> 0
-        let is_js_object (i : Ident.t) = (i.flags land js_object_flag) <> 0
-        let make_js_object (i : Ident.t) =
-          i.flags <- i.flags lor js_object_flag
-        let create_js (name : string) =
-          ({ name; flags = js_flag; stamp = 0 } : Ident.t)
-        let js_module_table = Hashtbl.create 31
-        let create_js_module (name : string) =
-          (let name =
-             (String.concat "") @@
-               ((List.map String.capitalize) @@ (Ext_string.split name '-')) in
-           match Hashtbl.find js_module_table name with
-           | exception Not_found  ->
-               let v = Ident.create name in
-               let ans = { v with flags = js_module_flag } in
-               (Hashtbl.add js_module_table name ans; ans)
-           | v -> v : Ident.t)
-        let create = Ident.create
-        let gen_js ?(name= "$js")  () = create name
-        let reserved_words =
-          ["break";
-          "case";
-          "catch";
-          "continue";
-          "debugger";
-          "default";
-          "delete";
-          "do";
-          "else";
-          "finally";
-          "for";
-          "function";
-          "if";
-          "in";
-          "instanceof";
-          "new";
-          "return";
-          "switch";
-          "this";
-          "throw";
-          "try";
-          "typeof";
-          "var";
-          "void";
-          "while";
-          "with";
-          "class";
-          "enum";
-          "export";
-          "extends";
-          "import";
-          "super";
-          "implements";
-          "interface";
-          "let";
-          "package";
-          "private";
-          "protected";
-          "public";
-          "static";
-          "yield";
-          "null";
-          "true";
-          "false";
-          "NaN";
-          "undefined";
-          "this";
-          "abstract";
-          "boolean";
-          "byte";
-          "char";
-          "const";
-          "double";
-          "final";
-          "float";
-          "goto";
-          "int";
-          "long";
-          "native";
-          "short";
-          "synchronized";
-          "throws";
-          "transient";
-          "volatile";
-          "await";
-          "event";
-          "location";
-          "window";
-          "document";
-          "eval";
-          "navigator";
-          "Array";
-          "Date";
-          "Math";
-          "JSON";
-          "Object";
-          "RegExp";
-          "String";
-          "Boolean";
-          "Number";
-          "Map";
-          "Set";
-          "Infinity";
-          "isFinite";
-          "ActiveXObject";
-          "XMLHttpRequest";
-          "XDomainRequest";
-          "DOMException";
-          "Error";
-          "SyntaxError";
-          "arguments";
-          "decodeURI";
-          "decodeURIComponent";
-          "encodeURI";
-          "encodeURIComponent";
-          "escape";
-          "unescape";
-          "isNaN";
-          "parseFloat";
-          "parseInt";
-          "require";
-          "exports";
-          "module"]
-        let reserved_map =
-          List.fold_left (fun acc  -> fun x  -> String_set.add x acc)
-            String_set.empty reserved_words
-        let convert (name : string) =
-          let module E = struct exception Not_normal_letter of int end in
-            let len = String.length name in
-            if String_set.mem name reserved_map
-            then "$$" ^ name
-            else
-              (try
-                 for i = 0 to len - 1 do
-                   (let c = String.unsafe_get name i in
-                    if
-                      not
-                        (((c >= 'a') && (c <= 'z')) ||
-                           (((c >= 'A') && (c <= 'Z')) ||
-                              ((c = '_') || (c = '$'))))
-                    then raise (E.Not_normal_letter i)
-                    else ())
-                 done;
-                 name
-               with
-               | E.Not_normal_letter i ->
-                   (String.sub name 0 i) ^
-                     (let buffer = Buffer.create len in
-                      (for j = i to len - 1 do
-                         (let c = String.unsafe_get name j in
-                          match c with
-                          | '*' -> Buffer.add_string buffer "$star"
-                          | '\'' -> Buffer.add_string buffer "$prime"
-                          | '!' -> Buffer.add_string buffer "$bang"
-                          | '>' -> Buffer.add_string buffer "$great"
-                          | '<' -> Buffer.add_string buffer "$less"
-                          | '=' -> Buffer.add_string buffer "$eq"
-                          | '+' -> Buffer.add_string buffer "$plus"
-                          | '-' -> Buffer.add_string buffer "$neg"
-                          | '@' -> Buffer.add_string buffer "$at"
-                          | '^' -> Buffer.add_string buffer "$caret"
-                          | '/' -> Buffer.add_string buffer "$slash"
-                          | '|' -> Buffer.add_string buffer "$pipe"
-                          | '.' -> Buffer.add_string buffer "$dot"
-                          | 'a'..'z'|'A'..'Z'|'_'|'$'|'0'..'9' ->
-                              Buffer.add_char buffer c
-                          | _ -> Buffer.add_string buffer "$unknown")
-                       done;
-                       Buffer.contents buffer)))
-        let make_unused () = create "_"
-        let is_unused_ident i = (Ident.name i) = "_"
-        let reset () = Hashtbl.clear js_module_table
-      end 
     module Js_helper :
       sig
         [@@@ocaml.text " Creator utilities for the [J] module "]
-        val prim : string
-        val exceptions : string
-        val io : string
-        val oo : string
-        val sys : string
-        val lex_parse : string
-        val obj_runtime : string
-        val array : string
-        val format : string
-        val string : string
-        val float : string
         val no_side_effect : J.expression -> bool
         val is_constant : J.expression -> bool[@@ocaml.doc
                                                 " check if a javascript ast is constant \n    \n    The better signature might be \n    {[\n    J.expresssion -> Js_output.t\n    ]}\n    for exmaple\n    {[\n    e ?print_int(3) :  0\n    --->\n    if(e){print_int(3)}\n    ]}\n"]
@@ -2530,7 +2777,7 @@ include
           val runtime_call : string -> string -> t list -> t
           val runtime_ref : string -> string -> t
           val str : ?pure:bool -> ?comment:string -> string -> t
-          val efun :
+          val fun_ :
             ?comment:string ->
               ?immutable_mask:bool array -> J.ident list -> J.block -> t
           val econd : ?comment:string -> t -> t -> t -> t
@@ -2548,7 +2795,7 @@ include
           val function_length : unary_op
           val char_of_int : unary_op
           val char_to_int : unary_op
-          val array_append : ?comment:string -> t -> t list -> t
+          val array_append : binary_op
           val array_copy : unary_op
           val string_append : binary_op[@@ocaml.doc
                                          "\n     When in ES6 mode, we can use Symbol to guarantee its uniquess,\n     we can not tag [js] object, since it can be frozen \n   "]
@@ -2590,6 +2837,8 @@ include
             ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
           val flat_call : binary_op
           val dump : ?comment:string -> Js_op.level -> t list -> t
+          val anything_to_string : unary_op
+          val int_to_string : unary_op
           val to_json_string : unary_op
           val new_ :
             ?comment:string -> J.expression -> J.expression list -> t
@@ -2602,7 +2851,6 @@ include
           val false_ : t
           val bool : bool -> t
           val unknown_lambda : ?comment:string -> Lambda.lambda -> t
-          val unknown_primitive : ?comment:string -> Lambda.primitive -> t
           val unit : unit -> t[@@ocaml.doc
                                 " [unit] in ocaml will be compiled into [0]  in js "]
           val js_var : ?comment:string -> string -> t
@@ -2652,7 +2900,7 @@ include
             ?comment:string ->
               ?ident_info:J.ident_info ->
                 kind:Lambda.let_kind -> Ident.t -> J.expression -> t
-          val const_variable :
+          val alias_variable :
             ?comment:string -> ?exp:J.expression -> Ident.t -> t
           val assign : ?comment:string -> J.ident -> J.expression -> t
           val assign_unit : ?comment:string -> J.ident -> t
@@ -2675,21 +2923,11 @@ include
           val return_unit : ?comment:string -> unit -> t[@@ocaml.doc
                                                           " for ocaml function which returns unit \n      it will be compiled into [return 0] in js "]
           val break : ?comment:string -> unit -> t
-          val continue : ?comment:string -> J.label -> t
+          val continue : ?comment:string -> ?label:J.label -> unit -> t
+          [@@ocaml.doc " if [label] is not set, it will default to empty "]
         end
       end =
       struct
-        let prim = "Caml_primitive"
-        let exceptions = "Caml_exceptions"
-        let io = "Caml_io"
-        let sys = "Caml_sys"
-        let lex_parse = "Caml_lexer"
-        let obj_runtime = "Caml_obj_runtime"
-        let array = "Caml_array"
-        let format = "Caml_format"
-        let string = "Caml_string"
-        let float = "Caml_float"
-        let oo = "Caml_oo"
         let no_side_effect = Js_analyzer.no_side_effect_expression
         type binary_op =
           ?comment:string -> J.expression -> J.expression -> J.expression
@@ -2753,7 +2991,14 @@ include
                } : t)
             let str ?(pure= true)  ?comment  s =
               ({ expression_desc = (Str (pure, s)); comment } : t)
-            let efun ?comment  ?immutable_mask  params block =
+            let anything_to_string ?comment  (e : t) =
+              (match e.expression_desc with
+               | Str _ -> e
+               | _ -> { expression_desc = (Anything_to_string e); comment } : 
+              t)
+            let int_to_string ?comment  (e : t) =
+              (anything_to_string ?comment e : t)
+            let fun_ ?comment  ?immutable_mask  params block =
               (let len = List.length params in
                {
                  expression_desc =
@@ -2771,42 +3016,6 @@ include
                | (_,Seq (a,({ expression_desc = Number _ } as v))) ->
                    seq ?comment (seq e0 a) v
                | _ -> { expression_desc = (Seq (e0, e1)); comment } : 
-              t)
-            let rec econd ?comment  (b : t) (t : t) (f : t) =
-              (match ((b.expression_desc), (t.expression_desc),
-                       (f.expression_desc))
-               with
-               | (Number (Int { i = 0;_}),_,_) -> f
-               | ((Number _|Array _),_,_) -> t
-               | ((Bin
-                   (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},x)
-                   |Bin
-                   (EqEqEq ,x,{ expression_desc = Number (Int { i = 0;_});_})),_,_)
-                   -> econd ?comment x f t
-               | (Bin
-                  (Ge
-                   ,{
-                      expression_desc =
-                        (String_length _|Array_length _|Bytes_length _
-                         |Function_length _);_},{
-                                                  expression_desc = Number
-                                                    (Int { i = 0;_})
-                                                  }),_,_)
-                   -> f
-               | (Bin
-                  (Gt
-                   ,({
-                       expression_desc =
-                         (String_length _|Array_length _|Bytes_length _
-                          |Function_length _);_}
-                       as pred),{ expression_desc = Number (Int { i = 0 }) }),_,_)
-                   -> econd ?comment pred t f
-               | (Not e,_,_) -> econd ?comment e f t
-               | (Int_of_boolean b,_,_) -> econd ?comment b t f
-               | _ ->
-                   if Js_analyzer.eq_expression t f
-                   then (if no_side_effect b then t else seq ?comment b t)
-                   else { expression_desc = (Cond (b, t, f)); comment } : 
               t)
             let int ?comment  ?c  i =
               ({ expression_desc = (Number (Int { i; c })); comment } : 
@@ -2909,6 +3118,8 @@ include
                   ({ expression_desc = Str (_,c) },d)) ->
                    string_append ?comment (string_append a (str (b ^ c))) d
                | (Str (_,a),Str (_,b)) -> str ?comment (a ^ b)
+               | (_,Anything_to_string b) -> string_append ?comment e b
+               | (Anything_to_string b,_) -> string_append ?comment b el
                | (_,_) ->
                    { comment; expression_desc = (String_append (e, el)) } : 
               t)
@@ -2954,86 +3165,11 @@ include
                    to_ocaml_boolean
                      { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
               t)
-            let rec float_equal ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Number (Int { i = i0;_}),Number (Int { i = i1 })) ->
-                   bool (i0 = i1)
-               | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
-                   f0 = f1 -> true_
-               | _ ->
-                   to_ocaml_boolean
-                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
-              t)
-            let int_equal = float_equal
-            let rec string_equal ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Str (_,a0),Str (_,b0)) -> bool (Ext_string.equal a0 b0)
-               | (_,_) ->
-                   to_ocaml_boolean
-                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
-              t)
             let bin ?comment  (op : J.binop) e0 e1 =
               (match op with
                | EqEqEq  -> triple_equal ?comment e0 e1
                | _ -> { expression_desc = (Bin (op, e0, e1)); comment } : 
               t)
-            let arr ?comment  mt es =
-              ({ expression_desc = (Array (es, mt)); comment } : t)
-            let uninitialized_array ?comment  (e : t) =
-              (match e.expression_desc with
-               | Number (Int { i = 0;_}) -> arr ?comment NA []
-               | _ -> { comment; expression_desc = (Array_of_size e) } : 
-              t)
-            let typeof ?comment  (e : t) =
-              (match e.expression_desc with
-               | Number _|Array_length _|String_length _ ->
-                   str ?comment "number"
-               | Str _ -> str ?comment "string"
-               | Array _ -> str ?comment "object"
-               | _ -> { expression_desc = (Typeof e); comment } : t)
-            let is_type_number ?comment  (e : t) =
-              (string_equal ?comment (typeof e) (str "number") : t)
-            let rec not (({ expression_desc; comment } as e) : t) =
-              (match expression_desc with
-               | Bin (EqEqEq ,e0,e1) ->
-                   { expression_desc = (Bin (NotEqEq, e0, e1)); comment }
-               | Bin (NotEqEq ,e0,e1) ->
-                   { expression_desc = (Bin (EqEqEq, e0, e1)); comment }
-               | Bin (Lt ,a,b) ->
-                   { e with expression_desc = (Bin (Ge, a, b)) }
-               | Bin (Ge ,a,b) ->
-                   { e with expression_desc = (Bin (Lt, a, b)) }
-               | Bin (Le ,a,b) ->
-                   { e with expression_desc = (Bin (Gt, a, b)) }
-               | Bin (Gt ,a,b) ->
-                   { e with expression_desc = (Bin (Le, a, b)) }
-               | Number (Int { i;_}) -> if i != 0 then false_ else true_
-               | Int_of_boolean e -> not e
-               | Not e -> e
-               | x -> { expression_desc = (Not e); comment = None } : 
-              t)
-            let new_ ?comment  e0 args =
-              ({ expression_desc = (New (e0, (Some args))); comment } : 
-              t)
-            let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
-              (str ~pure:false ~comment (Lam_util.string_of_lambda lam) : 
-              t)[@@ocaml.doc " cannot use [boolean] in js   "]
-            let unknown_primitive ?(comment= "unknown") 
-              (p : Lambda.primitive) =
-              (str ~pure:false ~comment (Lam_util.string_of_primitive p) : 
-              t)
-            let unit () = int ~comment:"()" 0
-            let undefined ?comment  () = js_global ?comment "undefined"
-            let math ?comment  v args =
-              ({ comment; expression_desc = (Math (v, args)) } : t)
-            let inc ?comment  (e : t) =
-              match e with
-              | { expression_desc = Number (Int ({ i;_} as v));_} ->
-                  {
-                    e with
-                    expression_desc = (Number (Int { v with i = (i + 1) }))
-                  }
-              | _ -> bin ?comment Plus e (int 1)
             let rec and_ ?comment  (e1 : t) (e2 : t) =
               match ((e1.expression_desc), (e2.expression_desc)) with
               | (Int_of_boolean e1,Int_of_boolean e2) -> and_ ?comment e1 e2
@@ -3058,6 +3194,125 @@ include
                     (Or ,_,{ expression_desc = Var j;_})))
                   when Js_op_util.same_vident i j -> to_ocaml_boolean e2
               | (_,_) -> to_ocaml_boolean @@ (bin ?comment Or e1 e2)
+            let rec not (({ expression_desc; comment } as e) : t) =
+              (match expression_desc with
+               | Bin (EqEqEq ,e0,e1) ->
+                   { expression_desc = (Bin (NotEqEq, e0, e1)); comment }
+               | Bin (NotEqEq ,e0,e1) ->
+                   { expression_desc = (Bin (EqEqEq, e0, e1)); comment }
+               | Bin (Lt ,a,b) ->
+                   { e with expression_desc = (Bin (Ge, a, b)) }
+               | Bin (Ge ,a,b) ->
+                   { e with expression_desc = (Bin (Lt, a, b)) }
+               | Bin (Le ,a,b) ->
+                   { e with expression_desc = (Bin (Gt, a, b)) }
+               | Bin (Gt ,a,b) ->
+                   { e with expression_desc = (Bin (Le, a, b)) }
+               | Number (Int { i;_}) -> if i != 0 then false_ else true_
+               | Int_of_boolean e -> not e
+               | Not e -> e
+               | x -> { expression_desc = (Not e); comment = None } : 
+              t)
+            let rec econd ?comment  (b : t) (t : t) (f : t) =
+              (match ((b.expression_desc), (t.expression_desc),
+                       (f.expression_desc))
+               with
+               | (Number (Int { i = 0;_}),_,_) -> f
+               | ((Number _|Array _),_,_) -> t
+               | ((Bin
+                   (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},x)
+                   |Bin
+                   (EqEqEq ,x,{ expression_desc = Number (Int { i = 0;_});_})),_,_)
+                   -> econd ?comment x f t
+               | (Bin
+                  (Ge
+                   ,{
+                      expression_desc =
+                        (String_length _|Array_length _|Bytes_length _
+                         |Function_length _);_},{
+                                                  expression_desc = Number
+                                                    (Int { i = 0;_})
+                                                  }),_,_)
+                   -> f
+               | (Bin
+                  (Gt
+                   ,({
+                       expression_desc =
+                         (String_length _|Array_length _|Bytes_length _
+                          |Function_length _);_}
+                       as pred),{ expression_desc = Number (Int { i = 0 }) }),_,_)
+                   -> econd ?comment pred t f
+               | (_,Cond (p1,branch_code0,branch_code1),_) when
+                   Js_analyzer.eq_expression branch_code1 f ->
+                   econd (and_ b p1) branch_code0 f
+               | (_,Cond (p1,branch_code0,branch_code1),_) when
+                   Js_analyzer.eq_expression branch_code0 f ->
+                   econd (and_ b (not p1)) branch_code1 f
+               | (_,_,Cond (p1',branch_code0,branch_code1)) when
+                   Js_analyzer.eq_expression t branch_code0 ->
+                   econd (or_ b p1') t branch_code1
+               | (_,_,Cond (p1',branch_code0,branch_code1)) when
+                   Js_analyzer.eq_expression t branch_code1 ->
+                   econd (or_ b (not p1')) t branch_code0
+               | (Not e,_,_) -> econd ?comment e f t
+               | (Int_of_boolean b,_,_) -> econd ?comment b t f
+               | _ ->
+                   if Js_analyzer.eq_expression t f
+                   then (if no_side_effect b then t else seq ?comment b t)
+                   else { expression_desc = (Cond (b, t, f)); comment } : 
+              t)
+            let rec float_equal ?comment  (e0 : t) (e1 : t) =
+              (match ((e0.expression_desc), (e1.expression_desc)) with
+               | (Number (Int { i = i0;_}),Number (Int { i = i1 })) ->
+                   bool (i0 = i1)
+               | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
+                   f0 = f1 -> true_
+               | _ ->
+                   to_ocaml_boolean
+                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+              t)
+            let int_equal = float_equal
+            let rec string_equal ?comment  (e0 : t) (e1 : t) =
+              (match ((e0.expression_desc), (e1.expression_desc)) with
+               | (Str (_,a0),Str (_,b0)) -> bool (Ext_string.equal a0 b0)
+               | (_,_) ->
+                   to_ocaml_boolean
+                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+              t)
+            let arr ?comment  mt es =
+              ({ expression_desc = (Array (es, mt)); comment } : t)
+            let uninitialized_array ?comment  (e : t) =
+              (match e.expression_desc with
+               | Number (Int { i = 0;_}) -> arr ?comment NA []
+               | _ -> { comment; expression_desc = (Array_of_size e) } : 
+              t)
+            let typeof ?comment  (e : t) =
+              (match e.expression_desc with
+               | Number _|Array_length _|String_length _ ->
+                   str ?comment "number"
+               | Str _ -> str ?comment "string"
+               | Array _ -> str ?comment "object"
+               | _ -> { expression_desc = (Typeof e); comment } : t)
+            let is_type_number ?comment  (e : t) =
+              (string_equal ?comment (typeof e) (str "number") : t)
+            let new_ ?comment  e0 args =
+              ({ expression_desc = (New (e0, (Some args))); comment } : 
+              t)
+            let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
+              (str ~pure:false ~comment (Lam_util.string_of_lambda lam) : 
+              t)[@@ocaml.doc " cannot use [boolean] in js   "]
+            let unit () = int ~comment:"()" 0
+            let undefined ?comment  () = js_global ?comment "undefined"
+            let math ?comment  v args =
+              ({ comment; expression_desc = (Math (v, args)) } : t)
+            let inc ?comment  (e : t) =
+              match e with
+              | { expression_desc = Number (Int ({ i;_} as v));_} ->
+                  {
+                    e with
+                    expression_desc = (Number (Int { v with i = (i + 1) }))
+                  }
+              | _ -> bin ?comment Plus e (int 1)
             let string_of_small_int_array ?comment  xs =
               ({ expression_desc = (String_of_small_int_array xs); comment } : 
               t)
@@ -3261,10 +3516,7 @@ include
                | _ -> { statement_desc = (Exp e); comment } : t)
             let declare_variable ?comment  ?ident_info  ~kind  (v : Ident.t)
               =
-              (let property: J.property =
-                 match (kind : Lambda.let_kind) with
-                 | Alias |Strict |StrictOpt  -> Immutable
-                 | Variable  -> Mutable in
+              (let property: J.property = kind in
                let ident_info: J.ident_info =
                  match ident_info with
                  | None  -> { used_stats = NA }
@@ -3276,10 +3528,7 @@ include
                  comment
                } : t)
             let define ?comment  ?ident_info  ~kind  (v : Ident.t) exp =
-              (let property: J.property =
-                 match (kind : Lambda.let_kind) with
-                 | Alias |Strict |StrictOpt  -> Immutable
-                 | Variable  -> Mutable in
+              (let property: J.property = kind in
                let ident_info: J.ident_info =
                  match ident_info with
                  | None  -> { used_stats = NA }
@@ -3469,14 +3718,14 @@ include
                | (false ,Some (kind,did)) ->
                    block ((declare_variable ~kind did) ::
                      (List.rev if_block)) : t)
-            let const_variable ?comment  ?exp  (v : Ident.t) =
+            let alias_variable ?comment  ?exp  (v : Ident.t) =
               ({
                  statement_desc =
                    (Variable
                       {
                         ident = v;
                         value = exp;
-                        property = Immutable;
+                        property = Alias;
                         ident_info = { used_stats = NA }
                       });
                  comment
@@ -3499,7 +3748,7 @@ include
                       {
                         ident = id;
                         value = (Some (Exp.unit ()));
-                        property = Mutable;
+                        property = Variable;
                         ident_info = { used_stats = NA }
                       });
                  comment
@@ -3534,9 +3783,1310 @@ include
               (exp @@
                  (Exp.str ~comment ~pure:false
                     (Lam_util.string_of_lambda lam)) : t)
-            let continue ?comment  label =
+            let continue ?comment  ?(label= "")  unit =
               ({ statement_desc = (J.Continue label); comment } : t)
           end
+      end 
+    module Js_number :
+      sig
+        type t = float
+        val to_string : t -> string
+        val caml_float_literal_to_js_string : string -> string
+      end =
+      struct
+        type t = float
+        let to_string v =
+          if v = infinity
+          then "Infinity"
+          else
+            if v = neg_infinity
+            then "-Infinity"
+            else
+              if v <> v
+              then "NaN"
+              else
+                (let vint = int_of_float v in
+                 if (float_of_int vint) = v
+                 then string_of_int vint
+                 else
+                   (let s1 = Printf.sprintf "%.12g" v in
+                    if v = (float_of_string s1)
+                    then s1
+                    else
+                      (let s2 = Printf.sprintf "%.15g" v in
+                       if v = (float_of_string s2)
+                       then s2
+                       else Printf.sprintf "%.18g" v)))
+        let caml_float_literal_to_js_string v =
+          let len = String.length v in
+          if
+            (len >= 2) &&
+              (((v.[0]) = '0') && (((v.[1]) = 'x') || ((v.[1]) = 'X')))
+          then assert false
+          else
+            (let rec aux buf i =
+               if i >= len
+               then buf
+               else
+                 (let x = v.[i] in
+                  if x = '_'
+                  then aux buf (i + 1)
+                  else
+                    if (x = '.') && (i = (len - 1))
+                    then buf
+                    else (Buffer.add_char buf x; aux buf (i + 1))) in
+             Buffer.contents (aux (Buffer.create len) 0))
+      end 
+    module Int_map : sig include (Map.S with type  key =  int) end =
+      struct
+        include
+          Map.Make(struct
+                     type t = int
+                     let compare (x : int) y = Pervasives.compare x y
+                   end)
+      end 
+    module Ext_pp_scope :
+      sig
+        [@@@ocaml.text " Scope type to improve identifier name printing\n "]
+        [@@@ocaml.text
+          " Defines scope type [t], so that the pretty printer would print more beautiful code: \n    \n    print [identifer] instead of [identifier$1234] when it can\n "]
+        type t
+        val empty : t
+        val add_ident : Ident.t -> t -> (int* t)
+        val sub_scope : t -> Ident_set.t -> t
+        val merge : Ident_set.t -> t -> t
+        val print : Format.formatter -> t -> unit
+      end =
+      struct
+        type t = int Int_map.t String_map.t
+        let empty = String_map.empty
+        let rec print fmt v =
+          Format.fprintf fmt "@[<v>{";
+          String_map.iter
+            (fun k  ->
+               fun m  -> Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m)
+            v;
+          Format.fprintf fmt "}@]"
+        and print_int_map fmt m =
+          Int_map.iter (fun k  -> fun v  -> Format.fprintf fmt "%d - %d" k v)
+            m
+        let add_ident (id : Ident.t) (cxt : t) =
+          (match String_map.find id.name cxt with
+           | exception Not_found  ->
+               (0,
+                 (String_map.add id.name
+                    (let open Int_map in add id.stamp 0 empty) cxt))
+           | imap ->
+               (match Int_map.find id.stamp imap with
+                | exception Not_found  ->
+                    let v = Int_map.cardinal imap in
+                    (v,
+                      (String_map.add id.name (Int_map.add id.stamp v imap)
+                         cxt))
+                | i -> (i, cxt)) : (int* t))
+        let of_list lst cxt =
+          List.fold_left (fun scope  -> fun i  -> snd (add_ident i scope))
+            cxt lst
+        let merge set cxt =
+          Ident_set.fold
+            (fun ident  -> fun acc  -> snd (add_ident ident acc)) set cxt
+        let sub_scope (scope : t) ident_collection =
+          (let cxt = empty in
+           Ident_set.fold
+             (fun (i : Ident.t)  ->
+                fun acc  ->
+                  match String_map.find i.name scope with
+                  | exception Not_found  -> assert false
+                  | imap ->
+                      (match String_map.find i.name acc with
+                       | exception Not_found  ->
+                           String_map.add i.name imap acc
+                       | _ -> acc)) ident_collection cxt : t)
+      end 
+    module Ext_pervasives :
+      sig
+        [@@@ocaml.text
+          " Extension to standard library [Pervavives] module, safe to open \n  "]
+        external reraise : exn -> 'a = "%reraise"
+        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+      end =
+      struct
+        external reraise : exn -> 'a = "%reraise"
+        let finally v f action =
+          match f v with
+          | exception e -> (action v; reraise e)
+          | e -> (action v; e)
+        let with_file_as_chan filename f =
+          let chan = open_out filename in finally chan f close_out
+        let with_file_as_pp filename f =
+          let chan = open_out filename in
+          finally chan
+            (fun chan  ->
+               let fmt = Format.formatter_of_out_channel chan in
+               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
+      end 
+    module Ext_pp :
+      sig
+        type t[@@ocaml.doc
+                " A simple pretty printer\n    \n    Advantage compared with [Format], \n    [P.newline] does not screw the layout, have better control when do a newline (sicne JS has ASI)\n    Easy to tweak\n\n    {ul \n    {- be a little smarter}\n    {- buffer the last line, so that  we can do a smart newline, when it's really safe to do so}\n    }\n"]
+        val indent_length : int
+        val string : t -> string -> unit
+        val space : t -> unit
+        val nspace : t -> int -> unit
+        val group : t -> int -> (unit -> 'a) -> 'a[@@ocaml.doc
+                                                    " [group] will record current indentation \n    and indent futher\n "]
+        val vgroup : t -> int -> (unit -> 'a) -> 'a
+        val paren : t -> (unit -> 'a) -> 'a
+        val brace : t -> (unit -> 'a) -> 'a
+        val paren_group : t -> int -> (unit -> 'a) -> 'a
+        val paren_vgroup : t -> int -> (unit -> 'a) -> 'a
+        val brace_group : t -> int -> (unit -> 'a) -> 'a
+        val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
+        val bracket_group : t -> int -> (unit -> 'a) -> 'a
+        val bracket_vgroup : t -> int -> (unit -> 'a) -> 'a
+        val newline : t -> unit
+        val force_newline : t -> unit[@@ocaml.doc
+                                       " [force_newline] Always print a newline "]
+        val from_channel : out_channel -> t
+        val from_buffer : Buffer.t -> t
+        val flush : t -> unit -> unit
+      end =
+      struct
+        module L = struct let space = " "
+                          let indent_str = "  " end
+        let indent_length = String.length L.indent_str
+        type t =
+          {
+          output_string: string -> unit;
+          output_char: char -> unit;
+          flush: unit -> unit;
+          mutable indent_level: int;
+          mutable last_new_line: bool;}
+        let from_channel chan =
+          {
+            output_string = (fun s  -> output_string chan s);
+            output_char = (fun c  -> output_char chan c);
+            flush = (fun _  -> flush chan);
+            indent_level = 0;
+            last_new_line = false
+          }
+        let from_buffer buf =
+          {
+            output_string = (fun s  -> Buffer.add_string buf s);
+            output_char = (fun c  -> Buffer.add_char buf c);
+            flush = (fun _  -> ());
+            indent_level = 0;
+            last_new_line = false
+          }
+        let string t s = t.output_string s; t.last_new_line <- false
+        let newline t =
+          if not t.last_new_line
+          then
+            (t.output_char '\n';
+             for i = 0 to t.indent_level - 1 do t.output_string L.indent_str
+             done;
+             t.last_new_line <- true)
+        let force_newline t =
+          t.output_char '\n';
+          for i = 0 to t.indent_level - 1 do t.output_string L.indent_str
+          done
+        let space t = string t L.space
+        let nspace t n = string t (String.make n ' ')
+        let group t i action =
+          if i = 0
+          then action ()
+          else
+            (let old = t.indent_level in
+             t.indent_level <- t.indent_level + i;
+             Ext_pervasives.finally () action
+               (fun _  -> t.indent_level <- old))
+        let vgroup = group
+        let paren t action =
+          string t "("; (let v = action () in string t ")"; v)
+        let brace fmt u = string fmt "{"; (let v = u () in string fmt "}"; v)
+        let bracket fmt u =
+          string fmt "["; (let v = u () in string fmt "]"; v)
+        let brace_vgroup st n action =
+          string st "{";
+          (let v =
+             vgroup st n (fun _  -> newline st; (let v = action () in v)) in
+           force_newline st; string st "}"; v)
+        let bracket_vgroup st n action =
+          string st "[";
+          (let v =
+             vgroup st n (fun _  -> newline st; (let v = action () in v)) in
+           force_newline st; string st "]"; v)
+        let bracket_group st n action =
+          group st n (fun _  -> bracket st action)
+        let paren_vgroup st n action =
+          string st "(";
+          (let v =
+             group st n (fun _  -> newline st; (let v = action () in v)) in
+           newline st; string st ")"; v)
+        let paren_group st n action = group st n (fun _  -> paren st action)
+        let brace_group st n action = group st n (fun _  -> brace st action)
+        let indent t n = t.indent_level <- t.indent_level + n
+        let flush t () = t.flush ()
+      end 
+    module Js_dump :
+      sig
+        [@@@ocaml.text " Print JS IR to vanilla Javascript code "]
+        val dump_deps_program : J.deps_program -> out_channel -> unit
+        val string_of_block : J.block -> string[@@ocaml.doc
+                                                 " 2 functions Only used for debugging "]
+        val dump_program : J.program -> out_channel -> unit
+      end =
+      struct
+        module P = Ext_pp
+        module E = Js_helper.Exp
+        module S = Js_helper.Stmt
+        module L =
+          struct
+            let function_ = "function"
+            let var = "var"
+            let return = "return"
+            let eq = "="
+            let require = "require"
+            let exports = "exports"
+            let dot = "."
+            let comma = ","
+            let colon = ":"
+            let throw = "throw"
+            let default = "default"
+            let length = "length"
+            let char_code_at = "charCodeAt"
+            let new_ = "new"
+            let array = "Array"
+            let question = "?"
+            let plusplus = "++"
+            let minusminus = "--"
+            let semi = ";"
+            let else_ = "else"
+            let if_ = "if"
+            let while_ = "while"
+            let empty_block = "empty_block"
+            let start_block = "start_block"
+            let end_block = "end_block"
+            let json = "JSON"
+            let stringify = "stringify"
+            let console = "console"
+            let define = "define"
+            let break = "break"
+            let strict_directive = "'use strict';"
+            let curry = "curry"
+          end
+        let return_indent = (String.length L.return) / Ext_pp.indent_length
+        let throw_indent = (String.length L.throw) / Ext_pp.indent_length
+        let semi f = P.string f L.semi
+        let (op_prec,op_str) = let open Js_op_util in (op_prec, op_str)
+        let best_string_quote s =
+          let simple = ref 0 in
+          let double = ref 0 in
+          for i = 0 to (String.length s) - 1 do
+            (match s.[i] with
+             | '\'' -> incr simple
+             | '"' -> incr double
+             | _ -> ())
+          done;
+          if (!simple) < (!double) then '\'' else '"'
+        let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t) =
+          if Ext_ident.is_js id
+          then ((id.name), cxt)
+          else
+            (let name = Ext_ident.convert id.name in
+             let (i,new_cxt) = Ext_pp_scope.add_ident id cxt in
+             ((if i == 0 then name else Printf.sprintf "%s$%d" name i),
+               new_cxt))[@@ocaml.doc
+                          "\n   same as {!Js_dump.ident} except it generates a string instead of doing the printing\n"]
+        let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) =
+          (let (str,cxt) = str_of_ident cxt id in P.string f str; cxt : 
+          Ext_pp_scope.t)
+        let pp_string f ?(quote= '"')  ?(utf= false)  s =
+          let array_str1 =
+            Array.init 256 (fun i  -> String.make 1 (Char.chr i)) in
+          let array_conv =
+            Array.init 16 (fun i  -> String.make 1 ("0123456789abcdef".[i])) in
+          let quote_s = String.make 1 quote in
+          P.string f quote_s;
+          (let l = String.length s in
+           for i = 0 to l - 1 do
+             (let c = s.[i] in
+              match c with
+              | '\000' when
+                  (i = (l - 1)) ||
+                    (((s.[i + 1]) < '0') || ((s.[i + 1]) > '9'))
+                  -> P.string f "\\0"
+              | '\b' -> P.string f "\\b"
+              | '\t' -> P.string f "\\t"
+              | '\n' -> P.string f "\\n"
+              | '\012' -> P.string f "\\f"
+              | '\\' when not utf -> P.string f "\\\\"
+              | '\r' -> P.string f "\\r"
+              | '\000'..'\031'|'\127' ->
+                  let c = Char.code c in
+                  (P.string f "\\x";
+                   P.string f (Array.unsafe_get array_conv (c lsr 4));
+                   P.string f (Array.unsafe_get array_conv (c land 15)))
+              | '\128'..'\255' when not utf ->
+                  let c = Char.code c in
+                  (P.string f "\\x";
+                   P.string f (Array.unsafe_get array_conv (c lsr 4));
+                   P.string f (Array.unsafe_get array_conv (c land 15)))
+              | _ ->
+                  if c = quote
+                  then
+                    (P.string f "\\";
+                     P.string f (Array.unsafe_get array_str1 (Char.code c)))
+                  else P.string f (Array.unsafe_get array_str1 (Char.code c)))
+           done;
+           P.string f quote_s)
+        let pp_quote_string f s =
+          pp_string f ~utf:false ~quote:(best_string_quote s) s
+        let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list)
+          (b : J.block) (env : Js_fun_env.t) =
+          let ipp_ident cxt f id un_used =
+            if un_used
+            then ident cxt f (Ext_ident.make_unused ())
+            else ident cxt f id in
+          let rec formal_parameter_list cxt (f : P.t) l =
+            let rec aux i cxt l =
+              match l with
+              | [] -> cxt
+              | id::[] -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
+              | id::r ->
+                  let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
+                  (P.string f L.comma; P.space f; aux (i + 1) cxt r) in
+            match l with
+            | [] -> cxt
+            | i::[] ->
+                if Js_fun_env.get_unused env 0 then cxt else ident cxt f i
+            | _ -> aux 0 cxt l in
+          let rec aux cxt f ls =
+            match ls with
+            | [] -> cxt
+            | x::[] -> ident cxt f x
+            | y::ys ->
+                let cxt = ident cxt f y in (P.string f L.comma; aux cxt f ys) in
+          let set_env =
+            match name with
+            | None  -> Js_fun_env.get_bound env
+            | Some id -> Ident_set.add id (Js_fun_env.get_bound env) in
+          let outer_cxt = Ext_pp_scope.merge set_env cxt in
+          let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
+          (let action return =
+             if return then (P.string f L.return; P.space f) else ();
+             P.string f L.function_;
+             P.space f;
+             (match name with
+              | None  -> ()
+              | Some x -> ignore (ident inner_cxt f x));
+             (let body_cxt =
+                P.paren_group f 1
+                  (fun _  -> formal_parameter_list inner_cxt f l) in
+              P.space f;
+              ignore @@
+                (P.brace_vgroup f 1
+                   (fun _  -> statement_list false body_cxt f b))) in
+           let lexical = Js_fun_env.get_lexical_scope env in
+           let enclose action lexical return =
+             if Ident_set.is_empty lexical
+             then action return
+             else
+               (let lexical = Ident_set.elements lexical in
+                if return then (P.string f L.return; P.space f) else ();
+                P.string f "(";
+                P.string f L.function_;
+                P.string f "(";
+                ignore @@ (aux inner_cxt f lexical);
+                P.string f ")";
+                P.brace_vgroup f 0 (fun _  -> action true);
+                P.string f "(";
+                ignore @@ (aux inner_cxt f lexical);
+                P.string f ")";
+                P.string f ")") in
+           enclose action lexical return);
+          outer_cxt
+        and output_one :
+          'a . _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _=
+          fun cxt  ->
+            fun f  ->
+              fun pp_cond  ->
+                fun ({ case = e; body = (sl,break) } : _ J.case_clause)  ->
+                  let cxt =
+                    (P.group f 1) @@
+                      (fun _  ->
+                         (P.group f 1) @@
+                           ((fun _  ->
+                               P.string f "case ";
+                               pp_cond f e;
+                               P.space f;
+                               P.string f L.colon));
+                         P.space f;
+                         (P.group f 1) @@
+                           ((fun _  ->
+                               let cxt =
+                                 match sl with
+                                 | [] -> cxt
+                                 | _ ->
+                                     (P.newline f;
+                                      statement_list false cxt f sl) in
+                               if break
+                               then (P.newline f; P.string f L.break; semi f);
+                               cxt))) in
+                  P.newline f; cxt
+        and loop :
+          'a .
+            Ext_pp_scope.t ->
+              P.t ->
+                (P.t -> 'a -> unit) ->
+                  'a J.case_clause list -> Ext_pp_scope.t=
+          fun cxt  ->
+            fun f  ->
+              fun pp_cond  ->
+                fun cases  ->
+                  match cases with
+                  | [] -> cxt
+                  | x::[] -> output_one cxt f pp_cond x
+                  | x::xs ->
+                      let cxt = output_one cxt f pp_cond x in
+                      loop cxt f pp_cond xs
+        and vident cxt f (v : J.vident) =
+          match v with
+          | Id v|Qualified (v,_,None ) -> ident cxt f v
+          | Qualified (id,_,Some name) ->
+              let cxt = ident cxt f id in
+              (P.string f L.dot; P.string f (Ext_ident.convert name); cxt)
+        and expression l cxt f (exp : J.expression) =
+          (pp_comment_option f exp.comment;
+           expression_desc cxt l f exp.expression_desc : Ext_pp_scope.t)
+        and expression_desc cxt (l : int) f x =
+          (match x with
+           | Var v -> vident cxt f v
+           | Seq (e1,e2) ->
+               let action () =
+                 let cxt = expression 0 cxt f e1 in
+                 P.string f L.comma; P.space f; expression 0 cxt f e2 in
+               if l > 0 then P.paren_group f 1 action else action ()
+           | Fun (l,b,env) -> pp_function cxt f false l b env
+           | Call (e,el,info) ->
+               let action () =
+                 P.group f 1
+                   (fun _  ->
+                      match (info, el) with
+                      | ({ arity = Full  },_)|(_,[]) ->
+                          let cxt = expression 15 cxt f e in
+                          P.paren_group f 1 (fun _  -> arguments cxt f el)
+                      | (_,_) ->
+                          (P.string f Js_config.curry;
+                           P.string f L.dot;
+                           (let len = List.length el in
+                            if (1 <= len) && (len <= 8)
+                            then
+                              (P.string f (Printf.sprintf "app%d" len);
+                               P.paren_group f 1
+                                 (fun _  -> arguments cxt f (e :: el)))
+                            else
+                              (P.string f L.curry;
+                               P.paren_group f 1
+                                 (fun _  ->
+                                    arguments cxt f [e; E.arr Mutable el]))))) in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Tag_ml_obj e ->
+               P.group f 1
+                 (fun _  ->
+                    P.string f "Object.defineProperty";
+                    P.paren_group f 1
+                      (fun _  ->
+                         let cxt = expression 1 cxt f e in
+                         P.string f L.comma;
+                         P.space f;
+                         P.string f {|"##ml"|};
+                         P.string f L.comma;
+                         P.string f {|{"value" : true, "writable" : false}|};
+                         cxt))
+           | FlatCall (e,el) ->
+               P.group f 1
+                 (fun _  ->
+                    let cxt = expression 15 cxt f e in
+                    P.string f ".apply";
+                    P.paren_group f 1
+                      (fun _  ->
+                         P.string f "null";
+                         P.string f L.comma;
+                         P.space f;
+                         expression 1 cxt f el))
+           | String_of_small_int_array e ->
+               let action () =
+                 P.group f 1
+                   (fun _  ->
+                      P.string f "String.fromCharCode.apply";
+                      P.paren_group f 1
+                        (fun _  ->
+                           P.string f "null";
+                           P.string f L.comma;
+                           expression 1 cxt f e)) in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Array_append (e,el) ->
+               P.group f 1
+                 (fun _  ->
+                    let cxt = expression 15 cxt f e in
+                    P.string f ".concat";
+                    P.paren_group f 1 (fun _  -> arguments cxt f [el]))
+           | Array_copy e ->
+               P.group f 1
+                 (fun _  ->
+                    let cxt = expression 15 cxt f e in
+                    P.string f ".slice"; P.string f "()"; cxt)
+           | Dump (level,el) ->
+               let obj =
+                 match level with
+                 | Log  -> "log"
+                 | Info  -> "info"
+                 | Warn  -> "warn"
+                 | Error  -> "error" in
+               P.group f 1
+                 (fun _  ->
+                    P.string f L.console;
+                    P.string f L.dot;
+                    P.string f obj;
+                    P.paren_group f 1 (fun _  -> arguments cxt f el))
+           | Json_stringify e ->
+               P.group f 1
+                 (fun _  ->
+                    P.string f L.json;
+                    P.string f L.dot;
+                    P.string f L.stringify;
+                    P.paren_group f 1 (fun _  -> expression 0 cxt f e))
+           | Char_to_int e ->
+               (match e.expression_desc with
+                | String_access (a,b) ->
+                    P.group f 1
+                      (fun _  ->
+                         let cxt = expression 15 cxt f a in
+                         P.string f L.dot;
+                         P.string f L.char_code_at;
+                         P.paren_group f 1 (fun _  -> expression 0 cxt f b))
+                | _ ->
+                    P.group f 1
+                      (fun _  ->
+                         let cxt = expression 15 cxt f e in
+                         P.string f L.dot;
+                         P.string f L.char_code_at;
+                         P.string f "(0)";
+                         cxt))
+           | Char_of_int e ->
+               P.group f 1
+                 (fun _  ->
+                    P.string f "String";
+                    P.string f L.dot;
+                    P.string f "fromCharCode";
+                    P.paren_group f 1 (fun _  -> arguments cxt f [e]))
+           | Math (name,el) ->
+               P.group f 1
+                 (fun _  ->
+                    P.string f "Math";
+                    P.string f L.dot;
+                    P.string f name;
+                    P.paren_group f 1 (fun _  -> arguments cxt f el))
+           | Str (_,s) ->
+               let quote = best_string_quote s in (pp_string f ~quote s; cxt)
+           | Number v ->
+               let s =
+                 match v with
+                 | Float { f = v } ->
+                     Js_number.caml_float_literal_to_js_string v
+                 | Int { i = v;_} -> string_of_int v in
+               let need_paren =
+                 if (s.[0]) = '-'
+                 then l > 13
+                 else (l = 15) && (((s.[0]) <> 'I') && ((s.[0]) <> 'N')) in
+               let action _ = P.string f s in
+               (if need_paren then P.paren f action else action (); cxt)
+           | Int_of_boolean e ->
+               let action () =
+                 (P.group f 0) @@
+                   (fun _  -> P.string f "+"; expression 13 cxt f e) in
+               if l > 12 then P.paren_group f 1 action else action ()
+           | Not e ->
+               let action () = P.string f "!"; expression 13 cxt f e in
+               if l > 13 then P.paren_group f 1 action else action ()
+           | Typeof e ->
+               (P.string f "typeof"; P.space f; expression 13 cxt f e)
+           | Bin
+               (Eq
+                ,{ expression_desc = Var i },{
+                                               expression_desc =
+                                                 (Bin
+                                                  ((Plus  as op),{
+                                                                   expression_desc
+                                                                    = Var j
+                                                                   },delta)
+                                                  |Bin
+                                                  ((Plus  as op),delta,
+                                                   { expression_desc = Var j
+                                                     })|Bin
+                                                  ((Minus  as op),{
+                                                                    expression_desc
+                                                                    = Var j },delta))
+                                               })
+               when Js_op_util.same_vident i j ->
+               (match (delta, op) with
+                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
+                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
+                    -> (P.string f L.plusplus; P.space f; vident cxt f i)
+                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
+                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
+                    (P.string f L.minusminus; P.space f; vident cxt f i)
+                | (_,_) ->
+                    let cxt = vident cxt f i in
+                    (P.space f;
+                     if op = Plus then P.string f "+=" else P.string f "-=";
+                     P.space f;
+                     expression 13 cxt f delta))
+           | Bin
+               (Eq
+                ,{
+                   expression_desc = Access
+                     ({ expression_desc = Var i;_},{
+                                                     expression_desc = Number
+                                                       (Int { i = k0 })
+                                                     })
+                   },{
+                       expression_desc =
+                         (Bin
+                          ((Plus  as op),{
+                                           expression_desc = Access
+                                             ({ expression_desc = Var j;_},
+                                              {
+                                                expression_desc = Number (Int
+                                                  { i = k1 })
+                                                });_},delta)|Bin
+                          ((Plus  as op),delta,{
+                                                 expression_desc = Access
+                                                   ({
+                                                      expression_desc = Var j;_},
+                                                    {
+                                                      expression_desc =
+                                                        Number (Int
+                                                        { i = k1 })
+                                                      });_})|Bin
+                          ((Minus  as op),{
+                                            expression_desc = Access
+                                              ({ expression_desc = Var j;_},
+                                               {
+                                                 expression_desc = Number
+                                                   (Int { i = k1 })
+                                                 });_},delta))
+                       })
+               when (k0 = k1) && (Js_op_util.same_vident i j) ->
+               let aux cxt f vid i =
+                 let cxt = vident cxt f vid in
+                 P.string f "[";
+                 P.string f (string_of_int i);
+                 P.string f "]";
+                 cxt in
+               (match (delta, op) with
+                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
+                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
+                    -> (P.string f L.plusplus; P.space f; aux cxt f i k0)
+                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
+                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
+                    (P.string f L.minusminus; P.space f; aux cxt f i k0)
+                | (_,_) ->
+                    let cxt = aux cxt f i k0 in
+                    (P.space f;
+                     if op = Plus then P.string f "+=" else P.string f "-=";
+                     P.space f;
+                     expression 13 cxt f delta))
+           | Anything_to_string e ->
+               expression_desc cxt l f
+                 (Bin
+                    (Plus,
+                      { expression_desc = (Str (true, "")); comment = None },
+                      e))
+           | Bin
+               (Minus
+                ,{
+                   expression_desc = Number
+                     (Int { i = 0;_}|Float { f = "0." })
+                   },e)
+               ->
+               let action () = P.string f "-"; expression 13 cxt f e in
+               if l > 13 then P.paren_group f 1 action else action ()
+           | Bin (op,e1,e2) ->
+               let (out,lft,rght) = op_prec op in
+               let need_paren =
+                 (l > out) ||
+                   (match op with | Lsl |Lsr |Asr  -> true | _ -> false) in
+               let action () =
+                 let cxt = expression lft cxt f e1 in
+                 P.space f;
+                 P.string f (op_str op);
+                 P.space f;
+                 expression rght cxt f e2 in
+               if need_paren then P.paren_group f 1 action else action ()
+           | String_append (e1,e2) ->
+               let op: Js_op.binop = Plus in
+               let (out,lft,rght) = op_prec op in
+               let need_paren =
+                 (l > out) ||
+                   (match op with | Lsl |Lsr |Asr  -> true | _ -> false) in
+               let action () =
+                 let cxt = expression lft cxt f e1 in
+                 P.space f;
+                 P.string f "+";
+                 P.space f;
+                 expression rght cxt f e2 in
+               if need_paren then P.paren_group f 1 action else action ()
+           | Array (el,_) ->
+               (match el with
+                | []|_::[] ->
+                    (P.bracket_group f 1) @@
+                      ((fun _  -> array_element_list cxt f el))
+                | _ ->
+                    (P.bracket_vgroup f 1) @@
+                      ((fun _  -> array_element_list cxt f el)))
+           | Access (e,e')|String_access (e,e') ->
+               let action () =
+                 (P.group f 1) @@
+                   (fun _  ->
+                      let cxt = expression 15 cxt f e in
+                      (P.bracket_group f 1) @@
+                        (fun _  -> expression 0 cxt f e')) in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Array_length e|String_length e|Bytes_length e|Function_length e
+               ->
+               let action () =
+                 let cxt = expression 15 cxt f e in
+                 P.string f L.dot; P.string f L.length; cxt in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Dot (e,nm,normal) ->
+               if normal
+               then
+                 let action () =
+                   let cxt = expression 15 cxt f e in
+                   P.string f L.dot; P.string f (Ext_ident.convert nm); cxt in
+                 (if l > 15 then P.paren_group f 1 action else action ())
+               else
+                 (let action () =
+                    (P.group f 1) @@
+                      (fun _  ->
+                         let cxt = expression 15 cxt f e in
+                         (P.bracket_group f 1) @@
+                           ((fun _  ->
+                               pp_string f ~quote:(best_string_quote nm) nm));
+                         cxt) in
+                  if l > 15 then P.paren_group f 1 action else action ())
+           | New (e,el) ->
+               let action () =
+                 (P.group f 1) @@
+                   (fun _  ->
+                      P.string f L.new_;
+                      P.space f;
+                      (let cxt = expression 16 cxt f e in
+                       (P.paren_group f 1) @@
+                         (fun _  ->
+                            match el with
+                            | Some el -> arguments cxt f el
+                            | None  -> cxt))) in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Array_of_size e ->
+               let action () =
+                 (P.group f 1) @@
+                   (fun _  ->
+                      P.string f L.new_;
+                      P.space f;
+                      P.string f L.array;
+                      (P.paren_group f 1) @@
+                        ((fun _  -> expression 0 cxt f e))) in
+               if l > 15 then P.paren_group f 1 action else action ()
+           | Cond (e,e1,e2) ->
+               let action () =
+                 let cxt = expression 3 cxt f e in
+                 P.space f;
+                 P.string f L.question;
+                 P.space f;
+                 (let cxt =
+                    (P.group f 1) @@ (fun _  -> expression 3 cxt f e1) in
+                  P.space f;
+                  P.string f L.colon;
+                  P.space f;
+                  (P.group f 1) @@ ((fun _  -> expression 3 cxt f e2))) in
+               if l > 2 then P.paren_vgroup f 1 action else action ()
+           | Object lst ->
+               (P.brace_vgroup f 1) @@
+                 ((fun _  -> property_name_and_value_list cxt f lst)) : 
+          Ext_pp_scope.t)
+        and property_name cxt f (s : J.property_name) =
+          (pp_string f ~utf:true ~quote:(best_string_quote s) s; cxt : 
+          Ext_pp_scope.t)
+        and property_name_and_value_list cxt f l =
+          (match l with
+           | [] -> cxt
+           | (pn,e)::[] ->
+               (P.group f 0) @@
+                 ((fun _  ->
+                     let cxt = property_name cxt f pn in
+                     P.string f L.colon; P.space f; expression 1 cxt f e))
+           | (pn,e)::r ->
+               let cxt =
+                 (P.group f 0) @@
+                   (fun _  ->
+                      let cxt = property_name cxt f pn in
+                      P.string f L.colon; P.space f; expression 1 cxt f e) in
+               (P.string f L.comma;
+                P.newline f;
+                property_name_and_value_list cxt f r) : Ext_pp_scope.t)
+        and array_element_list cxt f el =
+          (match el with
+           | [] -> cxt
+           | e::[] -> expression 1 cxt f e
+           | e::r ->
+               let cxt = expression 1 cxt f e in
+               (P.string f L.comma; P.newline f; array_element_list cxt f r) : 
+          Ext_pp_scope.t)
+        and arguments cxt f l =
+          (match l with
+           | [] -> cxt
+           | e::[] -> expression 1 cxt f e
+           | e::r ->
+               let cxt = expression 1 cxt f e in
+               (P.string f L.comma; P.space f; arguments cxt f r) : Ext_pp_scope.t)
+        and variable_declaration top cxt f
+          (variable : J.variable_declaration) =
+          (match variable with
+           | { ident = i; value = None ; ident_info;_} ->
+               if ident_info.used_stats = Dead_pure
+               then cxt
+               else
+                 (P.string f L.var;
+                  P.space f;
+                  (let cxt = ident cxt f i in semi f; cxt))
+           | { ident = i; value = Some e; ident_info = { used_stats;_} } ->
+               (match used_stats with
+                | Dead_pure  -> cxt
+                | Dead_non_pure  -> statement_desc top cxt f (J.Exp e)
+                | _ ->
+                    (match (e, top) with
+                     | ({ expression_desc = Fun (params,b,env); comment = _ },true
+                        ) -> pp_function cxt f ~name:i false params b env
+                     | (_,_) ->
+                         (P.string f L.var;
+                          P.space f;
+                          (let cxt = ident cxt f i in
+                           P.space f;
+                           P.string f L.eq;
+                           P.space f;
+                           (let cxt = expression 1 cxt f e in semi f; cxt))))) : 
+          Ext_pp_scope.t)
+        and ipp_comment : 'a . P.t -> 'a -> unit=
+          fun f  -> fun comment  -> ()
+        and pp_comment f comment =
+          if (String.length comment) > 0 then P.string f "/* ";
+          P.string f comment;
+          P.string f " */"[@@ocaml.text
+                            " don't print a new line -- ASI \n    FIXME: this still does not work in some cases...\n    {[\n    return /* ... */\n    [... ]\n    ]}\n"]
+        and pp_comment_option f comment =
+          match comment with | None  -> () | Some x -> pp_comment f x
+        and statement top cxt f
+          ({ statement_desc = s; comment;_} : J.statement) =
+          (pp_comment_option f comment; statement_desc top cxt f s : 
+          Ext_pp_scope.t)
+        and statement_desc top cxt f (s : J.statement_desc) =
+          (match s with
+           | Block [] -> (ipp_comment f L.empty_block; cxt)
+           | Block b ->
+               (ipp_comment f L.start_block;
+                (let cxt = statement_list top cxt f b in
+                 ipp_comment f L.end_block; cxt))
+           | Variable l -> variable_declaration top cxt f l
+           | Exp { expression_desc = Var _ } -> (semi f; cxt)
+           | Exp e ->
+               let rec need_paren (e : J.expression) =
+                 match e.expression_desc with
+                 | Call ({ expression_desc = Fun _ },_,_) -> true
+                 | Fun _|Object _ -> true
+                 | Anything_to_string _|String_of_small_int_array _|Call _
+                   |Array_append _|Array_copy _|Tag_ml_obj _|Seq _|Dot _|Cond
+                   _|Bin _|String_access _|Access _|Array_of_size _
+                   |Array_length _|String_length _|Bytes_length _
+                   |String_append _|Char_of_int _|Char_to_int _|Dump _
+                   |Json_stringify _|Math _|Var _|Str _|Array _|FlatCall _
+                   |Typeof _|Function_length _|Number _|Not _|New _
+                   |Int_of_boolean _ -> false in
+               let cxt =
+                 (if need_paren e then P.paren_group f 1 else P.group f 0)
+                   (fun _  -> expression 0 cxt f e) in
+               (semi f; cxt)
+           | If (e,s1,s2) ->
+               (P.string f L.if_;
+                P.space f;
+                (let cxt =
+                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
+                 P.space f;
+                 (let cxt = block cxt f s1 in
+                  match s2 with
+                  | None |Some []|Some ({ statement_desc = Block [] }::[]) ->
+                      (P.newline f; cxt)
+                  | Some (({ statement_desc = If _ } as nest)::[])|Some
+                    ({
+                       statement_desc = Block
+                         (({ statement_desc = If _;_} as nest)::[]);_}::[])
+                      ->
+                      (P.newline f;
+                       P.string f L.else_;
+                       P.space f;
+                       statement false cxt f nest)
+                  | Some s2 ->
+                      (P.newline f;
+                       P.string f L.else_;
+                       P.space f;
+                       block cxt f s2))))
+           | While (label,e,s,_env) ->
+               ((match label with
+                 | Some i -> (P.string f i; P.string f L.colon; P.newline f)
+                 | None  -> ());
+                (let cxt =
+                   match e.expression_desc with
+                   | Number (Int { i = 1 }) ->
+                       (P.string f L.while_;
+                        P.string f "(true)";
+                        P.space f;
+                        cxt)
+                   | _ ->
+                       (P.string f L.while_;
+                        (let cxt =
+                           (P.paren_group f 1) @@
+                             (fun _  -> expression 0 cxt f e) in
+                         P.space f; cxt)) in
+                 let cxt = block cxt f s in semi f; cxt))
+           | ForRange (for_ident_expression,finish,id,direction,s,env) ->
+               let action cxt =
+                 (P.vgroup f 0) @@
+                   (fun _  ->
+                      let cxt =
+                        (P.group f 0) @@
+                          (fun _  ->
+                             P.string f "for";
+                             (P.paren_group f 1) @@
+                               ((fun _  ->
+                                   let (cxt,new_id) =
+                                     match (for_ident_expression,
+                                             (finish.expression_desc))
+                                     with
+                                     | (Some
+                                        ident_expression,(Number _|Var _)) ->
+                                         (P.string f L.var;
+                                          P.space f;
+                                          (let cxt = ident cxt f id in
+                                           P.space f;
+                                           P.string f L.eq;
+                                           P.space f;
+                                           ((expression 0 cxt f
+                                               ident_expression), None)))
+                                     | (Some ident_expression,_) ->
+                                         (P.string f L.var;
+                                          P.space f;
+                                          (let cxt = ident cxt f id in
+                                           P.space f;
+                                           P.string f L.eq;
+                                           P.space f;
+                                           (let cxt =
+                                              expression 1 cxt f
+                                                ident_expression in
+                                            P.space f;
+                                            P.string f L.comma;
+                                            (let id =
+                                               Ext_ident.create
+                                                 ((Ident.name id) ^ "_finish") in
+                                             let cxt = ident cxt f id in
+                                             P.space f;
+                                             P.string f L.eq;
+                                             P.space f;
+                                             ((expression 1 cxt f finish),
+                                               (Some id))))))
+                                     | (None ,(Number _|Var _)) ->
+                                         (cxt, None)
+                                     | (None ,_) ->
+                                         (P.string f L.var;
+                                          P.string f " ";
+                                          (let id =
+                                             Ext_ident.create
+                                               ((Ident.name id) ^ "_finish") in
+                                           let cxt = ident cxt f id in
+                                           P.string f " = ";
+                                           ((expression 15 cxt f finish),
+                                             (Some id)))) in
+                                   semi f;
+                                   P.space f;
+                                   (let cxt = ident cxt f id in
+                                    let right_prec =
+                                      match direction with
+                                      | Upto  ->
+                                          let (_,_,right) = op_prec Le in
+                                          (P.string f "<="; right)
+                                      | Downto  ->
+                                          let (_,_,right) = op_prec Ge in
+                                          (P.string f ">="; right) in
+                                    P.space f;
+                                    (let cxt =
+                                       match new_id with
+                                       | Some i ->
+                                           expression right_prec cxt f
+                                             (E.var i)
+                                       | None  ->
+                                           expression right_prec cxt f finish in
+                                     semi f;
+                                     P.space f;
+                                     (let () =
+                                        match direction with
+                                        | Upto  -> P.string f "++"
+                                        | Downto  -> P.string f "--" in
+                                      ident cxt f id)))))) in
+                      block cxt f s) in
+               let lexical = Js_closure.get_lexical_scope env in
+               if Ident_set.is_empty lexical
+               then action cxt
+               else
+                 (let inner_cxt = Ext_pp_scope.merge lexical cxt in
+                  let lexical = Ident_set.elements lexical in
+                  let _enclose action inner_cxt lexical =
+                    let rec aux cxt f ls =
+                      match ls with
+                      | [] -> cxt
+                      | x::[] -> ident cxt f x
+                      | y::ys ->
+                          let cxt = ident cxt f y in
+                          (P.string f L.comma; aux cxt f ys) in
+                    P.vgroup f 0
+                      (fun _  ->
+                         P.string f "(function(";
+                         ignore @@ (aux inner_cxt f lexical);
+                         P.string f ")";
+                         (let cxt =
+                            P.brace_vgroup f 0 (fun _  -> action inner_cxt) in
+                          P.string f "(";
+                          ignore @@ (aux inner_cxt f lexical);
+                          P.string f ")";
+                          P.string f ")";
+                          semi f;
+                          cxt)) in
+                  _enclose action inner_cxt lexical)
+           | Continue s ->
+               (P.string f "continue ";
+                P.string f s;
+                semi f;
+                P.newline f;
+                cxt)
+           | Break  -> (P.string f "break "; semi f; P.newline f; cxt)
+           | Return { return_value = e } ->
+               (match e with
+                | { expression_desc = Fun (l,b,env);_} ->
+                    let cxt = pp_function cxt f true l b env in (semi f; cxt)
+                | e ->
+                    (P.string f L.return;
+                     P.space f;
+                     (P.group f return_indent) @@
+                       ((fun _  ->
+                           let cxt = expression 0 cxt f e in semi f; cxt))))
+           | Int_switch (e,cc,def) ->
+               (P.string f "switch";
+                P.space f;
+                (let cxt =
+                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
+                 P.space f;
+                 (P.brace_vgroup f 1) @@
+                   ((fun _  ->
+                       let cxt =
+                         loop cxt f
+                           (fun f  -> fun i  -> P.string f (string_of_int i))
+                           cc in
+                       match def with
+                       | None  -> cxt
+                       | Some def ->
+                           (P.group f 1) @@
+                             ((fun _  ->
+                                 P.string f L.default;
+                                 P.string f L.colon;
+                                 P.newline f;
+                                 statement_list false cxt f def))))))
+           | String_switch (e,cc,def) ->
+               (P.string f "switch";
+                P.space f;
+                (let cxt =
+                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
+                 P.space f;
+                 (P.brace_vgroup f 1) @@
+                   ((fun _  ->
+                       let cxt =
+                         loop cxt f (fun f  -> fun i  -> pp_quote_string f i)
+                           cc in
+                       match def with
+                       | None  -> cxt
+                       | Some def ->
+                           (P.group f 1) @@
+                             ((fun _  ->
+                                 P.string f L.default;
+                                 P.string f L.colon;
+                                 P.newline f;
+                                 statement_list false cxt f def))))))
+           | Throw e ->
+               (P.string f L.throw;
+                P.space f;
+                (P.group f throw_indent) @@
+                  ((fun _  -> let cxt = expression 0 cxt f e in semi f; cxt)))
+           | Try (b,ctch,fin) ->
+               (P.vgroup f 0) @@
+                 ((fun _  ->
+                     P.string f "try";
+                     P.space f;
+                     (let cxt = block cxt f b in
+                      let cxt =
+                        match ctch with
+                        | None  -> cxt
+                        | Some (i,b) ->
+                            (P.newline f;
+                             P.string f "catch (";
+                             (let cxt = ident cxt f i in
+                              P.string f ")"; block cxt f b)) in
+                      match fin with
+                      | None  -> cxt
+                      | Some b ->
+                          (P.group f 1) @@
+                            ((fun _  ->
+                                P.string f "finally";
+                                P.space f;
+                                block cxt f b))))) : Ext_pp_scope.t)
+        and statement_list top cxt f b =
+          match b with
+          | [] -> cxt
+          | s::[] -> statement top cxt f s
+          | s::r ->
+              let cxt = statement top cxt f s in
+              (P.newline f;
+               if top then P.force_newline f;
+               statement_list top cxt f r)
+        and block cxt f b =
+          P.brace_vgroup f 1 (fun _  -> statement_list false cxt f b)
+        let exports cxt f (idents : Ident.t list) =
+          let (outer_cxt,reversed_list,margin) =
+            List.fold_left
+              (fun (cxt,acc,len)  ->
+                 fun (id : Ident.t)  ->
+                   let s = Ext_ident.convert id.name in
+                   let (str,cxt) = str_of_ident cxt id in
+                   (cxt, ((s, str) :: acc), (max len (String.length s))))
+              (cxt, [], 0) idents in
+          P.newline f;
+          Ext_list.rev_iter
+            (fun (s,export)  ->
+               (P.group f 0) @@
+                 ((fun _  ->
+                     P.string f L.exports;
+                     P.string f L.dot;
+                     P.string f s;
+                     P.nspace f ((margin - (String.length s)) + 1);
+                     P.string f L.eq;
+                     P.space f;
+                     P.string f export;
+                     semi f));
+               P.newline f) reversed_list;
+          outer_cxt
+        let requires cxt f (modules : (Ident.t* string) list) =
+          P.newline f;
+          (let (outer_cxt,reversed_list,margin) =
+             List.fold_left
+               (fun (cxt,acc,len)  ->
+                  fun (id,s)  ->
+                    let (str,cxt) = str_of_ident cxt id in
+                    (cxt, ((str, s) :: acc), (max len (String.length str))))
+               (cxt, [], 0) modules in
+           P.force_newline f;
+           Ext_list.rev_iter
+             (fun (s,file)  ->
+                P.string f L.var;
+                P.space f;
+                P.string f s;
+                P.nspace f ((margin - (String.length s)) + 1);
+                P.string f L.eq;
+                P.space f;
+                P.string f L.require;
+                (P.paren_group f 0) @@
+                  ((fun _  ->
+                      pp_string f ~utf:true ~quote:(best_string_quote s) file));
+                semi f;
+                P.newline f) reversed_list;
+           outer_cxt)
+        let program f cxt (x : J.program) =
+          let () = P.force_newline f in
+          let cxt = statement_list true cxt f x.block in
+          let () = P.force_newline f in exports cxt f x.exports
+        let node_program f (x : J.deps_program) =
+          let cxt = requires Ext_pp_scope.empty f x.modules in
+          program f cxt x.program
+        let amd_program f (x : J.deps_program) =
+          P.newline f;
+          (let cxt = Ext_pp_scope.empty in
+           (P.vgroup f 1) @@
+             (fun _  ->
+                P.string f L.define;
+                P.string f "([";
+                P.string f (Printf.sprintf "%S" L.exports);
+                List.iter
+                  (fun (_,s)  ->
+                     P.string f L.comma;
+                     P.space f;
+                     pp_string f ~utf:true ~quote:(best_string_quote s) s)
+                  x.modules;
+                P.string f "]";
+                P.string f L.comma;
+                P.newline f;
+                P.string f L.function_;
+                P.string f "(";
+                P.string f L.exports;
+                (let cxt =
+                   List.fold_left
+                     (fun cxt  ->
+                        fun (id,_)  ->
+                          P.string f L.comma; P.space f; ident cxt f id) cxt
+                     x.modules in
+                 P.string f ")";
+                 (let v =
+                    (P.brace_vgroup f 1) @@
+                      (fun _  ->
+                         let () = P.string f L.strict_directive in
+                         program f cxt x.program) in
+                  P.string f ")"; v))))
+        let pp_deps_program (program : J.deps_program) (f : Ext_pp.t) =
+          P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
+          P.newline f;
+          P.string f L.strict_directive;
+          P.newline f;
+          ignore
+            (match Js_config.get_env () with
+             | Browser  -> node_program f program
+             | NodeJS  ->
+                 (match Sys.getenv "OCAML_AMD_MODULE" with
+                  | exception Not_found  -> node_program f program
+                  | _ -> amd_program f program));
+          P.newline f;
+          P.string f
+            (match program.side_effect with
+             | None  -> "/* No side effect */"
+             | Some v -> Printf.sprintf "/* %s Not a pure module */" v);
+          P.newline f;
+          P.flush f ()
+        let dump_program (x : J.program) oc =
+          ignore (program (P.from_channel oc) Ext_pp_scope.empty x)
+        let dump_deps_program x (oc : out_channel) =
+          pp_deps_program x (P.from_channel oc)
+        let string_of_block block =
+          let buffer = Buffer.create 50 in
+          let f = P.from_buffer buffer in
+          let _scope = statement_list true Ext_pp_scope.empty f block in
+          P.flush f (); Buffer.contents buffer
       end 
     module Js_output :
       sig
@@ -3570,6 +5120,7 @@ include
             Lam_compile_defs.return_type ->
               Lambda.lambda -> J.block -> J.expression -> t
         val concat : t list -> t
+        val to_string : t -> string
       end =
       struct
         module E = Js_helper.Exp
@@ -3682,6 +5233,7 @@ include
         let concat (xs : t list) =
           (List.fold_right (fun x  -> fun acc  -> append x acc) xs dummy : 
           t)
+        let to_string x = Js_dump.string_of_block (to_block x)
       end 
     module Ext_marshal :
       sig
@@ -3808,7 +5360,7 @@ include
             ("format.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\020\215\000\000\004\166\000\000\017\134\000\000\016Z\160\208\208\208\208\208\208\208@(asprintf\160\176@\160\160A\160\176\001\006V%param@@@@@\208@'bprintf\160\176@\160\160B\160\176\001\006N!b@\160\176\001\006T\004\012@@@@@@AB)close_box\160\176A\160\160A\160\176\001\007t%param@@@@@\208@)close_tag\160\176A\160\160A\160\176\001\007r\004\t@@@@@@AC*close_tbox\160\176A\160\160A\160\176\001\007a\004\016@@@@@\208\208@'eprintf\160\176@\160\160A\160\176\001\006;#fmt@@@@@@A-err_formatter\160\176@@@@\208@3flush_str_formatter\160\176@\160\160A\160\176\001\006\171\0048@@@@@@ABD-force_newline\160\176@\160\160A\160\176\001\007f\004,@@@@@\208\208\208\208@3formatter_of_buffer\160\176@\160\160A\160\176\001\005\149!b@@@@@@A8formatter_of_out_channel\160\176@\160\160A\160\176\001\005\147\"oc@@@@@\208@'fprintf\160\176@\160\160B\160\176\001\0063#ppf@\160\176\001\0064#fmt@@@@@\208@\t\"get_all_formatter_output_functions\160\176A\160\160A\160\176\001\007I\004T@@@@@@ABC1get_ellipsis_text\160\176@\160\160A\160\176\001\007T\004[@@@@@\208\208@;get_formatter_out_functions\160\176A\160\160A\160\176\001\007Q\004d@@@@@@A>get_formatter_output_functions\160\176A\160\160A\160\176\001\007N\004k@@@@@\208@;get_formatter_tag_functions\160\176A\160\160A\160\176\001\007G\004s@@@@@@ABD*get_margin\160\176@\160\160A\160\176\001\007[\004z@@@@@\208\208@-get_mark_tags\160\176@\160\160A\160\176\001\007C\004\131@@@@@@A-get_max_boxes\160\176@\160\160A\160\176\001\007W\004\138@@@@@@BEF.get_max_indent\160\176@\160\160A\160\176\001\007Y\004\145@@@@@\208\208\208\208@.get_print_tags\160\176@\160\160A\160\176\001\007E\004\156@@@@@@A(ifprintf\160\176@\160\160B\160\176\001\0066#ppf@\160\176\001\0067#fmt@@@@@\208\208@)ikfprintf\160\176@\160\160C\160\176\001\006/!k@\160\176\001\0060!x@\160\176\001\006]\004\201@@@@@@A(kfprintf\160\176@\160\160C\160\176\001\006)!k@\160\176\001\006*!o@\160\176\001\006a\004\214@@@@@\208\208@'kprintf\160\176@\160\160B\160\176\001\006=!k@\160\176\001\006X\004\226@@@@@@A(ksprintf\160\004\n@@BCD.make_formatter\160\176@\160\160B\160\176\001\005\143&output@\160\176\001\005\144%flush@@@@@\208\208@(open_box\160\176@\160\160A\160\176\001\007u\004\229@@@@@@A)open_hbox\160\176@\160\160A\160\176\001\007y\004\236@@@@@\208@+open_hovbox\160\176@\160\160A\160\176\001\007v\004\244@@@@@@ABE*open_hvbox\160\176@\160\160A\160\176\001\007w\004\251@@@@@\208\208\208\208@(open_tag\160\176A\160\160A\160\176\001\007s\005\001\006@@@@@@A)open_tbox\160\176@\160\160A\160\176\001\007b\005\001\r@@@@@@B)open_vbox\160\176@\160\160A\160\176\001\007x\005\001\020@@@@@\208\208@.over_max_boxes\160\176A\160\160A\160\176\001\007V\005\001\029@@@@@@A,pp_close_box\160\176A\160\160B\160\176\001\004\198%state@\160\176\001\006\218\005\001:@@@@@\208@,pp_close_tag\160\176A\160\160B\160\176\001\004\203%state@\160\176\001\006\213\005\001E@@@@@\208@-pp_close_tbox\160\176A\160\160B\160\176\001\005\"%state@\160\176\001\006\199\005\001P@@@@@@ABCD0pp_force_newline\160\176@\160\160B\160\176\001\005\018%state@\160\176\001\006\204\005\001Z@@@@@\208\208\208\208@\t%pp_get_all_formatter_output_functions\160\176A\160\160B\160\176\001\005v%state@\160\176\001\006\181\005\001h@@@@@@A4pp_get_ellipsis_text\160\176@\160\160B\160\176\001\005I%state@\160\176\001\006\188\005\001r@@@@@\208@>pp_get_formatter_out_functions\160\176A\160\160B\160\176\001\005h%state@\160\176\001\006\183\005\001}@@@@@@AB\t!pp_get_formatter_output_functions\160\176A\160\160B\160\176\001\005n%state@\160\176\001\006\182\005\001\135@@@@@\208\208@>pp_get_formatter_tag_functions\160\176A\160\160B\160\176\001\004\220%state@\160\176\001\006\209\005\001\147@@@@@@A-pp_get_margin\160\176@\160\160B\160\176\001\005[%state@\160\176\001\006\186\005\001\157@@@@@@BC0pp_get_mark_tags\160\176@\160\160B\160\176\001\004\215%state@\160\176\001\006\211\005\001\167@@@@@\208\208\208@0pp_get_max_boxes\160\176@\160\160B\160\176\001\005B%state@\160\176\001\006\190\005\001\180@@@@@@A1pp_get_max_indent\160\176@\160\160B\160\176\001\005T%state@\160\176\001\006\187\005\001\190@@@@@@B1pp_get_print_tags\160\176@\160\160B\160\176\001\004\213%state@\160\176\001\006\212\005\001\200@@@@@\208@+pp_open_box\160\176@\160\160B\160\176\001\005\011%state@\160\176\001\005\012&indent@@@@@@ACDEFG,pp_open_hbox\160\176@\160\160B\160\176\001\005\004%state@\160\176\001\006\207\005\001\222@@@@@\208\208\208\208@.pp_open_hovbox\160\176@\160\160B\160\176\001\005\t%state@\160\176\001\005\n&indent@@@@@@A-pp_open_hvbox\160\176@\160\160B\160\176\001\005\007%state@\160\176\001\005\b&indent@@@@@\208@+pp_open_tag\160\176A\160\160B\160\176\001\004\200%state@\160\176\001\004\201(tag_name@@@@@\208@,pp_open_tbox\160\176@\160\160B\160\176\001\005\031%state@\160\176\001\006\200\005\002\015@@@@@@ABC,pp_open_vbox\160\176@\160\160B\160\176\001\005\005%state@\160\176\001\005\006&indent@@@@@\208\208@1pp_over_max_boxes\160\176A\160\160B\160\176\001\005D%state@\160\176\001\006\189\005\002&@@@@@@A+pp_print_as\160\176@\160\160C\160\176\001\004\237%state@\160\176\001\004\238%isize@\160\176\001\004\239!s@@@@@\208@-pp_print_bool\160\176@\160\160B\160\176\001\004\250%state@\160\176\001\004\251!b@@@@@\208@.pp_print_break\160\176A\160\160C\160\176\001\005\022%state@\160\176\001\005\023%width@\160\176\001\005\024&offset@@@@@@ABCD-pp_print_char\160\176@\160\160B\160\176\001\004\253%state@\160\176\001\004\254!c@@@@@\208\208\208\208@,pp_print_cut\160\176A\160\160B\160\176\001\005\029%state@\160\176\001\006\201\005\002h@@@@@@A.pp_print_float\160\176@\160\160B\160\176\001\004\247%state@\160\176\001\004\248!f@@@@@\208@.pp_print_flush\160\176@\160\160B\160\176\001\005\016%state@\160\176\001\006\205\005\002~@@@@@\208@3pp_print_if_newline\160\176@\160\160B\160\176\001\005\020%state@\160\176\001\006\203\005\002\137@@@@@@ABC,pp_print_int\160\176@\160\160B\160\176\001\004\244%state@\160\176\001\004\245!i@@@@@\208\208\208\208@-pp_print_list\160\176@\160\160D\160\176\001\005/%*opt*@\160\176\001\0052$pp_v@\160\176\001\0053#ppf@\160\176\001\006\194%param@@@@@@A0pp_print_newline\160\176@\160\160B\160\176\001\005\015%state@\160\176\001\006\206\005\002\179@@@@@@B.pp_print_space\160\176A\160\160B\160\176\001\005\028%state@\160\176\001\006\202\005\002\189@@@@@@C/pp_print_string\160\176@\160\160B\160\176\001\004\241%state@\160\176\001\004\242!s@@@@@\208@,pp_print_tab\160\176A\160\160B\160\176\001\005*%state@\160\176\001\006\198\005\002\211@@@@@@ADE/pp_print_tbreak\160\176A\160\160C\160\176\001\005%%state@\160\176\001\005&%width@\160\176\001\005'&offset@@@@@\208\208\208\208@-pp_print_text\160\176A\160\160B\160\176\001\0058#ppf@\160\176\001\0059!s@@@@@\208@\t%pp_set_all_formatter_output_functions\160\176A\160\160E\160\176\001\005p%state@\160\176\001\005q!f@\160\176\001\005r!g@\160\176\001\005s!h@\160\176\001\005t!i@@@@@@AB4pp_set_ellipsis_text\160\176A\160\160B\160\176\001\005G%state@\160\176\001\005H!s@@@@@@C<pp_set_formatter_out_channel\160\176A\160\160B\160\176\001\005~%state@\160\176\001\005\127\"os@@@@@\208\208\208@>pp_set_formatter_out_functions\160\176A\160\160B\160\176\001\005b%state@\160\176\001\006\185\005\003(@@@@@@A\t!pp_set_formatter_output_functions\160\176A\160\160C\160\176\001\005j%state@\160\176\001\005k!f@\160\176\001\005l!g@@@@@\208@>pp_set_formatter_tag_functions\160\176A\160\160B\160\176\001\004\222%state@\160\176\001\006\208\005\003A@@@@@@AB-pp_set_margin\160\176@\160\160B\160\176\001\005V%state@\160\176\001\005W!n@@@@@@CD0pp_set_mark_tags\160\176A\160\160B\160\176\001\004\210%state@\160\176\001\004\211!b@@@@@\208\208\208@0pp_set_max_boxes\160\176A\160\160B\160\176\001\005?%state@\160\176\001\005@!n@@@@@@A1pp_set_max_indent\160\176@\160\160B\160\176\001\005Q%state@\160\176\001\005R!n@@@@@@B1pp_set_print_tags\160\176A\160\160B\160\176\001\004\207%state@\160\176\001\004\208!b@@@@@\208@*pp_set_tab\160\176@\160\160B\160\176\001\005,%state@\160\176\001\006\197\005\003\134@@@@@\208@+pp_set_tags\160\176A\160\160B\160\176\001\004\217%state@\160\176\001\004\218!b@@@@@@ABCEFGH(print_as\160\176@\160\160B\160\176\001\007p\005\003\134@\160\176\001\007q\005\003\136@@@@@\208\208\208@*print_bool\160\176@\160\160A\160\176\001\007k\005\003\146@@@@@\208@+print_break\160\176A\160\160B\160\176\001\007i\005\003\154@\160\176\001\007j\005\003\156@@@@@@AB*print_char\160\176@\160\160A\160\176\001\007l\005\003\163@@@@@\208\208@)print_cut\160\176A\160\160A\160\176\001\007h\005\003\172@@@@@@A+print_float\160\176@\160\160A\160\176\001\007m\005\003\179@@@@@\208@+print_flush\160\176@\160\160A\160\176\001\007e\005\003\187@@@@@\208@0print_if_newline\160\176@\160\160A\160\176\001\007c\005\003\195@@@@@@ABCD)print_int\160\176@\160\160A\160\176\001\007n\005\003\202@@@@@\208\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\007d\005\003\214@@@@@@A+print_space\160\176A\160\160A\160\176\001\007g\005\003\221@@@@@@B,print_string\160\176@\160\160A\160\176\001\007o\005\003\228@@@@@\208@)print_tab\160\176A\160\160A\160\176\001\007]\005\003\236@@@@@@AC,print_tbreak\160\176A\160\160B\160\176\001\007_\005\003\243@\160\176\001\007`\005\003\245@@@@@\208\208\208@&printf\160\176@\160\160A\160\176\001\0069#fmt@@@@@\208@\t\"set_all_formatter_output_functions\160\176A\160\160D\160\176\001\007J\005\004\b@\160\176\001\007K\005\004\n@\160\176\001\007L\005\004\012@\160\176\001\007M\005\004\014@@@@@@AB1set_ellipsis_text\160\176A\160\160A\160\176\001\007U\005\004\021@@@@@@C9set_formatter_out_channel\160\176A\160\160A\160\176\001\007S\005\004\028@@@@@\208\208@;set_formatter_out_functions\160\176A\160\160A\160\176\001\007R\005\004%@@@@@@A>set_formatter_output_functions\160\176A\160\160B\160\176\001\007O\005\004,@\160\176\001\007P\005\004.@@@@@\208@;set_formatter_tag_functions\160\176A\160\160A\160\176\001\007H\005\0046@@@@@@ABDE*set_margin\160\176@\160\160A\160\176\001\007\\\005\004=@@@@@\208\208\208@-set_mark_tags\160\176A\160\160A\160\176\001\007D\005\004G@@@@@@A-set_max_boxes\160\176A\160\160A\160\176\001\007X\005\004N@@@@@@B.set_max_indent\160\176@\160\160A\160\176\001\007Z\005\004U@@@@@\208\208@.set_print_tags\160\176A\160\160A\160\176\001\007F\005\004^@@@@@@A'set_tab\160\176@\160\160A\160\176\001\007^\005\004e@@@@@\208\208@(set_tags\160\176A\160\160A\160\176\001\007B\005\004n@@@@@\208@'sprintf\160\176@\160\160A\160\176\001\006D#fmt@@@@@@AB-std_formatter\160\176@@@@\208@&stdbuf\160\176A@@@\208@-str_formatter\160\176@@@@@ABCDEFGI\144*blank_line")));
+                    "\132\149\166\190\000\000\020\215\000\000\004\166\000\000\017\134\000\000\016Z\160\208\208\208\208\208\208\208@(asprintf\160\176@\160\160A\160\176\001\006V%param@@@@@\208@'bprintf\160\176@\160\160B\160\176\001\006N!b@\160\176\001\006T\004\012@@@@@@AB)close_box\160\176A\160\160A\160\176\001\007k%param@@@@@\208@)close_tag\160\176A\160\160A\160\176\001\007i\004\t@@@@@@AC*close_tbox\160\176A\160\160A\160\176\001\007X\004\016@@@@@\208\208@'eprintf\160\176@\160\160A\160\176\001\006;#fmt@@@@@@A-err_formatter\160\176@@@@\208@3flush_str_formatter\160\176@\160\160A\160\176\001\006\171\0048@@@@@@ABD-force_newline\160\176@\160\160A\160\176\001\007]\004,@@@@@\208\208\208\208@3formatter_of_buffer\160\176@\160\160A\160\176\001\005\149!b@@@@@@A8formatter_of_out_channel\160\176@\160\160A\160\176\001\005\147\"oc@@@@@\208@'fprintf\160\176@\160\160B\160\176\001\0063#ppf@\160\176\001\0064#fmt@@@@@\208@\t\"get_all_formatter_output_functions\160\176A\160\160A\160\176\001\007@\004T@@@@@@ABC1get_ellipsis_text\160\176@\160\160A\160\176\001\007K\004[@@@@@\208\208@;get_formatter_out_functions\160\176A\160\160A\160\176\001\007H\004d@@@@@@A>get_formatter_output_functions\160\176A\160\160A\160\176\001\007E\004k@@@@@\208@;get_formatter_tag_functions\160\176A\160\160A\160\176\001\007>\004s@@@@@@ABD*get_margin\160\176@\160\160A\160\176\001\007R\004z@@@@@\208\208@-get_mark_tags\160\176@\160\160A\160\176\001\007:\004\131@@@@@@A-get_max_boxes\160\176@\160\160A\160\176\001\007N\004\138@@@@@@BEF.get_max_indent\160\176@\160\160A\160\176\001\007P\004\145@@@@@\208\208\208\208@.get_print_tags\160\176@\160\160A\160\176\001\007<\004\156@@@@@@A(ifprintf\160\176@\160\160B\160\176\001\0066#ppf@\160\176\001\0067#fmt@@@@@\208\208@)ikfprintf\160\176@\160\160C\160\176\001\006/!k@\160\176\001\0060!x@\160\176\001\006]\004\201@@@@@@A(kfprintf\160\176@\160\160C\160\176\001\006)!k@\160\176\001\006*!o@\160\176\001\006a\004\214@@@@@\208\208@'kprintf\160\176@\160\160B\160\176\001\006=!k@\160\176\001\006X\004\226@@@@@@A(ksprintf\160\004\n@@BCD.make_formatter\160\176@\160\160B\160\176\001\005\143&output@\160\176\001\005\144%flush@@@@@\208\208@(open_box\160\176@\160\160A\160\176\001\007l\004\229@@@@@@A)open_hbox\160\176@\160\160A\160\176\001\007p\004\236@@@@@\208@+open_hovbox\160\176@\160\160A\160\176\001\007m\004\244@@@@@@ABE*open_hvbox\160\176@\160\160A\160\176\001\007n\004\251@@@@@\208\208\208\208@(open_tag\160\176A\160\160A\160\176\001\007j\005\001\006@@@@@@A)open_tbox\160\176@\160\160A\160\176\001\007Y\005\001\r@@@@@@B)open_vbox\160\176@\160\160A\160\176\001\007o\005\001\020@@@@@\208\208@.over_max_boxes\160\176A\160\160A\160\176\001\007M\005\001\029@@@@@@A,pp_close_box\160\176A\160\160B\160\176\001\004\198%state@\160\176\001\006\218\005\001:@@@@@\208@,pp_close_tag\160\176A\160\160B\160\176\001\004\203%state@\160\176\001\006\213\005\001E@@@@@\208@-pp_close_tbox\160\176A\160\160B\160\176\001\005\"%state@\160\176\001\006\199\005\001P@@@@@@ABCD0pp_force_newline\160\176@\160\160B\160\176\001\005\018%state@\160\176\001\006\204\005\001Z@@@@@\208\208\208\208@\t%pp_get_all_formatter_output_functions\160\176A\160\160B\160\176\001\005v%state@\160\176\001\006\181\005\001h@@@@@@A4pp_get_ellipsis_text\160\176@\160\160B\160\176\001\005I%state@\160\176\001\006\188\005\001r@@@@@\208@>pp_get_formatter_out_functions\160\176A\160\160B\160\176\001\005h%state@\160\176\001\006\183\005\001}@@@@@@AB\t!pp_get_formatter_output_functions\160\176A\160\160B\160\176\001\005n%state@\160\176\001\006\182\005\001\135@@@@@\208\208@>pp_get_formatter_tag_functions\160\176A\160\160B\160\176\001\004\220%state@\160\176\001\006\209\005\001\147@@@@@@A-pp_get_margin\160\176@\160\160B\160\176\001\005[%state@\160\176\001\006\186\005\001\157@@@@@@BC0pp_get_mark_tags\160\176@\160\160B\160\176\001\004\215%state@\160\176\001\006\211\005\001\167@@@@@\208\208\208@0pp_get_max_boxes\160\176@\160\160B\160\176\001\005B%state@\160\176\001\006\190\005\001\180@@@@@@A1pp_get_max_indent\160\176@\160\160B\160\176\001\005T%state@\160\176\001\006\187\005\001\190@@@@@@B1pp_get_print_tags\160\176@\160\160B\160\176\001\004\213%state@\160\176\001\006\212\005\001\200@@@@@\208@+pp_open_box\160\176@\160\160B\160\176\001\005\011%state@\160\176\001\005\012&indent@@@@@@ACDEFG,pp_open_hbox\160\176@\160\160B\160\176\001\005\004%state@\160\176\001\006\207\005\001\222@@@@@\208\208\208\208@.pp_open_hovbox\160\176@\160\160B\160\176\001\005\t%state@\160\176\001\005\n&indent@@@@@@A-pp_open_hvbox\160\176@\160\160B\160\176\001\005\007%state@\160\176\001\005\b&indent@@@@@\208@+pp_open_tag\160\176A\160\160B\160\176\001\004\200%state@\160\176\001\004\201(tag_name@@@@@\208@,pp_open_tbox\160\176@\160\160B\160\176\001\005\031%state@\160\176\001\006\200\005\002\015@@@@@@ABC,pp_open_vbox\160\176@\160\160B\160\176\001\005\005%state@\160\176\001\005\006&indent@@@@@\208\208@1pp_over_max_boxes\160\176A\160\160B\160\176\001\005D%state@\160\176\001\006\189\005\002&@@@@@@A+pp_print_as\160\176@\160\160C\160\176\001\004\237%state@\160\176\001\004\238%isize@\160\176\001\004\239!s@@@@@\208@-pp_print_bool\160\176@\160\160B\160\176\001\004\250%state@\160\176\001\004\251!b@@@@@\208@.pp_print_break\160\176A\160\160C\160\176\001\005\022%state@\160\176\001\005\023%width@\160\176\001\005\024&offset@@@@@@ABCD-pp_print_char\160\176@\160\160B\160\176\001\004\253%state@\160\176\001\004\254!c@@@@@\208\208\208\208@,pp_print_cut\160\176A\160\160B\160\176\001\005\029%state@\160\176\001\006\201\005\002h@@@@@@A.pp_print_float\160\176@\160\160B\160\176\001\004\247%state@\160\176\001\004\248!f@@@@@\208@.pp_print_flush\160\176@\160\160B\160\176\001\005\016%state@\160\176\001\006\205\005\002~@@@@@\208@3pp_print_if_newline\160\176@\160\160B\160\176\001\005\020%state@\160\176\001\006\203\005\002\137@@@@@@ABC,pp_print_int\160\176@\160\160B\160\176\001\004\244%state@\160\176\001\004\245!i@@@@@\208\208\208\208@-pp_print_list\160\176@\160\160D\160\176\001\005/%*opt*@\160\176\001\0052$pp_v@\160\176\001\0053#ppf@\160\176\001\006\194%param@@@@@@A0pp_print_newline\160\176@\160\160B\160\176\001\005\015%state@\160\176\001\006\206\005\002\179@@@@@@B.pp_print_space\160\176A\160\160B\160\176\001\005\028%state@\160\176\001\006\202\005\002\189@@@@@@C/pp_print_string\160\176@\160\160B\160\176\001\004\241%state@\160\176\001\004\242!s@@@@@\208@,pp_print_tab\160\176A\160\160B\160\176\001\005*%state@\160\176\001\006\198\005\002\211@@@@@@ADE/pp_print_tbreak\160\176A\160\160C\160\176\001\005%%state@\160\176\001\005&%width@\160\176\001\005'&offset@@@@@\208\208\208\208@-pp_print_text\160\176A\160\160B\160\176\001\0058#ppf@\160\176\001\0059!s@@@@@\208@\t%pp_set_all_formatter_output_functions\160\176A\160\160E\160\176\001\005p%state@\160\176\001\005q!f@\160\176\001\005r!g@\160\176\001\005s!h@\160\176\001\005t!i@@@@@@AB4pp_set_ellipsis_text\160\176A\160\160B\160\176\001\005G%state@\160\176\001\005H!s@@@@@@C<pp_set_formatter_out_channel\160\176A\160\160B\160\176\001\005~%state@\160\176\001\005\127\"os@@@@@\208\208\208@>pp_set_formatter_out_functions\160\176A\160\160B\160\176\001\005b%state@\160\176\001\006\185\005\003(@@@@@@A\t!pp_set_formatter_output_functions\160\176A\160\160C\160\176\001\005j%state@\160\176\001\005k!f@\160\176\001\005l!g@@@@@\208@>pp_set_formatter_tag_functions\160\176A\160\160B\160\176\001\004\222%state@\160\176\001\006\208\005\003A@@@@@@AB-pp_set_margin\160\176@\160\160B\160\176\001\005V%state@\160\176\001\005W!n@@@@@@CD0pp_set_mark_tags\160\176A\160\160B\160\176\001\004\210%state@\160\176\001\004\211!b@@@@@\208\208\208@0pp_set_max_boxes\160\176A\160\160B\160\176\001\005?%state@\160\176\001\005@!n@@@@@@A1pp_set_max_indent\160\176@\160\160B\160\176\001\005Q%state@\160\176\001\005R!n@@@@@@B1pp_set_print_tags\160\176A\160\160B\160\176\001\004\207%state@\160\176\001\004\208!b@@@@@\208@*pp_set_tab\160\176@\160\160B\160\176\001\005,%state@\160\176\001\006\197\005\003\134@@@@@\208@+pp_set_tags\160\176A\160\160B\160\176\001\004\217%state@\160\176\001\004\218!b@@@@@@ABCEFGH(print_as\160\176@\160\160B\160\176\001\007g\005\003\134@\160\176\001\007h\005\003\136@@@@@\208\208\208@*print_bool\160\176@\160\160A\160\176\001\007b\005\003\146@@@@@\208@+print_break\160\176A\160\160B\160\176\001\007`\005\003\154@\160\176\001\007a\005\003\156@@@@@@AB*print_char\160\176@\160\160A\160\176\001\007c\005\003\163@@@@@\208\208@)print_cut\160\176A\160\160A\160\176\001\007_\005\003\172@@@@@@A+print_float\160\176@\160\160A\160\176\001\007d\005\003\179@@@@@\208@+print_flush\160\176@\160\160A\160\176\001\007\\\005\003\187@@@@@\208@0print_if_newline\160\176@\160\160A\160\176\001\007Z\005\003\195@@@@@@ABCD)print_int\160\176@\160\160A\160\176\001\007e\005\003\202@@@@@\208\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\007[\005\003\214@@@@@@A+print_space\160\176A\160\160A\160\176\001\007^\005\003\221@@@@@@B,print_string\160\176@\160\160A\160\176\001\007f\005\003\228@@@@@\208@)print_tab\160\176A\160\160A\160\176\001\007T\005\003\236@@@@@@AC,print_tbreak\160\176A\160\160B\160\176\001\007V\005\003\243@\160\176\001\007W\005\003\245@@@@@\208\208\208@&printf\160\176@\160\160A\160\176\001\0069#fmt@@@@@\208@\t\"set_all_formatter_output_functions\160\176A\160\160D\160\176\001\007A\005\004\b@\160\176\001\007B\005\004\n@\160\176\001\007C\005\004\012@\160\176\001\007D\005\004\014@@@@@@AB1set_ellipsis_text\160\176A\160\160A\160\176\001\007L\005\004\021@@@@@@C9set_formatter_out_channel\160\176A\160\160A\160\176\001\007J\005\004\028@@@@@\208\208@;set_formatter_out_functions\160\176A\160\160A\160\176\001\007I\005\004%@@@@@@A>set_formatter_output_functions\160\176A\160\160B\160\176\001\007F\005\004,@\160\176\001\007G\005\004.@@@@@\208@;set_formatter_tag_functions\160\176A\160\160A\160\176\001\007?\005\0046@@@@@@ABDE*set_margin\160\176@\160\160A\160\176\001\007S\005\004=@@@@@\208\208\208@-set_mark_tags\160\176A\160\160A\160\176\001\007;\005\004G@@@@@@A-set_max_boxes\160\176A\160\160A\160\176\001\007O\005\004N@@@@@@B.set_max_indent\160\176@\160\160A\160\176\001\007Q\005\004U@@@@@\208\208@.set_print_tags\160\176A\160\160A\160\176\001\007=\005\004^@@@@@@A'set_tab\160\176@\160\160A\160\176\001\007U\005\004e@@@@@\208\208@(set_tags\160\176A\160\160A\160\176\001\0079\005\004n@@@@@\208@'sprintf\160\176@\160\160A\160\176\001\006D#fmt@@@@@@AB-std_formatter\160\176@@@@\208@&stdbuf\160\176A@@@\208@-str_formatter\160\176@@@@@ABCDEFGI\144*blank_line")));
             ("gc.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -3941,6 +5493,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "\132\149\166\190\000\000\000\225\000\000\000:\000\000\000\201\000\000\000\191\160\208\208\208@/caml_array_blit\160\176A\160\160E\160\176\001\004\023\"a1@\160\176\001\004\024\"i1@\160\176\001\004\025\"a2@\160\176\001\004\026\"i2@\160\176\001\004\027#len@@@@@@A1caml_array_concat\160\176@\160\160A\160\176\001\004\007!l@@@@@@B.caml_array_sub\160\176@\160\160C\160\176\001\003\242!x@\160\176\001\003\243&offset@\160\176\001\003\244#len@@@@@\208@.caml_make_vect\160\176@\160\160B\160\176\001\004\018#len@\160\176\001\004\019$init@@@@@@AC@")));
+            ("caml_curry.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\002j\000\000\000\208\000\000\002\154\000\000\002\142\160\208\208\208@$app1\160\176@\160\160B\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A$app2\160\176@\160\160C\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B$app3\160\176@\160\160D\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208\208@$app4\160\176@\160\160E\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A$app5\160\176@\160\160F\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@B$app6\160\176@\160\160G\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208@$app7\160\176@\160\160H\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@$app8\160\176@\160\160I\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB%curry\160\176@\160\160B\160\176\001\003\253!f@\160\176\001\003\254$args@@@@@\208@&curry1\160\176@\160\160C\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@ACDE@")));
             ("caml_oo.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -3948,11 +5504,7 @@ include
             ("caml_string.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002Q\000\000\000\153\000\000\002\026\000\000\002\002\160\208\208\208@#add\160\176@\160\160B\160\176\001\0047$prim@\160\176\001\0046\004\003@@@@@@A)bytes_cat\160\176@\160\160B\160\176\001\003\248!a@\160\176\001\003\249!b@@@@@\208@/bytes_of_string\160\176@\160\160A\160\176\001\004\029!s@@@@@@AB/bytes_to_string\160\176@\160\160A\160\176\001\004,!a@@@@@\208\208\208\208@/caml_blit_bytes\160\176A\160\160E\160\176\001\004\019\"s1@\160\176\001\004\020\"i1@\160\176\001\004\021\"s2@\160\176\001\004\022\"i2@\160\176\001\004\023#len@@@@@@A0caml_blit_string\160\176A\160\160E\160\176\001\004\t\"s1@\160\176\001\004\n\"i1@\160\176\001\004\011\"s2@\160\176\001\004\012\"i2@\160\176\001\004\r#len@@@@@@B2caml_create_string\160\176@\160\160A\160\176\001\003\254#len@@@@@\208@0caml_fill_string\160\176A\160\160D\160\176\001\004\003!s@\160\176\001\004\004!i@\160\176\001\004\005!l@\160\176\001\004\006!c@@@@@@AC1caml_is_printable\160\176A\160\160A\160\176\001\0043!c@@@@@\208\208@3caml_string_compare\160\176A\160\160B\160\176\001\004\000\"s1@\160\176\001\004\001\"s2@@@@@@A/caml_string_get\160\176A\160\160B\160\176\001\003\251!s@\160\176\001\003\252!i@@@@@\208@9caml_string_of_char_array\160\176@\160\160A\160\176\001\004.%chars@@@@@@ABDE@")));
-            ("curry.cmj",
-              (lazy
-                 (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002j\000\000\000\208\000\000\002\154\000\000\002\142\160\208\208\208@$app1\160\176@\160\160B\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A$app2\160\176@\160\160C\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B$app3\160\176@\160\160D\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208\208@$app4\160\176@\160\160E\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A$app5\160\176@\160\160F\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@B$app6\160\176@\160\160G\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208@$app7\160\176@\160\160H\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@$app8\160\176@\160\160I\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB%curry\160\176@\160\160B\160\176\001\003\253!f@\160\176\001\003\254$args@@@@@\208@&curry1\160\176@\160\160C\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@ACDE@")))]
+                    "\132\149\166\190\000\000\002*\000\000\000\141\000\000\001\241\000\000\001\218\160\208\208\208@#add\160\176@\160\160B\160\176\001\0044$prim@\160\176\001\0043\004\003@@@@@@A/bytes_of_string\160\176@\160\160A\160\176\001\004\026!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\160\176\001\004)!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\160\176\001\004\016\"s1@\160\176\001\004\017\"i1@\160\176\001\004\018\"s2@\160\176\001\004\019\"i2@\160\176\001\004\020#len@@@@@@AB0caml_blit_string\160\176A\160\160E\160\176\001\004\006\"s1@\160\176\001\004\007\"i1@\160\176\001\004\b\"s2@\160\176\001\004\t\"i2@\160\176\001\004\n#len@@@@@\208@2caml_create_string\160\176@\160\160A\160\176\001\003\251#len@@@@@\208@0caml_fill_string\160\176A\160\160D\160\176\001\004\000!s@\160\176\001\004\001!i@\160\176\001\004\002!l@\160\176\001\004\003!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\160\176\001\0040!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\160\176\001\003\253\"s1@\160\176\001\003\254\"s2@@@@@@A/caml_string_get\160\176A\160\160B\160\176\001\003\248!s@\160\176\001\003\249!i@@@@@@B9caml_string_of_char_array\160\176@\160\160A\160\176\001\004+%chars@@@@@@CE@")))]
       end 
     module Config_util :
       sig
@@ -3974,7 +5526,7 @@ include
                with
                | v -> Lazy.force v
                | exception Not_found  ->
-                   (Ext_log.warn __LOC__ "@[%s not found @]@." file;
+                   (Ext_log.warn __LOC__ "@[%s not found @]" file;
                     Js_cmj_format.dummy ()))
       end 
     module Lam_compile_env :
@@ -4205,367 +5757,354 @@ include
         module S = Js_helper.Stmt
         let query (prim : Lam_compile_env.primitive_description)
           (args : J.expression list) =
-          (let module X = struct exception NA end in
-             try
-               let v =
-                 match prim.prim_name with
-                 | "caml_gc_stat"|"caml_gc_quick_stat" ->
-                     Js_of_lam_record.make Immutable
-                       (let open E in
-                          [("minor_words", zero_float_lit);
-                          ("promoted_words", zero_float_lit);
-                          ("major_words", zero_float_lit);
-                          ("minor_collections", (int 0));
-                          ("major_collections", (int 0));
-                          ("heap_words", (int 0));
-                          ("heap_chunks", (int 0));
-                          ("live_words", (int 0));
-                          ("live_blocks", (int 0));
-                          ("free_words", (int 0));
-                          ("free_blocks", (int 0));
-                          ("largest_free", (int 0));
-                          ("fragments", (int 0));
-                          ("compactions", (int 0));
-                          ("top_heap_words", (int 0));
-                          ("stack_size", (int 0))])
-                 | "caml_abs_float" -> E.math "abs" args
-                 | "caml_acos_float" -> E.math "acos" args
-                 | "caml_add_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_add e0 e1
-                      | _ -> assert false)
-                 | "caml_div_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_div e0 e1
-                      | _ -> assert false)
-                 | "caml_sub_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_minus e0 e1
-                      | _ -> assert false)
-                 | "caml_eq_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_equal e0 e1
-                      | _ -> assert false)
-                 | "caml_ge_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_comp Cge e0 e1
-                      | _ -> assert false)
-                 | "caml_gt_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_comp Cgt e0 e1
-                      | _ -> assert false)
-                 | "caml_tan_float" -> E.math "tan" args
-                 | "caml_tanh_float" -> E.math "tanh" args
-                 | "caml_asin_float" -> E.math "asin" args
-                 | "caml_atan2_float" -> E.math "atan2" args
-                 | "caml_atan_float" -> E.math "atan" args
-                 | "caml_ceil_float" -> E.math "ceil" args
-                 | "caml_cos_float" -> E.math "cos" args
-                 | "caml_cosh_float" -> E.math "cosh" args
-                 | "caml_exp_float" -> E.math "exp" args
-                 | "caml_sin_float" -> E.math "sin" args
-                 | "caml_sinh_float" -> E.math "sinh" args
-                 | "caml_sqrt_float" -> E.math "sqrt" args
-                 | "caml_float_of_int" ->
-                     (match args with | e::[] -> e | _ -> assert false)
-                 | "caml_floor_float" -> E.math "floor" args
-                 | "caml_log_float" -> E.math "log" args
-                 | "caml_log10_float" -> E.math "log10" args
-                 | "caml_log1p_float" -> E.math "log1p" args
-                 | "caml_power_float" -> E.math "pow" args
-                 | "caml_make_float_vect" ->
-                     E.new_ (E.js_global "Array") args
-                 | "caml_array_append" ->
-                     (match args with
-                      | e0::e1::[] -> E.array_append e0 [e1]
-                      | _ -> assert false)
-                 | "caml_array_get"|"caml_array_get_addr"
-                   |"caml_array_get_float"|"caml_array_unsafe_get"
-                   |"caml_array_unsafe_get_float" ->
-                     (match args with
-                      | e0::e1::[] -> Js_of_lam_array.ref_array e0 e1
-                      | _ -> assert false)
-                 | "caml_array_set"|"caml_array_set_addr"
-                   |"caml_array_set_float"|"caml_array_unsafe_set"
-                   |"caml_array_unsafe_set_addr"
-                   |"caml_array_unsafe_set_float" ->
-                     (match args with
-                      | e0::e1::e2::[] -> Js_of_lam_array.set_array e0 e1 e2
-                      | _ -> assert false)
-                 | "caml_int32_add"|"caml_nativeint_add" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_add e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_div"|"caml_nativeint_div" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_div e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_mul"|"caml_nativeint_mul" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_mul e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_of_int"|"caml_nativeint_of_int"
-                   |"caml_nativeint_of_int32" ->
-                     (match args with | e::[] -> e | _ -> assert false)
-                 | "caml_int32_of_float"|"caml_int_of_float"
-                   |"caml_nativeint_of_float" ->
-                     (match args with
-                      | e::[] -> E.to_int32 e
-                      | _ -> assert false)
-                 | "caml_int32_to_float"|"caml_int32_to_int"
-                   |"caml_nativeint_to_int"|"caml_nativeint_to_float"
-                   |"caml_nativeint_to_int32" ->
-                     (match args with | e::[] -> e | _ -> assert false)
-                 | "caml_int32_sub"|"caml_nativeint_sub" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_minus e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_xor"|"caml_nativeint_xor" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_bxor e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_and"|"caml_nativeint_and" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_band e0 e1
-                      | _ -> assert false)
-                 | "caml_int32_or"|"caml_nativeint_or" ->
-                     (match args with
-                      | e0::e1::[] -> E.int32_bor e0 e1
-                      | _ -> assert false)
-                 | "caml_le_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_comp Cle e0 e1
-                      | _ -> assert false)
-                 | "caml_lt_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_comp Clt e0 e1
-                      | _ -> assert false)
-                 | "caml_neg_float" ->
-                     (match args with
-                      | e::[] -> E.int32_minus (E.int 0) e
-                      | _ -> assert false)
-                 | "caml_neq_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_notequal e0 e1
-                      | _ -> assert false)
-                 | "caml_mul_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_mul e0 e1
-                      | _ -> assert false)
-                 | "caml_int64_bits_of_float"|"caml_int64_float_of_bits"
-                   |"caml_classify_float"|"caml_modf_float"
-                   |"caml_ldexp_float"|"caml_frexp_float"
-                   |"caml_float_compare"|"caml_copysign_float"
-                   |"caml_expm1_float"|"caml_hypot_float" ->
-                     E.runtime_call Js_helper.float prim.prim_name args
-                 | "caml_fmod_float" ->
-                     (match args with
-                      | e0::e1::[] -> E.float_mod e0 e1
-                      | _ -> assert false)
-                 | "caml_string_equal" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_equal e0 e1
-                      | _ -> assert false)
-                 | "caml_string_notequal" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_comp NotEqEq e0 e1
-                      | _ -> assert false)
-                 | "caml_string_lessequal" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_comp Le e0 e1
-                      | _ -> assert false)
-                 | "caml_string_lessthan" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_comp Lt e0 e1
-                      | _ -> assert false)
-                 | "caml_string_greaterequal" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_comp Ge e0 e1
-                      | _ -> assert false)
-                 | "caml_string_greaterthan" ->
-                     (match args with
-                      | e0::e1::[] -> E.string_comp Gt e0 e1
-                      | _ -> assert false)
-                 | "caml_create_string" ->
-                     (match args with
-                      | ({ expression_desc = Number (Int { i;_});_} as v)::[]
-                          when i >= 0 -> E.uninitialized_array v
-                      | _ ->
-                          E.runtime_call Js_helper.string prim.prim_name args)
-                 | "caml_string_get"|"caml_string_compare"|"string_of_bytes"
-                   |"bytes_of_string"|"caml_is_printable"
-                   |"caml_string_of_char_array"|"caml_fill_string"
-                   |"caml_blit_string"|"caml_blit_bytes" ->
-                     E.runtime_call Js_helper.string prim.prim_name args
-                 | "caml_register_named_value" -> E.unit ()
-                 | "caml_gc_compaction"|"caml_gc_full_major"|"caml_gc_major"
-                   |"caml_gc_major_slice"|"caml_gc_minor"|"caml_gc_set"
-                   |"caml_final_register"|"caml_final_release"
-                   |"caml_backtrace_status"|"caml_get_exception_backtrace"
-                   |"caml_get_exception_raw_backtrace"
-                   |"caml_record_backtrace"|"caml_convert_raw_backtrace"
-                   |"caml_get_current_callstack" -> E.unit ()
-                 | "caml_gc_counters" ->
-                     Js_of_lam_tuple.make
-                       (let open E in
-                          [zero_float_lit; zero_float_lit; zero_float_lit])
-                 | "caml_gc_get" ->
-                     E.arr NA
-                       [E.int 0;
-                       E.int ~comment:"minor_heap_size" 0;
-                       E.int ~comment:"major_heap_increment" 0;
-                       E.int ~comment:"space_overhead" 0;
-                       E.int ~comment:"verbose" 0;
-                       E.int ~comment:"max_overhead" 0;
-                       E.int ~comment:"stack_limit" 0;
-                       E.int ~comment:"allocation_policy" 0]
-                 | "caml_set_oo_id" ->
-                     (match args with
-                      | ({
-                           expression_desc = Array
-                             (tag::str::{
-                                          expression_desc = J.Number (Int
-                                            { i = 0;_});_}::[],flag);_}
-                           as v)::[]
-                          ->
-                          {
-                            v with
-                            expression_desc =
-                              (J.Array
-                                 ([tag;
-                                  str;
-                                  E.prefix_inc
-                                    (E.runtime_var_vid Js_helper.exceptions
-                                       "caml_oo_last_id")], flag))
-                          }
-                      | _ ->
-                          E.runtime_call Js_helper.exceptions prim.prim_name
-                            args)
-                 | "caml_sys_const_big_endian" -> E.bool Sys.big_endian
-                 | "caml_sys_const_word_size" -> E.int Sys.word_size
-                 | "caml_sys_const_ostype_cygwin" -> E.false_
-                 | "caml_sys_const_ostype_win32" -> E.false_
-                 | "caml_sys_const_ostype_unix" -> E.true_
-                 | "caml_is_js" -> E.true_
-                 | "caml_sys_get_config" ->
-                     Js_of_lam_tuple.make
-                       [E.str Sys.os_type;
-                       E.int Sys.word_size;
-                       E.bool Sys.big_endian]
-                 | "caml_sys_get_argv" ->
-                     Js_of_lam_tuple.make [E.str "cmd"; E.arr NA []]
-                 | "caml_sys_time"|"caml_sys_random_seed"|"caml_sys_getenv"
-                   |"caml_sys_system_command" ->
-                     E.runtime_call Js_helper.sys prim.prim_name args
-                 | "caml_lex_engine"|"caml_new_lex_engine"
-                   |"caml_parse_engine"|"caml_set_parser_trace" ->
-                     E.runtime_call Js_helper.lex_parse prim.prim_name args
-                 | "caml_array_sub"|"caml_array_concat"|"caml_array_blit"
-                   |"caml_make_vect" ->
-                     E.runtime_call Js_helper.array prim.prim_name args
-                 | "caml_ml_open_descriptor_in"|"caml_ml_open_descriptor_out"
-                   |"caml_ml_output_char"|"caml_ml_output"
-                   |"caml_ml_input_char" ->
-                     E.runtime_call Js_helper.io prim.prim_name args
-                 | "caml_obj_dup" ->
-                     (match args with
-                      | a::[] when Js_helper.is_constant a -> a
-                      | _ ->
-                          E.runtime_call Js_helper.obj_runtime prim.prim_name
-                            args)
-                 | "caml_obj_block" ->
-                     (match args with
-                      | { expression_desc = Number (Int { i = tag;_});_}::
-                          { expression_desc = Number (Int { i = 0;_});_}::[]
-                          -> E.arr Immutable [E.int tag]
-                      | _ ->
-                          E.runtime_call Js_helper.obj_runtime prim.prim_name
-                            args)
-                 | "caml_obj_is_block"|"caml_obj_tag"|"caml_obj_set_tag"
-                   |"caml_obj_truncate"|"caml_lazy_make_forward" ->
-                     E.runtime_call Js_helper.obj_runtime prim.prim_name args
-                 | "caml_format_float"|"caml_format_int"
-                   |"caml_nativeint_format"|"caml_int32_format"
-                   |"caml_float_of_string"|"caml_int_of_string"
-                   |"caml_int32_of_string"|"caml_nativeint_of_string" ->
-                     E.runtime_call Js_helper.format prim.prim_name args
-                 | "caml_update_dummy"|"caml_compare"|"caml_int_compare"
-                   |"caml_int32_compare"|"caml_nativeint_compare"
-                   |"caml_equal"|"caml_notequal"|"caml_greaterequal"
-                   |"caml_greaterthan"|"caml_lessequal"|"caml_lessthan"
-                   |"caml_convert_raw_backtrace_slot"|"caml_bswap16"
-                   |"caml_int32_bswap"|"caml_nativeint_bswap"
-                   |"caml_int64_bswap" ->
-                     E.runtime_call Js_helper.prim prim.prim_name args
-                 | "caml_get_public_method" ->
-                     E.runtime_call Js_helper.oo prim.prim_name args
-                 | "caml_install_signal_handler"
-                   |"caml_output_value_to_buffer"|"caml_marshal_data_size"
-                   |"caml_input_value_from_string"|"caml_output_value"
-                   |"caml_input_value"|"caml_output_value_to_string"
-                   |"caml_int64_format"|"caml_int64_compare"
-                   |"caml_md5_string"|"caml_md5_chan"|"caml_hash"
-                   |"caml_hash_univ_param"|"caml_weak_set"|"caml_weak_create"
-                   |"caml_weak_get"|"caml_weak_check"|"caml_weak_blit"
-                   |"caml_weak_get_copy"|"caml_sys_close"
-                   |"caml_int64_of_string"|"caml_sys_open"|"caml_ml_flush"
-                   |"caml_ml_input"|"caml_ml_input_scan_line"
-                   |"caml_ml_input_int"|"caml_ml_close_channel"
-                   |"caml_ml_output_int"|"caml_sys_exit"
-                   |"caml_ml_out_channels_list"|"caml_ml_channel_size_64"
-                   |"caml_ml_channel_size"|"caml_ml_pos_in_64"
-                   |"caml_ml_pos_in"|"caml_ml_seek_in"|"caml_ml_seek_in_64"
-                   |"caml_ml_pos_out"|"caml_ml_pos_out_64"|"caml_ml_seek_out"
-                   |"caml_ml_seek_out_64"|"caml_ml_set_binary_mode" ->
-                     E.runtime_call Js_helper.prim prim.prim_name args
-                 | "js_function_length" ->
-                     (match args with
-                      | f::[] -> E.function_length f
-                      | _ -> assert false)
-                 | "js_create_array" ->
-                     (match args with
-                      | e::[] -> E.uninitialized_array e
-                      | _ -> assert false)
-                 | "js_array_append" ->
-                     (match args with
-                      | a::b::[] -> E.array_append a [b]
-                      | _ -> assert false)
-                 | "js_string_append" ->
-                     (match args with
-                      | a::b::[] -> E.string_append a b
-                      | _ -> assert false)
-                 | "js_apply" ->
-                     (match args with
-                      | f::args::[] -> E.flat_call f args
-                      | _ -> assert false)
-                 | "js_string_of_small_int_array" ->
-                     (match args with
-                      | e::[] -> E.string_of_small_int_array e
-                      | _ -> assert false)
-                 | "js_typeof" ->
-                     (match args with
-                      | e::[] -> E.typeof e
-                      | _ -> assert false)
-                 | "js_dump" -> E.seq (E.dump Log args) (E.unit ())
-                 | "js_json_stringify" ->
-                     (match args with
-                      | e::[] -> E.to_json_string e
-                      | _ -> assert false)
-                 | "js_apply1"|"js_apply2"|"js_apply3"|"js_apply4"
-                   |"js_apply5"|"js_apply6"|"js_apply7"|"js_apply8" ->
-                     (match args with
-                      | fn::rest -> E.call ~info:{ arity = Full } fn rest
-                      | _ -> assert false)
-                 | _ ->
-                     let comment = "Missing primitve" in
-                     (Ext_log.warn __LOC__ "%s"
-                        (Printf.sprintf "%s: %s\n" comment prim.prim_name);
-                      E.str ~comment ~pure:false prim.prim_name) in
-               v
-             with
-             | X.NA  -> E.runtime_call Js_helper.prim prim.prim_name args : 
-          J.expression)[@@ocaml.doc
-                         " \nThere are two things we need consider:\n1.  For some primitives we can replace caml-primitive with js primitives directly\n2.  For some standard library functions, we prefer to replace with javascript primitives\n    For example [Pervasives[\"^\"] -> ^]\n    We can collect all mli files in OCaml and replace it with an efficient javascript runtime\n"]
+          (match prim.prim_name with
+           | "caml_gc_stat"|"caml_gc_quick_stat" ->
+               Js_of_lam_record.make Immutable
+                 (let open E in
+                    [("minor_words", zero_float_lit);
+                    ("promoted_words", zero_float_lit);
+                    ("major_words", zero_float_lit);
+                    ("minor_collections", (int 0));
+                    ("major_collections", (int 0));
+                    ("heap_words", (int 0));
+                    ("heap_chunks", (int 0));
+                    ("live_words", (int 0));
+                    ("live_blocks", (int 0));
+                    ("free_words", (int 0));
+                    ("free_blocks", (int 0));
+                    ("largest_free", (int 0));
+                    ("fragments", (int 0));
+                    ("compactions", (int 0));
+                    ("top_heap_words", (int 0));
+                    ("stack_size", (int 0))])
+           | "caml_abs_float" -> E.math "abs" args
+           | "caml_acos_float" -> E.math "acos" args
+           | "caml_add_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_add e0 e1
+                | _ -> assert false)
+           | "caml_div_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_div e0 e1
+                | _ -> assert false)
+           | "caml_sub_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_minus e0 e1
+                | _ -> assert false)
+           | "caml_eq_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_equal e0 e1
+                | _ -> assert false)
+           | "caml_ge_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_comp Cge e0 e1
+                | _ -> assert false)
+           | "caml_gt_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_comp Cgt e0 e1
+                | _ -> assert false)
+           | "caml_tan_float" -> E.math "tan" args
+           | "caml_tanh_float" -> E.math "tanh" args
+           | "caml_asin_float" -> E.math "asin" args
+           | "caml_atan2_float" -> E.math "atan2" args
+           | "caml_atan_float" -> E.math "atan" args
+           | "caml_ceil_float" -> E.math "ceil" args
+           | "caml_cos_float" -> E.math "cos" args
+           | "caml_cosh_float" -> E.math "cosh" args
+           | "caml_exp_float" -> E.math "exp" args
+           | "caml_sin_float" -> E.math "sin" args
+           | "caml_sinh_float" -> E.math "sinh" args
+           | "caml_sqrt_float" -> E.math "sqrt" args
+           | "caml_float_of_int" ->
+               (match args with | e::[] -> e | _ -> assert false)
+           | "caml_floor_float" -> E.math "floor" args
+           | "caml_log_float" -> E.math "log" args
+           | "caml_log10_float" -> E.math "log10" args
+           | "caml_log1p_float" -> E.math "log1p" args
+           | "caml_power_float" -> E.math "pow" args
+           | "caml_make_float_vect" -> E.new_ (E.js_global "Array") args
+           | "caml_array_append" ->
+               (match args with
+                | e0::e1::[] -> E.array_append e0 e1
+                | _ -> assert false)
+           | "caml_array_get"|"caml_array_get_addr"|"caml_array_get_float"
+             |"caml_array_unsafe_get"|"caml_array_unsafe_get_float" ->
+               (match args with
+                | e0::e1::[] -> Js_of_lam_array.ref_array e0 e1
+                | _ -> assert false)
+           | "caml_array_set"|"caml_array_set_addr"|"caml_array_set_float"
+             |"caml_array_unsafe_set"|"caml_array_unsafe_set_addr"
+             |"caml_array_unsafe_set_float" ->
+               (match args with
+                | e0::e1::e2::[] -> Js_of_lam_array.set_array e0 e1 e2
+                | _ -> assert false)
+           | "caml_int32_add"|"caml_nativeint_add" ->
+               (match args with
+                | e0::e1::[] -> E.int32_add e0 e1
+                | _ -> assert false)
+           | "caml_int32_div"|"caml_nativeint_div" ->
+               (match args with
+                | e0::e1::[] -> E.int32_div e0 e1
+                | _ -> assert false)
+           | "caml_int32_mul"|"caml_nativeint_mul" ->
+               (match args with
+                | e0::e1::[] -> E.int32_mul e0 e1
+                | _ -> assert false)
+           | "caml_int32_of_int"|"caml_nativeint_of_int"
+             |"caml_nativeint_of_int32" ->
+               (match args with | e::[] -> e | _ -> assert false)
+           | "caml_int32_of_float"|"caml_int_of_float"
+             |"caml_nativeint_of_float" ->
+               (match args with | e::[] -> E.to_int32 e | _ -> assert false)
+           | "caml_int32_to_float"|"caml_int32_to_int"
+             |"caml_nativeint_to_int"|"caml_nativeint_to_float"
+             |"caml_nativeint_to_int32" ->
+               (match args with | e::[] -> e | _ -> assert false)
+           | "caml_int32_sub"|"caml_nativeint_sub" ->
+               (match args with
+                | e0::e1::[] -> E.int32_minus e0 e1
+                | _ -> assert false)
+           | "caml_int32_xor"|"caml_nativeint_xor" ->
+               (match args with
+                | e0::e1::[] -> E.int32_bxor e0 e1
+                | _ -> assert false)
+           | "caml_int32_and"|"caml_nativeint_and" ->
+               (match args with
+                | e0::e1::[] -> E.int32_band e0 e1
+                | _ -> assert false)
+           | "caml_int32_or"|"caml_nativeint_or" ->
+               (match args with
+                | e0::e1::[] -> E.int32_bor e0 e1
+                | _ -> assert false)
+           | "caml_le_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_comp Cle e0 e1
+                | _ -> assert false)
+           | "caml_lt_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_comp Clt e0 e1
+                | _ -> assert false)
+           | "caml_neg_float" ->
+               (match args with
+                | e::[] -> E.int32_minus (E.int 0) e
+                | _ -> assert false)
+           | "caml_neq_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_notequal e0 e1
+                | _ -> assert false)
+           | "caml_mul_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_mul e0 e1
+                | _ -> assert false)
+           | "caml_int64_bits_of_float"|"caml_int64_float_of_bits"
+             |"caml_classify_float"|"caml_modf_float"|"caml_ldexp_float"
+             |"caml_frexp_float"|"caml_float_compare"|"caml_copysign_float"
+             |"caml_expm1_float"|"caml_hypot_float" ->
+               E.runtime_call Js_config.float prim.prim_name args
+           | "caml_fmod_float" ->
+               (match args with
+                | e0::e1::[] -> E.float_mod e0 e1
+                | _ -> assert false)
+           | "caml_string_equal" ->
+               (match args with
+                | e0::e1::[] -> E.string_equal e0 e1
+                | _ -> assert false)
+           | "caml_string_notequal" ->
+               (match args with
+                | e0::e1::[] -> E.string_comp NotEqEq e0 e1
+                | _ -> assert false)
+           | "caml_string_lessequal" ->
+               (match args with
+                | e0::e1::[] -> E.string_comp Le e0 e1
+                | _ -> assert false)
+           | "caml_string_lessthan" ->
+               (match args with
+                | e0::e1::[] -> E.string_comp Lt e0 e1
+                | _ -> assert false)
+           | "caml_string_greaterequal" ->
+               (match args with
+                | e0::e1::[] -> E.string_comp Ge e0 e1
+                | _ -> assert false)
+           | "caml_string_greaterthan" ->
+               (match args with
+                | e0::e1::[] -> E.string_comp Gt e0 e1
+                | _ -> assert false)
+           | "caml_create_string" ->
+               (match args with
+                | ({ expression_desc = Number (Int { i;_});_} as v)::[] when
+                    i >= 0 -> E.uninitialized_array v
+                | _ -> E.runtime_call Js_config.string prim.prim_name args)
+           | "caml_string_get"|"caml_string_compare"|"string_of_bytes"
+             |"bytes_of_string"|"caml_is_printable"
+             |"caml_string_of_char_array"|"caml_fill_string"
+             |"caml_blit_string"|"caml_blit_bytes" ->
+               E.runtime_call Js_config.string prim.prim_name args
+           | "caml_register_named_value" -> E.unit ()
+           | "caml_gc_compaction"|"caml_gc_full_major"|"caml_gc_major"
+             |"caml_gc_major_slice"|"caml_gc_minor"|"caml_gc_set"
+             |"caml_final_register"|"caml_final_release"
+             |"caml_backtrace_status"|"caml_get_exception_backtrace"
+             |"caml_get_exception_raw_backtrace"|"caml_record_backtrace"
+             |"caml_convert_raw_backtrace"|"caml_get_current_callstack" ->
+               E.unit ()
+           | "caml_gc_counters" ->
+               Js_of_lam_tuple.make
+                 (let open E in
+                    [zero_float_lit; zero_float_lit; zero_float_lit])
+           | "caml_gc_get" ->
+               E.arr NA
+                 [E.int 0;
+                 E.int ~comment:"minor_heap_size" 0;
+                 E.int ~comment:"major_heap_increment" 0;
+                 E.int ~comment:"space_overhead" 0;
+                 E.int ~comment:"verbose" 0;
+                 E.int ~comment:"max_overhead" 0;
+                 E.int ~comment:"stack_limit" 0;
+                 E.int ~comment:"allocation_policy" 0]
+           | "caml_set_oo_id" ->
+               (match args with
+                | ({
+                     expression_desc = Array
+                       (tag::str::{
+                                    expression_desc = J.Number (Int
+                                      { i = 0;_});_}::[],flag);_}
+                     as v)::[]
+                    ->
+                    {
+                      v with
+                      expression_desc =
+                        (J.Array
+                           ([tag;
+                            str;
+                            E.prefix_inc
+                              (E.runtime_var_vid Js_config.exceptions
+                                 "caml_oo_last_id")], flag))
+                    }
+                | _ ->
+                    E.runtime_call Js_config.exceptions prim.prim_name args)
+           | "caml_sys_const_big_endian" -> E.bool Sys.big_endian
+           | "caml_sys_const_word_size" -> E.int Sys.word_size
+           | "caml_sys_const_ostype_cygwin" -> E.false_
+           | "caml_sys_const_ostype_win32" -> E.false_
+           | "caml_sys_const_ostype_unix" -> E.true_
+           | "caml_is_js" -> E.true_
+           | "caml_sys_get_config" ->
+               Js_of_lam_tuple.make
+                 [E.str Sys.os_type;
+                 E.int Sys.word_size;
+                 E.bool Sys.big_endian]
+           | "caml_sys_get_argv" ->
+               Js_of_lam_tuple.make [E.str "cmd"; E.arr NA []]
+           | "caml_sys_time"|"caml_sys_random_seed"|"caml_sys_getenv"
+             |"caml_sys_system_command" ->
+               E.runtime_call Js_config.sys prim.prim_name args
+           | "caml_lex_engine"|"caml_new_lex_engine"|"caml_parse_engine"
+             |"caml_set_parser_trace" ->
+               E.runtime_call Js_config.lex_parse prim.prim_name args
+           | "caml_array_sub"|"caml_array_concat"|"caml_array_blit"
+             |"caml_make_vect" ->
+               E.runtime_call Js_config.array prim.prim_name args
+           | "caml_ml_flush"|"caml_ml_out_channels_list"
+             |"caml_ml_open_descriptor_in"|"caml_ml_open_descriptor_out"
+             |"caml_ml_output_char"|"caml_ml_output"|"caml_ml_input_char" ->
+               E.runtime_call Js_config.io prim.prim_name args
+           | "caml_obj_dup" ->
+               (match args with
+                | a::[] when Js_helper.is_constant a -> a
+                | _ ->
+                    E.runtime_call Js_config.obj_runtime prim.prim_name args)
+           | "caml_obj_block" ->
+               (match args with
+                | { expression_desc = Number (Int { i = tag;_});_}::{
+                                                                    expression_desc
+                                                                    = Number
+                                                                    (Int
+                                                                    {
+                                                                    i = 0;_});_}::[]
+                    -> E.arr Immutable [E.int tag]
+                | _ ->
+                    E.runtime_call Js_config.obj_runtime prim.prim_name args)
+           | "caml_obj_is_block"|"caml_obj_tag"|"caml_obj_set_tag"
+             |"caml_obj_truncate"|"caml_lazy_make_forward" ->
+               E.runtime_call Js_config.obj_runtime prim.prim_name args
+           | "caml_format_float"|"caml_format_int"|"caml_nativeint_format"
+             |"caml_int32_format"|"caml_float_of_string"|"caml_int_of_string"
+             |"caml_int32_of_string"|"caml_nativeint_of_string" ->
+               E.runtime_call Js_config.format prim.prim_name args
+           | "caml_update_dummy"|"caml_compare"|"caml_int_compare"
+             |"caml_int32_compare"|"caml_nativeint_compare"|"caml_equal"
+             |"caml_notequal"|"caml_greaterequal"|"caml_greaterthan"
+             |"caml_lessequal"|"caml_lessthan"
+             |"caml_convert_raw_backtrace_slot"|"caml_bswap16"
+             |"caml_int32_bswap"|"caml_nativeint_bswap"|"caml_int64_bswap" ->
+               E.runtime_call Js_config.prim prim.prim_name args
+           | "caml_get_public_method" ->
+               E.runtime_call Js_config.oo prim.prim_name args
+           | "caml_install_signal_handler"|"caml_output_value_to_buffer"
+             |"caml_marshal_data_size"|"caml_input_value_from_string"
+             |"caml_output_value"|"caml_input_value"
+             |"caml_output_value_to_string"|"caml_int64_format"
+             |"caml_int64_compare"|"caml_md5_string"|"caml_md5_chan"
+             |"caml_hash"|"caml_hash_univ_param"|"caml_weak_set"
+             |"caml_weak_create"|"caml_weak_get"|"caml_weak_check"
+             |"caml_weak_blit"|"caml_weak_get_copy"|"caml_sys_close"
+             |"caml_int64_of_string"|"caml_sys_open"|"caml_ml_input"
+             |"caml_ml_input_scan_line"|"caml_ml_input_int"
+             |"caml_ml_close_channel"|"caml_ml_output_int"|"caml_sys_exit"
+             |"caml_ml_channel_size_64"|"caml_ml_channel_size"
+             |"caml_ml_pos_in_64"|"caml_ml_pos_in"|"caml_ml_seek_in"
+             |"caml_ml_seek_in_64"|"caml_ml_pos_out"|"caml_ml_pos_out_64"
+             |"caml_ml_seek_out"|"caml_ml_seek_out_64"
+             |"caml_ml_set_binary_mode"|"caml_sys_getcwd" ->
+               E.runtime_call Js_config.prim prim.prim_name args
+           | "js_function_length" ->
+               (match args with
+                | f::[] -> E.function_length f
+                | _ -> assert false)
+           | "js_create_array" ->
+               (match args with
+                | e::[] -> E.uninitialized_array e
+                | _ -> assert false)
+           | "js_array_append" ->
+               (match args with
+                | a::b::[] -> E.array_append a b
+                | _ -> assert false)
+           | "js_string_append" ->
+               (match args with
+                | a::b::[] -> E.string_append a b
+                | _ -> assert false)
+           | "js_apply" ->
+               (match args with
+                | f::args::[] -> E.flat_call f args
+                | _ -> assert false)
+           | "js_string_of_small_int_array" ->
+               (match args with
+                | e::[] -> E.string_of_small_int_array e
+                | _ -> assert false)
+           | "js_typeof" ->
+               (match args with | e::[] -> E.typeof e | _ -> assert false)
+           | "js_dump" -> E.seq (E.dump Log args) (E.unit ())
+           | "caml_anything_to_string"|"js_anything_to_string" ->
+               (match args with
+                | e::[] -> E.anything_to_string e
+                | _ -> assert false)
+           | "js_json_stringify" ->
+               (match args with
+                | e::[] -> E.to_json_string e
+                | _ -> assert false)
+           | "js_apply1"|"js_apply2"|"js_apply3"|"js_apply4"|"js_apply5"
+             |"js_apply6"|"js_apply7"|"js_apply8" ->
+               (match args with
+                | fn::rest -> E.call ~info:{ arity = Full } fn rest
+                | _ -> assert false)
+           | _ ->
+               let comment = "Missing primitve" in
+               (Ext_log.warn __LOC__ "%s"
+                  (Printf.sprintf "%s: %s\n" comment prim.prim_name);
+                E.dump ~comment Error
+                  [E.str ~comment ~pure:false prim.prim_name]) : J.expression)
+          [@@ocaml.doc
+            " \nThere are two things we need consider:\n1.  For some primitives we can replace caml-primitive with js primitives directly\n2.  For some standard library functions, we prefer to replace with javascript primitives\n    For example [Pervasives[\"^\"] -> ^]\n    We can collect all mli files in OCaml and replace it with an efficient javascript runtime\n"]
       end 
     module Lam_compile_global :
       sig
@@ -4608,7 +6147,7 @@ include
                            | _ -> E.ml_var_dot id name)
            | QueryGlobal (id,env,expand) ->
                if Ident.is_predef_exn id
-               then E.runtime_ref Js_helper.exceptions id.name
+               then E.runtime_ref Js_config.exceptions id.name
                else
                  Lam_compile_env.query_and_add_if_not_exist
                    (Lam_module_ident.of_ml id) env
@@ -4637,6 +6176,8 @@ include
                        match (id, name, args) with
                        | ({ name = "Pervasives";_},"^",e0::e1::[]) ->
                            E.string_append e0 e1
+                       | ({ name = "Pervasives";_},"string_of_int",e::[]) ->
+                           E.int_to_string e
                        | ({ name = "Pervasives";_},"print_endline",(_::[] as
                                                                     args))
                            -> E.seq (E.dump Log args) (E.unit ())
@@ -4944,7 +6485,7 @@ include
                          (match qualifiers @ [fn] with
                           | y::ys -> List.fold_left E.dot (E.js_var y) ys
                           | _ -> assert false) in
-                   E.call fn args
+                   E.call ~info:{ arity = Full } fn args
                | None  -> assert false)
           | Js_new
               { external_module_name = module_name; txt = { name = fn } } ->
@@ -4973,7 +6514,8 @@ include
                      let args =
                        Ext_list.flat_map2_last (ocaml_to_js js_splice)
                          arg_types args in
-                     E.call (E.dot self name) args)[@warning "-8"])
+                     E.call ~info:{ arity = Full } (E.dot self name) args)
+                   [@warning "-8"])
                | _ -> assert false)
           | Normal  ->
               Lam_compile_global.get_exp (CamlRuntimePrimitive (prim, args))
@@ -5007,9 +6549,9 @@ include
             let set_byte e e0 e1 =
               E.assign (E.access e e0) (E.char_to_int e1)
             let bytes_to_string e =
-              E.runtime_call Js_helper.string "bytes_to_string" [e]
+              E.runtime_call Js_config.string "bytes_to_string" [e]
             let bytes_of_string s =
-              E.runtime_call Js_helper.string "bytes_of_string" [s]
+              E.runtime_call Js_config.string "bytes_of_string" [s]
           end
         module B =
           struct
@@ -5026,10 +6568,10 @@ include
             [@@@ocaml.text
               "\n   Note that [String.fromCharCode] also works, but it only \n   work for small arrays, however, for {bytes_to_string} it is likely the bytes \n   will become big\n   {[\n   String.fromCharCode.apply(null,[87,97])\n   \"Wa\"\n   String.fromCharCode(87,97)\n   \"Wa\" \n   ]}\n   This does not work for large arrays\n   {[\n   String.fromCharCode.apply(null, prim = Array[1048576]) \n   Maxiume call stack size exceeded\n   ]}\n "]
             let bytes_to_string e =
-              E.runtime_call Js_helper.string "bytes_to_string" [e][@@ocaml.text
+              E.runtime_call Js_config.string "bytes_to_string" [e][@@ocaml.text
                                                                     "\n   Note that [String.fromCharCode] also works, but it only \n   work for small arrays, however, for {bytes_to_string} it is likely the bytes \n   will become big\n   {[\n   String.fromCharCode.apply(null,[87,97])\n   \"Wa\"\n   String.fromCharCode(87,97)\n   \"Wa\" \n   ]}\n   This does not work for large arrays\n   {[\n   String.fromCharCode.apply(null, prim = Array[1048576]) \n   Maxiume call stack size exceeded\n   ]}\n "]
             let bytes_of_string s =
-              E.runtime_call Js_helper.string "bytes_of_string" [s]
+              E.runtime_call Js_config.string "bytes_of_string" [s]
           end
         include B
       end 
@@ -5102,151 +6644,149 @@ include
            | Pfield i ->
                (match args with
                 | e::[] -> Js_of_lam_block.field e i
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pnegint |Pnegbint _|Pnegfloat  ->
                (match args with
                 | e::[] -> E.int32_minus (E.int 0) e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pnot  ->
-               (match args with
-                | e::[] -> E.not e
-                | _ -> E.unknown_primitive prim)
+               (match args with | e::[] -> E.not e | _ -> assert false)
            | Poffsetint n ->
                (match args with
                 | e::[] -> E.int32_add e (E.int n)
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Poffsetref n ->
                (match args with
                 | e::[] ->
                     let v = Js_of_lam_block.field e 0 in
                     E.assign v (E.int32_add v (E.int n))
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Paddint |Paddbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_add e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Paddfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_add e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psubint |Psubbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_minus e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psubfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_minus e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pmulint |Pmulbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_mul e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pmulfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_mul e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pdivfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_div e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pdivint |Pdivbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_div e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pmodint |Pmodbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_mod e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Plslint |Plslbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_lsl e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Plsrint |Plsrbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_lsr e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pasrint |Pasrbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_asr e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pandint |Pandbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_band e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Porint |Porbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_bor e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pxorint |Pxorbint _ ->
                (match args with
                 | e1::e2::[] -> E.int32_bxor e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psequand  ->
                (match args with
                 | e1::e2::[] -> E.and_ e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psequor  ->
                (match args with
                 | e1::e2::[] -> E.or_ e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pisout  ->
                (match args with
                 | range::e::[] -> E.is_out e range
-                | _ -> E.unknown_primitive prim)
-           | Pidentity  ->
-               (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
+           | Pidentity  -> (match args with | e::[] -> e | _ -> assert false)
            | Pmark_ocaml_object  ->
-               (match args with
-                | e::[] -> E.tag_ml_obj e
-                | _ -> E.unknown_primitive prim)
+               (match args with | e::[] -> E.tag_ml_obj e | _ -> assert false)
            | Pchar_of_int  ->
                (match args with
                 | e::[] -> Js_of_lam_string.caml_char_of_int e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pchar_to_int  ->
                (match args with
                 | e::[] -> Js_of_lam_string.caml_char_to_int e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pbytes_of_string  ->
                (match args with
                 | e::[] -> Js_of_lam_string.bytes_of_string e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pbytes_to_string  ->
                (match args with
                 | e::[] -> Js_of_lam_string.bytes_to_string e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pstringlength  ->
                (match args with
                 | e::[] -> E.string_length e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pbyteslength  ->
                (match args with
                 | e::[] -> E.bytes_length e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pbytessetu |Pbytessets  ->
                (match args with
                 | e::e0::e1::[] ->
                     decorate_side_effect cxt
                       (Js_of_lam_string.set_byte e e0 e1)
-                | _ -> E.unknown_primitive prim)
-           | Pstringsetu |Pstringsets  -> E.unknown_primitive prim
+                | _ -> assert false)
+           | Pstringsetu |Pstringsets  ->
+               (Ext_log.err __LOC__
+                  "string is immutable, %s is not available"
+                  "string.unsafe_get";
+                assert false)
            | Pbytesrefu |Pbytesrefs  ->
                (match args with
                 | e::e1::[] -> Js_of_lam_string.ref_byte e e1
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pstringrefu |Pstringrefs  ->
                (match args with
                 | e::e1::[] -> Js_of_lam_string.ref_string e e1
-                | _ -> E.unknown_primitive prim)
-           | Pignore  ->
-               (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
+           | Pignore  -> (match args with | e::[] -> e | _ -> assert false)
            | Pbintcomp (_,cmp)|Pfloatcomp cmp|Pintcomp cmp ->
                (match args with
                 | e1::e2::[] -> E.int_comp cmp e1 e2
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pgetglobal i ->
                Lam_compile_global.get_exp (QueryGlobal (i, env, false))
-           | Praise _raise_kind -> E.unknown_primitive prim
+           | Praise _raise_kind -> assert false
            | Prevapply _ ->
                (match args with
                 | arg::f::[] -> E.call f [arg]
@@ -5254,53 +6794,53 @@ include
            | Pdirapply _ ->
                (match args with
                 | f::arg::[] -> E.call f [arg]
-                | _ -> E.unknown_primitive prim)
-           | Ploc kind -> E.unknown_primitive prim
+                | _ -> assert false)
+           | Ploc kind -> assert false
            | Pintoffloat  ->
-               (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
+               (match args with | e::[] -> e | _ -> assert false)
            | Parraylength _ ->
                (match args with
                 | e::[] -> E.array_length e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psetfield (i,_) ->
                (match args with
                 | e0::e1::[] ->
                     decorate_side_effect cxt
                       (Js_of_lam_block.set_field e0 i e1)
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Psetfloatfield i ->
                (match args with
                 | e::e0::[] ->
                     decorate_side_effect cxt
                       (Js_of_lam_float_record.set_double_field e i e0)
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pfloatfield i ->
                (match args with
                 | e::[] -> Js_of_lam_float_record.get_double_feild e i
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Parrayrefu _kind|Parrayrefs _kind ->
                (match args with
                 | e::e1::[] -> Js_of_lam_array.ref_array e e1
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pmakearray kind -> Js_of_lam_array.make_array Mutable kind args
            | Parraysetu _kind|Parraysets _kind ->
                (match args with
                 | e::e0::e1::[] ->
                     (decorate_side_effect cxt) @@
                       (Js_of_lam_array.set_array e e0 e1)
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pbintofint _|Pintofbint _|Pfloatofint  ->
-               (match args with | e::[] -> e | _ -> E.unknown_primitive prim)
+               (match args with | e::[] -> e | _ -> assert false)
            | Pabsfloat  ->
                (match args with
                 | e::[] -> E.math "abs" [e]
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pccall ({ prim_attributes; prim_ty } as prim) ->
                Lam_compile_external_call.translate cxt prim args
            | Pisint  ->
                (match args with
                 | e::[] -> E.is_type_number e
-                | _ -> E.unknown_primitive prim)
+                | _ -> assert false)
            | Pctconst ct ->
                (match ct with
                 | Big_endian  -> if Sys.big_endian then E.true_ else E.false_
@@ -5309,10 +6849,8 @@ include
                 | Ostype_win32  -> if Sys.win32 then E.true_ else E.false_
                 | Ostype_cygwin  -> if Sys.cygwin then E.true_ else E.false_)
            | Pcvtbint (_boxed_integer_source,_boxed_integer_dest) ->
-               (match args with
-                | e0::[] -> e0
-                | _ -> E.unknown_primitive prim)
-           | Psetglobal _ -> E.unknown_primitive prim
+               (match args with | e0::[] -> e0 | _ -> assert false)
+           | Psetglobal _ -> assert false
            | Pduprecord ((Record_regular |Record_float ),_) ->
                (match args with | e::[] -> E.array_copy e | _ -> assert false)
            | Plazyforce |Pbittest |Pbigarrayref (_,_,_,_)|Pbigarrayset
@@ -5321,7 +6859,11 @@ include
              |Pstring_set_64 _|Pbigstring_load_16 _|Pbigstring_load_32 _
              |Pbigstring_load_64 _|Pbigstring_set_16 _|Pbigstring_set_32 _
              |Pbigstring_set_64 _|Pbswap16 |Pbbswap _|Pint_as_pointer  ->
-               E.unknown_primitive prim : J.expression)
+               let comment = "Missing primitve" in
+               let s = Lam_util.string_of_primitive prim in
+               let warn = Printf.sprintf "%s: %s\n" comment s in
+               (Ext_log.warn __LOC__ "%s" warn; E.dump Error [E.str warn]) : 
+          J.expression)
       end 
     module Lam_compile_const :
       sig
@@ -5418,7 +6960,7 @@ include
                    if ret.triggered
                    then
                      let body_block = Js_output.to_block output in
-                     E.efun ~immutable_mask:(ret.immutable_mask)
+                     E.fun_ ~immutable_mask:(ret.immutable_mask)
                        (List.map
                           (fun x  ->
                              try Ident_map.find x ret.new_params
@@ -5431,7 +6973,7 @@ include
                                     (S.define ~kind:Alias old
                                        (E.var new_param))
                                     :: acc) ret.new_params body_block)]
-                   else E.efun params (Js_output.to_block output))), [])
+                   else E.fun_ params (Js_output.to_block output))), [])
           | Lprim (Pmakeblock _,_) ->
               (match compile_lambda
                        { cxt with st = NeedValue; should_return = False } arg
@@ -5440,7 +6982,7 @@ include
                    ((Js_output.of_block
                        (b @
                           [S.exp
-                             (E.runtime_call Js_helper.prim
+                             (E.runtime_call Js_config.prim
                                 "caml_update_dummy" [E.var id; v])])), 
                      [id])
                | _ -> assert false)
@@ -5586,7 +7128,7 @@ include
           (match lam with
            | Lfunction (kind,params,body) ->
                Js_output.handle_name_tail st should_return lam
-                 (E.efun params
+                 (E.fun_ params
                     (Js_output.to_block
                        (compile_lambda
                           {
@@ -5657,52 +7199,55 @@ include
                   | (Lvar id',True (Some ({ id; label; params;_} as ret)))
                       when Ident.same id id' ->
                       (ret.triggered <- true;
-                       Js_output.of_block
-                         ((List.concat args_code) @
-                            (let (_,assigned_params,new_params) =
-                               List.fold_left2
-                                 (fun (i,assigns,new_params)  ->
-                                    fun param  ->
-                                      fun (arg : J.expression)  ->
-                                        match arg with
-                                        | { expression_desc = Var (Id x);_}
-                                            when Ident.same x param ->
-                                            ((i + 1), assigns, new_params)
-                                        | _ ->
-                                            let (new_param,m) =
-                                              match Ident_map.find param
-                                                      ret.new_params
-                                              with
-                                              | exception Not_found  ->
-                                                  ((ret.immutable_mask).(i)
-                                                   <- false;
-                                                   (let v =
-                                                      Ext_ident.create
-                                                        ("_" ^
-                                                           param.Ident.name) in
-                                                    (v,
-                                                      (Ident_map.add param v
-                                                         new_params))))
-                                              | v -> (v, new_params) in
-                                            ((i + 1), ((new_param, arg) ::
-                                              assigns), m))
-                                 (0, [], Ident_map.empty) params args in
-                             let () =
-                               ret.new_params <-
-                                 let open Ident_map in
-                                   merge_disjoint new_params ret.new_params in
-                             assigned_params |>
-                               (List.map
-                                  (fun (param,arg)  -> S.assign param arg)))))
+                       (let block =
+                          (List.concat args_code) @
+                            ((let (_,assigned_params,new_params) =
+                                List.fold_left2
+                                  (fun (i,assigns,new_params)  ->
+                                     fun param  ->
+                                       fun (arg : J.expression)  ->
+                                         match arg with
+                                         | { expression_desc = Var (Id x);_}
+                                             when Ident.same x param ->
+                                             ((i + 1), assigns, new_params)
+                                         | _ ->
+                                             let (new_param,m) =
+                                               match Ident_map.find param
+                                                       ret.new_params
+                                               with
+                                               | exception Not_found  ->
+                                                   ((ret.immutable_mask).(i)
+                                                    <- false;
+                                                    (let v =
+                                                       Ext_ident.create
+                                                         ("_" ^
+                                                            param.Ident.name) in
+                                                     (v,
+                                                       (Ident_map.add param v
+                                                          new_params))))
+                                               | v -> (v, new_params) in
+                                             ((i + 1), ((new_param, arg) ::
+                                               assigns), m))
+                                  (0, [], Ident_map.empty) params args in
+                              let () =
+                                ret.new_params <-
+                                  let open Ident_map in
+                                    merge_disjoint new_params ret.new_params in
+                              assigned_params |>
+                                (List.map
+                                   (fun (param,arg)  -> S.assign param arg)))
+                               @ [S.continue ()]) in
+                        Js_output.of_block ~finished:True block))
                   | _ ->
                       Js_output.handle_block_return st should_return lam
                         (List.concat args_code)
                         (E.call
-                           ~info:(match info with
-                                  | { apply_status = Full  } ->
+                           ~info:(match (fn, info) with
+                                  | (_,{ apply_status = Full  }) ->
                                       { arity = Full }
-                                  | { apply_status = NA  } -> { arity = NA })
-                           fn_code args)))[@warning "-8"])
+                                  | (_,{ apply_status = NA  }) ->
+                                      { arity = NA }) fn_code args)))
+               [@warning "-8"])
            | Llet (let_kind,id,arg,body) ->
                let args_code = compile_let let_kind cxt id arg in
                args_code ++ (compile_lambda cxt body)
@@ -5725,6 +7270,66 @@ include
                     Js_output.make (b @ [S.throw v]) ~value:(E.undefined ())
                       ~finished:True
                 | { value = None ;_} -> assert false)
+           | Lprim (Psequand ,l::r::[]) ->
+               (match cxt with
+                | { should_return = True _ } ->
+                    compile_lambda cxt
+                      (Lifthenelse (l, r, Lam_util.lam_false))
+                | _ ->
+                    let (l_block,l_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } l
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let (r_block,r_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } r
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let args_code = l_block @ r_block in
+                    let exp = E.and_ l_expr r_expr in
+                    Js_output.handle_block_return st should_return lam
+                      args_code exp)
+           | Lprim (Psequor ,l::r::[]) ->
+               (match cxt with
+                | { should_return = True _ } ->
+                    compile_lambda cxt
+                      (Lifthenelse (l, Lam_util.lam_true, r))
+                | _ ->
+                    let (l_block,l_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } l
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let (r_block,r_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } r
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let args_code = l_block @ r_block in
+                    let exp = E.or_ l_expr r_expr in
+                    Js_output.handle_block_return st should_return lam
+                      args_code exp)
            | Lprim (prim,args_lambda) ->
                let (args_block,args_expr) =
                  (args_lambda |>
@@ -5749,7 +7354,7 @@ include
                  compile_lambda
                    { cxt with st = EffectCall; should_return = False } l1 in
                let output_l2 = compile_lambda cxt l2 in
-               output_l1 ++ output_l2
+               let result = output_l1 ++ output_l2 in result
            | Lifthenelse (p,t_br,f_br) ->
                (match compile_lambda
                         { cxt with st = NeedValue; should_return = False } p
@@ -6154,7 +7759,7 @@ include
                            (obj' :: args))
                   | Cached |Public (None ) ->
                       let get =
-                        E.runtime_ref Js_helper.oo "caml_get_public_method" in
+                        E.runtime_ref Js_config.oo "caml_get_public_method" in
                       let cache = !method_cache_id in
                       let () = incr method_cache_id in
                       Js_output.handle_block_return st should_return lam
@@ -6206,7 +7811,7 @@ include
                            Js_output.handle_block_return st should_return lam
                              (List.concat args_code)
                              (E.call
-                                (E.runtime_call Js_helper.oo
+                                (E.runtime_call Js_config.oo
                                    "caml_get_public_method"
                                    [obj'; label; E.int cache]) (obj' :: args)))))
                [@warning "-8"])
@@ -6227,30 +7832,6 @@ include
           | Llet _|Lletrec _|Lstringswitch _|Lswitch _|Lstaticraise _
             |Lfunction _|Lstaticcatch _|Ltrywith _|Lifthenelse _|Lsequence _
             |Lwhile _|Lfor _|Lassign _|Lsend _|Levent _|Lifused _ -> false
-      end 
-    module Ext_pervasives :
-      sig
-        [@@@ocaml.text
-          " Extension to standard library [Pervavives] module, safe to open \n  "]
-        external reraise : exn -> 'a = "%reraise"
-        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
-        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-      end =
-      struct
-        external reraise : exn -> 'a = "%reraise"
-        let finally v f action =
-          match f v with
-          | exception e -> (action v; reraise e)
-          | e -> (action v; e)
-        let with_file_as_chan filename f =
-          let chan = open_out filename in finally chan f close_out
-        let with_file_as_pp filename f =
-          let chan = open_out filename in
-          finally chan
-            (fun chan  ->
-               let fmt = Format.formatter_of_out_channel chan in
-               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
       end 
     module Ext_option :
       sig
@@ -6512,6 +8093,11 @@ include
             Ident.t list ->
               Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
         val refresh : Lambda.lambda -> Lambda.lambda
+        val propogate_beta_reduce_with_map :
+          Lam_stats.meta ->
+            Lam_analysis.stats Ident_map.t ->
+              Ident_map.key list ->
+                Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
       end =
       struct
         let rewrite (map : (Ident.t,_) Hashtbl.t) (lam : Lambda.lambda) =
@@ -6625,6 +8211,57 @@ include
                         arg)
                    | _ -> arg in
                  Lam_util.refine_let param arg l) rest_bindings new_body
+        let propogate_beta_reduce_with_map (meta : Lam_stats.meta)
+          (map : Lam_analysis.stats Ident_map.t) params body args =
+          let (rest_bindings,rev_new_params) =
+            List.fold_left2
+              (fun (rest_bindings,acc)  ->
+                 fun old_param  ->
+                   fun (arg : Lambda.lambda)  ->
+                     match arg with
+                     | Lconst _|Lvar _ -> (rest_bindings, (arg :: acc))
+                     | Lprim (Pgetglobal ident,[]) ->
+                         let p = Ident.rename old_param in
+                         (((p, arg) :: rest_bindings), ((Lambda.Lvar p) ::
+                           acc))
+                     | _ ->
+                         if Lam_analysis.no_side_effects arg
+                         then
+                           (match Ident_map.find old_param map with
+                            | exception Not_found  -> assert false
+                            | { top = true ; times = 0 }
+                              |{ top = true ; times = 1 } ->
+                                (rest_bindings, (arg :: acc))
+                            | _ ->
+                                let p = Ident.rename old_param in
+                                (((p, arg) :: rest_bindings),
+                                  ((Lambda.Lvar p) :: acc)))
+                         else
+                           (let p = Ident.rename old_param in
+                            (((p, arg) :: rest_bindings), ((Lambda.Lvar p) ::
+                              acc)))) ([], []) params args in
+          let new_body =
+            rewrite (Ext_hashtbl.of_list2 (List.rev params) rev_new_params)
+              body in
+          List.fold_right
+            (fun (param,(arg : Lambda.lambda))  ->
+               fun l  ->
+                 let arg =
+                   match arg with
+                   | Lvar v ->
+                       ((match Hashtbl.find meta.ident_tbl v with
+                         | exception Not_found  -> ()
+                         | ident_info ->
+                             Hashtbl.add meta.ident_tbl param ident_info);
+                        arg)
+                   | Lprim (Pgetglobal ident,[]) ->
+                       Lam_compile_global.query_lambda ident meta.env
+                   | Lprim (Pmakeblock (_,_,Immutable ),ls) ->
+                       (Hashtbl.replace meta.ident_tbl param
+                          (Lam_util.kind_of_lambda_block ls);
+                        arg)
+                   | _ -> arg in
+                 Lam_util.refine_let param arg l) rest_bindings new_body
         let beta_reduce params body args =
           List.fold_left2
             (fun l  ->
@@ -6647,7 +8284,7 @@ include
                    with | Not_found  -> lam)
               | Llet (kind,k,(Lprim (Pgetglobal i,[]) as g),l) ->
                   let v = simpl l in
-                  if Lambda.IdentSet.mem k meta.export_idents
+                  if Ident_set.mem k meta.export_idents
                   then Llet (kind, k, g, v)
                   else v
               | Lprim (Pfield i,(Lvar v)::[]) ->
@@ -6702,23 +8339,30 @@ include
                               (Lam_beta_reduce.propogate_beta_reduce meta
                                  params body args)
                           else
-                            if
-                              (lam_size < Lam_analysis.small_inline_size) &&
-                                ((Lam_analysis.is_closed_by
-                                    meta.export_idents _m)
-                                   ||
-                                   (not
-                                      (Lambda.IdentSet.mem v
-                                         meta.export_idents)))
+                            if lam_size < Lam_analysis.small_inline_size
                             then
-                              (if rec_flag = Rec
+                              (let param_fresh_map =
+                                 Lam_analysis.param_map_of_list params in
+                               let param_map =
+                                 Lam_analysis.free_variables
+                                   meta.export_idents param_fresh_map body in
+                               let old_count = List.length params in
+                               let new_count = Ident_map.cardinal param_map in
+                               if
+                                 (not (Ident_set.mem v meta.export_idents))
+                                   || (old_count = new_count)
                                then
-                                 Lam_beta_reduce.propogate_beta_reduce meta
-                                   params body args
+                                 (if rec_flag = Rec
+                                  then
+                                    Lam_beta_reduce.propogate_beta_reduce_with_map
+                                      meta param_map params body args
+                                  else
+                                    simpl
+                                      (Lam_beta_reduce.propogate_beta_reduce_with_map
+                                         meta param_map params body args))
                                else
-                                 simpl
-                                   (Lam_beta_reduce.propogate_beta_reduce
-                                      meta params body args))
+                                 Lapply
+                                   ((simpl l1), (List.map simpl args), info))
                             else
                               Lapply
                                 ((simpl l1), (List.map simpl args), info))
@@ -7288,7 +8932,7 @@ include
                   annotate meta rec_flag ident arity lam; collect l))
             | x ->
                 (collect x;
-                 if Lambda.IdentSet.mem ident meta.export_idents
+                 if Ident_set.mem ident meta.export_idents
                  then
                    annotate meta rec_flag ident
                      (Lam_stats_util.get_arity meta x) lam)
@@ -7538,10 +9182,10 @@ include
       sig
         [@@@ocaml.text
           " A module to create the whole JS program IR with [requires] and [exports] "]
-        val make_program :
-          string ->
-            string option ->
-              Ident.t list -> Lam_module_ident.t list -> J.block -> J.program
+        val make_program : string -> Ident.t list -> J.block -> J.program
+        val decorate_deps :
+          J.required_modules -> string option -> J.program -> J.deps_program
+        val string_of_module_id : Lam_module_ident.t -> string
       end =
       struct
         module E = Js_helper.Exp
@@ -7553,43 +9197,45 @@ include
            | Runtime |Ml  ->
                let id = x.id in
                let file = Printf.sprintf "%s.js" id.name in
-               if Ext_string.starts_with id.name "Caml_"
-               then
-                 let path =
-                   match Sys.getenv "OCAML_JS_RUNTIME_PATH" with
-                   | exception Not_found  ->
-                       Filename.concat
-                         (Filename.dirname
-                            (Filename.dirname Sys.executable_name)) "runtime"
-                   | f -> f in
-                 Ext_filename.node_relative_path (!Location.input_name)
-                   (Filename.concat path (String.uncapitalize id.name))
-               else
-                 (match Config_util.find file with
-                  | exception Not_found  ->
-                      (Ext_log.warn __LOC__
-                         "@[%s not found in search path - while compiling %s @] @."
-                         file (!Location.input_name);
-                       Printf.sprintf "%s" (String.uncapitalize id.name))
-                  | path ->
+               (match Js_config.get_env () with
+                | Browser  ->
+                    let target = String.uncapitalize file in
+                    if String_set.mem target Js_config.runtime_set
+                    then "./runtime/" ^ (Filename.chop_extension target)
+                    else "./stdlib/" ^ (Filename.chop_extension target)
+                | NodeJS  ->
+                    if Ext_string.starts_with id.name "Caml_"
+                    then
+                      let path =
+                        match Sys.getenv "OCAML_JS_RUNTIME_PATH" with
+                        | exception Not_found  ->
+                            Filename.concat
+                              (Filename.dirname
+                                 (Filename.dirname Sys.executable_name))
+                              "runtime"
+                        | f -> f in
                       Ext_filename.node_relative_path (!Location.input_name)
-                        path)
+                        (Filename.concat path (String.uncapitalize id.name))
+                    else
+                      (match Config_util.find file with
+                       | exception Not_found  ->
+                           (Ext_log.warn __LOC__
+                              "@[%s not found in search path - while compiling %s @] "
+                              file (!Location.input_name);
+                            Printf.sprintf "%s" (String.uncapitalize id.name))
+                       | path ->
+                           Ext_filename.node_relative_path
+                             (!Location.input_name) path))
            | External name -> name : string)
-        let make_program name side_effect export_idents external_module_ids
-          block =
-          (let modules =
-             List.map
-               (fun id  ->
-                  ((Lam_module_ident.id id), (string_of_module_id id)))
-               external_module_ids in
-           {
+        let make_program name export_idents block =
+          ({
              name;
-             modules;
              exports = export_idents;
              export_set = (Ident_set.of_list export_idents);
-             block;
-             side_effect
+             block
            } : J.program)
+        let decorate_deps modules side_effect program =
+          ({ program; modules; side_effect } : J.deps_program)
       end 
     module Js_pass_scope :
       sig
@@ -7668,17 +9314,18 @@ include
               | { ident; value; property } ->
                   let obj =
                     (match ((self#get_in_loop), property) with
-                     | (true ,Mutable ) ->
+                     | (true ,Variable ) ->
                          self#add_loop_mutable_variable ident
-                     | (true ,Immutable ) ->
+                     | (true ,(Strict |StrictOpt |Alias )) ->
                          (match value with
                           | None  -> self#add_loop_mutable_variable ident
                           | Some x ->
                               (match x.expression_desc with
                                | Fun _|Number _|Str _ -> self
                                | _ -> self#add_loop_mutable_variable ident))
-                     | (false ,Mutable ) -> self#add_mutable_variable ident
-                     | (false ,Immutable ) -> self)#add_defined_ident ident in
+                     | (false ,Variable ) -> self#add_mutable_variable ident
+                     | (false ,(Strict |StrictOpt |Alias )) -> self)#add_defined_ident
+                      ident in
                   (match value with
                    | None  -> obj
                    | Some x -> obj#expression x)
@@ -7846,22 +9493,18 @@ include
             method property : property -> property= o#unknown
             method program : program -> program=
               fun
-                { name = _x; modules = _x_i1; block = _x_i2; exports = _x_i3;
-                  export_set = _x_i4; side_effect = _x_i5 }
+                { name = _x; block = _x_i1; exports = _x_i2;
+                  export_set = _x_i3 }
                  ->
                 let _x = o#string _x in
-                let _x_i1 = o#required_modules _x_i1 in
-                let _x_i2 = o#block _x_i2 in
-                let _x_i3 = o#exports _x_i3 in
-                let _x_i4 = o#unknown _x_i4 in
-                let _x_i5 = o#option (fun o  -> o#string) _x_i5 in
+                let _x_i1 = o#block _x_i1 in
+                let _x_i2 = o#exports _x_i2 in
+                let _x_i3 = o#unknown _x_i3 in
                 {
                   name = _x;
-                  modules = _x_i1;
-                  block = _x_i2;
-                  exports = _x_i3;
-                  export_set = _x_i4;
-                  side_effect = _x_i5
+                  block = _x_i1;
+                  exports = _x_i2;
+                  export_set = _x_i3
                 }
             method number : number -> number= o#unknown
             method mutable_flag : mutable_flag -> mutable_flag= o#unknown
@@ -7898,8 +9541,7 @@ include
               | Array_copy _x -> let _x = o#expression _x in Array_copy _x
               | Array_append (_x,_x_i1) ->
                   let _x = o#expression _x in
-                  let _x_i1 = o#list (fun o  -> o#expression) _x_i1 in
-                  Array_append (_x, _x_i1)
+                  let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
               | Tag_ml_obj _x -> let _x = o#expression _x in Tag_ml_obj _x
               | String_append (_x,_x_i1) ->
                   let _x = o#expression _x in
@@ -7912,6 +9554,8 @@ include
                   let _x = o#expression _x in String_of_small_int_array _x
               | Json_stringify _x ->
                   let _x = o#expression _x in Json_stringify _x
+              | Anything_to_string _x ->
+                  let _x = o#expression _x in Anything_to_string _x
               | Dump (_x,_x_i1) ->
                   let _x = o#unknown _x in
                   let _x_i1 = o#list (fun o  -> o#expression) _x_i1 in
@@ -7971,6 +9615,12 @@ include
             method exports : exports -> exports= o#unknown
             method exception_ident : exception_ident -> exception_ident=
               o#ident
+            method deps_program : deps_program -> deps_program=
+              fun { program = _x; modules = _x_i1; side_effect = _x_i2 }  ->
+                let _x = o#program _x in
+                let _x_i1 = o#required_modules _x_i1 in
+                let _x_i2 = o#option (fun o  -> o#string) _x_i2 in
+                { program = _x; modules = _x_i1; side_effect = _x_i2 }
             method case_clause :
               'a 'a_out .
                 ('self_type -> 'a -> 'a_out) ->
@@ -8044,7 +9694,7 @@ include
                   (Js_op_util.update_used_stats ident_info Used;
                    Hashtbl.replace ident_use_stats ident (`Info ident_info))
               | `Info _ ->
-                  Ext_log.warn __LOC__ "@[%s$%d in %s@]@." ident.name
+                  Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name
                     ident.stamp name
               | exception Not_found  ->
                   (Hashtbl.add ident_use_stats ident (`Info ident_info);
@@ -8102,7 +9752,7 @@ include
                     value = Some x }
                   -> { v with statement_desc = (Exp x) }
               | Variable
-                  ({ ident; property = Immutable ;
+                  ({ ident; property = (Strict |StrictOpt |Alias );
                      value = Some
                        ({
                           expression_desc = Array
@@ -8241,6 +9891,23 @@ include
           end
         let program (x : J.program) = flatten_map#program x
       end 
+    module Js_pass_debug : sig val dump : J.program -> J.program end =
+      struct
+        let log_counter = ref 0
+        let dump (prog : J.program) =
+          let () =
+            if
+              ((Js_config.get_env ()) != Browser) &&
+                (Lam_current_unit.is_same_file ())
+            then
+              (incr log_counter;
+               Ext_pervasives.with_file_as_chan
+                 ((Ext_filename.chop_extension ~loc:__LOC__
+                     (Lam_current_unit.get_file ()))
+                    ^ (Printf.sprintf ".%02d.jsx" (!log_counter)))
+                 (fun chan  -> Js_dump.dump_program prog chan)) in
+          prog
+      end 
     module Js_inline_and_eliminate :
       sig
         [@@@ocaml.text " Inline and remove unused code in JS IR "]
@@ -8348,7 +10015,7 @@ include
                        value = Some
                          { expression_desc = Fun (params,block,_env);
                            comment = _ };
-                       property = Immutable ;
+                       property = (Alias |StrictOpt |Strict );
                        ident_info = { used_stats = Once_pure  }; ident = _ }
                        as v when Ext_list.same_length params args ->
                        (Js_op_util.update_used_stats v.ident_info Dead_pure;
@@ -8464,1272 +10131,6 @@ include
           let _export_set = program.export_set in
           program |> (subst program.name _export_set _stats)#program
       end 
-    module Js_number :
-      sig
-        type t = float
-        val to_string : t -> string
-        val caml_float_literal_to_js_string : string -> string
-      end =
-      struct
-        type t = float
-        let to_string v =
-          if v = infinity
-          then "Infinity"
-          else
-            if v = neg_infinity
-            then "-Infinity"
-            else
-              if v <> v
-              then "NaN"
-              else
-                (let vint = int_of_float v in
-                 if (float_of_int vint) = v
-                 then string_of_int vint
-                 else
-                   (let s1 = Printf.sprintf "%.12g" v in
-                    if v = (float_of_string s1)
-                    then s1
-                    else
-                      (let s2 = Printf.sprintf "%.15g" v in
-                       if v = (float_of_string s2)
-                       then s2
-                       else Printf.sprintf "%.18g" v)))
-        let caml_float_literal_to_js_string v =
-          let len = String.length v in
-          if
-            (len >= 2) &&
-              (((v.[0]) = '0') && (((v.[1]) = 'x') || ((v.[1]) = 'X')))
-          then assert false
-          else
-            (let rec aux buf i =
-               if i >= len
-               then buf
-               else
-                 (let x = v.[i] in
-                  if x = '_'
-                  then aux buf (i + 1)
-                  else
-                    if (x = '.') && (i = (len - 1))
-                    then buf
-                    else (Buffer.add_char buf x; aux buf (i + 1))) in
-             Buffer.contents (aux (Buffer.create len) 0))
-      end 
-    module Int_map : sig include (Map.S with type  key =  int) end =
-      struct
-        include
-          Map.Make(struct
-                     type t = int
-                     let compare (x : int) y = Pervasives.compare x y
-                   end)
-      end 
-    module Ext_pp_scope :
-      sig
-        [@@@ocaml.text " Scope type to improve identifier name printing\n "]
-        [@@@ocaml.text
-          " Defines scope type [t], so that the pretty printer would print more beautiful code: \n    \n    print [identifer] instead of [identifier$1234] when it can\n "]
-        type t
-        val empty : t
-        val add_ident : Ident.t -> t -> (int* t)
-        val sub_scope : t -> Ident_set.t -> t
-        val merge : Ident_set.t -> t -> t
-        val print : Format.formatter -> t -> unit
-      end =
-      struct
-        type t = int Int_map.t String_map.t
-        let empty = String_map.empty
-        let rec print fmt v =
-          Format.fprintf fmt "@[<v>{";
-          String_map.iter
-            (fun k  ->
-               fun m  -> Format.fprintf fmt "%s: @[%a@],@ " k print_int_map m)
-            v;
-          Format.fprintf fmt "}@]"
-        and print_int_map fmt m =
-          Int_map.iter (fun k  -> fun v  -> Format.fprintf fmt "%d - %d" k v)
-            m
-        let add_ident (id : Ident.t) (cxt : t) =
-          (match String_map.find id.name cxt with
-           | exception Not_found  ->
-               (0,
-                 (String_map.add id.name
-                    (let open Int_map in add id.stamp 0 empty) cxt))
-           | imap ->
-               (match Int_map.find id.stamp imap with
-                | exception Not_found  ->
-                    let v = Int_map.cardinal imap in
-                    (v,
-                      (String_map.add id.name (Int_map.add id.stamp v imap)
-                         cxt))
-                | i -> (i, cxt)) : (int* t))
-        let of_list lst cxt =
-          List.fold_left (fun scope  -> fun i  -> snd (add_ident i scope))
-            cxt lst
-        let merge set cxt =
-          Ident_set.fold
-            (fun ident  -> fun acc  -> snd (add_ident ident acc)) set cxt
-        let sub_scope (scope : t) ident_collection =
-          (let cxt = empty in
-           Ident_set.fold
-             (fun (i : Ident.t)  ->
-                fun acc  ->
-                  match String_map.find i.name scope with
-                  | exception Not_found  -> assert false
-                  | imap ->
-                      (match String_map.find i.name acc with
-                       | exception Not_found  ->
-                           String_map.add i.name imap acc
-                       | _ -> acc)) ident_collection cxt : t)
-      end 
-    module Ext_pp :
-      sig
-        type t[@@ocaml.doc
-                " A simple pretty printer\n    \n    Advantage compared with [Format], \n    [P.newline] does not screw the layout, have better control when do a newline (sicne JS has ASI)\n    Easy to tweak\n\n    {ul \n    {- be a little smarter}\n    {- buffer the last line, so that  we can do a smart newline, when it's really safe to do so}\n    }\n"]
-        val indent_length : int
-        val string : t -> string -> unit
-        val space : t -> unit
-        val nspace : t -> int -> unit
-        val group : t -> int -> (unit -> 'a) -> 'a[@@ocaml.doc
-                                                    " [group] will record current indentation \n    and indent futher\n "]
-        val vgroup : t -> int -> (unit -> 'a) -> 'a
-        val paren : t -> (unit -> 'a) -> 'a
-        val brace : t -> (unit -> 'a) -> 'a
-        val paren_group : t -> int -> (unit -> 'a) -> 'a
-        val paren_vgroup : t -> int -> (unit -> 'a) -> 'a
-        val brace_group : t -> int -> (unit -> 'a) -> 'a
-        val brace_vgroup : t -> int -> (unit -> 'a) -> 'a
-        val bracket_group : t -> int -> (unit -> 'a) -> 'a
-        val bracket_vgroup : t -> int -> (unit -> 'a) -> 'a
-        val newline : t -> unit
-        val force_newline : t -> unit[@@ocaml.doc
-                                       " [force_newline] Always print a newline "]
-        val from_channel : out_channel -> t
-        val from_buffer : Buffer.t -> t
-        val flush : t -> unit -> unit
-      end =
-      struct
-        module L = struct let space = " "
-                          let indent_str = "  " end
-        let indent_length = String.length L.indent_str
-        type t =
-          {
-          output_string: string -> unit;
-          output_char: char -> unit;
-          flush: unit -> unit;
-          mutable indent_level: int;
-          mutable last_new_line: bool;}
-        let from_channel chan =
-          {
-            output_string = (fun s  -> output_string chan s);
-            output_char = (fun c  -> output_char chan c);
-            flush = (fun _  -> flush chan);
-            indent_level = 0;
-            last_new_line = false
-          }
-        let from_buffer buf =
-          {
-            output_string = (fun s  -> Buffer.add_string buf s);
-            output_char = (fun c  -> Buffer.add_char buf c);
-            flush = (fun _  -> ());
-            indent_level = 0;
-            last_new_line = false
-          }
-        let string t s = t.output_string s; t.last_new_line <- false
-        let newline t =
-          if not t.last_new_line
-          then
-            (t.output_char '\n';
-             for i = 0 to t.indent_level - 1 do t.output_string L.indent_str
-             done;
-             t.last_new_line <- true)
-        let force_newline t =
-          t.output_char '\n';
-          for i = 0 to t.indent_level - 1 do t.output_string L.indent_str
-          done
-        let space t = string t L.space
-        let nspace t n = string t (String.make n ' ')
-        let group t i action =
-          if i = 0
-          then action ()
-          else
-            (let old = t.indent_level in
-             t.indent_level <- t.indent_level + i;
-             Ext_pervasives.finally () action
-               (fun _  -> t.indent_level <- old))
-        let vgroup = group
-        let paren t action =
-          string t "("; (let v = action () in string t ")"; v)
-        let brace fmt u = string fmt "{"; (let v = u () in string fmt "}"; v)
-        let bracket fmt u =
-          string fmt "["; (let v = u () in string fmt "]"; v)
-        let brace_vgroup st n action =
-          string st "{";
-          (let v =
-             vgroup st n (fun _  -> newline st; (let v = action () in v)) in
-           force_newline st; string st "}"; v)
-        let bracket_vgroup st n action =
-          string st "[";
-          (let v =
-             vgroup st n (fun _  -> newline st; (let v = action () in v)) in
-           force_newline st; string st "]"; v)
-        let bracket_group st n action =
-          group st n (fun _  -> bracket st action)
-        let paren_vgroup st n action =
-          string st "(";
-          (let v =
-             group st n (fun _  -> newline st; (let v = action () in v)) in
-           newline st; string st ")"; v)
-        let paren_group st n action = group st n (fun _  -> paren st action)
-        let brace_group st n action = group st n (fun _  -> brace st action)
-        let indent t n = t.indent_level <- t.indent_level + n
-        let flush t () = t.flush ()
-      end 
-    module Js_dump :
-      sig
-        [@@@ocaml.text " Print JS IR to vanilla Javascript code "]
-        val pp_program : J.program -> Ext_pp.t -> unit
-        val dump_program : J.program -> out_channel -> unit
-      end =
-      struct
-        module P = Ext_pp
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
-        module L =
-          struct
-            let function_ = "function"
-            let var = "var"
-            let return = "return"
-            let eq = "="
-            let require = "require"
-            let exports = "exports"
-            let dot = "."
-            let comma = ","
-            let colon = ":"
-            let throw = "throw"
-            let default = "default"
-            let length = "length"
-            let char_code_at = "charCodeAt"
-            let new_ = "new"
-            let array = "Array"
-            let question = "?"
-            let plusplus = "++"
-            let minusminus = "--"
-            let semi = ";"
-            let else_ = "else"
-            let if_ = "if"
-            let while_ = "while"
-            let empty_block = "empty_block"
-            let start_block = "start_block"
-            let end_block = "end_block"
-            let json = "JSON"
-            let stringify = "stringify"
-            let console = "console"
-          end
-        let return_indent = (String.length L.return) / Ext_pp.indent_length
-        let throw_indent = (String.length L.throw) / Ext_pp.indent_length
-        let semi f = P.string f L.semi
-        let (op_prec,op_str) = let open Js_op_util in (op_prec, op_str)
-        let best_string_quote s =
-          let simple = ref 0 in
-          let double = ref 0 in
-          for i = 0 to (String.length s) - 1 do
-            (match s.[i] with
-             | '\'' -> incr simple
-             | '"' -> incr double
-             | _ -> ())
-          done;
-          if (!simple) < (!double) then '\'' else '"'
-        let str_of_ident (cxt : Ext_pp_scope.t) (id : Ident.t) =
-          if Ext_ident.is_js id
-          then ((id.name), cxt)
-          else
-            (let name = Ext_ident.convert id.name in
-             let (i,new_cxt) = Ext_pp_scope.add_ident id cxt in
-             ((if i == 0 then name else Printf.sprintf "%s$%d" name i),
-               new_cxt))[@@ocaml.doc
-                          "\n   same as {!Js_dump.ident} except it generates a string instead of doing the printing\n"]
-        let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) =
-          (let (str,cxt) = str_of_ident cxt id in P.string f str; cxt : 
-          Ext_pp_scope.t)
-        let pp_string f ?(quote= '"')  ?(utf= false)  s =
-          let array_str1 =
-            Array.init 256 (fun i  -> String.make 1 (Char.chr i)) in
-          let array_conv =
-            Array.init 16 (fun i  -> String.make 1 ("0123456789abcdef".[i])) in
-          let quote_s = String.make 1 quote in
-          P.string f quote_s;
-          (let l = String.length s in
-           for i = 0 to l - 1 do
-             (let c = s.[i] in
-              match c with
-              | '\000' when
-                  (i = (l - 1)) ||
-                    (((s.[i + 1]) < '0') || ((s.[i + 1]) > '9'))
-                  -> P.string f "\\0"
-              | '\b' -> P.string f "\\b"
-              | '\t' -> P.string f "\\t"
-              | '\n' -> P.string f "\\n"
-              | '\012' -> P.string f "\\f"
-              | '\\' when not utf -> P.string f "\\\\"
-              | '\r' -> P.string f "\\r"
-              | '\000'..'\031'|'\127' ->
-                  let c = Char.code c in
-                  (P.string f "\\x";
-                   P.string f (Array.unsafe_get array_conv (c lsr 4));
-                   P.string f (Array.unsafe_get array_conv (c land 15)))
-              | '\128'..'\255' when not utf ->
-                  let c = Char.code c in
-                  (P.string f "\\x";
-                   P.string f (Array.unsafe_get array_conv (c lsr 4));
-                   P.string f (Array.unsafe_get array_conv (c land 15)))
-              | _ ->
-                  if c = quote
-                  then
-                    (P.string f "\\";
-                     P.string f (Array.unsafe_get array_str1 (Char.code c)))
-                  else P.string f (Array.unsafe_get array_str1 (Char.code c)))
-           done;
-           P.string f quote_s)
-        let pp_quote_string f s =
-          pp_string f ~utf:false ~quote:(best_string_quote s) s
-        let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list)
-          (b : J.block) (env : Js_fun_env.t) =
-          let ipp_ident cxt f id un_used =
-            if un_used
-            then ident cxt f (Ext_ident.make_unused ())
-            else ident cxt f id in
-          let rec formal_parameter_list cxt (f : P.t) l =
-            let rec aux i cxt l =
-              match l with
-              | [] -> cxt
-              | id::[] -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-              | id::r ->
-                  let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-                  (P.string f L.comma; P.space f; aux (i + 1) cxt r) in
-            match l with
-            | [] -> cxt
-            | i::[] ->
-                if Js_fun_env.get_unused env 0 then cxt else ident cxt f i
-            | _ -> aux 0 cxt l in
-          let rec aux cxt f ls =
-            match ls with
-            | [] -> cxt
-            | x::[] -> ident cxt f x
-            | y::ys ->
-                let cxt = ident cxt f y in (P.string f L.comma; aux cxt f ys) in
-          let set_env =
-            match name with
-            | None  -> Js_fun_env.get_bound env
-            | Some id -> Ident_set.add id (Js_fun_env.get_bound env) in
-          let outer_cxt = Ext_pp_scope.merge set_env cxt in
-          let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-          (let action return =
-             if return then P.string f "return " else ();
-             P.string f L.function_;
-             P.space f;
-             (match name with
-              | None  -> ()
-              | Some x -> ignore (ident inner_cxt f x));
-             (let body_cxt =
-                P.paren_group f 1
-                  (fun _  -> formal_parameter_list inner_cxt f l) in
-              P.space f;
-              ignore @@
-                (P.brace_vgroup f 1
-                   (fun _  -> statement_list false body_cxt f b))) in
-           let lexical = Js_fun_env.get_lexical_scope env in
-           let enclose action lexical return =
-             if Ident_set.is_empty lexical
-             then action return
-             else
-               (let lexical = Ident_set.elements lexical in
-                if return then P.string f "return " else ();
-                P.string f "(function(";
-                ignore @@ (aux inner_cxt f lexical);
-                P.string f ")";
-                P.brace_vgroup f 0 (fun _  -> action true);
-                P.string f "(";
-                ignore @@ (aux inner_cxt f lexical);
-                P.string f ")";
-                P.string f ")") in
-           enclose action lexical return);
-          outer_cxt
-        and output_one :
-          'a . _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _=
-          fun cxt  ->
-            fun f  ->
-              fun pp_cond  ->
-                fun ({ case = e; body = (sl,break) } : _ J.case_clause)  ->
-                  let cxt =
-                    (P.group f 1) @@
-                      (fun _  ->
-                         (P.group f 1) @@
-                           ((fun _  ->
-                               P.string f "case ";
-                               pp_cond f e;
-                               P.space f;
-                               P.string f L.colon));
-                         P.space f;
-                         (P.group f 1) @@
-                           ((fun _  ->
-                               let cxt =
-                                 match sl with
-                                 | [] -> cxt
-                                 | _ ->
-                                     (P.newline f;
-                                      statement_list false cxt f sl) in
-                               if break
-                               then (P.newline f; P.string f "break"; semi f);
-                               cxt))) in
-                  P.newline f; cxt
-        and loop :
-          'a .
-            Ext_pp_scope.t ->
-              P.t ->
-                (P.t -> 'a -> unit) ->
-                  'a J.case_clause list -> Ext_pp_scope.t=
-          fun cxt  ->
-            fun f  ->
-              fun pp_cond  ->
-                fun cases  ->
-                  match cases with
-                  | [] -> cxt
-                  | x::[] -> output_one cxt f pp_cond x
-                  | x::xs ->
-                      let cxt = output_one cxt f pp_cond x in
-                      loop cxt f pp_cond xs
-        and vident cxt f (v : J.vident) =
-          match v with
-          | Id v|Qualified (v,_,None ) -> ident cxt f v
-          | Qualified (id,_,Some name) ->
-              let cxt = ident cxt f id in
-              (P.string f "."; P.string f (Ext_ident.convert name); cxt)
-        and expression l cxt f (exp : J.expression) =
-          (pp_comment_option f exp.comment;
-           expression_desc cxt l f exp.expression_desc : Ext_pp_scope.t)
-        and expression_desc cxt (l : int) f expression_desc =
-          (match expression_desc with
-           | Var v -> vident cxt f v
-           | Seq (e1,e2) ->
-               let action () =
-                 let cxt = expression 0 cxt f e1 in
-                 P.string f L.comma; P.space f; expression 0 cxt f e2 in
-               if l > 0 then P.paren_group f 1 action else action ()
-           | Fun (l,b,env) -> pp_function cxt f false l b env
-           | Call (e,el,info) ->
-               let action () =
-                 P.group f 1
-                   (fun _  ->
-                      let () =
-                        match info with
-                        | { arity = NA  } -> ipp_comment f (Some "!")
-                        | _ -> () in
-                      let cxt = expression 15 cxt f e in
-                      P.paren_group f 1 (fun _  -> arguments cxt f el)) in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Tag_ml_obj e ->
-               P.group f 1
-                 (fun _  ->
-                    P.string f "Object.defineProperty";
-                    P.paren_group f 1
-                      (fun _  ->
-                         let cxt = expression 1 cxt f e in
-                         P.string f L.comma;
-                         P.space f;
-                         P.string f {|"##ml"|};
-                         P.string f L.comma;
-                         P.string f {|{"value" : true, "writable" : false}|};
-                         cxt))
-           | FlatCall (e,el) ->
-               P.group f 1
-                 (fun _  ->
-                    let cxt = expression 15 cxt f e in
-                    P.string f ".apply";
-                    P.paren_group f 1
-                      (fun _  ->
-                         P.string f "null";
-                         P.string f L.comma;
-                         P.space f;
-                         expression 1 cxt f el))
-           | String_of_small_int_array e ->
-               let action () =
-                 P.group f 1
-                   (fun _  ->
-                      P.string f "String.fromCharCode.apply";
-                      P.paren_group f 1
-                        (fun _  ->
-                           P.string f "null";
-                           P.string f L.comma;
-                           expression 1 cxt f e)) in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Array_append (e,el) ->
-               P.group f 1
-                 (fun _  ->
-                    let cxt = expression 15 cxt f e in
-                    P.string f ".concat";
-                    P.paren_group f 1 (fun _  -> arguments cxt f el))
-           | Array_copy e ->
-               P.group f 1
-                 (fun _  ->
-                    let cxt = expression 15 cxt f e in
-                    P.string f ".slice"; P.string f "()"; cxt)
-           | Dump (level,el) ->
-               let obj =
-                 match level with
-                 | Log  -> "log"
-                 | Info  -> "info"
-                 | Warn  -> "warn"
-                 | Error  -> "error" in
-               P.group f 1
-                 (fun _  ->
-                    P.string f L.console;
-                    P.string f L.dot;
-                    P.string f obj;
-                    P.paren_group f 1 (fun _  -> arguments cxt f el))
-           | Json_stringify e ->
-               P.group f 1
-                 (fun _  ->
-                    P.string f L.json;
-                    P.string f L.dot;
-                    P.string f L.stringify;
-                    P.paren_group f 1 (fun _  -> expression 0 cxt f e))
-           | Char_to_int e ->
-               (match e.expression_desc with
-                | String_access (a,b) ->
-                    P.group f 1
-                      (fun _  ->
-                         let cxt = expression 15 cxt f a in
-                         P.string f L.dot;
-                         P.string f L.char_code_at;
-                         P.paren_group f 1 (fun _  -> expression 0 cxt f b))
-                | _ ->
-                    P.group f 1
-                      (fun _  ->
-                         let cxt = expression 15 cxt f e in
-                         P.string f L.dot;
-                         P.string f L.char_code_at;
-                         P.string f "(0)";
-                         cxt))
-           | Char_of_int e ->
-               P.group f 1
-                 (fun _  ->
-                    P.string f "String";
-                    P.string f L.dot;
-                    P.string f "fromCharCode";
-                    P.paren_group f 1 (fun _  -> arguments cxt f [e]))
-           | Math (name,el) ->
-               P.group f 1
-                 (fun _  ->
-                    P.string f "Math";
-                    P.string f L.dot;
-                    P.string f name;
-                    P.paren_group f 1 (fun _  -> arguments cxt f el))
-           | Str (_,s) ->
-               let quote = best_string_quote s in (pp_string f ~quote s; cxt)
-           | Number v ->
-               let s =
-                 match v with
-                 | Float { f = v } ->
-                     Js_number.caml_float_literal_to_js_string v
-                 | Int { i = v;_} -> string_of_int v in
-               let need_paren =
-                 if (s.[0]) = '-'
-                 then l > 13
-                 else (l = 15) && (((s.[0]) <> 'I') && ((s.[0]) <> 'N')) in
-               let action _ = P.string f s in
-               (if need_paren then P.paren f action else action (); cxt)
-           | Int_of_boolean e ->
-               let action () =
-                 (P.group f 0) @@
-                   (fun _  -> P.string f "+"; expression 13 cxt f e) in
-               if l > 12 then P.paren_group f 1 action else action ()
-           | Not e ->
-               let action () = P.string f "!"; expression 13 cxt f e in
-               if l > 13 then P.paren_group f 1 action else action ()
-           | Typeof e ->
-               (P.string f "typeof"; P.space f; expression 13 cxt f e)
-           | Bin
-               (Eq
-                ,{ expression_desc = Var i },{
-                                               expression_desc =
-                                                 (Bin
-                                                  ((Plus  as op),{
-                                                                   expression_desc
-                                                                    = Var j
-                                                                   },delta)
-                                                  |Bin
-                                                  ((Plus  as op),delta,
-                                                   { expression_desc = Var j
-                                                     })|Bin
-                                                  ((Minus  as op),{
-                                                                    expression_desc
-                                                                    = Var j },delta))
-                                               })
-               when Js_op_util.same_vident i j ->
-               (match (delta, op) with
-                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
-                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
-                    -> (P.string f L.plusplus; P.space f; vident cxt f i)
-                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
-                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
-                    (P.string f L.minusminus; P.space f; vident cxt f i)
-                | (_,_) ->
-                    let cxt = vident cxt f i in
-                    (P.space f;
-                     if op = Plus then P.string f "+=" else P.string f "-=";
-                     P.space f;
-                     expression 13 cxt f delta))
-           | Bin
-               (Eq
-                ,{
-                   expression_desc = Access
-                     ({ expression_desc = Var i;_},{
-                                                     expression_desc = Number
-                                                       (Int { i = k0 })
-                                                     })
-                   },{
-                       expression_desc =
-                         (Bin
-                          ((Plus  as op),{
-                                           expression_desc = Access
-                                             ({ expression_desc = Var j;_},
-                                              {
-                                                expression_desc = Number (Int
-                                                  { i = k1 })
-                                                });_},delta)|Bin
-                          ((Plus  as op),delta,{
-                                                 expression_desc = Access
-                                                   ({
-                                                      expression_desc = Var j;_},
-                                                    {
-                                                      expression_desc =
-                                                        Number (Int
-                                                        { i = k1 })
-                                                      });_})|Bin
-                          ((Minus  as op),{
-                                            expression_desc = Access
-                                              ({ expression_desc = Var j;_},
-                                               {
-                                                 expression_desc = Number
-                                                   (Int { i = k1 })
-                                                 });_},delta))
-                       })
-               when (k0 = k1) && (Js_op_util.same_vident i j) ->
-               let aux cxt f vid i =
-                 let cxt = vident cxt f vid in
-                 P.string f "[";
-                 P.string f (string_of_int i);
-                 P.string f "]";
-                 cxt in
-               (match (delta, op) with
-                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
-                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
-                    -> (P.string f L.plusplus; P.space f; aux cxt f i k0)
-                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
-                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
-                    (P.string f L.minusminus; P.space f; aux cxt f i k0)
-                | (_,_) ->
-                    let cxt = aux cxt f i k0 in
-                    (P.space f;
-                     if op = Plus then P.string f "+=" else P.string f "-=";
-                     P.space f;
-                     expression 13 cxt f delta))
-           | Bin
-               (Minus
-                ,{
-                   expression_desc = Number
-                     (Int { i = 0;_}|Float { f = "0." })
-                   },e)
-               ->
-               let action () = P.string f "-"; expression 13 cxt f e in
-               if l > 13 then P.paren_group f 1 action else action ()
-           | Bin (op,e1,e2) ->
-               let (out,lft,rght) = op_prec op in
-               let need_paren =
-                 (l > out) ||
-                   (match op with | Lsl |Lsr |Asr  -> true | _ -> false) in
-               let action () =
-                 let cxt = expression lft cxt f e1 in
-                 P.space f;
-                 P.string f (op_str op);
-                 P.space f;
-                 expression rght cxt f e2 in
-               if need_paren then P.paren_group f 1 action else action ()
-           | String_append (e1,e2) ->
-               let op: Js_op.binop = Plus in
-               let (out,lft,rght) = op_prec op in
-               let need_paren =
-                 (l > out) ||
-                   (match op with | Lsl |Lsr |Asr  -> true | _ -> false) in
-               let action () =
-                 let cxt = expression lft cxt f e1 in
-                 P.space f;
-                 P.string f "+";
-                 P.space f;
-                 expression rght cxt f e2 in
-               if need_paren then P.paren_group f 1 action else action ()
-           | Array (el,_) ->
-               (match el with
-                | []|_::[] ->
-                    (P.bracket_group f 1) @@
-                      ((fun _  -> array_element_list cxt f el))
-                | _ ->
-                    (P.bracket_vgroup f 1) @@
-                      ((fun _  -> array_element_list cxt f el)))
-           | Access (e,e')|String_access (e,e') ->
-               let action () =
-                 (P.group f 1) @@
-                   (fun _  ->
-                      let cxt = expression 15 cxt f e in
-                      (P.bracket_group f 1) @@
-                        (fun _  -> expression 0 cxt f e')) in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Array_length e|String_length e|Bytes_length e|Function_length e
-               ->
-               let action () =
-                 let cxt = expression 15 cxt f e in
-                 P.string f L.dot; P.string f L.length; cxt in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Dot (e,nm,normal) ->
-               if normal
-               then
-                 let action () =
-                   let cxt = expression 15 cxt f e in
-                   P.string f L.dot; P.string f (Ext_ident.convert nm); cxt in
-                 (if l > 15 then P.paren_group f 1 action else action ())
-               else
-                 (let action () =
-                    (P.group f 1) @@
-                      (fun _  ->
-                         let cxt = expression 15 cxt f e in
-                         (P.bracket_group f 1) @@
-                           ((fun _  ->
-                               pp_string f ~quote:(best_string_quote nm) nm));
-                         cxt) in
-                  if l > 15 then P.paren_group f 1 action else action ())
-           | New (e,el) ->
-               let action () =
-                 (P.group f 1) @@
-                   (fun _  ->
-                      P.string f L.new_;
-                      P.space f;
-                      (let cxt = expression 16 cxt f e in
-                       (P.paren_group f 1) @@
-                         (fun _  ->
-                            match el with
-                            | Some el -> arguments cxt f el
-                            | None  -> cxt))) in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Array_of_size e ->
-               let action () =
-                 (P.group f 1) @@
-                   (fun _  ->
-                      P.string f L.new_;
-                      P.space f;
-                      P.string f L.array;
-                      (P.paren_group f 1) @@
-                        ((fun _  -> expression 0 cxt f e))) in
-               if l > 15 then P.paren_group f 1 action else action ()
-           | Cond (e,e1,e2) ->
-               let action () =
-                 let cxt = expression 3 cxt f e in
-                 P.space f;
-                 P.string f L.question;
-                 P.space f;
-                 (let cxt =
-                    (P.group f 1) @@ (fun _  -> expression 3 cxt f e1) in
-                  P.space f;
-                  P.string f L.colon;
-                  P.space f;
-                  (P.group f 1) @@ ((fun _  -> expression 3 cxt f e2))) in
-               if l > 2 then P.paren_vgroup f 1 action else action ()
-           | Object lst ->
-               (P.brace_vgroup f 1) @@
-                 ((fun _  -> property_name_and_value_list cxt f lst)) : 
-          Ext_pp_scope.t)
-        and property_name cxt f (s : J.property_name) =
-          (pp_string f ~utf:true ~quote:(best_string_quote s) s; cxt : 
-          Ext_pp_scope.t)
-        and property_name_and_value_list cxt f l =
-          (match l with
-           | [] -> cxt
-           | (pn,e)::[] ->
-               (P.group f 0) @@
-                 ((fun _  ->
-                     let cxt = property_name cxt f pn in
-                     P.string f L.colon; P.space f; expression 1 cxt f e))
-           | (pn,e)::r ->
-               let cxt =
-                 (P.group f 0) @@
-                   (fun _  ->
-                      let cxt = property_name cxt f pn in
-                      P.string f L.colon; P.space f; expression 1 cxt f e) in
-               (P.string f L.comma;
-                P.newline f;
-                property_name_and_value_list cxt f r) : Ext_pp_scope.t)
-        and array_element_list cxt f el =
-          (match el with
-           | [] -> cxt
-           | e::[] -> expression 1 cxt f e
-           | e::r ->
-               let cxt = expression 1 cxt f e in
-               (P.string f L.comma; P.newline f; array_element_list cxt f r) : 
-          Ext_pp_scope.t)
-        and arguments cxt f l =
-          (match l with
-           | [] -> cxt
-           | e::[] -> expression 1 cxt f e
-           | e::r ->
-               let cxt = expression 1 cxt f e in
-               (P.string f L.comma; P.space f; arguments cxt f r) : Ext_pp_scope.t)
-        and variable_declaration top cxt f
-          (variable : J.variable_declaration) =
-          (match variable with
-           | { ident = i; value = None ; ident_info;_} ->
-               if ident_info.used_stats = Dead_pure
-               then cxt
-               else
-                 (P.string f L.var;
-                  P.space f;
-                  (let cxt = ident cxt f i in semi f; cxt))
-           | { ident = i; value = Some e; ident_info = { used_stats;_} } ->
-               (match used_stats with
-                | Dead_pure  -> cxt
-                | Dead_non_pure  -> statement_desc top cxt f (J.Exp e)
-                | _ ->
-                    (match (e, top) with
-                     | ({ expression_desc = Fun (params,b,env); comment = _ },true
-                        ) -> pp_function cxt f ~name:i false params b env
-                     | (_,_) ->
-                         (P.string f L.var;
-                          P.space f;
-                          (let cxt = ident cxt f i in
-                           P.space f;
-                           P.string f L.eq;
-                           P.space f;
-                           (let cxt = expression 1 cxt f e in semi f; cxt))))) : 
-          Ext_pp_scope.t)
-        and ipp_comment : 'a . P.t -> 'a -> unit=
-          fun f  -> fun comment  -> ()
-        and pp_comment f comment =
-          if (String.length comment) > 0 then P.string f "/* ";
-          P.string f comment;
-          P.string f " */"[@@ocaml.text
-                            " don't print a new line -- ASI \n    FIXME: this still does not work in some cases...\n    {[\n    return /* ... */\n    [... ]\n    ]}\n"]
-        and pp_comment_option f comment =
-          match comment with | None  -> () | Some x -> pp_comment f x
-        and statement top cxt f
-          ({ statement_desc = s; comment;_} : J.statement) =
-          (pp_comment_option f comment; statement_desc top cxt f s : 
-          Ext_pp_scope.t)
-        and statement_desc top cxt f (s : J.statement_desc) =
-          (match s with
-           | Block [] -> (ipp_comment f L.empty_block; cxt)
-           | Block b ->
-               (ipp_comment f L.start_block;
-                (let cxt = statement_list top cxt f b in
-                 ipp_comment f L.end_block; cxt))
-           | Variable l -> variable_declaration top cxt f l
-           | Exp { expression_desc = Var _ } -> (semi f; cxt)
-           | Exp e ->
-               let rec need_paren (e : J.expression) =
-                 match e.expression_desc with
-                 | Call ({ expression_desc = Fun _ },_,_) -> true
-                 | Fun _|Object _ -> true
-                 | String_of_small_int_array _|Call _|Array_append _
-                   |Array_copy _|Tag_ml_obj _|Seq _|Dot _|Cond _|Bin _
-                   |String_access _|Access _|Array_of_size _|Array_length _
-                   |String_length _|Bytes_length _|String_append _
-                   |Char_of_int _|Char_to_int _|Dump _|Json_stringify _|Math
-                   _|Var _|Str _|Array _|FlatCall _|Typeof _|Function_length
-                   _|Number _|Not _|New _|Int_of_boolean _ -> false in
-               let cxt =
-                 (if need_paren e then P.paren_group f 1 else P.group f 0)
-                   (fun _  -> expression 0 cxt f e) in
-               (semi f; cxt)
-           | If (e,s1,s2) ->
-               (P.string f L.if_;
-                P.space f;
-                (let cxt =
-                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
-                 P.space f;
-                 (let cxt = block cxt f s1 in
-                  match s2 with
-                  | None |Some []|Some ({ statement_desc = Block [] }::[]) ->
-                      (P.newline f; cxt)
-                  | Some (({ statement_desc = If _ } as nest)::[])|Some
-                    ({
-                       statement_desc = Block
-                         (({ statement_desc = If _;_} as nest)::[]);_}::[])
-                      ->
-                      (P.newline f;
-                       P.string f L.else_;
-                       P.space f;
-                       statement false cxt f nest)
-                  | Some s2 ->
-                      (P.newline f;
-                       P.string f L.else_;
-                       P.space f;
-                       block cxt f s2))))
-           | While (label,e,s,_env) ->
-               ((match label with
-                 | Some i -> (P.string f i; P.string f L.colon; P.newline f)
-                 | None  -> ());
-                (let cxt =
-                   match e.expression_desc with
-                   | Number (Int { i = 1 }) ->
-                       (P.string f L.while_;
-                        P.string f "(true)";
-                        P.space f;
-                        cxt)
-                   | _ ->
-                       (P.string f L.while_;
-                        (let cxt =
-                           (P.paren_group f 1) @@
-                             (fun _  -> expression 0 cxt f e) in
-                         P.space f; cxt)) in
-                 let cxt = block cxt f s in semi f; cxt))
-           | ForRange (for_ident_expression,finish,id,direction,s,env) ->
-               let action cxt =
-                 (P.vgroup f 0) @@
-                   (fun _  ->
-                      let cxt =
-                        (P.group f 0) @@
-                          (fun _  ->
-                             P.string f "for";
-                             (P.paren_group f 1) @@
-                               ((fun _  ->
-                                   let (cxt,new_id) =
-                                     match (for_ident_expression,
-                                             (finish.expression_desc))
-                                     with
-                                     | (Some
-                                        ident_expression,(Number _|Var _)) ->
-                                         (P.string f L.var;
-                                          P.space f;
-                                          (let cxt = ident cxt f id in
-                                           P.space f;
-                                           P.string f L.eq;
-                                           P.space f;
-                                           ((expression 0 cxt f
-                                               ident_expression), None)))
-                                     | (Some ident_expression,_) ->
-                                         (P.string f L.var;
-                                          P.space f;
-                                          (let cxt = ident cxt f id in
-                                           P.space f;
-                                           P.string f L.eq;
-                                           P.space f;
-                                           (let cxt =
-                                              expression 1 cxt f
-                                                ident_expression in
-                                            P.space f;
-                                            P.string f L.comma;
-                                            (let id =
-                                               Ext_ident.create
-                                                 ((Ident.name id) ^ "_finish") in
-                                             let cxt = ident cxt f id in
-                                             P.space f;
-                                             P.string f L.eq;
-                                             P.space f;
-                                             ((expression 1 cxt f finish),
-                                               (Some id))))))
-                                     | (None ,(Number _|Var _)) ->
-                                         (cxt, None)
-                                     | (None ,_) ->
-                                         (P.string f L.var;
-                                          P.string f " ";
-                                          (let id =
-                                             Ext_ident.create
-                                               ((Ident.name id) ^ "_finish") in
-                                           let cxt = ident cxt f id in
-                                           P.string f " = ";
-                                           ((expression 15 cxt f finish),
-                                             (Some id)))) in
-                                   semi f;
-                                   P.space f;
-                                   (let cxt = ident cxt f id in
-                                    let right_prec =
-                                      match direction with
-                                      | Upto  ->
-                                          let (_,_,right) = op_prec Le in
-                                          (P.string f "<="; right)
-                                      | Downto  ->
-                                          let (_,_,right) = op_prec Ge in
-                                          (P.string f ">="; right) in
-                                    P.space f;
-                                    (let cxt =
-                                       match new_id with
-                                       | Some i ->
-                                           expression right_prec cxt f
-                                             (E.var i)
-                                       | None  ->
-                                           expression right_prec cxt f finish in
-                                     semi f;
-                                     P.space f;
-                                     (let () =
-                                        match direction with
-                                        | Upto  -> P.string f "++"
-                                        | Downto  -> P.string f "--" in
-                                      ident cxt f id)))))) in
-                      block cxt f s) in
-               let lexical = Js_closure.get_lexical_scope env in
-               if Ident_set.is_empty lexical
-               then action cxt
-               else
-                 (let inner_cxt = Ext_pp_scope.merge lexical cxt in
-                  let lexical = Ident_set.elements lexical in
-                  let _enclose action inner_cxt lexical =
-                    let rec aux cxt f ls =
-                      match ls with
-                      | [] -> cxt
-                      | x::[] -> ident cxt f x
-                      | y::ys ->
-                          let cxt = ident cxt f y in
-                          (P.string f L.comma; aux cxt f ys) in
-                    P.vgroup f 0
-                      (fun _  ->
-                         P.string f "(function(";
-                         ignore @@ (aux inner_cxt f lexical);
-                         P.string f ")";
-                         (let cxt =
-                            P.brace_vgroup f 0 (fun _  -> action inner_cxt) in
-                          P.string f "(";
-                          ignore @@ (aux inner_cxt f lexical);
-                          P.string f ")";
-                          P.string f ")";
-                          semi f;
-                          cxt)) in
-                  _enclose action inner_cxt lexical)
-           | Continue s ->
-               (P.string f "continue ";
-                P.string f s;
-                semi f;
-                P.newline f;
-                cxt)
-           | Break  -> (P.string f "break "; semi f; P.newline f; cxt)
-           | Return { return_value = e } ->
-               (match e with
-                | { expression_desc = Fun (l,b,env);_} ->
-                    let cxt = pp_function cxt f true l b env in (semi f; cxt)
-                | e ->
-                    (P.string f L.return;
-                     P.space f;
-                     (P.group f return_indent) @@
-                       ((fun _  ->
-                           let cxt = expression 0 cxt f e in semi f; cxt))))
-           | Int_switch (e,cc,def) ->
-               (P.string f "switch";
-                P.space f;
-                (let cxt =
-                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
-                 P.space f;
-                 (P.brace_vgroup f 1) @@
-                   ((fun _  ->
-                       let cxt =
-                         loop cxt f
-                           (fun f  -> fun i  -> P.string f (string_of_int i))
-                           cc in
-                       match def with
-                       | None  -> cxt
-                       | Some def ->
-                           (P.group f 1) @@
-                             ((fun _  ->
-                                 P.string f L.default;
-                                 P.string f L.colon;
-                                 P.newline f;
-                                 statement_list false cxt f def))))))
-           | String_switch (e,cc,def) ->
-               (P.string f "switch";
-                P.space f;
-                (let cxt =
-                   (P.paren_group f 1) @@ (fun _  -> expression 0 cxt f e) in
-                 P.space f;
-                 (P.brace_vgroup f 1) @@
-                   ((fun _  ->
-                       let cxt =
-                         loop cxt f (fun f  -> fun i  -> pp_quote_string f i)
-                           cc in
-                       match def with
-                       | None  -> cxt
-                       | Some def ->
-                           (P.group f 1) @@
-                             ((fun _  ->
-                                 P.string f L.default;
-                                 P.string f L.colon;
-                                 P.newline f;
-                                 statement_list false cxt f def))))))
-           | Throw e ->
-               (P.string f L.throw;
-                P.space f;
-                (P.group f throw_indent) @@
-                  ((fun _  -> let cxt = expression 0 cxt f e in semi f; cxt)))
-           | Try (b,ctch,fin) ->
-               (P.vgroup f 0) @@
-                 ((fun _  ->
-                     P.string f "try";
-                     P.space f;
-                     (let cxt = block cxt f b in
-                      let cxt =
-                        match ctch with
-                        | None  -> cxt
-                        | Some (i,b) ->
-                            (P.newline f;
-                             P.string f "catch (";
-                             (let cxt = ident cxt f i in
-                              P.string f ")"; block cxt f b)) in
-                      match fin with
-                      | None  -> cxt
-                      | Some b ->
-                          (P.group f 1) @@
-                            ((fun _  ->
-                                P.string f "finally";
-                                P.space f;
-                                block cxt f b))))) : Ext_pp_scope.t)
-        and statement_list top cxt f b =
-          match b with
-          | [] -> cxt
-          | s::[] -> statement top cxt f s
-          | s::r ->
-              let cxt = statement top cxt f s in
-              (P.newline f;
-               if top then P.force_newline f;
-               statement_list top cxt f r)
-        and block cxt f b =
-          P.brace_vgroup f 1 (fun _  -> statement_list false cxt f b)
-        let exports cxt f (idents : Ident.t list) =
-          let (outer_cxt,reversed_list,margin) =
-            List.fold_left
-              (fun (cxt,acc,len)  ->
-                 fun (id : Ident.t)  ->
-                   let s = Ext_ident.convert id.name in
-                   let (str,cxt) = str_of_ident cxt id in
-                   (cxt, ((s, str) :: acc), (max len (String.length s))))
-              (cxt, [], 0) idents in
-          P.newline f;
-          Ext_list.rev_iter
-            (fun (s,export)  ->
-               (P.group f 0) @@
-                 ((fun _  ->
-                     P.string f L.exports;
-                     P.string f L.dot;
-                     P.string f s;
-                     P.nspace f ((margin - (String.length s)) + 1);
-                     P.string f L.eq;
-                     P.space f;
-                     P.string f export;
-                     semi f));
-               P.newline f) reversed_list;
-          outer_cxt
-        let node_program f (program : J.program) =
-          let cxt = Ext_pp_scope.empty in
-          let requires cxt f (modules : (Ident.t* string) list) =
-            P.newline f;
-            (let (outer_cxt,reversed_list,margin) =
-               List.fold_left
-                 (fun (cxt,acc,len)  ->
-                    fun (id,s)  ->
-                      let (str,cxt) = str_of_ident cxt id in
-                      (cxt, ((str, s) :: acc), (max len (String.length str))))
-                 (cxt, [], 0) modules in
-             P.force_newline f;
-             Ext_list.rev_iter
-               (fun (s,file)  ->
-                  P.string f L.var;
-                  P.space f;
-                  P.string f s;
-                  P.nspace f ((margin - (String.length s)) + 1);
-                  P.string f L.eq;
-                  P.space f;
-                  P.string f L.require;
-                  (P.paren_group f 0) @@
-                    ((fun _  ->
-                        pp_string f ~utf:true ~quote:(best_string_quote s)
-                          file));
-                  semi f;
-                  P.newline f) reversed_list;
-             outer_cxt) in
-          let cxt = requires cxt f program.modules in
-          let () = P.force_newline f in
-          let cxt = statement_list true cxt f program.block in
-          let () = P.force_newline f in exports cxt f program.exports
-        let amd_program f
-          ({ modules; block = b; exports = exp; side_effect } : J.program) =
-          let rec aux cxt f modules =
-            match modules with
-            | [] -> cxt
-            | (id,_)::[] -> ident cxt f id
-            | (id,_)::rest ->
-                let cxt = ident cxt f id in
-                (P.string f L.comma; aux cxt f rest) in
-          P.newline f;
-          (let cxt = Ext_pp_scope.empty in
-           let rec list ~pp_sep  pp_v ppf =
-             function
-             | [] -> ()
-             | v::[] -> pp_v ppf v
-             | v::vs -> (pp_v ppf v; pp_sep ppf (); list ~pp_sep pp_v ppf vs) in
-           (P.vgroup f 1) @@
-             (fun _  ->
-                P.string f "define([";
-                list ~pp_sep:(fun f  -> fun _  -> P.string f L.comma)
-                  (fun f  ->
-                     fun (_,s)  ->
-                       pp_string f ~utf:true ~quote:(best_string_quote s) s)
-                  f modules;
-                P.string f "]";
-                P.string f L.comma;
-                P.newline f;
-                P.string f L.function_;
-                P.string f "(";
-                (let cxt = aux cxt f modules in
-                 P.string f ")";
-                 (P.brace_vgroup f 1) @@
-                   ((fun _  ->
-                       let cxt = statement_list true cxt f b in
-                       P.newline f;
-                       P.string f L.return;
-                       P.space f;
-                       (P.brace_vgroup f 1) @@
-                         ((fun _  ->
-                             let rec aux cxt f (idents : Ident.t list) =
-                               match idents with
-                               | [] -> cxt
-                               | id::[] ->
-                                   (P.string f (Ext_ident.convert id.name);
-                                    P.space f;
-                                    P.string f L.colon;
-                                    P.space f;
-                                    ident cxt f id)
-                               | id::rest ->
-                                   (P.string f (Ext_ident.convert id.name);
-                                    P.space f;
-                                    P.string f L.colon;
-                                    P.space f;
-                                    (let cxt = ident cxt f id in
-                                     P.string f L.comma;
-                                     P.space f;
-                                     P.newline f;
-                                     aux cxt f rest)) in
-                             ignore @@ (aux cxt f exp)))));
-                 P.string f ")")))
-        let pp_program (program : J.program) (f : Ext_pp.t) =
-          let () =
-            P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
-            P.newline f;
-            P.string f {|"use strict";|};
-            P.newline f in
-          (match Sys.getenv "OCAML_AMD_MODULE" with
-           | exception Not_found  -> ignore (node_program f program)
-           | _ -> amd_program f program);
-          P.string f
-            (match program.side_effect with
-             | None  -> "/* No side effect */"
-             | Some v -> Printf.sprintf "/* %s Not a pure module */" v);
-          P.newline f;
-          P.flush f ()
-        let dump_program (program : J.program) (oc : out_channel) =
-          pp_program program (P.from_channel oc)
-      end 
     module Lam_compile_group :
       sig
         [@@@ocaml.text " OCamlscript entry point in the OCaml compiler "]
@@ -9737,8 +10138,10 @@ include
           " Compile and register the hook of function to compile  a lambda to JS IR \n "]
         val compile :
           filename:string ->
-            Env.t -> Types.signature -> Lambda.lambda -> J.program[@@ocaml.doc
-                                                                    " For toplevel, [filename] is [\"\"] which is the same as\n    {!Env.get_unit_name ()}\n "]
+            bool ->
+              Env.t -> Types.signature -> Lambda.lambda -> J.deps_program
+        [@@ocaml.doc
+          " For toplevel, [filename] is [\"\"] which is the same as\n    {!Env.get_unit_name ()}\n "]
         val lambda_as_module :
           Env.t -> Types.signature -> string -> Lambda.lambda -> unit
       end =
@@ -9755,69 +10158,77 @@ include
               (_,({ name = ("stdout"|"stderr"|"stdin");_} as id),_),"pervasives.ml")
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id
-                    ~exp:(E.runtime_ref Js_helper.io id.name))
+                 (S.alias_variable id
+                    ~exp:(E.runtime_ref Js_config.io id.name))
            | (Single (_,({ name = "infinity";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.js_global "Infinity"))
+                 (S.alias_variable id ~exp:(E.js_global "Infinity"))
            | (Single
               (_,({ name = "neg_infinity";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.js_global "-Infinity"))
+                 (S.alias_variable id ~exp:(E.js_global "-Infinity"))
            | (Single (_,({ name = "nan";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.js_global "NaN"))
+                 (S.alias_variable id ~exp:(E.js_global "NaN"))
            | (Single (_,({ name = "^";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id
-                    ~exp:(E.runtime_ref Js_helper.string "add"))
+                 (S.alias_variable id
+                    ~exp:(let a = Ext_ident.create "a" in
+                          let b = Ext_ident.create "b" in
+                          E.fun_ [a; b]
+                            [S.return (E.string_append (E.var a) (E.var b))]))
            | (Single
               (_,({ name = "print_endline";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.js_global "console.log"))
+                 (S.alias_variable id ~exp:(E.js_global "console.log"))
            | (Single
               (_,({ name = "prerr_endline";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.js_global "console.error"))
+                 (S.alias_variable id ~exp:(E.js_global "console.error"))
            | (Single
               (_,({ name = "string_of_int";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id
-                    ~exp:(E.runtime_ref Js_helper.prim "string_of_int"))
+                 (S.alias_variable id
+                    ~exp:(let arg = Ext_ident.create "param" in
+                          E.fun_ [arg]
+                            [S.return (E.anything_to_string (E.var arg))]))
            | (Single (_,({ name = "max_float";_} as id),_),"pervasives.ml")
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id
+                 (S.alias_variable id
                     ~exp:(E.js_global_dot "Number" "MAX_VALUE"))
            | (Single (_,({ name = "min_float";_} as id),_),"pervasives.ml")
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id
+                 (S.alias_variable id
                     ~exp:(E.js_global_dot "Number" "MIN_VALUE"))
            | (Single
               (_,({ name = "epsilon_float";_} as id),_),"pervasives.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id
+                 (S.alias_variable id
                     ~exp:(E.js_global_dot "Number" "EPSILON"))
            | (Single (_,({ name = "cat";_} as id),_),"bytes.ml") ->
                Js_output.of_stmt @@
-                 (S.const_variable id
-                    ~exp:(E.runtime_ref Js_helper.string "bytes_cat"))
+                 (S.alias_variable id
+                    ~exp:(let a = Ext_ident.create "a" in
+                          let b = Ext_ident.create "b" in
+                          E.fun_ [a; b]
+                            [S.return (E.array_append (E.var a) (E.var b))]))
            | (Single
               (_,({ name = ("max_array_length"|"max_string_length");_} as id),_),"sys.ml")
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.float "4_294_967_295."))
+                 (S.alias_variable id ~exp:(E.float "4_294_967_295."))
            | (Single
               (_,({ name = "max_int";_} as id),_),("sys.ml"|"nativeint.ml"))
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.float "9007199254740991."))
+                 (S.alias_variable id ~exp:(E.float "9007199254740991."))
            | (Single
               (_,({ name = "min_int";_} as id),_),("sys.ml"|"nativeint.ml"))
                ->
                Js_output.of_stmt @@
-                 (S.const_variable id ~exp:(E.float "-9007199254740991."))
+                 (S.alias_variable id ~exp:(E.float "-9007199254740991."))
            | (Single (kind,id,lam),_) ->
                Lam_compile.compile_let kind
                  {
@@ -9842,138 +10253,160 @@ include
                    jmp_table = Lam_compile_defs.empty_handler_map;
                    meta
                  } lam : Js_output.t)
-        let compile ~filename  env sigs lam =
-          (let export_idents = Translmod.get_export_identifiers () in
-           let () = Translmod.reset () in
-           let () = Lam_compile_env.reset () in
-           let lam = Lam_group.deep_flatten lam in
-           let _d = Lam_util.dump env filename in
-           let meta =
-             Lam_pass_collect.count_alias_globals env filename export_idents
-               lam in
-           let lam =
-             let lam =
-               (lam |> Lam_pass_exits.simplify_exits) |>
-                 (Lam_pass_remove_alias.simplify_alias meta) in
-             let lam = Lam_group.deep_flatten lam in
-             let () = Lam_pass_collect.collect_helper meta lam in
-             let lam = Lam_pass_remove_alias.simplify_alias meta lam in
-             let lam = Lam_group.deep_flatten lam in
-             let () = Lam_pass_collect.collect_helper meta lam in
-             let lam =
-               (lam |> (Lam_pass_alpha_conversion.alpha_conversion meta)) |>
-                 Lam_pass_exits.simplify_exits in
-             let () = Lam_pass_collect.collect_helper meta lam in
-             (((lam |> (Lam_pass_remove_alias.simplify_alias meta)) |>
-                 (Lam_pass_alpha_conversion.alpha_conversion meta))
-                |> Lam_pass_lets_dce.simplify_lets)
-               |> Lam_pass_exits.simplify_exits in
-           match (lam : Lambda.lambda) with
-           | Lprim (Psetglobal id,biglambda::[]) ->
-               (match Lam_group.flatten [] biglambda with
-                | (Lprim (Pmakeblock (_,_,_),lambda_exports),rest) ->
-                    let (coercion_groups,new_exports) =
-                      List.fold_right2
-                        (fun eid  ->
-                           fun lam  ->
-                             fun (coercions,new_exports)  ->
-                               match (lam : Lambda.lambda) with
-                               | Lvar id when
-                                   (Ident.name id) = (Ident.name eid) ->
-                                   (coercions, (id :: new_exports))
-                               | _ ->
-                                   (((Lam_group.Single (Strict, eid, lam)) ::
-                                     coercions), (eid :: new_exports)))
-                        meta.exports lambda_exports ([], []) in
-                    let meta =
-                      {
-                        meta with
-                        export_idents =
-                          (Lam_util.ident_set_of_list new_exports);
-                        exports = new_exports
-                      } in
-                    let rest = List.rev_append rest coercion_groups in
-                    let () =
-                      if not @@ (Ext_string.is_empty filename)
-                      then
-                        let f =
-                          (Ext_filename.chop_extension ~loc:__LOC__ filename)
-                            ^ ".lambda" in
-                        (Ext_pervasives.with_file_as_pp f) @@
-                          (fun fmt  ->
-                             Format.pp_print_list
-                               ~pp_sep:Format.pp_print_newline
-                               (Lam_group.pp_group env) fmt rest) in
-                    let rest = Lam_dce.remove meta.exports rest in
-                    let module E = struct exception Not_pure of string end in
-                      let no_side_effects rest =
-                        Ext_list.for_all_opt
-                          (fun (x : Lam_group.t)  ->
-                             match x with
-                             | Single (kind,id,body) ->
-                                 (match kind with
-                                  | Strict |Variable  ->
-                                      if
-                                        not @@
-                                          (Lam_analysis.no_side_effects body)
-                                      then Some (Printf.sprintf "%s" id.name)
-                                      else None
-                                  | _ -> None)
-                             | Recursive bindings ->
-                                 Ext_list.for_all_opt
-                                   (fun (id,lam)  ->
-                                      if
-                                        not @@
-                                          (Lam_analysis.no_side_effects lam)
-                                      then
-                                        Some
-                                          (Printf.sprintf "%s" id.Ident.name)
-                                      else None) bindings
-                             | Nop lam ->
-                                 if not @@ (Lam_analysis.no_side_effects lam)
-                                 then Some ""
-                                 else None) rest in
-                      let maybe_pure = no_side_effects rest in
-                      let body =
-                        ((rest |>
-                            (List.map
-                               (fun group  -> compile_group meta group)))
-                           |> Js_output.concat)
-                          |> Js_output.to_block in
-                      let external_module_ids =
-                        Lam_compile_env.get_requried_modules meta.env
-                          meta.required_modules
-                          (Js_fold_basic.calculate_hard_dependencies body) in
-                      let v =
-                        Lam_stats_util.export_to_cmj meta maybe_pure
-                          external_module_ids lambda_exports in
-                      (if not @@ (Ext_string.is_empty filename)
-                       then
-                         Js_cmj_format.to_file
-                           ((Ext_filename.chop_extension ~loc:__LOC__
-                               filename)
-                              ^ ".cmj") v;
-                       (let js =
-                          Js_program_loader.make_program filename v.pure
-                            meta.exports external_module_ids body in
-                        ((((js |> Js_pass_flatten.program) |>
-                             Js_inline_and_eliminate.inline_and_shake)
-                            |> Js_pass_flatten_and_mark_dead.program)
-                           |>
-                           (fun js  ->
-                              ignore @@ (Js_pass_scope.program js); js))
-                          |> Js_shake.shake_program))
-                | _ -> raise Not_a_module)
-           | _ -> raise Not_a_module : J.program)[@@ocaml.doc
-                                                   " Actually simplify_lets is kind of global optimization since it requires you to know whether \n    it's used or not \n"]
+        let compile ~filename  non_export env _sigs lam =
+          let export_idents =
+            if non_export then [] else Translmod.get_export_identifiers () in
+          let () = Translmod.reset () in
+          let () = Lam_compile_env.reset () in
+          let _d = Lam_util.dump env filename in
+          let _j = Js_pass_debug.dump in
+          let lam = _d lam in
+          let lam = Lam_group.deep_flatten lam in
+          let lam = _d lam in
+          let meta =
+            Lam_pass_collect.count_alias_globals env filename export_idents
+              lam in
+          let lam =
+            let lam =
+              (((lam |> _d) |> Lam_pass_exits.simplify_exits) |> _d) |>
+                (Lam_pass_remove_alias.simplify_alias meta) in
+            let () = ignore @@ (_d lam) in
+            let lam = Lam_group.deep_flatten lam in
+            let () = ignore @@ (_d lam) in
+            let () = Lam_pass_collect.collect_helper meta lam in
+            let lam = Lam_pass_remove_alias.simplify_alias meta lam in
+            let lam = Lam_group.deep_flatten lam in
+            let () = Lam_pass_collect.collect_helper meta lam in
+            let () = ignore @@ (_d lam) in
+            let lam =
+              (lam |> (Lam_pass_alpha_conversion.alpha_conversion meta)) |>
+                Lam_pass_exits.simplify_exits in
+            let () = Lam_pass_collect.collect_helper meta lam in
+            (((((lam |> _d) |> (Lam_pass_remove_alias.simplify_alias meta))
+                 |> _d)
+                |> (Lam_pass_alpha_conversion.alpha_conversion meta))
+               |> Lam_pass_lets_dce.simplify_lets)
+              |> Lam_pass_exits.simplify_exits in
+          match (lam : Lambda.lambda) with
+          | Lprim (Psetglobal id,biglambda::[]) ->
+              (match Lam_group.flatten [] biglambda with
+               | (Lprim (Pmakeblock (_,_,_),lambda_exports),rest) ->
+                   let (coercion_groups,new_exports) =
+                     if non_export
+                     then ([], [])
+                     else
+                       List.fold_right2
+                         (fun eid  ->
+                            fun lam  ->
+                              fun (coercions,new_exports)  ->
+                                match (lam : Lambda.lambda) with
+                                | Lvar id when
+                                    (Ident.name id) = (Ident.name eid) ->
+                                    (coercions, (id :: new_exports))
+                                | _ ->
+                                    (((Lam_group.Single (Strict, eid, lam))
+                                      :: coercions), (eid :: new_exports)))
+                         meta.exports lambda_exports ([], []) in
+                   let meta =
+                     {
+                       meta with
+                       export_idents =
+                         (Lam_util.ident_set_of_list new_exports);
+                       exports = new_exports
+                     } in
+                   let rest = List.rev_append rest coercion_groups in
+                   let () =
+                     if not @@ (Ext_string.is_empty filename)
+                     then
+                       let f =
+                         (Ext_filename.chop_extension ~loc:__LOC__ filename)
+                           ^ ".lambda" in
+                       (Ext_pervasives.with_file_as_pp f) @@
+                         (fun fmt  ->
+                            Format.pp_print_list
+                              ~pp_sep:Format.pp_print_newline
+                              (Lam_group.pp_group env) fmt rest) in
+                   let rest = Lam_dce.remove meta.exports rest in
+                   let module E = struct exception Not_pure of string end in
+                     let no_side_effects rest =
+                       Ext_list.for_all_opt
+                         (fun (x : Lam_group.t)  ->
+                            match x with
+                            | Single (kind,id,body) ->
+                                (match kind with
+                                 | Strict |Variable  ->
+                                     if
+                                       not @@
+                                         (Lam_analysis.no_side_effects body)
+                                     then Some (Printf.sprintf "%s" id.name)
+                                     else None
+                                 | _ -> None)
+                            | Recursive bindings ->
+                                Ext_list.for_all_opt
+                                  (fun (id,lam)  ->
+                                     if
+                                       not @@
+                                         (Lam_analysis.no_side_effects lam)
+                                     then
+                                       Some
+                                         (Printf.sprintf "%s" id.Ident.name)
+                                     else None) bindings
+                            | Nop lam ->
+                                if not @@ (Lam_analysis.no_side_effects lam)
+                                then Some ""
+                                else None) rest in
+                     let maybe_pure = no_side_effects rest in
+                     let body =
+                       ((rest |>
+                           (List.map (fun group  -> compile_group meta group)))
+                          |> Js_output.concat)
+                         |> Js_output.to_block in
+                     let js =
+                       Js_program_loader.make_program filename meta.exports
+                         body in
+                     (((((((js |> _j) |> Js_pass_flatten.program) |> _j) |>
+                           Js_inline_and_eliminate.inline_and_shake)
+                          |> Js_pass_flatten_and_mark_dead.program)
+                         |>
+                         (fun js  -> ignore @@ (Js_pass_scope.program js); js))
+                        |> Js_shake.shake_program)
+                       |>
+                       ((fun (js : J.program)  ->
+                           let external_module_ids =
+                             Lam_compile_env.get_requried_modules meta.env
+                               meta.required_modules
+                               (Js_fold_basic.calculate_hard_dependencies
+                                  js.block) in
+                           let required_modules =
+                             List.map
+                               (fun id  ->
+                                  ((Lam_module_ident.id id),
+                                    (Js_program_loader.string_of_module_id id)))
+                               external_module_ids in
+                           let v =
+                             Lam_stats_util.export_to_cmj meta maybe_pure
+                               external_module_ids
+                               (if non_export then [] else lambda_exports) in
+                           if not @@ (Ext_string.is_empty filename)
+                           then
+                             Js_cmj_format.to_file
+                               ((Ext_filename.chop_extension ~loc:__LOC__
+                                   filename)
+                                  ^ ".cmj") v;
+                           Js_program_loader.decorate_deps required_modules
+                             v.pure js))
+               | _ -> raise Not_a_module)
+          | _ -> raise Not_a_module[@@ocaml.doc
+                                     " Actually simplify_lets is kind of global optimization since it requires you to know whether \n    it's used or not \n    [non_export] is only used in playground\n"]
         let lambda_as_module env (sigs : Types.signature) (filename : string)
           (lam : Lambda.lambda) =
           Lam_current_unit.set_file filename;
-          Lam_current_unit.set_debug_file "ari_regress_test.ml";
+          Lam_current_unit.iset_debug_file "format_regression.ml";
           Ext_pervasives.with_file_as_chan
             ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^ ".js")
             (fun chan  ->
-               Js_dump.dump_program (compile ~filename env sigs lam) chan)
+               Js_dump.dump_deps_program
+                 (compile ~filename false env sigs lam) chan)
       end 
     module Ext_map :
       sig
