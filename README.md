@@ -248,14 +248,6 @@ Some known issues are listed as below:
 1. Language features:
 
    Recursive modules, Lazy modules, have not looked into it yet.
-   
-   Better Currying support. Currently, we have an inference engine for
-   function currying and we do cross module inference, however, there
-   are some more challenging cases, for example, high order functions,
-   it can be resolved by either aggressive inlining or falling back to a
-   slow path using `Function.prototype.length`. We prepared the
-   runtime support in [module curry](jscomp/runtime/curry.ml), will support it in the near
-   future.
 
    Int32 operations, currently, Int use Float operations, this should
    be fixed in the near future.
