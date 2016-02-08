@@ -49,7 +49,7 @@ ReactDom.render(React.createClass({
                         "alt": "pic"
                       }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"));
           }
-        }), Caml_curry.app1(document.getElementById, "hi"));
+        }), document.getElementById("hi"));
 
 exports.fib        = fib;
 exports.sum        = sum;

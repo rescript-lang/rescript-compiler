@@ -376,14 +376,18 @@ function check_char(ib, _c) {
               return /* () */0;
             }
             else {
-              return ib$1[3] = /* false */0;
+              ib$1[3] = /* false */0;
+              continue ;
+              
             }
           }
           else if (switcher === 3 || switcher === 2) {
             return /* () */0;
           }
           else {
-            return ib$1[3] = /* false */0;
+            ib$1[3] = /* false */0;
+            continue ;
+            
           }
         }
       };
@@ -405,6 +409,8 @@ function check_char(ib, _c) {
       else if (c === /* "\n" */10) {
         ib[3] = /* false */0;
         _c = /* "\n" */10;
+        continue ;
+        
       }
       else {
         var s$1 = character_mismatch_err(c, ci);
@@ -546,11 +552,15 @@ function scan_decimal_digits(_width, ib) {
         else {
           var width$1 = ignore_char(width, ib);
           _width = width$1;
+          continue ;
+          
         }
       }
       else if (c >= 48) {
         var width$2 = store_char(width, ib, c);
         _width = width$2;
+        continue ;
+        
       }
       else {
         return width;
@@ -612,12 +622,16 @@ function scan_digits_plus(basis, digitp, width, ib) {
           }
           else if (Caml_curry.app1(digitp, c$1)) {
             _width = store_char(width$1, ib, c$1);
+            continue ;
+            
           }
           else if (c$1 !== 95) {
             return width$1;
           }
           else {
             _width = ignore_char(width$1, ib);
+            continue ;
+            
           }
         }
         else {
@@ -982,6 +996,8 @@ function scan_string(stp, width, ib) {
         }
         else {
           _width = store_char(width$1, ib, c);
+          continue ;
+          
         }
       }
       else {
@@ -989,6 +1005,8 @@ function scan_string(stp, width, ib) {
         if (switcher > 4 || switcher < 0) {
           if (switcher !== 23) {
             _width = store_char(width$1, ib, c);
+            continue ;
+            
           }
           else {
             return width$1;
@@ -996,6 +1014,8 @@ function scan_string(stp, width, ib) {
         }
         else if (switcher === 3 || switcher === 2) {
           _width = store_char(width$1, ib, c);
+          continue ;
+          
         }
         else {
           return width$1;
@@ -1300,6 +1320,8 @@ function scan_caml_string(width, ib) {
       if (c !== 34) {
         if (c !== 92) {
           _width = store_char(width, ib, c);
+          continue ;
+          
         }
         else {
           var width$1 = ignore_char(width, ib);
@@ -1331,6 +1353,8 @@ function scan_caml_string(width, ib) {
       }
       else {
         _width = ignore_char(width, ib);
+        continue ;
+        
       }
     };
   };
@@ -1394,6 +1418,8 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
       if (i > 0 && !ib[1] && CamlinternalFormat.is_in_char_set(char_set, c) && c !== stp) {
         store_char(Pervasives.max_int, ib, c);
         _i = i - 1;
+        continue ;
+        
       }
       else {
         return 0;
@@ -1530,12 +1556,21 @@ function take_format_readers(k, _fmt) {
         case 7 : 
         case 8 : 
             _fmt = fmt[4];
-            break;
-        case 14 : 
+            continue ;
+            case 14 : 
             return take_fmtty_format_readers(k, CamlinternalFormatBasics.erase_rel(CamlinternalFormat.symm(fmt[2])), fmt[3]);
         case 18 : 
             var match = fmt[1];
-            _fmt = match[0] ? CamlinternalFormatBasics.concat_fmt(match[1][1], fmt[2]) : CamlinternalFormatBasics.concat_fmt(match[1][1], fmt[2]);
+            if (match[0]) {
+              _fmt = CamlinternalFormatBasics.concat_fmt(match[1][1], fmt[2]);
+              continue ;
+              
+            }
+            else {
+              _fmt = CamlinternalFormatBasics.concat_fmt(match[1][1], fmt[2]);
+              continue ;
+              
+            }
             break;
         case 19 : 
             var fmt_rest = fmt[1];
@@ -1558,8 +1593,8 @@ function take_format_readers(k, _fmt) {
         case 17 : 
         case 21 : 
             _fmt = fmt[2];
-            break;
-        case 0 : 
+            continue ;
+            case 0 : 
         case 1 : 
         case 9 : 
         case 10 : 
@@ -1567,8 +1602,8 @@ function take_format_readers(k, _fmt) {
         case 16 : 
         case 22 : 
             _fmt = fmt[1];
-            break;
-        case 23 : 
+            continue ;
+            case 23 : 
             var k$1 = k;
             var ign = fmt[1];
             var fmt$1 = fmt[2];
@@ -1617,8 +1652,8 @@ function take_format_readers(k, _fmt) {
         case 20 : 
         case 24 : 
             _fmt = fmt[3];
-            break;
-        
+            continue ;
+            
       }
     }
   };
@@ -1634,12 +1669,12 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
       switch (fmtty[0]) {
         case 8 : 
             _fmtty = fmtty[2];
-            break;
-        case 9 : 
+            continue ;
+            case 9 : 
             var ty = CamlinternalFormat.trans(CamlinternalFormat.symm(fmtty[1]), fmtty[2]);
             _fmtty = CamlinternalFormatBasics.concat_fmtty(ty, fmtty[3]);
-            break;
-        case 0 : 
+            continue ;
+            case 0 : 
         case 1 : 
         case 2 : 
         case 3 : 
@@ -1651,8 +1686,8 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
         case 11 : 
         case 12 : 
             _fmtty = fmtty[1];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             var fmt_rest = fmtty[1];
             return (function(fmt_rest){
             return function (reader) {
@@ -1841,6 +1876,8 @@ function make_scanf(ib, _fmt, readers) {
         case 10 : 
             if (end_of_input(ib)) {
               _fmt = fmt[1];
+              continue ;
+              
             }
             else {
               throw [
@@ -1855,12 +1892,12 @@ function make_scanf(ib, _fmt, readers) {
                   return check_char(ib, param);
                 }, fmt[1]);
             _fmt = fmt[2];
-            break;
-        case 12 : 
+            continue ;
+            case 12 : 
             check_char(ib, fmt[1]);
             _fmt = fmt[2];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             scan_caml_string(width_of_pad_opt(fmt[1]), ib);
             var s = token(ib);
             var fmt$1;
@@ -1928,17 +1965,21 @@ function make_scanf(ib, _fmt, readers) {
                   return check_char(ib, param);
                 }, CamlinternalFormat.string_of_formatting_lit(fmt[1]));
             _fmt = fmt[2];
-            break;
-        case 18 : 
+            continue ;
+            case 18 : 
             var match$5 = fmt[1];
             check_char(ib, /* "@" */64);
             if (match$5[0]) {
               check_char(ib, /* "[" */91);
               _fmt = CamlinternalFormatBasics.concat_fmt(match$5[1][1], fmt[2]);
+              continue ;
+              
             }
             else {
               check_char(ib, /* "{" */123);
               _fmt = CamlinternalFormatBasics.concat_fmt(match$5[1][1], fmt[2]);
+              continue ;
+              
             }
             break;
         case 19 : 
@@ -2142,6 +2183,8 @@ function kscanf(ib, ef, param) {
         if (args) {
           _args = args[2];
           _f = Caml_curry.app1(f$1, args[1]);
+          continue ;
+          
         }
         else {
           return f$1;

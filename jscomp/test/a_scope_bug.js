@@ -9,6 +9,8 @@ function odd(_z) {
     var a = even + 4 + even;
     console.log("" + a);
     _z = 32;
+    continue ;
+    
   };
 }
 

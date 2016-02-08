@@ -16,6 +16,8 @@ function f(_n, _acc) {
       }
       }(n,acc));
       _n = n - 1;
+      continue ;
+      
     }
     else {
       return Caml_curry.app1(acc, /* () */0);

@@ -34,6 +34,8 @@ function assoc3(x, _l) {
       }
       else {
         _l = l[2];
+        continue ;
+        
       }
     }
     else {

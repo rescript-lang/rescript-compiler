@@ -29,18 +29,14 @@
  *)
 
 
-type ('a,'b) logging =   ('a -> 'b, Format.formatter, unit, unit, unit, unit) format6 -> 'a -> 'b
 
-(* FIXM: below does not work 
-   {[
-     err __LOC__ "hi"     
-   ]}   
-   
-*)
-val err : string -> ('a,'b) logging
-val ierr : bool -> string -> ('a,'b) logging 
-val warn : string -> ('a,'b) logging
-val iwarn : bool -> string -> ('a,'b) logging 
-val dwarn : string -> ('a,'b) logging 
-val info : string -> ('a,'b) logging
-val iinfo : bool -> string -> ('a,'b) logging
+type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
+
+
+val err : string -> 'a logging
+val ierr : bool -> string -> 'a logging 
+val warn : string -> 'a logging
+val iwarn : bool -> string -> 'a logging 
+val dwarn : string -> 'a logging 
+val info : string -> 'a logging
+val iinfo : bool -> string -> 'a logging

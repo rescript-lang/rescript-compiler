@@ -31,6 +31,8 @@ function f(_x) {
   while(true) {
     var x = _x;
     _x = x + 4;
+    continue ;
+    
   };
 }
 
@@ -40,11 +42,14 @@ function ff(_x, _y) {
     var x = _x;
     _y = x + 1;
     _x = y;
+    continue ;
+    
   };
 }
 
 function fff(_, _$1) {
   while(true) {
+    continue ;
     
   };
 }

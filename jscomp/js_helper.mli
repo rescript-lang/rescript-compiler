@@ -298,6 +298,7 @@ module Stmt : sig
 
   val break : ?comment:string  -> unit -> t
 
-  val continue : ?comment:string  -> J.label -> t
+  (** if [label] is not set, it will default to empty *)  
+  val continue : ?comment:string  -> ?label:J.label -> unit  -> t
 end
 

@@ -19,6 +19,8 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       }
       else if (Caml_curry.app2(is_dir_sep, name, n)) {
         _n = n - 1;
+        continue ;
+        
       }
       else {
         var _n$1 = n;
@@ -33,6 +35,8 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
           }
           else {
             _n$1 = n$1 - 1;
+            continue ;
+            
           }
         };
       }

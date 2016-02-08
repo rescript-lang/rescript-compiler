@@ -192,11 +192,15 @@ function advance_to_closing(opening, closing, k, s, start) {
     else if (s.charCodeAt(i) === opening) {
       _i = i + 1;
       _k = k$1 + 1;
+      continue ;
+      
     }
     else if (s.charCodeAt(i) === closing) {
       if (k$1) {
         _i = i + 1;
         _k = k$1 - 1;
+        continue ;
+        
       }
       else {
         return i;
@@ -204,6 +208,8 @@ function advance_to_closing(opening, closing, k, s, start) {
     }
     else {
       _i = i + 1;
+      continue ;
+      
     }
   };
 }
@@ -251,6 +257,8 @@ function advance_to_non_alpha(s, start) {
       }
       if (exit === 1) {
         _i = i + 1;
+        continue ;
+        
       }
       
     }
@@ -308,21 +316,29 @@ function add_substitute(b, f, s) {
           add_char(b, current);
           _i = i + 1;
           _previous = /* " " */32;
+          continue ;
+          
         }
         else if (current !== 92) {
           add_char(b, current);
           _i = i + 1;
           _previous = current;
+          continue ;
+          
         }
         else {
           _i = i + 1;
           _previous = current;
+          continue ;
+          
         }
       }
       else if (previous === /* "\\" */92) {
         add_char(b, current);
         _i = i + 1;
         _previous = /* " " */32;
+        continue ;
+        
       }
       else {
         var j = i + 1;
@@ -330,6 +346,8 @@ function add_substitute(b, f, s) {
         add_string(b, Caml_curry.app1(f, match[1]));
         _i = match[2];
         _previous = /* " " */32;
+        continue ;
+        
       }
     }
     else if (previous === /* "\\" */92) {

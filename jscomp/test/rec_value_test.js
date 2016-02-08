@@ -207,6 +207,8 @@ function even2(_n) {
     var n = _n;
     if (n) {
       _n = n - 1;
+      continue ;
+      
     }
     else {
       return /* true */1;
@@ -234,6 +236,8 @@ function sum(_acc, _n) {
     if (n > 0) {
       _n = n - 1;
       _acc = acc + n;
+      continue ;
+      
     }
     else {
       return acc;

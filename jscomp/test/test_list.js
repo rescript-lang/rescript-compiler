@@ -14,6 +14,8 @@ function length_aux(_len, _param) {
     if (param) {
       _param = param[2];
       _len = len + 1;
+      continue ;
+      
     }
     else {
       return len;
@@ -57,6 +59,8 @@ function nth(l, n) {
         if (n$1) {
           _n = n$1 - 1;
           _l = l$1[2];
+          continue ;
+          
         }
         else {
           return l$1[1];
@@ -80,6 +84,8 @@ function rev_append(_l1, _l2) {
         l2
       ];
       _l1 = l1[2];
+      continue ;
+      
     }
     else {
       return l2;
@@ -145,6 +151,8 @@ function rev_map(f, l) {
         Caml_curry.app1(f, param[1]),
         accu
       ];
+      continue ;
+      
     }
     else {
       return accu;
@@ -158,6 +166,8 @@ function iter(f, _param) {
     if (param) {
       Caml_curry.app1(f, param[1]);
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -176,6 +186,8 @@ function iteri(f, l) {
       Caml_curry.app2(f$1, i, param[1]);
       _param = param[2];
       _i = i + 1;
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -190,6 +202,8 @@ function fold_left(f, _accu, _l) {
     if (l) {
       _l = l[2];
       _accu = Caml_curry.app2(f, accu, l[1]);
+      continue ;
+      
     }
     else {
       return accu;
@@ -245,6 +259,8 @@ function rev_map2(f, l1, l2) {
           Caml_curry.app2(f, l1$1[1], l2$1[1]),
           accu
         ];
+        continue ;
+        
       }
       else {
         return Pervasives.invalid_arg("List.rev_map2");
@@ -268,6 +284,8 @@ function iter2(f, _l1, _l2) {
         Caml_curry.app2(f, l1[1], l2[1]);
         _l2 = l2[2];
         _l1 = l1[2];
+        continue ;
+        
       }
       else {
         return Pervasives.invalid_arg("List.iter2");
@@ -292,6 +310,8 @@ function fold_left2(f, _accu, _l1, _l2) {
         _l2 = l2[2];
         _l1 = l1[2];
         _accu = Caml_curry.app3(f, accu, l1[1], l2[1]);
+        continue ;
+        
       }
       else {
         return Pervasives.invalid_arg("List.fold_left2");
@@ -329,6 +349,8 @@ function for_all(p, _param) {
     if (param) {
       if (Caml_curry.app1(p, param[1])) {
         _param = param[2];
+        continue ;
+        
       }
       else {
         return /* false */0;
@@ -349,6 +371,8 @@ function exists(p, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -366,6 +390,8 @@ function for_all2(p, _l1, _l2) {
         if (Caml_curry.app2(p, l1[1], l2[1])) {
           _l2 = l2[2];
           _l1 = l1[2];
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -396,6 +422,8 @@ function exists2(p, _l1, _l2) {
         else {
           _l2 = l2[2];
           _l1 = l1[2];
+          continue ;
+          
         }
       }
       else {
@@ -417,6 +445,8 @@ function mem(x, _param) {
     if (param) {
       if (Caml_primitive.caml_compare(param[1], x)) {
         _param = param[2];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -437,6 +467,8 @@ function memq(x, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -452,6 +484,8 @@ function assoc(x, _param) {
       var match = param[1];
       if (Caml_primitive.caml_compare(match[1], x)) {
         _param = param[2];
+        continue ;
+        
       }
       else {
         return match[2];
@@ -473,6 +507,8 @@ function assq(x, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -487,6 +523,8 @@ function mem_assoc(x, _param) {
     if (param) {
       if (Caml_primitive.caml_compare(param[1][1], x)) {
         _param = param[2];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -507,6 +545,8 @@ function mem_assq(x, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -565,6 +605,8 @@ function find(p, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -590,9 +632,13 @@ function find_all(p) {
             x,
             accu
           ];
+          continue ;
+          
         }
         else {
           _param = l;
+          continue ;
+          
         }
       }
       else {
@@ -620,6 +666,8 @@ function partition(p, l) {
           x,
           yes
         ];
+        continue ;
+        
       }
       else {
         _param = l$1;
@@ -628,6 +676,8 @@ function partition(p, l) {
           x,
           no
         ];
+        continue ;
+        
       }
     }
     else {
@@ -729,6 +779,8 @@ function chop(_k, _l) {
       if (l) {
         _l = l[2];
         _k = k - 1;
+        continue ;
+        
       }
       else {
         throw [
@@ -928,6 +980,8 @@ function stable_sort(cmp, l) {
                 accu
               ];
               _l1 = l1[2];
+              continue ;
+              
             }
             else {
               _accu = [
@@ -936,6 +990,8 @@ function stable_sort(cmp, l) {
                 accu
               ];
               _l2 = l2$1[2];
+              continue ;
+              
             }
           }
           else {
@@ -1127,6 +1183,8 @@ function stable_sort(cmp, l) {
                 accu
               ];
               _l1 = l1[2];
+              continue ;
+              
             }
             else {
               _accu = [
@@ -1135,6 +1193,8 @@ function stable_sort(cmp, l) {
                 accu
               ];
               _l2 = l2$1[2];
+              continue ;
+              
             }
           }
           else {
@@ -1449,6 +1509,8 @@ function sort_uniq(cmp, l) {
                   accu
                 ];
                 _l1 = t1;
+                continue ;
+                
               }
               else {
                 _accu = [
@@ -1457,6 +1519,8 @@ function sort_uniq(cmp, l) {
                   accu
                 ];
                 _l2 = t2;
+                continue ;
+                
               }
             }
             else {
@@ -1467,6 +1531,8 @@ function sort_uniq(cmp, l) {
               ];
               _l2 = t2;
               _l1 = t1;
+              continue ;
+              
             }
           }
           else {
@@ -1771,6 +1837,8 @@ function sort_uniq(cmp, l) {
                   accu
                 ];
                 _l1 = t1;
+                continue ;
+                
               }
               else {
                 _accu = [
@@ -1779,6 +1847,8 @@ function sort_uniq(cmp, l) {
                   accu
                 ];
                 _l2 = t2;
+                continue ;
+                
               }
             }
             else {
@@ -1789,6 +1859,8 @@ function sort_uniq(cmp, l) {
               ];
               _l2 = t2;
               _l1 = t1;
+              continue ;
+              
             }
           }
           else {

@@ -54,6 +54,8 @@ function get_data(count, _d) {
               }
               else {
                 _d = d2;
+                continue ;
+                
               }
             }
             else if (match[0]) {
@@ -86,8 +88,8 @@ function get_data(count, _d) {
             _d = tag === 250 ? f[1] : (
                 tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
               );
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             var g = d[1];
             var match$1 = g[1];
             if (match$1) {
@@ -205,8 +207,8 @@ function peek(s) {
                 tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
               );
             s[1] = d$1;
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             var g = match[1];
             var match$1 = g[1];
             if (match$1) {
@@ -278,10 +280,13 @@ function junk(s) {
     }
     if (exit === 1) {
       var match$2 = peek(s);
-      if (!match$2) {
+      if (match$2) {
+        continue ;
+        
+      }
+      else {
         return /* () */0;
       }
-      
     }
     
   };
@@ -364,6 +369,8 @@ function iter(f, strm) {
       junk(strm);
       Caml_curry.app1(f, match[1]);
       _param = /* () */0;
+      continue ;
+      
     }
     else {
       return /* () */0;

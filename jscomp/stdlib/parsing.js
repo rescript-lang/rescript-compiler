@@ -99,20 +99,20 @@ function yyparse(tables, start, lexer, lexbuf) {
             env[10] = lexbuf[12];
             _arg = t;
             _cmd = /* Token_read */1;
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             throw Parse_error;
         case 2 : 
             grow_stacks(/* () */0);
             _arg = /* () */0;
             _cmd = /* Stacks_grown_1 */2;
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             grow_stacks(/* () */0);
             _arg = /* () */0;
             _cmd = /* Stacks_grown_2 */3;
-            break;
-        case 4 : 
+            continue ;
+            case 4 : 
             var match$1;
             try {
               match$1 = [
@@ -135,13 +135,13 @@ function yyparse(tables, start, lexer, lexbuf) {
             }
             _arg = match$1[2];
             _cmd = match$1[1];
-            break;
-        case 5 : 
+            continue ;
+            case 5 : 
             Caml_curry.app1(tables[14], "syntax error");
             _arg = /* () */0;
             _cmd = /* Error_detected */5;
-            break;
-        
+            continue ;
+            
       }
     };
   }
@@ -190,6 +190,8 @@ function symbol_start_pos() {
       }
       else {
         _i = i - 1;
+        continue ;
+        
       }
     }
   };

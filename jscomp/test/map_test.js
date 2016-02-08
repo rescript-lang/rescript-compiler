@@ -140,6 +140,8 @@ function cons_enum(_m, _e) {
         e
       ];
       _m = m[1];
+      continue ;
+      
     }
     else {
       return e;
@@ -167,6 +169,8 @@ function compare(cmp, m1, m2) {
           else {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
         }
       }
@@ -195,6 +199,8 @@ function equal(cmp, m1, m2) {
           if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -348,6 +354,8 @@ function find(x, _param) {
       var c = $$String.compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];

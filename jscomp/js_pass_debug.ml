@@ -1,8 +1,5 @@
 (* OCamlScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * http://www.ocsigen.org/js_of_ocaml/
- * Copyright (C) 2010 Jérôme Vouillon
- * Laboratoire PPS - CNRS Université Paris Diderot
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,19 +15,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-(* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
+(* Author: Hongbo Zhang  *)
 
+let log_counter = ref 0 
 
-(** Print JS IR to vanilla Javascript code *)
+let dump  (prog : J.program) = 
+  begin
+    let () = 
+      if Js_config.get_env () != Browser 
+      (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
+      && Lam_current_unit.is_same_file ()
+      then 
+        begin
+          incr log_counter ; 
+          Ext_pervasives.with_file_as_chan       
+            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_file()) ^
+             (Printf.sprintf ".%02d.jsx" !log_counter)
+            ) (fun chan -> Js_dump.dump_program prog chan )
+        end in
+    prog    
+  end
 
-
-
-
-
-val dump_deps_program : J.deps_program -> out_channel -> unit
-
-(** 2 functions Only used for debugging *)
-val string_of_block : J.block -> string
-
-val dump_program : J.program -> out_channel -> unit
+ 

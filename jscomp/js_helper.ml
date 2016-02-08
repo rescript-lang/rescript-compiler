@@ -1175,7 +1175,7 @@ module Stmt = struct
   (* TODO: 
       actually, only loops can be labelled
    *)    
-  let continue  ?comment   label : t = 
+  let continue  ?comment   ?(label="") unit  : t = 
     { 
       statement_desc = J.Continue  label;
       comment;

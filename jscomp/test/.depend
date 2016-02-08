@@ -88,6 +88,8 @@ for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmx : mt.cmx
+format_regression.cmo :
+format_regression.cmx :
 global_exception_regression_test.cmo : mt.cmo
 global_exception_regression_test.cmx : mt.cmx
 google_closure_test.cmo : test_google_closure.cmo mt.cmo
@@ -116,6 +118,8 @@ list_test.cmo : ../stdlib/pervasives.cmi mt.cmo ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx
+loop_regression_test.cmo : mt.cmo
+loop_regression_test.cmx : mt.cmx
 loop_suites_test.cmo : mt.cmo for_loop_test.cmo
 loop_suites_test.cmx : mt.cmx for_loop_test.cmx
 map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \
@@ -448,6 +452,8 @@ for_loop_test.cmo : mt.cmo ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmj : mt.cmj
+format_regression.cmo :
+format_regression.cmj :
 global_exception_regression_test.cmo : mt.cmo
 global_exception_regression_test.cmj : mt.cmj
 google_closure_test.cmo : test_google_closure.cmo mt.cmo
@@ -476,6 +482,8 @@ list_test.cmo : ../stdlib/pervasives.cmi mt.cmo ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
+loop_regression_test.cmo : mt.cmo
+loop_regression_test.cmj : mt.cmj
 loop_suites_test.cmo : mt.cmo for_loop_test.cmo
 loop_suites_test.cmj : mt.cmj for_loop_test.cmj
 map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \

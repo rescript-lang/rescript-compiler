@@ -145,6 +145,8 @@ function escaped(s) {
         if (exit === 1) {
           if (Caml_string.caml_is_printable(c)) {
             _i = i + 1;
+            continue ;
+            
           }
           else {
             return /* true */1;

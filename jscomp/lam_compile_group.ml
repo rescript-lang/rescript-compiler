@@ -160,7 +160,8 @@ let compile  ~filename non_export env _sigs lam   =
   in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
-  let _d   = Lam_util.dump env filename in
+  let _d  = Lam_util.dump env filename in
+  let _j = Js_pass_debug.dump in
   let lam = _d  lam in
   let lam  = Lam_group.deep_flatten lam in
   let lam = _d  lam in
@@ -312,7 +313,9 @@ let compile  ~filename non_export env _sigs lam   =
               body 
           in
           js 
+          |> _j
           |> Js_pass_flatten.program
+          |> _j
           |> Js_inline_and_eliminate.inline_and_shake
 
           |> Js_pass_flatten_and_mark_dead.program
@@ -354,10 +357,10 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.iset_debug_file "ari_regress_test.ml";
+    Lam_current_unit.iset_debug_file "format_regression.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
-      (fun chan -> Js_dump.dump_program (compile ~filename false env sigs lam) chan)
+      (fun chan -> Js_dump.dump_deps_program (compile ~filename false env sigs lam) chan)
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

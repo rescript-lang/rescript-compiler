@@ -32,13 +32,15 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     if (__ocaml_lex_state$1 > 9 || __ocaml_lex_state$1 < 0) {
       Caml_curry.app1(lexbuf[1], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
+      continue ;
+      
     }
     else {
       switch (__ocaml_lex_state$1) {
         case 0 : 
             ___ocaml_lex_state = 0;
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             return [
                     /* NUMERAL */0,
                     Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))

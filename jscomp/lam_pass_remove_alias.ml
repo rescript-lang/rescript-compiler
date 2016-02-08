@@ -101,7 +101,7 @@ let simplify_alias
     *)      
     | Lapply((Lvar v as l1), args, info) -> (* Check info for always inlining *)
 
-      (* Ext_log.dwarn __LOC__ "%s/%d@." v.name v.stamp;     *)
+      (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
 
       begin 
         match Hashtbl.find meta.ident_tbl v with
@@ -121,7 +121,7 @@ let simplify_alias
 
               (* Check: recursive applying may result in non-termination *)
               begin
-                (* Ext_log.dwarn __LOC__ "beta .. %s/%d@." v.name v.stamp ; *)
+                (* Ext_log.dwarn __LOC__ "beta .. %s/%d" v.name v.stamp ; *)
                 simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args) 
               end
             else 
@@ -140,13 +140,13 @@ let simplify_alias
                 then 
                   if rec_flag = Rec then               
                     begin
-                      (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d@." v.name v.stamp ; *)
+                      (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d" v.name v.stamp ; *)
                       (* Lam_beta_reduce.propogate_beta_reduce meta params body args *)
                       Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args
                     end
                   else 
                     begin
-                      (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d@."  *)
+                      (* Ext_log.dwarn __LOC__ "beta  nonrec..[%d] [%a]  %s/%d"  *)
                       (*   (List.length args)  *)
                       (*   Printlambda.lambda body                      *)
                       (*   v.name v.stamp ; *)
@@ -157,24 +157,24 @@ let simplify_alias
                   Lapply ( simpl l1, List.map simpl args, info)
               else 
                 begin
-                  (* Ext_log.dwarn __LOC__ "%s/%d: %d @."  *)
+                  (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
                   Lapply ( simpl l1, List.map simpl args, info)
                 end
           else
             begin
-              (* Ext_log.dwarn __LOC__ "%d vs %d @." (List.length args) (List.length params); *)
+              (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
               Lapply ( simpl l1, List.map simpl args, info)
             end
 
         | _ -> 
           begin
-            (* Ext_log.dwarn __LOC__ "%s/%d -- no source @." v.name v.stamp;     *)
+            (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
             Lapply ( simpl l1, List.map simpl args, info)
           end
         | exception Not_found -> 
-            (* Ext_log.dwarn __LOC__ "%s/%d -- not found @." v.name v.stamp;     *)
+            (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
           Lapply ( simpl l1, List.map simpl args, info)
       end
 

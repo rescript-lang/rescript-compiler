@@ -199,6 +199,8 @@ function to_string(x) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else if (x === Caml_exceptions.Out_of_memory) {
@@ -519,6 +521,8 @@ function backtrace_slots(raw_backtrace) {
           }
           else {
             _i = i - 1;
+            continue ;
+            
           }
         }
         else {

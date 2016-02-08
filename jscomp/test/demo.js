@@ -110,9 +110,9 @@ function ui_layout(compile, lookup, appContext) {
                           "bid": bid,
                           "ask": ask
                         });
-                    var text = Caml_curry.app1(bid.toFixed, 2);
-                    var text$1 = Caml_curry.app1(ask.toFixed, 2);
-                    var text$2 = Caml_curry.app1(result.toFixed, 2);
+                    var text = bid.toFixed(2);
+                    var text$1 = ask.toFixed(2);
+                    var text$2 = result.toFixed(2);
                     return /* array */[
                             {
                               "label": {

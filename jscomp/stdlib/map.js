@@ -142,6 +142,8 @@ function Make(funarg) {
         var c = Caml_curry.app2(funarg[1], x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return param[3];
@@ -159,6 +161,8 @@ function Make(funarg) {
         var c = Caml_curry.app2(funarg[1], x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return /* true */1;
@@ -176,6 +180,8 @@ function Make(funarg) {
         var l = param[1];
         if (l) {
           _param = l;
+          continue ;
+          
         }
         else {
           return [
@@ -197,6 +203,8 @@ function Make(funarg) {
         var r = param[4];
         if (r) {
           _param = r;
+          continue ;
+          
         }
         else {
           return [
@@ -268,6 +276,8 @@ function Make(funarg) {
         iter(f, param[1]);
         Caml_curry.app2(f, param[2], param[3]);
         _param = param[4];
+        continue ;
+        
       }
       else {
         return /* () */0;
@@ -318,6 +328,8 @@ function Make(funarg) {
       if (m) {
         _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
         _m = m[4];
+        continue ;
+        
       }
       else {
         return accu;
@@ -331,6 +343,8 @@ function Make(funarg) {
         if (Caml_curry.app2(p, param[2], param[3])) {
           if (for_all(p, param[1])) {
             _param = param[4];
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -357,6 +371,8 @@ function Make(funarg) {
         }
         else {
           _param = param[4];
+          continue ;
+          
         }
       }
       else {
@@ -583,6 +599,8 @@ function Make(funarg) {
           e
         ];
         _m = m[1];
+        continue ;
+        
       }
       else {
         return e;
@@ -609,6 +627,8 @@ function Make(funarg) {
             else {
               _e2 = cons_enum(e2[3], e2[4]);
               _e1 = cons_enum(e1[3], e1[4]);
+              continue ;
+              
             }
           }
         }
@@ -638,6 +658,8 @@ function Make(funarg) {
           else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -678,6 +700,8 @@ function Make(funarg) {
           ],
           bindings_aux(accu, param[4])
         ];
+        continue ;
+        
       }
       else {
         return accu;

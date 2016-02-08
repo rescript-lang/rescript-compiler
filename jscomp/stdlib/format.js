@@ -268,6 +268,8 @@ function format_pp_token(state, size, param) {
                   }
                   else {
                     _param = param[2];
+                    continue ;
+                    
                   }
                 }
                 else {
@@ -359,7 +361,9 @@ function advance_left(state) {
       else {
         take_queue(state$1[27]);
         format_pp_token(state$1, size < 0 ? pp_infinity : size, match[2]);
-        return state$1[12] = match[3] + state$1[12];
+        state$1[12] = match[3] + state$1[12];
+        continue ;
+        
       }
     };
   }
@@ -865,6 +869,8 @@ function pp_print_list(_$staropt$star, pp_v, ppf, _param) {
           /* Some */0,
           pp_sep
         ];
+        continue ;
+        
       }
       else {
         return Caml_curry.app2(pp_v, ppf, v);
@@ -1051,6 +1057,8 @@ function display_blanks(state, _n) {
       else {
         Caml_curry.app3(state[17], blank_line, 0, 80);
         _n = n - 80;
+        continue ;
+        
       }
     }
     else {

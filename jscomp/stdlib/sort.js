@@ -102,6 +102,8 @@ function list(order, l) {
     if (llist) {
       if (llist[2]) {
         _llist = merge2(llist);
+        continue ;
+        
       }
       else {
         return llist[1];
@@ -163,10 +165,14 @@ function array(cmp, arr) {
         if (j - lo <= hi - i) {
           qsort(lo, j);
           _lo = i;
+          continue ;
+          
         }
         else {
           qsort(i, hi);
           _hi = j;
+          continue ;
+          
         }
       }
       else {

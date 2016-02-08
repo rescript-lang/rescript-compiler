@@ -44,7 +44,7 @@ let find_cmj file =
       -> Lazy.force v 
     | exception Not_found 
       ->     
-      Ext_log.warn __LOC__ "@[%s not found @]@." file ;
+      Ext_log.warn __LOC__ "@[%s not found @]" file ;
       Js_cmj_format.dummy  (); (* FIXME *)
     end
   end

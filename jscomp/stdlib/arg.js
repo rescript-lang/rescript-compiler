@@ -40,6 +40,8 @@ function assoc3(x, _l) {
       }
       else {
         _l = l[2];
+        continue ;
+        
       }
     }
     else {
@@ -824,6 +826,8 @@ function second_word(s) {
       }
       else if (s[n] === " ") {
         _n = n + 1;
+        continue ;
+        
       }
       else {
         return n;

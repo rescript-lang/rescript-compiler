@@ -189,6 +189,8 @@ function find(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -207,6 +209,8 @@ function mem(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -225,6 +229,8 @@ function min_binding(_param) {
       var l = param[1];
       if (l) {
         _param = l;
+        continue ;
+        
       }
       else {
         return [
@@ -247,6 +253,8 @@ function max_binding(_param) {
       var r = param[4];
       if (r) {
         _param = r;
+        continue ;
+        
       }
       else {
         return [
@@ -321,6 +329,8 @@ function iter(f, _param) {
       iter(f, param[1]);
       Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -374,6 +384,8 @@ function fold(f, _m, _accu) {
     if (m) {
       _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -388,6 +400,8 @@ function for_all(p, _param) {
       if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all(p, param[1])) {
           _param = param[4];
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -415,6 +429,8 @@ function exists(p, _param) {
       }
       else {
         _param = param[4];
+        continue ;
+        
       }
     }
     else {
@@ -651,6 +667,8 @@ function cons_enum(_m, _e) {
         e
       ];
       _m = m[1];
+      continue ;
+      
     }
     else {
       return e;
@@ -678,6 +696,8 @@ function compare(cmp, m1, m2) {
           else {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
         }
       }
@@ -708,6 +728,8 @@ function equal(cmp, m1, m2) {
         else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
           _e2 = cons_enum(e2[3], e2[4]);
           _e1 = cons_enum(e1[3], e1[4]);
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -750,6 +772,8 @@ function bindings_aux(_accu, _param) {
         ],
         bindings_aux(accu, param[4])
       ];
+      continue ;
+      
     }
     else {
       return accu;
@@ -931,6 +955,8 @@ function find$1(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -949,6 +975,8 @@ function mem$1(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -967,6 +995,8 @@ function min_binding$1(_param) {
       var l = param[1];
       if (l) {
         _param = l;
+        continue ;
+        
       }
       else {
         return [
@@ -989,6 +1019,8 @@ function max_binding$1(_param) {
       var r = param[4];
       if (r) {
         _param = r;
+        continue ;
+        
       }
       else {
         return [
@@ -1063,6 +1095,8 @@ function iter$1(f, _param) {
       iter$1(f, param[1]);
       Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -1116,6 +1150,8 @@ function fold$1(f, _m, _accu) {
     if (m) {
       _accu = Caml_curry.app3(f, m[2], m[3], fold$1(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -1130,6 +1166,8 @@ function for_all$1(p, _param) {
       if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all$1(p, param[1])) {
           _param = param[4];
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -1157,6 +1195,8 @@ function exists$1(p, _param) {
       }
       else {
         _param = param[4];
+        continue ;
+        
       }
     }
     else {
@@ -1393,6 +1433,8 @@ function cons_enum$1(_m, _e) {
         e
       ];
       _m = m[1];
+      continue ;
+      
     }
     else {
       return e;
@@ -1420,6 +1462,8 @@ function compare$1(cmp, m1, m2) {
           else {
             _e2 = cons_enum$1(e2[3], e2[4]);
             _e1 = cons_enum$1(e1[3], e1[4]);
+            continue ;
+            
           }
         }
       }
@@ -1450,6 +1494,8 @@ function equal$1(cmp, m1, m2) {
         else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
           _e2 = cons_enum$1(e2[3], e2[4]);
           _e1 = cons_enum$1(e1[3], e1[4]);
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -1492,6 +1538,8 @@ function bindings_aux$1(_accu, _param) {
         ],
         bindings_aux$1(accu, param[4])
       ];
+      continue ;
+      
     }
     else {
       return accu;
@@ -1673,6 +1721,8 @@ function find$2(x, _param) {
       var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -1691,6 +1741,8 @@ function mem$2(x, _param) {
       var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -1709,6 +1761,8 @@ function min_binding$2(_param) {
       var l = param[1];
       if (l) {
         _param = l;
+        continue ;
+        
       }
       else {
         return [
@@ -1731,6 +1785,8 @@ function max_binding$2(_param) {
       var r = param[4];
       if (r) {
         _param = r;
+        continue ;
+        
       }
       else {
         return [
@@ -1805,6 +1861,8 @@ function iter$2(f, _param) {
       iter$2(f, param[1]);
       Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -1858,6 +1916,8 @@ function fold$2(f, _m, _accu) {
     if (m) {
       _accu = Caml_curry.app3(f, m[2], m[3], fold$2(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -1872,6 +1932,8 @@ function for_all$2(p, _param) {
       if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all$2(p, param[1])) {
           _param = param[4];
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -1899,6 +1961,8 @@ function exists$2(p, _param) {
       }
       else {
         _param = param[4];
+        continue ;
+        
       }
     }
     else {
@@ -2135,6 +2199,8 @@ function cons_enum$2(_m, _e) {
         e
       ];
       _m = m[1];
+      continue ;
+      
     }
     else {
       return e;
@@ -2162,6 +2228,8 @@ function compare$2(cmp, m1, m2) {
           else {
             _e2 = cons_enum$2(e2[3], e2[4]);
             _e1 = cons_enum$2(e1[3], e1[4]);
+            continue ;
+            
           }
         }
       }
@@ -2190,6 +2258,8 @@ function equal$2(cmp, m1, m2) {
           if (Caml_curry.app2(cmp, e1[2], e2[2])) {
             _e2 = cons_enum$2(e2[3], e2[4]);
             _e1 = cons_enum$2(e1[3], e1[4]);
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -2236,6 +2306,8 @@ function bindings_aux$2(_accu, _param) {
         ],
         bindings_aux$2(accu, param[4])
       ];
+      continue ;
+      
     }
     else {
       return accu;
@@ -2721,6 +2793,8 @@ function iter_f(obj, _param) {
     if (param) {
       Caml_curry.app1(param[1], obj);
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -2796,6 +2870,8 @@ function lookup_keys(i, keys, tables) {
       }
       else if (tables$1[3] !== /* Empty */0) {
         _tables = tables$1[3];
+        continue ;
+        
       }
       else {
         var next = [

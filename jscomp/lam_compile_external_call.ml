@@ -371,7 +371,7 @@ let translate
           let [@warning"-8"] (_return_type, self_type::arg_types )
             = Type_util.list_of_arrow ty in
           let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
-          E.call (E.dot self name) args
+          E.call ~info:{arity=Full}  (E.dot self name) args
         | _ -> assert false 
       end
 

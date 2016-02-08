@@ -99,6 +99,8 @@ function copy(q) {
           prev[2] = res;
           _cell = cell[2];
           _prev = res;
+          continue ;
+          
         }
         else {
           return 0;
@@ -138,6 +140,8 @@ function iter(f, q) {
       Caml_curry.app1(f, cell[1]);
       if (cell !== tail) {
         _cell = cell[2];
+        continue ;
+        
       }
       else {
         return 0;
@@ -164,6 +168,8 @@ function fold(f, accu, q) {
       else {
         _cell = cell[2];
         _accu = accu$2;
+        continue ;
+        
       }
     };
   }

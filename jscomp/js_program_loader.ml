@@ -62,7 +62,7 @@ let string_of_module_id (x : module_id) : string =
           begin match Config_util.find file with   
             (* for some primitive files, no cmj support *)
             | exception Not_found ->
-              Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] @."
+              Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] "
                 file !Location.input_name ;
               Printf.sprintf "%s" 
                 (String.uncapitalize id.name) 

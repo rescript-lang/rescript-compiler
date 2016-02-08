@@ -21,6 +21,8 @@ function len(_acc, _l) {
     if (l) {
       _l = l[2];
       _acc = l[1].length + acc;
+      continue ;
+      
     }
     else {
       return acc;
@@ -44,6 +46,8 @@ function fill(arr, _i, _l) {
       };
       _l = l[2];
       _i = k;
+      continue ;
+      
     }
     else {
       return /* () */0;

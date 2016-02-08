@@ -26,6 +26,8 @@ function fib2(n) {
       _i = i + 1;
       _b = a + b;
       _a = b;
+      continue ;
+      
     }
   };
 }

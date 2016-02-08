@@ -1,8 +1,5 @@
 (* OCamlScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * http://www.ocsigen.org/js_of_ocaml/
- * Copyright (C) 2010 Jérôme Vouillon
- * Laboratoire PPS - CNRS Université Paris Diderot
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,19 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
-(* Authors: Jérôme Vouillon, Hongbo Zhang  *)
 
+(* Author: Hongbo Zhang  *)
 
-
-(** Print JS IR to vanilla Javascript code *)
-
-
-
-
-
-val dump_deps_program : J.deps_program -> out_channel -> unit
-
-(** 2 functions Only used for debugging *)
-val string_of_block : J.block -> string
-
-val dump_program : J.program -> out_channel -> unit
+val dump : J.program -> J.program 

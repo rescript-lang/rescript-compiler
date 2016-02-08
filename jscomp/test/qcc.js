@@ -95,6 +95,8 @@ function find(s, _n) {
     }
     else {
       _n = n + 1;
+      continue ;
+      
     }
   };
 }
@@ -190,23 +192,31 @@ function skip(_param) {
             var match = Caml_curry.app1(getch, /* () */0);
             if (match !== 42) {
               _param$1 = /* () */0;
+              continue ;
+              
             }
             else if (peekch(/* () */0) === /* "/" */47) {
               return skip(Caml_curry.app1(getch, /* () */0));
             }
             else {
               _param$1 = /* () */0;
+              continue ;
+              
             }
           };
         }
       }
       else {
         _param = /* () */0;
+        continue ;
+        
       }
     }
     else if (ch >= 11) {
       if (ch >= 13) {
         _param = /* () */0;
+        continue ;
+        
       }
       else {
         return ch;
@@ -214,6 +224,8 @@ function skip(_param) {
     }
     else if (ch >= 9) {
       _param = /* () */0;
+      continue ;
+      
     }
     else {
       return ch;
@@ -258,6 +270,8 @@ function next() {
             }
             else {
               _n = 10 * n + Caml_curry.app1(getch, /* () */0) - 48;
+              continue ;
+              
             }
           };
         }
@@ -288,6 +302,8 @@ function next() {
         if (match$2 !== 34) {
           glo[e] = getq(/* () */0);
           _e = e + 1;
+          continue ;
+          
         }
         else {
           Caml_curry.app1(getch, /* () */0);
@@ -311,6 +327,8 @@ function next() {
           if (isid(peekch(/* () */0))) {
             _ch = Caml_curry.app1(getch, /* () */0);
             _n$1 = n$1 + 1;
+            continue ;
+            
           }
           else {
             return [
@@ -376,6 +394,8 @@ function next() {
             }
             else {
               _param = param[2];
+              continue ;
+              
             }
           }
           else {
@@ -1088,6 +1108,8 @@ function binary(stk, lvl) {
           var loc$prime = test(lvl - 8, loc);
           binary(stk, lvl - 1);
           _loc = loc$prime;
+          continue ;
+          
         }
         else {
           Caml_curry.app1(unnext, t);
@@ -1118,6 +1140,8 @@ function binary(stk, lvl) {
               List.iter(out, match[1]);
             }
             _param = /* () */0;
+            continue ;
+            
           }
           else {
             return Caml_curry.app1(unnext, t);
@@ -1317,6 +1341,8 @@ function postfix(stk) {
                   List.hd(rl),
                   l
                 ];
+                continue ;
+                
               }
             };
           };
@@ -1448,6 +1474,8 @@ function expr(stk) {
         out(4753665);
       }
       _param = /* () */0;
+      continue ;
+      
     }
     else {
       return Caml_curry.app1(unnext, t);
@@ -1521,6 +1549,8 @@ function decl(g, _n, _stk) {
                 Caml_curry.app1(next$1, /* () */0);
                 _stk = stk$prime;
                 _n = n$prime;
+                continue ;
+                
               }
               else {
                 return [
@@ -1562,6 +1592,8 @@ function decl(g, _n, _stk) {
       }
       _stk = match[2];
       _n = n + match[1];
+      continue ;
+      
     }
     else {
       Caml_curry.app1(unnext, t);
@@ -1783,6 +1815,8 @@ function top(_param) {
     else if (nextis(tokint)) {
       decl(/* true */1, 0, /* [] */0);
       _param = /* () */0;
+      continue ;
+      
     }
     else {
       var match = Caml_curry.app1(next$1, /* () */0);
@@ -1837,8 +1871,8 @@ function top(_param) {
                   _stk = stk$prime;
                   _n = n + 1;
                   _regs = List.tl(regs);
-                  break;
-              
+                  continue ;
+                  
             }
           };
         };
@@ -1908,6 +1942,8 @@ function top(_param) {
                   ]), Caml_curry.app1(symstr, f));
         }
         _param = /* () */0;
+        continue ;
+        
       }
       else {
         return Pervasives.failwith("[decl] or [fun] expected");
@@ -2073,6 +2109,8 @@ function elfgen(outf) {
               le(64, 1 + (n$1[1] << 32));
               le(64, 0);
               _l = get32(l);
+              continue ;
+              
             }
             else {
               return 0;
@@ -2310,6 +2348,8 @@ function main() {
           if (tok[0]) {
             ppsym(tok);
             _param = /* () */0;
+            continue ;
+            
           }
           else if (tok[1] === "EOF!") {
             return Printf.printf([
@@ -2325,6 +2365,8 @@ function main() {
           else {
             ppsym(tok);
             _param = /* () */0;
+            continue ;
+            
           }
         };
     default:

@@ -18,6 +18,8 @@ function is_sorted(x) {
     }
     else if (Caml_primitive.caml_lessthan(x[i], x[i + 1])) {
       _i = i + 1;
+      continue ;
+      
     }
     else {
       return /* false */0;

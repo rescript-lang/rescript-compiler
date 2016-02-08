@@ -35,14 +35,20 @@ function split_by($staropt$star, is_delim, str) {
           v,
           acc
         ];
+        continue ;
+        
       }
       else {
         _pos = pos - 1;
         _last_pos = pos;
+        continue ;
+        
       }
     }
     else {
       _pos = pos - 1;
+      continue ;
+      
     }
   };
 }
@@ -86,6 +92,8 @@ function ends_with(s, beg) {
       else if (s[j] === beg[k]) {
         _k = k - 1;
         _j = j - 1;
+        continue ;
+        
       }
       else {
         return /* false */0;
@@ -111,6 +119,8 @@ function escaped(s) {
             }
             else {
               _i = i + 1;
+              continue ;
+              
             }
           }
           else if (switcher > 57 || switcher < 1) {
@@ -118,6 +128,8 @@ function escaped(s) {
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
         else if (match >= 11) {
@@ -149,6 +161,8 @@ function for_all(p, s) {
     }
     else if (Caml_curry.app1(p, s.charCodeAt(i))) {
       _i = i + 1;
+      continue ;
+      
     }
     else {
       return /* false */0;

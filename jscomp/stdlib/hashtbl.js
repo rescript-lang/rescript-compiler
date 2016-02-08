@@ -80,6 +80,8 @@ function power_2_above(_x, n) {
     }
     else {
       _x = x * 2;
+      continue ;
+      
     }
   };
 }
@@ -247,6 +249,8 @@ function find(h, key) {
                 if (param) {
                   if (Caml_primitive.caml_compare(key$1, param[1])) {
                     _param = param[3];
+                    continue ;
+                    
                   }
                   else {
                     return param[2];
@@ -290,6 +294,8 @@ function find_all(h, key) {
         var rest = param[3];
         if (Caml_primitive.caml_compare(param[1], key)) {
           _param = rest;
+          continue ;
+          
         }
         else {
           return [
@@ -368,6 +374,8 @@ function mem(h, key) {
     if (param) {
       if (Caml_primitive.caml_compare(param[1], key)) {
         _param = param[3];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -386,6 +394,8 @@ function iter(f, h) {
       if (param) {
         Caml_curry.app2(f, param[1], param[2]);
         _param = param[3];
+        continue ;
+        
       }
       else {
         return /* () */0;
@@ -407,6 +417,8 @@ function fold(f, h, init) {
       if (b) {
         _accu = Caml_curry.app3(f, b[1], b[2], accu);
         _b = b[3];
+        continue ;
+        
       }
       else {
         return accu;
@@ -428,6 +440,8 @@ function bucket_length(_accu, _param) {
     if (param) {
       _param = param[3];
       _accu = accu + 1;
+      continue ;
+      
     }
     else {
       return accu;
@@ -529,6 +543,8 @@ function MakeSeeded(H) {
                 }
                 else {
                   _param = param[3];
+                  continue ;
+                  
                 }
               }
               else {
@@ -564,6 +580,8 @@ function MakeSeeded(H) {
           }
           else {
             _param = rest;
+            continue ;
+            
           }
         }
         else {
@@ -636,6 +654,8 @@ function MakeSeeded(H) {
         }
         else {
           _param = param[3];
+          continue ;
+          
         }
       }
       else {
@@ -738,6 +758,8 @@ function Make(H) {
                 }
                 else {
                   _param = param[3];
+                  continue ;
+                  
                 }
               }
               else {
@@ -773,6 +795,8 @@ function Make(H) {
           }
           else {
             _param = rest;
+            continue ;
+            
           }
         }
         else {
@@ -845,6 +869,8 @@ function Make(H) {
         }
         else {
           _param = param[3];
+          continue ;
+          
         }
       }
       else {

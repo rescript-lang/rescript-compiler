@@ -83,10 +83,13 @@ function $$int(s, bound) {
     while(true) {
       var r = bits(s$1);
       var v = r % n;
-      if (r - v <= 1073741823 - n + 1) {
+      if (r - v > 1073741823 - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }
@@ -103,10 +106,13 @@ function int32(s, bound) {
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
       var v = r % n;
-      if (r - v <= Int32.max_int - n + 1) {
+      if (r - v > Int32.max_int - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }
@@ -124,10 +130,13 @@ function int64(s, bound) {
       var b3 = ((bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if (r - v <= Int64.max_int - n + 1) {
+      if (r - v > Int64.max_int - n + 1) {
+        continue ;
+        
+      }
+      else {
         return v;
       }
-      
     };
   }
 }

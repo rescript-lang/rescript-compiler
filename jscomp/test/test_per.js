@@ -145,6 +145,8 @@ function valid_float_lexem(s) {
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else if (match !== 45) {
@@ -152,6 +154,8 @@ function valid_float_lexem(s) {
       }
       else {
         _i = i + 1;
+        continue ;
+        
       }
     }
   };
@@ -236,6 +240,8 @@ function flush_all() {
         
       }
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -354,6 +360,8 @@ function unsafe_really_input(ic, s, _ofs, _len) {
       if (r) {
         _len = len - r;
         _ofs = ofs + r;
+        continue ;
+        
       }
       else {
         throw Caml_exceptions.End_of_file;
@@ -392,6 +400,8 @@ function input_line(chan) {
         Caml_string.caml_blit_string(hd, 0, buf, pos - len, len);
         _param = param[2];
         _pos = pos - len;
+        continue ;
+        
       }
       else {
         return buf;
@@ -430,6 +440,8 @@ function input_line(chan) {
           beg,
           accu
         ];
+        continue ;
+        
       }
     }
     else if (accu) {

@@ -372,6 +372,8 @@ function index_rec(s, lim, _i, c) {
     }
     else {
       _i = i + 1;
+      continue ;
+      
     }
   };
 }
@@ -401,6 +403,8 @@ function rindex_rec(s, _i, c) {
     }
     else {
       _i = i - 1;
+      continue ;
+      
     }
   };
 }

@@ -163,6 +163,8 @@ function find(x, _param) {
       var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -181,6 +183,8 @@ function fold(f, _m, _accu) {
     if (m) {
       _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -425,6 +429,8 @@ function find$1(x, _param) {
       var c = Caml_primitive.caml_int_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -525,6 +531,8 @@ function get_method_label(table, name) {
         var c = Caml_string.caml_string_compare(x, param[2]);
         if (c) {
           _param = c < 0 ? param[1] : param[4];
+          continue ;
+          
         }
         else {
           return param[3];
@@ -897,6 +905,8 @@ function iter_f(obj, _param) {
     if (param) {
       Caml_curry.app1(param[1], obj);
       _param = param[2];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -972,6 +982,8 @@ function lookup_keys(i, keys, tables) {
       }
       else if (tables$1[3] !== /* Empty */0) {
         _tables = tables$1[3];
+        continue ;
+        
       }
       else {
         var next = [

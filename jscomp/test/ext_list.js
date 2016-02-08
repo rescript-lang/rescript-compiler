@@ -21,6 +21,8 @@ function filter_map(f, _xs) {
       }
       else {
         _xs = ys;
+        continue ;
+        
       }
     }
     else {
@@ -37,6 +39,8 @@ function same_length(_xs, _ys) {
       if (ys) {
         _ys = ys[2];
         _xs = xs[2];
+        continue ;
+        
       }
       else {
         return /* false */0;
@@ -69,6 +73,8 @@ function filter_mapi(f, xs) {
         else {
           _xs = ys;
           _i = i + 1;
+          continue ;
+          
         }
       }
       else {
@@ -98,6 +104,8 @@ function filter_map2(f, _xs, _ys) {
         else {
           _ys = vs;
           _xs = us;
+          continue ;
+          
         }
       }
       else {
@@ -135,6 +143,8 @@ function filter_map2i(f, xs, ys) {
             _ys = vs;
             _xs = us;
             _i = i + 1;
+            continue ;
+            
           }
         }
         else {
@@ -163,6 +173,8 @@ function rev_map_append(f, _l1, _l2) {
         l2
       ];
       _l1 = l1[2];
+      continue ;
+      
     }
     else {
       return l2;
@@ -183,6 +195,8 @@ function flat_map2(f, lx, ly) {
         _ly = ly$1[2];
         _lx = lx$1[2];
         _acc = List.rev_append(Caml_curry.app2(f, lx$1[1], ly$1[1]), acc);
+        continue ;
+        
       }
       else {
         return Pervasives.invalid_arg("Ext_list.flat_map2");
@@ -206,6 +220,8 @@ function flat_map(f, lx) {
     if (lx$1) {
       _lx = lx$1[2];
       _acc = List.rev_append(Caml_curry.app1(f, lx$1[1]), acc);
+      continue ;
+      
     }
     else {
       return List.rev(acc);
@@ -322,6 +338,8 @@ function exclude_tail(x) {
           x$1[1],
           acc
         ];
+        continue ;
+        
       }
       else {
         return List.rev(acc);
@@ -393,6 +411,8 @@ function drop(_n, _h) {
       if (h) {
         _h = List.tl(h);
         _n = n - 1;
+        continue ;
+        
       }
       else {
         return Pervasives.invalid_arg("Ext_list.drop");
@@ -411,6 +431,8 @@ function for_all_ret(p, _param) {
       var a = param[1];
       if (Caml_curry.app1(p, a)) {
         _param = param[2];
+        continue ;
+        
       }
       else {
         return [
@@ -435,6 +457,8 @@ function for_all_opt(p, _param) {
       }
       else {
         _param = param[2];
+        continue ;
+        
       }
     }
     else {
@@ -462,6 +486,8 @@ function rev_map_acc(acc, f, l) {
         Caml_curry.app1(f, param[1]),
         accu
       ];
+      continue ;
+      
     }
     else {
       return accu;

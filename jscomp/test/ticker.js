@@ -51,6 +51,8 @@ function split(delim, s) {
             ];
           _i = i$prime;
           _l = l$2;
+          continue ;
+          
         }
         
       }
@@ -279,6 +281,8 @@ function find(x, _param) {
       var c = Caml_primitive.caml_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return param[3];
@@ -297,6 +301,8 @@ function mem(x, _param) {
       var c = Caml_primitive.caml_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
+        continue ;
+        
       }
       else {
         return /* true */1;
@@ -315,6 +321,8 @@ function min_binding(_param) {
       var l = param[1];
       if (l) {
         _param = l;
+        continue ;
+        
       }
       else {
         return [
@@ -337,6 +345,8 @@ function max_binding(_param) {
       var r = param[4];
       if (r) {
         _param = r;
+        continue ;
+        
       }
       else {
         return [
@@ -411,6 +421,8 @@ function iter(f, _param) {
       iter(f, param[1]);
       Caml_curry.app2(f, param[2], param[3]);
       _param = param[4];
+      continue ;
+      
     }
     else {
       return /* () */0;
@@ -464,6 +476,8 @@ function fold(f, _m, _accu) {
     if (m) {
       _accu = Caml_curry.app3(f, m[2], m[3], fold(f, m[1], accu));
       _m = m[4];
+      continue ;
+      
     }
     else {
       return accu;
@@ -478,6 +492,8 @@ function for_all(p, _param) {
       if (Caml_curry.app2(p, param[2], param[3])) {
         if (for_all(p, param[1])) {
           _param = param[4];
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -505,6 +521,8 @@ function exists(p, _param) {
       }
       else {
         _param = param[4];
+        continue ;
+        
       }
     }
     else {
@@ -741,6 +759,8 @@ function cons_enum(_m, _e) {
         e
       ];
       _m = m[1];
+      continue ;
+      
     }
     else {
       return e;
@@ -768,6 +788,8 @@ function compare(cmp, m1, m2) {
           else {
             _e2 = cons_enum(e2[3], e2[4]);
             _e1 = cons_enum(e1[3], e1[4]);
+            continue ;
+            
           }
         }
       }
@@ -798,6 +820,8 @@ function equal(cmp, m1, m2) {
         else if (Caml_curry.app2(cmp, e1[2], e2[2])) {
           _e2 = cons_enum(e2[3], e2[4]);
           _e1 = cons_enum(e1[3], e1[4]);
+          continue ;
+          
         }
         else {
           return /* false */0;
@@ -840,6 +864,8 @@ function bindings_aux(_accu, _param) {
         ],
         bindings_aux(accu, param[4])
       ];
+      continue ;
+      
     }
     else {
       return accu;
@@ -940,6 +966,8 @@ function compute_update_sequences(all_tickers) {
                   ticker,
                   up
                 ];
+                continue ;
+                
               }
               else {
                 var l = find(ticker_name, map);
@@ -1185,6 +1213,8 @@ function loop(_lines, _param) {
     if (lines) {
       _param = process_input_line(param[2], all_tickers, lines[1]);
       _lines = lines[2];
+      continue ;
+      
     }
     else {
       return print_all_composite(all_tickers);

@@ -384,6 +384,8 @@ function bprint_char_set(buf, char_set) {
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else {
@@ -437,6 +439,8 @@ function bprint_char_set(buf, char_set) {
             }
             else {
               _j = j + 1;
+              continue ;
+              
             }
           };
         }
@@ -673,68 +677,68 @@ function bprint_fmtty(buf, _fmtty) {
         case 0 : 
             buffer_add_string(buf, "%c");
             _fmtty = fmtty[1];
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             buffer_add_string(buf, "%s");
             _fmtty = fmtty[1];
-            break;
-        case 2 : 
+            continue ;
+            case 2 : 
             buffer_add_string(buf, "%i");
             _fmtty = fmtty[1];
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             buffer_add_string(buf, "%li");
             _fmtty = fmtty[1];
-            break;
-        case 4 : 
+            continue ;
+            case 4 : 
             buffer_add_string(buf, "%ni");
             _fmtty = fmtty[1];
-            break;
-        case 5 : 
+            continue ;
+            case 5 : 
             buffer_add_string(buf, "%Li");
             _fmtty = fmtty[1];
-            break;
-        case 6 : 
+            continue ;
+            case 6 : 
             buffer_add_string(buf, "%f");
             _fmtty = fmtty[1];
-            break;
-        case 7 : 
+            continue ;
+            case 7 : 
             buffer_add_string(buf, "%B");
             _fmtty = fmtty[1];
-            break;
-        case 8 : 
+            continue ;
+            case 8 : 
             buffer_add_string(buf, "%{");
             bprint_fmtty(buf, fmtty[1]);
             buffer_add_string(buf, "%}");
             _fmtty = fmtty[2];
-            break;
-        case 9 : 
+            continue ;
+            case 9 : 
             buffer_add_string(buf, "%(");
             bprint_fmtty(buf, fmtty[1]);
             buffer_add_string(buf, "%)");
             _fmtty = fmtty[3];
-            break;
-        case 10 : 
+            continue ;
+            case 10 : 
             buffer_add_string(buf, "%a");
             _fmtty = fmtty[1];
-            break;
-        case 11 : 
+            continue ;
+            case 11 : 
             buffer_add_string(buf, "%t");
             _fmtty = fmtty[1];
-            break;
-        case 12 : 
+            continue ;
+            case 12 : 
             buffer_add_string(buf, "%?");
             _fmtty = fmtty[1];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             buffer_add_string(buf, "%r");
             _fmtty = fmtty[1];
-            break;
-        case 14 : 
+            continue ;
+            case 14 : 
             buffer_add_string(buf, "%_r");
             _fmtty = fmtty[1];
-            break;
-        
+            continue ;
+            
       }
     }
   };
@@ -766,75 +770,75 @@ function bprint_fmt(buf, fmt) {
             buffer_add_char(buf, /* "c" */99);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 1 : 
+            continue ;
+            case 1 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, /* "C" */67);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 2 : 
+            continue ;
+            case 2 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_padding(buf, fmt$1[1]);
             buffer_add_char(buf, /* "s" */115);
             _ign_flag = /* false */0;
             _fmt = fmt$1[2];
-            break;
-        case 3 : 
+            continue ;
+            case 3 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_padding(buf, fmt$1[1]);
             buffer_add_char(buf, /* "S" */83);
             _ign_flag = /* false */0;
             _fmt = fmt$1[2];
-            break;
-        case 4 : 
+            continue ;
+            case 4 : 
             bprint_int_fmt(buf, ign_flag, fmt$1[1], fmt$1[2], fmt$1[3]);
             _ign_flag = /* false */0;
             _fmt = fmt$1[4];
-            break;
-        case 5 : 
+            continue ;
+            case 5 : 
             bprint_altint_fmt(buf, ign_flag, fmt$1[1], fmt$1[2], fmt$1[3], /* "l" */108);
             _ign_flag = /* false */0;
             _fmt = fmt$1[4];
-            break;
-        case 6 : 
+            continue ;
+            case 6 : 
             bprint_altint_fmt(buf, ign_flag, fmt$1[1], fmt$1[2], fmt$1[3], /* "n" */110);
             _ign_flag = /* false */0;
             _fmt = fmt$1[4];
-            break;
-        case 7 : 
+            continue ;
+            case 7 : 
             bprint_altint_fmt(buf, ign_flag, fmt$1[1], fmt$1[2], fmt$1[3], /* "L" */76);
             _ign_flag = /* false */0;
             _fmt = fmt$1[4];
-            break;
-        case 8 : 
+            continue ;
+            case 8 : 
             bprint_float_fmt(buf, ign_flag, fmt$1[1], fmt$1[2], fmt$1[3]);
             _ign_flag = /* false */0;
             _fmt = fmt$1[4];
-            break;
-        case 9 : 
+            continue ;
+            case 9 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, /* "B" */66);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 10 : 
+            continue ;
+            case 10 : 
             buffer_add_string(buf, "%!");
             _fmt = fmt$1[1];
-            break;
-        case 11 : 
+            continue ;
+            case 11 : 
             bprint_string_literal(buf, fmt$1[1]);
             _fmt = fmt$1[2];
-            break;
-        case 12 : 
+            continue ;
+            case 12 : 
             bprint_char_literal(buf, fmt$1[1]);
             _fmt = fmt$1[2];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_pad_opt(buf, fmt$1[1]);
@@ -844,8 +848,8 @@ function bprint_fmt(buf, fmt) {
             buffer_add_char(buf, /* "}" */125);
             _ign_flag = /* false */0;
             _fmt = fmt$1[3];
-            break;
-        case 14 : 
+            continue ;
+            case 14 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_pad_opt(buf, fmt$1[1]);
@@ -855,65 +859,65 @@ function bprint_fmt(buf, fmt) {
             buffer_add_char(buf, /* ")" */41);
             _ign_flag = /* false */0;
             _fmt = fmt$1[3];
-            break;
-        case 15 : 
+            continue ;
+            case 15 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, /* "a" */97);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 16 : 
+            continue ;
+            case 16 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, /* "t" */116);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 17 : 
+            continue ;
+            case 17 : 
             bprint_string_literal(buf, string_of_formatting_lit(fmt$1[1]));
             _fmt = fmt$1[2];
-            break;
-        case 18 : 
+            continue ;
+            case 18 : 
             bprint_string_literal(buf, "@{");
             bprint_string_literal(buf, string_of_formatting_gen(fmt$1[1]));
             _fmt = fmt$1[2];
-            break;
-        case 19 : 
+            continue ;
+            case 19 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, /* "r" */114);
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 20 : 
+            continue ;
+            case 20 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_pad_opt(buf, fmt$1[1]);
             bprint_char_set(buf, fmt$1[2]);
             _ign_flag = /* false */0;
             _fmt = fmt$1[3];
-            break;
-        case 21 : 
+            continue ;
+            case 21 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             buffer_add_char(buf, char_of_counter(fmt$1[1]));
             _ign_flag = /* false */0;
             _fmt = fmt$1[2];
-            break;
-        case 22 : 
+            continue ;
+            case 22 : 
             buffer_add_char(buf, /* "%" */37);
             bprint_ignored_flag(buf, ign_flag);
             bprint_string_literal(buf, "0c");
             _ign_flag = /* false */0;
             _fmt = fmt$1[1];
-            break;
-        case 23 : 
+            continue ;
+            case 23 : 
             var match = param_format_of_ignored_format(fmt$1[1], fmt$1[2]);
             _ign_flag = /* true */1;
             _fmt = match[1];
-            break;
-        case 24 : 
+            continue ;
+            case 24 : 
             for(var _i = 1 ,_i_finish = int_of_custom_arity(fmt$1[1]); _i<= _i_finish; ++_i){
               buffer_add_char(buf, /* "%" */37);
               bprint_ignored_flag(buf, ign_flag);
@@ -921,8 +925,8 @@ function bprint_fmt(buf, fmt) {
             }
             _ign_flag = /* false */0;
             _fmt = fmt$1[3];
-            break;
-        
+            continue ;
+            
       }
     }
   };
@@ -2150,8 +2154,8 @@ function fmtty_of_fmt(_fmtty) {
                   ];
         case 10 : 
             _fmtty = fmtty[1];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             return [
                     /* Format_arg_ty */8,
                     fmtty[2],
@@ -2179,8 +2183,8 @@ function fmtty_of_fmt(_fmtty) {
         case 12 : 
         case 17 : 
             _fmtty = fmtty[2];
-            break;
-        case 18 : 
+            continue ;
+            case 18 : 
             return CamlinternalFormatBasics.concat_fmtty(fmtty_of_formatting_gen(fmtty[1]), fmtty_of_fmt(fmtty[2]));
         case 19 : 
             return [
@@ -3656,6 +3660,8 @@ function convert_float(fconv, prec, x) {
           if (switcher > 23 || switcher < 0) {
             if (switcher !== 55) {
               _i = i + 1;
+              continue ;
+              
             }
             else {
               return /* true */1;
@@ -3666,6 +3672,8 @@ function convert_float(fconv, prec, x) {
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
       };
@@ -3915,24 +3923,24 @@ function make_printf(_k, o, _acc, _fmt) {
               /* Acc_flush */7,
               acc
             ];
-            break;
-        case 11 : 
+            continue ;
+            case 11 : 
             _fmt = fmt[2];
             _acc = [
               /* Acc_string_literal */2,
               acc,
               fmt[1]
             ];
-            break;
-        case 12 : 
+            continue ;
+            case 12 : 
             _fmt = fmt[2];
             _acc = [
               /* Acc_char_literal */3,
               acc,
               fmt[1]
             ];
-            break;
-        case 13 : 
+            continue ;
+            case 13 : 
             var rest$3 = fmt[3];
             var ty = string_of_fmtty(fmt[2]);
             return (function(k,acc,rest$3,ty){
@@ -3983,8 +3991,8 @@ function make_printf(_k, o, _acc, _fmt) {
               acc,
               fmt[1]
             ];
-            break;
-        case 18 : 
+            continue ;
+            case 18 : 
             var match = fmt[1];
             if (match[0]) {
               var rest$7 = fmt[2];
@@ -4003,6 +4011,8 @@ function make_printf(_k, o, _acc, _fmt) {
               _fmt = match[1][1];
               _acc = /* End_of_acc */0;
               _k = k$prime;
+              continue ;
+              
             }
             else {
               var rest$8 = fmt[2];
@@ -4021,6 +4031,8 @@ function make_printf(_k, o, _acc, _fmt) {
               _fmt = match[1][1];
               _acc = /* End_of_acc */0;
               _k = k$prime$1;
+              continue ;
+              
             }
             break;
         case 19 : 
@@ -4417,10 +4429,14 @@ function output_acc(o, _acc) {
             if (match[0]) {
               Pervasives.output_string(o, "@[");
               _acc = match[1];
+              continue ;
+              
             }
             else {
               Pervasives.output_string(o, "@{");
               _acc = match[1];
+              continue ;
+              
             }
             break;
         case 2 : 
@@ -4475,10 +4491,14 @@ function bufput_acc(b, _acc) {
             if (match[0]) {
               Buffer.add_string(b, "@[");
               _acc = match[1];
+              continue ;
+              
             }
             else {
               Buffer.add_string(b, "@{");
               _acc = match[1];
+              continue ;
+              
             }
             break;
         case 2 : 
@@ -4494,8 +4514,8 @@ function bufput_acc(b, _acc) {
             return Caml_curry.app1(acc[2], b);
         case 7 : 
             _acc = acc[1];
-            break;
-        case 8 : 
+            continue ;
+            case 8 : 
             bufput_acc(b, acc[1]);
             return Pervasives.invalid_arg(acc[2]);
         
@@ -4533,10 +4553,14 @@ function strput_acc(b, _acc) {
             if (match[0]) {
               Buffer.add_string(b, "@[");
               _acc = match[1];
+              continue ;
+              
             }
             else {
               Buffer.add_string(b, "@{");
               _acc = match[1];
+              continue ;
+              
             }
             break;
         case 2 : 
@@ -4552,8 +4576,8 @@ function strput_acc(b, _acc) {
             return Buffer.add_string(b, Caml_curry.app1(acc[2], /* () */0));
         case 7 : 
             _acc = acc[1];
-            break;
-        case 8 : 
+            continue ;
+            case 8 : 
             strput_acc(b, acc[1]);
             return Pervasives.invalid_arg(acc[2]);
         
@@ -4619,10 +4643,14 @@ function open_box_of_string(str) {
             }
             else {
               _i = i + 1;
+              continue ;
+              
             }
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
       };
@@ -4640,6 +4668,8 @@ function open_box_of_string(str) {
           }
           else {
             _j = j + 1;
+            continue ;
+            
           }
         }
       };
@@ -4658,6 +4688,8 @@ function open_box_of_string(str) {
             }
             else {
               _j = j + 1;
+              continue ;
+              
             }
           }
           else if (match !== 45) {
@@ -4665,6 +4697,8 @@ function open_box_of_string(str) {
           }
           else {
             _j = j + 1;
+            continue ;
+            
           }
         }
       };
@@ -4947,6 +4981,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         if (match !== 37) {
           if (match !== 64) {
             _str_ind = str_ind + 1;
+            continue ;
+            
           }
           else {
             var match$1 = parse_after_at(str_ind + 1, end_ind);
@@ -5049,20 +5085,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           case 0 : 
               set_flag(str_ind$1, space);
               _str_ind = str_ind$1 + 1;
-              break;
-          case 3 : 
+              continue ;
+              case 3 : 
               set_flag(str_ind$1, sharp);
               _str_ind = str_ind$1 + 1;
-              break;
-          case 11 : 
+              continue ;
+              case 11 : 
               set_flag(str_ind$1, plus);
               _str_ind = str_ind$1 + 1;
-              break;
-          case 13 : 
+              continue ;
+              case 13 : 
               set_flag(str_ind$1, minus);
               _str_ind = str_ind$1 + 1;
-              break;
-          case 1 : 
+              continue ;
+              case 1 : 
           case 2 : 
           case 4 : 
           case 5 : 
@@ -5079,8 +5115,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           case 16 : 
               set_flag(str_ind$1, zero);
               _str_ind = str_ind$1 + 1;
-              break;
-          
+              continue ;
+              
         }
       }
       if (exit === 1) {
@@ -6917,6 +6953,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         else {
           add_in_char_set(char_set, /* "-" */45);
           _str_ind = str_ind + 1;
+          continue ;
+          
         }
       };
     };
@@ -7011,8 +7049,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               add_in_char_set(char_set, c);
               _c = c$prime;
               _str_ind = str_ind + 1;
-              break;
-          
+              continue ;
+              
         }
       };
     };
@@ -7045,6 +7083,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       if (str[str_ind] === " ") {
         _str_ind = str_ind + 1;
+        continue ;
+        
       }
       else {
         return str_ind;
@@ -7106,6 +7146,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         else {
           _acc = new_acc;
           _str_ind = str_ind + 1;
+          continue ;
+          
         }
       }
     };
@@ -7235,6 +7277,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       var match = str.charCodeAt(str_ind);
       if (match !== 37) {
         _str_ind = str_ind + 1;
+        continue ;
+        
       }
       else {
         if (str_ind + 1 === end_ind) {
@@ -7256,8 +7300,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   case 0 : 
                       var sub_end = search_subformat_end(str_ind + 2, end_ind, /* "}" */125);
                       _str_ind = sub_end + 2;
-                      break;
-                  case 1 : 
+                      continue ;
+                      case 1 : 
                       exit = 1;
                       break;
                   case 2 : 
@@ -7277,15 +7321,21 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               if (match$2 !== 40) {
                 if (match$2 !== 123) {
                   _str_ind = str_ind + 3;
+                  continue ;
+                  
                 }
                 else {
                   var sub_end$1 = search_subformat_end(str_ind + 3, end_ind, /* "}" */125);
                   _str_ind = sub_end$1 + 2;
+                  continue ;
+                  
                 }
               }
               else {
                 var sub_end$2 = search_subformat_end(str_ind + 3, end_ind, /* ")" */41);
                 _str_ind = sub_end$2 + 2;
+                continue ;
+                
               }
             }
           }
@@ -7300,9 +7350,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           else {
             var sub_end$3 = search_subformat_end(str_ind + 2, end_ind, /* ")" */41);
             _str_ind = sub_end$3 + 2;
+            continue ;
+            
           }
           if (exit === 1) {
             _str_ind = str_ind + 2;
+            continue ;
+            
           }
           
         }
@@ -7578,6 +7632,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             if (exit$1 === 3) {
               if (legacy_behavior$1) {
                 _sharp = /* false */0;
+                continue ;
+                
               }
               else {
                 return incompatible_flag(pct_ind, str_ind, symb, "'#'");
@@ -7589,6 +7645,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               if (space !== 0) {
                 if (legacy_behavior$1) {
                   _space = /* false */0;
+                  continue ;
+                  
                 }
                 else {
                   return incompatible_flag(pct_ind, str_ind, /* " " */32, "'+'");
@@ -7596,6 +7654,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               }
               else if (legacy_behavior$1) {
                 _plus = /* false */0;
+                continue ;
+                
               }
               else {
                 return incompatible_flag(pct_ind, str_ind, symb, "'+'");
@@ -7604,6 +7664,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             else if (space !== 0) {
               if (legacy_behavior$1) {
                 _space = /* false */0;
+                continue ;
+                
               }
               else {
                 return incompatible_flag(pct_ind, str_ind, symb, "' '");
@@ -7634,6 +7696,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         if (space !== 0) {
           if (legacy_behavior$1) {
             _space = /* false */0;
+            continue ;
+            
           }
           else {
             return incompatible_flag(pct_ind, str_ind, /* " " */32, "'+'");
@@ -7676,6 +7740,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           if (exit === 1) {
             if (legacy_behavior$1) {
               _plus = /* false */0;
+              continue ;
+              
             }
             else {
               return incompatible_flag(pct_ind, str_ind, symb, "'+'");
@@ -7721,6 +7787,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         if (exit$1 === 1) {
           if (legacy_behavior$1) {
             _space = /* false */0;
+            continue ;
+            
           }
           else {
             return incompatible_flag(pct_ind, str_ind, symb, "' '");

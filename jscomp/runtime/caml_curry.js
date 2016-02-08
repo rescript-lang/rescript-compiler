@@ -14,6 +14,8 @@ function curry(_f, _args) {
       if (d < 0) {
         _args = Caml_array.caml_array_sub(args, arity, -d);
         _f = f.apply(null, Caml_array.caml_array_sub(args, 0, arity));
+        continue ;
+        
       }
       else {
         return (function(f,args){

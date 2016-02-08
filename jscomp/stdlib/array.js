@@ -145,6 +145,8 @@ function to_list(a) {
         res
       ];
       _i = i - 1;
+      continue ;
+      
     }
   };
 }
@@ -156,6 +158,8 @@ function list_length(_accu, _param) {
     if (param) {
       _param = param[2];
       _accu = accu + 1;
+      continue ;
+      
     }
     else {
       return accu;
@@ -175,6 +179,8 @@ function of_list(l) {
         a[i] = param[1];
         _param = param[2];
         _i = i + 1;
+        continue ;
+        
       }
       else {
         return a;
@@ -246,6 +252,8 @@ function sort(cmp, a) {
         if (Caml_curry.app2(cmp, a[j], e$1) > 0) {
           a[i$1] = a[j];
           _i = j;
+          continue ;
+          
         }
         else {
           a[i$1] = e$1;
@@ -272,6 +280,8 @@ function sort(cmp, a) {
         var j = maxson(l$1, i$1);
         a[i$1] = a[j];
         _i = j;
+        continue ;
+        
       };
     }
     catch (exn){
@@ -303,6 +313,8 @@ function sort(cmp, a) {
         a[i] = a[father];
         if (father > 0) {
           _i = father;
+          continue ;
+          
         }
         else {
           a[0] = e;
@@ -359,6 +371,8 @@ function stable_sort(cmp, a) {
           _d = d + 1;
           _s1 = a[i1$1];
           _i1 = i1$1;
+          continue ;
+          
         }
         else {
           return blit(src2, i2, dst, d + 1, src2r - i2);
@@ -371,6 +385,8 @@ function stable_sort(cmp, a) {
           _d = d + 1;
           _s2 = src2[i2$1];
           _i2 = i2$1;
+          continue ;
+          
         }
         else {
           return blit(a, i1, dst, d + 1, src1r - i1);

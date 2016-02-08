@@ -74,9 +74,13 @@ function Make(H) {
                     if (match) {
                       _accu = Caml_curry.app2(f, match[1], accu);
                       _i = i + 1;
+                      continue ;
+                      
                     }
                     else {
                       _i = i + 1;
+                      continue ;
+                      
                     }
                   }
                 };
@@ -96,9 +100,13 @@ function Make(H) {
                     if (match) {
                       Caml_curry.app1(f, match[1]);
                       _i = i + 1;
+                      continue ;
+                      
                     }
                     else {
                       _i = i + 1;
+                      continue ;
+                      
                     }
                   }
                 };
@@ -119,9 +127,13 @@ function Make(H) {
                     if (match !== 0) {
                       Caml_curry.app3(f, b, t[2][j], i);
                       _i = i + 1;
+                      continue ;
+                      
                     }
                     else {
                       _i = i + 1;
+                      continue ;
+                      
                     }
                   }
                 };
@@ -139,6 +151,8 @@ function Make(H) {
           Caml_primitive.caml_weak_check(b, i) ? 1 : 0
         );
         _i = i + 1;
+        continue ;
+        
       }
     };
   };
@@ -167,15 +181,21 @@ function Make(H) {
           if (j >= prev_len) {
             if (Caml_primitive.caml_weak_check(bucket, i)) {
               _i = i + 1;
+              continue ;
+              
             }
             else if (Caml_primitive.caml_weak_check(bucket, j)) {
               Caml_primitive.caml_weak_blit(bucket, j, bucket, i, 1);
               hbucket[i] = hbucket[j];
               _j = j - 1;
               _i = i + 1;
+              continue ;
+              
             }
             else {
               _j = j - 1;
+              continue ;
+              
             }
           }
           else {
@@ -261,6 +281,8 @@ function Make(H) {
       }
       else if (Caml_primitive.caml_weak_check(bucket, i)) {
         _i = i + 1;
+        continue ;
+        
       }
       else {
         Caml_curry.app3(setter, bucket, i, d);
@@ -300,18 +322,26 @@ function Make(H) {
             }
             else {
               _i = i + 1;
+              continue ;
+              
             }
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else {
         _i = i + 1;
+        continue ;
+        
       }
     };
   };
@@ -351,14 +381,20 @@ function Make(H) {
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else {
         _i = i + 1;
+        continue ;
+        
       }
     };
   };
@@ -398,21 +434,31 @@ function Make(H) {
                 accu
               ];
               _i = i + 1;
+              continue ;
+              
             }
             else {
               _i = i + 1;
+              continue ;
+              
             }
           }
           else {
             _i = i + 1;
+            continue ;
+            
           }
         }
         else {
           _i = i + 1;
+          continue ;
+          
         }
       }
       else {
         _i = i + 1;
+        continue ;
+        
       }
     };
   };

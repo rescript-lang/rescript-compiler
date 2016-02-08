@@ -39,6 +39,8 @@ function length_aux(_len, _param) {
     if (param) {
       _param = param[2];
       _len = len + 1;
+      continue ;
+      
     }
     else {
       return len;

@@ -28,6 +28,8 @@ function absolute_path(s) {
       }
       else if (base === Filename.current_dir_name) {
         _s = dir;
+        continue ;
+        
       }
       else if (base === Filename.parent_dir_name) {
         return Caml_curry.app1(Filename.dirname, aux(dir));
@@ -77,6 +79,8 @@ function relative_path(file1, file2) {
           if (dir1[1] === dir2[1]) {
             _dir2 = dir2[2];
             _dir1 = dir1[2];
+            continue ;
+            
           }
           else {
             exit = 1;
