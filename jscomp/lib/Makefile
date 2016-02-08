@@ -1,5 +1,6 @@
 include ../Makefile.shared
 
+CAMLC=../bin/osc
 
 SOURCE_LIST := $(shell cat lib.mllib)
 
@@ -15,7 +16,7 @@ clean::
 	rm -f  *.annot
 	rm -f *.rawlambda *.lam *.lambda *.map
 
-CAMLC=../bin/osc
+
 .mli.cmi:
 	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
 .ml.cmj:

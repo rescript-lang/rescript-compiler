@@ -1,6 +1,7 @@
 #!/bin/sh
 set -e
 watchman watch-del .
+git clean -dfx
 . ./env.sh
 . ./build.sh
 make release
