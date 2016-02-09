@@ -5,8 +5,8 @@ var Caml_exceptions  = require("../runtime/caml_exceptions");
 var Test_inline_map2 = require("./test_inline_map2");
 var Mt               = require("./mt");
 var Test_map_find    = require("./test_map_find");
-var Assert           = require("assert");
 var Caml_primitive   = require("../runtime/caml_primitive");
+var Assert           = require("assert");
 var Caml_curry       = require("../runtime/caml_curry");
 var Caml_string      = require("../runtime/caml_string");
 var List             = require("../stdlib/list");
@@ -383,8 +383,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var y = param[2];
-      var c = Caml_string.caml_string_compare(x, y);
+      var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
         continue ;

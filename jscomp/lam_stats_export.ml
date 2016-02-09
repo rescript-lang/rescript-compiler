@@ -80,18 +80,19 @@ let export_to_cmj
                  else None
                else 
                  let lam_size = Lam_analysis.size lambda in
+                 (* TODO:
+                    1. global need re-assocate when do the beta reduction 
+                    2. [lambda_exports] is not precise
+                 *)
                  let free_variables =
-                   Lam_analysis.free_variables Ident_set.empty Ident_map.empty 
+                   Lam_analysis.free_variables Ident_set.empty
+                   (* meta.export_idents *)  Ident_map.empty 
                      lambda in
-                 if  lam_size < Lam_analysis.small_inline_size && 
+                 if  lam_size < Lam_analysis.small_inline_size  && 
                      Ident_map.is_empty free_variables
-                     (* TODO:
-                        1. global need re-assocate when do the beta reduction 
-                        2. [lambda_exports] is not precise
-                     *)
                  then 
                    begin
-                     (* Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ; *)
+                     Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ;
                      Some lambda
                    end
                  else 

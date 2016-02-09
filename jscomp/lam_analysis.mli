@@ -41,7 +41,6 @@ val is_closed : Lambda.lambda -> bool
 
 
 
-
 type stats = 
   { 
     mutable top : bool ; 
@@ -56,6 +55,10 @@ type stats =
     *)    
     mutable times : int ; 
   }
+
+val is_closed_with_map : 
+  Ident_set.t ->
+  Ident.t list -> Lambda.lambda -> bool * stats Ident_map.t
 
 val param_map_of_list : Ident.t list -> stats Ident_map.t
 

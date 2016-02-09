@@ -3,9 +3,9 @@
 
 var Mt         = require("./mt");
 var Lexing     = require("../stdlib/lexing");
+var Assert     = require("assert");
 var Caml_curry = require("../runtime/caml_curry");
 var $$String   = require("../stdlib/string");
-var Assert     = require("assert");
 
 var __ocaml_lex_tables = [
   /* record */0,
@@ -41,8 +41,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
         case 0 : 
             return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
-            var i = lexbuf[5];
-            var c = lexbuf[2][i];
+            var c = lexbuf[2][lexbuf[5]];
             return $$String.make(1, c) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";

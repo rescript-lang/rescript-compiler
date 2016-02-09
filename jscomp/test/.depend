@@ -68,6 +68,8 @@ cont_int_fold_test.cmo :
 cont_int_fold_test.cmx :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmx : mt.cmx ../stdlib/array.cmx
+cross_module_inline_test.cmo :
+cross_module_inline_test.cmx :
 demo.cmo :
 demo.cmx :
 demo_page.cmo :
@@ -442,6 +444,8 @@ cont_int_fold_test.cmo :
 cont_int_fold_test.cmj :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
+cross_module_inline_test.cmo :
+cross_module_inline_test.cmj :
 demo.cmo :
 demo.cmj :
 demo_page.cmo :

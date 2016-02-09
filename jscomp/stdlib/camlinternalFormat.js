@@ -4470,8 +4470,7 @@ function output_acc(o, _acc) {
           return Pervasives.output_string(o, acc[2]);
       case 2 : 
           output_acc(o, acc[1]);
-          var prim = acc[2];
-          return Caml_io.caml_ml_output_char(o, prim);
+          return Caml_io.caml_ml_output_char(o, acc[2]);
       
     }
   };
