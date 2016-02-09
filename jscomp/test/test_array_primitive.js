@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
@@ -13,7 +13,11 @@ function caml_array_sub(x, offset, len) {
 
 function caml_array_set(xs, index, newval) {
   if (index < 0 || index >= xs.length) {
-    return Pervasives.invalid_arg("index out of bounds");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "index out of bounds"
+        ];
   }
   else {
     xs[index] = newval;
@@ -23,7 +27,11 @@ function caml_array_set(xs, index, newval) {
 
 function caml_array_get(xs, index) {
   if (index < 0 || index >= xs.length) {
-    return Pervasives.invalid_arg("index out of bounds");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "index out of bounds"
+        ];
   }
   else {
     return xs[index];

@@ -470,7 +470,7 @@ function print_bytes(s) {
 }
 
 function print_int(i) {
-  return output_string(stdout, Caml_format.caml_format_int("%d", i));
+  return output_string(stdout, "" + i);
 }
 
 function print_float(f) {
@@ -497,7 +497,7 @@ function prerr_bytes(s) {
 }
 
 function prerr_int(i) {
-  return output_string(stderr, Caml_format.caml_format_int("%d", i));
+  return output_string(stderr, "" + i);
 }
 
 function prerr_float(f) {

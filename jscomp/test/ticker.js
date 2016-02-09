@@ -188,11 +188,19 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -208,11 +216,19 @@ function bal(l, x, d, r) {
         return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -373,7 +389,11 @@ function remove_min_binding(param) {
     }
   }
   else {
-    return Pervasives.invalid_arg("Map.remove_min_elt");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Map.remove_min_elt"
+        ];
   }
 }
 
@@ -990,10 +1010,18 @@ function compute_update_sequences(all_tickers) {
                     var lhs = param[2];
                     var rhs = param$1[2];
                     if (typeof lhs === "number") {
-                      return Pervasives.failwith("All nodes should be ranked");
+                      throw [
+                            0,
+                            Caml_exceptions.Failure,
+                            "All nodes should be ranked"
+                          ];
                     }
                     else if (typeof rhs === "number") {
-                      return Pervasives.failwith("All nodes should be ranked");
+                      throw [
+                            0,
+                            Caml_exceptions.Failure,
+                            "All nodes should be ranked"
+                          ];
                     }
                     else {
                       return Caml_primitive.caml_int_compare(lhs[1], rhs[1]);
@@ -1042,7 +1070,11 @@ function process_quote(ticker_map, new_ticker, new_value) {
                 return /* () */0;
               }
               else {
-                return Pervasives.failwith("Only single Market ticker should be udpated upon a new quote");
+                throw [
+                      0,
+                      Caml_exceptions.Failure,
+                      "Only single Market ticker should be udpated upon a new quote"
+                    ];
               }
             }, update_sequence);
 }
@@ -1076,7 +1108,11 @@ function process_input_line(ticker_map, all_tickers, line) {
             var match$1 = match[2];
             if (match$1) {
               if (match$1[2]) {
-                return Pervasives.failwith("Invalid input line");
+                throw [
+                      0,
+                      Caml_exceptions.Failure,
+                      "Invalid input line"
+                    ];
               }
               else {
                 var ticker_map$1 = ticker_map ? ticker_map[1] : compute_update_sequences(all_tickers);
@@ -1093,11 +1129,19 @@ function process_input_line(ticker_map, all_tickers, line) {
               }
             }
             else {
-              return Pervasives.failwith("Invalid input line");
+              throw [
+                    0,
+                    Caml_exceptions.Failure,
+                    "Invalid input line"
+                  ];
             }
           }
           else {
-            return Pervasives.failwith("Invalid input line");
+            throw [
+                  0,
+                  Caml_exceptions.Failure,
+                  "Invalid input line"
+                ];
           }
           break;
       case "R" : 
@@ -1113,7 +1157,11 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$5 = match$4[2];
                       if (match$5) {
                         if (match$5[2]) {
-                          return Pervasives.failwith("Invalid input line");
+                          throw [
+                                0,
+                                Caml_exceptions.Failure,
+                                "Invalid input line"
+                              ];
                         }
                         else {
                           return [
@@ -1128,11 +1176,19 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        return Pervasives.failwith("Invalid input line");
+                        throw [
+                              0,
+                              Caml_exceptions.Failure,
+                              "Invalid input line"
+                            ];
                       }
                     }
                     else {
-                      return Pervasives.failwith("Invalid input line");
+                      throw [
+                            0,
+                            Caml_exceptions.Failure,
+                            "Invalid input line"
+                          ];
                     }
                     break;
                 case "-" : 
@@ -1141,7 +1197,11 @@ function process_input_line(ticker_map, all_tickers, line) {
                       var match$7 = match$6[2];
                       if (match$7) {
                         if (match$7[2]) {
-                          return Pervasives.failwith("Invalid input line");
+                          throw [
+                                0,
+                                Caml_exceptions.Failure,
+                                "Invalid input line"
+                              ];
                         }
                         else {
                           return [
@@ -1156,16 +1216,28 @@ function process_input_line(ticker_map, all_tickers, line) {
                         }
                       }
                       else {
-                        return Pervasives.failwith("Invalid input line");
+                        throw [
+                              0,
+                              Caml_exceptions.Failure,
+                              "Invalid input line"
+                            ];
                       }
                     }
                     else {
-                      return Pervasives.failwith("Invalid input line");
+                      throw [
+                            0,
+                            Caml_exceptions.Failure,
+                            "Invalid input line"
+                          ];
                     }
                     break;
                 case "S" : 
                     if (match$3[2]) {
-                      return Pervasives.failwith("Invalid input line");
+                      throw [
+                            0,
+                            Caml_exceptions.Failure,
+                            "Invalid input line"
+                          ];
                     }
                     else {
                       return [
@@ -1184,24 +1256,45 @@ function process_input_line(ticker_map, all_tickers, line) {
                               ticker_map
                             ];
                     }
+                    break;
                 default:
-                  return Pervasives.failwith("Invalid input line");
+                  throw [
+                        0,
+                        Caml_exceptions.Failure,
+                        "Invalid input line"
+                      ];
               }
             }
             else {
-              return Pervasives.failwith("Invalid input line");
+              throw [
+                    0,
+                    Caml_exceptions.Failure,
+                    "Invalid input line"
+                  ];
             }
           }
           else {
-            return Pervasives.failwith("Invalid input line");
+            throw [
+                  0,
+                  Caml_exceptions.Failure,
+                  "Invalid input line"
+                ];
           }
           break;
       default:
-        return Pervasives.failwith("Invalid input line");
+        throw [
+              0,
+              Caml_exceptions.Failure,
+              "Invalid input line"
+            ];
     }
   }
   else {
-    return Pervasives.failwith("Invalid input line");
+    throw [
+          0,
+          Caml_exceptions.Failure,
+          "Invalid input line"
+        ];
   }
 }
 

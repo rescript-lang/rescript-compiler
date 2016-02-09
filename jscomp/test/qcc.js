@@ -284,7 +284,11 @@ function next() {
         var ch = getq(/* () */0);
         var qt = Caml_curry.app1(getch, /* () */0);
         if (qt !== /* "'" */39) {
-          return Pervasives.failwith("syntax error");
+          throw [
+                0,
+                Caml_exceptions.Failure,
+                "syntax error"
+              ];
         }
         else {
           return [
@@ -1173,26 +1177,35 @@ function unary(stk) {
           case "*" : 
               Caml_curry.app1(next$1, /* () */0);
               var t = Caml_curry.app1(next$1, /* () */0);
-              var match$1 = Caml_primitive.caml_equal(t, tokint) ? (
-                  Caml_primitive.caml_equal(Caml_curry.app1(next$1, /* () */0), [
-                        /* Op */0,
-                        "*"
-                      ]) ? [
-                      /* tuple */0,
-                      /* Int */0,
-                      1
-                    ] : [
-                      /* tuple */0,
-                      /* Int */0,
-                      5
-                    ]
-                ) : (
-                  Caml_primitive.caml_equal(t, tokchar) ? [
-                      /* tuple */0,
-                      /* Chr */1,
-                      2
-                    ] : Pervasives.failwith("[cast] expected")
-                );
+              var match$1;
+              if (Caml_primitive.caml_equal(t, tokint)) {
+                match$1 = Caml_primitive.caml_equal(Caml_curry.app1(next$1, /* () */0), [
+                      /* Op */0,
+                      "*"
+                    ]) ? [
+                    /* tuple */0,
+                    /* Int */0,
+                    1
+                  ] : [
+                    /* tuple */0,
+                    /* Int */0,
+                    5
+                  ];
+              }
+              else if (Caml_primitive.caml_equal(t, tokchar)) {
+                match$1 = [
+                  /* tuple */0,
+                  /* Chr */1,
+                  2
+                ];
+              }
+              else {
+                throw [
+                      0,
+                      Caml_exceptions.Failure,
+                      "[cast] expected"
+                    ];
+              }
               for(var k = 1 ,k_finish = match$1[2]; k<= k_finish; ++k){
                 Caml_curry.app1(next$1, /* () */0);
               }
@@ -1234,19 +1247,24 @@ function unary(stk) {
             ];
             unary(stk);
             if (!List.mem_assoc(o, unops)) {
-              Pervasives.failwith(Caml_curry.app1(Printf.sprintf([
-                            /* Format */0,
-                            [
-                              /* String_literal */11,
-                              "unknown operator ",
-                              [
-                                /* String */2,
-                                /* No_padding */0,
-                                /* End_of_format */0
-                              ]
-                            ],
-                            "unknown operator %s"
-                          ]), o));
+              var s = Caml_curry.app1(Printf.sprintf([
+                        /* Format */0,
+                        [
+                          /* String_literal */11,
+                          "unknown operator ",
+                          [
+                            /* String */2,
+                            /* No_padding */0,
+                            /* End_of_format */0
+                          ]
+                        ],
+                        "unknown operator %s"
+                      ]), o);
+              throw [
+                    0,
+                    Caml_exceptions.Failure,
+                    s
+                  ];
             }
             out(List.assoc(o, unops));
             if (o === "!") {
@@ -1521,7 +1539,11 @@ function decl(g, _n, _stk) {
               if (g) {
                 var glo = globs[s];
                 if (glo[2] >= 0) {
-                  Pervasives.failwith("symbol defined twice");
+                  throw [
+                        0,
+                        Caml_exceptions.Failure,
+                        "symbol defined twice"
+                      ];
                 }
                 var va = gpos[1] + textoff + base;
                 globs[s] = [
@@ -1562,7 +1584,11 @@ function decl(g, _n, _stk) {
               }
             }
             else {
-              return Pervasives.failwith("[var] expected in [decl]");
+              throw [
+                    0,
+                    Caml_exceptions.Failure,
+                    "[var] expected in [decl]"
+                  ];
             }
           }
         };
@@ -1825,7 +1851,11 @@ function top(_param) {
         var f = match[1];
         var g = globs[f];
         if (g[2] >= 0) {
-          Pervasives.failwith("symbol defined twice");
+          throw [
+                0,
+                Caml_exceptions.Failure,
+                "symbol defined twice"
+              ];
         }
         globs[f] = [
           /* record */0,
@@ -1844,12 +1874,20 @@ function top(_param) {
                     return stk;
                   }
                   else {
-                    return Pervasives.failwith("[var] or ) expected");
+                    throw [
+                          0,
+                          Caml_exceptions.Failure,
+                          "[var] or ) expected"
+                        ];
                   }
                   break;
               case 1 : 
               case 2 : 
-                  return Pervasives.failwith("[var] or ) expected");
+                  throw [
+                        0,
+                        Caml_exceptions.Failure,
+                        "[var] or ) expected"
+                      ];
               case 3 : 
                   var r = List.hd(regs);
                   push(r);
@@ -1947,7 +1985,11 @@ function top(_param) {
         
       }
       else {
-        return Pervasives.failwith("[decl] or [fun] expected");
+        throw [
+              0,
+              Caml_exceptions.Failure,
+              "[decl] or [fun] expected"
+            ];
       }
     }
   };
@@ -2375,7 +2417,8 @@ function main() {
       inch[1] = Pervasives.open_in(f);
       top(/* () */0);
       elfgen(oc);
-      return Pervasives.close_out(oc);
+      Caml_io.caml_ml_flush(oc);
+      return Caml_primitive.caml_ml_close_channel(oc);
   }
 }
 

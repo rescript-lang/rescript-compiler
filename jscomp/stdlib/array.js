@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_array      = require("../runtime/caml_array");
 var Caml_curry      = require("../runtime/caml_curry");
@@ -9,7 +8,11 @@ var Caml_curry      = require("../runtime/caml_curry");
 function init(l, f) {
   if (l) {
     if (l < 0) {
-      return Pervasives.invalid_arg("Array.init");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Array.init"
+          ];
     }
     else {
       var res = Caml_array.caml_make_vect(l, Caml_curry.app1(f, 0));
@@ -59,7 +62,11 @@ function append(a1, a2) {
 
 function sub(a, ofs, len) {
   if (len < 0 || ofs > a.length - len) {
-    return Pervasives.invalid_arg("Array.sub");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Array.sub"
+        ];
   }
   else {
     return Caml_array.caml_array_sub(a, ofs, len);
@@ -68,7 +75,11 @@ function sub(a, ofs, len) {
 
 function fill(a, ofs, len, v) {
   if (ofs < 0 || len < 0 || ofs > a.length - len) {
-    return Pervasives.invalid_arg("Array.fill");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Array.fill"
+        ];
   }
   else {
     for(var i = ofs ,i_finish = ofs + len - 1; i<= i_finish; ++i){
@@ -80,7 +91,11 @@ function fill(a, ofs, len, v) {
 
 function blit(a1, ofs1, a2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
-    return Pervasives.invalid_arg("Array.blit");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Array.blit"
+        ];
   }
   else {
     return Caml_array.caml_array_blit(a1, ofs1, a2, ofs2, len);

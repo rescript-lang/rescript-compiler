@@ -166,3 +166,4 @@ and_or_tailcall_test
 const_defs
 const_defs_test
 
+genlex_test

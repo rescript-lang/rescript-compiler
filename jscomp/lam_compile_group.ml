@@ -182,10 +182,9 @@ let compile  ~filename non_export env _sigs lam   =
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
-    let () = ignore @@ _d lam  in
-
     let lam = 
       lam
+      |> _d
       |> Lam_pass_alpha_conversion.alpha_conversion meta
       |> Lam_pass_exits.simplify_exits in    
     let () = Lam_pass_collect.collect_helper meta lam in
@@ -215,19 +214,39 @@ let compile  ~filename non_export env _sigs lam   =
 
   begin 
     match (lam : Lambda.lambda) with
-    | Lprim(Psetglobal id, [biglambda])  (* ATT: might be wrong in toplevel *) ->
+    | Lprim(Psetglobal id, [biglambda])
+      -> 
+      (* Invariant: The last one is always [exports]
+         Compile definitions
+         Compile exports
+         Assume Pmakeblock(_,_),
+         lambda_exports are pure
+         compile each binding with a return value
+         This might be wrong in toplevel
+      *)
+
       begin 
         match Lam_group.flatten [] biglambda with 
         | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
-          let coercion_groups, new_exports = 
+          let coercion_groups, new_exports, new_export_set,  export_map = 
             if non_export then 
-              [], []
+              [], [], Ident_set.empty, Ident_map.empty
             else
               List.fold_right2 
-                (fun  eid lam (coercions, new_exports) ->
+                (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
                    match (lam : Lambda.lambda) with 
-                   | Lvar id when Ident.name id = Ident.name eid -> 
-                     (coercions, id :: new_exports)
+                   | Lvar id 
+                     when Ident.name id = Ident.name eid -> 
+                     (* {[ Ident.same id eid]} is more  correct, 
+                        however, it will introduce 
+                        a coercion, which is not necessary, 
+                        as long as its name is the same, we want to avoid 
+                        another coercion                        
+                     *)
+                     (coercions, 
+                      id :: new_exports, 
+                      Ident_set.add id new_export_set,
+                      export_map)
                    | _ -> (** TODO : bug 
                               check [map.ml] here coercion, we introduced 
                               rebound which is not corrrect 
@@ -243,15 +262,25 @@ let compile  ~filename non_export env _sigs lam   =
                               however
                           *)
                      (Lam_group.Single(Strict ,eid,  lam) :: coercions, 
-                      eid :: new_exports))
-                meta.exports lambda_exports ([],[])
+                      eid :: new_exports,
+                      Ident_set.add eid new_export_set, 
+                      Ident_map.add eid lam export_map))
+                meta.exports lambda_exports 
+                ([],[], Ident_set.empty, Ident_map.empty)
           in
 
           let meta = { meta with 
-                       export_idents = Lam_util.ident_set_of_list new_exports;
+                       export_idents = new_export_set;
                        exports = new_exports
                      } in 
-          let rest = List.rev_append rest coercion_groups in
+          let (export_map, rest) = 
+            List.fold_left 
+              (fun (export_map, acc) x ->
+                 (match (x : Lam_group.t)  with 
+                 | Single (_,id,lam) when Ident_set.mem id new_export_set 
+                   -> Ident_map.add id lam export_map
+                 | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
+
           let () =
             if not @@ Ext_string.is_empty filename 
             then
@@ -261,13 +290,6 @@ let compile  ~filename non_export env _sigs lam   =
               Format.pp_print_list ~pp_sep:Format.pp_print_newline
                 (Lam_group.pp_group env) fmt rest ;
           in
-          (* Invariant: The last one is always [exports]
-             Compile definitions
-             Compile exports
-             Assume Pmakeblock(_,_),
-             lambda_exports are pure
-             compile each binding with a return value
-          *)
           let rest = Lam_dce.remove meta.exports rest 
           in
           let module  E = struct exception  Not_pure of string end in
@@ -335,8 +357,8 @@ let compile  ~filename non_export env _sigs lam   =
 
             (* Exporting ... *)
             let v = 
-              Lam_stats_util.export_to_cmj meta  maybe_pure external_module_ids
-                (if non_export then [] else lambda_exports) 
+              Lam_stats_export.export_to_cmj meta  maybe_pure external_module_ids
+                (if non_export then Ident_map.empty else export_map) 
             in
             (if not @@ Ext_string.is_empty filename then
                Js_cmj_format.to_file 

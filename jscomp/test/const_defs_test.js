@@ -1,12 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
 var u = 3;
 
 function f() {
-  return Pervasives.invalid_arg("hi");
+  throw [
+        0,
+        Caml_exceptions.Invalid_argument,
+        "hi"
+      ];
 }
 
 exports.u = u;

@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_primitive  = require("../runtime/caml_primitive");
 var Caml_curry      = require("../runtime/caml_curry");
@@ -55,11 +54,19 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -75,11 +82,19 @@ function bal(l, x, d, r) {
         return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -240,7 +255,11 @@ function remove_min_binding(param) {
     }
   }
   else {
-    return Pervasives.invalid_arg("Map.remove_min_elt");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Map.remove_min_elt"
+        ];
   }
 }
 

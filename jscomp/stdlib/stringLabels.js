@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes    = require("./bytes");
 var $$String = require("./string");
 
 var make = $$String.make;
@@ -12,9 +11,9 @@ var copy = $$String.copy;
 
 var sub = $$String.sub;
 
-var fill = Bytes.fill;
+var fill = $$String.fill;
 
-var blit = Bytes.blit_string;
+var blit = $$String.blit;
 
 var concat = $$String.concat;
 

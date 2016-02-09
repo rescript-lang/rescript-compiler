@@ -1,0 +1,147 @@
+(* OCamlScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(* Author: Hongbo Zhang  *)
+
+let pp = Format.fprintf 
+(* we should exclude meaninglist names and do the convert as well *)
+
+let meaningless_names  = ["*opt*"; "param";]
+
+let rec dump_ident fmt (id : Ident.t) (arity : Lam_stats.function_arities)  = 
+  pp fmt  "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name ) dump_arity arity
+
+and dump_arity fmt (arity : Lam_stats.function_arities) = 
+  match arity with 
+  | NA -> pp fmt "any"
+  | Determin (_, [], _) -> pp fmt "any"
+  | Determin (_, (_,args)::xs, _) -> 
+    pp fmt "@[(%a)@ =>@ any@]" 
+      (Format.pp_print_list  
+         ~pp_sep:(fun fmt _ -> 
+             Format.pp_print_string fmt ",";
+             Format.pp_print_space fmt ();
+           )
+         (fun fmt ident -> pp fmt "@[%s@ :@ any@]" 
+             (Ext_ident.convert @@ Ident.name ident))
+      ) args 
+
+
+(* Note that 
+   [lambda_exports] is 
+   lambda expression to be exported
+   for the js backend, we compile to js 
+   for the inliner, we try to seriaize it -- 
+   relies on other optimizations to make this happen
+   {[
+     exports.Make = function () {.....}
+   ]}
+   TODO: check that we don't do this in browser environment
+*)
+let export_to_cmj 
+    (meta : Lam_stats.meta ) 
+    maybe_pure
+    external_ids 
+    export_map
+
+  : Js_cmj_format.cmj_table = 
+  let values = 
+
+    List.fold_left
+      (fun   acc (x : Ident.t)  ->
+         let arity =  Lam_stats_util.get_arity meta (Lvar x) in
+         match Ident_map.find x export_map with 
+         | lambda  -> 
+           if Lam_analysis.safe_to_inline lambda
+           (* when inlning a non function, we have to be very careful,
+              only truly immutable values can be inlined
+           *)
+           then
+             let closed_lambda = 
+               if Lam_inline_util.should_be_functor x.name lambda (* can also be submodule *)
+               then
+                 if Lam_analysis.is_closed lambda (* TODO: seriealize more*)
+                 then Some lambda
+                 else None
+               else 
+                 let lam_size = Lam_analysis.size lambda in
+                 let free_variables =
+                   Lam_analysis.free_variables Ident_set.empty Ident_map.empty 
+                     lambda in
+                 if  lam_size < Lam_analysis.small_inline_size && 
+                     Ident_map.is_empty free_variables
+                     (* TODO:
+                        1. global need re-assocate when do the beta reduction 
+                        2. [lambda_exports] is not precise
+                     *)
+                 then 
+                   begin
+                     (* Ext_log.dwarn __LOC__ "%s recorded for inlining @." x.name ; *)
+                     Some lambda
+                   end
+                 else 
+                   begin
+                     (* Ext_log.dwarn __LOC__ "%s : %d : {%s} not inlined @."  *)
+                     (*   x.name lam_size   *)
+                     (*   (String.concat ", " @@  *)
+                     (*    List.map (fun x -> x.Ident.name) @@ Ident_map.keys free_variables) ; *)
+                     None 
+                   end
+             in 
+             String_map.add x.name  Js_cmj_format.{arity ; closed_lambda } acc 
+           else
+             String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None } acc 
+         | exception Not_found 
+           -> String_map.add x.name  Js_cmj_format.{arity ; closed_lambda = None} acc  
+      )
+      String_map.empty
+      meta.exports 
+
+
+  in
+
+  let rec dump fmt ids = 
+    (* TODO: also use {[Ext_pp]} module instead *)
+    match ids with 
+    | [] -> ()
+    | x::xs -> 
+      dump_ident fmt x (Lam_stats_util.get_arity meta (Lvar x)) ; 
+      Format.pp_print_space fmt ();
+      dump fmt xs in
+
+  let () =
+    if not @@ Ext_string.is_empty meta.filename then
+      Ext_pervasives.with_file_as_pp 
+        (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
+      @@ fun fmt -> 
+        pp fmt "@[<v>%a@]@." dump meta.exports
+  in
+  let pure = 
+    match maybe_pure with
+    | None ->  
+      Ext_option.bind ( Ext_list.for_all_ret 
+                          (fun (id : Lam_module_ident.t) -> 
+                             Lam_compile_env.query_and_add_if_not_exist id meta.env 
+                               ~not_found:(fun _ -> false ) ~found:(fun i -> 
+                                   i.pure)
+                          ) external_ids) (fun x -> Lam_module_ident.name x)
+    | Some _ -> maybe_pure
+
+  in
+  {values; pure }
+

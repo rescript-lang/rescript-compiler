@@ -6,7 +6,9 @@ var v = 0;
 
 ++ v;
 
-console.log("" + v);
+var n = v;
+
+console.log("" + n);
 
 function unuse_v() {
   return 35;

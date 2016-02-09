@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
+var Obj              = require("./obj");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
 var CamlinternalOO   = require("./camlinternalOO");
 var $$Array          = require("./array");
@@ -67,7 +68,7 @@ function update_mod(shape, o, n) {
   if (typeof shape === "number") {
     switch (shape) {
       case 0 : 
-          if (Caml_obj_runtime.caml_obj_tag(n) === 247 && n.length <= o.length) {
+          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.closure_tag && n.length <= o.length) {
             overwrite(o, n);
             return Caml_obj_runtime.caml_obj_truncate(o, n.length);
           }
@@ -77,17 +78,17 @@ function update_mod(shape, o, n) {
                       });
           }
       case 1 : 
-          if (Caml_obj_runtime.caml_obj_tag(n) === 246) {
+          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.lazy_tag) {
             o[0] = n[0];
             return /* () */0;
           }
-          else if (Caml_obj_runtime.caml_obj_tag(n) === 250) {
-            Caml_obj_runtime.caml_obj_set_tag(o, 250);
+          else if (Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag) {
+            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
             o[0] = n[0];
             return /* () */0;
           }
           else {
-            Caml_obj_runtime.caml_obj_set_tag(o, 250);
+            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
             o[0] = n;
             return /* () */0;
           }

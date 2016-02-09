@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Pervasives      = require("./pervasives");
 var Char            = require("./char");
 var Caml_primitive  = require("../runtime/caml_primitive");
 var Caml_curry      = require("../runtime/caml_curry");
@@ -42,7 +42,11 @@ function of_string(s) {
 
 function sub(s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return Pervasives.invalid_arg("String.sub / Bytes.sub");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.sub / Bytes.sub"
+        ];
   }
   else {
     var r = Caml_string.caml_create_string(len);
@@ -78,7 +82,11 @@ function extend(s, left, right) {
 
 function fill(s, ofs, len, c) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
-    return Pervasives.invalid_arg("String.fill / Bytes.fill");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.fill / Bytes.fill"
+        ];
   }
   else {
     return Caml_string.caml_fill_string(s, ofs, len, c);
@@ -87,7 +95,11 @@ function fill(s, ofs, len, c) {
 
 function blit(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
-    return Pervasives.invalid_arg("Bytes.blit");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Bytes.blit"
+        ];
   }
   else {
     return Caml_string.caml_blit_bytes(s1, ofs1, s2, ofs2, len);
@@ -96,7 +108,11 @@ function blit(s1, ofs1, s2, ofs2, len) {
 
 function blit_string(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
-    return Pervasives.invalid_arg("String.blit / Bytes.blit_string");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.blit / Bytes.blit_string"
+        ];
   }
   else {
     return Caml_string.caml_blit_string(s1, ofs1, s2, ofs2, len);
@@ -385,7 +401,11 @@ function index(s, c) {
 function index_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
-    return Pervasives.invalid_arg("String.index_from / Bytes.index_from");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.index_from / Bytes.index_from"
+        ];
   }
   else {
     return index_rec(s, l, i, c);
@@ -415,7 +435,11 @@ function rindex(s, c) {
 
 function rindex_from(s, i, c) {
   if (i < -1 || i >= s.length) {
-    return Pervasives.invalid_arg("String.rindex_from / Bytes.rindex_from");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.rindex_from / Bytes.rindex_from"
+        ];
   }
   else {
     return rindex_rec(s, i, c);
@@ -425,7 +449,11 @@ function rindex_from(s, i, c) {
 function contains_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
-    return Pervasives.invalid_arg("String.contains_from / Bytes.contains_from");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.contains_from / Bytes.contains_from"
+        ];
   }
   else {
     try {
@@ -449,7 +477,11 @@ function contains(s, c) {
 
 function rcontains_from(s, i, c) {
   if (i < 0 || i >= s.length) {
-    return Pervasives.invalid_arg("String.rcontains_from / Bytes.rcontains_from");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "String.rcontains_from / Bytes.rcontains_from"
+        ];
   }
   else {
     try {

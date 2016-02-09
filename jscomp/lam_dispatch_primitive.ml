@@ -517,7 +517,7 @@ let query (prim : Lam_compile_env.primitive_description)
       E.runtime_call Js_config.obj_runtime prim.prim_name args 
 
     | "caml_format_float"
-    | "caml_format_int"
+
     | "caml_nativeint_format"
     | "caml_int32_format"
     | "caml_float_of_string"
@@ -525,8 +525,14 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_int32_of_string"
     | "caml_nativeint_of_string" -> 
       E.runtime_call Js_config.format prim.prim_name args
-
-
+    | "caml_format_int" -> 
+      begin match args with 
+      | [ {expression_desc = Str (_, "%d"); _}; v] 
+        ->
+        E.int_to_string v 
+      | _ -> 
+        E.runtime_call Js_config.format prim.prim_name args
+      end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
     | "caml_update_dummy"

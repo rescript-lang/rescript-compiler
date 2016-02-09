@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Pervasives      = require("./pervasives");
 var Caml_primitive  = require("../runtime/caml_primitive");
 var Caml_curry      = require("../runtime/caml_curry");
 
@@ -29,7 +29,11 @@ function hd(param) {
     return param[1];
   }
   else {
-    return Pervasives.failwith("hd");
+    throw [
+          0,
+          Caml_exceptions.Failure,
+          "hd"
+        ];
   }
 }
 
@@ -38,13 +42,21 @@ function tl(param) {
     return param[2];
   }
   else {
-    return Pervasives.failwith("tl");
+    throw [
+          0,
+          Caml_exceptions.Failure,
+          "tl"
+        ];
   }
 }
 
 function nth(l, n) {
   if (n < 0) {
-    return Pervasives.invalid_arg("List.nth");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "List.nth"
+        ];
   }
   else {
     var _l = l;
@@ -64,7 +76,11 @@ function nth(l, n) {
         }
       }
       else {
-        return Pervasives.failwith("nth");
+        throw [
+              0,
+              Caml_exceptions.Failure,
+              "nth"
+            ];
       }
     };
   }
@@ -228,11 +244,19 @@ function map2(f, l1, l2) {
             ];
     }
     else {
-      return Pervasives.invalid_arg("List.map2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.map2"
+          ];
     }
   }
   else if (l2) {
-    return Pervasives.invalid_arg("List.map2");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "List.map2"
+        ];
   }
   else {
     return /* [] */0;
@@ -260,11 +284,19 @@ function rev_map2(f, l1, l2) {
         
       }
       else {
-        return Pervasives.invalid_arg("List.rev_map2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.rev_map2"
+            ];
       }
     }
     else if (l2$1) {
-      return Pervasives.invalid_arg("List.rev_map2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.rev_map2"
+          ];
     }
     else {
       return accu;
@@ -285,11 +317,19 @@ function iter2(f, _l1, _l2) {
         
       }
       else {
-        return Pervasives.invalid_arg("List.iter2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.iter2"
+            ];
       }
     }
     else if (l2) {
-      return Pervasives.invalid_arg("List.iter2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.iter2"
+          ];
     }
     else {
       return /* () */0;
@@ -311,11 +351,19 @@ function fold_left2(f, _accu, _l1, _l2) {
         
       }
       else {
-        return Pervasives.invalid_arg("List.fold_left2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.fold_left2"
+            ];
       }
     }
     else if (l2) {
-      return Pervasives.invalid_arg("List.fold_left2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.fold_left2"
+          ];
     }
     else {
       return accu;
@@ -329,11 +377,19 @@ function fold_right2(f, l1, l2, accu) {
       return Caml_curry.app3(f, l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
     }
     else {
-      return Pervasives.invalid_arg("List.fold_right2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.fold_right2"
+          ];
     }
   }
   else if (l2) {
-    return Pervasives.invalid_arg("List.fold_right2");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "List.fold_right2"
+        ];
   }
   else {
     return accu;
@@ -395,11 +451,19 @@ function for_all2(p, _l1, _l2) {
         }
       }
       else {
-        return Pervasives.invalid_arg("List.for_all2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.for_all2"
+            ];
       }
     }
     else if (l2) {
-      return Pervasives.invalid_arg("List.for_all2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.for_all2"
+          ];
     }
     else {
       return /* true */1;
@@ -424,11 +488,19 @@ function exists2(p, _l1, _l2) {
         }
       }
       else {
-        return Pervasives.invalid_arg("List.exists2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.exists2"
+            ];
       }
     }
     else if (l2) {
-      return Pervasives.invalid_arg("List.exists2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.exists2"
+          ];
     }
     else {
       return /* false */0;
@@ -728,11 +800,19 @@ function combine(l1, l2) {
             ];
     }
     else {
-      return Pervasives.invalid_arg("List.combine");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.combine"
+          ];
     }
   }
   else if (l2) {
-    return Pervasives.invalid_arg("List.combine");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "List.combine"
+        ];
   }
   else {
     return /* [] */0;

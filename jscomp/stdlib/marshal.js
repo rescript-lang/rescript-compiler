@@ -1,13 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives     = require("./pervasives");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_string    = require("../runtime/caml_string");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_string     = require("../runtime/caml_string");
 
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > buff.length - len) {
-    return Pervasives.invalid_arg("Marshal.to_buffer: substring out of bounds");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Marshal.to_buffer: substring out of bounds"
+        ];
   }
   else {
     return Caml_primitive.caml_output_value_to_buffer(buff, ofs, len, v, flags);
@@ -18,7 +22,11 @@ var header_size = 20;
 
 function data_size(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
-    return Pervasives.invalid_arg("Marshal.data_size");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Marshal.data_size"
+        ];
   }
   else {
     return Caml_primitive.caml_marshal_data_size(buff, ofs);
@@ -31,12 +39,20 @@ function total_size(buff, ofs) {
 
 function from_bytes(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
-    return Pervasives.invalid_arg("Marshal.from_bytes");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Marshal.from_bytes"
+        ];
   }
   else {
     var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
     if (ofs > buff.length - (header_size + len)) {
-      return Pervasives.invalid_arg("Marshal.from_bytes");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Marshal.from_bytes"
+          ];
     }
     else {
       return Caml_primitive.caml_input_value_from_string(buff, ofs);

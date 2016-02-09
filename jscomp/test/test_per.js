@@ -126,7 +126,7 @@ function bool_of_string(param) {
 }
 
 function string_of_int(n) {
-  return Caml_format.caml_format_int("%d", n);
+  return "" + n;
 }
 
 function valid_float_lexem(s) {
@@ -475,7 +475,7 @@ function print_bytes(s) {
 }
 
 function print_int(i) {
-  return output_string(stdout, Caml_format.caml_format_int("%d", i));
+  return output_string(stdout, "" + i);
 }
 
 function print_float(f) {
@@ -506,7 +506,7 @@ function prerr_bytes(s) {
 }
 
 function prerr_int(i) {
-  return output_string(stderr, Caml_format.caml_format_int("%d", i));
+  return output_string(stderr, "" + i);
 }
 
 function prerr_float(f) {

@@ -65,3 +65,4 @@ val small_inline_size : int
 val exit_inline_size : int 
 
 
+val safe_to_inline : Lambda.lambda -> bool

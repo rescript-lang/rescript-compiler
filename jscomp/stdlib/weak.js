@@ -230,7 +230,11 @@ function Make(H) {
       if (i >= sz) {
         var newsz = Pervasives.min((3 * sz / 2 | 0) + 3, Sys.max_array_length - 1);
         if (newsz <= sz) {
-          Pervasives.failwith("Weak.Make: hash bucket cannot grow more");
+          throw [
+                0,
+                Caml_exceptions.Failure,
+                "Weak.Make: hash bucket cannot grow more"
+              ];
         }
         var newbucket = Caml_primitive.caml_weak_create(newsz);
         var newhashes = Caml_array.caml_make_vect(newsz, 0);

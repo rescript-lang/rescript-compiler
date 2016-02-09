@@ -3,6 +3,7 @@
 
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
+var Lexing           = require("./lexing");
 var Caml_lexer       = require("../runtime/caml_lexer");
 var Caml_primitive   = require("../runtime/caml_primitive");
 var Caml_array       = require("../runtime/caml_array");
@@ -25,38 +26,14 @@ var env = [
   /* record */0,
   Caml_array.caml_make_vect(100, 0),
   Caml_array.caml_make_vect(100, /* () */0),
-  Caml_array.caml_make_vect(100, [
-        /* record */0,
-        "",
-        0,
-        0,
-        -1
-      ]),
-  Caml_array.caml_make_vect(100, [
-        /* record */0,
-        "",
-        0,
-        0,
-        -1
-      ]),
+  Caml_array.caml_make_vect(100, Lexing.dummy_pos),
+  Caml_array.caml_make_vect(100, Lexing.dummy_pos),
   100,
   0,
   0,
   /* () */0,
-  [
-    /* record */0,
-    "",
-    0,
-    0,
-    -1
-  ],
-  [
-    /* record */0,
-    "",
-    0,
-    0,
-    -1
-  ],
+  Lexing.dummy_pos,
+  Lexing.dummy_pos,
   0,
   0,
   0,
@@ -70,20 +47,8 @@ function grow_stacks() {
   var newsize = oldsize * 2;
   var new_s = Caml_array.caml_make_vect(newsize, 0);
   var new_v = Caml_array.caml_make_vect(newsize, /* () */0);
-  var new_start = Caml_array.caml_make_vect(newsize, [
-        /* record */0,
-        "",
-        0,
-        0,
-        -1
-      ]);
-  var new_end = Caml_array.caml_make_vect(newsize, [
-        /* record */0,
-        "",
-        0,
-        0,
-        -1
-      ]);
+  var new_start = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
+  var new_end = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
   $$Array.blit(env[1], 0, new_s, 0, oldsize);
   env[1] = new_s;
   $$Array.blit(env[2], 0, new_v, 0, oldsize);

@@ -83,7 +83,7 @@ function field(x, i) {
                       "%S"
                     ]), f);
     }
-    else if (Caml_obj_runtime.caml_obj_tag(f) === 253) {
+    else if (Caml_obj_runtime.caml_obj_tag(f) === Obj.double_tag) {
       return Pervasives.string_of_float(f);
     }
     else {

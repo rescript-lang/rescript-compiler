@@ -457,3 +457,11 @@ let is_closed  lam =
   Ident_map.for_all (fun k _ -> Ident.global k)
     (free_variables Ident_set.empty Ident_map.empty lam)  
 
+(* TODO:  We can relax this a bit later,
+    but decide whether to inline it later in the call site
+ *)
+let safe_to_inline (lam : Lambda.lambda) = 
+  match lam with 
+  | Lfunction _ ->  true
+  | Lconst (Const_pointer _  | Const_immstring _ ) -> true
+  | _ -> false

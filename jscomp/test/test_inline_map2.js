@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("../stdlib/pervasives");
+var Assert          = require("assert");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Mt              = require("./mt");
 var Caml_primitive  = require("../runtime/caml_primitive");
@@ -46,11 +46,19 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -66,11 +74,19 @@ function bal(l, x, d, r) {
         return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -217,11 +233,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -237,11 +261,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -351,11 +383,13 @@ var s = List.fold_left(function (acc, param) {
     ]);
 
 function assertions1() {
-  return Mt.assert_equal(find(10, m), /* "a" */97);
+  var prim = find(10, m);
+  return Assert.deepEqual(prim, /* "a" */97);
 }
 
 function assertions2() {
-  return Mt.assert_equal(find$1("10", s), /* "a" */97);
+  var prim = find$1("10", s);
+  return Assert.deepEqual(prim, /* "a" */97);
 }
 
 exports.assertions1 = assertions1;

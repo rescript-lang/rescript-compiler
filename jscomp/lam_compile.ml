@@ -75,7 +75,26 @@ let rec
              it is very small             
              TODO: add comment here, we should try to add comment for 
              cross module inlining             
-          *)              
+          
+             if we do too agressive inlining here: 
+
+             if we inline {!List.length} which will call {!A_list.length}, 
+             then we if we try inline {!A_list.length}, this means if {!A_list} 
+             is rebuilt, this module should also be rebuilt,
+
+             But if the build system is content-based, suppose {!A_list} 
+             is changed, cmj files in {!List} is unchnaged, however, 
+             {!List.length} call {!A_list.length} which is changed, since
+             [ocamldep] only detect that we depend on {!List}, it will not 
+             get re-built, then we are screwed.                   
+
+             This is okay for stamp based build system.
+
+             Another solution is that we add dependencies in the compiler
+
+             -: we should not do functor application inlining in a 
+                non-toplevel, it will explode code very quickly              
+          *)               
           ->  
           compile_lambda cxt lam
         | _ -> 
@@ -145,8 +164,6 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           (match id, name,  args with 
            | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
              E.string_append e0 e1 
-           | {name = "Pervasives"; _}, "string_of_int", [e] 
-             -> E.int_to_string e 
            | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
              E.seq (E.dump Log args) (E.unit ())
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  

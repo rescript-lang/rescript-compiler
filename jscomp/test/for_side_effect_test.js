@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt     = require("./mt");
+var Assert = require("assert");
 
 function tst() {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i<= i_finish; ++i){
@@ -24,7 +25,8 @@ var suites_001 = [
   /* tuple */0,
   "for_order",
   function () {
-    return Mt.assert_equal(10, test2(/* () */0));
+    var prim = test2(/* () */0);
+    return Assert.deepEqual(10, prim);
   }
 ];
 
