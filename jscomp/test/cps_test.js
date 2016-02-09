@@ -5,6 +5,7 @@ var Mt         = require("./mt");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 var Caml_curry = require("../runtime/caml_curry");
+var Assert     = require("assert");
 
 function test() {
   var v = [
@@ -90,7 +91,8 @@ Mt.from_suites("cps_test.ml", [
         /* tuple */0,
         "cps_test_sum",
         function () {
-          return Mt.assert_equal(55, test(/* () */0));
+          var prim = test(/* () */0);
+          return Assert.deepEqual(55, prim);
         }
       ],
       [
@@ -99,7 +101,8 @@ Mt.from_suites("cps_test.ml", [
           /* tuple */0,
           "cps_test_closure",
           function () {
-            return Mt.assert_equal(15, test_closure(/* () */0));
+            var prim = test_closure(/* () */0);
+            return Assert.deepEqual(15, prim);
           }
         ],
         [
@@ -108,7 +111,8 @@ Mt.from_suites("cps_test.ml", [
             /* tuple */0,
             "cps_test_closure2",
             function () {
-              return Mt.assert_equal(30, test_closure2(/* () */0));
+              var prim = test_closure2(/* () */0);
+              return Assert.deepEqual(30, prim);
             }
           ],
           /* [] */0

@@ -3914,7 +3914,7 @@ function make_printf(_k, o, _acc, _fmt) {
               return make_printf(k, o, [
                           /* Acc_data_string */4,
                           acc,
-                          Pervasives.string_of_bool(b)
+                          b ? "true" : "false"
                         ], rest$2);
             }
             }(k,acc,rest$2));
@@ -4456,7 +4456,11 @@ function output_acc(o, _acc) {
             return Caml_io.caml_ml_flush(o);
         case 8 : 
             output_acc(o, acc[1]);
-            return Pervasives.invalid_arg(acc[2]);
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  acc[2]
+                ];
         
       }
     }
@@ -4466,8 +4470,7 @@ function output_acc(o, _acc) {
           return Pervasives.output_string(o, acc[2]);
       case 2 : 
           output_acc(o, acc[1]);
-          var prim = acc[2];
-          return Caml_io.caml_ml_output_char(o, prim);
+          return Caml_io.caml_ml_output_char(o, acc[2]);
       
     }
   };
@@ -4519,7 +4522,11 @@ function bufput_acc(b, _acc) {
             continue ;
             case 8 : 
             bufput_acc(b, acc[1]);
-            return Pervasives.invalid_arg(acc[2]);
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  acc[2]
+                ];
         
       }
     }
@@ -4581,7 +4588,11 @@ function strput_acc(b, _acc) {
             continue ;
             case 8 : 
             strput_acc(b, acc[1]);
-            return Pervasives.invalid_arg(acc[2]);
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  acc[2]
+                ];
         
       }
     }
@@ -4601,7 +4612,12 @@ function failwith_message(param) {
   var buf = Buffer.create(256);
   var k = function (_, acc) {
     strput_acc(buf, acc);
-    return Pervasives.failwith(Buffer.contents(buf));
+    var s = Buffer.contents(buf);
+    throw [
+          0,
+          Caml_exceptions.Failure,
+          s
+        ];
   };
   return make_printf(k, /* () */0, /* End_of_acc */0, param[1]);
 }

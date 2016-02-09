@@ -1,13 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_sys   = require("../runtime/caml_sys");
-var Pervasives = require("./pervasives");
-var Nativeint  = require("./nativeint");
-var Digest     = require("./digest");
-var Caml_array = require("../runtime/caml_array");
-var $$Array    = require("./array");
-var Caml_curry = require("../runtime/caml_curry");
+var Caml_sys        = require("../runtime/caml_sys");
+var Pervasives      = require("./pervasives");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Nativeint       = require("./nativeint");
+var Int32           = require("./int32");
+var Digest          = require("./digest");
+var Int64           = require("./int64");
+var Caml_array      = require("../runtime/caml_array");
+var $$Array         = require("./array");
+var Caml_curry      = require("../runtime/caml_curry");
 
 function new_state() {
   return [
@@ -73,7 +76,11 @@ function bits(s) {
 
 function $$int(s, bound) {
   if (bound > 1073741823 || bound <= 0) {
-    return Pervasives.invalid_arg("Random.int");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Random.int"
+        ];
   }
   else {
     var s$1 = s;
@@ -94,7 +101,11 @@ function $$int(s, bound) {
 
 function int32(s, bound) {
   if (bound <= 0) {
-    return Pervasives.invalid_arg("Random.int32");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Random.int32"
+        ];
   }
   else {
     var s$1 = s;
@@ -104,7 +115,7 @@ function int32(s, bound) {
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
       var v = r % n;
-      if (r - v > 2147483647 - n + 1) {
+      if (r - v > Int32.max_int - n + 1) {
         continue ;
         
       }
@@ -117,7 +128,11 @@ function int32(s, bound) {
 
 function int64(s, bound) {
   if (bound <= 0) {
-    return Pervasives.invalid_arg("Random.int64");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Random.int64"
+        ];
   }
   else {
     var s$1 = s;
@@ -128,7 +143,7 @@ function int64(s, bound) {
       var b3 = ((bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if (r - v > 9223372036854775807 - n + 1) {
+      if (r - v > Int64.max_int - n + 1) {
         continue ;
         
       }

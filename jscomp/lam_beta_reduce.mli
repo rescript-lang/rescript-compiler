@@ -50,8 +50,15 @@ val refresh :
   Lambda.lambda -> 
   Lambda.lambda 
 
+(** 
+   {[ Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args]}
+   [param_map] collect the usage of parameters, 
+   it can be  produced by 
+   {[!Lam_analysis.free_variables meta.export_idents 
+       (Lam_analysis.param_map_of_list params) body]}
+*)
 val propogate_beta_reduce_with_map : 
   Lam_stats.meta ->
   Lam_analysis.stats Ident_map.t ->
-  Ident_map.key list ->
+  Ident.t list ->
   Lambda.lambda -> Lambda.lambda list -> Lambda.lambda

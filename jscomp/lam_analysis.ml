@@ -457,3 +457,20 @@ let is_closed  lam =
   Ident_map.for_all (fun k _ -> Ident.global k)
     (free_variables Ident_set.empty Ident_map.empty lam)  
 
+
+let is_closed_with_map exports params body = 
+  let param_map = free_variables exports (param_map_of_list params) body in
+  let old_count = List.length params in
+  let new_count = Ident_map.cardinal param_map in
+  (old_count  = new_count, param_map)
+
+
+  
+(* TODO:  We can relax this a bit later,
+    but decide whether to inline it later in the call site
+ *)
+let safe_to_inline (lam : Lambda.lambda) = 
+  match lam with 
+  | Lfunction _ ->  true
+  | Lconst (Const_pointer _  | Const_immstring _ ) -> true
+  | _ -> false

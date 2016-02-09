@@ -4,7 +4,6 @@
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Obj              = require("./obj");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Pervasives       = require("./pervasives");
 var Caml_oo          = require("../runtime/caml_oo");
 var Sys              = require("./sys");
 var Caml_primitive   = require("../runtime/caml_primitive");
@@ -79,11 +78,19 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -99,11 +106,19 @@ function bal(l, x, d, r) {
         return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -230,11 +245,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -250,11 +273,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -345,11 +376,19 @@ function bal$2(l, x, d, r) {
         return create$2(create$2(ll, lv, ld, lr[1]), lr[2], lr[3], create$2(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -365,11 +404,19 @@ function bal$2(l, x, d, r) {
         return create$2(create$2(l, x, d, rl[1]), rl[2], rl[3], create$2(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {

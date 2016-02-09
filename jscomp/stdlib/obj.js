@@ -3,7 +3,6 @@
 
 var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Pervasives       = require("./pervasives");
 var Marshal          = require("./marshal");
 var Caml_primitive   = require("../runtime/caml_primitive");
 
@@ -58,7 +57,11 @@ function extension_name(x) {
   }
   catch (exn){
     if (exn === Caml_exceptions.Not_found) {
-      return Pervasives.invalid_arg("Obj.extension_name");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Obj.extension_name"
+          ];
     }
     else {
       throw exn;
@@ -73,7 +76,11 @@ function extension_id(x) {
   }
   catch (exn){
     if (exn === Caml_exceptions.Not_found) {
-      return Pervasives.invalid_arg("Obj.extension_id");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Obj.extension_id"
+          ];
     }
     else {
       throw exn;
@@ -87,7 +94,11 @@ function extension_slot$1(x) {
   }
   catch (exn){
     if (exn === Caml_exceptions.Not_found) {
-      return Pervasives.invalid_arg("Obj.extension_slot");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Obj.extension_slot"
+          ];
     }
     else {
       throw exn;

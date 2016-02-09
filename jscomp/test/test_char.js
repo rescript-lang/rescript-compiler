@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function f(x) {
   return x + 1;
@@ -9,7 +9,11 @@ function f(x) {
 
 function chr(n) {
   if (n < 0 || n > 255) {
-    return Pervasives.invalid_arg("Char.chr");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Char.chr"
+        ];
   }
   else {
     return n;

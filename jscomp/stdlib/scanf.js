@@ -96,7 +96,7 @@ function char_count(ib) {
 function token(ib) {
   var tokbuf = ib[8];
   var tok = Buffer.contents(tokbuf);
-  Buffer.clear(tokbuf);
+  tokbuf[2] = 0;
   ++ ib[6];
   return tok;
 }
@@ -1957,9 +1957,17 @@ function make_scanf(ib, _fmt, readers) {
                     make_scanf(ib, CamlinternalFormatBasics.concat_fmt(match$2[2], fmt[3]), readers)
                   ];
         case 15 : 
-            return Pervasives.invalid_arg('scanf: bad conversion "%a"');
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  'scanf: bad conversion "%a"'
+                ];
         case 16 : 
-            return Pervasives.invalid_arg('scanf: bad conversion "%t"');
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  'scanf: bad conversion "%t"'
+                ];
         case 17 : 
             $$String.iter(function (param) {
                   return check_char(ib, param);
@@ -2066,7 +2074,11 @@ function make_scanf(ib, _fmt, readers) {
             }
             break;
         case 24 : 
-            return Pervasives.invalid_arg('scanf: bad conversion "%?" (custom converter)');
+            throw [
+                  0,
+                  Caml_exceptions.Invalid_argument,
+                  'scanf: bad conversion "%?" (custom converter)'
+                ];
         
       }
     }
@@ -2077,7 +2089,11 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
   if (typeof pad === "number") {
     if (typeof prec === "number") {
       if (prec !== 0) {
-        return Pervasives.invalid_arg('scanf: bad conversion "%*"');
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              'scanf: bad conversion "%*"'
+            ];
       }
       else {
         Caml_curry.app3(scan, Pervasives.max_int, Pervasives.max_int, ib);
@@ -2100,13 +2116,21 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
     }
   }
   else if (pad[0]) {
-    return Pervasives.invalid_arg('scanf: bad conversion "%*"');
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          'scanf: bad conversion "%*"'
+        ];
   }
   else if (pad[1] !== 0) {
     var w = pad[2];
     if (typeof prec === "number") {
       if (prec !== 0) {
-        return Pervasives.invalid_arg('scanf: bad conversion "%*"');
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              'scanf: bad conversion "%*"'
+            ];
       }
       else {
         Caml_curry.app3(scan, w, Pervasives.max_int, ib);
@@ -2129,7 +2153,11 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
     }
   }
   else {
-    return Pervasives.invalid_arg('scanf: bad conversion "%-"');
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          'scanf: bad conversion "%-"'
+        ];
   }
 }
 
@@ -2165,7 +2193,12 @@ function kscanf(ib, ef, param) {
         ];
       }
       else if (exc[1] === Caml_exceptions.Invalid_argument) {
-        match = Pervasives.invalid_arg(exc[2] + (' in format "' + ($$String.escaped(str) + '"')));
+        var s = exc[2] + (' in format "' + ($$String.escaped(str) + '"'));
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              s
+            ];
       }
       else {
         throw exc;

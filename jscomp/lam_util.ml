@@ -317,6 +317,10 @@ let lam_true : Lambda.lambda = Lconst (Const_pointer ( 1, NullConstructor "true"
 
 let lam_false : Lambda.lambda = Lconst (Const_pointer( 0, NullConstructor "false"))
 
+let is_function (lam : Lambda.lambda) = 
+  match lam with 
+  | Lfunction _ -> true | _ -> false
+
 let not_function (lam : Lambda.lambda) = 
   match lam with 
   | Lfunction _ -> false | _ -> true 

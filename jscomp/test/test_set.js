@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("../stdlib/pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Caml_curry      = require("../runtime/caml_curry");
 var List            = require("../stdlib/list");
@@ -41,11 +40,19 @@ function Make(Ord) {
           return create(create(ll, lv, lr[1]), lr[2], create(lr[3], v, r));
         }
         else {
-          return Pervasives.invalid_arg("Set.bal");
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                "Set.bal"
+              ];
         }
       }
       else {
-        return Pervasives.invalid_arg("Set.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Set.bal"
+            ];
       }
     }
     else if (hr > hl + 2) {
@@ -60,11 +67,19 @@ function Make(Ord) {
           return create(create(l, v, rl[1]), rl[2], create(rl[3], rv, rr));
         }
         else {
-          return Pervasives.invalid_arg("Set.bal");
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                "Set.bal"
+              ];
         }
       }
       else {
-        return Pervasives.invalid_arg("Set.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Set.bal"
+            ];
       }
     }
     else {
@@ -202,7 +217,11 @@ function Make(Ord) {
       }
     }
     else {
-      return Pervasives.invalid_arg("Set.remove_min_elt");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Set.remove_min_elt"
+          ];
     }
   };
   var merge = function (t1, t2) {

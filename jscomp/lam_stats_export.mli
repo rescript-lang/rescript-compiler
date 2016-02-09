@@ -18,16 +18,9 @@
 
 (* Author: Hongbo Zhang  *)
 
-
-
-(** Utilities for lambda analysis *)
-
-val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
-
-val pp_arities : Format.formatter -> Lam_stats.function_arities -> unit
-
-val get_arity : Lam_stats.meta -> Lambda.lambda -> Lam_stats.function_arities
-
-(* val dump_exports_arities : Lam_stats.meta -> unit *)
-
+val export_to_cmj : 
+  Lam_stats.meta ->
+  Js_cmj_format.effect ->
+  Lam_module_ident.t list ->
+  Lambda.lambda Ident_map.t -> Js_cmj_format.cmj_table
 

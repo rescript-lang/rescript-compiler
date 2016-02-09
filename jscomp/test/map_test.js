@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives       = require("../stdlib/pervasives");
 var Caml_exceptions  = require("../runtime/caml_exceptions");
 var Test_inline_map2 = require("./test_inline_map2");
 var Mt               = require("./mt");
 var Test_map_find    = require("./test_map_find");
 var Caml_primitive   = require("../runtime/caml_primitive");
+var Assert           = require("assert");
 var Caml_curry       = require("../runtime/caml_curry");
-var $$String         = require("../stdlib/string");
+var Caml_string      = require("../runtime/caml_string");
 var List             = require("../stdlib/list");
 var Test_inline_map  = require("./test_inline_map");
 
@@ -50,11 +50,19 @@ function bal(l, x, d, r) {
         return create(create(ll, lv, ld, lr[1]), lr[2], lr[3], create(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -70,11 +78,19 @@ function bal(l, x, d, r) {
         return create(create(l, x, d, rl[1]), rl[2], rl[3], create(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -270,11 +286,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(ll, lv, ld, lr[1]), lr[2], lr[3], create$1(lr[4], x, d, r));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else if (hr > hl + 2) {
@@ -290,11 +314,19 @@ function bal$1(l, x, d, r) {
         return create$1(create$1(l, x, d, rl[1]), rl[2], rl[3], create$1(rl[4], rv, rd, rr));
       }
       else {
-        return Pervasives.invalid_arg("Map.bal");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Map.bal"
+            ];
       }
     }
     else {
-      return Pervasives.invalid_arg("Map.bal");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Map.bal"
+          ];
     }
   }
   else {
@@ -315,7 +347,7 @@ function add$1(x, data, param) {
     var d = param[3];
     var v = param[2];
     var l = param[1];
-    var c = $$String.compare(x, v);
+    var c = Caml_string.caml_string_compare(x, v);
     if (c) {
       if (c < 0) {
         return bal$1(add$1(x, data, l), v, d, r);
@@ -351,7 +383,7 @@ function find(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = $$String.compare(x, param[2]);
+      var c = Caml_string.caml_string_compare(x, param[2]);
       if (c) {
         _param = c < 0 ? param[1] : param[4];
         continue ;
@@ -610,7 +642,9 @@ var int_map_suites_002 = [
                     m = add$1("" + i, "" + i, m);
                   }
                   for(var i$1 = 0; i$1<= count; ++i$1){
-                    Mt.assert_equal(find("" + i$1, m), "" + i$1);
+                    var prim = "" + i$1;
+                    var prim$1 = find("" + i$1, m);
+                    Assert.deepEqual(prim$1, prim);
                   }
                   return /* () */0;
                 }

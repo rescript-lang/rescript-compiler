@@ -68,6 +68,8 @@ cont_int_fold_test.cmo :
 cont_int_fold_test.cmx :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmx : mt.cmx ../stdlib/array.cmx
+cross_module_inline_test.cmo :
+cross_module_inline_test.cmx :
 demo.cmo :
 demo.cmx :
 demo_page.cmo :
@@ -96,6 +98,10 @@ for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmx : mt.cmx
 format_regression.cmo :
 format_regression.cmx :
+genlex_test.cmo : ../stdlib/stream.cmi mt.cmo ../stdlib/list.cmi \
+    ../stdlib/genlex.cmi
+genlex_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
+    ../stdlib/genlex.cmx
 global_exception_regression_test.cmo : mt.cmo
 global_exception_regression_test.cmx : mt.cmx
 google_closure_test.cmo : test_google_closure.cmo mt.cmo
@@ -438,6 +444,8 @@ cont_int_fold_test.cmo :
 cont_int_fold_test.cmj :
 cps_test.cmo : mt.cmo ../stdlib/array.cmi
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
+cross_module_inline_test.cmo :
+cross_module_inline_test.cmj :
 demo.cmo :
 demo.cmj :
 demo_page.cmo :
@@ -466,6 +474,10 @@ for_side_effect_test.cmo : mt.cmo
 for_side_effect_test.cmj : mt.cmj
 format_regression.cmo :
 format_regression.cmj :
+genlex_test.cmo : ../stdlib/stream.cmi mt.cmo ../stdlib/list.cmi \
+    ../stdlib/genlex.cmi
+genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
+    ../stdlib/genlex.cmj
 global_exception_regression_test.cmo : mt.cmo
 global_exception_regression_test.cmj : mt.cmj
 google_closure_test.cmo : test_google_closure.cmo mt.cmo

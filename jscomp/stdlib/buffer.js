@@ -2,8 +2,8 @@
 'use strict';
 
 var Bytes           = require("./bytes");
-var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Pervasives      = require("./pervasives");
 var Sys             = require("./sys");
 var $$String        = require("./string");
 var Caml_curry      = require("../runtime/caml_curry");
@@ -32,7 +32,11 @@ function to_bytes(b) {
 
 function sub(b, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > b[2] - len) {
-    return Pervasives.invalid_arg("Buffer.sub");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Buffer.sub"
+        ];
   }
   else {
     return Bytes.sub_string(b[1], ofs, len);
@@ -41,7 +45,11 @@ function sub(b, ofs, len) {
 
 function blit(src, srcoff, dst, dstoff, len) {
   if (len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len) {
-    return Pervasives.invalid_arg("Buffer.blit");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Buffer.blit"
+        ];
   }
   else {
     return Bytes.blit(src[1], srcoff, dst, dstoff, len);
@@ -50,7 +58,11 @@ function blit(src, srcoff, dst, dstoff, len) {
 
 function nth(b, ofs) {
   if (ofs < 0 || ofs >= b[2]) {
-    return Pervasives.invalid_arg("Buffer.nth");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Buffer.nth"
+        ];
   }
   else {
     return b[1][ofs];
@@ -84,7 +96,11 @@ function resize(b, more) {
       new_len = Sys.max_string_length;
     }
     else {
-      Pervasives.failwith("Buffer.add: cannot grow buffer");
+      throw [
+            0,
+            Caml_exceptions.Failure,
+            "Buffer.add: cannot grow buffer"
+          ];
     }
   }
   var new_buffer = Caml_string.caml_create_string(new_len);
@@ -106,7 +122,11 @@ function add_char(b, c) {
 
 function add_substring(b, s, offset, len) {
   if (offset < 0 || len < 0 || offset + len > s.length) {
-    Pervasives.invalid_arg("Buffer.add_substring/add_subbytes");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Buffer.add_substring/add_subbytes"
+        ];
   }
   var new_position = b[2] + len;
   if (new_position > b[3]) {
@@ -142,7 +162,11 @@ function add_buffer(b, bs) {
 
 function add_channel(b, ic, len) {
   if (len < 0 || len > Sys.max_string_length) {
-    Pervasives.invalid_arg("Buffer.add_channel");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Buffer.add_channel"
+        ];
   }
   if (b[2] + len > b[3]) {
     resize(b, len);

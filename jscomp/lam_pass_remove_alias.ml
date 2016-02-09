@@ -76,7 +76,7 @@ let simplify_alias
               | {closed_lambda=Some Lfunction(Curried, params, body) } 
                 (** be more cautious when do cross module inlining *)
                 when
-                  (
+                  ( Ext_list.same_length params args &&
                     List.for_all (fun (arg : Lambda.lambda) ->
                         match arg with 
                         | Lvar p -> 
@@ -126,18 +126,19 @@ let simplify_alias
               end
             else 
               if lam_size < Lam_analysis.small_inline_size then 
-                let param_fresh_map = Lam_analysis.param_map_of_list params in
-                let param_map = 
-                  Lam_analysis.free_variables meta.export_idents param_fresh_map body in
-                let old_count = List.length params in
-                let new_count = Ident_map.cardinal param_map in
-                if  
-                  (
-                    not (Ident_set.mem v meta.export_idents)
-                    || old_count = new_count
-                  )
 
-                then 
+                (* let param_map =  *)
+                (*   Lam_analysis.free_variables meta.export_idents  *)
+                (*     (Lam_analysis.param_map_of_list params) body in *)
+                (* let old_count = List.length params in *)
+                (* let new_count = Ident_map.cardinal param_map in *)
+                let param_map = 
+                  Lam_analysis.is_closed_with_map 
+                    meta.export_idents params body in
+                let is_export_id = Ident_set.mem v meta.export_idents in
+                match is_export_id, param_map with 
+                | false, (_, param_map)
+                | true, (true, param_map) -> 
                   if rec_flag = Rec then               
                     begin
                       (* Ext_log.dwarn __LOC__ "beta rec.. %s/%d" v.name v.stamp ; *)
@@ -153,7 +154,7 @@ let simplify_alias
                       simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
 
                     end
-                else 
+                | _ -> 
                   Lapply ( simpl l1, List.map simpl args, info)
               else 
                 begin

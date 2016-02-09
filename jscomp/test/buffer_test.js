@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Assert          = require("assert");
 var Bytes           = require("../stdlib/bytes");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Mt              = require("./mt");
@@ -80,7 +81,8 @@ var suites_002 = [
       for(var i = 0; i<= 10; ++i){
         Buffer.add_string(v, "" + i);
       }
-      return Mt.assert_equal(Buffer.contents(v), "012345678910");
+      var prim = Buffer.contents(v);
+      return Assert.deepEqual(prim, "012345678910");
     }
   ],
   /* [] */0

@@ -49,7 +49,12 @@ function chop_extension($staropt$star, name) {
   }
   catch (exn){
     if (exn[1] === Caml_exceptions.Invalid_argument) {
-      return Pervasives.invalid_arg("Filename.chop_extension (" + (loc + (":" + (name + ")"))));
+      var s = "Filename.chop_extension (" + (loc + (":" + (name + ")")));
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            s
+          ];
     }
     else {
       throw exn;

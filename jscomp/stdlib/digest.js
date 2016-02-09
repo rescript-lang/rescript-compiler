@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives      = require("./pervasives");
 var Caml_exceptions = require("../runtime/caml_exceptions");
+var Pervasives      = require("./pervasives");
 var Char            = require("./char");
 var Caml_primitive  = require("../runtime/caml_primitive");
 var $$String        = require("./string");
@@ -18,7 +18,11 @@ function bytes(b) {
 
 function substring(str, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > str.length - len) {
-    return Pervasives.invalid_arg("Digest.substring");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Digest.substring"
+        ];
   }
   else {
     return Caml_primitive.caml_md5_string(str, ofs, len);

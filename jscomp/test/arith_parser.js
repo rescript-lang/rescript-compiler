@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
-var Parsing    = require("../stdlib/parsing");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Parsing         = require("../stdlib/parsing");
 
 var yytransl_const = /* array */[
   259,
@@ -48,7 +48,11 @@ var yynames_block = "NUMERAL\0IDENT\0";
 
 var yyact = /* array */[
   function () {
-    return Pervasives.failwith("parser");
+    throw [
+          0,
+          Caml_exceptions.Failure,
+          "parser"
+        ];
   },
   function (__caml_parser_env) {
     return Parsing.peek_val(__caml_parser_env, 1);

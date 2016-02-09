@@ -213,7 +213,11 @@ function concat(dirname, filename) {
 function chop_suffix(name, suff) {
   var n = name.length - suff.length;
   if (n < 0) {
-    return Pervasives.invalid_arg("Filename.chop_suffix");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Filename.chop_suffix"
+        ];
   }
   else {
     return $$String.sub(name, 0, n);
@@ -225,7 +229,11 @@ function chop_extension(name) {
   while(true) {
     var i = _i;
     if (i < 0 || Caml_curry.app2(is_dir_sep$1, name, i)) {
-      return Pervasives.invalid_arg("Filename.chop_extension");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Filename.chop_extension"
+          ];
     }
     else if (name[i] === ".") {
       return $$String.sub(name, 0, i);

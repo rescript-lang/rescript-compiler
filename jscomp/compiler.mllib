@@ -32,6 +32,7 @@ lam_compile_env
 lam_dispatch_primitive
 lam_stats
 lam_stats_util
+lam_stats_export
 lam_util
 lam_pass_alpha_conversion
 lam_pass_remove_alias

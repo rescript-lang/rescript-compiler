@@ -5,6 +5,7 @@ var Caml_exceptions = require("../runtime/caml_exceptions");
 var Mt              = require("./mt");
 var Caml_primitive  = require("../runtime/caml_primitive");
 var $$Array         = require("../stdlib/array");
+var Assert          = require("assert");
 var List            = require("../stdlib/list");
 
 var list_suites_001 = [
@@ -90,9 +91,10 @@ var list_suites_002 = [
       "long_length",
       function () {
         var v = 100000;
-        return Mt.assert_equal(v, List.length($$Array.to_list($$Array.init(v, function () {
-                                return 0;
-                              }))));
+        var prim = List.length($$Array.to_list($$Array.init(v, function () {
+                      return 0;
+                    })));
+        return Assert.deepEqual(v, prim);
       }
     ],
     [
@@ -101,25 +103,26 @@ var list_suites_002 = [
         /* tuple */0,
         "sort",
         function () {
-          return Mt.assert_equal(List.sort(function (x, y) {
-                          return Caml_primitive.caml_int_compare(x, y);
-                        }, [
-                          /* :: */0,
-                          4,
-                          [
-                            /* :: */0,
-                            1,
-                            [
-                              /* :: */0,
-                              2,
-                              [
-                                /* :: */0,
-                                3,
-                                /* [] */0
-                              ]
-                            ]
-                          ]
-                        ]), [
+          var prim = List.sort(function (x, y) {
+                return Caml_primitive.caml_int_compare(x, y);
+              }, [
+                /* :: */0,
+                4,
+                [
+                  /* :: */0,
+                  1,
+                  [
+                    /* :: */0,
+                    2,
+                    [
+                      /* :: */0,
+                      3,
+                      /* [] */0
+                    ]
+                  ]
+                ]
+              ]);
+          return Assert.deepEqual(prim, [
                       /* :: */0,
                       1,
                       [

@@ -677,7 +677,7 @@ function pp_print_float(state, f) {
 }
 
 function pp_print_bool(state, b) {
-  return pp_print_string(state, Pervasives.string_of_bool(b));
+  return pp_print_string(state, b ? "true" : "false");
 }
 
 function pp_print_char(state, c) {
@@ -1265,7 +1265,7 @@ function print_char(param) {
 }
 
 function print_bool(param) {
-  return pp_print_string(std_formatter, Pervasives.string_of_bool(param));
+  return pp_print_string(std_formatter, param ? "true" : "false");
 }
 
 function print_break(param, param$1) {
@@ -1416,7 +1416,7 @@ function compute_tag(output, tag_acc) {
   var ppf = formatter_of_buffer(buf);
   Caml_curry.app2(output, ppf, tag_acc);
   pp_print_flush(ppf, /* () */0);
-  var len = Buffer.length(buf);
+  var len = buf[2];
   if (len < 2) {
     return Buffer.contents(buf);
   }
@@ -1611,7 +1611,11 @@ function output_acc(ppf, acc) {
           return pp_print_flush(ppf, /* () */0);
       case 8 : 
           output_acc(ppf, acc[1]);
-          return Pervasives.invalid_arg(acc[2]);
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                acc[2]
+              ];
       
     }
   }
@@ -1802,7 +1806,11 @@ function strput_acc(ppf, acc) {
           return pp_print_flush(ppf, /* () */0);
       case 8 : 
           strput_acc(ppf, acc[1]);
-          return Pervasives.invalid_arg(acc[2]);
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                acc[2]
+              ];
       
     }
   }

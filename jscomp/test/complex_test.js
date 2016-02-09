@@ -14,13 +14,7 @@ var suites_001 = [
               2,
               2
             ],
-            Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), /* float array */[
-                      0.0,
-                      1.0
-                    ]), /* float array */[
-                  0.0,
-                  1.0
-                ])
+            Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
           ];
   }
 ];

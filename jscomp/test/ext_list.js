@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var $$Array         = require("../stdlib/array");
+var Caml_curry      = require("../runtime/caml_curry");
+var List            = require("../stdlib/list");
 
 function filter_map(f, _xs) {
   while(true) {
@@ -109,11 +109,19 @@ function filter_map2(f, _xs, _ys) {
         }
       }
       else {
-        return Pervasives.invalid_arg("Ext_list.filter_map2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Ext_list.filter_map2"
+            ];
       }
     }
     else if (ys) {
-      return Pervasives.invalid_arg("Ext_list.filter_map2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Ext_list.filter_map2"
+          ];
     }
     else {
       return /* [] */0;
@@ -148,11 +156,19 @@ function filter_map2i(f, xs, ys) {
           }
         }
         else {
-          return Pervasives.invalid_arg("Ext_list.filter_map2i");
+          throw [
+                0,
+                Caml_exceptions.Invalid_argument,
+                "Ext_list.filter_map2i"
+              ];
         }
       }
       else if (ys) {
-        return Pervasives.invalid_arg("Ext_list.filter_map2i");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Ext_list.filter_map2i"
+            ];
       }
       else {
         return /* [] */0;
@@ -199,11 +215,19 @@ function flat_map2(f, lx, ly) {
         
       }
       else {
-        return Pervasives.invalid_arg("Ext_list.flat_map2");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Ext_list.flat_map2"
+            ];
       }
     }
     else if (ly$1) {
-      return Pervasives.invalid_arg("Ext_list.flat_map2");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Ext_list.flat_map2"
+          ];
     }
     else {
       return List.rev(acc);
@@ -250,7 +274,11 @@ function map2_last(f, l1, l2) {
       }
     }
     else {
-      return Pervasives.invalid_arg("List.map2_last");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "List.map2_last"
+          ];
     }
     if (exit === 1) {
       if (l2) {
@@ -262,13 +290,21 @@ function map2_last(f, l1, l2) {
               ];
       }
       else {
-        return Pervasives.invalid_arg("List.map2_last");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "List.map2_last"
+            ];
       }
     }
     
   }
   else if (l2) {
-    return Pervasives.invalid_arg("List.map2_last");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "List.map2_last"
+        ];
   }
   else {
     return /* [] */0;
@@ -312,7 +348,11 @@ function take(n, l) {
   var arr = $$Array.of_list(l);
   var arr_length = arr.length;
   if (arr_length < n) {
-    return Pervasives.invalid_arg("Ext_list.take");
+    throw [
+          0,
+          Caml_exceptions.Invalid_argument,
+          "Ext_list.take"
+        ];
   }
   else {
     return [
@@ -346,7 +386,11 @@ function exclude_tail(x) {
       }
     }
     else {
-      return Pervasives.invalid_arg("Ext_list.exclude_tail");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Ext_list.exclude_tail"
+          ];
     }
   };
 }
@@ -405,7 +449,11 @@ function drop(_n, _h) {
     var h = _h;
     var n = _n;
     if (n < 0) {
-      return Pervasives.invalid_arg("Ext_list.drop");
+      throw [
+            0,
+            Caml_exceptions.Invalid_argument,
+            "Ext_list.drop"
+          ];
     }
     else if (n) {
       if (h) {
@@ -415,7 +463,11 @@ function drop(_n, _h) {
         
       }
       else {
-        return Pervasives.invalid_arg("Ext_list.drop");
+        throw [
+              0,
+              Caml_exceptions.Invalid_argument,
+              "Ext_list.drop"
+            ];
       }
     }
     else {

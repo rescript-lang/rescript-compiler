@@ -1,10 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Stack = require("../stdlib/stack");
 
 function v(x) {
-  return Stack.is_empty(x);
+  return +(x[1] === /* [] */0);
 }
 
 exports.v = v;

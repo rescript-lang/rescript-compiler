@@ -7,7 +7,7 @@ var List  = require("../stdlib/list");
 
 function to_list(v) {
   var acc = /* [] */0;
-  while(!Stack.is_empty(v)) {
+  while(v[1] !== /* [] */0) {
     acc = [
       /* :: */0,
       Stack.pop(v),
@@ -18,7 +18,10 @@ function to_list(v) {
 }
 
 function v() {
-  var v$1 = Stack.create(/* () */0);
+  var v$1 = [
+    /* record */0,
+    /* [] */0
+  ];
   Stack.push(3, v$1);
   Stack.push(4, v$1);
   Stack.push(1, v$1);

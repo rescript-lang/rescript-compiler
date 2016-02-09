@@ -1,8 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("./pervasives");
-var List       = require("./list");
+var List = require("./list");
 
 var length = List.length;
 
@@ -14,7 +13,7 @@ var nth = List.nth;
 
 var rev = List.rev;
 
-var append = Pervasives.$at;
+var append = List.append;
 
 var rev_append = List.rev_append;
 

@@ -75,7 +75,26 @@ let rec
              it is very small             
              TODO: add comment here, we should try to add comment for 
              cross module inlining             
-          *)              
+          
+             if we do too agressive inlining here: 
+
+             if we inline {!List.length} which will call {!A_list.length}, 
+             then we if we try inline {!A_list.length}, this means if {!A_list} 
+             is rebuilt, this module should also be rebuilt,
+
+             But if the build system is content-based, suppose {!A_list} 
+             is changed, cmj files in {!List} is unchnaged, however, 
+             {!List.length} call {!A_list.length} which is changed, since
+             [ocamldep] only detect that we depend on {!List}, it will not 
+             get re-built, then we are screwed.                   
+
+             This is okay for stamp based build system.
+
+             Another solution is that we add dependencies in the compiler
+
+             -: we should not do functor application inlining in a 
+                non-toplevel, it will explode code very quickly              
+          *)               
           ->  
           compile_lambda cxt lam
         | _ -> 
@@ -100,25 +119,6 @@ let rec
 
 and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
     (id : Ident.t) (pos : int) env : Js_output.t = 
-  let args_code, args = 
-    List.fold_right 
-      (fun (x : Lambda.lambda) (args_code, args)  ->
-         match x with 
-         | Lprim (Pgetglobal i, [] ) -> 
-           (* when module is passed as an argument - unpack to an array
-               for the function, generative module or functor can be a function,
-               however it can not be global -- global can only module
-           *)
-
-           args_code, (Lam_compile_global.get_exp (i, env, true) :: args)
-         | _ -> 
-           begin match compile_lambda {cxt with st = NeedValue; should_return = False} x with
-             | {block = a; value = Some b} -> 
-               (a @ args_code), (b :: args )
-             | _ -> assert false
-           end
-      ) args_lambda ([], []) in
-
   Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
       (** This can not happen since this id should be already consulted by type checker 
           Worst case 
@@ -127,26 +127,50 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           ]}
           shift by one (due to module encoding)
       *)
-      Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
-      E.str ~pure:false  (Printf.sprintf "Err %s %d %d"
-                            id.name
-                            id.flags
-                            pos
-                         ))
+      (* Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@  *)
+      (* E.str ~pure:false  (Printf.sprintf "Err %s %d %d" *)
+      (*                       id.name *)
+      (*                       id.flags *)
+      (*                       pos *)
+      (*                    ) *)
+      assert false 
+    )
 
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
+        let args_code, args = 
+          List.fold_right 
+            (fun (x : Lambda.lambda) (args_code, args)  ->
+               match x with 
+               | Lprim (Pgetglobal i, [] ) -> 
+                 (* when module is passed as an argument - unpack to an array
+                     for the function, generative module or functor can be a function,
+                     however it can not be global -- global can only module
+                 *)
+
+                 args_code, (Lam_compile_global.get_exp (i, env, true) :: args)
+               | _ -> 
+                 begin match compile_lambda {cxt with st = NeedValue; should_return = False} x with
+                   | {block = a; value = Some b} -> 
+                     (a @ args_code), (b :: args )
+                   | _ -> assert false
+                 end
+            ) args_lambda ([], []) in
+
+
         match closed_lambda with 
         | Some (Lfunction (_, params, body)) 
           when Ext_list.same_length params args_lambda -> 
+          (* TODO: serialize it when exporting to save compile time *)
+          let (_, param_map)  = 
+            Lam_analysis.is_closed_with_map Ident_set.empty params body in
           compile_lambda cxt 
-            (Lam_beta_reduce.propogate_beta_reduce cxt.meta params body args_lambda)
+            (Lam_beta_reduce.propogate_beta_reduce_with_map cxt.meta param_map
+               params body args_lambda)
         | _ ->  
           Js_output.handle_block_return cxt.st cxt.should_return lam args_code @@ 
           (match id, name,  args with 
            | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
              E.string_append e0 e1 
-           | {name = "Pervasives"; _}, "string_of_int", [e] 
-             -> E.int_to_string e 
            | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
              E.seq (E.dump Log args) (E.unit ())
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
