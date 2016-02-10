@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function f(x) {
   if (x > 3 || x < 1) {
     throw [
           0,
-          Caml_exceptions.Match_failure,
+          Caml_builtin_exceptions.Match_failure,
           [
             0,
             "test_incomplete.ml",

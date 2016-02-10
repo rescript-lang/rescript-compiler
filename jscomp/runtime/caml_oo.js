@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("./caml_exceptions");
-var Caml_array      = require("./caml_array");
+var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Caml_array              = require("./caml_array");
 
 var caml_methods_cache = Caml_array.caml_make_vect(1000, 0);
 
@@ -19,7 +19,7 @@ function caml_get_public_method(obj, tag, cacheid) {
         if (i < 3) {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "caml_oo.ml",

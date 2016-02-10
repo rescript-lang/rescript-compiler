@@ -18,41 +18,23 @@
 
 (* Author: Hongbo Zhang  *)
 
-type env = 
-  | Browser
-  | NodeJS
+let caml_raise_sys_error msg = 
+  raise (Sys_error msg)
 
+let caml_failwith s = raise (Failure s)
 
-val get_env : unit -> env
-
-val set_env : env -> unit
-
-val runtime_set : String_set.t
-val stdlib_set : String_set.t
-
-val prim : string 
-
-val builtin_exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lex_parse : string 
-
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
-
-val curry : string 
+let caml_invalid_argument s = 
+  raise (Invalid_argument s)
 
 
 
+let caml_array_bound_error () =
+  raise (Invalid_argument "index out of bounds") 
+
+let caml_raise_zero_divide () = 
+  raise Division_by_zero
+
+let caml_raise_not_found () = 
+  raise Not_found
+
+let caml_undef_module loc = raise (Undefined_recursive_module loc) 

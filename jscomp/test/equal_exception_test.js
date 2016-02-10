@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("../stdlib/bytes");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt              = require("./mt");
+var Bytes                   = require("../stdlib/bytes");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Mt                      = require("./mt");
 
 var v = "gso";
 
@@ -11,7 +11,7 @@ function is_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "equal_exception_test.ml",
@@ -23,7 +23,7 @@ function is_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "equal_exception_test.ml",
@@ -37,7 +37,7 @@ function is_equal() {
   if (u[0] !== /* "b" */98) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "equal_exception_test.ml",
@@ -52,7 +52,7 @@ function is_equal() {
   else {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "equal_exception_test.ml",
@@ -65,10 +65,10 @@ function is_equal() {
 
 function is_exception() {
   try {
-    throw Caml_exceptions.Not_found;
+    throw Caml_builtin_exceptions.Not_found;
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       return /* () */0;
     }
     else {
@@ -81,7 +81,7 @@ function is_normal_exception() {
   var A = [
     248,
     "A",
-    ++ Caml_exceptions.caml_oo_last_id
+    ++ Caml_builtin_exceptions.caml_oo_last_id
   ];
   var v = [
     0,
@@ -110,7 +110,7 @@ function is_arbitrary_exception() {
   var A = [
     248,
     "A",
-    ++ Caml_exceptions.caml_oo_last_id
+    ++ Caml_builtin_exceptions.caml_oo_last_id
   ];
   try {
     throw A;

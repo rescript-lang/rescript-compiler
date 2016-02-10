@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Pervasives       = require("./pervasives");
-var Sys              = require("./sys");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var Caml_array       = require("../runtime/caml_array");
-var $$Array          = require("./array");
-var Caml_curry       = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Pervasives              = require("./pervasives");
+var Sys                     = require("./sys");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("./array");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function length(x) {
   return x.length - 1;
@@ -18,7 +18,7 @@ function fill(ar, ofs, len, x) {
   if (ofs < 0 || len < 0 || ofs + len > ar.length - 1) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Weak.fill"
         ];
   }
@@ -232,7 +232,7 @@ function Make(H) {
         if (newsz <= sz) {
           throw [
                 0,
-                Caml_exceptions.Failure,
+                Caml_builtin_exceptions.Failure,
                 "Weak.Make: hash bucket cannot grow more"
               ];
         }
@@ -362,7 +362,7 @@ function Make(H) {
   };
   var find = function (t, d) {
     return find_or(t, d, function (_, _$1) {
-                throw Caml_exceptions.Not_found;
+                throw Caml_builtin_exceptions.Not_found;
               });
   };
   var find_shadow = function (t, d, iffound, ifnotfound) {

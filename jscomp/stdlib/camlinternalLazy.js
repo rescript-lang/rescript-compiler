@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj              = require("./obj");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Caml_curry       = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Obj                     = require("./obj");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var Undefined = [
   248,
   "CamlinternalLazy.Undefined",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function raise_undefined() {

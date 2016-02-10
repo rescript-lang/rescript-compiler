@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt              = require("./mt");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var $$Array         = require("../stdlib/array");
-var Assert          = require("assert");
-var List            = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Mt                      = require("./mt");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var $$Array                 = require("../stdlib/array");
+var Assert                  = require("assert");
+var List                    = require("../stdlib/list");
 
 var list_suites_001 = [
   /* tuple */0,
@@ -29,7 +29,7 @@ var list_suites_001 = [
     else {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "list_test.ml",
@@ -73,7 +73,7 @@ var list_suites_002 = [
       else {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "list_test.ml",

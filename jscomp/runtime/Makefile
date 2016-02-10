@@ -6,6 +6,7 @@ SOURCE_LIST := $(shell cat runtime.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
+
 $(RUNTIME): $(CAMLC)
 
 all: $(RUNTIME)

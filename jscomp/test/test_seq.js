@@ -1,27 +1,27 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("../stdlib/pervasives");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("../stdlib/pervasives");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var Bad = [
   248,
   "Test_seq.Bad",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var Help = [
   248,
   "Test_seq.Help",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var Stop = [
   248,
   "Test_seq.Stop",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function assoc3(x, _l) {
@@ -39,7 +39,7 @@ function assoc3(x, _l) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -71,7 +71,7 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       add1 = [
         /* :: */0,
         [
@@ -96,7 +96,7 @@ function add_help(speclist) {
     add2 = /* [] */0;
   }
   catch (exn$1){
-    if (exn$1 === Caml_exceptions.Not_found) {
+    if (exn$1 === Caml_builtin_exceptions.Not_found) {
       add2 = [
         /* :: */0,
         [

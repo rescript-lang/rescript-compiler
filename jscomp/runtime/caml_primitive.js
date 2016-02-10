@@ -213,7 +213,7 @@ function caml_int64_bswap(x) {
 exports.caml_int64_bswap = caml_int64_bswap;
 function caml_CamlinternalMod_init_mod(loc, shape) {
     function undef_module(_x) {
-        caml_exceptions_1.caml_raise_with_arg(caml_exceptions_1.Undefined_recursive_module, loc);
+        caml_exceptions_1.caml_undef_module(loc);
     }
     function loop(shape, struct, idx) {
         if (typeof shape === "number")

@@ -93,12 +93,12 @@ else{
 }
 
 function i32div(x,y) {
-    if (y == 0) caml_raise_zero_divide ();
+    if (y == 0) caml_raise_zero_divide (0);
     return (x/y)|0;
 }
 
 function i32mod(x,y) {
-    if (y == 0) caml_raise_zero_divide ();
+    if (y == 0) caml_raise_zero_divide (0);
     return x%y;
 }
 

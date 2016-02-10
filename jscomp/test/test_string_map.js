@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
-var Caml_string     = require("../runtime/caml_string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
 
 function height(param) {
   if (param) {
@@ -45,7 +45,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -53,7 +53,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -73,7 +73,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -81,7 +81,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -151,7 +151,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }

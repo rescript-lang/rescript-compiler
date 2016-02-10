@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("./caml_exceptions");
+var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 function add(prim, prim$1) {
   return prim + prim$1;
@@ -11,7 +11,7 @@ function caml_string_get(s, i) {
   if (i >= s.length || i < 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "index out of bounds"
         ];
   }
@@ -24,7 +24,7 @@ function caml_create_string(len) {
   if (len < 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.create"
         ];
   }

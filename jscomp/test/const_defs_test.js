@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 var u = 3;
 
 function f() {
   throw [
         0,
-        Caml_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.Invalid_argument,
         "hi"
       ];
 }

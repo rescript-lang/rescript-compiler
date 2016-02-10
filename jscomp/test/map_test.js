@@ -1,16 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Test_inline_map2 = require("./test_inline_map2");
-var Mt               = require("./mt");
-var Test_map_find    = require("./test_map_find");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var Assert           = require("assert");
-var Caml_curry       = require("../runtime/caml_curry");
-var Caml_string      = require("../runtime/caml_string");
-var List             = require("../stdlib/list");
-var Test_inline_map  = require("./test_inline_map");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Test_inline_map2        = require("./test_inline_map2");
+var Mt                      = require("./mt");
+var Test_map_find           = require("./test_map_find");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Assert                  = require("assert");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
+var List                    = require("../stdlib/list");
+var Test_inline_map         = require("./test_inline_map");
 
 function height(param) {
   if (param) {
@@ -52,7 +52,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -60,7 +60,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -80,7 +80,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -88,7 +88,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -288,7 +288,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -296,7 +296,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -316,7 +316,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -324,7 +324,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -394,7 +394,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -440,7 +440,7 @@ var int_map_suites_001 = [
     else {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "map_test.ml",
@@ -513,7 +513,7 @@ var int_map_suites_002 = [
             }, u, v)) {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "map_test.ml",
@@ -591,7 +591,7 @@ var int_map_suites_002 = [
         else {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "map_test.ml",

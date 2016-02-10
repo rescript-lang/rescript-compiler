@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function f(param) {
   switch (param) {
@@ -12,7 +12,7 @@ function f(param) {
     default:
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "test_string.ml",

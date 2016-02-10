@@ -56,13 +56,13 @@ else {
 }
 function i32div(x, y) {
     if (y == 0)
-        caml_exceptions_1.caml_raise_zero_divide();
+        caml_exceptions_1.caml_raise_zero_divide(0);
     return (x / y) | 0;
 }
 exports.i32div = i32div;
 function i32mod(x, y) {
     if (y == 0)
-        caml_exceptions_1.caml_raise_zero_divide();
+        caml_exceptions_1.caml_raise_zero_divide(0);
     return x % y;
 }
 exports.i32mod = i32mod;

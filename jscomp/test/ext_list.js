@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var $$Array         = require("../stdlib/array");
-var Caml_curry      = require("../runtime/caml_curry");
-var List            = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var $$Array                 = require("../stdlib/array");
+var Caml_curry              = require("../runtime/caml_curry");
+var List                    = require("../stdlib/list");
 
 function filter_map(f, _xs) {
   while(true) {
@@ -111,7 +111,7 @@ function filter_map2(f, _xs, _ys) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.filter_map2"
             ];
       }
@@ -119,7 +119,7 @@ function filter_map2(f, _xs, _ys) {
     else if (ys) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.filter_map2"
           ];
     }
@@ -158,7 +158,7 @@ function filter_map2i(f, xs, ys) {
         else {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Ext_list.filter_map2i"
               ];
         }
@@ -166,7 +166,7 @@ function filter_map2i(f, xs, ys) {
       else if (ys) {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.filter_map2i"
             ];
       }
@@ -217,7 +217,7 @@ function flat_map2(f, lx, ly) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.flat_map2"
             ];
       }
@@ -225,7 +225,7 @@ function flat_map2(f, lx, ly) {
     else if (ly$1) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.flat_map2"
           ];
     }
@@ -276,7 +276,7 @@ function map2_last(f, l1, l2) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.map2_last"
           ];
     }
@@ -292,7 +292,7 @@ function map2_last(f, l1, l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.map2_last"
             ];
       }
@@ -302,7 +302,7 @@ function map2_last(f, l1, l2) {
   else if (l2) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "List.map2_last"
         ];
   }
@@ -350,7 +350,7 @@ function take(n, l) {
   if (arr_length < n) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Ext_list.take"
         ];
   }
@@ -388,7 +388,7 @@ function exclude_tail(x) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.exclude_tail"
           ];
     }
@@ -451,7 +451,7 @@ function drop(_n, _h) {
     if (n < 0) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.drop"
           ];
     }
@@ -465,7 +465,7 @@ function drop(_n, _h) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.drop"
             ];
       }

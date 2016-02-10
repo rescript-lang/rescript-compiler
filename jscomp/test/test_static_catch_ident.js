@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 var Scan_failure = [
   248,
   "Test_static_catch_ident.Scan_failure",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function scanf_bad_input(_, x) {
@@ -16,7 +16,7 @@ function scanf_bad_input(_, x) {
     s = x[2];
     exit = 1;
   }
-  else if (x[1] === Caml_exceptions.Failure) {
+  else if (x[1] === Caml_builtin_exceptions.Failure) {
     s = x[2];
     exit = 1;
   }

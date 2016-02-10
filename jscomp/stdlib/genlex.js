@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("./bytes");
-var Hashtbl         = require("./hashtbl");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Stream          = require("./stream");
-var Caml_format     = require("../runtime/caml_format");
-var Char            = require("./char");
-var $$String        = require("./string");
-var Caml_string     = require("../runtime/caml_string");
-var List            = require("./list");
+var Bytes                   = require("./bytes");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Hashtbl                 = require("./hashtbl");
+var Stream                  = require("./stream");
+var Caml_format             = require("../runtime/caml_format");
+var Char                    = require("./char");
+var $$String                = require("./string");
+var Caml_string             = require("../runtime/caml_string");
+var List                    = require("./list");
 
 var initial_buffer = new Array(32);
 
@@ -58,7 +58,7 @@ function make_lexer(keywords) {
       return Hashtbl.find(kwd_table, id);
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         return [
                 /* Ident */1,
                 id
@@ -75,7 +75,7 @@ function make_lexer(keywords) {
       return Hashtbl.find(kwd_table, s);
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         throw [
               0,
               Stream.$$Error,

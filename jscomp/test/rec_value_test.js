@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var CamlinternalLazy = require("../stdlib/camlinternalLazy");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Mt               = require("./mt");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var List             = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var CamlinternalLazy        = require("../stdlib/camlinternalLazy");
+var Mt                      = require("./mt");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var List                    = require("../stdlib/list");
 
 var x = [];
 
@@ -74,7 +74,7 @@ var v = [
   function () {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "rec_value_test.ml",
@@ -347,7 +347,7 @@ var suites_002 = [
       if (exit === 1) {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "rec_value_test.ml",

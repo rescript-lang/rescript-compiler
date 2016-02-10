@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function peek_queue() {
   throw [
         0,
-        Caml_exceptions.Assert_failure,
+        Caml_builtin_exceptions.Assert_failure,
         [
           0,
           "format_regression.ml",
@@ -20,7 +20,7 @@ function peek_queue() {
 function int_of_size() {
   throw [
         0,
-        Caml_exceptions.Assert_failure,
+        Caml_builtin_exceptions.Assert_failure,
         [
           0,
           "format_regression.ml",
@@ -33,7 +33,7 @@ function int_of_size() {
 function take_queue() {
   throw [
         0,
-        Caml_exceptions.Assert_failure,
+        Caml_builtin_exceptions.Assert_failure,
         [
           0,
           "format_regression.ml",
@@ -46,7 +46,7 @@ function take_queue() {
 function format_pp_token(_, _$1) {
   throw [
         0,
-        Caml_exceptions.Assert_failure,
+        Caml_builtin_exceptions.Assert_failure,
         [
           0,
           "format_regression.ml",

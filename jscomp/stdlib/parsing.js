@@ -1,25 +1,25 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Lexing           = require("./lexing");
-var Caml_lexer       = require("../runtime/caml_lexer");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var Caml_array       = require("../runtime/caml_array");
-var $$Array          = require("./array");
-var Caml_curry       = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Lexing                  = require("./lexing");
+var Caml_lexer              = require("../runtime/caml_lexer");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("./array");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var YYexit = [
   248,
   "Parsing.YYexit",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var Parse_error = [
   248,
   "Parsing.Parse_error",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var env = [
