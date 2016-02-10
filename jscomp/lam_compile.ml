@@ -442,7 +442,7 @@ and
     (* External function calll *)
     | Lapply(Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
 
-      get_exp_with_args cxt lam  args_lambda(* args_code *) id n  env (* args *)
+      get_exp_with_args cxt lam  args_lambda id n  env
 
 
     | Lapply(fn,args_lambda,  info) -> 
@@ -451,30 +451,30 @@ and
          2. no need create names
       *)
       begin 
-        let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code::args)   = 
-          (fn::args_lambda) 
-          |> List.map 
-            (
-              fun (x : Lambda.lambda) ->
-                match x with 
-                | Lprim (Pgetglobal ident, []) -> 
-                  (* when module is passed as an argument - unpack to an array
-                      for the function, generative module or functor can be a function, 
-                      however it can not be global -- global can only module 
-                  *)
-                  [], Lam_compile_global.get_exp  (ident, env,true)
-                | _ ->
-                  begin
-                    match compile_lambda 
-                            {cxt with st = NeedValue ; should_return =  False} x with
-                    | {block = a; value =  Some b} -> a,b 
-                    | _ -> assert false
-                  end)
-          |> List.split   in
+        let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
+          List.fold_right (fun (x : Lambda.lambda) (args_code, fn_code )-> 
+              match x with             
+              | Lprim (Pgetglobal ident, []) -> 
+                (* when module is passed as an argument - unpack to an array
+                    for the function, generative module or functor can be a function, 
+                    however it can not be global -- global can only module 
+                *)
+                args_code, Lam_compile_global.get_exp  (ident, env,true) :: fn_code
+              | _ ->
+                begin
+                  match compile_lambda 
+                          {cxt with st = NeedValue ; should_return =  False} x with
+                  | {block = a; value =  Some b} -> a @ args_code , b:: fn_code 
+                  | _ -> assert false
+                end
+            ) (fn::args_lambda) ([],[]) in
+
+
         begin
           match fn, should_return with
           | (Lvar id',
              True (Some ({id;label; params; _} as ret))) when Ident.same id id' ->
+
 
             (* Ext_log.err "@[ %s : %a tailcall @]@."  cxt.meta.filename Ident.print id; *)
             ret.triggered <- true;
@@ -492,7 +492,7 @@ and
 
             *)
             (* TODO: use [fold]*)            
-            let block = List.concat args_code @
+            let block =  args_code @
                         (
                           let (_,assigned_params,new_params) = 
                             List.fold_left2 (fun (i,assigns,new_params) param (arg : J.expression) ->
@@ -546,7 +546,7 @@ and
           (* (E.call fn_code args)  *)
           | _ -> 
 
-            Js_output.handle_block_return st should_return lam (List.concat args_code ) 
+            Js_output.handle_block_return st should_return lam args_code 
               (E.call ~info:(match fn, info with 
                    | _, { apply_status = Full} -> {arity = Full }
                    | _,  { apply_status = NA} -> {arity = NA} ) fn_code args) 
