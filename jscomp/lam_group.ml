@@ -140,7 +140,20 @@ let deep_flatten
 
   and aux  (lam : Lambda.lambda) : Lambda.lambda= 
     match lam with 
-    | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
+    | Levent (e, ev) -> 
+      let kind =
+        match ev.lev_kind with
+        | Lev_before -> "before"
+        | Lev_after _  -> "after"
+        | Lev_function -> "funct-body" in
+      Ext_log.dwarn __LOC__ "@[<2>(%s %s(%i)%s:%i-%i@ %a@ %a)@]" kind
+              ev.lev_loc.Location.loc_start.Lexing.pos_fname
+              ev.lev_loc.Location.loc_start.Lexing.pos_lnum
+              (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "")
+              (ev.lev_loc.Location.loc_start.Lexing.pos_cnum - ev.lev_loc.Location.loc_start.Lexing.pos_bol)
+              (ev.lev_loc.Location.loc_end.Lexing.pos_cnum - ev.lev_loc.Location.loc_end.Lexing.pos_bol)
+              Env_summary.print ev.lev_env Printlambda.lambda e;      
+      aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 
       let res, groups = flatten [] lam  
       in lambda_of_groups res groups

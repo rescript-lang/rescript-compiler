@@ -7,7 +7,7 @@ INCLUDES= -I ../stdlib -I ../runtime -I ../lib
 SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
-COMPFLAGS+= -safe-string -w -40 
+COMPFLAGS+= -safe-string -w -40 -g
 
 $(TESTS): $(CAMLC)
 
