@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions          = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
 var Pervasives               = require("./pervasives");
 var Caml_format              = require("../runtime/caml_format");
 var Printf                   = require("./printf");
@@ -28,7 +28,7 @@ function next_char(ib) {
     return c;
   }
   catch (exn){
-    if (exn === Caml_exceptions.End_of_file) {
+    if (exn === Caml_builtin_exceptions.End_of_file) {
       ib[2] = null_char;
       ib[3] = /* false */0;
       ib[1] = /* true */1;
@@ -52,7 +52,7 @@ function peek_char(ib) {
 function checked_peek_char(ib) {
   var c = peek_char(ib);
   if (ib[1]) {
-    throw Caml_exceptions.End_of_file;
+    throw Caml_builtin_exceptions.End_of_file;
   }
   return c;
 }
@@ -135,7 +135,7 @@ function from_string(s) {
   var len = s.length;
   var next = function () {
     if (i[1] >= len) {
-      throw Caml_exceptions.End_of_file;
+      throw Caml_builtin_exceptions.End_of_file;
     }
     else {
       var c = s.charCodeAt(i[1]);
@@ -157,11 +157,11 @@ var file_buffer_size = [
 
 function scan_close_at_end(ic) {
   Caml_primitive.caml_ml_close_channel(ic);
-  throw Caml_exceptions.End_of_file;
+  throw Caml_builtin_exceptions.End_of_file;
 }
 
 function scan_raise_at_end() {
-  throw Caml_exceptions.End_of_file;
+  throw Caml_builtin_exceptions.End_of_file;
 }
 
 function from_ic(scan_close_ic, iname, ic) {
@@ -186,7 +186,7 @@ function from_ic(scan_close_ic, iname, ic) {
       return c;
     }
     else if (eof[1]) {
-      throw Caml_exceptions.End_of_file;
+      throw Caml_builtin_exceptions.End_of_file;
     }
     else {
       lim[1] = Pervasives.input(ic, buf, 0, len);
@@ -247,7 +247,7 @@ function memo_from_ic(scan_close_ic, ic) {
     return List.assq(ic, memo[1]);
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       var ib = from_ic(scan_close_ic, [
             /* From_channel */1,
             ic
@@ -289,7 +289,7 @@ function close_in(ib) {
 var Scan_failure = [
   248,
   "Scanf.Scan_failure",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function bad_input_escape(c) {
@@ -515,7 +515,7 @@ function token_int_literal(conv, ib) {
   if (exit === 1) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "scanf.ml",
@@ -846,7 +846,7 @@ function scan_int_conv(conv, width, ib) {
   if (exit === 1) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "scanf.ml",
@@ -1460,7 +1460,7 @@ function scanf_bad_input(ib, x) {
     s = x[2];
     exit = 1;
   }
-  else if (x[1] === Caml_exceptions.Failure) {
+  else if (x[1] === Caml_builtin_exceptions.Failure) {
     s = x[2];
     exit = 1;
   }
@@ -1905,7 +1905,7 @@ function make_scanf(ib, _fmt, readers) {
               fmt$1 = CamlinternalFormat.format_of_string_fmtty(s, fmt[2]);
             }
             catch (exn){
-              if (exn[1] === Caml_exceptions.Failure) {
+              if (exn[1] === Caml_builtin_exceptions.Failure) {
                 throw [
                       0,
                       Scan_failure,
@@ -1936,7 +1936,7 @@ function make_scanf(ib, _fmt, readers) {
               ];
             }
             catch (exn$1){
-              if (exn$1[1] === Caml_exceptions.Failure) {
+              if (exn$1[1] === Caml_builtin_exceptions.Failure) {
                 throw [
                       0,
                       Scan_failure,
@@ -1959,13 +1959,13 @@ function make_scanf(ib, _fmt, readers) {
         case 15 : 
             throw [
                   0,
-                  Caml_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.Invalid_argument,
                   'scanf: bad conversion "%a"'
                 ];
         case 16 : 
             throw [
                   0,
-                  Caml_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.Invalid_argument,
                   'scanf: bad conversion "%t"'
                 ];
         case 17 : 
@@ -2063,7 +2063,7 @@ function make_scanf(ib, _fmt, readers) {
             else {
               throw [
                     0,
-                    Caml_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.Assert_failure,
                     [
                       0,
                       "scanf.ml",
@@ -2076,7 +2076,7 @@ function make_scanf(ib, _fmt, readers) {
         case 24 : 
             throw [
                   0,
-                  Caml_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.Invalid_argument,
                   'scanf: bad conversion "%?" (custom converter)'
                 ];
         
@@ -2091,7 +2091,7 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       if (prec !== 0) {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               'scanf: bad conversion "%*"'
             ];
       }
@@ -2118,7 +2118,7 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
   else if (pad[0]) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           'scanf: bad conversion "%*"'
         ];
   }
@@ -2128,7 +2128,7 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       if (prec !== 0) {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               'scanf: bad conversion "%*"'
             ];
       }
@@ -2155,7 +2155,7 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
   else {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           'scanf: bad conversion "%-"'
         ];
   }
@@ -2180,23 +2180,23 @@ function kscanf(ib, ef, param) {
           exc
         ];
       }
-      else if (exc[1] === Caml_exceptions.Failure) {
+      else if (exc[1] === Caml_builtin_exceptions.Failure) {
         match = [
           /* Exc */1,
           exc
         ];
       }
-      else if (exc === Caml_exceptions.End_of_file) {
+      else if (exc === Caml_builtin_exceptions.End_of_file) {
         match = [
           /* Exc */1,
           exc
         ];
       }
-      else if (exc[1] === Caml_exceptions.Invalid_argument) {
+      else if (exc[1] === Caml_builtin_exceptions.Invalid_argument) {
         var s = exc[2] + (' in format "' + ($$String.escaped(str) + '"'));
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               s
             ];
       }
@@ -2260,7 +2260,7 @@ function bscanf_format(ib, format, f) {
     $js = CamlinternalFormat.format_of_string_format(str, format);
   }
   catch (exn){
-    if (exn[1] === Caml_exceptions.Failure) {
+    if (exn[1] === Caml_builtin_exceptions.Failure) {
       throw [
             0,
             Scan_failure,

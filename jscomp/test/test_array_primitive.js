@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
@@ -15,7 +15,7 @@ function caml_array_set(xs, index, newval) {
   if (index < 0 || index >= xs.length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "index out of bounds"
         ];
   }
@@ -29,7 +29,7 @@ function caml_array_get(xs, index) {
   if (index < 0 || index >= xs.length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "index out of bounds"
         ];
   }

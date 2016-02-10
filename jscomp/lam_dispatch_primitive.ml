@@ -417,18 +417,18 @@ let query (prim : Lam_compile_env.primitive_description)
             _} as v 
           ] 
           -> 
-          (* Caml_exceptions.caml_oo_last_id++*)
+
           {v with expression_desc  =
                     J.Array
                       ([ tag; str ; 
                          E.prefix_inc
                            (E.runtime_var_vid
-                              Js_config.exceptions
+                              Js_config.builtin_exceptions
                               "caml_oo_last_id") 
                        ], flag)
           }
         | _ ->  
-          E.runtime_call Js_config.exceptions prim.prim_name args 
+          E.runtime_call Js_config.builtin_exceptions prim.prim_name args 
       end
 
     | "caml_sys_const_big_endian" -> 

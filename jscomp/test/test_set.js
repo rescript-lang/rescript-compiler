@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
-var List            = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_curry              = require("../runtime/caml_curry");
+var List                    = require("../stdlib/list");
 
 function Make(Ord) {
   var height = function (param) {
@@ -42,7 +42,7 @@ function Make(Ord) {
         else {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Set.bal"
               ];
         }
@@ -50,7 +50,7 @@ function Make(Ord) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Set.bal"
             ];
       }
@@ -69,7 +69,7 @@ function Make(Ord) {
         else {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Set.bal"
               ];
         }
@@ -77,7 +77,7 @@ function Make(Ord) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Set.bal"
             ];
       }
@@ -183,7 +183,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -202,7 +202,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -219,7 +219,7 @@ function Make(Ord) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Set.remove_min_elt"
           ];
     }
@@ -710,7 +710,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -836,7 +836,7 @@ function Make(Ord) {
         else {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "test_set.ml",

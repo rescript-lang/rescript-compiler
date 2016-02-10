@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt              = require("./mt");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Mt                      = require("./mt");
 
-var v = Caml_exceptions.Not_found;
+var v = Caml_builtin_exceptions.Not_found;
 
-var u = Caml_exceptions.Not_found;
+var u = Caml_builtin_exceptions.Not_found;
 
-var s = Caml_exceptions.End_of_file;
+var s = Caml_builtin_exceptions.End_of_file;
 
 var suites_001 = [
   /* tuple */0,

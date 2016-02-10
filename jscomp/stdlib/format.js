@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_io            = require("../runtime/caml_io");
-var Caml_exceptions    = require("../runtime/caml_exceptions");
-var Pervasives         = require("./pervasives");
-var Caml_primitive     = require("../runtime/caml_primitive");
-var Buffer             = require("./buffer");
-var Caml_curry         = require("../runtime/caml_curry");
-var $$String           = require("./string");
-var CamlinternalFormat = require("./camlinternalFormat");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_io                 = require("../runtime/caml_io");
+var Pervasives              = require("./pervasives");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Buffer                  = require("./buffer");
+var Caml_curry              = require("../runtime/caml_curry");
+var $$String                = require("./string");
+var CamlinternalFormat      = require("./camlinternalFormat");
 
 function add_queue(x, q) {
   var c_001 = [
@@ -36,7 +36,7 @@ function add_queue(x, q) {
 var Empty_queue = [
   248,
   "Format.Empty_queue",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function peek_queue(param) {
@@ -274,7 +274,7 @@ function format_pp_token(state, size, param) {
                   }
                 }
                 else {
-                  throw Caml_exceptions.Not_found;
+                  throw Caml_builtin_exceptions.Not_found;
                 }
               };
             };
@@ -285,7 +285,7 @@ function format_pp_token(state, size, param) {
                 tab = find(insertion_point, tabs$1[1]);
               }
               catch (exn){
-                if (exn === Caml_exceptions.Not_found) {
+                if (exn === Caml_builtin_exceptions.Not_found) {
                   tab = match$9[1];
                 }
                 else {
@@ -1613,7 +1613,7 @@ function output_acc(ppf, acc) {
           output_acc(ppf, acc[1]);
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 acc[2]
               ];
       
@@ -1808,7 +1808,7 @@ function strput_acc(ppf, acc) {
           strput_acc(ppf, acc[1]);
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 acc[2]
               ];
       

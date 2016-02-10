@@ -1,16 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_io          = require("../runtime/caml_io");
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj              = require("./obj");
-var Pervasives       = require("./pervasives");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Printf           = require("./printf");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var $$Array          = require("./array");
-var Buffer           = require("./buffer");
-var Caml_curry       = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_io                 = require("../runtime/caml_io");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Obj                     = require("./obj");
+var Pervasives              = require("./pervasives");
+var Printf                  = require("./printf");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var $$Array                 = require("./array");
+var Buffer                  = require("./buffer");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var printers = [
   0,
@@ -204,23 +204,23 @@ function to_string(x) {
         
       }
     }
-    else if (x === Caml_exceptions.Out_of_memory) {
+    else if (x === Caml_builtin_exceptions.Out_of_memory) {
       return "Out of memory";
     }
-    else if (x === Caml_exceptions.Stack_overflow) {
+    else if (x === Caml_builtin_exceptions.Stack_overflow) {
       return "Stack overflow";
     }
-    else if (x[1] === Caml_exceptions.Match_failure) {
+    else if (x[1] === Caml_builtin_exceptions.Match_failure) {
       var match$1 = x[2];
       var $$char = match$1[3];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$1[1], match$1[2], $$char, $$char + 5, "Pattern matching failed");
     }
-    else if (x[1] === Caml_exceptions.Assert_failure) {
+    else if (x[1] === Caml_builtin_exceptions.Assert_failure) {
       var match$2 = x[2];
       var $$char$1 = match$2[3];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$2[1], match$2[2], $$char$1, $$char$1 + 6, "Assertion failed");
     }
-    else if (x[1] === Caml_exceptions.Undefined_recursive_module) {
+    else if (x[1] === Caml_builtin_exceptions.Undefined_recursive_module) {
       var match$3 = x[2];
       var $$char$2 = match$3[3];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$3[1], match$3[2], $$char$2, $$char$2 + 6, "Undefined recursive module");
@@ -299,7 +299,7 @@ function convert_raw_backtrace(rbckt) {
           ];
   }
   catch (exn){
-    if (exn[1] === Caml_exceptions.Failure) {
+    if (exn[1] === Caml_builtin_exceptions.Failure) {
       return /* None */0;
     }
     else {

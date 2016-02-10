@@ -1,20 +1,20 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var Obj              = require("../stdlib/obj");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Caml_oo          = require("../runtime/caml_oo");
-var Sys              = require("../stdlib/sys");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var Caml_array       = require("../runtime/caml_array");
-var $$Array          = require("../stdlib/array");
-var Caml_curry       = require("../runtime/caml_curry");
-var Caml_string      = require("../runtime/caml_string");
-var List             = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Obj                     = require("../stdlib/obj");
+var Caml_oo                 = require("../runtime/caml_oo");
+var Sys                     = require("../stdlib/sys");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("../stdlib/array");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
+var List                    = require("../stdlib/list");
 
 function copy(o) {
-  return Caml_exceptions.caml_set_oo_id(Caml_obj_runtime.caml_obj_dup(o));
+  return Caml_builtin_exceptions.caml_set_oo_id(Caml_obj_runtime.caml_obj_dup(o));
 }
 
 var params = [
@@ -97,7 +97,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -105,7 +105,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -125,7 +125,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -133,7 +133,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -212,7 +212,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -256,7 +256,7 @@ function min_binding(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -280,7 +280,7 @@ function max_binding(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -298,7 +298,7 @@ function remove_min_binding(param) {
   else {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -606,7 +606,7 @@ function merge(f, s1, s2) {
     else {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "map.ml",
@@ -883,7 +883,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -891,7 +891,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -911,7 +911,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -919,7 +919,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -998,7 +998,7 @@ function find$1(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1042,7 +1042,7 @@ function min_binding$1(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1066,7 +1066,7 @@ function max_binding$1(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1084,7 +1084,7 @@ function remove_min_binding$1(param) {
   else {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -1392,7 +1392,7 @@ function merge$1(f, s1, s2) {
     else {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "map.ml",
@@ -1669,7 +1669,7 @@ function bal$2(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -1677,7 +1677,7 @@ function bal$2(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -1697,7 +1697,7 @@ function bal$2(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -1705,7 +1705,7 @@ function bal$2(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -1784,7 +1784,7 @@ function find$2(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1828,7 +1828,7 @@ function min_binding$2(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1852,7 +1852,7 @@ function max_binding$2(_param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -1870,7 +1870,7 @@ function remove_min_binding$2(param) {
   else {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -2178,7 +2178,7 @@ function merge$2(f, s1, s2) {
     else {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "map.ml",
@@ -2496,7 +2496,7 @@ function get_method_label(table, name) {
     return find$1(name, table[3]);
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       var label = new_method(table);
       table[3] = add$1(name, label, table[3]);
       table[4] = add$2(label, /* true */1, table[4]);
@@ -2538,7 +2538,7 @@ function get_method(table, label) {
     return List.assoc(label, table[6]);
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       return table[2][label];
     }
     else {
@@ -2602,7 +2602,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
           $js = find$2(label, table[4]);
         }
         catch (exn){
-          if (exn === Caml_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.Not_found) {
             $js = /* true */1;
           }
           else {
@@ -2669,7 +2669,7 @@ function new_variable(table, name) {
     return find(name, table[7]);
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       var index = new_slot(table);
       if (name !== "") {
         table[7] = add(name, index, table[7]);
@@ -2710,10 +2710,10 @@ function get_variable(table, name) {
     return find(name, table[7]);
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "test_internalOO.ml",
@@ -2816,7 +2816,7 @@ function dummy_class(loc) {
   var undef = function () {
     throw [
           0,
-          Caml_exceptions.Undefined_recursive_module,
+          Caml_builtin_exceptions.Undefined_recursive_module,
           loc
         ];
   };
@@ -2832,7 +2832,7 @@ function dummy_class(loc) {
 function create_object(table) {
   var obj = Object.defineProperty(Caml_obj_runtime.caml_obj_block(Obj.object_tag, table[1]), "##ml",{"value" : true, "writable" : false});
   obj[0] = table[2];
-  return Caml_exceptions.caml_set_oo_id(obj);
+  return Caml_builtin_exceptions.caml_set_oo_id(obj);
 }
 
 function create_object_opt(obj_0, table) {
@@ -2842,7 +2842,7 @@ function create_object_opt(obj_0, table) {
   else {
     var obj = Object.defineProperty(Caml_obj_runtime.caml_obj_block(Obj.object_tag, table[1]), "##ml",{"value" : true, "writable" : false});
     obj[0] = table[2];
-    return Caml_exceptions.caml_set_oo_id(obj);
+    return Caml_builtin_exceptions.caml_set_oo_id(obj);
   }
 }
 

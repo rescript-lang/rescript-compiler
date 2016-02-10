@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("./pervasives");
-var Char            = require("./char");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_curry      = require("../runtime/caml_curry");
-var Caml_string     = require("../runtime/caml_string");
-var List            = require("./list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Char                    = require("./char");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
+var List                    = require("./list");
 
 function make(n, c) {
   var s = Caml_string.caml_create_string(n);
@@ -44,7 +44,7 @@ function sub(s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.sub / Bytes.sub"
         ];
   }
@@ -84,7 +84,7 @@ function fill(s, ofs, len, c) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.fill / Bytes.fill"
         ];
   }
@@ -97,7 +97,7 @@ function blit(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Bytes.blit"
         ];
   }
@@ -110,7 +110,7 @@ function blit_string(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.blit / Bytes.blit_string"
         ];
   }
@@ -381,7 +381,7 @@ function index_rec(s, lim, _i, c) {
   while(true) {
     var i = _i;
     if (i >= lim) {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
     else if (s[i] === c) {
       return i;
@@ -403,7 +403,7 @@ function index_from(s, i, c) {
   if (i < 0 || i > l) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.index_from / Bytes.index_from"
         ];
   }
@@ -416,7 +416,7 @@ function rindex_rec(s, _i, c) {
   while(true) {
     var i = _i;
     if (i < 0) {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
     else if (s[i] === c) {
       return i;
@@ -437,7 +437,7 @@ function rindex_from(s, i, c) {
   if (i < -1 || i >= s.length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.rindex_from / Bytes.rindex_from"
         ];
   }
@@ -451,7 +451,7 @@ function contains_from(s, i, c) {
   if (i < 0 || i > l) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.contains_from / Bytes.contains_from"
         ];
   }
@@ -461,7 +461,7 @@ function contains_from(s, i, c) {
       return /* true */1;
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         return /* false */0;
       }
       else {
@@ -479,7 +479,7 @@ function rcontains_from(s, i, c) {
   if (i < 0 || i >= s.length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "String.rcontains_from / Bytes.rcontains_from"
         ];
   }
@@ -489,7 +489,7 @@ function rcontains_from(s, i, c) {
       return /* true */1;
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         return /* false */0;
       }
       else {

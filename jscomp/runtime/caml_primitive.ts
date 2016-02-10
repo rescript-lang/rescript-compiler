@@ -21,12 +21,9 @@
 // Hongbo Zhang (hzhang295@bloomberg.net)              
 
 "use strict";
-import {
-    caml_failwith, caml_invalid_argument,
-    caml_raise_with_arg,
-    Undefined_recursive_module
-       } from './caml_exceptions'
 
+import {caml_failwith, caml_invalid_argument, caml_undef_module}  from './caml_exceptions'
+import {Undefined_recursive_module } from './caml_builtin_exceptions'
 import {caml_array_sub} from './caml_array'
 
 
@@ -204,7 +201,7 @@ function caml_int64_bswap(x) {
 
 function caml_CamlinternalMod_init_mod(loc,shape) {
   function undef_module (_x) {
-    caml_raise_with_arg(Undefined_recursive_module, loc);
+      caml_undef_module(loc);
   }
   function loop (shape,struct,idx){
     if(typeof shape === "number")

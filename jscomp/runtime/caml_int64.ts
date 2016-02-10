@@ -222,7 +222,7 @@ function caml_int64_udivmod (x, y) {
 //Requires: caml_int64_neg, caml_int64_udivmod
 export function caml_int64_div (x, y)
 {
-    if (caml_int64_is_zero (y)) caml_raise_zero_divide ();
+    if (caml_int64_is_zero (y)) caml_raise_zero_divide (0);
     var sign = x[3] ^ y[3];
     if (x[3] && 0x8000) x = caml_int64_neg(x);
     if (y[3] && 0x8000) y = caml_int64_neg(y);
@@ -236,7 +236,7 @@ export function caml_int64_div (x, y)
 //Requires: caml_int64_neg, caml_int64_udivmod
 export function caml_int64_mod (x, y)
 {
-    if (caml_int64_is_zero (y)) caml_raise_zero_divide ();
+    if (caml_int64_is_zero (y)) caml_raise_zero_divide (0);
     var sign = x[3] ^ y[3];
     if (x[3] && 0x8000) x = caml_int64_neg(x);
     if (y[3] && 0x8000) y = caml_int64_neg(y);

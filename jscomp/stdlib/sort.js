@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function merge(order, l1, l2) {
   if (l1) {
@@ -145,7 +145,7 @@ function array(cmp, arr) {
         if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Sort.array"
               ];
         }

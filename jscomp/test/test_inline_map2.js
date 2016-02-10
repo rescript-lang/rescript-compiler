@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Assert          = require("assert");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt              = require("./mt");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var List            = require("../stdlib/list");
-var Caml_string     = require("../runtime/caml_string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Assert                  = require("assert");
+var Mt                      = require("./mt");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var List                    = require("../stdlib/list");
+var Caml_string             = require("../runtime/caml_string");
 
 function height(param) {
   if (param) {
@@ -48,7 +48,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -56,7 +56,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -76,7 +76,7 @@ function bal(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -84,7 +84,7 @@ function bal(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -154,7 +154,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -235,7 +235,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -243,7 +243,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -263,7 +263,7 @@ function bal$1(l, x, d, r) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -271,7 +271,7 @@ function bal$1(l, x, d, r) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.bal"
           ];
     }
@@ -341,7 +341,7 @@ function find$1(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }

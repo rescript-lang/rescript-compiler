@@ -1,16 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_sys        = require("../runtime/caml_sys");
-var Pervasives      = require("./pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Nativeint       = require("./nativeint");
-var Int32           = require("./int32");
-var Digest          = require("./digest");
-var Int64           = require("./int64");
-var Caml_array      = require("../runtime/caml_array");
-var $$Array         = require("./array");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_sys                = require("../runtime/caml_sys");
+var Pervasives              = require("./pervasives");
+var Nativeint               = require("./nativeint");
+var Int32                   = require("./int32");
+var Digest                  = require("./digest");
+var Int64                   = require("./int64");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("./array");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function new_state() {
   return [
@@ -78,7 +78,7 @@ function $$int(s, bound) {
   if (bound > 1073741823 || bound <= 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Random.int"
         ];
   }
@@ -103,7 +103,7 @@ function int32(s, bound) {
   if (bound <= 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Random.int32"
         ];
   }
@@ -130,7 +130,7 @@ function int64(s, bound) {
   if (bound <= 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Random.int64"
         ];
   }

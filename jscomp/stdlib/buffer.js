@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("./bytes");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("./pervasives");
-var Sys             = require("./sys");
-var $$String        = require("./string");
-var Caml_curry      = require("../runtime/caml_curry");
-var Caml_string     = require("../runtime/caml_string");
+var Bytes                   = require("./bytes");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Sys                     = require("./sys");
+var $$String                = require("./string");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
 
 function create(n) {
   var n$1 = n < 1 ? 1 : n;
@@ -34,7 +34,7 @@ function sub(b, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > b[2] - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Buffer.sub"
         ];
   }
@@ -47,7 +47,7 @@ function blit(src, srcoff, dst, dstoff, len) {
   if (len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Buffer.blit"
         ];
   }
@@ -60,7 +60,7 @@ function nth(b, ofs) {
   if (ofs < 0 || ofs >= b[2]) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Buffer.nth"
         ];
   }
@@ -98,7 +98,7 @@ function resize(b, more) {
     else {
       throw [
             0,
-            Caml_exceptions.Failure,
+            Caml_builtin_exceptions.Failure,
             "Buffer.add: cannot grow buffer"
           ];
     }
@@ -124,7 +124,7 @@ function add_substring(b, s, offset, len) {
   if (offset < 0 || len < 0 || offset + len > s.length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Buffer.add_substring/add_subbytes"
         ];
   }
@@ -164,7 +164,7 @@ function add_channel(b, ic, len) {
   if (len < 0 || len > Sys.max_string_length) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Buffer.add_channel"
         ];
   }
@@ -185,7 +185,7 @@ function closing(param) {
     if (param !== 123) {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "buffer.ml",
@@ -211,7 +211,7 @@ function advance_to_closing(opening, closing, k, s, start) {
     var i = _i;
     var k$1 = _k;
     if (i >= lim) {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
     else if (s.charCodeAt(i) === opening) {
       _i = i + 1;
@@ -291,7 +291,7 @@ function advance_to_non_alpha(s, start) {
 
 function find_ident(s, start, lim) {
   if (start >= lim) {
-    throw Caml_exceptions.Not_found;
+    throw Caml_builtin_exceptions.Not_found;
   }
   else {
     var c = s.charCodeAt(start);

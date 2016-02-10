@@ -18,41 +18,17 @@
 
 (* Author: Hongbo Zhang  *)
 
-type env = 
-  | Browser
-  | NodeJS
+val caml_raise_sys_error : string -> 'a
+
+val caml_failwith : string -> 'a
+
+val caml_invalid_argument : string -> 'a
 
 
-val get_env : unit -> env
+val caml_array_bound_error : unit -> 'a
 
-val set_env : env -> unit
+val caml_raise_zero_divide : unit -> 'a
 
-val runtime_set : String_set.t
-val stdlib_set : String_set.t
+val caml_raise_not_found : unit -> 'a
 
-val prim : string 
-
-val builtin_exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lex_parse : string 
-
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
-
-val curry : string 
-
-
-
+val caml_undef_module : string * int * int -> 'a 

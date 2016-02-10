@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_string     = require("../runtime/caml_string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_string             = require("../runtime/caml_string");
 
 function chr(n) {
   if (n < 0 || n > 255) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Char.chr"
         ];
   }

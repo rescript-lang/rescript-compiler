@@ -30,7 +30,7 @@ function caml_sys_getenv (n : string) {
      && process.env
      && process.env[n] != undefined)
     return process.env[n];
-  caml_raise_not_found ();
+  caml_raise_not_found (0);
 }
 
 

@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("./bytes");
-var Pervasives      = require("./pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_lexer      = require("../runtime/caml_lexer");
-var Sys             = require("./sys");
-var Caml_curry      = require("../runtime/caml_curry");
-var Caml_string     = require("../runtime/caml_string");
+var Bytes                   = require("./bytes");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Caml_lexer              = require("../runtime/caml_lexer");
+var Sys                     = require("./sys");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
 
 function engine(tbl, state, buf) {
   var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
@@ -67,7 +67,7 @@ function from_function(f) {
                 if (lexbuf[3] - lexbuf[5] + n > newlen) {
                   throw [
                         0,
-                        Caml_exceptions.Failure,
+                        Caml_builtin_exceptions.Failure,
                         "Lexing.lex_refill: cannot grow buffer"
                       ];
                 }

@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Parsing         = require("../stdlib/parsing");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Parsing                 = require("../stdlib/parsing");
 
 var yytransl_const = /* array */[
   259,
@@ -50,7 +50,7 @@ var yyact = /* array */[
   function () {
     throw [
           0,
-          Caml_exceptions.Failure,
+          Caml_builtin_exceptions.Failure,
           "parser"
         ];
   },

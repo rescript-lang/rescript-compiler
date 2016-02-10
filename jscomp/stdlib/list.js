@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("./pervasives");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function length(l) {
   var _len = 0;
@@ -31,7 +31,7 @@ function hd(param) {
   else {
     throw [
           0,
-          Caml_exceptions.Failure,
+          Caml_builtin_exceptions.Failure,
           "hd"
         ];
   }
@@ -44,7 +44,7 @@ function tl(param) {
   else {
     throw [
           0,
-          Caml_exceptions.Failure,
+          Caml_builtin_exceptions.Failure,
           "tl"
         ];
   }
@@ -54,7 +54,7 @@ function nth(l, n) {
   if (n < 0) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "List.nth"
         ];
   }
@@ -78,7 +78,7 @@ function nth(l, n) {
       else {
         throw [
               0,
-              Caml_exceptions.Failure,
+              Caml_builtin_exceptions.Failure,
               "nth"
             ];
       }
@@ -246,7 +246,7 @@ function map2(f, l1, l2) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.map2"
           ];
     }
@@ -254,7 +254,7 @@ function map2(f, l1, l2) {
   else if (l2) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "List.map2"
         ];
   }
@@ -286,7 +286,7 @@ function rev_map2(f, l1, l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.rev_map2"
             ];
       }
@@ -294,7 +294,7 @@ function rev_map2(f, l1, l2) {
     else if (l2$1) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.rev_map2"
           ];
     }
@@ -319,7 +319,7 @@ function iter2(f, _l1, _l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.iter2"
             ];
       }
@@ -327,7 +327,7 @@ function iter2(f, _l1, _l2) {
     else if (l2) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.iter2"
           ];
     }
@@ -353,7 +353,7 @@ function fold_left2(f, _accu, _l1, _l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.fold_left2"
             ];
       }
@@ -361,7 +361,7 @@ function fold_left2(f, _accu, _l1, _l2) {
     else if (l2) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.fold_left2"
           ];
     }
@@ -379,7 +379,7 @@ function fold_right2(f, l1, l2, accu) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.fold_right2"
           ];
     }
@@ -387,7 +387,7 @@ function fold_right2(f, l1, l2, accu) {
   else if (l2) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "List.fold_right2"
         ];
   }
@@ -453,7 +453,7 @@ function for_all2(p, _l1, _l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.for_all2"
             ];
       }
@@ -461,7 +461,7 @@ function for_all2(p, _l1, _l2) {
     else if (l2) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.for_all2"
           ];
     }
@@ -490,7 +490,7 @@ function exists2(p, _l1, _l2) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "List.exists2"
             ];
       }
@@ -498,7 +498,7 @@ function exists2(p, _l1, _l2) {
     else if (l2) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.exists2"
           ];
     }
@@ -561,7 +561,7 @@ function assoc(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -581,7 +581,7 @@ function assq(x, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -679,7 +679,7 @@ function find(p, _param) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -802,7 +802,7 @@ function combine(l1, l2) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "List.combine"
           ];
     }
@@ -810,7 +810,7 @@ function combine(l1, l2) {
   else if (l2) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "List.combine"
         ];
   }
@@ -862,7 +862,7 @@ function chop(_k, _l) {
       else {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "list.ml",

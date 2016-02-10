@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array      = require("../runtime/caml_array");
-var $$Array         = require("../stdlib/array");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("../stdlib/array");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var v = [
   0,
@@ -45,7 +45,7 @@ console.log("" + n);
 if (v[1] !== 45) {
   throw [
         0,
-        Caml_exceptions.Assert_failure,
+        Caml_builtin_exceptions.Assert_failure,
         [
           0,
           "test_while_closure.ml",

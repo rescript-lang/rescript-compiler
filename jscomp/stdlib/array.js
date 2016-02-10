@@ -1,16 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array      = require("../runtime/caml_array");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_array              = require("../runtime/caml_array");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function init(l, f) {
   if (l) {
     if (l < 0) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Array.init"
           ];
     }
@@ -64,7 +64,7 @@ function sub(a, ofs, len) {
   if (len < 0 || ofs > a.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Array.sub"
         ];
   }
@@ -77,7 +77,7 @@ function fill(a, ofs, len, v) {
   if (ofs < 0 || len < 0 || ofs > a.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Array.fill"
         ];
   }
@@ -93,7 +93,7 @@ function blit(a1, ofs1, a2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Array.blit"
         ];
   }
@@ -226,7 +226,7 @@ function fold_right(f, a, x) {
 var Bottom = [
   248,
   "Array.Bottom",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function sort(cmp, a) {
@@ -315,7 +315,7 @@ function sort(cmp, a) {
       if (i === father) {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "array.ml",

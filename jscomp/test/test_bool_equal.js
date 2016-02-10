@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function bool_equal(x, y) {
   if (x !== 0) {
@@ -24,7 +24,7 @@ function assertions() {
   if (!bool_equal(/* true */1, /* true */1)) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_bool_equal.ml",
@@ -36,7 +36,7 @@ function assertions() {
   if (!bool_equal(/* false */0, /* false */0)) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_bool_equal.ml",
@@ -48,7 +48,7 @@ function assertions() {
   if (bool_equal(/* true */1, /* false */0)) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_bool_equal.ml",
@@ -60,7 +60,7 @@ function assertions() {
   if (bool_equal(/* false */0, /* true */1)) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_bool_equal.ml",

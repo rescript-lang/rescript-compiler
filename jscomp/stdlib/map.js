@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_curry              = require("../runtime/caml_curry");
 
 function Make(funarg) {
   var height = function (param) {
@@ -53,7 +53,7 @@ function Make(funarg) {
         else {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Map.bal"
               ];
         }
@@ -61,7 +61,7 @@ function Make(funarg) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -81,7 +81,7 @@ function Make(funarg) {
         else {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Map.bal"
               ];
         }
@@ -89,7 +89,7 @@ function Make(funarg) {
       else {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Map.bal"
             ];
       }
@@ -165,7 +165,7 @@ function Make(funarg) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -207,7 +207,7 @@ function Make(funarg) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -230,7 +230,7 @@ function Make(funarg) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
   };
@@ -247,7 +247,7 @@ function Make(funarg) {
     else {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Map.remove_min_elt"
           ];
     }
@@ -541,7 +541,7 @@ function Make(funarg) {
       else {
         throw [
               0,
-              Caml_exceptions.Assert_failure,
+              Caml_builtin_exceptions.Assert_failure,
               [
                 0,
                 "map.ml",

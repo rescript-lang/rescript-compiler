@@ -2,7 +2,8 @@
 "use strict";
 import {repeat} from './caml_utils'
 import {caml_float_of_string, caml_format_int, caml_format_float } from './caml_format'
-import {caml_array_bound_error, Invalid_argument} from './caml_exceptions'
+import {Invalid_argument} from './caml_builtin_exceptions'
+import {caml_array_bound_error} from './caml_exceptions'
 
 var invalid_arg=function(s){throw [0,Invalid_argument,s]};
 
@@ -52,7 +53,7 @@ a(caml_format_int("%3d",32)," 32" )
 a(caml_format_float("%3.2f",32),"32.00")
 a(repeat(3,"a"), "aaa")
 
-a(what_exception(()=>caml_array_bound_error()),
+a(what_exception(()=>caml_array_bound_error(0)),
     what_exception(()=>invalid_arg("index out of bounds"))
 )
 }

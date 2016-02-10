@@ -1,33 +1,33 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("./pervasives");
-var Caml_format     = require("../runtime/caml_format");
-var Sys             = require("./sys");
-var Printf          = require("./printf");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Buffer          = require("./buffer");
-var Caml_curry      = require("../runtime/caml_curry");
-var $$String        = require("./string");
-var List            = require("./list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Caml_format             = require("../runtime/caml_format");
+var Sys                     = require("./sys");
+var Printf                  = require("./printf");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Buffer                  = require("./buffer");
+var Caml_curry              = require("../runtime/caml_curry");
+var $$String                = require("./string");
+var List                    = require("./list");
 
 var Bad = [
   248,
   "Arg.Bad",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var Help = [
   248,
   "Arg.Help",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var Stop = [
   248,
   "Arg.Stop",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function assoc3(x, _l) {
@@ -45,7 +45,7 @@ function assoc3(x, _l) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
 }
@@ -79,7 +79,7 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       add1 = [
         /* :: */0,
         [
@@ -104,7 +104,7 @@ function add_help(speclist) {
     add2 = /* [] */0;
   }
   catch (exn$1){
-    if (exn$1 === Caml_exceptions.Not_found) {
+    if (exn$1 === Caml_builtin_exceptions.Not_found) {
       add2 = [
         /* :: */0,
         [
@@ -391,7 +391,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
         action = assoc3(s, speclist[1]);
       }
       catch (exn){
-        if (exn === Caml_exceptions.Not_found) {
+        if (exn === Caml_builtin_exceptions.Not_found) {
           action = stop([
                 /* Unknown */0,
                 s
@@ -414,7 +414,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[1], Pervasives.bool_of_string(arg));
                   }
                   catch (exn){
-                    if (exn[1] === Caml_exceptions.Invalid_argument) {
+                    if (exn[1] === Caml_builtin_exceptions.Invalid_argument) {
                       if (exn[2] === "bool_of_string") {
                         throw [
                               0,
@@ -493,7 +493,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[1], Caml_format.caml_int_of_string(arg$1));
                   }
                   catch (exn$1){
-                    if (exn$1[1] === Caml_exceptions.Failure) {
+                    if (exn$1[1] === Caml_builtin_exceptions.Failure) {
                       if (exn$1[2] === "int_of_string") {
                         throw [
                               0,
@@ -534,7 +534,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     param[1][1] = Caml_format.caml_int_of_string(arg$2);
                   }
                   catch (exn$2){
-                    if (exn$2[1] === Caml_exceptions.Failure) {
+                    if (exn$2[1] === Caml_builtin_exceptions.Failure) {
                       if (exn$2[2] === "int_of_string") {
                         throw [
                               0,
@@ -575,7 +575,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[1], Caml_format.caml_float_of_string(arg$3));
                   }
                   catch (exn$3){
-                    if (exn$3[1] === Caml_exceptions.Failure) {
+                    if (exn$3[1] === Caml_builtin_exceptions.Failure) {
                       if (exn$3[2] === "float_of_string") {
                         throw [
                               0,
@@ -616,7 +616,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     param[1][1] = Caml_format.caml_float_of_string(arg$4);
                   }
                   catch (exn$4){
-                    if (exn$4[1] === Caml_exceptions.Failure) {
+                    if (exn$4[1] === Caml_builtin_exceptions.Failure) {
                       if (exn$4[2] === "float_of_string") {
                         throw [
                               0,
@@ -835,7 +835,7 @@ function second_word(s) {
     };
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       return len;
     }
     else {

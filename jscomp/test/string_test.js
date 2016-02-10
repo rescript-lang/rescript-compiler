@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes           = require("../stdlib/bytes");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Mt              = require("./mt");
-var $$String        = require("../stdlib/string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Bytes                   = require("../stdlib/bytes");
+var Mt                      = require("./mt");
+var $$String                = require("../stdlib/string");
 
 function ff(x) {
   var a;
@@ -80,7 +80,7 @@ function rev_split_by_char(c, s) {
       
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         return [
                 /* :: */0,
                 $$String.sub(s, i, s.length - i),
@@ -110,7 +110,7 @@ function xsplit(delim, s) {
           exit = 1;
         }
         catch (exn){
-          if (exn === Caml_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.Not_found) {
             return [
                     /* :: */0,
                     $$String.sub(s, 0, i),

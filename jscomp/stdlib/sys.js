@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_primitive  = require("../runtime/caml_primitive");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_primitive          = require("../runtime/caml_primitive");
 
 var is_js = /* true */1;
 
@@ -36,7 +36,7 @@ var sigint = -6;
 var Break = [
   248,
   "Sys.Break",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function catch_break(on) {

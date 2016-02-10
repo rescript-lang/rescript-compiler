@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_string     = require("../runtime/caml_string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_string             = require("../runtime/caml_string");
 
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > buff.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Marshal.to_buffer: substring out of bounds"
         ];
   }
@@ -24,7 +24,7 @@ function data_size(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Marshal.data_size"
         ];
   }
@@ -41,7 +41,7 @@ function from_bytes(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Marshal.from_bytes"
         ];
   }
@@ -50,7 +50,7 @@ function from_bytes(buff, ofs) {
     if (ofs > buff.length - (header_size + len)) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Marshal.from_bytes"
           ];
     }

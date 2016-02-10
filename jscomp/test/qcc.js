@@ -1,18 +1,18 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_io         = require("../runtime/caml_io");
-var Bytes           = require("../stdlib/bytes");
-var Pervasives      = require("../stdlib/pervasives");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Char            = require("../stdlib/char");
-var Sys             = require("../stdlib/sys");
-var Printf          = require("../stdlib/printf");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_array      = require("../runtime/caml_array");
-var Caml_curry      = require("../runtime/caml_curry");
-var $$String        = require("../stdlib/string");
-var List            = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_io                 = require("../runtime/caml_io");
+var Bytes                   = require("../stdlib/bytes");
+var Pervasives              = require("../stdlib/pervasives");
+var Char                    = require("../stdlib/char");
+var Sys                     = require("../stdlib/sys");
+var Printf                  = require("../stdlib/printf");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_array              = require("../runtime/caml_array");
+var Caml_curry              = require("../runtime/caml_curry");
+var $$String                = require("../stdlib/string");
+var List                    = require("../stdlib/list");
 
 var dbg = [
   0,
@@ -45,7 +45,7 @@ function bufferize(f) {
             if (buf[1] !== /* None */0) {
               throw [
                     0,
-                    Caml_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.Assert_failure,
                     [
                       0,
                       "qcc.ml",
@@ -112,7 +112,7 @@ function match_002(n) {
   if (n >= syms[1]) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "qcc.ml",
@@ -243,7 +243,7 @@ function next() {
     ];
   }
   catch (exn){
-    if (exn === Caml_exceptions.End_of_file) {
+    if (exn === Caml_builtin_exceptions.End_of_file) {
       match = /* None */0;
     }
     else {
@@ -286,7 +286,7 @@ function next() {
         if (qt !== /* "'" */39) {
           throw [
                 0,
-                Caml_exceptions.Failure,
+                Caml_builtin_exceptions.Failure,
                 "syntax error"
               ];
         }
@@ -469,7 +469,7 @@ function patch(rel, loc, n) {
   if (n >= 4294967296) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "qcc.ml",
@@ -1202,7 +1202,7 @@ function unary(stk) {
               else {
                 throw [
                       0,
-                      Caml_exceptions.Failure,
+                      Caml_builtin_exceptions.Failure,
                       "[cast] expected"
                     ];
               }
@@ -1262,7 +1262,7 @@ function unary(stk) {
                       ]), o);
               throw [
                     0,
-                    Caml_exceptions.Failure,
+                    Caml_builtin_exceptions.Failure,
                     s
                   ];
             }
@@ -1287,7 +1287,7 @@ function unary(stk) {
           if (l <= -256) {
             throw [
                   0,
-                  Caml_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.Assert_failure,
                   [
                     0,
                     "qcc.ml",
@@ -1541,7 +1541,7 @@ function decl(g, _n, _stk) {
                 if (glo[2] >= 0) {
                   throw [
                         0,
-                        Caml_exceptions.Failure,
+                        Caml_builtin_exceptions.Failure,
                         "symbol defined twice"
                       ];
                 }
@@ -1586,7 +1586,7 @@ function decl(g, _n, _stk) {
             else {
               throw [
                     0,
-                    Caml_exceptions.Failure,
+                    Caml_builtin_exceptions.Failure,
                     "[var] expected in [decl]"
                   ];
             }
@@ -1628,7 +1628,7 @@ function decl(g, _n, _stk) {
         if (n * 8 >= 256) {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "qcc.ml",
@@ -1769,7 +1769,7 @@ function stmt(brk, stk) {
     if (n < 0) {
       throw [
             0,
-            Caml_exceptions.Assert_failure,
+            Caml_builtin_exceptions.Assert_failure,
             [
               0,
               "qcc.ml",
@@ -1853,7 +1853,7 @@ function top(_param) {
         if (g[2] >= 0) {
           throw [
                 0,
-                Caml_exceptions.Failure,
+                Caml_builtin_exceptions.Failure,
                 "symbol defined twice"
               ];
         }
@@ -1876,7 +1876,7 @@ function top(_param) {
                   else {
                     throw [
                           0,
-                          Caml_exceptions.Failure,
+                          Caml_builtin_exceptions.Failure,
                           "[var] or ) expected"
                         ];
                   }
@@ -1885,7 +1885,7 @@ function top(_param) {
               case 2 : 
                   throw [
                         0,
-                        Caml_exceptions.Failure,
+                        Caml_builtin_exceptions.Failure,
                         "[var] or ) expected"
                       ];
               case 3 : 
@@ -1987,7 +1987,7 @@ function top(_param) {
       else {
         throw [
               0,
-              Caml_exceptions.Failure,
+              Caml_builtin_exceptions.Failure,
               "[decl] or [fun] expected"
             ];
       }
@@ -2263,7 +2263,7 @@ function elfgen(outf) {
   if (opos[1] !== textoff) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "qcc.ml",

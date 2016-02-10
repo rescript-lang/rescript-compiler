@@ -1,23 +1,23 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var CamlinternalLazy = require("./camlinternalLazy");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Pervasives       = require("./pervasives");
-var Caml_curry       = require("../runtime/caml_curry");
-var List             = require("./list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var CamlinternalLazy        = require("./camlinternalLazy");
+var Pervasives              = require("./pervasives");
+var Caml_curry              = require("../runtime/caml_curry");
+var List                    = require("./list");
 
 var Failure = [
   248,
   "Stream.Failure",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 var $$Error = [
   248,
   "Stream.Error",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function fill_buff(b) {
@@ -43,7 +43,7 @@ function get_data(count, _d) {
               if (match) {
                 throw [
                       0,
-                      Caml_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.Assert_failure,
                       [
                         0,
                         "stream.ml",
@@ -61,7 +61,7 @@ function get_data(count, _d) {
             else if (match[0]) {
               throw [
                     0,
-                    Caml_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.Assert_failure,
                     [
                       0,
                       "stream.ml",
@@ -167,7 +167,7 @@ function peek(s) {
               if (d) {
                 throw [
                       0,
-                      Caml_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.Assert_failure,
                       [
                         0,
                         "stream.ml",
@@ -183,7 +183,7 @@ function peek(s) {
             else if (d[0]) {
               throw [
                     0,
-                    Caml_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.Assert_failure,
                     [
                       0,
                       "stream.ml",

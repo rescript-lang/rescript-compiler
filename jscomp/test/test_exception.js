@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Test_common     = require("./test_common");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Test_common             = require("./test_common");
 
 var Local = [
   248,
   "Test_exception.Local",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function f() {
@@ -19,7 +19,7 @@ function f() {
 }
 
 function g() {
-  throw Caml_exceptions.Not_found;
+  throw Caml_builtin_exceptions.Not_found;
 }
 
 function h() {
@@ -37,7 +37,7 @@ function x() {
 function xx() {
   throw [
         0,
-        Caml_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.Invalid_argument,
         "x"
       ];
 }

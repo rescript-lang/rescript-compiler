@@ -1,18 +1,18 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
-var CamlinternalLazy = require("./camlinternalLazy");
-var Caml_sys         = require("../runtime/caml_sys");
-var Caml_exceptions  = require("../runtime/caml_exceptions");
-var Pervasives       = require("./pervasives");
-var Sys              = require("./sys");
-var Caml_primitive   = require("../runtime/caml_primitive");
-var Caml_array       = require("../runtime/caml_array");
-var $$Array          = require("./array");
-var $$String         = require("./string");
-var Caml_curry       = require("../runtime/caml_curry");
-var Random           = require("./random");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var CamlinternalLazy        = require("./camlinternalLazy");
+var Caml_sys                = require("../runtime/caml_sys");
+var Pervasives              = require("./pervasives");
+var Sys                     = require("./sys");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_array              = require("../runtime/caml_array");
+var $$Array                 = require("./array");
+var $$String                = require("./string");
+var Caml_curry              = require("../runtime/caml_curry");
+var Random                  = require("./random");
 
 function hash(x) {
   return Caml_primitive.caml_hash(10, 100, 0, x);
@@ -32,12 +32,12 @@ try {
   params = Caml_sys.caml_sys_getenv("OCAMLRUNPARAM");
 }
 catch (exn){
-  if (exn === Caml_exceptions.Not_found) {
+  if (exn === Caml_builtin_exceptions.Not_found) {
     try {
       params = Caml_sys.caml_sys_getenv("CAMLRUNPARAM");
     }
     catch (exn$1){
-      if (exn$1 === Caml_exceptions.Not_found) {
+      if (exn$1 === Caml_builtin_exceptions.Not_found) {
         params = "";
       }
       else {
@@ -257,7 +257,7 @@ function find(h, key) {
                   }
                 }
                 else {
-                  throw Caml_exceptions.Not_found;
+                  throw Caml_builtin_exceptions.Not_found;
                 }
               };
             }
@@ -266,7 +266,7 @@ function find(h, key) {
             }
           }
           else {
-            throw Caml_exceptions.Not_found;
+            throw Caml_builtin_exceptions.Not_found;
           }
         }
         else {
@@ -274,7 +274,7 @@ function find(h, key) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     }
     else {
@@ -282,7 +282,7 @@ function find(h, key) {
     }
   }
   else {
-    throw Caml_exceptions.Not_found;
+    throw Caml_builtin_exceptions.Not_found;
   }
 }
 
@@ -336,7 +336,7 @@ function replace(h, key, info) {
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
   var i = key_index(h, key);
@@ -346,7 +346,7 @@ function replace(h, key, info) {
     return /* () */0;
   }
   catch (exn){
-    if (exn === Caml_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.Not_found) {
       h[2][i] = [
         /* Cons */0,
         key,
@@ -548,21 +548,21 @@ function MakeSeeded(H) {
                 }
               }
               else {
-                throw Caml_exceptions.Not_found;
+                throw Caml_builtin_exceptions.Not_found;
               }
             };
           }
         }
         else {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.Not_found;
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
   var find_all = function (h, key) {
@@ -614,7 +614,7 @@ function MakeSeeded(H) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
     var i = key_index(h, key);
@@ -624,7 +624,7 @@ function MakeSeeded(H) {
       return /* () */0;
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         h[2][i] = [
           /* Cons */0,
           key,
@@ -763,21 +763,21 @@ function Make(H) {
                 }
               }
               else {
-                throw Caml_exceptions.Not_found;
+                throw Caml_builtin_exceptions.Not_found;
               }
             };
           }
         }
         else {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.Not_found;
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     }
     else {
-      throw Caml_exceptions.Not_found;
+      throw Caml_builtin_exceptions.Not_found;
     }
   };
   var find_all = function (h, key) {
@@ -829,7 +829,7 @@ function Make(H) {
         }
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.Not_found;
       }
     };
     var i = key_index(h, key);
@@ -839,7 +839,7 @@ function Make(H) {
       return /* () */0;
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.Not_found) {
         h[2][i] = [
           /* Cons */0,
           key,

@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Arith_syntax    = require("./arith_syntax");
-var Mt              = require("./mt");
-var Lexing          = require("../stdlib/lexing");
-var Number_lexer    = require("./number_lexer");
-var Arith_lexer     = require("./arith_lexer");
-var Caml_curry      = require("../runtime/caml_curry");
-var List            = require("../stdlib/list");
-var Arith_parser    = require("./arith_parser");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Arith_syntax            = require("./arith_syntax");
+var Mt                      = require("./mt");
+var Lexing                  = require("../stdlib/lexing");
+var Number_lexer            = require("./number_lexer");
+var Arith_lexer             = require("./arith_lexer");
+var Caml_curry              = require("../runtime/caml_curry");
+var List                    = require("../stdlib/list");
+var Arith_parser            = require("./arith_parser");
 
 function get_tokens(lex, str) {
   var buf = Lexing.from_string(str);
@@ -48,7 +48,7 @@ function from_tokens(lst) {
       return match[1];
     }
     else {
-      throw Caml_exceptions.End_of_file;
+      throw Caml_builtin_exceptions.End_of_file;
     }
   };
   return aux;

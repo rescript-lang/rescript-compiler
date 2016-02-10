@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("./pervasives");
-var Char            = require("./char");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var $$String        = require("./string");
-var Caml_string     = require("../runtime/caml_string");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Pervasives              = require("./pervasives");
+var Char                    = require("./char");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var $$String                = require("./string");
+var Caml_string             = require("../runtime/caml_string");
 
 function string(str) {
   return Caml_primitive.caml_md5_string(str, 0, str.length);
@@ -20,7 +20,7 @@ function substring(str, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > str.length - len) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Digest.substring"
         ];
   }
@@ -80,7 +80,7 @@ function from_hex(s) {
   if (s.length !== 32) {
     throw [
           0,
-          Caml_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.Invalid_argument,
           "Digest.from_hex"
         ];
   }
@@ -90,7 +90,7 @@ function from_hex(s) {
         if (c >= 103) {
           throw [
                 0,
-                Caml_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.Invalid_argument,
                 "Digest.from_hex"
               ];
         }
@@ -101,7 +101,7 @@ function from_hex(s) {
       else if (c >= 71) {
         throw [
               0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.Invalid_argument,
               "Digest.from_hex"
             ];
       }
@@ -112,7 +112,7 @@ function from_hex(s) {
     else if (c > 57 || c < 48) {
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             "Digest.from_hex"
           ];
     }

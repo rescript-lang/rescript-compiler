@@ -86,27 +86,29 @@ let runtime_set = String_set.of_list [
     "caml_array.js";
     "caml_float.js";
     "caml_obj_runtime.js";
-    (* "caml_sys.js"; *)
     "caml_bigarray.js";
     "caml_format.js";		
     "caml_oo.js";		
-    (* "caml_unix.js"; *)
     "caml_c_ffi.js";
     "caml_int64.js";
     "caml_primitive.js";
     "caml_utils.js";
+    "caml_builtin_exceptions.js";
     "caml_exceptions.js";
-    (* "caml_io.js"; *)
     "caml_curry.js";
     "caml_file.js";
     "caml_lexer.js";
     "caml_string.js"
+    (* "caml_sys.js"; *)
+    (* "caml_unix.js"; *)
+    (* "caml_io.js"; *)
 ]
 
 
 let prim = "Caml_primitive" 
 
-let exceptions = "Caml_exceptions"
+let builtin_exceptions = "Caml_builtin_exceptions"
+
 
 let io = "Caml_io"
 

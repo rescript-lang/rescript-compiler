@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function u() {
-  throw Caml_exceptions.Not_found;
+  throw Caml_builtin_exceptions.Not_found;
 }
 
 function f(x) {
@@ -18,7 +18,7 @@ function f(x) {
       case 1 : 
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "test_trywith.ml",

@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Filename        = require("../stdlib/filename");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Pervasives      = require("../stdlib/pervasives");
-var Ext_string      = require("./ext_string");
-var Caml_primitive  = require("../runtime/caml_primitive");
-var Caml_curry      = require("../runtime/caml_curry");
-var $$String        = require("../stdlib/string");
-var List            = require("../stdlib/list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Filename                = require("../stdlib/filename");
+var Pervasives              = require("../stdlib/pervasives");
+var Ext_string              = require("./ext_string");
+var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_curry              = require("../runtime/caml_curry");
+var $$String                = require("../stdlib/string");
+var List                    = require("../stdlib/list");
 
 var node_sep = "/";
 
@@ -48,11 +48,11 @@ function chop_extension($staropt$star, name) {
     return Filename.chop_extension(name);
   }
   catch (exn){
-    if (exn[1] === Caml_exceptions.Invalid_argument) {
+    if (exn[1] === Caml_builtin_exceptions.Invalid_argument) {
       var s = "Filename.chop_extension (" + (loc + (":" + (name + ")")));
       throw [
             0,
-            Caml_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.Invalid_argument,
             s
           ];
     }

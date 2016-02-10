@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var List            = require("./list");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var List                    = require("./list");
 
 var Empty = [
   248,
   "Stack.Empty",
-  ++ Caml_exceptions.caml_oo_last_id
+  ++ Caml_builtin_exceptions.caml_oo_last_id
 ];
 
 function create() {

@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_oo         = require("../runtime/caml_oo");
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var CamlinternalOO  = require("../stdlib/camlinternalOO");
-var Caml_curry      = require("../runtime/caml_curry");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_oo                 = require("../runtime/caml_oo");
+var CamlinternalOO          = require("../stdlib/camlinternalOO");
+var Caml_curry              = require("../runtime/caml_curry");
 
 var shared = [
   0,
@@ -101,7 +101,7 @@ function test() {
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 1), uu) !== "uu") {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -113,7 +113,7 @@ function test() {
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 2), uuu, 1, 20) !== 21) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -125,7 +125,7 @@ function test() {
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(v, 4846113, 3), v, 3, 7) !== 10) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -137,7 +137,7 @@ function test() {
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 4), u) !== 3) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -149,7 +149,7 @@ function test() {
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 5), u) !== 4) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -161,7 +161,7 @@ function test() {
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 6), u, 1, 2) !== 3) {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",
@@ -176,7 +176,7 @@ function test() {
   else {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "test_simple_obj.ml",

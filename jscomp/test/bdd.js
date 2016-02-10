@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_array      = require("../runtime/caml_array");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_array              = require("../runtime/caml_array");
 
 function $$eval(_bdd, vars) {
   while(true) {
@@ -80,7 +80,7 @@ function resize(newSize) {
         if (typeof n === "number") {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "bdd.ml",
@@ -160,7 +160,7 @@ function mkNode(low, v, high) {
         if (typeof n === "number") {
           throw [
                 0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.Assert_failure,
                 [
                   0,
                   "bdd.ml",
@@ -449,7 +449,7 @@ function main() {
   else {
     throw [
           0,
-          Caml_exceptions.Assert_failure,
+          Caml_builtin_exceptions.Assert_failure,
           [
             0,
             "bdd.ml",
