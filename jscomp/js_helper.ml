@@ -388,6 +388,14 @@ module Exp = struct
   *)
   let rec and_ ?comment (e1 : t) (e2 : t) = 
     match e1.expression_desc, e2.expression_desc with 
+    | (Bin (NotEqEq, e1, 
+            {expression_desc = Var (Id ({name = "undefined"; _} as id))})
+      | Bin (NotEqEq, 
+             {expression_desc = Var (Id ({name = "undefined"; _} as id))}, 
+             e1)
+      ), 
+      _ when Ext_ident.is_js id -> 
+      and_ e1 e2
     |  Int_of_boolean e1 , Int_of_boolean e2 -> 
       and_ ?comment e1 e2
     |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
@@ -461,6 +469,12 @@ module Exp = struct
       -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
     | (Bin (Bor, v , {expression_desc = Number (Int {i = 0 ; _})})), _, _
       -> econd v t f 
+    | Bin (NotEqEq, e1, 
+            {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
+      _, _
+      when Ext_ident.is_js id -> 
+      econd e1 t f 
+
     | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
        | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
       -> 
@@ -1147,6 +1161,12 @@ module Stmt = struct
         ->
         aux ?comment e else_  then_ acc 
 
+      | Bin (NotEqEq, e1, 
+             {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
+        _, _
+        when Ext_ident.is_js id -> 
+        aux ?comment e1 then_ else_ acc 
+
       | ((Bin (Gt, 
                ({expression_desc = 
                    Length _;
@@ -1154,10 +1174,10 @@ module Stmt = struct
 
         | Int_of_boolean e), _ , _
         ->
-      (** Add comment when simplified *)
-      aux ?comment e then_ else_ acc 
+        (** Add comment when simplified *)
+        aux ?comment e then_ else_ acc 
 
-    | _ -> 
+      | _ -> 
       { statement_desc = If (e, 
                              then_,
                              (match else_ with 

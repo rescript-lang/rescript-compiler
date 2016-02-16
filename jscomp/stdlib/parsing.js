@@ -154,7 +154,7 @@ function yyparse(tables, start, lexer, lexbuf) {
     }
     else {
       current_lookahead_fun[0] = function (tok) {
-        if (tok.length !== undefined) {
+        if (tok.length) {
           return +(tables[2][tok.tag | 0] === curr_char);
         }
         else {
