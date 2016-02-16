@@ -537,6 +537,11 @@ let query (prim : Lam_compile_env.primitive_description)
 
 
     | "caml_obj_is_block"
+      -> 
+      begin match args with 
+        | [e] -> E.is_caml_block e 
+        | _ -> assert false
+      end
     | "caml_obj_truncate"
     | "caml_lazy_make_forward"
     | "caml_compare"

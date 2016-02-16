@@ -90,11 +90,7 @@ let rec no_side_effect (x : J.expression)  =
   | Array_append (a,b) 
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
-  | Caml_block_length e
-  | Array_length e
-  | String_length e 
-  | Bytes_length e 
-  | Function_length e
+  | Length (e, _)
   | Char_of_int e 
   | Char_to_int e 
   | Caml_block_tag e 

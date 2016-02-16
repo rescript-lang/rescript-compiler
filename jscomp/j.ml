@@ -86,14 +86,10 @@ and for_direction = Asttypes.direction_flag
 
 and property_map = 
     (property_name * expression) list
-
+and length_object = Js_op.length_object
 and expression_desc =
   | Math of string * expression list
-  | Array_length of expression
-  | String_length of expression
-  | Bytes_length of expression
-  | Function_length of expression 
-
+  | Length of expression * length_object
   | Char_of_int of expression
   | Char_to_int of expression 
   | Array_of_size of expression 
@@ -220,7 +216,6 @@ and expression_desc =
   *)
   | Caml_block_tag of expression
   | Caml_block_set_tag of expression * expression
-  | Caml_block_length of expression
   | Caml_block_set_length of expression * expression
   (* It will just fetch tag, to make it safe, when creating it, 
      we need apply "|0", we don't do it in the 

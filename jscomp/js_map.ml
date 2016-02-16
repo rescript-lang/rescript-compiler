@@ -347,6 +347,7 @@ class virtual map =
         in { name = _x; block = _x_i1; exports = _x_i2; export_set = _x_i3; }
     method number : number -> number = o#unknown
     method mutable_flag : mutable_flag -> mutable_flag = o#unknown
+    method length_object : length_object -> length_object = o#unknown
     method label : label -> label = o#string
     method kind : kind -> kind = o#unknown
     method int_op : int_op -> int_op = o#unknown
@@ -364,10 +365,9 @@ class virtual map =
           let _x = o#string _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1
           in Math (_x, _x_i1)
-      | Array_length _x -> let _x = o#expression _x in Array_length _x
-      | String_length _x -> let _x = o#expression _x in String_length _x
-      | Bytes_length _x -> let _x = o#expression _x in Bytes_length _x
-      | Function_length _x -> let _x = o#expression _x in Function_length _x
+      | Length (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
       | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
       | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
       | Array_of_size _x -> let _x = o#expression _x in Array_of_size _x
@@ -447,8 +447,6 @@ class virtual map =
       | Caml_block_set_tag (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Caml_block_set_tag (_x, _x_i1)
-      | Caml_block_length _x ->
-          let _x = o#expression _x in Caml_block_length _x
       | Caml_block_set_length (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)

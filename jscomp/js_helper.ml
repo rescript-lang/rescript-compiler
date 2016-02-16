@@ -222,31 +222,40 @@ module Exp = struct
    *)
   let dot ?comment (e0 : t)  (e1 : string) : t = 
     { expression_desc = Dot (e0,  e1, true); comment} 
+
+  let undefined  = js_global "undefined"
+
+
+  (** coupled with the runtime *)
+  let is_caml_block ?comment (e : t) : t = 
+    {expression_desc = Bin ( NotEqEq, dot e "length" , undefined); 
+     comment}
+
   (* This is a property access not external module *)
   
   let array_length ?comment (e : t) : t = 
     match e.expression_desc with 
       (* TODO: use array instead? *)
     | Array (l, _) -> int ?comment (List.length l)
-    | _ -> { expression_desc = Array_length e ; comment }
+    | _ -> { expression_desc = Length (e, Array) ; comment }
 
   let string_length ?comment (e : t) : t =
     match e.expression_desc with 
     | Str(_,v) -> int ?comment (String.length v)
-    | _ -> { expression_desc = String_length e ; comment }
+    | _ -> { expression_desc = Length (e, String) ; comment }
 
   let bytes_length ?comment (e : t) : t = 
     match e.expression_desc with 
       (* TODO: use array instead? *)
     | Array (l, _) -> int ?comment (List.length l)
     | Str(_,v) -> int ?comment (String.length v)
-    | _ -> { expression_desc = Bytes_length e ; comment }
+    | _ -> { expression_desc = Length (e, Bytes) ; comment }
 
   let function_length ?comment (e : t) : t = 
     match e.expression_desc with 
     | Fun(params, _, _) -> int ?comment (List.length params)
      (* TODO: optimize if [e] is know at compile time *)
-    | _ -> { expression_desc = Function_length e ; comment }
+    | _ -> { expression_desc = Length (e, Function) ; comment }
 
       (** no dependency introduced *)
   let js_global_dot ?comment (x : string)  (e1 : string) : t = 
@@ -379,6 +388,14 @@ module Exp = struct
   *)
   let rec and_ ?comment (e1 : t) (e2 : t) = 
     match e1.expression_desc, e2.expression_desc with 
+    | (Bin (NotEqEq, e1, 
+            {expression_desc = Var (Id ({name = "undefined"; _} as id))})
+      | Bin (NotEqEq, 
+             {expression_desc = Var (Id ({name = "undefined"; _} as id))}, 
+             e1)
+      ), 
+      _ when Ext_ident.is_js id -> 
+      and_ e1 e2
     |  Int_of_boolean e1 , Int_of_boolean e2 -> 
       and_ ?comment e1 e2
     |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
@@ -452,22 +469,24 @@ module Exp = struct
       -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
     | (Bin (Bor, v , {expression_desc = Number (Int {i = 0 ; _})})), _, _
       -> econd v t f 
+    | Bin (NotEqEq, e1, 
+            {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
+      _, _
+      when Ext_ident.is_js id -> 
+      econd e1 t f 
+
     | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
        | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
       -> 
       econd ?comment x f t 
 
     | (Bin (Ge, 
-            ({expression_desc = 
-                (String_length _ 
-                | Array_length _ | Bytes_length _ | Function_length _ );
+            ({expression_desc = Length _ ;
               _}), {expression_desc = Number (Int { i = 0 ; _})})), _, _ 
       -> f
 
     | (Bin (Gt, 
-            ({expression_desc = 
-                (String_length _ 
-                | Array_length _ | Bytes_length _ | Function_length _ );
+            ({expression_desc = Length _;
               _} as pred ), {expression_desc = Number (Int {i = 0; })})), _, _
       ->
       (** Add comment when simplified *)
@@ -602,8 +621,7 @@ module Exp = struct
   let typeof ?comment (e : t) : t = 
     match e.expression_desc with 
     | Number _ 
-    | Array_length _ 
-    | String_length _ 
+    | Length _ 
       -> str ?comment "number"
     | Str _ 
       -> str ?comment "string" 
@@ -627,7 +645,7 @@ module Exp = struct
 
   let unit  () = int ~comment:"()" 0;; (* TODO: add a comment *)
 
-  let undefined ?comment () = js_global ?comment "undefined"
+
 
   let math ?comment v args  : t = 
     {comment ; expression_desc = Math(v,args)}
@@ -673,7 +691,7 @@ module Exp = struct
   let set_length ?comment e tag : t = 
     seq {expression_desc = Caml_block_set_length (e,tag); comment } (unit ())
   let obj_length ?comment e : t = 
-    {expression_desc = Caml_block_length e; comment }
+    {expression_desc = Length (e, Caml_block); comment }
   (* Arithmatic operations
      TODO: distinguish between int and float
      TODO: Note that we have to use Int64 to avoid integer overflow, this is fine
@@ -1122,7 +1140,7 @@ module Stmt = struct
           end
       |  (Number _ , _, _
       | (Bin (Ge, 
-              ({expression_desc = (String_length _ | Array_length _ | Bytes_length _ | Function_length _ );
+              ({expression_desc = Length _;
                _}), {expression_desc = Number (Int { i = 0; _})})), _ , _)
             (* TODO: always 
                 turn [Le] -> into [Ge]
@@ -1143,18 +1161,23 @@ module Stmt = struct
         ->
         aux ?comment e else_  then_ acc 
 
+      | Bin (NotEqEq, e1, 
+             {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
+        _, _
+        when Ext_ident.is_js id -> 
+        aux ?comment e1 then_ else_ acc 
+
       | ((Bin (Gt, 
                ({expression_desc = 
-                   (String_length _ 
-                   | Array_length _ | Bytes_length _ | Function_length _ );
+                   Length _;
                  _} as e ), {expression_desc = Number (Int { i = 0; _})}))
 
         | Int_of_boolean e), _ , _
         ->
-      (** Add comment when simplified *)
-      aux ?comment e then_ else_ acc 
+        (** Add comment when simplified *)
+        aux ?comment e then_ else_ acc 
 
-    | _ -> 
+      | _ -> 
       { statement_desc = If (e, 
                              then_,
                              (match else_ with 
