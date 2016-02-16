@@ -10,22 +10,15 @@ var split = Ext_string.split;
 
 var split_by = Ext_string.split_by;
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "split",
   function () {
-    var prim = split([
-          /* Some */0,
-          /* true */1
-        ], "hihi", /* "i" */105);
-    return Assert.deepEqual(prim, [
-                /* :: */0,
+    var prim = split(/* Some */[/* true */1], "hihi", /* "i" */105);
+    return Assert.deepEqual(prim, /* :: */[
                 "h",
-                [
-                  /* :: */0,
+                /* :: */[
                   "h",
-                  [
-                    /* :: */0,
+                  /* :: */[
                     "",
                     /* [] */0
                   ]
@@ -34,59 +27,41 @@ var suites_001 = [
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "split_non_empty",
     function () {
       var prim = split(/* None */0, "hihi", /* "i" */105);
-      return Assert.deepEqual(prim, [
-                  /* :: */0,
+      return Assert.deepEqual(prim, /* :: */[
                   "h",
-                  [
-                    /* :: */0,
+                  /* :: */[
                     "h",
                     /* [] */0
                   ]
                 ]);
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "splitempty",
       function () {
-        var prim = split([
-              /* Some */0,
-              /* true */1
-            ], "", /* "i" */105);
-        return Assert.deepEqual(prim, [
-                    /* :: */0,
+        var prim = split(/* Some */[/* true */1], "", /* "i" */105);
+        return Assert.deepEqual(prim, /* :: */[
                     "",
                     /* [] */0
                   ]);
       }
     ],
-    [
-      /* :: */0,
-      [
-        /* tuple */0,
+    /* :: */[
+      /* tuple */[
         "split_normal",
         function () {
-          var prim = split([
-                /* Some */0,
-                /* true */1
-              ], "h i i", /* " " */32);
-          return Assert.deepEqual(prim, [
-                      /* :: */0,
+          var prim = split(/* Some */[/* true */1], "h i i", /* " " */32);
+          return Assert.deepEqual(prim, /* :: */[
                       "h",
-                      [
-                        /* :: */0,
+                      /* :: */[
                         "i",
-                        [
-                          /* :: */0,
+                        /* :: */[
                           "i",
                           /* [] */0
                         ]
@@ -94,10 +69,8 @@ var suites_002 = [
                     ]);
         }
       ],
-      [
-        /* :: */0,
-        [
-          /* tuple */0,
+      /* :: */[
+        /* tuple */[
           "split_by",
           function () {
             var prim = List.filter(function (s) {
@@ -110,17 +83,13 @@ var suites_002 = [
                         return +(x === /* "\t" */9);
                       }
                     }, "h hgso hgso \t hi"));
-            return Assert.deepEqual(prim, [
-                        /* :: */0,
+            return Assert.deepEqual(prim, /* :: */[
                         "h",
-                        [
-                          /* :: */0,
+                        /* :: */[
                           "hgso",
-                          [
-                            /* :: */0,
+                          /* :: */[
                             "hgso",
-                            [
-                              /* :: */0,
+                            /* :: */[
                               "hi",
                               /* [] */0
                             ]
@@ -135,10 +104,9 @@ var suites_002 = [
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_suites("a_string_test.ml", suites);

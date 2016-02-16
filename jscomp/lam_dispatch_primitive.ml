@@ -395,14 +395,16 @@ let query (prim : Lam_compile_env.primitive_description)
 
     |  "caml_gc_get" ->  
       (* unit -> Gc.control*)
-      E.arr NA [E.int 0; 
-                E.int ~comment:"minor_heap_size" 0 ;
-                E.int ~comment:"major_heap_increment" 0 ;
-                E.int ~comment:"space_overhead" 0; 
-                E.int ~comment:"verbose" 0; (* TODO*)
-                E.int ~comment:"max_overhead" 0;
-                E.int ~comment:"stack_limit" 0;
-                E.int ~comment:"allocation_policy" 0]
+      Js_of_lam_record.make NA 
+        E.[
+         "minor_heap_size",   int 0 ;
+         "major_heap_increment",  int 0 ;
+         "space_overhead",  int 0; 
+         "verbose", int 0; (* TODO*)
+         "max_overhead",  int 0;
+         "stack_limit", int 0;
+         "allocation_policy", int 0
+        ]
     | "caml_set_oo_id" 
       ->
       (** ATT: relevant to how exception is encoded in OCaml 
@@ -411,24 +413,21 @@ let query (prim : Lam_compile_env.primitive_description)
           less code side when serialzation, and more knowledge in jsir
       *)
 
-      begin match args with 
-        | [  { expression_desc  = Array (
-            [ tag; str; {expression_desc = J.Number (Int { i = 0; _}); _} ],flag);
-            _} as v 
-          ] 
-          -> 
+      begin match Js_of_lam_exception.match_exception_def args 
+        with 
+        | Some ( exception_str, mutable_flag)
 
-          {v with expression_desc  =
-                    J.Array
-                      ([ tag; str ; 
-                         E.prefix_inc
-                           (E.runtime_var_vid
-                              Js_config.builtin_exceptions
-                              "caml_oo_last_id") 
-                       ], flag)
-          }
+          -> 
+          Js_of_lam_exception.make_exception    
+            (E.prefix_inc
+               (E.runtime_var_vid
+                  Js_config.builtin_exceptions
+                  "caml_oo_last_id")) 
+            exception_str mutable_flag      
+
         | _ ->  
-          E.runtime_call Js_config.builtin_exceptions prim.prim_name args 
+          E.runtime_call 
+            Js_config.builtin_exceptions prim.prim_name args 
       end
 
     | "caml_sys_const_big_endian" -> 
@@ -448,8 +447,11 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_sys_get_argv" -> 
       (** TODO: refine
           Inlined here is helpful for DCE
+          {[ external get_argv: unit -> string * string array = "caml_sys_get_argv" ]}
       *)
-      Js_of_lam_tuple.make [E.str "cmd"; E.arr NA [] ]
+      Js_of_lam_tuple.make [E.str "cmd"; 
+                            Js_of_lam_array.make_array NA Pgenarray []
+                           ]
     | "caml_sys_time"
 
     | "caml_sys_random_seed"
@@ -458,9 +460,12 @@ let query (prim : Lam_compile_env.primitive_description)
       E.runtime_call Js_config.sys prim.prim_name args 
     | "caml_lex_engine"
     | "caml_new_lex_engine"
+      -> 
+      E.runtime_call Js_config.lexer prim.prim_name args 
     | "caml_parse_engine"
-    | "caml_set_parser_trace" -> 
-      E.runtime_call Js_config.lex_parse prim.prim_name args 
+    | "caml_set_parser_trace" 
+      -> 
+      E.runtime_call Js_config.parser prim.prim_name args 
 
     | "caml_array_sub"
     | "caml_array_concat"
@@ -479,7 +484,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_ml_input_char"
       -> 
       E.runtime_call Js_config.io prim.prim_name args 
-
+    | "caml_update_dummy"
     | "caml_obj_dup" -> 
       (** Note currently is an Array copy function, this is tightly coupled with 
           how record, tuple encoded in JS.
@@ -488,7 +493,7 @@ let query (prim : Lam_compile_env.primitive_description)
       *)
       begin 
         match args with 
-        | [ a ] when Js_helper.is_constant a ->  a 
+        | [ a ] when Js_analyzer.is_constant a ->  a 
         | _ -> 
           E.runtime_call Js_config.obj_runtime prim.prim_name args 
       end
@@ -500,22 +505,16 @@ let query (prim : Lam_compile_env.primitive_description)
           ATTENTION: This optmization is coupled with memory layout
       *)
       begin match args with 
-        | [ {expression_desc = Number (Int { i = tag; _}); _ }; 
-            {expression_desc = Number (Int { i = 0;_}); _} ] ->
-          E.arr Immutable [E.int tag] (** size 0*)
-        | _ -> 
-          E.runtime_call Js_config.obj_runtime prim.prim_name args 
+        | [ tag; 
+            {expression_desc = Number (Int { i ;_}); _} ] ->
+          E.make_block tag NA (Ext_list.init i (fun _ -> E.int 0)  ) NA
+
+        | [ tag; size] -> 
+          E.uninitialized_object tag size
+        | _ -> assert false
+
 
       end
-    | "caml_obj_is_block"
-    | "caml_obj_tag"
-    | "caml_obj_set_tag"
-
-
-    | "caml_obj_truncate"
-    | "caml_lazy_make_forward" -> 
-      E.runtime_call Js_config.obj_runtime prim.prim_name args 
-
     | "caml_format_float"
 
     | "caml_nativeint_format"
@@ -535,13 +534,15 @@ let query (prim : Lam_compile_env.primitive_description)
       end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
-    | "caml_update_dummy"
 
+
+    | "caml_obj_is_block"
+    | "caml_obj_truncate"
+    | "caml_lazy_make_forward"
     | "caml_compare"
     | "caml_int_compare"
     | "caml_int32_compare"
     | "caml_nativeint_compare"
-
     | "caml_equal"
     | "caml_notequal"
     | "caml_greaterequal"
@@ -549,8 +550,19 @@ let query (prim : Lam_compile_env.primitive_description)
     | "caml_lessequal"
     | "caml_lessthan"
 
-    | "caml_convert_raw_backtrace_slot"
+      -> 
+      E.runtime_call Js_config.obj_runtime prim.prim_name args 
+    | "caml_obj_set_tag" 
+      -> begin match args with 
+          | [a;b]  -> E.set_tag a b 
+          | _ -> assert false end
+    | "caml_obj_tag" -> 
+      (* Note that in ocaml, [int] has tag [1000] and [string] has tag [252] *)      
+      begin match args with 
+      | [e] -> E.tag e 
+      | _ -> assert false end
 
+    | "caml_convert_raw_backtrace_slot"
     | "caml_bswap16"
     | "caml_int32_bswap"
     | "caml_nativeint_bswap"
@@ -644,6 +656,11 @@ let query (prim : Lam_compile_env.primitive_description)
         | [e] -> E.string_of_small_int_array e 
         | _ -> assert false
       end
+    | "js_is_instance_array" 
+      ->
+      begin match args with 
+        | [e] -> E.is_instance_array e 
+        | _ -> assert false end
     | "js_typeof"
       -> 
       begin match args with 
@@ -699,6 +716,23 @@ let query (prim : Lam_compile_env.primitive_description)
         | fn :: rest -> 
           E.call ~info:{arity=Full} fn rest 
         | _ -> assert false
+      end
+    | "js_uninitialized_object"
+      ->
+      begin match args with 
+        | [ tag; size] -> E.uninitialized_object tag size 
+        | _ -> assert false  end
+    | "js_obj_length" 
+      -> 
+      begin match args with 
+        | [e] -> E.obj_length e 
+        | _ -> assert false 
+      end
+    | "js_obj_set_length"
+      ->
+      begin match args with 
+        | [a; b] -> E.set_length a b 
+        | _ -> assert false 
       end
     | _ -> 
 

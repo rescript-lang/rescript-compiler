@@ -43,15 +43,14 @@ function absolute_path(s) {
 }
 
 function chop_extension($staropt$star, name) {
-  var loc = $staropt$star ? $staropt$star[1] : "";
+  var loc = $staropt$star ? $staropt$star[0] : "";
   try {
     return Filename.chop_extension(name);
   }
   catch (exn){
-    if (exn[1] === Caml_builtin_exceptions.Invalid_argument) {
+    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
       var s = "Filename.chop_extension (" + (loc + (":" + (name + ")")));
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             s
           ];
@@ -81,9 +80,9 @@ function relative_path(file1, file2) {
       var exit = 0;
       if (dir1) {
         if (dir2) {
-          if (dir1[1] === dir2[1]) {
-            _dir2 = dir2[2];
-            _dir1 = dir1[2];
+          if (dir1[0] === dir2[0]) {
+            _dir2 = dir2[1];
+            _dir1 = dir1[1];
             continue ;
             
           }
@@ -108,20 +107,18 @@ function relative_path(file1, file2) {
   };
   var ys = go(dir1, dir2);
   if (ys) {
-    if (ys[1] === node_parent) {
+    if (ys[0] === node_parent) {
       return $$String.concat(node_sep, ys);
     }
     else {
-      return $$String.concat(node_sep, [
-                  /* :: */0,
+      return $$String.concat(node_sep, /* :: */[
                   node_current,
                   ys
                 ]);
     }
   }
   else {
-    return $$String.concat(node_sep, [
-                /* :: */0,
+    return $$String.concat(node_sep, /* :: */[
                 node_current,
                 ys
               ]);

@@ -4,15 +4,15 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Test_common             = require("./test_common");
 
-var Local = [
-  248,
-  "Test_exception.Local",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Local = {
+  0: "Test_exception.Local",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function f() {
   throw [
-        0,
         Local,
         3
       ];
@@ -24,7 +24,6 @@ function g() {
 
 function h() {
   throw [
-        0,
         Test_common.U,
         3
       ];
@@ -36,7 +35,6 @@ function x() {
 
 function xx() {
   throw [
-        0,
         Caml_builtin_exceptions.Invalid_argument,
         "x"
       ];

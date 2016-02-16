@@ -2,20 +2,17 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                = require("../runtime/caml_obj");
 var Mt                      = require("./mt");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var $$Array                 = require("../stdlib/array");
 var Assert                  = require("assert");
 var List                    = require("../stdlib/list");
 
-var list_suites_001 = [
-  /* tuple */0,
+var list_suites_000 = /* tuple */[
   "length",
   function () {
-    if (1 === List.length([
-            /* :: */0,
-            [
-              /* tuple */0,
+    if (1 === List.length(/* :: */[
+            /* tuple */[
               0,
               1,
               2,
@@ -28,10 +25,8 @@ var list_suites_001 = [
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Assert_failure,
             [
-              0,
               "list_test.ml",
               5,
               3
@@ -41,26 +36,19 @@ var list_suites_001 = [
   }
 ];
 
-var list_suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var list_suites_001 = /* :: */[
+  /* tuple */[
     "length2",
     function () {
-      if (5 === List.length([
-              /* :: */0,
+      if (5 === List.length(/* :: */[
               0,
-              [
-                /* :: */0,
+              /* :: */[
                 1,
-                [
-                  /* :: */0,
+                /* :: */[
                   2,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     3,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       4,
                       /* [] */0
                     ]
@@ -72,10 +60,8 @@ var list_suites_002 = [
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Assert_failure,
               [
-                0,
                 "list_test.ml",
                 8,
                 3
@@ -84,10 +70,8 @@ var list_suites_002 = [
       }
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "long_length",
       function () {
         var v = 100000;
@@ -97,42 +81,32 @@ var list_suites_002 = [
         return Assert.deepEqual(v, prim);
       }
     ],
-    [
-      /* :: */0,
-      [
-        /* tuple */0,
+    /* :: */[
+      /* tuple */[
         "sort",
         function () {
           var prim = List.sort(function (x, y) {
-                return Caml_primitive.caml_int_compare(x, y);
-              }, [
-                /* :: */0,
+                return Caml_obj.caml_int_compare(x, y);
+              }, /* :: */[
                 4,
-                [
-                  /* :: */0,
+                /* :: */[
                   1,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     2,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       3,
                       /* [] */0
                     ]
                   ]
                 ]
               ]);
-          return Assert.deepEqual(prim, [
-                      /* :: */0,
+          return Assert.deepEqual(prim, /* :: */[
                       1,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         2,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             4,
                             /* [] */0
                           ]
@@ -146,10 +120,9 @@ var list_suites_002 = [
   ]
 ];
 
-var list_suites = [
-  /* :: */0,
-  list_suites_001,
-  list_suites_002
+var list_suites = /* :: */[
+  list_suites_000,
+  list_suites_001
 ];
 
 Mt.from_suites("List_suites", list_suites);

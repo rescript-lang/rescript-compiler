@@ -7,9 +7,8 @@ var List  = require("../stdlib/list");
 
 function to_list(v) {
   var acc = /* [] */0;
-  while(v[1] !== /* [] */0) {
-    acc = [
-      /* :: */0,
+  while(v[0] !== /* [] */0) {
+    acc = /* :: */[
       Stack.pop(v),
       acc
     ];
@@ -18,43 +17,36 @@ function to_list(v) {
 }
 
 function v() {
-  var v$1 = [
-    /* record */0,
-    /* [] */0
-  ];
+  var v$1 = /* record */[/* [] */0];
   Stack.push(3, v$1);
   Stack.push(4, v$1);
   Stack.push(1, v$1);
   return to_list(v$1);
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "push_test",
   function () {
-    return [
-            /* Eq */0,
-            [
-              /* :: */0,
+    return /* Eq */{
+            0: /* :: */[
               1,
-              [
-                /* :: */0,
+              /* :: */[
                 4,
-                [
-                  /* :: */0,
+                /* :: */[
                   3,
                   /* [] */0
                 ]
               ]
             ],
-            v(/* () */0)
-          ];
+            1: v(/* () */0),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

@@ -4,10 +4,7 @@
 var $$String = require("../stdlib/string");
 
 function v() {
-  return t([
-              0,
-              $$String.compare
-            ]);
+  return t([$$String.compare]);
 }
 
 function u(v) {
@@ -15,7 +12,6 @@ function u(v) {
 }
 
 var s = [
-  0,
   $$String.make,
   $$String.init,
   $$String.copy,

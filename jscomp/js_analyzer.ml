@@ -79,6 +79,7 @@ let rec no_side_effect (x : J.expression)  =
   | Fun _ -> true
   | Number _ -> true (* Can be refined later *)
   | Array (xs,_mutable_flag)  
+  | Caml_block (xs, _mutable_flag, _, _)
     ->
       (** create [immutable] block,
           does not really mean that this opreation itself is [pure].
@@ -86,8 +87,44 @@ let rec no_side_effect (x : J.expression)  =
           the block is mutable does not mean this operation is non-pure
        *)
       List.for_all no_side_effect  xs 
+  | Array_append (a,b) 
+  | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
-  | _ -> false 
+  | Caml_block_length e
+  | Array_length e
+  | String_length e 
+  | Bytes_length e 
+  | Function_length e
+  | Char_of_int e 
+  | Char_to_int e 
+  | Caml_block_tag e 
+  | Typeof e
+    -> no_side_effect e 
+  | Bin (op, a, b) -> 
+    op != Eq && no_side_effect a && no_side_effect b     
+  | Math _ 
+  | Array_of_size _
+  | Array_copy _ 
+  (* | Tag_ml_obj _ *)
+  | Int_of_boolean _ 
+
+  | Not _ 
+  | String_of_small_int_array _ 
+  | Json_stringify _ 
+  | Anything_to_string _ 
+  | Dump _ 
+  | Cond _ 
+
+  | FlatCall _ 
+  | Call _ 
+  | Dot _ 
+  | New _ 
+  | Caml_uninitialized_obj _
+  | String_access _
+  | Object _
+  | Caml_block_set_tag _ 
+  | Caml_block_set_length _ (* actually true? *)
+    -> false 
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 
@@ -181,3 +218,13 @@ let rev_toplevel_flatten block =
 
     | x :: xs -> aux (x :: acc) xs  in
   aux [] block
+
+let rec is_constant (x : J.expression)  = 
+  match x.expression_desc with 
+  | Access (a,b) -> is_constant a && is_constant b 
+  | Str (b,_) -> b
+  | Number _ -> true (* Can be refined later *)
+  | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
+  | Caml_block(xs, Immutable, tag, _) 
+    -> List.for_all is_constant xs && is_constant tag 
+  | _ -> false 

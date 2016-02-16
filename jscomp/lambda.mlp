@@ -40,7 +40,7 @@ and tag_info =
   | Array
   | Variant of string 
   | Record 
-  | NA
+  | NA (* exception/ Record labels *)
 
 and ident = Ident.t 
 and primitive =

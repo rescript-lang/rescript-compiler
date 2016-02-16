@@ -57,7 +57,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
     E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info) c 
 
   | Const_block(tag, tag_info, xs ) -> 
-    Js_of_lam_block.make_block NA tag_info tag (List.map translate xs)
+    Js_of_lam_block.make_block NA tag_info 
+      (E.int tag) (List.map translate xs)
 
   | Const_float_array ars -> 
     (* according to the compiler 
@@ -71,8 +72,10 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
         we  deoptimized this in js backend? so it is actually mutable 
     *)
     (* TODO-- *)
-    E.arr Mutable ~comment:"float array"
+    Js_of_lam_array.make_array Mutable Pfloatarray 
       (List.map (fun x ->  E.float  x ) ars)
+    (* E.arr Mutable ~comment:"float array" *)
+    (*   (List.map (fun x ->  E.float  x ) ars) *)
 
   | Const_immstring s ->  (*TODO *)
     E.str s  (* TODO: check *)

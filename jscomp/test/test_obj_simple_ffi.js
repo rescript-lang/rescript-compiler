@@ -18,7 +18,7 @@ var v2 = {
 };
 
 var v3 = {
-  "display_name": "display",
+  "display_name": /* Some */["display"] ? undefined : /* Some */["display"][1],
   "test": 3,
   "config": 3,
   "hi": "ghos"

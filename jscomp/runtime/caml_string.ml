@@ -133,7 +133,7 @@ let string_of_large_bytes bytes i len =
     end
 
 let bytes_to_string a  = 
-  string_of_large_bytes a 0 (String.length a)   
+  string_of_large_bytes a 0 (Bytes.length a)   
 
 
 (** TODO: performance could be improved, however, 

@@ -3,10 +3,10 @@
 
 var $$Array = require("../stdlib/array");
 
-var const_v = $$Array.append(/* array */[
+var const_v = $$Array.append(/* int array */[
       1,
       2
-    ], /* array */[3]);
+    ], /* int array */[3]);
 
 exports.const_v = const_v;
 /* const_v Not a pure module */

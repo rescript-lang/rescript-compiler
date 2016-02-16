@@ -4,45 +4,39 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var List                    = require("./list");
 
-var Empty = [
-  248,
-  "Stack.Empty",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Empty = {
+  0: "Stack.Empty",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function create() {
-  return [
-          /* record */0,
-          /* [] */0
-        ];
+  return /* record */[/* [] */0];
 }
 
 function clear(s) {
-  s[1] = /* [] */0;
+  s[0] = /* [] */0;
   return /* () */0;
 }
 
 function copy(s) {
-  return [
-          /* record */0,
-          s[1]
-        ];
+  return /* record */[s[0]];
 }
 
 function push(x, s) {
-  s[1] = [
-    /* :: */0,
+  s[0] = /* :: */[
     x,
-    s[1]
+    s[0]
   ];
   return /* () */0;
 }
 
 function pop(s) {
-  var match = s[1];
+  var match = s[0];
   if (match) {
-    s[1] = match[2];
-    return match[1];
+    s[0] = match[1];
+    return match[0];
   }
   else {
     throw Empty;
@@ -50,9 +44,9 @@ function pop(s) {
 }
 
 function top(s) {
-  var match = s[1];
+  var match = s[0];
   if (match) {
-    return match[1];
+    return match[0];
   }
   else {
     throw Empty;
@@ -60,15 +54,15 @@ function top(s) {
 }
 
 function is_empty(s) {
-  return +(s[1] === /* [] */0);
+  return +(s[0] === /* [] */0);
 }
 
 function length(s) {
-  return List.length(s[1]);
+  return List.length(s[0]);
 }
 
 function iter(f, s) {
-  return List.iter(f, s[1]);
+  return List.iter(f, s[0]);
 }
 
 exports.Empty    = Empty;

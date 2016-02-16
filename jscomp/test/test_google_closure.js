@@ -23,9 +23,9 @@ for(var i = 0; i<= 2; ++i){
   arr[i] = i + 1;
 }
 
-var match_001 = "" + n;
+var match_000 = "" + n;
 
-var a = match_001;
+var a = match_000;
 
 var b = 101;
 

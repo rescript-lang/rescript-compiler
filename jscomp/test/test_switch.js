@@ -13,7 +13,7 @@ function f(param) {
     }
   }
   else {
-    switch (param[0]) {
+    switch (param.tag | 0) {
       case 0 : 
           return 0;
       case 1 : 
@@ -28,14 +28,15 @@ function f(param) {
 }
 
 function bind(x, f) {
-  if (x[0]) {
+  if (x.tag) {
     return x;
   }
   else {
-    return [
-            /* Left */0,
-            Caml_curry.app1(f, x[1])
-          ];
+    return /* Left */{
+            0: Caml_curry.app1(f, x[0]),
+            length: 1,
+            tag: 0
+          };
   }
 }
 

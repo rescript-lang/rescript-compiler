@@ -6,8 +6,7 @@ var Caml_format = require("../runtime/caml_format");
 var Lexing      = require("../stdlib/lexing");
 var Caml_curry  = require("../runtime/caml_curry");
 
-var __ocaml_lex_tables = [
-  /* record */0,
+var __ocaml_lex_tables = /* record */[
   "\0\0\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff:\0\x85\0\xff\xff",
   "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\x01\0\xff\xff",
   "\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\0\0",
@@ -30,7 +29,7 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 9 || __ocaml_lex_state$1 < 0) {
-      Caml_curry.app1(lexbuf[1], lexbuf);
+      Caml_curry.app1(lexbuf[0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
@@ -41,15 +40,17 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
             ___ocaml_lex_state = 0;
             continue ;
             case 1 : 
-            return [
-                    /* NUMERAL */0,
-                    Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf))
-                  ];
+            return /* NUMERAL */{
+                    0: Caml_format.caml_int_of_string(Lexing.lexeme(lexbuf)),
+                    length: 1,
+                    tag: 0
+                  };
         case 2 : 
-            return [
-                    /* IDENT */1,
-                    Lexing.lexeme(lexbuf)
-                  ];
+            return /* IDENT */{
+                    0: Lexing.lexeme(lexbuf),
+                    length: 1,
+                    tag: 1
+                  };
         case 3 : 
             return /* PLUS */0;
         case 4 : 
@@ -71,21 +72,21 @@ function __ocaml_lex_lexeme_rec(lexbuf, ___ocaml_lex_state) {
 }
 
 function str(e) {
-  switch (e[0]) {
+  switch (e.tag | 0) {
     case 0 : 
-        return Pervasives.string_of_float(e[1]);
+        return Pervasives.string_of_float(e[0]);
     case 1 : 
-        return str(e[1]) + ("+" + str(e[2]));
+        return str(e[0]) + ("+" + str(e[1]));
     case 2 : 
-        return str(e[1]) + ("-" + str(e[2]));
+        return str(e[0]) + ("-" + str(e[1]));
     case 3 : 
-        return str(e[1]) + ("*" + str(e[2]));
+        return str(e[0]) + ("*" + str(e[1]));
     case 4 : 
-        return str(e[1]) + ("/" + str(e[2]));
+        return str(e[0]) + ("/" + str(e[1]));
     case 5 : 
-        return "-" + str(e[1]);
+        return "-" + str(e[0]);
     case 6 : 
-        return e[1];
+        return e[0];
     
   }
 }

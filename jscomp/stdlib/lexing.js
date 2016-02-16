@@ -12,14 +12,13 @@ var Caml_string             = require("../runtime/caml_string");
 function engine(tbl, state, buf) {
   var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[11] = buf[12];
-    var init = buf[12];
-    buf[12] = [
-      /* record */0,
+    buf[10] = buf[11];
+    var init = buf[11];
+    buf[11] = /* record */[
+      init[0],
       init[1],
       init[2],
-      init[3],
-      buf[4] + buf[6]
+      buf[3] + buf[5]
     ];
   }
   return result;
@@ -28,21 +27,19 @@ function engine(tbl, state, buf) {
 function new_engine(tbl, state, buf) {
   var result = Caml_lexer.caml_new_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[11] = buf[12];
-    var init = buf[12];
-    buf[12] = [
-      /* record */0,
+    buf[10] = buf[11];
+    var init = buf[11];
+    buf[11] = /* record */[
+      init[0],
       init[1],
       init[2],
-      init[3],
-      buf[4] + buf[6]
+      buf[3] + buf[5]
     ];
   }
   return result;
 }
 
-var zero_pos = [
-  /* record */0,
+var zero_pos = /* record */[
   "",
   1,
   0,
@@ -50,38 +47,36 @@ var zero_pos = [
 ];
 
 function from_function(f) {
-  return [
-          /* record */0,
+  return /* record */[
           function (param) {
             var read_fun = f;
             var aux_buffer = new Array(512);
             var lexbuf = param;
             var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
-            var n = read > 0 ? read : (lexbuf[9] = /* true */1, 0);
-            if (lexbuf[3] + n > lexbuf[2].length) {
-              if (lexbuf[3] - lexbuf[5] + n <= lexbuf[2].length) {
-                Bytes.blit(lexbuf[2], lexbuf[5], lexbuf[2], 0, lexbuf[3] - lexbuf[5]);
+            var n = read > 0 ? read : (lexbuf[8] = /* true */1, 0);
+            if (lexbuf[2] + n > lexbuf[1].length) {
+              if (lexbuf[2] - lexbuf[4] + n <= lexbuf[1].length) {
+                Bytes.blit(lexbuf[1], lexbuf[4], lexbuf[1], 0, lexbuf[2] - lexbuf[4]);
               }
               else {
-                var newlen = Pervasives.min(2 * lexbuf[2].length, Sys.max_string_length);
-                if (lexbuf[3] - lexbuf[5] + n > newlen) {
+                var newlen = Pervasives.min(2 * lexbuf[1].length, Sys.max_string_length);
+                if (lexbuf[2] - lexbuf[4] + n > newlen) {
                   throw [
-                        0,
                         Caml_builtin_exceptions.Failure,
                         "Lexing.lex_refill: cannot grow buffer"
                       ];
                 }
                 var newbuf = Caml_string.caml_create_string(newlen);
-                Bytes.blit(lexbuf[2], lexbuf[5], newbuf, 0, lexbuf[3] - lexbuf[5]);
-                lexbuf[2] = newbuf;
+                Bytes.blit(lexbuf[1], lexbuf[4], newbuf, 0, lexbuf[2] - lexbuf[4]);
+                lexbuf[1] = newbuf;
               }
-              var s = lexbuf[5];
-              lexbuf[4] += s;
+              var s = lexbuf[4];
+              lexbuf[3] += s;
+              lexbuf[5] -= s;
+              lexbuf[4] = 0;
               lexbuf[6] -= s;
-              lexbuf[5] = 0;
-              lexbuf[7] -= s;
-              lexbuf[3] -= s;
-              var t = lexbuf[10];
+              lexbuf[2] -= s;
+              var t = lexbuf[9];
               for(var i = 0 ,i_finish = t.length - 1; i<= i_finish; ++i){
                 var v = t[i];
                 if (v >= 0) {
@@ -90,8 +85,8 @@ function from_function(f) {
                 
               }
             }
-            Bytes.blit(aux_buffer, 0, lexbuf[2], lexbuf[3], n);
-            lexbuf[3] += n;
+            Bytes.blit(aux_buffer, 0, lexbuf[1], lexbuf[2], n);
+            lexbuf[2] += n;
             return /* () */0;
           },
           new Array(1024),
@@ -102,7 +97,7 @@ function from_function(f) {
           0,
           0,
           /* false */0,
-          /* array */[],
+          /* int array */[],
           zero_pos,
           zero_pos
         ];
@@ -115,10 +110,9 @@ function from_channel(ic) {
 }
 
 function from_string(s) {
-  return [
-          /* record */0,
+  return /* record */[
           function (lexbuf) {
-            lexbuf[9] = /* true */1;
+            lexbuf[8] = /* true */1;
             return /* () */0;
           },
           Bytes.of_string(s),
@@ -129,29 +123,26 @@ function from_string(s) {
           0,
           0,
           /* true */1,
-          /* array */[],
+          /* int array */[],
           zero_pos,
           zero_pos
         ];
 }
 
 function lexeme(lexbuf) {
-  var len = lexbuf[6] - lexbuf[5];
-  return Bytes.sub_string(lexbuf[2], lexbuf[5], len);
+  var len = lexbuf[5] - lexbuf[4];
+  return Bytes.sub_string(lexbuf[1], lexbuf[4], len);
 }
 
 function sub_lexeme(lexbuf, i1, i2) {
   var len = i2 - i1;
-  return Bytes.sub_string(lexbuf[2], i1, len);
+  return Bytes.sub_string(lexbuf[1], i1, len);
 }
 
 function sub_lexeme_opt(lexbuf, i1, i2) {
   if (i1 >= 0) {
     var len = i2 - i1;
-    return [
-            /* Some */0,
-            Bytes.sub_string(lexbuf[2], i1, len)
-          ];
+    return /* Some */[Bytes.sub_string(lexbuf[1], i1, len)];
   }
   else {
     return /* None */0;
@@ -159,15 +150,12 @@ function sub_lexeme_opt(lexbuf, i1, i2) {
 }
 
 function sub_lexeme_char(lexbuf, i) {
-  return lexbuf[2][i];
+  return lexbuf[1][i];
 }
 
 function sub_lexeme_char_opt(lexbuf, i) {
   if (i >= 0) {
-    return [
-            /* Some */0,
-            lexbuf[2][i]
-          ];
+    return /* Some */[lexbuf[1][i]];
   }
   else {
     return /* None */0;
@@ -175,54 +163,51 @@ function sub_lexeme_char_opt(lexbuf, i) {
 }
 
 function lexeme_char(lexbuf, i) {
-  return lexbuf[2][lexbuf[5] + i];
+  return lexbuf[1][lexbuf[4] + i];
 }
 
 function lexeme_start(lexbuf) {
-  return lexbuf[11][4];
+  return lexbuf[10][3];
 }
 
 function lexeme_end(lexbuf) {
-  return lexbuf[12][4];
+  return lexbuf[11][3];
 }
 
 function lexeme_start_p(lexbuf) {
-  return lexbuf[11];
+  return lexbuf[10];
 }
 
 function lexeme_end_p(lexbuf) {
-  return lexbuf[12];
+  return lexbuf[11];
 }
 
 function new_line(lexbuf) {
-  var lcp = lexbuf[12];
-  lexbuf[12] = [
-    /* record */0,
-    lcp[1],
-    lcp[2] + 1,
-    lcp[4],
-    lcp[4]
+  var lcp = lexbuf[11];
+  lexbuf[11] = /* record */[
+    lcp[0],
+    lcp[1] + 1,
+    lcp[3],
+    lcp[3]
   ];
   return /* () */0;
 }
 
 function flush_input(lb) {
-  lb[6] = 0;
-  lb[4] = 0;
-  var init = lb[12];
-  lb[12] = [
-    /* record */0,
+  lb[5] = 0;
+  lb[3] = 0;
+  var init = lb[11];
+  lb[11] = /* record */[
+    init[0],
     init[1],
     init[2],
-    init[3],
     0
   ];
-  lb[3] = 0;
+  lb[2] = 0;
   return /* () */0;
 }
 
-var dummy_pos = [
-  /* record */0,
+var dummy_pos = /* record */[
   "",
   0,
   0,

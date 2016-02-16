@@ -3,16 +3,10 @@
 
 
 function M() {
-  return [
-          0,
-          3
-        ];
+  return [3];
 }
 
-var V = [
-  0,
-  3
-];
+var V = [3];
 
 exports.M = M;
 exports.V = V;

@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Caml_obj                = require("../runtime/caml_obj");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
@@ -52,22 +52,20 @@ catch (exn){
 
 var randomized_default = $$String.contains(params, /* "R" */82);
 
-var randomized = [
-  0,
-  randomized_default
-];
+var randomized = [randomized_default];
 
 function randomize() {
-  randomized[1] = /* true */1;
+  randomized[0] = /* true */1;
   return /* () */0;
 }
 
-var prng = [
-  246,
-  function () {
-    return Caml_curry.app1(Random.State[2], /* () */0);
-  }
-];
+var prng = {
+  0: function () {
+    return Caml_curry.app1(Random.State[1], /* () */0);
+  },
+  length: 1,
+  tag: 246
+};
 
 function power_2_above(_x, n) {
   while(true) {
@@ -87,20 +85,19 @@ function power_2_above(_x, n) {
 }
 
 function create($staropt$star, initial_size) {
-  var random = $staropt$star ? $staropt$star[1] : randomized[1];
+  var random = $staropt$star ? $staropt$star[0] : randomized[0];
   var s = power_2_above(16, initial_size);
   var seed;
   if (random) {
-    var tag = Caml_obj_runtime.caml_obj_tag(prng);
-    seed = Caml_curry.app1(Random.State[4], tag === 250 ? prng[1] : (
+    var tag = prng.tag | 0;
+    seed = Caml_curry.app1(Random.State[3], tag === 250 ? prng[0] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
           ));
   }
   else {
     seed = 0;
   }
-  return [
-          /* record */0,
+  return /* record */[
           0,
           Caml_array.caml_make_vect(s, /* Empty */0),
           seed,
@@ -109,58 +106,58 @@ function create($staropt$star, initial_size) {
 }
 
 function clear(h) {
-  h[1] = 0;
-  var len = h[2].length;
+  h[0] = 0;
+  var len = h[1].length;
   for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-    h[2][i] = /* Empty */0;
+    h[1][i] = /* Empty */0;
   }
   return /* () */0;
 }
 
 function reset(h) {
-  var len = h[2].length;
-  if (h.length < 4 || len === h[4]) {
+  var len = h[1].length;
+  if (h.length < 4 || len === h[3]) {
     return clear(h);
   }
   else {
-    h[1] = 0;
-    h[2] = Caml_array.caml_make_vect(h[4], /* Empty */0);
+    h[0] = 0;
+    h[1] = Caml_array.caml_make_vect(h[3], /* Empty */0);
     return /* () */0;
   }
 }
 
 function copy(h) {
-  return [
-          /* record */0,
-          h[1],
-          $$Array.copy(h[2]),
-          h[3],
-          h[4]
+  return /* record */[
+          h[0],
+          $$Array.copy(h[1]),
+          h[2],
+          h[3]
         ];
 }
 
 function length(h) {
-  return h[1];
+  return h[0];
 }
 
 function resize(indexfun, h) {
-  var odata = h[2];
+  var odata = h[1];
   var osize = odata.length;
   var nsize = osize * 2;
   if (nsize < Sys.max_array_length) {
     var ndata = Caml_array.caml_make_vect(nsize, /* Empty */0);
-    h[2] = ndata;
+    h[1] = ndata;
     var insert_bucket = function (param) {
       if (param) {
-        var key = param[1];
-        insert_bucket(param[3]);
+        var key = param[0];
+        insert_bucket(param[2]);
         var nidx = Caml_curry.app2(indexfun, h, key);
-        ndata[nidx] = [
-          /* Cons */0,
-          key,
-          param[2],
-          ndata[nidx]
-        ];
+        ndata[nidx] = /* Cons */{
+          0: key,
+          1: param[1],
+          2: ndata[nidx],
+          length: 3,
+          tag: 0
+        };
         return /* () */0;
       }
       else {
@@ -179,25 +176,26 @@ function resize(indexfun, h) {
 
 function key_index(h, key) {
   if (h.length >= 3) {
-    return Caml_primitive.caml_hash(10, 100, h[3], key) & h[2].length - 1;
+    return Caml_primitive.caml_hash(10, 100, h[2], key) & h[1].length - 1;
   }
   else {
-    return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[2].length;
+    return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[1].length;
   }
 }
 
 function add(h, key, info) {
   var i = key_index(h, key);
-  var bucket_003 = h[2][i];
-  var bucket = [
-    /* Cons */0,
-    key,
-    info,
-    bucket_003
-  ];
-  h[2][i] = bucket;
-  ++ h[1];
-  if (h[1] > (h[2].length << 1)) {
+  var bucket_002 = h[1][i];
+  var bucket = /* Cons */{
+    0: key,
+    1: info,
+    2: bucket_002,
+    length: 3,
+    tag: 0
+  };
+  h[1][i] = bucket;
+  ++ h[0];
+  if (h[0] > (h[1].length << 1)) {
     return resize(key_index, h);
   }
   else {
@@ -208,18 +206,19 @@ function add(h, key, info) {
 function remove(h, key) {
   var remove_bucket = function (param) {
     if (param) {
-      var next = param[3];
-      var k = param[1];
-      if (Caml_primitive.caml_compare(k, key)) {
-        return [
-                /* Cons */0,
-                k,
-                param[2],
-                remove_bucket(next)
-              ];
+      var next = param[2];
+      var k = param[0];
+      if (Caml_obj.caml_compare(k, key)) {
+        return /* Cons */{
+                0: k,
+                1: param[1],
+                2: remove_bucket(next),
+                length: 3,
+                tag: 0
+              };
       }
       else {
-        -- h[1];
+        -- h[0];
         return next;
       }
     }
@@ -228,32 +227,32 @@ function remove(h, key) {
     }
   };
   var i = key_index(h, key);
-  h[2][i] = remove_bucket(h[2][i]);
+  h[1][i] = remove_bucket(h[1][i]);
   return /* () */0;
 }
 
 function find(h, key) {
-  var match = h[2][key_index(h, key)];
+  var match = h[1][key_index(h, key)];
   if (match) {
-    var rest1 = match[3];
-    if (Caml_primitive.caml_compare(key, match[1])) {
+    var rest1 = match[2];
+    if (Caml_obj.caml_compare(key, match[0])) {
       if (rest1) {
-        var rest2 = rest1[3];
-        if (Caml_primitive.caml_compare(key, rest1[1])) {
+        var rest2 = rest1[2];
+        if (Caml_obj.caml_compare(key, rest1[0])) {
           if (rest2) {
-            if (Caml_primitive.caml_compare(key, rest2[1])) {
+            if (Caml_obj.caml_compare(key, rest2[0])) {
               var key$1 = key;
-              var _param = rest2[3];
+              var _param = rest2[2];
               while(true) {
                 var param = _param;
                 if (param) {
-                  if (Caml_primitive.caml_compare(key$1, param[1])) {
-                    _param = param[3];
+                  if (Caml_obj.caml_compare(key$1, param[0])) {
+                    _param = param[2];
                     continue ;
                     
                   }
                   else {
-                    return param[2];
+                    return param[1];
                   }
                 }
                 else {
@@ -262,7 +261,7 @@ function find(h, key) {
               };
             }
             else {
-              return rest2[2];
+              return rest2[1];
             }
           }
           else {
@@ -270,7 +269,7 @@ function find(h, key) {
           }
         }
         else {
-          return rest1[2];
+          return rest1[1];
         }
       }
       else {
@@ -278,7 +277,7 @@ function find(h, key) {
       }
     }
     else {
-      return match[2];
+      return match[1];
     }
   }
   else {
@@ -291,16 +290,15 @@ function find_all(h, key) {
     while(true) {
       var param = _param;
       if (param) {
-        var rest = param[3];
-        if (Caml_primitive.caml_compare(param[1], key)) {
+        var rest = param[2];
+        if (Caml_obj.caml_compare(param[0], key)) {
           _param = rest;
           continue ;
           
         }
         else {
-          return [
-                  /* :: */0,
-                  param[2],
+          return /* :: */[
+                  param[1],
                   find_in_bucket(rest)
                 ];
         }
@@ -310,29 +308,31 @@ function find_all(h, key) {
       }
     };
   };
-  return find_in_bucket(h[2][key_index(h, key)]);
+  return find_in_bucket(h[1][key_index(h, key)]);
 }
 
 function replace(h, key, info) {
   var replace_bucket = function (param) {
     if (param) {
-      var next = param[3];
-      var k = param[1];
-      if (Caml_primitive.caml_compare(k, key)) {
-        return [
-                /* Cons */0,
-                k,
-                param[2],
-                replace_bucket(next)
-              ];
+      var next = param[2];
+      var k = param[0];
+      if (Caml_obj.caml_compare(k, key)) {
+        return /* Cons */{
+                0: k,
+                1: param[1],
+                2: replace_bucket(next),
+                length: 3,
+                tag: 0
+              };
       }
       else {
-        return [
-                /* Cons */0,
-                key,
-                info,
-                next
-              ];
+        return /* Cons */{
+                0: key,
+                1: info,
+                2: next,
+                length: 3,
+                tag: 0
+              };
       }
     }
     else {
@@ -340,21 +340,22 @@ function replace(h, key, info) {
     }
   };
   var i = key_index(h, key);
-  var l = h[2][i];
+  var l = h[1][i];
   try {
-    h[2][i] = replace_bucket(l);
+    h[1][i] = replace_bucket(l);
     return /* () */0;
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.Not_found) {
-      h[2][i] = [
-        /* Cons */0,
-        key,
-        info,
-        l
-      ];
-      ++ h[1];
-      if (h[1] > (h[2].length << 1)) {
+      h[1][i] = /* Cons */{
+        0: key,
+        1: info,
+        2: l,
+        length: 3,
+        tag: 0
+      };
+      ++ h[0];
+      if (h[0] > (h[1].length << 1)) {
         return resize(key_index, h);
       }
       else {
@@ -368,12 +369,12 @@ function replace(h, key, info) {
 }
 
 function mem(h, key) {
-  var _param = h[2][key_index(h, key)];
+  var _param = h[1][key_index(h, key)];
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_primitive.caml_compare(param[1], key)) {
-        _param = param[3];
+      if (Caml_obj.caml_compare(param[0], key)) {
+        _param = param[2];
         continue ;
         
       }
@@ -392,8 +393,8 @@ function iter(f, h) {
     while(true) {
       var param = _param;
       if (param) {
-        Caml_curry.app2(f, param[1], param[2]);
-        _param = param[3];
+        Caml_curry.app2(f, param[0], param[1]);
+        _param = param[2];
         continue ;
         
       }
@@ -402,7 +403,7 @@ function iter(f, h) {
       }
     };
   };
-  var d = h[2];
+  var d = h[1];
   for(var i = 0 ,i_finish = d.length - 1; i<= i_finish; ++i){
     do_bucket(d[i]);
   }
@@ -415,8 +416,8 @@ function fold(f, h, init) {
       var accu = _accu;
       var b = _b;
       if (b) {
-        _accu = Caml_curry.app3(f, b[1], b[2], accu);
-        _b = b[3];
+        _accu = Caml_curry.app3(f, b[0], b[1], accu);
+        _b = b[2];
         continue ;
         
       }
@@ -425,7 +426,7 @@ function fold(f, h, init) {
       }
     };
   };
-  var d = h[2];
+  var d = h[1];
   var accu = init;
   for(var i = 0 ,i_finish = d.length - 1; i<= i_finish; ++i){
     accu = do_bucket(d[i], accu);
@@ -438,7 +439,7 @@ function bucket_length(_accu, _param) {
     var param = _param;
     var accu = _accu;
     if (param) {
-      _param = param[3];
+      _param = param[2];
       _accu = accu + 1;
       continue ;
       
@@ -452,17 +453,16 @@ function bucket_length(_accu, _param) {
 function stats(h) {
   var mbl = $$Array.fold_left(function (m, b) {
         return Pervasives.max(m, bucket_length(0, b));
-      }, 0, h[2]);
+      }, 0, h[1]);
   var histo = Caml_array.caml_make_vect(mbl + 1, 0);
   $$Array.iter(function (b) {
         var l = bucket_length(0, b);
         histo[l] = histo[l] + 1;
         return /* () */0;
-      }, h[2]);
-  return [
-          /* record */0,
-          h[1],
-          h[2].length,
+      }, h[1]);
+  return /* record */[
+          h[0],
+          h[1].length,
           mbl,
           histo
         ];
@@ -470,20 +470,21 @@ function stats(h) {
 
 function MakeSeeded(H) {
   var key_index = function (h, key) {
-    return Caml_curry.app2(H[2], h[3], key) & h[2].length - 1;
+    return Caml_curry.app2(H[1], h[2], key) & h[1].length - 1;
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
-    var bucket_003 = h[2][i];
-    var bucket = [
-      /* Cons */0,
-      key,
-      info,
-      bucket_003
-    ];
-    h[2][i] = bucket;
-    ++ h[1];
-    if (h[1] > (h[2].length << 1)) {
+    var bucket_002 = h[1][i];
+    var bucket = /* Cons */{
+      0: key,
+      1: info,
+      2: bucket_002,
+      length: 3,
+      tag: 0
+    };
+    h[1][i] = bucket;
+    ++ h[0];
+    if (h[0] > (h[1].length << 1)) {
       return resize(key_index, h);
     }
     else {
@@ -493,19 +494,20 @@ function MakeSeeded(H) {
   var remove = function (h, key) {
     var remove_bucket = function (param) {
       if (param) {
-        var next = param[3];
-        var k = param[1];
-        if (Caml_curry.app2(H[1], k, key)) {
-          -- h[1];
+        var next = param[2];
+        var k = param[0];
+        if (Caml_curry.app2(H[0], k, key)) {
+          -- h[0];
           return next;
         }
         else {
-          return [
-                  /* Cons */0,
-                  k,
-                  param[2],
-                  remove_bucket(next)
-                ];
+          return /* Cons */{
+                  0: k,
+                  1: param[1],
+                  2: remove_bucket(next),
+                  length: 3,
+                  tag: 0
+                };
         }
       }
       else {
@@ -513,36 +515,36 @@ function MakeSeeded(H) {
       }
     };
     var i = key_index(h, key);
-    h[2][i] = remove_bucket(h[2][i]);
+    h[1][i] = remove_bucket(h[1][i]);
     return /* () */0;
   };
   var find = function (h, key) {
-    var match = h[2][key_index(h, key)];
+    var match = h[1][key_index(h, key)];
     if (match) {
-      var rest1 = match[3];
-      if (Caml_curry.app2(H[1], key, match[1])) {
-        return match[2];
+      var rest1 = match[2];
+      if (Caml_curry.app2(H[0], key, match[0])) {
+        return match[1];
       }
       else if (rest1) {
-        var rest2 = rest1[3];
-        if (Caml_curry.app2(H[1], key, rest1[1])) {
-          return rest1[2];
+        var rest2 = rest1[2];
+        if (Caml_curry.app2(H[0], key, rest1[0])) {
+          return rest1[1];
         }
         else if (rest2) {
-          if (Caml_curry.app2(H[1], key, rest2[1])) {
-            return rest2[2];
+          if (Caml_curry.app2(H[0], key, rest2[0])) {
+            return rest2[1];
           }
           else {
             var key$1 = key;
-            var _param = rest2[3];
+            var _param = rest2[2];
             while(true) {
               var param = _param;
               if (param) {
-                if (Caml_curry.app2(H[1], key$1, param[1])) {
-                  return param[2];
+                if (Caml_curry.app2(H[0], key$1, param[0])) {
+                  return param[1];
                 }
                 else {
-                  _param = param[3];
+                  _param = param[2];
                   continue ;
                   
                 }
@@ -570,11 +572,10 @@ function MakeSeeded(H) {
       while(true) {
         var param = _param;
         if (param) {
-          var rest = param[3];
-          if (Caml_curry.app2(H[1], param[1], key)) {
-            return [
-                    /* :: */0,
-                    param[2],
+          var rest = param[2];
+          if (Caml_curry.app2(H[0], param[0], key)) {
+            return /* :: */[
+                    param[1],
                     find_in_bucket(rest)
                   ];
           }
@@ -589,28 +590,30 @@ function MakeSeeded(H) {
         }
       };
     };
-    return find_in_bucket(h[2][key_index(h, key)]);
+    return find_in_bucket(h[1][key_index(h, key)]);
   };
   var replace = function (h, key, info) {
     var replace_bucket = function (param) {
       if (param) {
-        var next = param[3];
-        var k = param[1];
-        if (Caml_curry.app2(H[1], k, key)) {
-          return [
-                  /* Cons */0,
-                  key,
-                  info,
-                  next
-                ];
+        var next = param[2];
+        var k = param[0];
+        if (Caml_curry.app2(H[0], k, key)) {
+          return /* Cons */{
+                  0: key,
+                  1: info,
+                  2: next,
+                  length: 3,
+                  tag: 0
+                };
         }
         else {
-          return [
-                  /* Cons */0,
-                  k,
-                  param[2],
-                  replace_bucket(next)
-                ];
+          return /* Cons */{
+                  0: k,
+                  1: param[1],
+                  2: replace_bucket(next),
+                  length: 3,
+                  tag: 0
+                };
         }
       }
       else {
@@ -618,21 +621,22 @@ function MakeSeeded(H) {
       }
     };
     var i = key_index(h, key);
-    var l = h[2][i];
+    var l = h[1][i];
     try {
-      h[2][i] = replace_bucket(l);
+      h[1][i] = replace_bucket(l);
       return /* () */0;
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.Not_found) {
-        h[2][i] = [
-          /* Cons */0,
-          key,
-          info,
-          l
-        ];
-        ++ h[1];
-        if (h[1] > (h[2].length << 1)) {
+        h[1][i] = /* Cons */{
+          0: key,
+          1: info,
+          2: l,
+          length: 3,
+          tag: 0
+        };
+        ++ h[0];
+        if (h[0] > (h[1].length << 1)) {
           return resize(key_index, h);
         }
         else {
@@ -645,15 +649,15 @@ function MakeSeeded(H) {
     }
   };
   var mem = function (h, key) {
-    var _param = h[2][key_index(h, key)];
+    var _param = h[1][key_index(h, key)];
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app2(H[1], param[1], key)) {
+        if (Caml_curry.app2(H[0], param[0], key)) {
           return /* true */1;
         }
         else {
-          _param = param[3];
+          _param = param[2];
           continue ;
           
         }
@@ -664,7 +668,6 @@ function MakeSeeded(H) {
     };
   };
   return [
-          0,
           create,
           clear,
           reset,
@@ -683,22 +686,23 @@ function MakeSeeded(H) {
 }
 
 function Make(H) {
-  var equal = H[1];
+  var equal = H[0];
   var key_index = function (h, key) {
-    return Caml_curry.app1(H[2], key) & h[2].length - 1;
+    return Caml_curry.app1(H[1], key) & h[1].length - 1;
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
-    var bucket_003 = h[2][i];
-    var bucket = [
-      /* Cons */0,
-      key,
-      info,
-      bucket_003
-    ];
-    h[2][i] = bucket;
-    ++ h[1];
-    if (h[1] > (h[2].length << 1)) {
+    var bucket_002 = h[1][i];
+    var bucket = /* Cons */{
+      0: key,
+      1: info,
+      2: bucket_002,
+      length: 3,
+      tag: 0
+    };
+    h[1][i] = bucket;
+    ++ h[0];
+    if (h[0] > (h[1].length << 1)) {
       return resize(key_index, h);
     }
     else {
@@ -708,19 +712,20 @@ function Make(H) {
   var remove = function (h, key) {
     var remove_bucket = function (param) {
       if (param) {
-        var next = param[3];
-        var k = param[1];
+        var next = param[2];
+        var k = param[0];
         if (Caml_curry.app2(equal, k, key)) {
-          -- h[1];
+          -- h[0];
           return next;
         }
         else {
-          return [
-                  /* Cons */0,
-                  k,
-                  param[2],
-                  remove_bucket(next)
-                ];
+          return /* Cons */{
+                  0: k,
+                  1: param[1],
+                  2: remove_bucket(next),
+                  length: 3,
+                  tag: 0
+                };
         }
       }
       else {
@@ -728,36 +733,36 @@ function Make(H) {
       }
     };
     var i = key_index(h, key);
-    h[2][i] = remove_bucket(h[2][i]);
+    h[1][i] = remove_bucket(h[1][i]);
     return /* () */0;
   };
   var find = function (h, key) {
-    var match = h[2][key_index(h, key)];
+    var match = h[1][key_index(h, key)];
     if (match) {
-      var rest1 = match[3];
-      if (Caml_curry.app2(equal, key, match[1])) {
-        return match[2];
+      var rest1 = match[2];
+      if (Caml_curry.app2(equal, key, match[0])) {
+        return match[1];
       }
       else if (rest1) {
-        var rest2 = rest1[3];
-        if (Caml_curry.app2(equal, key, rest1[1])) {
-          return rest1[2];
+        var rest2 = rest1[2];
+        if (Caml_curry.app2(equal, key, rest1[0])) {
+          return rest1[1];
         }
         else if (rest2) {
-          if (Caml_curry.app2(equal, key, rest2[1])) {
-            return rest2[2];
+          if (Caml_curry.app2(equal, key, rest2[0])) {
+            return rest2[1];
           }
           else {
             var key$1 = key;
-            var _param = rest2[3];
+            var _param = rest2[2];
             while(true) {
               var param = _param;
               if (param) {
-                if (Caml_curry.app2(equal, key$1, param[1])) {
-                  return param[2];
+                if (Caml_curry.app2(equal, key$1, param[0])) {
+                  return param[1];
                 }
                 else {
-                  _param = param[3];
+                  _param = param[2];
                   continue ;
                   
                 }
@@ -785,11 +790,10 @@ function Make(H) {
       while(true) {
         var param = _param;
         if (param) {
-          var rest = param[3];
-          if (Caml_curry.app2(equal, param[1], key)) {
-            return [
-                    /* :: */0,
-                    param[2],
+          var rest = param[2];
+          if (Caml_curry.app2(equal, param[0], key)) {
+            return /* :: */[
+                    param[1],
                     find_in_bucket(rest)
                   ];
           }
@@ -804,28 +808,30 @@ function Make(H) {
         }
       };
     };
-    return find_in_bucket(h[2][key_index(h, key)]);
+    return find_in_bucket(h[1][key_index(h, key)]);
   };
   var replace = function (h, key, info) {
     var replace_bucket = function (param) {
       if (param) {
-        var next = param[3];
-        var k = param[1];
+        var next = param[2];
+        var k = param[0];
         if (Caml_curry.app2(equal, k, key)) {
-          return [
-                  /* Cons */0,
-                  key,
-                  info,
-                  next
-                ];
+          return /* Cons */{
+                  0: key,
+                  1: info,
+                  2: next,
+                  length: 3,
+                  tag: 0
+                };
         }
         else {
-          return [
-                  /* Cons */0,
-                  k,
-                  param[2],
-                  replace_bucket(next)
-                ];
+          return /* Cons */{
+                  0: k,
+                  1: param[1],
+                  2: replace_bucket(next),
+                  length: 3,
+                  tag: 0
+                };
         }
       }
       else {
@@ -833,21 +839,22 @@ function Make(H) {
       }
     };
     var i = key_index(h, key);
-    var l = h[2][i];
+    var l = h[1][i];
     try {
-      h[2][i] = replace_bucket(l);
+      h[1][i] = replace_bucket(l);
       return /* () */0;
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.Not_found) {
-        h[2][i] = [
-          /* Cons */0,
-          key,
-          info,
-          l
-        ];
-        ++ h[1];
-        if (h[1] > (h[2].length << 1)) {
+        h[1][i] = /* Cons */{
+          0: key,
+          1: info,
+          2: l,
+          length: 3,
+          tag: 0
+        };
+        ++ h[0];
+        if (h[0] > (h[1].length << 1)) {
           return resize(key_index, h);
         }
         else {
@@ -860,15 +867,15 @@ function Make(H) {
     }
   };
   var mem = function (h, key) {
-    var _param = h[2][key_index(h, key)];
+    var _param = h[1][key_index(h, key)];
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app2(equal, param[1], key)) {
+        if (Caml_curry.app2(equal, param[0], key)) {
           return /* true */1;
         }
         else {
-          _param = param[3];
+          _param = param[2];
           continue ;
           
         }
@@ -879,13 +886,9 @@ function Make(H) {
     };
   };
   var create$1 = function (sz) {
-    return create([
-                /* Some */0,
-                /* false */0
-              ], sz);
+    return create(/* Some */[/* false */0], sz);
   };
   return [
-          0,
           create$1,
           clear,
           reset,

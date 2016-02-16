@@ -13,16 +13,15 @@ var $$Array                 = require("./array");
 var Caml_curry              = require("../runtime/caml_curry");
 
 function new_state() {
-  return [
-          /* record */0,
+  return /* record */[
           Caml_array.caml_make_vect(55, 0),
           0
         ];
 }
 
 function assign(st1, st2) {
-  $$Array.blit(st2[1], 0, st1[1], 0, 55);
-  st1[2] = st2[2];
+  $$Array.blit(st2[0], 0, st1[0], 0, 55);
+  st1[1] = st2[1];
   return /* () */0;
 }
 
@@ -33,19 +32,19 @@ function full_init(s, seed) {
   var extract = function (d) {
     return d.charCodeAt(0) + (d.charCodeAt(1) << 8) + (d.charCodeAt(2) << 16) + (d.charCodeAt(3) << 24);
   };
-  var seed$1 = seed.length ? seed : /* array */[0];
+  var seed$1 = seed.length ? seed : /* int array */[0];
   var l = seed$1.length;
   for(var i = 0; i<= 54; ++i){
-    s[1][i] = i;
+    s[0][i] = i;
   }
   var accu = "x";
   for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l); i$1<= i_finish; ++i$1){
     var j = i$1 % 55;
     var k = i$1 % l;
     accu = combine(accu, seed$1[k]);
-    s[1][j] = (s[1][j] ^ extract(accu)) & 1073741823;
+    s[0][j] = (s[0][j] ^ extract(accu)) & 1073741823;
   }
-  s[2] = 0;
+  s[1] = 0;
   return /* () */0;
 }
 
@@ -66,18 +65,17 @@ function copy(s) {
 }
 
 function bits(s) {
-  s[2] = (s[2] + 1) % 55;
-  var curval = s[1][s[2]];
-  var newval = s[1][(s[2] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
+  s[1] = (s[1] + 1) % 55;
+  var curval = s[0][s[1]];
+  var newval = s[0][(s[1] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
   var newval30 = newval & 1073741823;
-  s[1][s[2]] = newval30;
+  s[0][s[1]] = newval30;
   return newval30;
 }
 
 function $$int(s, bound) {
   if (bound > 1073741823 || bound <= 0) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Random.int"
         ];
@@ -102,7 +100,6 @@ function $$int(s, bound) {
 function int32(s, bound) {
   if (bound <= 0) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Random.int32"
         ];
@@ -129,7 +126,6 @@ function int32(s, bound) {
 function int64(s, bound) {
   if (bound <= 0) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Random.int64"
         ];
@@ -175,8 +171,7 @@ function bool(s) {
   return +((bits(s) & 1) === 0);
 }
 
-var $$default = [
-  /* record */0,
+var $$default = /* record */[
   /* array */[
     987910699,
     495797812,
@@ -270,7 +265,7 @@ function full_init$1(seed) {
 }
 
 function init(seed) {
-  return full_init($$default, /* array */[seed]);
+  return full_init($$default, /* int array */[seed]);
 }
 
 function self_init() {
@@ -286,7 +281,6 @@ function set_state(s) {
 }
 
 var State = [
-  0,
   make,
   make_self_init,
   copy,

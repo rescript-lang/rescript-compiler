@@ -23,4 +23,5 @@
 module E = Js_helper.Exp 
 
 let make (args : J.expression list) =
-  E.arr Immutable (E.int 0 :: args)
+  E.make_block ~comment:"tuple" (E.int 0) Tuple args Immutable
+  (* E.arr Immutable (E.int 0 :: args) *)

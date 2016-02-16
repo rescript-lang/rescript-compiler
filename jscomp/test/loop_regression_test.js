@@ -4,43 +4,36 @@
 var Mt = require("./mt");
 
 function f() {
-  var v = [
-    0,
-    0
-  ];
-  var acc = [
-    0,
-    0
-  ];
+  var v = [0];
+  var acc = [0];
   var n = 10;
   while(true) {
-    if (v[1] > n) {
-      return acc[1];
+    if (v[0] > n) {
+      return acc[0];
     }
     else {
-      acc[1] += v[1];
-      ++ v[1];
+      acc[0] += v[0];
+      ++ v[0];
       continue ;
       
     }
   };
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "sum",
   function () {
-    return [
-            /* Eq */0,
-            55,
-            f(/* () */0)
-          ];
+    return /* Eq */{
+            0: 55,
+            1: f(/* () */0),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

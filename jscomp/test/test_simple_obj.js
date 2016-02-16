@@ -6,13 +6,9 @@ var Caml_oo                 = require("../runtime/caml_oo");
 var CamlinternalOO          = require("../stdlib/camlinternalOO");
 var Caml_curry              = require("../runtime/caml_curry");
 
-var shared = [
-  0,
-  "add"
-];
+var shared = ["add"];
 
 var $$class = CamlinternalOO.create_table([
-      0,
       "hi",
       "id1",
       "id2",
@@ -20,20 +16,19 @@ var $$class = CamlinternalOO.create_table([
     ]);
 
 var ids = CamlinternalOO.get_method_labels($$class, [
-      0,
       "id2",
       "id1",
       "hi",
       "hello"
     ]);
 
-var id2 = ids[1];
+var id2 = ids[0];
 
-var id1 = ids[2];
+var id1 = ids[1];
 
-var hi = ids[3];
+var hi = ids[2];
 
-var hello = ids[4];
+var hello = ids[3];
 
 CamlinternalOO.set_methods($$class, /* array */[
       hi,
@@ -58,10 +53,7 @@ CamlinternalOO.init_class($$class);
 
 var u = CamlinternalOO.create_object_opt(0, $$class);
 
-var $$class$1 = CamlinternalOO.create_table([
-      0,
-      "id"
-    ]);
+var $$class$1 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$1, "id");
 
@@ -100,10 +92,8 @@ var v = CamlinternalOO.create_object_opt(0, $$class$3);
 function test() {
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 1), uu) !== "uu") {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             21,
             4
@@ -112,10 +102,8 @@ function test() {
   }
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 2), uuu, 1, 20) !== 21) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             22,
             4
@@ -124,10 +112,8 @@ function test() {
   }
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(v, 4846113, 3), v, 3, 7) !== 10) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             23,
             4
@@ -136,10 +122,8 @@ function test() {
   }
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 4), u) !== 3) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             25,
             4
@@ -148,10 +132,8 @@ function test() {
   }
   if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 5), u) !== 4) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             26,
             4
@@ -160,10 +142,8 @@ function test() {
   }
   if (Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 6), u, 1, 2) !== 3) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             27,
             4
@@ -175,10 +155,8 @@ function test() {
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_simple_obj.ml",
             28,
             4

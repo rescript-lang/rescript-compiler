@@ -10,7 +10,6 @@ var length = List.length;
 var $at = Pervasives.$at;
 
 var List$1 = [
-  0,
   length,
   List.hd,
   List.tl,
@@ -146,7 +145,6 @@ var List$1 = [
 var $at$1 = Pervasives.$at;
 
 var U = [
-  0,
   Stack.Empty,
   Stack.create,
   Stack.push,

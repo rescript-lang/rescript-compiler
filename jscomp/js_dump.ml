@@ -89,6 +89,7 @@ module L = struct
   let strict_directive = "'use strict';"
 
   let curry = "curry" (* curry arbitrary args *)
+  let tag = "tag"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -420,17 +421,17 @@ and
     if l > 15 then P.paren_group f 1 action   
     else action ()
 
-  | Tag_ml_obj e -> 
-    P.group f 1 (fun _ -> 
-        P.string f "Object.defineProperty";
-        P.paren_group f 1 (fun _ ->
-            let cxt = expression 1 cxt f e in
-            P.string f L.comma;
-            P.space f ; 
-            P.string f {|"##ml"|};
-            P.string f L.comma;
-            P.string f {|{"value" : true, "writable" : false}|} ; 
-            cxt ))
+  (* | Tag_ml_obj e ->  *)
+  (*   P.group f 1 (fun _ ->  *)
+  (*       P.string f "Object.defineProperty"; *)
+  (*       P.paren_group f 1 (fun _ -> *)
+  (*           let cxt = expression 1 cxt f e in *)
+  (*           P.string f L.comma; *)
+  (*           P.space f ;  *)
+  (*           P.string f {|"##ml"|}; *)
+  (*           P.string f L.comma; *)
+  (*           P.string f {|{"value" : true, "writable" : false}|} ;  *)
+  (*           cxt )) *)
 
   | FlatCall(e,el) -> 
     P.group f 1 (fun _ -> 
@@ -580,6 +581,18 @@ and
     P.string f "typeof"; 
     P.space f;
     expression 13 cxt f e     
+  | Caml_block_set_tag(a,b) -> 
+    expression_desc cxt l f 
+      (Bin(Eq, 
+           {expression_desc = Caml_block_tag a; comment = None},
+           b
+          ))
+  | Caml_block_set_length(a,b) -> 
+    expression_desc cxt l f 
+      (Bin(Eq, 
+           {expression_desc = Caml_block_length a; comment = None},
+           b
+          ))
   | Bin (Eq, {expression_desc = Var i },
          {expression_desc = 
             (
@@ -744,7 +757,45 @@ and
       | []| [ _ ] -> P.bracket_group f 1 @@ fun _ -> array_element_list  cxt f el 
       | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el 
     end
+  | Caml_uninitialized_obj (tag, size) 
+    -> 
+    expression_desc cxt l f (Object [Length, size ; Tag, tag])    
+  | Caml_block( el, mutable_flag, tag, tag_info) 
+    -> 
+    (* Note that, if we ignore more than tag [0] we loose some information 
+       with regard tag  *)
+    begin match tag.expression_desc, tag_info with 
 
+    | Number (Int { i = 0 ; _})  , 
+      (Tuple | Array | Variant _ | Record | NA 
+      |  Constructor ("Some" | "::")) 
+      (* Hack to optimize option which is really pervasive in ocaml, 
+         we need concrete benchmark to support this
+      *) 
+      -> expression_desc cxt l f  (Array (el, mutable_flag))
+    (* TODO: for numbers like 248, 255 we can reverse engineer to make it 
+       [Obj.xx_flag], but we can not do this in runtime libraries
+    *)
+
+    | _, _
+      -> 
+      expression_desc cxt l f 
+        (J.Object (
+            let length, rev_list = 
+              List.fold_left (fun (i,acc) v -> 
+                (i+1, (Js_op.Int_key i, v) :: acc)                
+              ) (0, []) el in
+            List.rev_append rev_list 
+              [(Js_op.Length, E.int length) ;  (Js_op.Tag, tag)]
+          )
+        )
+    end
+  | Caml_block_tag e ->
+    P.group f 1 (fun _ ->  
+        let cxt = expression 15 cxt f  e in
+        P.string f L.dot ;
+        P.string f L.tag ;
+        cxt)
   | Access (e, e') 
 
   | String_access (e,e')
@@ -757,7 +808,8 @@ and
     in
     if l > 15 then P.paren_group f 1 action else action ()
 
-  | Array_length e | String_length e | Bytes_length e | Function_length e -> 
+  | Array_length e | String_length e | Bytes_length e 
+  | Function_length e | Caml_block_length e -> 
     let action () =  (** Todo: check parens *)
       let cxt = expression 15 cxt f e in
       P.string f L.dot;
@@ -840,24 +892,27 @@ and
     P.brace_vgroup f 1 @@ fun _ -> 
       property_name_and_value_list cxt f lst
 
-and property_name cxt f (s : J.property_name) : Ext_pp_scope.t =
-  pp_string f ~utf:true ~quote:(best_string_quote s) s; cxt 
+and property_name cxt f (s : J.property_name) : unit =
+  match s with
+  | Tag -> P.string f L.tag
+  | Length -> P.string f L.length
+  | Key s -> 
+    pp_string f ~utf:true ~quote:(best_string_quote s) s
+  | Int_key i -> P.string f (string_of_int i)
 
 and property_name_and_value_list cxt f l : Ext_pp_scope.t =
   match l with
   | [] -> cxt
   | [(pn, e)] ->
-    P.group f 0 @@ fun _ -> 
-      let cxt = property_name cxt  f pn in
-      P.string f L.colon;
-      P.space f;
-      expression 1 cxt f e 
+    property_name cxt  f pn ;
+    P.string f L.colon;
+    P.space f;
+    expression 1 cxt f e 
   | (pn, e) :: r ->
-    let cxt = P.group f 0 @@ fun _ -> 
-        let cxt = property_name cxt f pn in
-        P.string f L.colon;
-        P.space f;
-        expression 1 cxt f e in
+    property_name cxt f pn ; 
+    P.string f L.colon;
+    P.space f;
+    let cxt = expression 1 cxt f e in
     P.string f L.comma;
     P.newline f;
     property_name_and_value_list cxt f r
@@ -973,14 +1028,18 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
     let rec need_paren  (e : J.expression) =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
-
+      | Caml_uninitialized_obj _ 
       | Fun _ | Object _ -> true
+      | Caml_block_set_tag _ 
+      | Caml_block_length _
+      | Caml_block_set_length _ 
       | Anything_to_string _ 
       | String_of_small_int_array _
       | Call _ 
       | Array_append _ 
       | Array_copy _ 
-      | Tag_ml_obj _
+      (* | Tag_ml_obj _ *)
+      | Caml_block_tag _ 
       | Seq _
       | Dot _
       | Cond _
@@ -1000,6 +1059,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Var _ 
       | Str _ 
       | Array _ 
+      | Caml_block  _ 
       | FlatCall _ 
       | Typeof _
       | Function_length _ 

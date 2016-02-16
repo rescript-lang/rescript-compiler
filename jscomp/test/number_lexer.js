@@ -12,8 +12,7 @@ var l = Sys.is_js ? function (prim) {
     return Pervasives.output_string(Pervasives.stdout, param);
   };
 
-var __ocaml_lex_tables = [
-  /* record */0,
+var __ocaml_lex_tables = /* record */[
   "\0\0\xf6\xff\xf7\xff\xf8\xff\xf9\xff\xfa\xff\xfb\xff\xfc\xff:\0\x85\0\xff\xff",
   "\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x02\0\x01\0\xff\xff",
   "\xff\xff\0\0\0\0\0\0\0\0\0\0\0\0\0\0\xff\xff\xff\xff\0\0",
@@ -36,7 +35,7 @@ function __ocaml_lex_token_rec(l, lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 9 || __ocaml_lex_state$1 < 0) {
-      Caml_curry.app1(lexbuf[1], lexbuf);
+      Caml_curry.app1(lexbuf[0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       

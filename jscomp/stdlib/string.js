@@ -28,33 +28,24 @@ function sub(s, ofs, len) {
 
 function concat(sep, l) {
   if (l) {
-    var hd = l[1];
-    var num = [
-      0,
-      0
-    ];
-    var len = [
-      0,
-      0
-    ];
+    var hd = l[0];
+    var num = [0];
+    var len = [0];
     List.iter(function (s) {
-          ++ num[1];
-          len[1] += s.length;
+          ++ num[0];
+          len[0] += s.length;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[1] + sep.length * (num[1] - 1));
+    var r = Caml_string.caml_create_string(len[0] + sep.length * (num[0] - 1));
     Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
-    var pos = [
-      0,
-      hd.length
-    ];
+    var pos = [hd.length];
     List.iter(function (s) {
-          Caml_string.caml_blit_string(sep, 0, r, pos[1], sep.length);
-          pos[1] += sep.length;
-          Caml_string.caml_blit_string(s, 0, r, pos[1], s.length);
-          pos[1] += s.length;
+          Caml_string.caml_blit_string(sep, 0, r, pos[0], sep.length);
+          pos[0] += sep.length;
+          Caml_string.caml_blit_string(s, 0, r, pos[0], s.length);
+          pos[0] += s.length;
           return /* () */0;
-        }, l[2]);
+        }, l[1]);
     return Caml_string.bytes_to_string(r);
   }
   else {

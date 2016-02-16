@@ -82,13 +82,6 @@ let rec extract_non_pure (x : J.expression)  =
 (*   match aux x with *)
 (*   | `Empty ->  Js_output.dummy *)
   
-let rec is_constant (x : J.expression)  = 
-  match x.expression_desc with 
-  | Access (a,b) -> is_constant a && is_constant b 
-  | Str (b,_) -> b
-  | Number _ -> true (* Can be refined later *)
-  | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
-  | _ -> false 
 
 module Exp = struct 
   (* type nonrec t = t  a [bug in pretty printer] *)
@@ -144,6 +137,12 @@ module Exp = struct
       expression_desc = Fun ( params,block, Js_fun_env.empty ?immutable_mask len ); 
       comment
     }
+
+  let dummy_obj ?comment ()  : t = 
+    {comment  ; expression_desc = Object []}
+
+  let is_instance_array ?comment e : t = 
+    {comment; expression_desc = Bin(InstanceOf, e , str "Array") }
 
   (* TODO: complete 
       pure ...
@@ -312,8 +311,9 @@ module Exp = struct
   let obj ?comment properties : t = 
     {expression_desc = Object properties; comment }
 
-  let tag_ml_obj ?comment e : t = 
-    {comment; expression_desc = Tag_ml_obj e  }
+  let tag_ml_obj ?comment e : t =  
+    e (* tag is enough  *)
+    (* {comment; expression_desc = Tag_ml_obj e  } *)
 
   (* currently only in method call, no dependency introduced
    *)
@@ -445,11 +445,13 @@ module Exp = struct
 
   let rec econd ?comment (b : t) (t : t) (f : t) : t = 
     match b.expression_desc , t.expression_desc, f.expression_desc with
+
     | Number ((Int { i = 0; _}) ), _, _ 
       -> f  (* TODO: constant folding: could be refined *)
     | (Number _ | Array _), _, _ 
       -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
-
+    | (Bin (Bor, v , {expression_desc = Number (Int {i = 0 ; _})})), _, _
+      -> econd v t f 
     | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0; _}); _},x)) 
        | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0; _});_}))), _, _ 
       -> 
@@ -523,10 +525,48 @@ module Exp = struct
     match e0.expression_desc, e1.expression_desc with     
     | Number (Int {i = i0 ; _}), Number (Int {i = i1; }) -> 
       bool (i0 = i1)
+    | (Bin(Bor, 
+            {expression_desc = Number(Int {i = 0; _})}, 
+              ({expression_desc = Caml_block_tag _; _} as a ))
+      |
+        Bin(Bor, 
+            ({expression_desc = Caml_block_tag _; _} as a),
+            {expression_desc = Number (Int {i = 0; _})})), 
+      Number (Int {i = 0; _})
+      ->  (** (x.tag | 0) === 0  *)
+      not  a     
+    | (Bin(Bor, 
+            {expression_desc = Number(Int {i = 0; _})}, 
+              ({expression_desc = Caml_block_tag _; _} as a ))
+      |
+        Bin(Bor, 
+            ({expression_desc = Caml_block_tag _; _} as a),
+            {expression_desc = Number (Int {i = 0; _})}))
+    , Number _  ->  (* for sure [i != 0 ]*)
+      (* since a is integer, if we guarantee there is no overflow 
+         of a
+         then [a | 0] is a nop unless a is undefined
+         (which is applicable when applied to tag),
+         obviously tag can not be overflowed. 
+         if a is undefined, then [ a|0===0 ] is true 
+         while [a === 0 ] is not true
+         [a|0 === non_zero] is false and [a===non_zero] is false
+         so we can not eliminate when the tag is zero          
+      *)
+      float_equal ?comment a e1
     | Number (Float {f = f0; _}), Number (Float {f = f1 ; }) when f0 = f1 -> 
       true_
-    | _ -> 
-      to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}     
+
+    | Char_to_int a , Char_to_int b ->
+        float_equal ?comment a b
+    | Char_to_int a , Number (Int {i; c = Some v})
+    | Number (Int {i; c = Some v}), Char_to_int a  ->
+        float_equal ?comment a (str (String.make 1 v))
+    | Char_of_int a , Char_of_int b ->
+        float_equal ?comment a b
+
+    | _ ->  
+      to_ocaml_boolean {expression_desc = Bin(EqEqEq, e0,e1); comment}
   let int_equal = float_equal 
   let rec string_equal ?comment (e0 : t) (e1 : t) : t = 
     match e0.expression_desc, e1.expression_desc with     
@@ -539,6 +579,16 @@ module Exp = struct
 
   let arr ?comment mt es : t  = 
     {expression_desc = Array (es,mt) ; comment}
+  let make_block ?comment tag tag_info es mutable_flag : t = 
+    {
+      expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
+      comment = (match comment with 
+      | None -> Lam_compile_util.comment_of_tag_info tag_info 
+      | _ -> comment)
+    }    
+
+  let uninitialized_object ?comment tag size : t = 
+    { expression_desc = Caml_uninitialized_obj(tag,size); comment }
 
   let uninitialized_array ?comment (e : t) : t  = 
     match e.expression_desc with 
@@ -613,8 +663,17 @@ module Exp = struct
   let null ?comment () =     
     js_global ?comment "null"
 
-  let tag ?comment e = index ?comment e 0
+  let tag ?comment e : t = 
+    {expression_desc = 
+       Bin (Bor, {expression_desc = Caml_block_tag e; comment }, int 0 );
+       comment = None }    
+  let set_tag ?comment e tag : t = 
+    seq {expression_desc = Caml_block_set_tag (e,tag); comment } (unit ())
 
+  let set_length ?comment e tag : t = 
+    seq {expression_desc = Caml_block_set_length (e,tag); comment } (unit ())
+  let obj_length ?comment e : t = 
+    {expression_desc = Caml_block_length e; comment }
   (* Arithmatic operations
      TODO: distinguish between int and float
      TODO: Note that we have to use Int64 to avoid integer overflow, this is fine
@@ -661,6 +720,7 @@ module Exp = struct
         [l;r], _), 
       Number (Int {i = 0})
       -> int_comp cmp l r (* = 0 > 0 < 0 *)
+    | Ceq, _, _ -> int_equal e0 e1 
     | _ ->          
       to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
@@ -1068,25 +1128,29 @@ module Stmt = struct
                 turn [Le] -> into [Ge]
              *)
       -> block then_ :: acc 
+      | Bin (Bor , a, {expression_desc = Number (Int { i = 0 ; _})}), _, _ 
+      | Bin (Bor , {expression_desc = Number (Int { i = 0 ; _})}, a), _, _ 
+        -> 
+        aux ?comment a  then_ else_ acc
 
-    | (
-       (Bin ((EqEqEq, {expression_desc = Number (Int {i = 0; _}); _},e)) |
-       Bin (EqEqEq, e,{expression_desc = Number (Int {i = 0; _});_}))
-     ),  _,  else_ 
-          (* TODO: optimize in general of preciate information based on type system 
-              like: [if_], [econd]
-           *)
-      ->
+      | (
+        (Bin (((EqEqEq ), {expression_desc = Number (Int {i = 0; _}); _},e)) |
+         Bin ((EqEqEq ), e,{expression_desc = Number (Int {i = 0; _});_}))
+      ),  _,  else_ 
+        (* TODO: optimize in general of preciate information based on type system 
+            like: [if_], [econd]
+        *)
+        ->
         aux ?comment e else_  then_ acc 
 
-    | ((Bin (Gt, 
-             ({expression_desc = 
-                 (String_length _ 
-                 | Array_length _ | Bytes_length _ | Function_length _ );
-               _} as e ), {expression_desc = Number (Int { i = 0; _})}))
+      | ((Bin (Gt, 
+               ({expression_desc = 
+                   (String_length _ 
+                   | Array_length _ | Bytes_length _ | Function_length _ );
+                 _} as e ), {expression_desc = Number (Int { i = 0; _})}))
 
-      | Int_of_boolean e), _ , _
-      ->
+        | Int_of_boolean e), _ , _
+        ->
       (** Add comment when simplified *)
       aux ?comment e then_ else_ acc 
 

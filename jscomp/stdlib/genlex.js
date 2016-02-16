@@ -13,45 +13,40 @@ var List                    = require("./list");
 
 var initial_buffer = new Array(32);
 
-var buffer = [
-  0,
-  initial_buffer
-];
+var buffer = [initial_buffer];
 
-var bufpos = [
-  0,
-  0
-];
+var bufpos = [0];
 
 function reset_buffer() {
-  buffer[1] = initial_buffer;
-  bufpos[1] = 0;
+  buffer[0] = initial_buffer;
+  bufpos[0] = 0;
   return /* () */0;
 }
 
 function store(c) {
-  if (bufpos[1] >= buffer[1].length) {
-    var newbuffer = Caml_string.caml_create_string(2 * bufpos[1]);
-    Bytes.blit(buffer[1], 0, newbuffer, 0, bufpos[1]);
-    buffer[1] = newbuffer;
+  if (bufpos[0] >= buffer[0].length) {
+    var newbuffer = Caml_string.caml_create_string(2 * bufpos[0]);
+    Bytes.blit(buffer[0], 0, newbuffer, 0, bufpos[0]);
+    buffer[0] = newbuffer;
   }
-  buffer[1][bufpos[1]] = c;
-  return ++ bufpos[1];
+  buffer[0][bufpos[0]] = c;
+  return ++ bufpos[0];
 }
 
 function get_string() {
-  var s = Bytes.sub_string(buffer[1], 0, bufpos[1]);
-  buffer[1] = initial_buffer;
+  var s = Bytes.sub_string(buffer[0], 0, bufpos[0]);
+  buffer[0] = initial_buffer;
   return s;
 }
 
 function make_lexer(keywords) {
   var kwd_table = Hashtbl.create(/* None */0, 17);
   List.iter(function (s) {
-        return Hashtbl.add(kwd_table, s, [
-                    /* Kwd */0,
-                    s
-                  ]);
+        return Hashtbl.add(kwd_table, s, /* Kwd */{
+                    0: s,
+                    length: 1,
+                    tag: 0
+                  });
       }, keywords);
   var ident_or_keyword = function (id) {
     try {
@@ -59,10 +54,11 @@ function make_lexer(keywords) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.Not_found) {
-        return [
-                /* Ident */1,
-                id
-              ];
+        return /* Ident */{
+                0: id,
+                length: 1,
+                tag: 1
+              };
       }
       else {
         throw exn;
@@ -77,7 +73,6 @@ function make_lexer(keywords) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.Not_found) {
         throw [
-              0,
               Stream.$$Error,
               "Illegal character " + s
             ];
@@ -91,7 +86,7 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var c = match[1];
+        var c = match[0];
         var exit = 0;
         if (c < 124) {
           var switcher = c - 65;
@@ -112,13 +107,11 @@ function make_lexer(keywords) {
                     case 34 : 
                     Stream.junk(strm__);
                     reset_buffer(/* () */0);
-                    return [
-                            /* Some */0,
-                            [
-                              /* String */4,
-                              string(strm__)
-                            ]
-                          ];
+                    return /* Some */[/* String */{
+                              0: string(strm__),
+                              length: 1,
+                              tag: 4
+                            }];
                 case 39 : 
                     Stream.junk(strm__);
                     var c$1;
@@ -128,7 +121,6 @@ function make_lexer(keywords) {
                     catch (exn){
                       if (exn === Stream.Failure) {
                         throw [
-                              0,
                               Stream.$$Error,
                               ""
                             ];
@@ -139,27 +131,23 @@ function make_lexer(keywords) {
                     }
                     var match$1 = Stream.peek(strm__);
                     if (match$1) {
-                      if (match$1[1] !== 39) {
+                      if (match$1[0] !== 39) {
                         throw [
-                              0,
                               Stream.$$Error,
                               ""
                             ];
                       }
                       else {
                         Stream.junk(strm__);
-                        return [
-                                /* Some */0,
-                                [
-                                  /* Char */5,
-                                  c$1
-                                ]
-                              ];
+                        return /* Some */[/* Char */{
+                                  0: c$1,
+                                  length: 1,
+                                  tag: 5
+                                }];
                       }
                     }
                     else {
                       throw [
-                            0,
                             Stream.$$Error,
                             ""
                           ];
@@ -170,11 +158,8 @@ function make_lexer(keywords) {
                     var strm__$1 = strm__;
                     var match$2 = Stream.peek(strm__$1);
                     if (match$2) {
-                      if (match$2[1] !== 42) {
-                        return [
-                                /* Some */0,
-                                keyword_or_error(/* "(" */40)
-                              ];
+                      if (match$2[0] !== 42) {
+                        return /* Some */[keyword_or_error(/* "(" */40)];
                       }
                       else {
                         Stream.junk(strm__$1);
@@ -183,17 +168,14 @@ function make_lexer(keywords) {
                       }
                     }
                     else {
-                      return [
-                              /* Some */0,
-                              keyword_or_error(/* "(" */40)
-                            ];
+                      return /* Some */[keyword_or_error(/* "(" */40)];
                     }
                 case 45 : 
                     Stream.junk(strm__);
                     var strm__$2 = strm__;
                     var match$3 = Stream.peek(strm__$2);
                     if (match$3) {
-                      var c$2 = match$3[1];
+                      var c$2 = match$3[0];
                       if (c$2 > 57 || c$2 < 48) {
                         reset_buffer(/* () */0);
                         store(/* "-" */45);
@@ -311,10 +293,7 @@ function make_lexer(keywords) {
         switch (exit) {
           case 1 : 
               Stream.junk(strm__);
-              return [
-                      /* Some */0,
-                      keyword_or_error(c)
-                    ];
+              return /* Some */[keyword_or_error(c)];
           case 2 : 
               Stream.junk(strm__);
               reset_buffer(/* () */0);
@@ -323,7 +302,7 @@ function make_lexer(keywords) {
               while(true) {
                 var match$4 = Stream.peek(strm__$3);
                 if (match$4) {
-                  var c$3 = match$4[1];
+                  var c$3 = match$4[0];
                   var exit$1 = 0;
                   if (c$3 >= 91) {
                     var switcher$2 = c$3 - 95;
@@ -332,20 +311,14 @@ function make_lexer(keywords) {
                         exit$1 = 1;
                       }
                       else {
-                        return [
-                                /* Some */0,
-                                ident_or_keyword(get_string(/* () */0))
-                              ];
+                        return /* Some */[ident_or_keyword(get_string(/* () */0))];
                       }
                     }
                     else if (switcher$2 !== 1) {
                       exit$1 = 1;
                     }
                     else {
-                      return [
-                              /* Some */0,
-                              ident_or_keyword(get_string(/* () */0))
-                            ];
+                      return /* Some */[ident_or_keyword(get_string(/* () */0))];
                     }
                   }
                   else if (c$3 >= 48) {
@@ -353,17 +326,11 @@ function make_lexer(keywords) {
                       exit$1 = 1;
                     }
                     else {
-                      return [
-                              /* Some */0,
-                              ident_or_keyword(get_string(/* () */0))
-                            ];
+                      return /* Some */[ident_or_keyword(get_string(/* () */0))];
                     }
                   }
                   else if (c$3 !== 39) {
-                    return [
-                            /* Some */0,
-                            ident_or_keyword(get_string(/* () */0))
-                          ];
+                    return /* Some */[ident_or_keyword(get_string(/* () */0))];
                   }
                   else {
                     exit$1 = 1;
@@ -377,10 +344,7 @@ function make_lexer(keywords) {
                   
                 }
                 else {
-                  return [
-                          /* Some */0,
-                          ident_or_keyword(get_string(/* () */0))
-                        ];
+                  return /* Some */[ident_or_keyword(get_string(/* () */0))];
                 }
               };
           case 3 : 
@@ -405,26 +369,20 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var c = match[1];
+        var c = match[0];
         var exit = 0;
         if (c >= 94) {
           var switcher = c - 95;
           if (switcher > 30 || switcher < 0) {
             if (switcher >= 32) {
-              return [
-                      /* Some */0,
-                      ident_or_keyword(get_string(/* () */0))
-                    ];
+              return /* Some */[ident_or_keyword(get_string(/* () */0))];
             }
             else {
               exit = 1;
             }
           }
           else if (switcher !== 29) {
-            return [
-                    /* Some */0,
-                    ident_or_keyword(get_string(/* () */0))
-                  ];
+            return /* Some */[ident_or_keyword(get_string(/* () */0))];
           }
           else {
             exit = 1;
@@ -432,10 +390,7 @@ function make_lexer(keywords) {
         }
         else if (c >= 65) {
           if (c !== 92) {
-            return [
-                    /* Some */0,
-                    ident_or_keyword(get_string(/* () */0))
-                  ];
+            return /* Some */[ident_or_keyword(get_string(/* () */0))];
           }
           else {
             exit = 1;
@@ -460,10 +415,7 @@ function make_lexer(keywords) {
             case 23 : 
             case 24 : 
             case 26 : 
-                return [
-                        /* Some */0,
-                        ident_or_keyword(get_string(/* () */0))
-                      ];
+                return /* Some */[ident_or_keyword(get_string(/* () */0))];
             case 0 : 
             case 2 : 
             case 3 : 
@@ -485,10 +437,7 @@ function make_lexer(keywords) {
           }
         }
         else {
-          return [
-                  /* Some */0,
-                  ident_or_keyword(get_string(/* () */0))
-                ];
+          return /* Some */[ident_or_keyword(get_string(/* () */0))];
         }
         if (exit === 1) {
           Stream.junk(strm__);
@@ -499,10 +448,7 @@ function make_lexer(keywords) {
         
       }
       else {
-        return [
-                /* Some */0,
-                ident_or_keyword(get_string(/* () */0))
-              ];
+        return /* Some */[ident_or_keyword(get_string(/* () */0))];
       }
     };
   };
@@ -511,7 +457,7 @@ function make_lexer(keywords) {
       var match = Stream.peek(strm__);
       var exit = 0;
       if (match) {
-        var c = match[1];
+        var c = match[0];
         if (c >= 58) {
           if (c !== 69) {
             if (c !== 101) {
@@ -548,7 +494,7 @@ function make_lexer(keywords) {
             var match$1 = Stream.peek(strm__$1);
             var exit$1 = 0;
             if (match$1) {
-              var c$1 = match$1[1];
+              var c$1 = match$1[0];
               var switcher = c$1 - 69;
               if (switcher > 32 || switcher < 0) {
                 if ((switcher + 21 >>> 0) > 9) {
@@ -574,13 +520,11 @@ function make_lexer(keywords) {
               exit$1 = 1;
             }
             if (exit$1 === 1) {
-              return [
-                      /* Some */0,
-                      [
-                        /* Float */3,
-                        Caml_format.caml_float_of_string(get_string(/* () */0))
-                      ]
-                    ];
+              return /* Some */[/* Float */{
+                        0: Caml_format.caml_float_of_string(get_string(/* () */0)),
+                        length: 1,
+                        tag: 3
+                      }];
             }
             
           };
@@ -590,13 +534,11 @@ function make_lexer(keywords) {
         exit = 1;
       }
       if (exit === 1) {
-        return [
-                /* Some */0,
-                [
-                  /* Int */2,
-                  Caml_format.caml_int_of_string(get_string(/* () */0))
-                ]
-              ];
+        return /* Some */[/* Int */{
+                  0: Caml_format.caml_int_of_string(get_string(/* () */0)),
+                  length: 1,
+                  tag: 2
+                }];
       }
       
     };
@@ -604,7 +546,7 @@ function make_lexer(keywords) {
   var exponent_part = function (strm__) {
     var match = Stream.peek(strm__);
     if (match) {
-      var c = match[1];
+      var c = match[0];
       if (c !== 43) {
         if (c !== 45) {
           return end_exponent_part(strm__);
@@ -629,15 +571,13 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var c = match[1];
+        var c = match[0];
         if (c > 57 || c < 48) {
-          return [
-                  /* Some */0,
-                  [
-                    /* Float */3,
-                    Caml_format.caml_float_of_string(get_string(/* () */0))
-                  ]
-                ];
+          return /* Some */[/* Float */{
+                    0: Caml_format.caml_float_of_string(get_string(/* () */0)),
+                    length: 1,
+                    tag: 3
+                  }];
         }
         else {
           Stream.junk(strm__);
@@ -647,13 +587,11 @@ function make_lexer(keywords) {
         }
       }
       else {
-        return [
-                /* Some */0,
-                [
-                  /* Float */3,
-                  Caml_format.caml_float_of_string(get_string(/* () */0))
-                ]
-              ];
+        return /* Some */[/* Float */{
+                  0: Caml_format.caml_float_of_string(get_string(/* () */0)),
+                  length: 1,
+                  tag: 3
+                }];
       }
     };
   };
@@ -661,7 +599,7 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var c = match[1];
+        var c = match[0];
         if (c !== 34) {
           if (c !== 92) {
             Stream.junk(strm__);
@@ -678,7 +616,6 @@ function make_lexer(keywords) {
             catch (exn){
               if (exn === Stream.Failure) {
                 throw [
-                      0,
                       Stream.$$Error,
                       ""
                     ];
@@ -705,7 +642,7 @@ function make_lexer(keywords) {
   var $$char = function (strm__) {
     var match = Stream.peek(strm__);
     if (match) {
-      var c = match[1];
+      var c = match[0];
       if (c !== 92) {
         Stream.junk(strm__);
         return c;
@@ -718,7 +655,6 @@ function make_lexer(keywords) {
         catch (exn){
           if (exn === Stream.Failure) {
             throw [
-                  0,
                   Stream.$$Error,
                   ""
                 ];
@@ -736,7 +672,7 @@ function make_lexer(keywords) {
   var $$escape = function (strm__) {
     var match = Stream.peek(strm__);
     if (match) {
-      var c1 = match[1];
+      var c1 = match[0];
       if (c1 >= 58) {
         var switcher = c1 - 110;
         if (switcher > 6 || switcher < 0) {
@@ -768,10 +704,9 @@ function make_lexer(keywords) {
         Stream.junk(strm__);
         var match$1 = Stream.peek(strm__);
         if (match$1) {
-          var c2 = match$1[1];
+          var c2 = match$1[0];
           if (c2 > 57 || c2 < 48) {
             throw [
-                  0,
                   Stream.$$Error,
                   ""
                 ];
@@ -780,10 +715,9 @@ function make_lexer(keywords) {
             Stream.junk(strm__);
             var match$2 = Stream.peek(strm__);
             if (match$2) {
-              var c3 = match$2[1];
+              var c3 = match$2[0];
               if (c3 > 57 || c3 < 48) {
                 throw [
-                      0,
                       Stream.$$Error,
                       ""
                     ];
@@ -795,7 +729,6 @@ function make_lexer(keywords) {
             }
             else {
               throw [
-                    0,
                     Stream.$$Error,
                     ""
                   ];
@@ -804,7 +737,6 @@ function make_lexer(keywords) {
         }
         else {
           throw [
-                0,
                 Stream.$$Error,
                 ""
               ];
@@ -823,7 +755,7 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var switcher = match[1] - 40;
+        var switcher = match[0] - 40;
         if (switcher > 2 || switcher < 0) {
           Stream.junk(strm__);
           continue ;
@@ -836,7 +768,7 @@ function make_lexer(keywords) {
                 var strm__$1 = strm__;
                 var match$1 = Stream.peek(strm__$1);
                 if (match$1) {
-                  if (match$1[1] !== 42) {
+                  if (match$1[0] !== 42) {
                     Stream.junk(strm__$1);
                     return comment(strm__$1);
                   }
@@ -858,7 +790,7 @@ function make_lexer(keywords) {
                 while(true) {
                   var match$2 = Stream.peek(strm__$2);
                   if (match$2) {
-                    var c = match$2[1];
+                    var c = match$2[0];
                     if (c !== 41) {
                       if (c !== 42) {
                         Stream.junk(strm__$2);

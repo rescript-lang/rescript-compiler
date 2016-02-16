@@ -70,8 +70,7 @@ function rev_split_by_char(c, s) {
     try {
       var i$prime = $$String.index_from(s, i, c);
       var s$prime = $$String.sub(s, i, i$prime - i);
-      _l = s$prime === "" ? l : [
-          /* :: */0,
+      _l = s$prime === "" ? l : /* :: */[
           s$prime,
           l
         ];
@@ -81,8 +80,7 @@ function rev_split_by_char(c, s) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.Not_found) {
-        return [
-                /* :: */0,
+        return /* :: */[
                 $$String.sub(s, i, s.length - i),
                 l
               ];
@@ -111,8 +109,7 @@ function xsplit(delim, s) {
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.Not_found) {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     $$String.sub(s, 0, i),
                     l
                   ];
@@ -122,14 +119,12 @@ function xsplit(delim, s) {
           }
         }
         if (exit === 1) {
-          var l_001 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
-          var l$1 = [
-            /* :: */0,
-            l_001,
+          var l_000 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
+          var l$1 = /* :: */[
+            l_000,
             l
           ];
-          var l$2 = i$prime ? l$1 : [
-              /* :: */0,
+          var l$2 = i$prime ? l$1 : /* :: */[
               "",
               l$1
             ];
@@ -150,119 +145,106 @@ function xsplit(delim, s) {
   }
 }
 
-Mt.from_pair_suites("string_test.ml", [
-      /* :: */0,
-      [
-        /* tuple */0,
+Mt.from_pair_suites("string_test.ml", /* :: */[
+      /* tuple */[
         "mutliple switch",
         function () {
-          return [
-                  /* Eq */0,
-                  9,
-                  ff("4")
-                ];
+          return /* Eq */{
+                  0: 9,
+                  1: ff("4"),
+                  length: 2,
+                  tag: 0
+                };
         }
       ],
-      [
-        /* :: */0,
-        [
-          /* tuple */0,
+      /* :: */[
+        /* tuple */[
           "int switch",
           function () {
-            return [
-                    /* Eq */0,
-                    9,
-                    gg(4)
-                  ];
+            return /* Eq */{
+                    0: 9,
+                    1: gg(4),
+                    length: 2,
+                    tag: 0
+                  };
           }
         ],
-        [
-          /* :: */0,
-          [
-            /* tuple */0,
+        /* :: */[
+          /* tuple */[
             "escape_normal",
             function () {
-              return [
-                      /* Eq */0,
-                      "haha",
-                      $$String.escaped("haha")
-                    ];
+              return /* Eq */{
+                      0: "haha",
+                      1: $$String.escaped("haha"),
+                      length: 2,
+                      tag: 0
+                    };
             }
           ],
-          [
-            /* :: */0,
-            [
-              /* tuple */0,
+          /* :: */[
+            /* tuple */[
               "escape_bytes",
               function () {
-                return [
-                        /* Eq */0,
-                        Bytes.of_string("haha"),
-                        Bytes.escaped(Bytes.of_string("haha"))
-                      ];
+                return /* Eq */{
+                        0: Bytes.of_string("haha"),
+                        1: Bytes.escaped(Bytes.of_string("haha")),
+                        length: 2,
+                        tag: 0
+                      };
               }
             ],
-            [
-              /* :: */0,
-              [
-                /* tuple */0,
+            /* :: */[
+              /* tuple */[
                 "escape_quote",
                 function () {
-                  return [
-                          /* Eq */0,
-                          '\\"\\"',
-                          $$String.escaped('""')
-                        ];
+                  return /* Eq */{
+                          0: '\\"\\"',
+                          1: $$String.escaped('""'),
+                          length: 2,
+                          tag: 0
+                        };
                 }
               ],
-              [
-                /* :: */0,
-                [
-                  /* tuple */0,
+              /* :: */[
+                /* tuple */[
                   "rev_split_by_char",
                   function () {
-                    return [
-                            /* Eq */0,
-                            [
-                              /* :: */0,
+                    return /* Eq */{
+                            0: /* :: */[
                               "",
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 "bbbb",
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   "bbbb",
                                   /* [] */0
                                 ]
                               ]
                             ],
-                            rev_split_by_char(/* "a" */97, "bbbbabbbba")
-                          ];
+                            1: rev_split_by_char(/* "a" */97, "bbbbabbbba"),
+                            length: 2,
+                            tag: 0
+                          };
                   }
                 ],
-                [
-                  /* :: */0,
-                  [
-                    /* tuple */0,
+                /* :: */[
+                  /* tuple */[
                     "xsplit",
                     function () {
-                      return [
-                              /* Eq */0,
-                              [
-                                /* :: */0,
+                      return /* Eq */{
+                              0: /* :: */[
                                 "a",
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   "b",
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     "c",
                                     /* [] */0
                                   ]
                                 ]
                               ],
-                              xsplit(/* "." */46, "a.b.c")
-                            ];
+                              1: xsplit(/* "." */46, "a.b.c"),
+                              length: 2,
+                              tag: 0
+                            };
                     }
                   ],
                   /* [] */0

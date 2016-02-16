@@ -4,10 +4,7 @@
 
 var b = 3;
 
-var N = [
-  0,
-  b
-];
+var N = [b];
 
 var h = 4;
 

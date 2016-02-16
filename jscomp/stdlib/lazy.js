@@ -1,20 +1,24 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
+var Caml_obj         = require("../runtime/caml_obj");
 var Obj              = require("./obj");
 var CamlinternalLazy = require("./camlinternalLazy");
 
 function from_fun(f) {
-  var x = Caml_obj_runtime.caml_obj_block(Obj.lazy_tag, 1);
+  var x = {
+    0: 0,
+    length: 1,
+    tag: Obj.lazy_tag
+  };
   x[0] = f;
   return x;
 }
 
 function from_val(v) {
-  var t = Caml_obj_runtime.caml_obj_tag(v);
+  var t = v.tag | 0;
   if (t === Obj.forward_tag || t === Obj.lazy_tag || t === Obj.double_tag) {
-    return Caml_obj_runtime.caml_lazy_make_forward(v);
+    return Caml_obj.caml_lazy_make_forward(v);
   }
   else {
     return v;
@@ -22,7 +26,7 @@ function from_val(v) {
 }
 
 function is_val(l) {
-  return +(Caml_obj_runtime.caml_obj_tag(l) !== Obj.lazy_tag);
+  return +((l.tag | 0) !== Obj.lazy_tag);
 }
 
 var Undefined = CamlinternalLazy.Undefined;

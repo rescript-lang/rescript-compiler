@@ -19,7 +19,6 @@ function bytes(b) {
 function substring(str, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > str.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Digest.substring"
         ];
@@ -79,7 +78,6 @@ function to_hex(d) {
 function from_hex(s) {
   if (s.length !== 32) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Digest.from_hex"
         ];
@@ -89,7 +87,6 @@ function from_hex(s) {
       if (c >= 97) {
         if (c >= 103) {
           throw [
-                0,
                 Caml_builtin_exceptions.Invalid_argument,
                 "Digest.from_hex"
               ];
@@ -100,7 +97,6 @@ function from_hex(s) {
       }
       else if (c >= 71) {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "Digest.from_hex"
             ];
@@ -111,7 +107,6 @@ function from_hex(s) {
     }
     else if (c > 57 || c < 48) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Digest.from_hex"
           ];

@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
+var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
 var Sys                     = require("./sys");
 var Caml_primitive          = require("../runtime/caml_primitive");
@@ -17,7 +17,6 @@ function length(x) {
 function fill(ar, ofs, len, x) {
   if (ofs < 0 || len < 0 || ofs + len > ar.length - 1) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Weak.fill"
         ];
@@ -33,29 +32,28 @@ function fill(ar, ofs, len, x) {
 function Make(H) {
   var emptybucket = Caml_primitive.caml_weak_create(0);
   var get_index = function (t, h) {
-    return (h & Pervasives.max_int) % t[1].length;
+    return (h & Pervasives.max_int) % t[0].length;
   };
   var limit = 7;
   var over_limit = 2;
   var create = function (sz) {
     var sz$1 = sz < 7 ? 7 : sz;
     var sz$2 = sz$1 > Sys.max_array_length ? Sys.max_array_length : sz$1;
-    return [
-            /* record */0,
+    return /* record */[
             Caml_array.caml_make_vect(sz$2, emptybucket),
-            Caml_array.caml_make_vect(sz$2, /* array */[]),
+            Caml_array.caml_make_vect(sz$2, /* int array */[]),
             limit,
             0,
             0
           ];
   };
   var clear = function (t) {
-    for(var i = 0 ,i_finish = t[1].length - 1; i<= i_finish; ++i){
-      t[1][i] = emptybucket;
-      t[2][i] = /* array */[];
+    for(var i = 0 ,i_finish = t[0].length - 1; i<= i_finish; ++i){
+      t[0][i] = emptybucket;
+      t[1][i] = /* int array */[];
     }
-    t[3] = limit;
-    t[4] = 0;
+    t[2] = limit;
+    t[3] = 0;
     return /* () */0;
   };
   var fold = function (f, t, init) {
@@ -72,7 +70,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_get(b, i);
                     if (match) {
-                      _accu = Caml_curry.app2(f, match[1], accu);
+                      _accu = Caml_curry.app2(f, match[0], accu);
                       _i = i + 1;
                       continue ;
                       
@@ -84,7 +82,7 @@ function Make(H) {
                     }
                   }
                 };
-              }, t[1], init);
+              }, t[0], init);
   };
   var iter = function (f, t) {
     return $$Array.iter(function (param) {
@@ -98,7 +96,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_get(b, i);
                     if (match) {
-                      Caml_curry.app1(f, match[1]);
+                      Caml_curry.app1(f, match[0]);
                       _i = i + 1;
                       continue ;
                       
@@ -110,7 +108,7 @@ function Make(H) {
                     }
                   }
                 };
-              }, t[1]);
+              }, t[0]);
   };
   var iter_weak = function (f, t) {
     return $$Array.iteri(function (param, param$1) {
@@ -125,7 +123,7 @@ function Make(H) {
                   else {
                     var match = Caml_primitive.caml_weak_check(b, i);
                     if (match !== 0) {
-                      Caml_curry.app3(f, b, t[2][j], i);
+                      Caml_curry.app3(f, b, t[1][j], i);
                       _i = i + 1;
                       continue ;
                       
@@ -137,7 +135,7 @@ function Make(H) {
                     }
                   }
                 };
-              }, t[1]);
+              }, t[0]);
   };
   var count_bucket = function (_i, b, _accu) {
     while(true) {
@@ -159,7 +157,7 @@ function Make(H) {
   var count = function (t) {
     return $$Array.fold_right(function (param, param$1) {
                 return count_bucket(0, param, param$1);
-              }, t[1], 0);
+              }, t[0], 0);
   };
   var next_sz = function (n) {
     return Pervasives.min((3 * n / 2 | 0) + 3, Sys.max_array_length);
@@ -168,8 +166,8 @@ function Make(H) {
     return ((n - 3) * 2 + 2) / 3 | 0;
   };
   var test_shrink_bucket = function (t) {
-    var bucket = t[1][t[5]];
-    var hbucket = t[2][t[5]];
+    var bucket = t[0][t[4]];
+    var hbucket = t[1][t[4]];
     var len = bucket.length - 1;
     var prev_len = prev_sz(len);
     var live = count_bucket(0, bucket, 0);
@@ -205,24 +203,24 @@ function Make(H) {
       };
       loop(0, bucket.length - 1 - 1);
       if (prev_len) {
-        Caml_obj_runtime.caml_obj_truncate(bucket, prev_len + 1);
-        Caml_obj_runtime.caml_obj_truncate(hbucket, prev_len);
+        Caml_obj.caml_obj_truncate(bucket, prev_len + 1);
+        Caml_obj.caml_obj_truncate(hbucket, prev_len);
       }
       else {
-        t[1][t[5]] = emptybucket;
-        t[2][t[5]] = /* array */[];
+        t[0][t[4]] = emptybucket;
+        t[1][t[4]] = /* int array */[];
       }
-      if (len > t[3] && prev_len <= t[3]) {
-        -- t[4];
+      if (len > t[2] && prev_len <= t[2]) {
+        -- t[3];
       }
       
     }
-    t[5] = (t[5] + 1) % t[1].length;
+    t[4] = (t[4] + 1) % t[0].length;
     return /* () */0;
   };
   var add_aux = function (t, setter, d, h, index) {
-    var bucket = t[1][index];
-    var hashes = t[2][index];
+    var bucket = t[0][index];
+    var hashes = t[1][index];
     var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
@@ -231,7 +229,6 @@ function Make(H) {
         var newsz = Pervasives.min((3 * sz / 2 | 0) + 3, Sys.max_array_length - 1);
         if (newsz <= sz) {
           throw [
-                0,
                 Caml_builtin_exceptions.Failure,
                 "Weak.Make: hash bucket cannot grow more"
               ];
@@ -242,17 +239,17 @@ function Make(H) {
         $$Array.blit(hashes, 0, newhashes, 0, sz);
         Caml_curry.app3(setter, newbucket, sz, d);
         newhashes[sz] = h;
-        t[1][index] = newbucket;
-        t[2][index] = newhashes;
-        if (sz <= t[3] && newsz > t[3]) {
-          ++ t[4];
+        t[0][index] = newbucket;
+        t[1][index] = newhashes;
+        if (sz <= t[2] && newsz > t[2]) {
+          ++ t[3];
           for(var _i$1 = 0; _i$1<= over_limit; ++_i$1){
             test_shrink_bucket(t);
           }
         }
-        if (t[4] > (t[1].length / over_limit | 0)) {
+        if (t[3] > (t[0].length / over_limit | 0)) {
           var t$1 = t;
-          var oldlen = t$1[1].length;
+          var oldlen = t$1[0].length;
           var newlen = next_sz(oldlen);
           if (newlen > oldlen) {
             var newt = create(newlen);
@@ -266,16 +263,16 @@ function Make(H) {
             }
             }(newt));
             iter_weak(add_weak, t$1);
+            t$1[0] = newt[0];
             t$1[1] = newt[1];
             t$1[2] = newt[2];
             t$1[3] = newt[3];
-            t$1[4] = newt[4];
-            t$1[5] = t$1[5] % newt[1].length;
+            t$1[4] = t$1[4] % newt[0].length;
             return /* () */0;
           }
           else {
-            t$1[3] = Pervasives.max_int;
-            t$1[4] = 0;
+            t$1[2] = Pervasives.max_int;
+            t$1[3] = 0;
             return /* () */0;
           }
         }
@@ -296,19 +293,16 @@ function Make(H) {
     };
   };
   var add = function (t, d) {
-    var h = Caml_curry.app1(H[2], d);
+    var h = Caml_curry.app1(H[1], d);
     return add_aux(t, function (prim, prim$1, prim$2) {
                 return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
-              }, [
-                /* Some */0,
-                d
-              ], h, get_index(t, h));
+              }, /* Some */[d], h, get_index(t, h));
   };
   var find_or = function (t, d, ifnotfound) {
-    var h = Caml_curry.app1(H[2], d);
+    var h = Caml_curry.app1(H[1], d);
     var index = get_index(t, h);
-    var bucket = t[1][index];
-    var hashes = t[2][index];
+    var bucket = t[0][index];
+    var hashes = t[1][index];
     var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
@@ -319,10 +313,10 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[1], match[1], d)) {
+          if (Caml_curry.app2(H[0], match[0], d)) {
             var match$1 = Caml_primitive.caml_weak_get(bucket, i);
             if (match$1) {
-              return match$1[1];
+              return match$1[0];
             }
             else {
               _i = i + 1;
@@ -353,10 +347,7 @@ function Make(H) {
     return find_or(t, d, function (h, index) {
                 add_aux(t, function (prim, prim$1, prim$2) {
                       return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
-                    }, [
-                      /* Some */0,
-                      d
-                    ], h, index);
+                    }, /* Some */[d], h, index);
                 return d;
               });
   };
@@ -366,10 +357,10 @@ function Make(H) {
               });
   };
   var find_shadow = function (t, d, iffound, ifnotfound) {
-    var h = Caml_curry.app1(H[2], d);
+    var h = Caml_curry.app1(H[1], d);
     var index = get_index(t, h);
-    var bucket = t[1][index];
-    var hashes = t[2][index];
+    var bucket = t[0][index];
+    var hashes = t[1][index];
     var sz = bucket.length - 1;
     var _i = 0;
     while(true) {
@@ -380,7 +371,7 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[1], match[1], d)) {
+          if (Caml_curry.app2(H[0], match[0], d)) {
             return Caml_curry.app2(iffound, bucket, i);
           }
           else {
@@ -413,10 +404,10 @@ function Make(H) {
               }, /* false */0);
   };
   var find_all = function (t, d) {
-    var h = Caml_curry.app1(H[2], d);
+    var h = Caml_curry.app1(H[1], d);
     var index = get_index(t, h);
-    var bucket = t[1][index];
-    var hashes = t[2][index];
+    var bucket = t[0][index];
+    var hashes = t[1][index];
     var sz = bucket.length - 1;
     var _i = 0;
     var _accu = /* [] */0;
@@ -429,12 +420,11 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_primitive.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[1], match[1], d)) {
+          if (Caml_curry.app2(H[0], match[0], d)) {
             var match$1 = Caml_primitive.caml_weak_get(bucket, i);
             if (match$1) {
-              _accu = [
-                /* :: */0,
-                match$1[1],
+              _accu = /* :: */[
+                match$1[0],
                 accu
               ];
               _i = i + 1;
@@ -467,16 +457,15 @@ function Make(H) {
     };
   };
   var stats = function (t) {
-    var len = t[1].length;
-    var lens = $$Array.map(length, t[1]);
+    var len = t[0].length;
+    var lens = $$Array.map(length, t[0]);
     $$Array.sort(function (prim, prim$1) {
-          return Caml_primitive.caml_compare(prim, prim$1);
+          return Caml_obj.caml_compare(prim, prim$1);
         }, lens);
     var totlen = $$Array.fold_left(function (prim, prim$1) {
           return prim + prim$1;
         }, 0, lens);
-    return [
-            /* tuple */0,
+    return /* tuple */[
             len,
             count(t),
             totlen,
@@ -486,7 +475,6 @@ function Make(H) {
           ];
   };
   return [
-          0,
           create,
           clear,
           merge,

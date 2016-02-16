@@ -14,20 +14,22 @@ function fib(n) {
 }
 
 function cons(x, y) {
-  return [
-          /* Cons */0,
-          x,
-          y
-        ];
+  return /* Cons */{
+          0: x,
+          1: y,
+          length: 2,
+          tag: 0
+        };
 }
 
 function map(f, param) {
   if (param) {
-    return [
-            /* Cons */0,
-            Caml_curry.app1(f, param[1]),
-            map(f, param[2])
-          ];
+    return /* Cons */{
+            0: Caml_curry.app1(f, param[0]),
+            1: map(f, param[1]),
+            length: 2,
+            tag: 0
+          };
   }
   else {
     return /* Nil */0;

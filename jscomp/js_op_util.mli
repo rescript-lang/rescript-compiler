@@ -35,3 +35,5 @@ val str_of_used_stats : Js_op.used_stats -> string
 val update_used_stats : J.ident_info -> Js_op.used_stats -> unit
 
 val same_vident : J.vident -> J.vident -> bool
+
+val of_lam_mutable_flag : Asttypes.mutable_flag -> Js_op.mutable_flag 

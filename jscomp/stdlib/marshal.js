@@ -8,7 +8,6 @@ var Caml_string             = require("../runtime/caml_string");
 function to_buffer(buff, ofs, len, v, flags) {
   if (ofs < 0 || len < 0 || ofs > buff.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Marshal.to_buffer: substring out of bounds"
         ];
@@ -23,7 +22,6 @@ var header_size = 20;
 function data_size(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Marshal.data_size"
         ];
@@ -40,7 +38,6 @@ function total_size(buff, ofs) {
 function from_bytes(buff, ofs) {
   if (ofs < 0 || ofs > buff.length - header_size) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Marshal.from_bytes"
         ];
@@ -49,7 +46,6 @@ function from_bytes(buff, ofs) {
     var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
     if (ofs > buff.length - (header_size + len)) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Marshal.from_bytes"
           ];

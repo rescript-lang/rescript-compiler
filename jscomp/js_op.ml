@@ -20,6 +20,8 @@
 
 
 
+
+
 (** Define some basic types used in JS IR *)
 
 type binop =
@@ -33,6 +35,7 @@ type binop =
   | And
   | EqEqEq
   | NotEqEq
+  | InstanceOf
 
   | Lt
   | Le
@@ -133,6 +136,15 @@ type property = Lambda.let_kind =
   | StrictOpt 
   | Variable
 
+type property_name = 
+  | Key of string
+  | Int_key of int 
+  | Tag 
+  | Length
+
+type 'a access = 
+  | Getter
+  | Setter
 type int_or_char = 
     { i :  int;
       c : char option
@@ -194,6 +206,15 @@ type ident_info = {
 type exports = Ident.t list 
 
 type required_modules = (Ident.t * string) list
+
+type tag_info = Lambda.tag_info = 
+  | Constructor of string
+  | Tuple
+  | Array
+  | Variant of string 
+  | Record 
+  | NA
+
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)
 (*   | Const_int of int *)

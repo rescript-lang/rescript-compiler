@@ -2,8 +2,8 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_curry              = require("../runtime/caml_curry");
 
 function length(l) {
@@ -13,7 +13,7 @@ function length(l) {
     var param = _param;
     var len = _len;
     if (param) {
-      _param = param[2];
+      _param = param[1];
       _len = len + 1;
       continue ;
       
@@ -26,11 +26,10 @@ function length(l) {
 
 function hd(param) {
   if (param) {
-    return param[1];
+    return param[0];
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Failure,
           "hd"
         ];
@@ -39,11 +38,10 @@ function hd(param) {
 
 function tl(param) {
   if (param) {
-    return param[2];
+    return param[1];
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Failure,
           "tl"
         ];
@@ -53,7 +51,6 @@ function tl(param) {
 function nth(l, n) {
   if (n < 0) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "List.nth"
         ];
@@ -67,17 +64,16 @@ function nth(l, n) {
       if (l$1) {
         if (n$1) {
           _n = n$1 - 1;
-          _l = l$1[2];
+          _l = l$1[1];
           continue ;
           
         }
         else {
-          return l$1[1];
+          return l$1[0];
         }
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Failure,
               "nth"
             ];
@@ -91,12 +87,11 @@ function rev_append(_l1, _l2) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
-      _l2 = [
-        /* :: */0,
-        l1[1],
+      _l2 = /* :: */[
+        l1[0],
         l2
       ];
-      _l1 = l1[2];
+      _l1 = l1[1];
       continue ;
       
     }
@@ -112,7 +107,7 @@ function rev(l) {
 
 function flatten(param) {
   if (param) {
-    return Pervasives.$at(param[1], flatten(param[2]));
+    return Pervasives.$at(param[0], flatten(param[1]));
   }
   else {
     return /* [] */0;
@@ -121,11 +116,10 @@ function flatten(param) {
 
 function map(f, param) {
   if (param) {
-    var r = Caml_curry.app1(f, param[1]);
-    return [
-            /* :: */0,
+    var r = Caml_curry.app1(f, param[0]);
+    return /* :: */[
             r,
-            map(f, param[2])
+            map(f, param[1])
           ];
   }
   else {
@@ -135,11 +129,10 @@ function map(f, param) {
 
 function mapi(i, f, param) {
   if (param) {
-    var r = Caml_curry.app2(f, i, param[1]);
-    return [
-            /* :: */0,
+    var r = Caml_curry.app2(f, i, param[0]);
+    return /* :: */[
             r,
-            mapi(i + 1, f, param[2])
+            mapi(i + 1, f, param[1])
           ];
   }
   else {
@@ -158,10 +151,9 @@ function rev_map(f, l) {
     var param = _param;
     var accu = _accu;
     if (param) {
-      _param = param[2];
-      _accu = [
-        /* :: */0,
-        Caml_curry.app1(f, param[1]),
+      _param = param[1];
+      _accu = /* :: */[
+        Caml_curry.app1(f, param[0]),
         accu
       ];
       continue ;
@@ -177,8 +169,8 @@ function iter(f, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      Caml_curry.app1(f, param[1]);
-      _param = param[2];
+      Caml_curry.app1(f, param[0]);
+      _param = param[1];
       continue ;
       
     }
@@ -196,8 +188,8 @@ function iteri(f, l) {
     var param = _param;
     var i = _i;
     if (param) {
-      Caml_curry.app2(f$1, i, param[1]);
-      _param = param[2];
+      Caml_curry.app2(f$1, i, param[0]);
+      _param = param[1];
       _i = i + 1;
       continue ;
       
@@ -213,8 +205,8 @@ function fold_left(f, _accu, _l) {
     var l = _l;
     var accu = _accu;
     if (l) {
-      _l = l[2];
-      _accu = Caml_curry.app2(f, accu, l[1]);
+      _l = l[1];
+      _accu = Caml_curry.app2(f, accu, l[0]);
       continue ;
       
     }
@@ -226,7 +218,7 @@ function fold_left(f, _accu, _l) {
 
 function fold_right(f, l, accu) {
   if (l) {
-    return Caml_curry.app2(f, l[1], fold_right(f, l[2], accu));
+    return Caml_curry.app2(f, l[0], fold_right(f, l[1], accu));
   }
   else {
     return accu;
@@ -236,16 +228,14 @@ function fold_right(f, l, accu) {
 function map2(f, l1, l2) {
   if (l1) {
     if (l2) {
-      var r = Caml_curry.app2(f, l1[1], l2[1]);
-      return [
-              /* :: */0,
+      var r = Caml_curry.app2(f, l1[0], l2[0]);
+      return /* :: */[
               r,
-              map2(f, l1[2], l2[2])
+              map2(f, l1[1], l2[1])
             ];
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.map2"
           ];
@@ -253,7 +243,6 @@ function map2(f, l1, l2) {
   }
   else if (l2) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "List.map2"
         ];
@@ -273,11 +262,10 @@ function rev_map2(f, l1, l2) {
     var accu = _accu;
     if (l1$1) {
       if (l2$1) {
-        _l2 = l2$1[2];
-        _l1 = l1$1[2];
-        _accu = [
-          /* :: */0,
-          Caml_curry.app2(f, l1$1[1], l2$1[1]),
+        _l2 = l2$1[1];
+        _l1 = l1$1[1];
+        _accu = /* :: */[
+          Caml_curry.app2(f, l1$1[0], l2$1[0]),
           accu
         ];
         continue ;
@@ -285,7 +273,6 @@ function rev_map2(f, l1, l2) {
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.rev_map2"
             ];
@@ -293,7 +280,6 @@ function rev_map2(f, l1, l2) {
     }
     else if (l2$1) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.rev_map2"
           ];
@@ -310,15 +296,14 @@ function iter2(f, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        Caml_curry.app2(f, l1[1], l2[1]);
-        _l2 = l2[2];
-        _l1 = l1[2];
+        Caml_curry.app2(f, l1[0], l2[0]);
+        _l2 = l2[1];
+        _l1 = l1[1];
         continue ;
         
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.iter2"
             ];
@@ -326,7 +311,6 @@ function iter2(f, _l1, _l2) {
     }
     else if (l2) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.iter2"
           ];
@@ -344,15 +328,14 @@ function fold_left2(f, _accu, _l1, _l2) {
     var accu = _accu;
     if (l1) {
       if (l2) {
-        _l2 = l2[2];
-        _l1 = l1[2];
-        _accu = Caml_curry.app3(f, accu, l1[1], l2[1]);
+        _l2 = l2[1];
+        _l1 = l1[1];
+        _accu = Caml_curry.app3(f, accu, l1[0], l2[0]);
         continue ;
         
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.fold_left2"
             ];
@@ -360,7 +343,6 @@ function fold_left2(f, _accu, _l1, _l2) {
     }
     else if (l2) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.fold_left2"
           ];
@@ -374,11 +356,10 @@ function fold_left2(f, _accu, _l1, _l2) {
 function fold_right2(f, l1, l2, accu) {
   if (l1) {
     if (l2) {
-      return Caml_curry.app3(f, l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
+      return Caml_curry.app3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.fold_right2"
           ];
@@ -386,7 +367,6 @@ function fold_right2(f, l1, l2, accu) {
   }
   else if (l2) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "List.fold_right2"
         ];
@@ -400,8 +380,8 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app1(p, param[1])) {
-        _param = param[2];
+      if (Caml_curry.app1(p, param[0])) {
+        _param = param[1];
         continue ;
         
       }
@@ -419,11 +399,11 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app1(p, param[1])) {
+      if (Caml_curry.app1(p, param[0])) {
         return /* true */1;
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -440,9 +420,9 @@ function for_all2(p, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        if (Caml_curry.app2(p, l1[1], l2[1])) {
-          _l2 = l2[2];
-          _l1 = l1[2];
+        if (Caml_curry.app2(p, l1[0], l2[0])) {
+          _l2 = l2[1];
+          _l1 = l1[1];
           continue ;
           
         }
@@ -452,7 +432,6 @@ function for_all2(p, _l1, _l2) {
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.for_all2"
             ];
@@ -460,7 +439,6 @@ function for_all2(p, _l1, _l2) {
     }
     else if (l2) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.for_all2"
           ];
@@ -477,19 +455,18 @@ function exists2(p, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        if (Caml_curry.app2(p, l1[1], l2[1])) {
+        if (Caml_curry.app2(p, l1[0], l2[0])) {
           return /* true */1;
         }
         else {
-          _l2 = l2[2];
-          _l1 = l1[2];
+          _l2 = l2[1];
+          _l1 = l1[1];
           continue ;
           
         }
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.exists2"
             ];
@@ -497,7 +474,6 @@ function exists2(p, _l1, _l2) {
     }
     else if (l2) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.exists2"
           ];
@@ -512,8 +488,8 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_primitive.caml_compare(param[1], x)) {
-        _param = param[2];
+      if (Caml_obj.caml_compare(param[0], x)) {
+        _param = param[1];
         continue ;
         
       }
@@ -531,11 +507,11 @@ function memq(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (param[1] === x) {
+      if (param[0] === x) {
         return /* true */1;
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -550,14 +526,14 @@ function assoc(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var match = param[1];
-      if (Caml_primitive.caml_compare(match[1], x)) {
-        _param = param[2];
+      var match = param[0];
+      if (Caml_obj.caml_compare(match[0], x)) {
+        _param = param[1];
         continue ;
         
       }
       else {
-        return match[2];
+        return match[1];
       }
     }
     else {
@@ -570,12 +546,12 @@ function assq(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var match = param[1];
-      if (match[1] === x) {
-        return match[2];
+      var match = param[0];
+      if (match[0] === x) {
+        return match[1];
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -590,8 +566,8 @@ function mem_assoc(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_primitive.caml_compare(param[1][1], x)) {
-        _param = param[2];
+      if (Caml_obj.caml_compare(param[0][0], x)) {
+        _param = param[1];
         continue ;
         
       }
@@ -609,11 +585,11 @@ function mem_assq(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (param[1][1] === x) {
+      if (param[0][0] === x) {
         return /* true */1;
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -626,11 +602,10 @@ function mem_assq(x, _param) {
 
 function remove_assoc(x, param) {
   if (param) {
-    var l = param[2];
-    var pair = param[1];
-    if (Caml_primitive.caml_compare(pair[1], x)) {
-      return [
-              /* :: */0,
+    var l = param[1];
+    var pair = param[0];
+    if (Caml_obj.caml_compare(pair[0], x)) {
+      return /* :: */[
               pair,
               remove_assoc(x, l)
             ];
@@ -646,14 +621,13 @@ function remove_assoc(x, param) {
 
 function remove_assq(x, param) {
   if (param) {
-    var l = param[2];
-    var pair = param[1];
-    if (pair[1] === x) {
+    var l = param[1];
+    var pair = param[0];
+    if (pair[0] === x) {
       return l;
     }
     else {
-      return [
-              /* :: */0,
+      return /* :: */[
               pair,
               remove_assq(x, l)
             ];
@@ -668,12 +642,12 @@ function find(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var x = param[1];
+      var x = param[0];
       if (Caml_curry.app1(p, x)) {
         return x;
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -692,12 +666,11 @@ function find_all(p) {
       var param$1 = _param;
       var accu = _accu;
       if (param$1) {
-        var l = param$1[2];
-        var x = param$1[1];
+        var l = param$1[1];
+        var x = param$1[0];
         if (Caml_curry.app1(p, x)) {
           _param = l;
-          _accu = [
-            /* :: */0,
+          _accu = /* :: */[
             x,
             accu
           ];
@@ -726,12 +699,11 @@ function partition(p, l) {
     var no = _no;
     var yes = _yes;
     if (param) {
-      var l$1 = param[2];
-      var x = param[1];
+      var l$1 = param[1];
+      var x = param[0];
       if (Caml_curry.app1(p, x)) {
         _param = l$1;
-        _yes = [
-          /* :: */0,
+        _yes = /* :: */[
           x,
           yes
         ];
@@ -740,8 +712,7 @@ function partition(p, l) {
       }
       else {
         _param = l$1;
-        _no = [
-          /* :: */0,
+        _no = /* :: */[
           x,
           no
         ];
@@ -750,8 +721,7 @@ function partition(p, l) {
       }
     }
     else {
-      return [
-              /* tuple */0,
+      return /* tuple */[
               rev_append(yes, /* [] */0),
               rev_append(no, /* [] */0)
             ];
@@ -761,25 +731,21 @@ function partition(p, l) {
 
 function split(param) {
   if (param) {
-    var match = param[1];
-    var match$1 = split(param[2]);
-    return [
-            /* tuple */0,
-            [
-              /* :: */0,
+    var match = param[0];
+    var match$1 = split(param[1]);
+    return /* tuple */[
+            /* :: */[
+              match[0],
+              match$1[0]
+            ],
+            /* :: */[
               match[1],
               match$1[1]
-            ],
-            [
-              /* :: */0,
-              match[2],
-              match$1[2]
             ]
           ];
   }
   else {
-    return [
-            /* tuple */0,
+    return /* tuple */[
             /* [] */0,
             /* [] */0
           ];
@@ -789,19 +755,16 @@ function split(param) {
 function combine(l1, l2) {
   if (l1) {
     if (l2) {
-      return [
-              /* :: */0,
-              [
-                /* tuple */0,
-                l1[1],
-                l2[1]
+      return /* :: */[
+              /* tuple */[
+                l1[0],
+                l2[0]
               ],
-              combine(l1[2], l2[2])
+              combine(l1[1], l2[1])
             ];
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.combine"
           ];
@@ -809,7 +772,6 @@ function combine(l1, l2) {
   }
   else if (l2) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "List.combine"
         ];
@@ -822,20 +784,18 @@ function combine(l1, l2) {
 function merge(cmp, l1, l2) {
   if (l1) {
     if (l2) {
-      var h2 = l2[1];
-      var h1 = l1[1];
+      var h2 = l2[0];
+      var h1 = l1[0];
       if (Caml_curry.app2(cmp, h1, h2) <= 0) {
-        return [
-                /* :: */0,
+        return /* :: */[
                 h1,
-                merge(cmp, l1[2], l2)
+                merge(cmp, l1[1], l2)
               ];
       }
       else {
-        return [
-                /* :: */0,
+        return /* :: */[
                 h2,
-                merge(cmp, l1, l2[2])
+                merge(cmp, l1, l2[1])
               ];
       }
     }
@@ -854,17 +814,15 @@ function chop(_k, _l) {
     var k = _k;
     if (k) {
       if (l) {
-        _l = l[2];
+        _l = l[1];
         _k = k - 1;
         continue ;
         
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Assert_failure,
               [
-                0,
                 "list.ml",
                 223,
                 11
@@ -886,23 +844,20 @@ function stable_sort(cmp, l) {
         exit = 1;
       }
       else if (l) {
-        var match = l[2];
+        var match = l[1];
         if (match) {
-          var match$1 = match[2];
+          var match$1 = match[1];
           if (match$1) {
-            var x3 = match$1[1];
-            var x2 = match[1];
-            var x1 = l[1];
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
             if (Caml_curry.app2(cmp, x1, x2) <= 0) {
               if (Caml_curry.app2(cmp, x2, x3) <= 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
                             /* [] */0
                           ]
@@ -910,14 +865,11 @@ function stable_sort(cmp, l) {
                       ];
               }
               else if (Caml_curry.app2(cmp, x1, x3) <= 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -925,14 +877,11 @@ function stable_sort(cmp, l) {
                       ];
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x3,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -941,14 +890,11 @@ function stable_sort(cmp, l) {
               }
             }
             else if (Caml_curry.app2(cmp, x1, x3) <= 0) {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x3,
                           /* [] */0
                         ]
@@ -956,14 +902,11 @@ function stable_sort(cmp, l) {
                     ];
             }
             else if (Caml_curry.app2(cmp, x2, x3) <= 0) {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x3,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
                           /* [] */0
                         ]
@@ -971,14 +914,11 @@ function stable_sort(cmp, l) {
                     ];
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x3,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x2,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
                           /* [] */0
                         ]
@@ -999,27 +939,23 @@ function stable_sort(cmp, l) {
       }
     }
     else if (l) {
-      var match$2 = l[2];
+      var match$2 = l[1];
       if (match$2) {
-        var x2$1 = match$2[1];
-        var x1$1 = l[1];
+        var x2$1 = match$2[0];
+        var x1$1 = l[0];
         if (Caml_curry.app2(cmp, x1$1, x2$1) <= 0) {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x1$1,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     x2$1,
                     /* [] */0
                   ]
                 ];
         }
         else {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x2$1,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     x1$1,
                     /* [] */0
                   ]
@@ -1048,25 +984,23 @@ function stable_sort(cmp, l) {
         var l1 = _l1;
         if (l1) {
           if (l2$1) {
-            var h2 = l2$1[1];
-            var h1 = l1[1];
+            var h2 = l2$1[0];
+            var h1 = l1[0];
             if (Caml_curry.app2(cmp, h1, h2) > 0) {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h1,
                 accu
               ];
-              _l1 = l1[2];
+              _l1 = l1[1];
               continue ;
               
             }
             else {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h2,
                 accu
               ];
-              _l2 = l2$1[2];
+              _l2 = l2$1[1];
               continue ;
               
             }
@@ -1089,23 +1023,20 @@ function stable_sort(cmp, l) {
         exit = 1;
       }
       else if (l) {
-        var match = l[2];
+        var match = l[1];
         if (match) {
-          var match$1 = match[2];
+          var match$1 = match[1];
           if (match$1) {
-            var x3 = match$1[1];
-            var x2 = match[1];
-            var x1 = l[1];
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
             if (Caml_curry.app2(cmp, x1, x2) > 0) {
               if (Caml_curry.app2(cmp, x2, x3) > 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
                             /* [] */0
                           ]
@@ -1113,14 +1044,11 @@ function stable_sort(cmp, l) {
                       ];
               }
               else if (Caml_curry.app2(cmp, x1, x3) > 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1128,14 +1056,11 @@ function stable_sort(cmp, l) {
                       ];
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x3,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1144,14 +1069,11 @@ function stable_sort(cmp, l) {
               }
             }
             else if (Caml_curry.app2(cmp, x1, x3) > 0) {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x3,
                           /* [] */0
                         ]
@@ -1159,14 +1081,11 @@ function stable_sort(cmp, l) {
                     ];
             }
             else if (Caml_curry.app2(cmp, x2, x3) > 0) {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x3,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
                           /* [] */0
                         ]
@@ -1174,14 +1093,11 @@ function stable_sort(cmp, l) {
                     ];
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x3,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x2,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1,
                           /* [] */0
                         ]
@@ -1202,27 +1118,23 @@ function stable_sort(cmp, l) {
       }
     }
     else if (l) {
-      var match$2 = l[2];
+      var match$2 = l[1];
       if (match$2) {
-        var x2$1 = match$2[1];
-        var x1$1 = l[1];
+        var x2$1 = match$2[0];
+        var x1$1 = l[0];
         if (Caml_curry.app2(cmp, x1$1, x2$1) > 0) {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x1$1,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     x2$1,
                     /* [] */0
                   ]
                 ];
         }
         else {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x2$1,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     x1$1,
                     /* [] */0
                   ]
@@ -1251,25 +1163,23 @@ function stable_sort(cmp, l) {
         var l1 = _l1;
         if (l1) {
           if (l2$1) {
-            var h2 = l2$1[1];
-            var h1 = l1[1];
+            var h2 = l2$1[0];
+            var h1 = l1[0];
             if (Caml_curry.app2(cmp, h1, h2) <= 0) {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h1,
                 accu
               ];
-              _l1 = l1[2];
+              _l1 = l1[1];
               continue ;
               
             }
             else {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h2,
                 accu
               ];
-              _l2 = l2$1[2];
+              _l2 = l2$1[1];
               continue ;
               
             }
@@ -1302,27 +1212,24 @@ function sort_uniq(cmp, l) {
         exit = 1;
       }
       else if (l) {
-        var match = l[2];
+        var match = l[1];
         if (match) {
-          var match$1 = match[2];
+          var match$1 = match[1];
           if (match$1) {
-            var x3 = match$1[1];
-            var x2 = match[1];
-            var x1 = l[1];
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
             var c = Caml_curry.app2(cmp, x1, x2);
             if (c) {
               if (c < 0) {
                 var c$1 = Caml_curry.app2(cmp, x2, x3);
                 if (c$1) {
                   if (c$1 < 0) {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
@@ -1333,14 +1240,11 @@ function sort_uniq(cmp, l) {
                     var c$2 = Caml_curry.app2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 < 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x1,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x3,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1348,14 +1252,11 @@ function sort_uniq(cmp, l) {
                               ];
                       }
                       else {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x3,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1364,11 +1265,9 @@ function sort_uniq(cmp, l) {
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1377,11 +1276,9 @@ function sort_uniq(cmp, l) {
                   }
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x1,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1392,14 +1289,11 @@ function sort_uniq(cmp, l) {
                 var c$3 = Caml_curry.app2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 < 0) {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x2,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
@@ -1410,14 +1304,11 @@ function sort_uniq(cmp, l) {
                     var c$4 = Caml_curry.app2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 < 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x2,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x3,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1425,14 +1316,11 @@ function sort_uniq(cmp, l) {
                               ];
                       }
                       else {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x3,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1441,11 +1329,9 @@ function sort_uniq(cmp, l) {
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x1,
                                 /* [] */0
                               ]
@@ -1454,11 +1340,9 @@ function sort_uniq(cmp, l) {
                   }
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x1,
                             /* [] */0
                           ]
@@ -1470,22 +1354,18 @@ function sort_uniq(cmp, l) {
               var c$5 = Caml_curry.app2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 < 0) {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
                             /* [] */0
                           ]
                         ];
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1493,8 +1373,7 @@ function sort_uniq(cmp, l) {
                 }
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x2,
                         /* [] */0
                       ];
@@ -1514,29 +1393,25 @@ function sort_uniq(cmp, l) {
       }
     }
     else if (l) {
-      var match$2 = l[2];
+      var match$2 = l[1];
       if (match$2) {
-        var x2$1 = match$2[1];
-        var x1$1 = l[1];
+        var x2$1 = match$2[0];
+        var x1$1 = l[0];
         var c$6 = Caml_curry.app2(cmp, x1$1, x2$1);
         if (c$6) {
           if (c$6 < 0) {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     x1$1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       x2$1,
                       /* [] */0
                     ]
                   ];
           }
           else {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     x2$1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       x1$1,
                       /* [] */0
                     ]
@@ -1544,8 +1419,7 @@ function sort_uniq(cmp, l) {
           }
         }
         else {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x1$1,
                   /* [] */0
                 ];
@@ -1573,15 +1447,14 @@ function sort_uniq(cmp, l) {
         var l1 = _l1;
         if (l1) {
           if (l2$1) {
-            var t2 = l2$1[2];
-            var h2 = l2$1[1];
-            var t1 = l1[2];
-            var h1 = l1[1];
+            var t2 = l2$1[1];
+            var h2 = l2$1[0];
+            var t1 = l1[1];
+            var h1 = l1[0];
             var c$7 = Caml_curry.app2(cmp, h1, h2);
             if (c$7) {
               if (c$7 > 0) {
-                _accu = [
-                  /* :: */0,
+                _accu = /* :: */[
                   h1,
                   accu
                 ];
@@ -1590,8 +1463,7 @@ function sort_uniq(cmp, l) {
                 
               }
               else {
-                _accu = [
-                  /* :: */0,
+                _accu = /* :: */[
                   h2,
                   accu
                 ];
@@ -1601,8 +1473,7 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h1,
                 accu
               ];
@@ -1630,27 +1501,24 @@ function sort_uniq(cmp, l) {
         exit = 1;
       }
       else if (l) {
-        var match = l[2];
+        var match = l[1];
         if (match) {
-          var match$1 = match[2];
+          var match$1 = match[1];
           if (match$1) {
-            var x3 = match$1[1];
-            var x2 = match[1];
-            var x1 = l[1];
+            var x3 = match$1[0];
+            var x2 = match[0];
+            var x1 = l[0];
             var c = Caml_curry.app2(cmp, x1, x2);
             if (c) {
               if (c > 0) {
                 var c$1 = Caml_curry.app2(cmp, x2, x3);
                 if (c$1) {
                   if (c$1 > 0) {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
@@ -1661,14 +1529,11 @@ function sort_uniq(cmp, l) {
                     var c$2 = Caml_curry.app2(cmp, x1, x3);
                     if (c$2) {
                       if (c$2 > 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x1,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x3,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1676,14 +1541,11 @@ function sort_uniq(cmp, l) {
                               ];
                       }
                       else {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x3,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1692,11 +1554,9 @@ function sort_uniq(cmp, l) {
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1705,11 +1565,9 @@ function sort_uniq(cmp, l) {
                   }
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x1,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1720,14 +1578,11 @@ function sort_uniq(cmp, l) {
                 var c$3 = Caml_curry.app2(cmp, x1, x3);
                 if (c$3) {
                   if (c$3 > 0) {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x2,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
@@ -1738,14 +1593,11 @@ function sort_uniq(cmp, l) {
                     var c$4 = Caml_curry.app2(cmp, x2, x3);
                     if (c$4) {
                       if (c$4 > 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x2,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x3,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1753,14 +1605,11 @@ function sort_uniq(cmp, l) {
                               ];
                       }
                       else {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x3,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1769,11 +1618,9 @@ function sort_uniq(cmp, l) {
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x1,
                                 /* [] */0
                               ]
@@ -1782,11 +1629,9 @@ function sort_uniq(cmp, l) {
                   }
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x1,
                             /* [] */0
                           ]
@@ -1798,22 +1643,18 @@ function sort_uniq(cmp, l) {
               var c$5 = Caml_curry.app2(cmp, x2, x3);
               if (c$5) {
                 if (c$5 > 0) {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
                             /* [] */0
                           ]
                         ];
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
                             /* [] */0
                           ]
@@ -1821,8 +1662,7 @@ function sort_uniq(cmp, l) {
                 }
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x2,
                         /* [] */0
                       ];
@@ -1842,29 +1682,25 @@ function sort_uniq(cmp, l) {
       }
     }
     else if (l) {
-      var match$2 = l[2];
+      var match$2 = l[1];
       if (match$2) {
-        var x2$1 = match$2[1];
-        var x1$1 = l[1];
+        var x2$1 = match$2[0];
+        var x1$1 = l[0];
         var c$6 = Caml_curry.app2(cmp, x1$1, x2$1);
         if (c$6) {
           if (c$6 > 0) {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     x1$1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       x2$1,
                       /* [] */0
                     ]
                   ];
           }
           else {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     x2$1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       x1$1,
                       /* [] */0
                     ]
@@ -1872,8 +1708,7 @@ function sort_uniq(cmp, l) {
           }
         }
         else {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   x1$1,
                   /* [] */0
                 ];
@@ -1901,15 +1736,14 @@ function sort_uniq(cmp, l) {
         var l1 = _l1;
         if (l1) {
           if (l2$1) {
-            var t2 = l2$1[2];
-            var h2 = l2$1[1];
-            var t1 = l1[2];
-            var h1 = l1[1];
+            var t2 = l2$1[1];
+            var h2 = l2$1[0];
+            var t1 = l1[1];
+            var h1 = l1[0];
             var c$7 = Caml_curry.app2(cmp, h1, h2);
             if (c$7) {
               if (c$7 < 0) {
-                _accu = [
-                  /* :: */0,
+                _accu = /* :: */[
                   h1,
                   accu
                 ];
@@ -1918,8 +1752,7 @@ function sort_uniq(cmp, l) {
                 
               }
               else {
-                _accu = [
-                  /* :: */0,
+                _accu = /* :: */[
                   h2,
                   accu
                 ];
@@ -1929,8 +1762,7 @@ function sort_uniq(cmp, l) {
               }
             }
             else {
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 h1,
                 accu
               ];

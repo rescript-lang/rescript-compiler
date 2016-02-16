@@ -3,7 +3,7 @@
 
 
 function v(x) {
-  return +(x[1] === /* [] */0);
+  return +(x[0] === /* [] */0);
 }
 
 exports.v = v;

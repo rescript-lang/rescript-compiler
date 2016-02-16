@@ -59,83 +59,14 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
             then 
               (** TODO: add module into taginfo*)
               let len = List.length sigs in (** TODO: could be optimized *) 
-              E.arr Immutable (E.int ~comment:id.name 0 ::
-                               Ext_list.init len (fun i -> E.ml_var_dot id
-                                                     (Type_util.get_name sigs i ))
-                              )
+              Js_of_lam_module.make ~comment:id.name 
+                (Ext_list.init len (fun i -> 
+                     E.ml_var_dot id
+                       (Type_util.get_name sigs i )))
+                               
+
             else 
               E.ml_var id)
 
   
 
-(* TODO: how nested module call would behave,
-   In the future, we should keep in track  of if 
-   it is fully applied from [Lapply]
-   Seems that the module dependency is tricky..
-   should we depend on [Pervasives] or not?
-
-   we can not do this correctly for the return value, 
-   however we can inline the definition in Pervasives
-   TODO:
-   [Pervasives.print_endline]
-   [Pervasives.prerr_endline]
- *)
-
-let get_exp_with_args (id : Ident.t) (pos : int) env (args : J.expression list) : J.expression = 
-
-  Lam_compile_env.find_and_add_if_not_exist (id,pos) env ~not_found:(fun id -> 
-      (** This can not happen since this id should be already consulted by type checker 
-          Worst case 
-          {[
-            E.index m (pos + 1)
-          ]}
-          shift by one (due to module encoding)
-      *)
-      E.str ~pure:false  (Printf.sprintf "Err %s %d %d"
-                            id.name
-                            id.flags
-                            pos
-                         ))
-
-    ~found:(fun {id; name;arity; _} -> 
-        match id, name,  args with 
-        | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
-          E.string_append e0 e1 
-        | {name = "Pervasives"; _}, "string_of_int", [e] 
-          -> E.int_to_string e 
-        | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
-          E.seq (E.dump Log args) (E.unit ())
-        | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
-          E.seq (E.dump Error args) (E.unit ())
-        | _ -> 
-
-
-          let rec aux (acc : J.expression)
-              (arity : Lam_stats.function_arities) args (len : int)  =
-            match arity, len with
-            | _, 0 -> 
-              acc (** All arguments consumed so far *)
-            | Determin (a, (x,_) :: rest, b), len   ->
-              let x = 
-                if x = 0 
-                then 1 
-                else x in (* Relax when x = 0 *)
-              if  len >= x 
-              then
-                let first_part, continue =  (Ext_list.take x args) in
-                aux
-                  (E.call ~info:{arity=Full} acc first_part)
-                  (Determin (a, rest, b))
-                  continue (len - x)
-              else  acc 
-            (* alpha conversion now? --
-               Since we did an alpha conversion before so it is not here
-            *)
-            | Determin (a, [], b ), _ ->
-              (* can not happen, unless it's an exception ? *)
-              E.call acc args
-            | NA, _ ->
-              E.call acc args
-          in
-          aux (E.ml_var_dot id name) arity args (List.length args )
-      )

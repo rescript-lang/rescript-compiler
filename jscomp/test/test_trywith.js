@@ -12,15 +12,13 @@ function f(x) {
     return 2;
   }
   else {
-    switch (x[0]) {
+    switch (x.tag | 0) {
       case 0 : 
           return 1;
       case 1 : 
           throw [
-                0,
                 Caml_builtin_exceptions.Assert_failure,
                 [
-                  0,
                   "test_trywith.ml",
                   24,
                   9

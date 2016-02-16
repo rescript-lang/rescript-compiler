@@ -19,8 +19,8 @@ function len(_acc, _l) {
     var l = _l;
     var acc = _acc;
     if (l) {
-      _l = l[2];
-      _acc = l[1].length + acc;
+      _l = l[1];
+      _acc = l[0].length + acc;
       continue ;
       
     }
@@ -35,7 +35,7 @@ function fill(arr, _i, _l) {
     var l = _l;
     var i = _i;
     if (l) {
-      var x = l[1];
+      var x = l[0];
       var l$1 = x.length;
       var k = i;
       var j = 0;
@@ -44,7 +44,7 @@ function fill(arr, _i, _l) {
         ++ k;
         ++ j;
       };
-      _l = l[2];
+      _l = l[1];
       _i = k;
       continue ;
       

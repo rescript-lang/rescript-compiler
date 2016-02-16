@@ -6,21 +6,19 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 function merge(order, l1, l2) {
   if (l1) {
-    var h1 = l1[1];
+    var h1 = l1[0];
     if (l2) {
-      var h2 = l2[1];
+      var h2 = l2[0];
       if (Caml_curry.app2(order, h1, h2)) {
-        return [
-                /* :: */0,
+        return /* :: */[
                 h1,
-                merge(order, l1[2], l2)
+                merge(order, l1[1], l2)
               ];
       }
       else {
-        return [
-                /* :: */0,
+        return /* :: */[
                 h2,
-                merge(order, l1, l2[2])
+                merge(order, l1, l2[1])
               ];
       }
     }
@@ -36,37 +34,30 @@ function merge(order, l1, l2) {
 function list(order, l) {
   var initlist = function (param) {
     if (param) {
-      var match = param[2];
-      var e = param[1];
+      var match = param[1];
+      var e = param[0];
       if (match) {
-        var e2 = match[1];
-        return [
-                /* :: */0,
-                Caml_curry.app2(order, e, e2) ? [
-                    /* :: */0,
+        var e2 = match[0];
+        return /* :: */[
+                Caml_curry.app2(order, e, e2) ? /* :: */[
                     e,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       e2,
                       /* [] */0
                     ]
-                  ] : [
-                    /* :: */0,
+                  ] : /* :: */[
                     e2,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       e,
                       /* [] */0
                     ]
                   ],
-                initlist(match[2])
+                initlist(match[1])
               ];
       }
       else {
-        return [
-                /* :: */0,
-                [
-                  /* :: */0,
+        return /* :: */[
+                /* :: */[
                   e,
                   /* [] */0
                 ],
@@ -80,12 +71,11 @@ function list(order, l) {
   };
   var merge2 = function (x) {
     if (x) {
-      var match = x[2];
+      var match = x[1];
       if (match) {
-        return [
-                /* :: */0,
-                merge(order, x[1], match[1]),
-                merge2(match[2])
+        return /* :: */[
+                merge(order, x[0], match[0]),
+                merge2(match[1])
               ];
       }
       else {
@@ -100,13 +90,13 @@ function list(order, l) {
   while(true) {
     var llist = _llist;
     if (llist) {
-      if (llist[2]) {
+      if (llist[1]) {
         _llist = merge2(llist);
         continue ;
         
       }
       else {
-        return llist[1];
+        return llist[0];
       }
     }
     else {
@@ -144,7 +134,6 @@ function array(cmp, arr) {
         var j = hi - 1;
         if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
           throw [
-                0,
                 Caml_builtin_exceptions.Invalid_argument,
                 "Sort.array"
               ];

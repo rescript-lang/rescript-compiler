@@ -252,31 +252,31 @@ let translate
         match prim_ty with 
         | Some ty -> 
           let _return_type, arg_types = Type_util.list_of_arrow ty in
-          let kvs = 
+          let kvs : J.property_map = 
             Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) (arg : J.expression) -> 
                 match ty.desc, Type_util.label_name label with 
                 | Tconstr(p,_, _), _ when Path.same p Predef.path_unit -> None
                 | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool -> 
                   begin 
                     match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0;_}) ->  Some (label ,E.false_)
-                    | Number _ -> Some (label,E.true_)
-                    | _ -> Some ( label, (E.econd arg E.true_ E.false_))
+                    | Number ((* Float { f = "0."}| *) Int { i = 0;_}) ->  Some (Js_op.Key label ,E.false_)
+                    | Number _ -> Some (Js_op.Key label,E.true_)
+                    | _ -> Some (Js_op.Key label, (E.econd arg E.true_ E.false_))
                   end
 
                 | _, `Label label -> 
-                  Some ( label, arg)
+                  Some (Js_op.Key label, arg)
                 | _, `Optional label -> 
                   begin 
                     match (arg.expression_desc) with 
                     | Array ([x;y], _mutable_flag)  ->
-                      Some ( label, y) (*Invrariant: optional encoding*)
+                      Some (Js_op.Key label, y) (*Invrariant: optional encoding*)
                     | Number _ -> (*Invariant: None encoding*)
                       None
                     | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
                                is not a variable [Var ]
                                can only bd detected at runtime thing *)
-                      Some ( label, 
+                      Some ( Key label, 
                              E.econd arg
                                (* (E.bin EqEqEq (E.typeof arg) *)
                                (*   (E.str "number")) *)

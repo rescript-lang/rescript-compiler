@@ -31,7 +31,7 @@ let op_prec (op : Js_op.binop ) =
   | Or -> 3, 3, 3
   | And -> 4, 4, 4
   | EqEqEq | NotEqEq -> 8, 8, 9
-  | Gt | Ge | Lt | Le -> 9, 9, 10
+  | Gt | Ge | Lt | Le | InstanceOf -> 9, 9, 10
   | Bor -> 5, 5, 5
   | Bxor -> 6, 6, 6
   | Band -> 7, 7, 7
@@ -72,7 +72,7 @@ let op_str (op : Js_op.binop) =
   | Le      -> "<="
   | Gt      -> ">"
   | Ge      -> ">="
-
+  | InstanceOf -> "instanceof"
 
 let op_int_str (op : Js_op.int_op) = 
   match op with
@@ -131,3 +131,8 @@ let same_vident (x : J.vident) (y : J.vident) =
       Ident.same x0 y0 && same_kind k0 k1 && same_str_opt str_opt0 str_opt1
   | Id _, Qualified _ 
   | Qualified _, Id _ -> false
+
+let of_lam_mutable_flag (x : Asttypes.mutable_flag)  : Js_op.mutable_flag = 
+  match x with 
+  | Immutable -> Immutable
+  | Mutable -> Mutable

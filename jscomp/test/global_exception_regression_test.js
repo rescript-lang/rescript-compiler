@@ -10,38 +10,36 @@ var u = Caml_builtin_exceptions.Not_found;
 
 var s = Caml_builtin_exceptions.End_of_file;
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "not_found_equal",
   function () {
-    return [
-            /* Eq */0,
-            u,
-            v
-          ];
+    return /* Eq */{
+            0: u,
+            1: v,
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "not_found_not_equal_end_of_file",
     function () {
-      return [
-              /* Neq */1,
-              u,
-              s
-            ];
+      return /* Neq */{
+              0: u,
+              1: s,
+              length: 2,
+              tag: 1
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("global_exception_regression_test.ml", suites);

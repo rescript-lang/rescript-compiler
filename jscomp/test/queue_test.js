@@ -7,7 +7,7 @@ var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 
 function to_array(q) {
-  var v = Caml_array.caml_make_vect(q[1], 0);
+  var v = Caml_array.caml_make_vect(q[0], 0);
   Queue.fold(function (i, e) {
         v[i] = e;
         return i + 1;
@@ -16,8 +16,7 @@ function to_array(q) {
 }
 
 function queue_1(x) {
-  var q = [
-    /* record */0,
+  var q = /* record */[
     0,
     /* None */0
   ];
@@ -27,27 +26,26 @@ function queue_1(x) {
   return to_array(q);
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "simple push",
   function () {
-    var x = /* array */[
+    var x = /* int array */[
       3,
       4,
       5,
       2
     ];
-    return [
-            /* Eq */0,
-            x,
-            queue_1(x)
-          ];
+    return /* Eq */{
+            0: x,
+            1: queue_1(x),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

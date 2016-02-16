@@ -10,12 +10,11 @@ function filter_map(f, _xs) {
   while(true) {
     var xs = _xs;
     if (xs) {
-      var ys = xs[2];
-      var match = Caml_curry.app1(f, xs[1]);
+      var ys = xs[1];
+      var match = Caml_curry.app1(f, xs[0]);
       if (match) {
-        return [
-                /* :: */0,
-                match[1],
+        return /* :: */[
+                match[0],
                 filter_map(f, ys)
               ];
       }
@@ -37,8 +36,8 @@ function same_length(_xs, _ys) {
     var xs = _xs;
     if (xs) {
       if (ys) {
-        _ys = ys[2];
-        _xs = xs[2];
+        _ys = ys[1];
+        _xs = xs[1];
         continue ;
         
       }
@@ -61,12 +60,11 @@ function filter_mapi(f, xs) {
       var xs = _xs;
       var i = _i;
       if (xs) {
-        var ys = xs[2];
-        var match = Caml_curry.app2(f, i, xs[1]);
+        var ys = xs[1];
+        var match = Caml_curry.app2(f, i, xs[0]);
         if (match) {
-          return [
-                  /* :: */0,
-                  match[1],
+          return /* :: */[
+                  match[0],
                   aux(i + 1, ys)
                 ];
         }
@@ -91,13 +89,12 @@ function filter_map2(f, _xs, _ys) {
     var xs = _xs;
     if (xs) {
       if (ys) {
-        var vs = ys[2];
-        var us = xs[2];
-        var match = Caml_curry.app2(f, xs[1], ys[1]);
+        var vs = ys[1];
+        var us = xs[1];
+        var match = Caml_curry.app2(f, xs[0], ys[0]);
         if (match) {
-          return [
-                  /* :: */0,
-                  match[1],
+          return /* :: */[
+                  match[0],
                   filter_map2(f, us, vs)
                 ];
         }
@@ -110,7 +107,6 @@ function filter_map2(f, _xs, _ys) {
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.filter_map2"
             ];
@@ -118,7 +114,6 @@ function filter_map2(f, _xs, _ys) {
     }
     else if (ys) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.filter_map2"
           ];
@@ -137,13 +132,12 @@ function filter_map2i(f, xs, ys) {
       var i = _i;
       if (xs) {
         if (ys) {
-          var vs = ys[2];
-          var us = xs[2];
-          var match = Caml_curry.app3(f, i, xs[1], ys[1]);
+          var vs = ys[1];
+          var us = xs[1];
+          var match = Caml_curry.app3(f, i, xs[0], ys[0]);
           if (match) {
-            return [
-                    /* :: */0,
-                    match[1],
+            return /* :: */[
+                    match[0],
                     aux(i + 1, us, vs)
                   ];
           }
@@ -157,7 +151,6 @@ function filter_map2i(f, xs, ys) {
         }
         else {
           throw [
-                0,
                 Caml_builtin_exceptions.Invalid_argument,
                 "Ext_list.filter_map2i"
               ];
@@ -165,7 +158,6 @@ function filter_map2i(f, xs, ys) {
       }
       else if (ys) {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.filter_map2i"
             ];
@@ -183,12 +175,11 @@ function rev_map_append(f, _l1, _l2) {
     var l2 = _l2;
     var l1 = _l1;
     if (l1) {
-      _l2 = [
-        /* :: */0,
-        Caml_curry.app1(f, l1[1]),
+      _l2 = /* :: */[
+        Caml_curry.app1(f, l1[0]),
         l2
       ];
-      _l1 = l1[2];
+      _l1 = l1[1];
       continue ;
       
     }
@@ -208,15 +199,14 @@ function flat_map2(f, lx, ly) {
     var acc = _acc;
     if (lx$1) {
       if (ly$1) {
-        _ly = ly$1[2];
-        _lx = lx$1[2];
-        _acc = List.rev_append(Caml_curry.app2(f, lx$1[1], ly$1[1]), acc);
+        _ly = ly$1[1];
+        _lx = lx$1[1];
+        _acc = List.rev_append(Caml_curry.app2(f, lx$1[0], ly$1[0]), acc);
         continue ;
         
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.flat_map2"
             ];
@@ -224,7 +214,6 @@ function flat_map2(f, lx, ly) {
     }
     else if (ly$1) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.flat_map2"
           ];
@@ -242,8 +231,8 @@ function flat_map(f, lx) {
     var lx$1 = _lx;
     var acc = _acc;
     if (lx$1) {
-      _lx = lx$1[2];
-      _acc = List.rev_append(Caml_curry.app1(f, lx$1[1]), acc);
+      _lx = lx$1[1];
+      _acc = List.rev_append(Caml_curry.app1(f, lx$1[0]), acc);
       continue ;
       
     }
@@ -255,43 +244,39 @@ function flat_map(f, lx) {
 
 function map2_last(f, l1, l2) {
   if (l1) {
-    var l1$1 = l1[2];
-    var u = l1[1];
+    var l1$1 = l1[1];
+    var u = l1[0];
     var exit = 0;
     if (l1$1) {
       exit = 1;
     }
     else if (l2) {
-      if (l2[2]) {
+      if (l2[1]) {
         exit = 1;
       }
       else {
-        return [
-                /* :: */0,
-                Caml_curry.app3(f, /* true */1, u, l2[1]),
+        return /* :: */[
+                Caml_curry.app3(f, /* true */1, u, l2[0]),
                 /* [] */0
               ];
       }
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "List.map2_last"
           ];
     }
     if (exit === 1) {
       if (l2) {
-        var r = Caml_curry.app3(f, /* false */0, u, l2[1]);
-        return [
-                /* :: */0,
+        var r = Caml_curry.app3(f, /* false */0, u, l2[0]);
+        return /* :: */[
                 r,
-                map2_last(f, l1$1, l2[2])
+                map2_last(f, l1$1, l2[1])
               ];
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "List.map2_last"
             ];
@@ -301,7 +286,6 @@ function map2_last(f, l1, l2) {
   }
   else if (l2) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "List.map2_last"
         ];
@@ -313,19 +297,17 @@ function map2_last(f, l1, l2) {
 
 function map_last(f, l1) {
   if (l1) {
-    var l1$1 = l1[2];
-    var u = l1[1];
+    var l1$1 = l1[1];
+    var u = l1[0];
     if (l1$1) {
       var r = Caml_curry.app2(f, /* false */0, u);
-      return [
-              /* :: */0,
+      return /* :: */[
               r,
               map_last(f, l1$1)
             ];
     }
     else {
-      return [
-              /* :: */0,
+      return /* :: */[
               Caml_curry.app2(f, /* true */1, u),
               /* [] */0
             ];
@@ -349,14 +331,12 @@ function take(n, l) {
   var arr_length = arr.length;
   if (arr_length < n) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Ext_list.take"
         ];
   }
   else {
-    return [
-            /* tuple */0,
+    return /* tuple */[
             $$Array.to_list($$Array.sub(arr, 0, n)),
             $$Array.to_list($$Array.sub(arr, n, arr_length - n))
           ];
@@ -370,12 +350,11 @@ function exclude_tail(x) {
     var x$1 = _x;
     var acc = _acc;
     if (x$1) {
-      var ys = x$1[2];
+      var ys = x$1[1];
       if (ys) {
         _x = ys;
-        _acc = [
-          /* :: */0,
-          x$1[1],
+        _acc = /* :: */[
+          x$1[0],
           acc
         ];
         continue ;
@@ -387,7 +366,6 @@ function exclude_tail(x) {
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.exclude_tail"
           ];
@@ -397,7 +375,7 @@ function exclude_tail(x) {
 
 function group(cmp, lst) {
   if (lst) {
-    return aux(cmp, lst[1], group(cmp, lst[2]));
+    return aux(cmp, lst[0], group(cmp, lst[1]));
   }
   else {
     return /* [] */0;
@@ -406,13 +384,11 @@ function group(cmp, lst) {
 
 function aux(cmp, x, xss) {
   if (xss) {
-    var ys = xss[2];
-    var y = xss[1];
+    var ys = xss[1];
+    var y = xss[0];
     if (Caml_curry.app2(cmp, x, List.hd(y))) {
-      return [
-              /* :: */0,
-              [
-                /* :: */0,
+      return /* :: */[
+              /* :: */[
                 x,
                 y
               ],
@@ -420,18 +396,15 @@ function aux(cmp, x, xss) {
             ];
     }
     else {
-      return [
-              /* :: */0,
+      return /* :: */[
               y,
               aux(cmp, x, ys)
             ];
     }
   }
   else {
-    return [
-            /* :: */0,
-            [
-              /* :: */0,
+    return /* :: */[
+            /* :: */[
               x,
               /* [] */0
             ],
@@ -450,7 +423,6 @@ function drop(_n, _h) {
     var n = _n;
     if (n < 0) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Ext_list.drop"
           ];
@@ -464,7 +436,6 @@ function drop(_n, _h) {
       }
       else {
         throw [
-              0,
               Caml_builtin_exceptions.Invalid_argument,
               "Ext_list.drop"
             ];
@@ -480,17 +451,14 @@ function for_all_ret(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var a = param[1];
+      var a = param[0];
       if (Caml_curry.app1(p, a)) {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
       else {
-        return [
-                /* Some */0,
-                a
-              ];
+        return /* Some */[a];
       }
     }
     else {
@@ -503,12 +471,12 @@ function for_all_opt(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var v = Caml_curry.app1(p, param[1]);
+      var v = Caml_curry.app1(p, param[0]);
       if (v) {
         return v;
       }
       else {
-        _param = param[2];
+        _param = param[1];
         continue ;
         
       }
@@ -532,10 +500,9 @@ function rev_map_acc(acc, f, l) {
     var param = _param;
     var accu = _accu;
     if (param) {
-      _param = param[2];
-      _accu = [
-        /* :: */0,
-        Caml_curry.app1(f, param[1]),
+      _param = param[1];
+      _accu = /* :: */[
+        Caml_curry.app1(f, param[0]),
         accu
       ];
       continue ;
@@ -549,8 +516,8 @@ function rev_map_acc(acc, f, l) {
 
 function rev_iter(f, xs) {
   if (xs) {
-    rev_iter(f, xs[2]);
-    return Caml_curry.app1(f, xs[1]);
+    rev_iter(f, xs[1]);
+    return Caml_curry.app1(f, xs[0]);
   }
   else {
     return /* () */0;

@@ -8,10 +8,7 @@ var Caml_curry = require("../runtime/caml_curry");
 var Assert     = require("assert");
 
 function test() {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var f = function (_n, _acc) {
     while(true) {
       var acc = _acc;
@@ -19,7 +16,7 @@ function test() {
       if (n) {
         _acc = (function(n,acc){
         return function () {
-          v[1] += n;
+          v[0] += n;
           return Caml_curry.app1(acc, /* () */0);
         }
         }(n,acc));
@@ -35,15 +32,12 @@ function test() {
   f(10, function () {
         return /* () */0;
       });
-  return v[1];
+  return v[0];
 }
 
 function test_closure() {
   var n = 6;
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = Caml_array.caml_make_vect(n, function (x) {
         return x;
       });
@@ -55,18 +49,15 @@ function test_closure() {
     }(i));
   }
   $$Array.iter(function (i) {
-        v[1] += Caml_curry.app1(i, 0);
+        v[0] += Caml_curry.app1(i, 0);
         return /* () */0;
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function test_closure2() {
   var n = 6;
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = Caml_array.caml_make_vect(n, function (x) {
         return x;
       });
@@ -79,36 +70,30 @@ function test_closure2() {
     }(j));
   }
   $$Array.iter(function (i) {
-        v[1] += Caml_curry.app1(i, 0);
+        v[0] += Caml_curry.app1(i, 0);
         return /* () */0;
       }, arr);
-  return v[1];
+  return v[0];
 }
 
-Mt.from_suites("cps_test.ml", [
-      /* :: */0,
-      [
-        /* tuple */0,
+Mt.from_suites("cps_test.ml", /* :: */[
+      /* tuple */[
         "cps_test_sum",
         function () {
           var prim = test(/* () */0);
           return Assert.deepEqual(55, prim);
         }
       ],
-      [
-        /* :: */0,
-        [
-          /* tuple */0,
+      /* :: */[
+        /* tuple */[
           "cps_test_closure",
           function () {
             var prim = test_closure(/* () */0);
             return Assert.deepEqual(15, prim);
           }
         ],
-        [
-          /* :: */0,
-          [
-            /* tuple */0,
+        /* :: */[
+          /* tuple */[
             "cps_test_closure2",
             function () {
               var prim = test_closure2(/* () */0);

@@ -26,7 +26,7 @@
 
 val no_side_effect : J.expression -> bool
 
-val is_constant : J.expression -> bool
+
 (** check if a javascript ast is constant 
     
     The better signature might be 
@@ -177,6 +177,13 @@ module Exp : sig
 
   val arr : ?comment:string -> J.mutable_flag -> J.expression list -> t
 
+  val make_block : 
+    ?comment:string ->
+    J.expression -> J.tag_info -> J.expression list -> J.mutable_flag -> t
+
+  val uninitialized_object : 
+    ?comment:string -> J.expression -> J.expression -> t
+
   val uninitialized_array : unary_op
 
   val seq : binary_op
@@ -214,12 +221,24 @@ module Exp : sig
   val null : ?comment:string -> unit -> t
   
   val tag : ?comment:string -> J.expression -> t
-  
+  val set_tag : ?comment:string -> J.expression -> J.expression -> t
+
+  (** Note that this is coupled with how we encode block, if we use the 
+      `Object.defineProperty(..)` since the array already hold the length,
+      this should be a nop 
+  *)
+
+  val set_length : ?comment:string -> J.expression -> J.expression -> t
+  val obj_length : ?comment:string -> J.expression -> t
   val to_ocaml_boolean : unary_op
   
   val and_ : binary_op
-  
   val or_ : binary_op
+
+  (** we don't expose a general interface, since a general interface is generally not safe *)
+  val is_instance_array  : unary_op
+  (** used combined with [caml_update_dummy]*)
+  val dummy_obj : ?comment:string ->  unit -> t 
   
   (** convert a block to expresion by using IIFE *)    
   val of_block : ?comment:string -> J.statement list -> J.expression -> t

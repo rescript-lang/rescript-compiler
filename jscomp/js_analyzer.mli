@@ -60,3 +60,5 @@ val rev_flatten_seq : J.expression -> J.block
 
 val rev_toplevel_flatten : J.block -> J.block
 (** return the block in reverse order *)
+
+val is_constant : J.expression -> bool

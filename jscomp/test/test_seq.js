@@ -2,38 +2,41 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("../stdlib/pervasives");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_curry              = require("../runtime/caml_curry");
 
-var Bad = [
-  248,
-  "Test_seq.Bad",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Bad = {
+  0: "Test_seq.Bad",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
-var Help = [
-  248,
-  "Test_seq.Help",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Help = {
+  0: "Test_seq.Help",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
-var Stop = [
-  248,
-  "Test_seq.Stop",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Stop = {
+  0: "Test_seq.Stop",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function assoc3(x, _l) {
   while(true) {
     var l = _l;
     if (l) {
-      var match = l[1];
-      if (Caml_primitive.caml_equal(match[1], x)) {
-        return match[2];
+      var match = l[0];
+      if (Caml_obj.caml_equal(match[0], x)) {
+        return match[1];
       }
       else {
-        _l = l[2];
+        _l = l[1];
         continue ;
         
       }
@@ -46,12 +49,12 @@ function assoc3(x, _l) {
 
 function help_action() {
   throw [
-        0,
         Stop,
-        [
-          /* Unknown */0,
-          "-help"
-        ]
+        /* Unknown */{
+          0: "-help",
+          length: 1,
+          tag: 0
+        }
       ];
 }
 
@@ -72,15 +75,14 @@ function add_help(speclist) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.Not_found) {
-      add1 = [
-        /* :: */0,
-        [
-          /* tuple */0,
+      add1 = /* :: */[
+        /* tuple */[
           "-help",
-          [
-            /* Unit */0,
-            help_action
-          ],
+          /* Unit */{
+            0: help_action,
+            length: 1,
+            tag: 0
+          },
           " Display this list of options"
         ],
         /* [] */0
@@ -97,15 +99,14 @@ function add_help(speclist) {
   }
   catch (exn$1){
     if (exn$1 === Caml_builtin_exceptions.Not_found) {
-      add2 = [
-        /* :: */0,
-        [
-          /* tuple */0,
+      add2 = /* :: */[
+        /* tuple */[
           "--help",
-          [
-            /* Unit */0,
-            help_action
-          ],
+          /* Unit */{
+            0: help_action,
+            length: 1,
+            tag: 0
+          },
           " Display this list of options"
         ],
         /* [] */0

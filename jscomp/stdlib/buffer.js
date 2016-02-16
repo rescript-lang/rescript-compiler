@@ -13,8 +13,7 @@ function create(n) {
   var n$1 = n < 1 ? 1 : n;
   var n$2 = n$1 > Sys.max_string_length ? Sys.max_string_length : n$1;
   var s = Caml_string.caml_create_string(n$2);
-  return [
-          /* record */0,
+  return /* record */[
           s,
           0,
           n$2,
@@ -23,117 +22,112 @@ function create(n) {
 }
 
 function contents(b) {
-  return Bytes.sub_string(b[1], 0, b[2]);
+  return Bytes.sub_string(b[0], 0, b[1]);
 }
 
 function to_bytes(b) {
-  return Bytes.sub(b[1], 0, b[2]);
+  return Bytes.sub(b[0], 0, b[1]);
 }
 
 function sub(b, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > b[2] - len) {
+  if (ofs < 0 || len < 0 || ofs > b[1] - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Buffer.sub"
         ];
   }
   else {
-    return Bytes.sub_string(b[1], ofs, len);
+    return Bytes.sub_string(b[0], ofs, len);
   }
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
-  if (len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len) {
+  if (len < 0 || srcoff < 0 || srcoff > src[1] - len || dstoff < 0 || dstoff > dst.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Buffer.blit"
         ];
   }
   else {
-    return Bytes.blit(src[1], srcoff, dst, dstoff, len);
+    return Bytes.blit(src[0], srcoff, dst, dstoff, len);
   }
 }
 
 function nth(b, ofs) {
-  if (ofs < 0 || ofs >= b[2]) {
+  if (ofs < 0 || ofs >= b[1]) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Buffer.nth"
         ];
   }
   else {
-    return b[1][ofs];
+    return b[0][ofs];
   }
 }
 
 function length(b) {
-  return b[2];
+  return b[1];
 }
 
 function clear(b) {
-  b[2] = 0;
+  b[1] = 0;
   return /* () */0;
 }
 
 function reset(b) {
-  b[2] = 0;
-  b[1] = b[4];
-  b[3] = b[1].length;
+  b[1] = 0;
+  b[0] = b[3];
+  b[2] = b[0].length;
   return /* () */0;
 }
 
 function resize(b, more) {
-  var len = b[3];
+  var len = b[2];
   var new_len = len;
-  while(b[2] + more > new_len) {
+  while(b[1] + more > new_len) {
     new_len = 2 * new_len;
   };
   if (new_len > Sys.max_string_length) {
-    if (b[2] + more <= Sys.max_string_length) {
+    if (b[1] + more <= Sys.max_string_length) {
       new_len = Sys.max_string_length;
     }
     else {
       throw [
-            0,
             Caml_builtin_exceptions.Failure,
             "Buffer.add: cannot grow buffer"
           ];
     }
   }
   var new_buffer = Caml_string.caml_create_string(new_len);
-  Bytes.blit(b[1], 0, new_buffer, 0, b[2]);
-  b[1] = new_buffer;
-  b[3] = new_len;
+  Bytes.blit(b[0], 0, new_buffer, 0, b[1]);
+  b[0] = new_buffer;
+  b[2] = new_len;
   return /* () */0;
 }
 
 function add_char(b, c) {
-  var pos = b[2];
-  if (pos >= b[3]) {
+  var pos = b[1];
+  if (pos >= b[2]) {
     resize(b, 1);
   }
-  b[1][pos] = c;
-  b[2] = pos + 1;
+  b[0][pos] = c;
+  b[1] = pos + 1;
   return /* () */0;
 }
 
 function add_substring(b, s, offset, len) {
   if (offset < 0 || len < 0 || offset + len > s.length) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Buffer.add_substring/add_subbytes"
         ];
   }
-  var new_position = b[2] + len;
-  if (new_position > b[3]) {
+  var new_position = b[1] + len;
+  if (new_position > b[2]) {
     resize(b, len);
   }
-  Bytes.blit_string(s, offset, b[1], b[2], len);
-  b[2] = new_position;
+  Bytes.blit_string(s, offset, b[0], b[1], len);
+  b[1] = new_position;
   return /* () */0;
 }
 
@@ -143,12 +137,12 @@ function add_subbytes(b, s, offset, len) {
 
 function add_string(b, s) {
   var len = s.length;
-  var new_position = b[2] + len;
-  if (new_position > b[3]) {
+  var new_position = b[1] + len;
+  if (new_position > b[2]) {
     resize(b, len);
   }
-  Bytes.blit_string(s, 0, b[1], b[2], len);
-  b[2] = new_position;
+  Bytes.blit_string(s, 0, b[0], b[1], len);
+  b[1] = new_position;
   return /* () */0;
 }
 
@@ -157,37 +151,34 @@ function add_bytes(b, s) {
 }
 
 function add_buffer(b, bs) {
-  return add_subbytes(b, bs[1], 0, bs[2]);
+  return add_subbytes(b, bs[0], 0, bs[1]);
 }
 
 function add_channel(b, ic, len) {
   if (len < 0 || len > Sys.max_string_length) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Buffer.add_channel"
         ];
   }
-  if (b[2] + len > b[3]) {
+  if (b[1] + len > b[2]) {
     resize(b, len);
   }
-  Pervasives.really_input(ic, b[1], b[2], len);
-  b[2] += len;
+  Pervasives.really_input(ic, b[0], b[1], len);
+  b[1] += len;
   return /* () */0;
 }
 
 function output_buffer(oc, b) {
-  return Pervasives.output(oc, b[1], 0, b[2]);
+  return Pervasives.output(oc, b[0], 0, b[1]);
 }
 
 function closing(param) {
   if (param !== 40) {
     if (param !== 123) {
       throw [
-            0,
             Caml_builtin_exceptions.Assert_failure,
             [
-              0,
               "buffer.ml",
               115,
               9
@@ -299,8 +290,7 @@ function find_ident(s, start, lim) {
     if (c !== 40) {
       if (c !== 123) {
         var stop = advance_to_non_alpha(s, start + 1);
-        return [
-                /* tuple */0,
+        return /* tuple */[
                 $$String.sub(s, start, stop - start),
                 stop
               ];
@@ -315,8 +305,7 @@ function find_ident(s, start, lim) {
     if (exit === 1) {
       var new_start = start + 1;
       var stop$1 = advance_to_closing(c, closing(c), 0, s, new_start);
-      return [
-              /* tuple */0,
+      return /* tuple */[
               $$String.sub(s, new_start, stop$1 - start - 1),
               stop$1 + 1
             ];
@@ -367,8 +356,8 @@ function add_substitute(b, f, s) {
       else {
         var j = i + 1;
         var match = find_ident(s, j, lim);
-        add_string(b, Caml_curry.app1(f, match[1]));
-        _i = match[2];
+        add_string(b, Caml_curry.app1(f, match[0]));
+        _i = match[1];
         _previous = /* " " */32;
         continue ;
         

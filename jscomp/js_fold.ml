@@ -46,6 +46,7 @@ class virtual fold =
         let o = o#ident _x in
         let o = o#option (fun o -> o#expression) _x_i1 in
         let o = o#property _x_i2 in let o = o#ident_info _x_i3 in o
+    method tag_info : tag_info -> 'self_type = o#unknown
     method statement_desc : statement_desc -> 'self_type =
       function
       | Block _x -> let o = o#block _x in o
@@ -124,6 +125,7 @@ class virtual fold =
      *)
                  (* shallow copy, like [x.slice] *)
                  (* For [caml_array_append]*)
+                 (* | Tag_ml_obj of expression *)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -201,6 +203,20 @@ class virtual fold =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
+                 (* [tag] and [size] tailed  for [Obj.new_block] *)
+                 (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+                 (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)
                  (* pure*) (* pure *)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
    block can be nested, specified in ES3 
@@ -294,7 +310,7 @@ class virtual fold =
     method return_expression : return_expression -> 'self_type =
       fun { return_value = _x } -> let o = o#expression _x in o
     method required_modules : required_modules -> 'self_type = o#unknown
-    method property_name : property_name -> 'self_type = o#string
+    method property_name : property_name -> 'self_type = o#unknown
     method property_map : property_map -> 'self_type =
       o#list
         (fun o (_x, _x_i1) ->
@@ -334,7 +350,6 @@ class virtual fold =
       | Array_copy _x -> let o = o#expression _x in o
       | Array_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Tag_ml_obj _x -> let o = o#expression _x in o
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Int_of_boolean _x -> let o = o#expression _x in o
@@ -379,6 +394,18 @@ class virtual fold =
       | Array (_x, _x_i1) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in o
+      | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
+          let o = o#list (fun o -> o#expression) _x in
+          let o = o#mutable_flag _x_i1 in
+          let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
+      | Caml_uninitialized_obj (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Caml_block_tag _x -> let o = o#expression _x in o
+      | Caml_block_set_tag (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Caml_block_length _x -> let o = o#expression _x in o
+      | Caml_block_set_length (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o
       | Object _x -> let o = o#property_map _x in o
     method expression : expression -> 'self_type =

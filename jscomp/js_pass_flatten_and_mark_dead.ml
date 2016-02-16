@@ -173,45 +173,55 @@ let subst_map name = object (self)
 
     | Variable ({ ident ; 
                   property = (Strict | StrictOpt | Alias);
-                  value = Some ({expression_desc = (Array ( _:: _ :: _ as ls, Immutable))} as array)
+                  value = Some (
+                      {expression_desc = (Caml_block ( _:: _ :: _ as ls, Immutable, tag, tag_info) 
+                                         )} as block)
                 } as variable) -> 
       (** If we do this, we should prevent incorrect inlning to inline it into an array :) 
           do it only when block size is larger than one
       *)
-      let bindings = ref [] in
-      let e = List.mapi (fun i (x : J.expression) ->
-          match x.expression_desc with
-          | J.Var _ | Number _ | Str _ -> x
-          | _ ->
-            (* tradeoff, 
-                when the block is small, it does not make 
-                sense too much -- 
-                bottomline, when the block size is one, no need to do 
-                this
-            *)
-            let v' = self#expression x in
-            let match_id =
-              Ext_ident.create
-                (Printf.sprintf "%s_%03d"
-                   ident.name i) in
-            bindings := (match_id , v') :: !bindings;
-            E.var match_id
-        ) ls in
-      let e = {array with expression_desc = Array(e, Immutable)} in
-        let () = self#add_substitue ident e in
-        let bindings =  !bindings in
-        let original_statement = {v with statement_desc = 
-           Variable {variable with value =  Some   e }
+
+      let (_, e, bindings) = 
+        List.fold_left 
+          (fun  (i,e,  acc) (x : J.expression) -> 
+             match x.expression_desc with 
+             | J.Var _ | Number _ | Str _ 
+               -> 
+               (i + 1, x :: e, acc)
+             | _ ->                
+               (* tradeoff, 
+                   when the block is small, it does not make 
+                   sense too much -- 
+                   bottomline, when the block size is one, no need to do 
+                   this
+               *)
+               let v' = self#expression x in 
+               let match_id =
+                 Ext_ident.create
+                   (Printf.sprintf "%s_%03d"
+                      ident.name i) in
+               (i + 1, E.var match_id :: e, (match_id, v') :: acc)               
+          ) (0, [], []) ls  in
+      let e = 
+        {block with 
+         expression_desc = 
+           Caml_block(List.rev e, Immutable, tag, tag_info)
         } in
-        begin match bindings with 
+      let () = self#add_substitue ident e in
+      (* let bindings =  !bindings in *)
+      let original_statement = 
+        { v with 
+          statement_desc = Variable {variable with value =  Some   e }
+        } in
+      begin match bindings with 
         | [] -> 
-            original_statement
+          original_statement
         | _ ->  
-            self#add_substitue ident e ;
-            S.block @@
-              (Ext_list.rev_map_acc [original_statement] (fun (id,v) -> 
-                S.define ~kind:Strict id v)  bindings  )
-        end
+          (* self#add_substitue ident e ; *)
+          S.block @@
+          (Ext_list.rev_map_acc [original_statement] (fun (id,v) -> 
+               S.define ~kind:Strict id v)  bindings  )
+      end
     | _ -> super#statement v 
 
   method! expression x =
@@ -219,7 +229,7 @@ let subst_map name = object (self)
     | Access ({expression_desc = Var (Id (id))}, 
               {expression_desc = Number (Int {i; _})}) -> 
       begin match Hashtbl.find self#get_substitution id with 
-        | {expression_desc = Array (ls, Immutable) } 
+        | {expression_desc = Caml_block (ls, Immutable, _, _) } 
           -> 
           (* user program can be wrong, we should not 
              turn a runtime crash into compile time crash : )

@@ -102,4 +102,4 @@ let suites = Mt.[
 ]
 
 open Mt
-;; from_pair_suites __FILE__ suites
+(* ;; from_pair_suites __FILE__ suites *)

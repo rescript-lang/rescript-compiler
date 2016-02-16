@@ -10,20 +10,20 @@ function kfprintf(k, o, param) {
   return CamlinternalFormat.make_printf(function (o, acc) {
               CamlinternalFormat.output_acc(o, acc);
               return Caml_curry.app1(k, o);
-            }, o, /* End_of_acc */0, param[1]);
+            }, o, /* End_of_acc */0, param[0]);
 }
 
 function kbprintf(k, b, param) {
   return CamlinternalFormat.make_printf(function (b, acc) {
               CamlinternalFormat.bufput_acc(b, acc);
               return Caml_curry.app1(k, b);
-            }, b, /* End_of_acc */0, param[1]);
+            }, b, /* End_of_acc */0, param[0]);
 }
 
 function ikfprintf(k, oc, param) {
   return CamlinternalFormat.make_printf(function (oc, _) {
               return Caml_curry.app1(k, oc);
-            }, oc, /* End_of_acc */0, param[1]);
+            }, oc, /* End_of_acc */0, param[0]);
 }
 
 function fprintf(oc, fmt) {
@@ -58,7 +58,7 @@ function ksprintf(k, param) {
     CamlinternalFormat.strput_acc(buf, acc);
     return Caml_curry.app1(k, Buffer.contents(buf));
   };
-  return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[1]);
+  return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[0]);
 }
 
 function sprintf(fmt) {

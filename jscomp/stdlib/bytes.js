@@ -2,9 +2,9 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
 var Char                    = require("./char");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
@@ -43,7 +43,6 @@ function of_string(s) {
 function sub(s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.sub / Bytes.sub"
         ];
@@ -62,17 +61,15 @@ function sub_string(b, ofs, len) {
 function extend(s, left, right) {
   var len = s.length + left + right;
   var r = Caml_string.caml_create_string(len);
-  var match = left < 0 ? [
-      /* tuple */0,
+  var match = left < 0 ? /* tuple */[
       -left,
       0
-    ] : [
-      /* tuple */0,
+    ] : /* tuple */[
       0,
       left
     ];
-  var dstoff = match[2];
-  var srcoff = match[1];
+  var dstoff = match[1];
+  var srcoff = match[0];
   var cpylen = Pervasives.min(s.length - srcoff, len - dstoff);
   if (cpylen > 0) {
     Caml_string.caml_blit_bytes(s, srcoff, r, dstoff, cpylen);
@@ -83,7 +80,6 @@ function extend(s, left, right) {
 function fill(s, ofs, len, c) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.fill / Bytes.fill"
         ];
@@ -96,7 +92,6 @@ function fill(s, ofs, len, c) {
 function blit(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Bytes.blit"
         ];
@@ -109,7 +104,6 @@ function blit(s1, ofs1, s2, ofs2, len) {
 function blit_string(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.blit / Bytes.blit_string"
         ];
@@ -135,33 +129,24 @@ function iteri(f, a) {
 
 function concat(sep, l) {
   if (l) {
-    var hd = l[1];
-    var num = [
-      0,
-      0
-    ];
-    var len = [
-      0,
-      0
-    ];
+    var hd = l[0];
+    var num = [0];
+    var len = [0];
     List.iter(function (s) {
-          ++ num[1];
-          len[1] += s.length;
+          ++ num[0];
+          len[0] += s.length;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[1] + sep.length * (num[1] - 1));
+    var r = Caml_string.caml_create_string(len[0] + sep.length * (num[0] - 1));
     Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
-    var pos = [
-      0,
-      hd.length
-    ];
+    var pos = [hd.length];
     List.iter(function (s) {
-          Caml_string.caml_blit_bytes(sep, 0, r, pos[1], sep.length);
-          pos[1] += sep.length;
-          Caml_string.caml_blit_bytes(s, 0, r, pos[1], s.length);
-          pos[1] += s.length;
+          Caml_string.caml_blit_bytes(sep, 0, r, pos[0], sep.length);
+          pos[0] += sep.length;
+          Caml_string.caml_blit_bytes(s, 0, r, pos[0], s.length);
+          pos[0] += s.length;
           return /* () */0;
-        }, l[2]);
+        }, l[1]);
     return r;
   }
   else {
@@ -402,7 +387,6 @@ function index_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.index_from / Bytes.index_from"
         ];
@@ -436,7 +420,6 @@ function rindex(s, c) {
 function rindex_from(s, i, c) {
   if (i < -1 || i >= s.length) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.rindex_from / Bytes.rindex_from"
         ];
@@ -450,7 +433,6 @@ function contains_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.contains_from / Bytes.contains_from"
         ];
@@ -478,7 +460,6 @@ function contains(s, c) {
 function rcontains_from(s, i, c) {
   if (i < 0 || i >= s.length) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "String.rcontains_from / Bytes.rcontains_from"
         ];
@@ -500,7 +481,7 @@ function rcontains_from(s, i, c) {
 }
 
 function compare(x, y) {
-  return Caml_primitive.caml_compare(x, y);
+  return Caml_obj.caml_compare(x, y);
 }
 
 function unsafe_to_string(prim) {

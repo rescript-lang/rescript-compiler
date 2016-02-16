@@ -3,13 +3,13 @@
 
 var Mt = require("./mt");
 
-var a = /* array */[
+var a = /* float array */[
   0,
   1,
   2
 ];
 
-var b = /* array */[
+var b = /* int array */[
   0,
   1,
   2
@@ -36,38 +36,33 @@ function h() {
 
 function g() {
   f(/* () */0);
-  return [
-          /* Eq */0,
-          [
-            /* tuple */0,
+  return /* Eq */{
+          0: /* tuple */[
             a[0],
             b[0]
           ],
-          [
-            /* tuple */0,
+          1: /* tuple */[
             3.0,
             3
-          ]
-        ];
+          ],
+          length: 2,
+          tag: 0
+        };
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "const_block_test",
   g
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "avoid_mutable_inline_test",
     function () {
       c[0] = 3;
       c[1] = 4;
-      return [
-              /* Eq */0,
-              /* array */[
+      return /* Eq */{
+              0: /* array */[
                 3,
                 4,
                 2,
@@ -75,23 +70,23 @@ var suites_002 = [
                 4,
                 5
               ],
-              c
-            ];
+              1: c,
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("const_block_test.ml", suites);
 
-var v = [
-  /* tuple */0,
+var v = /* tuple */[
   0,
   1,
   2,
