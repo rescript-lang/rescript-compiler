@@ -35,10 +35,6 @@ function caml_obj_truncate(x, new_size) {
   }
 }
 
-function caml_obj_is_block(x) {
-  return +(typeof x.length === "undefined");
-}
-
 function caml_lazy_make_forward(x) {
   return {
           0: x,
@@ -288,7 +284,6 @@ var caml_nativeint_compare = caml_int_compare;
 
 exports.caml_obj_dup           = caml_obj_dup;
 exports.caml_obj_truncate      = caml_obj_truncate;
-exports.caml_obj_is_block      = caml_obj_is_block;
 exports.caml_lazy_make_forward = caml_lazy_make_forward;
 exports.caml_update_dummy      = caml_update_dummy;
 exports.caml_int_compare       = caml_int_compare;

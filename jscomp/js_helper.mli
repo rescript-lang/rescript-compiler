@@ -205,8 +205,8 @@ module Exp : sig
 
   val js_global : ?comment:string -> string -> t
 
-  val undefined : ?comment:string -> unit -> t
-
+  val undefined : t
+  val is_caml_block : ?comment:string -> t -> t
   val math : ?comment:string -> string -> t list -> t
   (** [math "abs"] --> Math["abs"] *)    
 

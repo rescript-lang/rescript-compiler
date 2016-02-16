@@ -379,7 +379,6 @@ and
   match x with
   | Var v ->
     vident cxt f v 
-
   | Seq (e1, e2) ->
     let action () = 
       let cxt = expression 0 cxt f e1 in
@@ -590,7 +589,7 @@ and
   | Caml_block_set_length(a,b) -> 
     expression_desc cxt l f 
       (Bin(Eq, 
-           {expression_desc = Caml_block_length a; comment = None},
+           {expression_desc = Length (a,Caml_block); comment = None},
            b
           ))
   | Bin (Eq, {expression_desc = Var i },
@@ -808,8 +807,7 @@ and
     in
     if l > 15 then P.paren_group f 1 action else action ()
 
-  | Array_length e | String_length e | Bytes_length e 
-  | Function_length e | Caml_block_length e -> 
+  | Length (e, _) -> 
     let action () =  (** Todo: check parens *)
       let cxt = expression 15 cxt f e in
       P.string f L.dot;
@@ -1031,14 +1029,13 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_uninitialized_obj _ 
       | Fun _ | Object _ -> true
       | Caml_block_set_tag _ 
-      | Caml_block_length _
+      | Length _ 
       | Caml_block_set_length _ 
       | Anything_to_string _ 
       | String_of_small_int_array _
       | Call _ 
       | Array_append _ 
       | Array_copy _ 
-      (* | Tag_ml_obj _ *)
       | Caml_block_tag _ 
       | Seq _
       | Dot _
@@ -1047,9 +1044,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | String_access _ 
       | Access _
       | Array_of_size _ 
-      | Array_length _
-      | String_length _ 
-      | Bytes_length _
       | String_append _ 
       | Char_of_int _ 
       | Char_to_int _
@@ -1062,7 +1056,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block  _ 
       | FlatCall _ 
       | Typeof _
-      | Function_length _ 
       | Number _
       | Not _ 
       | New _ 

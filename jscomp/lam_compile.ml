@@ -610,7 +610,8 @@ and
             cxt with should_return = False; st = NeedValue} e with 
         | {block = b; value =  Some v} -> 
 
-          Js_output.make (b @ [S.throw v]) ~value:(E.undefined ()) ~finished:True
+          Js_output.make (b @ [S.throw v])
+            ~value:E.undefined ~finished:True
         (* FIXME -- breaks invariant when NeedValue, reason is that js [throw] is statement 
            while ocaml it's an expression, we should remove such things in lambda optimizations
         *)
@@ -940,7 +941,7 @@ and
           in
           args_code ++ (* Declared in [Lstaticraise ]*)
           Js_output.make [S.assign exit_id (E.int order_id)]
-            ~value:(E.undefined ())
+            ~value:E.undefined
         | exception Not_found ->
           Js_output.make [S.unknown_lambda ~comment:"error" lam]
           (* staticraise is always enclosed by catch  *)

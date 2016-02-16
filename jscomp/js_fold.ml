@@ -324,6 +324,7 @@ class virtual fold =
         let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
     method number : number -> 'self_type = o#unknown
     method mutable_flag : mutable_flag -> 'self_type = o#unknown
+    method length_object : length_object -> 'self_type = o#unknown
     method label : label -> 'self_type = o#string
     method kind : kind -> 'self_type = o#unknown
     method int_op : int_op -> 'self_type = o#unknown
@@ -340,10 +341,8 @@ class virtual fold =
       | Math (_x, _x_i1) ->
           let o = o#string _x in
           let o = o#list (fun o -> o#expression) _x_i1 in o
-      | Array_length _x -> let o = o#expression _x in o
-      | String_length _x -> let o = o#expression _x in o
-      | Bytes_length _x -> let o = o#expression _x in o
-      | Function_length _x -> let o = o#expression _x in o
+      | Length (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#length_object _x_i1 in o
       | Char_of_int _x -> let o = o#expression _x in o
       | Char_to_int _x -> let o = o#expression _x in o
       | Array_of_size _x -> let o = o#expression _x in o
@@ -403,7 +402,6 @@ class virtual fold =
       | Caml_block_tag _x -> let o = o#expression _x in o
       | Caml_block_set_tag (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
-      | Caml_block_length _x -> let o = o#expression _x in o
       | Caml_block_set_length (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Number _x -> let o = o#number _x in o

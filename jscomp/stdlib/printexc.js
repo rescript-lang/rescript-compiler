@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_io                 = require("../runtime/caml_io");
 var Obj                     = require("./obj");
@@ -79,28 +78,7 @@ var locfmt = /* Format */{
 
 function field(x, i) {
   var f = x[i];
-  if (Caml_obj.caml_obj_is_block(f)) {
-    if ((f.tag | 0) === Obj.string_tag) {
-      return Caml_curry.app1(Printf.sprintf(/* Format */{
-                      0: /* Caml_string */{
-                        0: /* No_padding */0,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 3
-                      },
-                      1: "%S",
-                      length: 2,
-                      tag: 0
-                    }), f);
-    }
-    else if ((f.tag | 0) === Obj.double_tag) {
-      return Pervasives.string_of_float(f);
-    }
-    else {
-      return "_";
-    }
-  }
-  else {
+  if (f.length === undefined) {
     return Caml_curry.app1(Printf.sprintf(/* Format */{
                     0: /* Int */{
                       0: /* Int_d */0,
@@ -114,6 +92,25 @@ function field(x, i) {
                     length: 2,
                     tag: 0
                   }), f);
+  }
+  else if ((f.tag | 0) === Obj.string_tag) {
+    return Caml_curry.app1(Printf.sprintf(/* Format */{
+                    0: /* Caml_string */{
+                      0: /* No_padding */0,
+                      1: /* End_of_format */0,
+                      length: 2,
+                      tag: 3
+                    },
+                    1: "%S",
+                    length: 2,
+                    tag: 0
+                  }), f);
+  }
+  else if ((f.tag | 0) === Obj.double_tag) {
+    return Pervasives.string_of_float(f);
+  }
+  else {
+    return "_";
   }
 }
 

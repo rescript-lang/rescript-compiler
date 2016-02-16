@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Marshal                 = require("./marshal");
 var Caml_primitive          = require("../runtime/caml_primitive");
@@ -33,9 +32,9 @@ var string_tag = 252;
 var custom_tag = 255;
 
 function extension_slot(x) {
-  var slot = Caml_obj.caml_obj_is_block(x) && (x.tag | 0) !== object_tag && x.length >= 1 ? x[0] : x;
+  var slot = x.length !== undefined && (x.tag | 0) !== object_tag && x.length >= 1 ? x[0] : x;
   var name;
-  if (Caml_obj.caml_obj_is_block(slot) && (slot.tag | 0) === object_tag) {
+  if (slot.length !== undefined && (slot.tag | 0) === object_tag) {
     name = slot[0];
   }
   else {

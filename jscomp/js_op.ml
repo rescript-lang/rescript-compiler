@@ -215,6 +215,12 @@ type tag_info = Lambda.tag_info =
   | Record 
   | NA
 
+type length_object = 
+  | Array 
+  | String
+  | Bytes
+  | Function
+  | Caml_block
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)
 (*   | Const_int of int *)

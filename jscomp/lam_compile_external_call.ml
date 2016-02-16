@@ -235,7 +235,7 @@ let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr
           (*   (E.str "number")) *)
 
           [E.econd arg
-             (E.undefined ())
+             E.undefined
              (E.index arg 1)]
       end
     | _ ->  [arg]  
@@ -280,7 +280,7 @@ let translate
                              E.econd arg
                                (* (E.bin EqEqEq (E.typeof arg) *)
                                (*   (E.str "number")) *)
-                               (E.undefined ())
+                               E.undefined
                                (E.index arg 1))
                   end)                   
               arg_types args 

@@ -62,8 +62,6 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
     end
 
      
-let caml_obj_is_block x = 
-  js_typeof (Obj.repr (js_obj_length x )) = "undefined"
 
 let caml_lazy_make_forward x = lazy x 
 

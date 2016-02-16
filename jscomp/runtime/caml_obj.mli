@@ -22,20 +22,7 @@ val caml_obj_dup : Obj.t -> Obj.t
 
 val caml_obj_truncate : Obj.t -> int -> unit
 
-(** 
 
-   TODO: Semantics difference 
-   {[
-   Obj.is_block (Obj.repr "x");;
-   true   
-   ]}
-
-   {[
-     Obj.is_block (Obj.repr 32.0);;
-     true
-   ]}   
-*)
-val caml_obj_is_block : Obj.t -> bool
 
 val caml_lazy_make_forward : 'a -> 'a lazy_t
 
