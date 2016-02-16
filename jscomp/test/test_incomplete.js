@@ -6,10 +6,8 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 function f(x) {
   if (x > 3 || x < 1) {
     throw [
-          0,
           Caml_builtin_exceptions.Match_failure,
           [
-            0,
             "test_incomplete.ml",
             3,
             2
@@ -31,13 +29,13 @@ function f2(x) {
 }
 
 function f3(x) {
-  switch (x[0]) {
+  switch (x.tag | 0) {
     case 0 : 
     case 2 : 
-        return x[1] + 1;
+        return x[0] + 1;
     case 1 : 
     case 3 : 
-        return x[1] + 2;
+        return x[0] + 2;
     
   }
 }

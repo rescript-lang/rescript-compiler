@@ -15,13 +15,13 @@ function $$eval(_bdd, vars) {
         return /* true */1;
       }
     }
-    else if (vars[bdd[2]]) {
-      _bdd = bdd[4];
+    else if (vars[bdd[1]]) {
+      _bdd = bdd[3];
       continue ;
       
     }
     else {
-      _bdd = bdd[1];
+      _bdd = bdd[0];
       continue ;
       
     }
@@ -38,51 +38,37 @@ function getId(bdd) {
     }
   }
   else {
-    return bdd[3];
+    return bdd[2];
   }
 }
 
 var initSize_1 = 8 * 1024 - 1;
 
-var nodeC = [
-  0,
-  1
-];
+var nodeC = [1];
 
-var sz_1 = [
-  0,
-  initSize_1
-];
+var sz_1 = [initSize_1];
 
-var htab = [
-  0,
-  Caml_array.caml_make_vect(sz_1[1] + 1, /* [] */0)
-];
+var htab = [Caml_array.caml_make_vect(sz_1[0] + 1, /* [] */0)];
 
-var n_items = [
-  0,
-  0
-];
+var n_items = [0];
 
 function hashVal(x, y, v) {
   return (x << 1) + y + (v << 2);
 }
 
 function resize(newSize) {
-  var arr = htab[1];
+  var arr = htab[0];
   var newSz_1 = newSize - 1;
   var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
     while(true) {
       var bucket = _bucket;
       if (bucket) {
-        var n = bucket[1];
+        var n = bucket[0];
         if (typeof n === "number") {
           throw [
-                0,
                 Caml_builtin_exceptions.Assert_failure,
                 [
-                  0,
                   "bdd.ml",
                   54,
                   27
@@ -90,13 +76,12 @@ function resize(newSize) {
               ];
         }
         else {
-          var ind = hashVal(getId(n[1]), getId(n[4]), n[2]) & newSz_1;
-          newArr[ind] = [
-            /* :: */0,
+          var ind = hashVal(getId(n[0]), getId(n[3]), n[1]) & newSz_1;
+          newArr[ind] = /* :: */[
             n,
             newArr[ind]
           ];
-          _bucket = bucket[2];
+          _bucket = bucket[1];
           continue ;
           
         }
@@ -106,40 +91,38 @@ function resize(newSize) {
       }
     };
   };
-  for(var n = 0 ,n_finish = sz_1[1]; n<= n_finish; ++n){
+  for(var n = 0 ,n_finish = sz_1[0]; n<= n_finish; ++n){
     copyBucket(arr[n]);
   }
-  htab[1] = newArr;
-  sz_1[1] = newSz_1;
+  htab[0] = newArr;
+  sz_1[0] = newSz_1;
   return /* () */0;
 }
 
 function insert(idl, idh, v, ind, bucket, newNode) {
-  if (n_items[1] <= sz_1[1]) {
-    htab[1][ind] = [
-      /* :: */0,
+  if (n_items[0] <= sz_1[0]) {
+    htab[0][ind] = /* :: */[
       newNode,
       bucket
     ];
-    return ++ n_items[1];
+    return ++ n_items[0];
   }
   else {
-    resize(sz_1[1] + sz_1[1] + 2);
-    var ind$1 = hashVal(idl, idh, v) & sz_1[1];
-    htab[1][ind$1] = [
-      /* :: */0,
+    resize(sz_1[0] + sz_1[0] + 2);
+    var ind$1 = hashVal(idl, idh, v) & sz_1[0];
+    htab[0][ind$1] = /* :: */[
       newNode,
-      htab[1][ind$1]
+      htab[0][ind$1]
     ];
     return /* () */0;
   }
 }
 
 function resetUnique() {
-  sz_1[1] = initSize_1;
-  htab[1] = Caml_array.caml_make_vect(sz_1[1] + 1, /* [] */0);
-  n_items[1] = 0;
-  nodeC[1] = 1;
+  sz_1[0] = initSize_1;
+  htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1, /* [] */0);
+  n_items[0] = 0;
+  nodeC[0] = 1;
   return /* () */0;
 }
 
@@ -150,43 +133,42 @@ function mkNode(low, v, high) {
     return low;
   }
   else {
-    var ind = hashVal(idl, idh, v) & sz_1[1];
-    var bucket = htab[1][ind];
+    var ind = hashVal(idl, idh, v) & sz_1[0];
+    var bucket = htab[0][ind];
     var _b = bucket;
     while(true) {
       var b = _b;
       if (b) {
-        var n = b[1];
+        var n = b[0];
         if (typeof n === "number") {
           throw [
-                0,
                 Caml_builtin_exceptions.Assert_failure,
                 [
-                  0,
                   "bdd.ml",
                   99,
                   31
                 ]
               ];
         }
-        else if (v === n[2] && idl === getId(n[1]) && idh === getId(n[4])) {
+        else if (v === n[1] && idl === getId(n[0]) && idh === getId(n[3])) {
           return n;
         }
         else {
-          _b = b[2];
+          _b = b[1];
           continue ;
           
         }
       }
       else {
-        var n_003 = (++ nodeC[1], nodeC[1]);
-        var n$1 = [
-          /* Node */0,
-          low,
-          v,
-          n_003,
-          high
-        ];
+        var n_002 = (++ nodeC[0], nodeC[0]);
+        var n$1 = /* Node */{
+          0: low,
+          1: v,
+          2: n_002,
+          3: high,
+          length: 4,
+          tag: 0
+        };
         insert(getId(low), getId(high), v, ind, bucket, n$1);
         return n$1;
       }
@@ -246,13 +228,13 @@ function not(n) {
     }
   }
   else {
-    var id = n[3];
+    var id = n[2];
     var h = id % cacheSize;
     if (id === notslot1[h]) {
       return notslot2[h];
     }
     else {
-      var f = mkNode(not(n[1]), n[2], not(n[4]));
+      var f = mkNode(not(n[0]), n[1], not(n[3]));
       notslot1[h] = id;
       notslot2[h] = f;
       return f;
@@ -270,10 +252,10 @@ function and2(n1, n2) {
     }
   }
   else {
-    var r1 = n1[4];
-    var i1 = n1[3];
-    var v1 = n1[2];
-    var l1 = n1[1];
+    var r1 = n1[3];
+    var i1 = n1[2];
+    var v1 = n1[1];
+    var l1 = n1[0];
     if (typeof n2 === "number") {
       if (n2 !== 0) {
         return /* Zero */1;
@@ -283,10 +265,10 @@ function and2(n1, n2) {
       }
     }
     else {
-      var r2 = n2[4];
-      var i2 = n2[3];
-      var v2 = n2[2];
-      var l2 = n2[1];
+      var r2 = n2[3];
+      var i2 = n2[2];
+      var v2 = n2[1];
+      var l2 = n2[0];
       var h = hash(i1, i2);
       if (i1 === andslot1[h] && i2 === andslot2[h]) {
         return andslot3[h];
@@ -325,10 +307,10 @@ function xor(n1, n2) {
     }
   }
   else {
-    var r1 = n1[4];
-    var i1 = n1[3];
-    var v1 = n1[2];
-    var l1 = n1[1];
+    var r1 = n1[3];
+    var i1 = n1[2];
+    var v1 = n1[1];
+    var l1 = n1[0];
     if (typeof n2 === "number") {
       if (n2 !== 0) {
         return n1;
@@ -338,10 +320,10 @@ function xor(n1, n2) {
       }
     }
     else {
-      var r2 = n2[4];
-      var i2 = n2[3];
-      var v2 = n2[2];
-      var l2 = n2[1];
+      var r2 = n2[3];
+      var i2 = n2[2];
+      var v2 = n2[1];
+      var l2 = n2[0];
       var h = hash(i1, i2);
       if (i1 === andslot1[h] && i2 === andslot2[h]) {
         return andslot3[h];
@@ -390,14 +372,11 @@ function hwb(n) {
   return h(0, n - 1);
 }
 
-var seed = [
-  0,
-  0
-];
+var seed = [0];
 
 function random() {
-  seed[1] = seed[1] * 25173 + 17431;
-  return +((seed[1] & 1) > 0);
+  seed[0] = seed[0] * 25173 + 17431;
+  return +((seed[0] & 1) > 0);
 }
 
 function random_vars(n) {
@@ -448,10 +427,8 @@ function main() {
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "bdd.ml",
             233,
             2

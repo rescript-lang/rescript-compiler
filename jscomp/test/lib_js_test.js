@@ -3,14 +3,11 @@
 
 var Mt = require("./mt");
 
-console.log(JSON.stringify([
-          /* :: */0,
+console.log(JSON.stringify(/* :: */[
           1,
-          [
-            /* :: */0,
+          /* :: */[
             2,
-            [
-              /* :: */0,
+            /* :: */[
               3,
               /* [] */0
             ]
@@ -19,21 +16,20 @@ console.log(JSON.stringify([
 
 console.log("hey");
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "anything_to_string",
   function () {
-    return [
-            /* Eq */0,
-            "3",
-            "" + 3
-          ];
+    return /* Eq */{
+            0: "3",
+            1: "" + 3,
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

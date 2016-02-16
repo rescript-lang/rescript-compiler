@@ -21,8 +21,7 @@ function test2() {
   return v;
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "for_order",
   function () {
     var prim = test2(/* () */0);
@@ -30,9 +29,8 @@ var suites_001 = [
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

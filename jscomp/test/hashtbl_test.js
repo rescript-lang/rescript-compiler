@@ -1,18 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Hashtbl        = require("../stdlib/hashtbl");
-var Mt             = require("./mt");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array        = require("../stdlib/array");
-var List           = require("../stdlib/list");
+var Caml_obj = require("../runtime/caml_obj");
+var Hashtbl  = require("../stdlib/hashtbl");
+var Mt       = require("./mt");
+var $$Array  = require("../stdlib/array");
+var List     = require("../stdlib/list");
 
 function to_list(tbl) {
   return Hashtbl.fold(function (k, v, acc) {
-              return [
-                      /* :: */0,
-                      [
-                        /* tuple */0,
+              return /* :: */[
+                      /* tuple */[
                         k,
                         v
                       ],
@@ -26,7 +24,7 @@ function f() {
   Hashtbl.add(tbl, 1, /* "1" */49);
   Hashtbl.add(tbl, 2, /* "2" */50);
   return List.sort(function (param, param$1) {
-              return Caml_primitive.caml_int_compare(param[1], param$1[1]);
+              return Caml_obj.caml_int_compare(param[0], param$1[0]);
             }, to_list(tbl));
 }
 
@@ -40,65 +38,58 @@ function g(count) {
   }
   var v = to_list(tbl);
   return $$Array.of_list(List.sort(function (param, param$1) {
-                  return Caml_primitive.caml_int_compare(param[1], param$1[1]);
+                  return Caml_obj.caml_int_compare(param[0], param$1[0]);
                 }, v));
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "simple",
   function () {
-    return [
-            /* Eq */0,
-            [
-              /* :: */0,
-              [
-                /* tuple */0,
+    return /* Eq */{
+            0: /* :: */[
+              /* tuple */[
                 1,
                 /* "1" */49
               ],
-              [
-                /* :: */0,
-                [
-                  /* tuple */0,
+              /* :: */[
+                /* tuple */[
                   2,
                   /* "2" */50
                 ],
                 /* [] */0
               ]
             ],
-            f(/* () */0)
-          ];
+            1: f(/* () */0),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "more_iterations",
     function () {
       var count = 1000;
-      return [
-              /* Eq */0,
-              $$Array.init(count + 1, function (i) {
-                    return [
-                            /* tuple */0,
+      return /* Eq */{
+              0: $$Array.init(count + 1, function (i) {
+                    return /* tuple */[
                             2 * i,
                             "" + i
                           ];
                   }),
-              g(count)
-            ];
+              1: g(count),
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("hashtbl_test.ml", suites);

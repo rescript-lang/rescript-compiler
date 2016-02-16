@@ -7,8 +7,7 @@ var Assert     = require("assert");
 var Caml_curry = require("../runtime/caml_curry");
 var $$String   = require("../stdlib/string");
 
-var __ocaml_lex_tables = [
-  /* record */0,
+var __ocaml_lex_tables = /* record */[
   "\0\0\xfd\xff\xfe\xff\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\x01\0\x04\0\x03\0\0\0\x06\0\0\0\xff\xff",
   "\xff\xff\xff\xff\xff\xff\x01\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
   "\x02\0\0\0\0\0\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0\0",
@@ -31,7 +30,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 2 || __ocaml_lex_state$1 < 0) {
-      Caml_curry.app1(lexbuf[1], lexbuf);
+      Caml_curry.app1(lexbuf[0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
@@ -41,7 +40,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
         case 0 : 
             return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
-            var c = lexbuf[2][lexbuf[5]];
+            var c = lexbuf[1][lexbuf[4]];
             return $$String.make(1, c) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";
@@ -51,8 +50,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
   };
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "translate",
   function () {
     var lexbuf = Lexing.from_string("-- current_directory --");
@@ -61,9 +59,8 @@ var suites_001 = [
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

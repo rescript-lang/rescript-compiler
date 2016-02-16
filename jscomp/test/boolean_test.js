@@ -4,10 +4,8 @@
 var Mt              = require("./mt");
 var Test_bool_equal = require("./test_bool_equal");
 
-Mt.from_suites("boolean", [
-      /* :: */0,
-      [
-        /* tuple */0,
+Mt.from_suites("boolean", /* :: */[
+      /* tuple */[
         "bool_equal",
         Test_bool_equal.assertions
       ],

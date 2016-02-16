@@ -55,16 +55,16 @@ let lexer_suites =
         "/";
         "new line";
         "eof"]));  
-  "simple number", (fun _ -> 
+  "simple number", (fun _ ->
     Eq (
     Arith_syntax.str (
-    Arith_parser.toplevel 
+    Arith_parser.toplevel
       Arith_lexer.lexeme
       (Lexing.from_string "10")) , "10."
    ));
-  "arith", (fun _ -> 
-    Eq ((Arith_syntax.str  
-           (Arith_parser.toplevel 
+  "arith", (fun _ ->
+    Eq ((Arith_syntax.str
+           (Arith_parser.toplevel
               Arith_lexer.lexeme
               (Lexing.from_string "x + 3 + 4 + y")
            )

@@ -2,16 +2,13 @@
 'use strict';
 
 
-var v = [
-  0,
-  0
-];
+var v = [0];
 
 while(function () {
-      var n = v[1];
+      var n = v[0];
       console.log("" + n);
-      ++ v[1];
-      return +(v[1] < 10);
+      ++ v[0];
+      return +(v[0] < 10);
     }()) {
   
 };
@@ -25,18 +22,15 @@ function fib(n) {
   }
 }
 
-var x = [
-  0,
-  3
-];
+var x = [3];
 
 while(function () {
       var y = 3;
-      var n = x[1];
+      var n = x[0];
       console.log("" + n);
       ++ y;
-      ++ x[1];
-      return +(fib(x[1]) + fib(x[1]) < 20);
+      ++ x[0];
+      return +(fib(x[0]) + fib(x[0]) < 20);
     }()) {
   console.log("" + 3);
 };

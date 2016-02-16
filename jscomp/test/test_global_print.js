@@ -3,15 +3,9 @@
 
 var Hashtbl = require("../stdlib/hashtbl");
 
-var List = [
-  0,
-  3
-];
+var List = [3];
 
-var X = [
-  0,
-  List
-];
+var X = [List];
 
 var Hashtbl$1 = 0;
 

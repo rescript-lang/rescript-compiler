@@ -3,20 +3,20 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
-var Custom_inline = [
-  248,
-  "Test_literal.Custom_inline",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Custom_inline = {
+  0: "Test_literal.Custom_inline",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 var v = [
-  0,
   Custom_inline,
   1,
   2
 ];
 
-var vv = /* array */[
+var vv = /* float array */[
   1,
   2,
   3
@@ -40,7 +40,7 @@ var long_int_v = /* array */[
   6
 ];
 
-var short_int_v = /* array */[1];
+var short_int_v = /* int array */[1];
 
 var empty = /* array */[];
 

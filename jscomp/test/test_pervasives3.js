@@ -7,7 +7,6 @@ var List       = require("../stdlib/list");
 var $at = Pervasives.$at;
 
 var Pervasives$1 = [
-  0,
   Pervasives.invalid_arg,
   Pervasives.failwith,
   Pervasives.Exit,

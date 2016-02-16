@@ -27,7 +27,7 @@ function ff(x) {
 
 function f(x) {
   var y;
-  y = x[0] ? 4 : 3;
+  y = x.tag ? 4 : 3;
   return y + 32;
 }
 
@@ -35,7 +35,7 @@ function f2(x) {
   var v = 0;
   var y;
   v = 1;
-  if (x[0]) {
+  if (x.tag) {
     var z = 33;
     y = z + 4;
   }
@@ -50,7 +50,7 @@ function f3(x) {
   var v = 0;
   var y;
   v = 1;
-  if (x[0]) {
+  if (x.tag) {
     y = 4;
   }
   else {

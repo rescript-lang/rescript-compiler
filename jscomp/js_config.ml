@@ -85,7 +85,7 @@ let stdlib_set = String_set.of_list [
 let runtime_set = String_set.of_list [
     "caml_array.js";
     "caml_float.js";
-    "caml_obj_runtime.js";
+    "caml_obj.js";
     "caml_bigarray.js";
     "caml_format.js";		
     "caml_oo.js";		
@@ -98,6 +98,7 @@ let runtime_set = String_set.of_list [
     "caml_curry.js";
     "caml_file.js";
     "caml_lexer.js";
+    "caml_parser.js";
     "caml_string.js"
     (* "caml_sys.js"; *)
     (* "caml_unix.js"; *)
@@ -114,9 +115,9 @@ let io = "Caml_io"
 
 let sys = "Caml_sys"
 
-let lex_parse = "Caml_lexer"
-
-let obj_runtime = "Caml_obj_runtime"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
 
 let array = "Caml_array"
 
@@ -128,3 +129,4 @@ let float = "Caml_float"
 
 let oo = "Caml_oo"
 let curry = "Caml_curry"
+let internalMod = "Caml_internalMod"

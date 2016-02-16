@@ -1,14 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj_runtime = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 var Pervasives       = require("../stdlib/pervasives");
 var Caml_curry       = require("../runtime/caml_curry");
 
 function a4(prim) {
   return [
-          0,
           'File "test_primitive.ml", line 30, characters 9-19',
           prim
         ];
@@ -16,7 +14,6 @@ function a4(prim) {
 
 function a5(prim) {
   return [
-          0,
           31,
           prim
         ];
@@ -24,9 +21,7 @@ function a5(prim) {
 
 function a6(prim) {
   return [
-          0,
           [
-            0,
             "test_primitive.ml",
             32,
             9,
@@ -40,7 +35,7 @@ var test_float = 3;
 
 var test_abs = Math.abs(3.0);
 
-var v = /* array */[
+var v = /* float array */[
   1.0,
   2.0
 ];
@@ -65,7 +60,7 @@ function f2(h, b, _) {
 
 v[1] = 3.0;
 
-var unboxed_x = /* array */[
+var unboxed_x = /* float array */[
   0,
   0
 ];
@@ -80,9 +75,9 @@ function f(x) {
 }
 
 function is_lazy_force(x) {
-  var tag = Caml_obj_runtime.caml_obj_tag(x);
+  var tag = x.tag | 0;
   if (tag === 250) {
-    return x[1];
+    return x[0];
   }
   else if (tag === 246) {
     return CamlinternalLazy.force_lazy_block(x);
@@ -111,8 +106,7 @@ var a2 = 28;
 
 var a3 = "Test_primitive";
 
-var xx = [
-  /* tuple */0,
+var xx = /* tuple */[
   0,
   0
 ];

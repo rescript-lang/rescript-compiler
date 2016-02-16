@@ -26,52 +26,49 @@ function v(param) {
   return g1(3, 4)(6, param);
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "curry",
   function () {
-    return [
-            /* Eq */0,
-            g,
-            7
-          ];
+    return /* Eq */{
+            0: g,
+            1: 7,
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "curry2",
     function () {
-      return [
-              /* Eq */0,
-              14,
-              Caml_curry.app1(v, 1)
-            ];
+      return /* Eq */{
+              0: 14,
+              1: Caml_curry.app1(v, 1),
+              length: 2,
+              tag: 0
+            };
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "curry3",
       function () {
-        return [
-                /* Eq */0,
-                x,
-                14
-              ];
+        return /* Eq */{
+                0: x,
+                1: 14,
+                length: 2,
+                tag: 0
+              };
       }
     ],
     /* [] */0
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("ari_regress_test.ml", suites);

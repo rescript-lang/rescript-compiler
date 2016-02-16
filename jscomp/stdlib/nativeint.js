@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_format    = require("../runtime/caml_format");
-var Sys            = require("./sys");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_obj    = require("../runtime/caml_obj");
+var Caml_format = require("../runtime/caml_format");
+var Sys         = require("./sys");
 
 function succ(n) {
   return n + 1;
@@ -37,7 +37,7 @@ function to_string(n) {
 }
 
 function compare(x, y) {
-  return Caml_primitive.caml_nativeint_compare(x, y);
+  return Caml_obj.caml_nativeint_compare(x, y);
 }
 
 var zero = 0;

@@ -379,7 +379,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.iset_debug_file "caml_string.ml";
+    Lam_current_unit.iset_debug_file "rec_module_test.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
       (fun chan -> Js_dump.dump_deps_program (compile ~filename false env sigs lam) chan)

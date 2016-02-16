@@ -351,7 +351,7 @@ let create_object table =
   (* XXX Appel de [obj_block] *)
   let obj = mark_ocaml_object @@ Obj.new_block Obj.object_tag table.size in
   (* XXX Appel de [caml_modify] *)
-  Obj.set_field obj 1 (Obj.repr table.methods); (** Temporary fix -- it's a block *)
+  Obj.set_field obj 0 (Obj.repr table.methods);
   Obj.obj (set_id obj)
 
 let create_object_opt obj_0 table =
@@ -359,7 +359,7 @@ let create_object_opt obj_0 table =
     (* XXX Appel de [obj_block] *)
     let obj = mark_ocaml_object @@ Obj.new_block Obj.object_tag table.size in
     (* XXX Appel de [caml_modify] *)
-    Obj.set_field obj 1 (Obj.repr table.methods); (** Temporary fix --*)
+    Obj.set_field obj 0 (Obj.repr table.methods);
     Obj.obj (set_id obj)
   end
 

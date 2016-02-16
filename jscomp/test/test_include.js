@@ -6,9 +6,8 @@ var $$String   = require("../stdlib/string");
 var List       = require("../stdlib/list");
 
 function Make(U) {
-  var compare = U[1];
+  var compare = U[0];
   return [
-          0,
           compare,
           compare
         ];
@@ -17,7 +16,6 @@ function Make(U) {
 var compare = $$String.compare;
 
 var X = [
-  0,
   compare,
   compare
 ];
@@ -25,7 +23,6 @@ var X = [
 var compare$1 = Test_order.compare;
 
 var U = [
-  0,
   compare$1,
   compare$1
 ];

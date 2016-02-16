@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                 = require("../runtime/caml_obj");
 var Caml_io                  = require("../runtime/caml_io");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_primitive           = require("../runtime/caml_primitive");
@@ -11,7 +12,6 @@ var Caml_string              = require("../runtime/caml_string");
 
 function failwith(s) {
   throw [
-        0,
         Caml_builtin_exceptions.Failure,
         s
       ];
@@ -19,20 +19,20 @@ function failwith(s) {
 
 function invalid_arg(s) {
   throw [
-        0,
         Caml_builtin_exceptions.Invalid_argument,
         s
       ];
 }
 
-var Exit = [
-  248,
-  "Pervasives.Exit",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Exit = {
+  0: "Pervasives.Exit",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function min(x, y) {
-  if (Caml_primitive.caml_lessequal(x, y)) {
+  if (Caml_obj.caml_lessequal(x, y)) {
     return x;
   }
   else {
@@ -41,7 +41,7 @@ function min(x, y) {
 }
 
 function max(x, y) {
-  if (Caml_primitive.caml_greaterequal(x, y)) {
+  if (Caml_obj.caml_greaterequal(x, y)) {
     return x;
   }
   else {
@@ -85,7 +85,6 @@ function $caret(a, b) {
 function char_of_int(n) {
   if (n < 0 || n > 255) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "char_of_int"
         ];
@@ -112,7 +111,6 @@ function bool_of_string(param) {
         return /* true */1;
     default:
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "bool_of_string"
           ];
@@ -161,10 +159,9 @@ function string_of_float(f) {
 
 function $at(l1, l2) {
   if (l1) {
-    return [
-            /* :: */0,
-            l1[1],
-            $at(l1[2], l2)
+    return /* :: */[
+            l1[0],
+            $at(l1[1], l2)
           ];
   }
   else {
@@ -183,17 +180,13 @@ function open_out_gen(mode, perm, name) {
 }
 
 function open_out(name) {
-  return open_out_gen([
-              /* :: */0,
+  return open_out_gen(/* :: */[
               /* Open_wronly */1,
-              [
-                /* :: */0,
+              /* :: */[
                 /* Open_creat */3,
-                [
-                  /* :: */0,
+                /* :: */[
                   /* Open_trunc */4,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     /* Open_text */7,
                     /* [] */0
                   ]
@@ -203,17 +196,13 @@ function open_out(name) {
 }
 
 function open_out_bin(name) {
-  return open_out_gen([
-              /* :: */0,
+  return open_out_gen(/* :: */[
               /* Open_wronly */1,
-              [
-                /* :: */0,
+              /* :: */[
                 /* Open_creat */3,
-                [
-                  /* :: */0,
+                /* :: */[
                   /* Open_trunc */4,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     /* Open_binary */6,
                     /* [] */0
                   ]
@@ -228,12 +217,12 @@ function flush_all() {
     var param = _param;
     if (param) {
       try {
-        Caml_io.caml_ml_flush(param[1]);
+        Caml_io.caml_ml_flush(param[0]);
       }
       catch (exn){
         
       }
-      _param = param[2];
+      _param = param[1];
       continue ;
       
     }
@@ -254,7 +243,6 @@ function output_string(oc, s) {
 function output(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "output"
         ];
@@ -267,7 +255,6 @@ function output(oc, s, ofs, len) {
 function output_substring(oc, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "output_substring"
         ];
@@ -306,11 +293,9 @@ function open_in_gen(mode, perm, name) {
 }
 
 function open_in(name) {
-  return open_in_gen([
-              /* :: */0,
+  return open_in_gen(/* :: */[
               /* Open_rdonly */0,
-              [
-                /* :: */0,
+              /* :: */[
                 /* Open_text */7,
                 /* [] */0
               ]
@@ -318,11 +303,9 @@ function open_in(name) {
 }
 
 function open_in_bin(name) {
-  return open_in_gen([
-              /* :: */0,
+  return open_in_gen(/* :: */[
               /* Open_rdonly */0,
-              [
-                /* :: */0,
+              /* :: */[
                 /* Open_binary */6,
                 /* [] */0
               ]
@@ -332,7 +315,6 @@ function open_in_bin(name) {
 function input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "input"
         ];
@@ -367,7 +349,6 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 function really_input(ic, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "really_input"
         ];
@@ -389,10 +370,10 @@ function input_line(chan) {
       var param = _param;
       var pos = _pos;
       if (param) {
-        var hd = param[1];
+        var hd = param[0];
         var len = hd.length;
         Caml_string.caml_blit_bytes(hd, 0, buf, pos - len, len);
-        _param = param[2];
+        _param = param[1];
         _pos = pos - len;
         continue ;
         
@@ -414,8 +395,7 @@ function input_line(chan) {
           Caml_io.caml_ml_input_char(chan);
           if (accu) {
             var len$1 = len + n - 1;
-            return build_result(Caml_string.caml_create_string(len$1), len$1, [
-                        /* :: */0,
+            return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
                         res,
                         accu
                       ]);
@@ -428,8 +408,7 @@ function input_line(chan) {
           var beg = Caml_string.caml_create_string(-n);
           Caml_primitive.caml_ml_input(chan, beg, 0, -n);
           _len = len - n;
-          _accu = [
-            /* :: */0,
+          _accu = /* :: */[
             beg,
             accu
           ];
@@ -525,25 +504,23 @@ function read_float() {
 }
 
 function string_of_format(param) {
-  return param[2];
+  return param[1];
 }
 
 function $caret$caret(param, param$1) {
-  return [
-          /* Format */0,
-          CamlinternalFormatBasics.concat_fmt(param[1], param$1[1]),
-          $caret(param[2], $caret("%,", param$1[2]))
-        ];
+  return /* Format */{
+          0: CamlinternalFormatBasics.concat_fmt(param[0], param$1[0]),
+          1: $caret(param[1], $caret("%,", param$1[1])),
+          length: 2,
+          tag: 0
+        };
 }
 
-var exit_function = [
-  0,
-  flush_all
-];
+var exit_function = [flush_all];
 
 function at_exit(f) {
-  var g = exit_function[1];
-  exit_function[1] = function () {
+  var g = exit_function[0];
+  exit_function[0] = function () {
     Caml_curry.app1(f, /* () */0);
     return Caml_curry.app1(g, /* () */0);
   };
@@ -551,7 +528,7 @@ function at_exit(f) {
 }
 
 function do_at_exit() {
-  return Caml_curry.app1(exit_function[1], /* () */0);
+  return Caml_curry.app1(exit_function[0], /* () */0);
 }
 
 function exit(retcode) {
@@ -627,38 +604,37 @@ function set_binary_mode_in(prim, prim$1) {
   return Caml_primitive.caml_ml_set_binary_mode(prim, prim$1);
 }
 
-function LargeFile_001(prim, prim$1) {
+function LargeFile_000(prim, prim$1) {
   return Caml_primitive.caml_ml_seek_out_64(prim, prim$1);
 }
 
-function LargeFile_002(prim) {
+function LargeFile_001(prim) {
   return Caml_primitive.caml_ml_pos_out_64(prim);
 }
 
-function LargeFile_003(prim) {
+function LargeFile_002(prim) {
   return Caml_primitive.caml_ml_channel_size_64(prim);
 }
 
-function LargeFile_004(prim, prim$1) {
+function LargeFile_003(prim, prim$1) {
   return Caml_primitive.caml_ml_seek_in_64(prim, prim$1);
 }
 
-function LargeFile_005(prim) {
+function LargeFile_004(prim) {
   return Caml_primitive.caml_ml_pos_in_64(prim);
 }
 
-function LargeFile_006(prim) {
+function LargeFile_005(prim) {
   return Caml_primitive.caml_ml_channel_size_64(prim);
 }
 
 var LargeFile = [
-  0,
+  LargeFile_000,
   LargeFile_001,
   LargeFile_002,
   LargeFile_003,
   LargeFile_004,
-  LargeFile_005,
-  LargeFile_006
+  LargeFile_005
 ];
 
 exports.invalid_arg         = invalid_arg;

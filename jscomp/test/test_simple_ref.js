@@ -3,27 +3,18 @@
 
 var Caml_curry = require("../runtime/caml_curry");
 
-var v = [
-  0,
-  0
-];
+var v = [0];
 
 function gen() {
-  ++ v[1];
-  return v[1];
+  ++ v[0];
+  return v[0];
 }
 
-var h = [
-  0,
-  0
-];
+var h = [0];
 
 var a = 0;
 
-var c = [
-  0,
-  0
-];
+var c = [0];
 
 var not_real_escape = a;
 

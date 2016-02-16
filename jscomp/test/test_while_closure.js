@@ -6,10 +6,7 @@ var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("../stdlib/array");
 var Caml_curry              = require("../runtime/caml_curry");
 
-var v = [
-  0,
-  0
-];
+var v = [0];
 
 var count = 10;
 
@@ -23,7 +20,7 @@ function f() {
     var j = n;
     arr[j] = (function(j){
     return function () {
-      v[1] += j;
+      v[0] += j;
       return /* () */0;
     }
     }(j));
@@ -38,16 +35,14 @@ $$Array.iter(function (x) {
       return Caml_curry.app1(x, /* () */0);
     }, arr);
 
-var n = v[1];
+var n = v[0];
 
 console.log("" + n);
 
-if (v[1] !== 45) {
+if (v[0] !== 45) {
   throw [
-        0,
         Caml_builtin_exceptions.Assert_failure,
         [
-          0,
           "test_while_closure.ml",
           63,
           4

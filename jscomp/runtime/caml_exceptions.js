@@ -5,7 +5,6 @@ var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 function caml_raise_sys_error(msg) {
   throw [
-        0,
         Caml_builtin_exceptions.Sys_error,
         msg
       ];
@@ -13,7 +12,6 @@ function caml_raise_sys_error(msg) {
 
 function caml_failwith(s) {
   throw [
-        0,
         Caml_builtin_exceptions.Failure,
         s
       ];
@@ -21,7 +19,6 @@ function caml_failwith(s) {
 
 function caml_invalid_argument(s) {
   throw [
-        0,
         Caml_builtin_exceptions.Invalid_argument,
         s
       ];
@@ -29,7 +26,6 @@ function caml_invalid_argument(s) {
 
 function caml_array_bound_error() {
   throw [
-        0,
         Caml_builtin_exceptions.Invalid_argument,
         "index out of bounds"
       ];
@@ -45,7 +41,6 @@ function caml_raise_not_found() {
 
 function caml_undef_module(loc) {
   throw [
-        0,
         Caml_builtin_exceptions.Undefined_recursive_module,
         loc
       ];

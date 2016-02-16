@@ -4,18 +4,20 @@
 var Caml_curry = require("../runtime/caml_curry");
 
 function g(x) {
-  return Caml_curry.app1(x[1], x);
+  return Caml_curry.app1(x[0], x);
 }
 
-var loop = g([
-      /* A */0,
-      g
-    ]);
+var loop = g(/* A */{
+      0: g,
+      length: 1,
+      tag: 0
+    });
 
-var x = [
-  /* A */0,
-  g
-];
+var x = /* A */{
+  0: g,
+  length: 1,
+  tag: 0
+};
 
 var non_terminate = g(x);
 

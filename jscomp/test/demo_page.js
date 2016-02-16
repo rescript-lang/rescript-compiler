@@ -24,11 +24,12 @@ function sum(n) {
 
 function map(f, param) {
   if (param) {
-    return [
-            /* Cons */0,
-            Caml_curry.app1(f, param[1]),
-            map(f, param[2])
-          ];
+    return /* Cons */{
+            0: Caml_curry.app1(f, param[0]),
+            1: map(f, param[1]),
+            length: 2,
+            tag: 0
+          };
   }
   else {
     return /* Nil */0;
@@ -45,9 +46,11 @@ function f(param) {
 
 ReactDom.render(React.createClass({
           "render": function () {
-            return React.DOM.div({
-                        "alt": "pic"
-                      }, React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"));
+            return React.DOM.div(/* Some */[{
+                          "alt": /* Some */["pic"] ? undefined : /* Some */["pic"][1]
+                        }] ? undefined : /* Some */[{
+                              "alt": /* Some */["pic"] ? undefined : /* Some */["pic"][1]
+                            }][1], React.DOM.h1(null, "hello react"), React.DOM.h2(null, "type safe!"));
           }
         }), document.getElementById("hi"));
 

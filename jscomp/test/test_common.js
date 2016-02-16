@@ -3,17 +3,19 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
-var U = [
-  248,
-  "Test_common.U",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var U = {
+  0: "Test_common.U",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
-var H = [
-  248,
-  "Test_common.H",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var H = {
+  0: "Test_common.H",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 exports.U = U;
 exports.H = H;

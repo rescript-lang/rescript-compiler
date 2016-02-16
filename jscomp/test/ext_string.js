@@ -8,7 +8,7 @@ var Caml_curry  = require("../runtime/caml_curry");
 var Caml_string = require("../runtime/caml_string");
 
 function split_by($staropt$star, is_delim, str) {
-  var keep_empty = $staropt$star ? $staropt$star[1] : /* false */0;
+  var keep_empty = $staropt$star ? $staropt$star[0] : /* false */0;
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
@@ -18,8 +18,7 @@ function split_by($staropt$star, is_delim, str) {
     var last_pos = _last_pos;
     var acc = _acc;
     if (pos === -1) {
-      return [
-              /* :: */0,
+      return /* :: */[
               $$String.sub(str, 0, last_pos),
               acc
             ];
@@ -30,8 +29,7 @@ function split_by($staropt$star, is_delim, str) {
         var v = $$String.sub(str, pos + 1, new_len);
         _pos = pos - 1;
         _last_pos = pos;
-        _acc = [
-          /* :: */0,
+        _acc = /* :: */[
           v,
           acc
         ];
@@ -132,12 +130,7 @@ function escaped(s) {
             
           }
         }
-        else if (match >= 11) {
-          match !== 13;
-          return /* true */1;
-        }
         else {
-          match >= 8;
           return /* true */1;
         }
       }

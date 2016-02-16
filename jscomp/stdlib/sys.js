@@ -6,7 +6,7 @@ var Caml_primitive          = require("../runtime/caml_primitive");
 
 var is_js = /* true */1;
 
-var match_002 = [];
+var match_001 = /* array */[];
 
 var big_endian = /* false */0;
 
@@ -22,10 +22,7 @@ var max_array_length = 4294967295;
 
 var max_string_length = 4294967295;
 
-var interactive = [
-  0,
-  /* false */0
-];
+var interactive = [/* false */0];
 
 function set_signal(sig_num, sig_beh) {
   return Caml_primitive.caml_install_signal_handler(sig_num, sig_beh);
@@ -33,27 +30,29 @@ function set_signal(sig_num, sig_beh) {
 
 var sigint = -6;
 
-var Break = [
-  248,
-  "Sys.Break",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Break = {
+  0: "Sys.Break",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function catch_break(on) {
   if (on) {
-    return Caml_primitive.caml_install_signal_handler(sigint, [
-                /* Signal_handle */0,
-                function () {
+    return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_handle */{
+                0: function () {
                   throw Break;
-                }
-              ]);
+                },
+                length: 1,
+                tag: 0
+              });
   }
   else {
     return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_default */0);
   }
 }
 
-var argv = match_002;
+var argv = match_001;
 
 var executable_name = "cmd";
 

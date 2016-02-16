@@ -1,5 +1,6 @@
 caml_array.cmi :
 caml_exceptions.cmi :
+caml_obj.cmi :
 caml_oo.cmi :
 caml_string.cmi :
 caml_array.cmo : caml_array.cmi
@@ -8,6 +9,8 @@ caml_curry.cmo :
 caml_curry.cmx :
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmx : caml_exceptions.cmi
+caml_obj.cmo : caml_obj.cmi
+caml_obj.cmx : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi
 caml_oo.cmx : caml_oo.cmi
 caml_string.cmo : caml_string.cmi
@@ -18,6 +21,8 @@ caml_curry.cmo :
 caml_curry.cmj :
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmj : caml_exceptions.cmi
+caml_obj.cmo : caml_obj.cmi
+caml_obj.cmj : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi
 caml_oo.cmj : caml_oo.cmi
 caml_string.cmo : caml_string.cmi

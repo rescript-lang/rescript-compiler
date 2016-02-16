@@ -51,3 +51,4 @@ jscomp/bench/*.js
 *.jsx
 osc
 jscomp/pre_load.js
+boot

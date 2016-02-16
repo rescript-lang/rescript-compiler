@@ -29,14 +29,12 @@ function f() {
   return v;
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "acc",
   function () {
-    return [
-            /* Eq */0,
-            f(/* () */0),
-            /* array */[
+    return /* Eq */{
+            0: f(/* () */0),
+            1: /* array */[
               0,
               1,
               3,
@@ -47,47 +45,44 @@ var suites_001 = [
               28,
               36,
               45
-            ]
-          ];
+            ],
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "array_to_list",
     function () {
-      return [
-              /* Eq */0,
-              [
-                /* :: */0,
+      return /* Eq */{
+              0: /* :: */[
                 1,
-                [
-                  /* :: */0,
+                /* :: */[
                   2,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     3,
                     /* [] */0
                   ]
                 ]
               ],
-              $$Array.to_list(/* array */[
+              1: $$Array.to_list(/* int array */[
                     1,
                     2,
                     3
-                  ])
-            ];
+                  ]),
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("tailcall_inline_test.ml", suites);

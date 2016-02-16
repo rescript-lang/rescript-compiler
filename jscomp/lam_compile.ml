@@ -175,6 +175,25 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.seq (E.dump Log args) (E.unit ())
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
              E.seq (E.dump Error args) (E.unit ())
+           | {name = "CamlinternalMod"; _}, "update_mod" ,
+             [  shape  ;
+                _module ; 
+                _ ] when Js_of_lam_module.is_empty_shape shape
+             ->
+             E.unit ()
+           | {name = "CamlinternalMod"; _}, "init_mod" ,
+             [ 
+                _ ;
+                shape  ;
+                (* Module []
+                   TODO: add a function [empty_shape]
+                   This pattern match is fragile, since it depends 
+                   on how we compile [Lconst]
+                *)
+             ] when Js_of_lam_module.is_empty_shape shape
+             ->
+             E.dummy_obj () (* purely type definition*)
+
            | _ -> 
 
 
@@ -278,7 +297,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
             could be improved for simple cases
         *)
         Js_output.of_block  (
-          b  @ [S.exp(E.runtime_call Js_config.prim "caml_update_dummy" [ E.var id;  v])]),
+          b  @ [S.exp(E.runtime_call Js_config.obj_runtime "caml_update_dummy" [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false 
@@ -320,17 +339,20 @@ and compile_recursive_lets cxt id_args : Js_output.t =
   | [] -> output_code
   | _ ->  
     (Js_output.of_block  @@
-     List.map (fun id -> S.define ~kind:Variable id (E.arr Mutable [])) ids ) 
+     List.map (fun id -> S.define ~kind:Variable id (E.dummy_obj ())) ids ) 
     ++  output_code
 
 and compile_general_cases : 
   'a . 
   ('a -> J.expression) ->
+  (J.expression -> J.expression -> J.expression) -> 
   Lam_compile_defs.cxt -> 
-  (?default:J.block -> ?declaration:Lambda.let_kind * Ident.t  -> _ -> 'a J.case_clause list ->  J.statement) -> 
+  (?default:J.block ->
+   ?declaration:Lambda.let_kind * Ident.t  -> 
+   _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
   ('a * Lambda.lambda) list -> default_case -> J.block 
-  = fun f cxt switch v table default -> 
+  = fun f eq cxt switch v table default -> 
     let wrap (cxt : Lam_compile_defs.cxt) k =
       let cxt, define =
         match cxt.st with 
@@ -356,7 +378,7 @@ and compile_general_cases :
     | [(id,lam)], NonComplete 
       ->
       wrap cxt @@ fun cxt define  ->
-      [S.if_ ?declaration:define (E.triple_equal v (f id) )
+      [S.if_ ?declaration:define (eq v (f id) )
          (Js_output.to_block @@ compile_lambda cxt lam )]
 
     | ([(id,lam)], Default x) | ([(id,lam); (_,x)], Complete)
@@ -364,7 +386,7 @@ and compile_general_cases :
       wrap cxt  @@ fun cxt define -> 
       let else_block = Js_output.to_block (compile_lambda cxt x) in
       let then_block = Js_output.to_block (compile_lambda cxt lam)  in
-      [ S.if_ ?declaration:define (E.triple_equal v (f id) )
+      [ S.if_ ?declaration:define (eq v (f id) )
           then_block
           ~else_:else_block
       ]
@@ -402,10 +424,10 @@ and compile_general_cases :
       in
       [switch ?default ?declaration v body] 
 
-and compile_cases cxt = compile_general_cases E.int cxt 
+and compile_cases cxt = compile_general_cases E.int E.int_equal cxt 
     (fun  ?default ?declaration e clauses    -> S.int_switch ?default  ?declaration e clauses)
 
-and compile_string_cases cxt = compile_general_cases E.str cxt 
+and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt 
     (fun  ?default ?declaration e clauses    -> S.string_switch ?default  ?declaration e clauses)
 (* TODO: optional arguments are not good 
     for high order currying *)
@@ -1284,7 +1306,7 @@ and
             st should_return
             lam 
             (List.concat args_code)
-            (E.call (Js_of_lam_array.ref_array (E.index obj' 1) label )
+            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field obj' 0) label )
                (obj' :: args)) 
         (* [E.int 1] is because we use array, 
             when we change the runtime represenation, it needs to be adapted 

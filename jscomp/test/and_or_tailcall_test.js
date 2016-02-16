@@ -37,38 +37,36 @@ function or_f(b, _, _n) {
   };
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "and_tail",
   function () {
-    return [
-            /* Eq */0,
-            /* false */0,
-            f(/* true */1, 1, 0)
-          ];
+    return /* Eq */{
+            0: /* false */0,
+            1: f(/* true */1, 1, 0),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "or_tail",
     function () {
-      return [
-              /* Eq */0,
-              /* false */0,
-              or_f(/* false */0, 1, 0)
-            ];
+      return /* Eq */{
+              0: /* false */0,
+              1: or_f(/* false */0, 1, 0),
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("and_or_tailcall_test.ml", suites);

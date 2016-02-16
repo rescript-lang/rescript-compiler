@@ -31,7 +31,7 @@ let builtin_modules =
    "caml_sys", true;
    "caml_bigarray", true;
    "caml_hash", true;
-   "caml_obj_runtime", true;
+   "caml_obj", true;
    "caml_c_ffi", true;
    "caml_int64", true;
    "caml_polyfill", true;	     

@@ -9,7 +9,6 @@ function u(v) {
 }
 
 var s = [
-  0,
   $$String.make,
   $$String.init,
   $$String.copy,
@@ -37,10 +36,7 @@ var s = [
   $$String.compare
 ];
 
-var N = [
-  0,
-  s
-];
+var N = [s];
 
 var v0 = 1;
 
@@ -48,38 +44,36 @@ function v(x) {
   return x.length;
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "const",
   function () {
-    return [
-            /* Eq */0,
-            1,
-            v0
-          ];
+    return /* Eq */{
+            0: 1,
+            1: v0,
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "other",
     function () {
-      return [
-              /* Eq */0,
-              3,
-              v("abc")
-            ];
+      return /* Eq */{
+              0: 3,
+              1: v("abc"),
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("module_parameter_test.ml", suites);

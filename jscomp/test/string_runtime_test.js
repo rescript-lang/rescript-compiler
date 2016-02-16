@@ -7,72 +7,61 @@ var $$String    = require("../stdlib/string");
 var List        = require("../stdlib/list");
 var Caml_string = require("../runtime/caml_string");
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "string_of_char_array",
   function () {
-    return [
-            /* Eq */0,
-            Caml_string.caml_string_of_char_array(/* array */[
+    return /* Eq */{
+            0: Caml_string.caml_string_of_char_array(/* int array */[
                   /* "a" */97,
                   /* "b" */98,
                   /* "c" */99
                 ]),
-            "abc"
-          ];
+            1: "abc",
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "caml_is_printable",
     function () {
-      return [
-              /* Eq */0,
-              Caml_string.caml_is_printable(/* "a" */97),
-              /* true */1
-            ];
+      return /* Eq */{
+              0: Caml_string.caml_is_printable(/* "a" */97),
+              1: /* true */1,
+              length: 2,
+              tag: 0
+            };
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "caml_string_of_bytes",
       function () {
         var match = List.split(List.map(function (x) {
                   var len = x;
                   var b = new Array(1000);
                   Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
-                  return [
-                          /* tuple */0,
+                  return /* tuple */[
                           Caml_string.bytes_to_string(b),
                           $$String.init(len, function () {
                                 return /* "c" */99;
                               })
                         ];
-                }, [
-                  /* :: */0,
+                }, /* :: */[
                   1000,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     1024,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       1025,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         4095,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           4096,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             5000,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               10000,
                               /* [] */0
                             ]
@@ -82,21 +71,21 @@ var suites_002 = [
                     ]
                   ]
                 ]));
-        return [
-                /* Eq */0,
-                match[1],
-                match[2]
-              ];
+        return /* Eq */{
+                0: match[0],
+                1: match[1],
+                length: 2,
+                tag: 0
+              };
       }
     ],
     /* [] */0
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("string_runtime_test.ml", suites);

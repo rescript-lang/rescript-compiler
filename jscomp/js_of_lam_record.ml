@@ -24,4 +24,10 @@ module E = Js_helper.Exp
 
 (* TODO: add label to the comment *)
 let make  mutable_flag (args : (string * J.expression) list) =
-  E.arr mutable_flag (E.int 0 :: List.map snd args)
+  E.make_block ~comment:"record" 
+    (E.int 0) Record (List.map snd args) mutable_flag
+  (* E.arr mutable_flag (E.int 0 :: List.map snd args) *)
+
+let field e i = E.index e i 
+
+

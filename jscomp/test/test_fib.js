@@ -38,16 +38,17 @@ for(var i$1 = 10; i$1>= 0; --i$1){
 var sumdown = v$1;
 
 function cons(x, y) {
-  return [
-          /* Cons */0,
-          x,
-          y
-        ];
+  return /* Cons */{
+          0: x,
+          1: y,
+          length: 2,
+          tag: 0
+        };
 }
 
 function length(x) {
   if (x) {
-    return 1 + length(x[2]);
+    return 1 + length(x[1]);
   }
   else {
     return 0;
@@ -56,11 +57,12 @@ function length(x) {
 
 function map(f, x) {
   if (x) {
-    return [
-            /* Cons */0,
-            Caml_curry.app1(f, x[1]),
-            map(f, x[2])
-          ];
+    return /* Cons */{
+            0: Caml_curry.app1(f, x[0]),
+            1: map(f, x[1]),
+            length: 2,
+            tag: 0
+          };
   }
   else {
     return /* Nil */0;

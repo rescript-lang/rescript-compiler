@@ -38,10 +38,9 @@ let translate
     (args : J.expression list) : J.expression = 
   match prim with
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
-    begin match mutable_flag with 
-      | Immutable -> Js_of_lam_block.make_block Immutable tag_info tag args 
-      | Mutable -> Js_of_lam_block.make_block Mutable tag_info tag args 
-    end
+    Js_of_lam_block.make_block 
+      (Js_op_util.of_lam_mutable_flag mutable_flag) 
+      tag_info (E.int tag) args 
   | Pfield i -> 
     begin match args with 
       | [ e ]  -> Js_of_lam_block.field e i (* Invariant depends on runtime *)

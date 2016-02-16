@@ -22,7 +22,9 @@
 
 (** Utilities for creating block of lambda expression in JS IR *)
 
-val make_block : Js_op.mutable_flag -> Lambda.tag_info -> int -> J.expression list -> J.expression
+val make_block : 
+  Js_op.mutable_flag -> Lambda.tag_info ->
+  J.expression -> J.expression list -> J.expression
 
 val field : J.expression -> int -> J.expression
 

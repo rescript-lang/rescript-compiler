@@ -7,7 +7,7 @@ var Caml_array              = require("./caml_array");
 var caml_methods_cache = Caml_array.caml_make_vect(1000, 0);
 
 function caml_get_public_method(obj, tag, cacheid) {
-  var meths = obj[1];
+  var meths = obj[0];
   var offs = caml_methods_cache[cacheid];
   if (meths[offs] === tag) {
     return meths[offs - 1];
@@ -18,10 +18,8 @@ function caml_get_public_method(obj, tag, cacheid) {
         var i = _i;
         if (i < 3) {
           throw [
-                0,
                 Caml_builtin_exceptions.Assert_failure,
                 [
-                  0,
                   "caml_oo.ml",
                   43,
                   20

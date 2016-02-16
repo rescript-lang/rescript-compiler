@@ -2,7 +2,6 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
@@ -214,7 +213,6 @@ function chop_suffix(name, suff) {
   var n = name.length - suff.length;
   if (n < 0) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Filename.chop_suffix"
         ];
@@ -230,7 +228,6 @@ function chop_extension(name) {
     var i = _i;
     if (i < 0 || Caml_curry.app2(is_dir_sep$1, name, i)) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Filename.chop_extension"
           ];
@@ -246,72 +243,72 @@ function chop_extension(name) {
   };
 }
 
-var prng = [
-  246,
-  function () {
-    return Caml_curry.app1(Random.State[2], /* () */0);
-  }
-];
+var prng = {
+  0: function () {
+    return Caml_curry.app1(Random.State[1], /* () */0);
+  },
+  length: 1,
+  tag: 246
+};
 
 function temp_file_name(temp_dir, prefix, suffix) {
-  var tag = Caml_obj_runtime.caml_obj_tag(prng);
-  var rnd = Caml_curry.app1(Random.State[4], tag === 250 ? prng[1] : (
+  var tag = prng.tag | 0;
+  var rnd = Caml_curry.app1(Random.State[3], tag === 250 ? prng[0] : (
           tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
         )) & 16777215;
-  return concat(temp_dir, Caml_curry.app3(Printf.sprintf([
-                      /* Format */0,
-                      [
-                        /* String */2,
-                        /* No_padding */0,
-                        [
-                          /* Int */4,
-                          /* Int_x */6,
-                          [
-                            /* Lit_padding */0,
-                            /* Zeros */2,
-                            6
-                          ],
-                          /* No_precision */0,
-                          [
-                            /* String */2,
-                            /* No_padding */0,
-                            /* End_of_format */0
-                          ]
-                        ]
-                      ],
-                      "%s%06x%s"
-                    ]), prefix, rnd, suffix));
+  return concat(temp_dir, Caml_curry.app3(Printf.sprintf(/* Format */{
+                      0: /* String */{
+                        0: /* No_padding */0,
+                        1: /* Int */{
+                          0: /* Int_x */6,
+                          1: /* Lit_padding */{
+                            0: /* Zeros */2,
+                            1: 6,
+                            length: 2,
+                            tag: 0
+                          },
+                          2: /* No_precision */0,
+                          3: /* String */{
+                            0: /* No_padding */0,
+                            1: /* End_of_format */0,
+                            length: 2,
+                            tag: 2
+                          },
+                          length: 4,
+                          tag: 4
+                        },
+                        length: 2,
+                        tag: 2
+                      },
+                      1: "%s%06x%s",
+                      length: 2,
+                      tag: 0
+                    }), prefix, rnd, suffix));
 }
 
-var current_temp_dir_name = [
-  0,
-  temp_dir_name$2
-];
+var current_temp_dir_name = [temp_dir_name$2];
 
 function set_temp_dir_name(s) {
-  current_temp_dir_name[1] = s;
+  current_temp_dir_name[0] = s;
   return /* () */0;
 }
 
 function get_temp_dir_name() {
-  return current_temp_dir_name[1];
+  return current_temp_dir_name[0];
 }
 
 function temp_file($staropt$star, prefix, suffix) {
-  var temp_dir = $staropt$star ? $staropt$star[1] : current_temp_dir_name[1];
+  var temp_dir = $staropt$star ? $staropt$star[0] : current_temp_dir_name[0];
   var _counter = 0;
   while(true) {
     var counter = _counter;
     var name = temp_file_name(temp_dir, prefix, suffix);
     try {
-      Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, [
-                /* :: */0,
+      Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, /* :: */[
                 /* Open_wronly */1,
-                [
-                  /* :: */0,
+                /* :: */[
                   /* Open_creat */3,
-                  [
-                    /* :: */0,
+                  /* :: */[
                     /* Open_excl */5,
                     /* [] */0
                   ]
@@ -320,7 +317,7 @@ function temp_file($staropt$star, prefix, suffix) {
       return name;
     }
     catch (e){
-      if (e[1] === Caml_builtin_exceptions.Sys_error) {
+      if (e[0] === Caml_builtin_exceptions.Sys_error) {
         if (counter >= 1000) {
           throw e;
         }
@@ -338,28 +335,23 @@ function temp_file($staropt$star, prefix, suffix) {
 }
 
 function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
-  var mode = $staropt$star ? $staropt$star[1] : [
-      /* :: */0,
+  var mode = $staropt$star ? $staropt$star[0] : /* :: */[
       /* Open_text */7,
       /* [] */0
     ];
-  var temp_dir = $staropt$star$1 ? $staropt$star$1[1] : current_temp_dir_name[1];
+  var temp_dir = $staropt$star$1 ? $staropt$star$1[0] : current_temp_dir_name[0];
   var _counter = 0;
   while(true) {
     var counter = _counter;
     var name = temp_file_name(temp_dir, prefix, suffix);
     try {
-      return [
-              /* tuple */0,
+      return /* tuple */[
               name,
-              Pervasives.open_out_gen([
-                    /* :: */0,
+              Pervasives.open_out_gen(/* :: */[
                     /* Open_wronly */1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       /* Open_creat */3,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         /* Open_excl */5,
                         mode
                       ]
@@ -368,7 +360,7 @@ function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
             ];
     }
     catch (e){
-      if (e[1] === Caml_builtin_exceptions.Sys_error) {
+      if (e[0] === Caml_builtin_exceptions.Sys_error) {
         if (counter >= 1000) {
           throw e;
         }

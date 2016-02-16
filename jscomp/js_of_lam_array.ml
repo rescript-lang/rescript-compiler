@@ -47,9 +47,10 @@ module E  = Js_helper.Exp
 let make_array mt (kind : Lambda.array_kind) args = 
   match kind with 
   | Pgenarray
-  | Paddrarray 
-  | Pintarray (* ->  E.arr (E.int ~comment:"array" 0 :: args)  (\* Parrayref(u|s) *\) *)
-  | Pfloatarray -> E.arr ~comment:"array" mt args
+  | Paddrarray -> E.arr ~comment:"array" mt args 
+  | Pintarray  -> E.arr ~comment:"int array" mt args 
+  (* ->  E.arr (E.int ~comment:"array" 0 :: args)  (\* Parrayref(u|s) *\) *)
+  | Pfloatarray -> E.arr ~comment:"float array" mt args
 
 let set_array  e e0 e1 = 
   E.assign (E.access e e0)  e1

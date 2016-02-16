@@ -5,26 +5,18 @@ var $$Array = require("../stdlib/array");
 
 var a = 3;
 
-var v = [
-  0,
-  32
-];
+var v = [32];
 
-v[1] = 0;
+v[0] = 0;
 
 var N = [
-  0,
   a,
   v
 ];
 
-var v$1 = [
-  0,
-  32
-];
+var v$1 = [32];
 
 var NN = [
-  0,
   3,
   v$1
 ];

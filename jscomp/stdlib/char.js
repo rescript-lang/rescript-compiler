@@ -7,7 +7,6 @@ var Caml_string             = require("../runtime/caml_string");
 function chr(n) {
   if (n < 0 || n > 255) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Char.chr"
         ];
@@ -59,11 +58,11 @@ function escaped(c) {
   }
   if (exit === 1) {
     if (Caml_string.caml_is_printable(c)) {
-      return Caml_string.caml_string_of_char_array(/* array */[c]);
+      return Caml_string.caml_string_of_char_array(/* int array */[c]);
     }
     else {
       var n = c;
-      return Caml_string.caml_string_of_char_array(/* array */[
+      return Caml_string.caml_string_of_char_array(/* int array */[
                   /* "\\" */92,
                   48 + (n / 100 | 0),
                   48 + (n / 10 | 0) % 10,

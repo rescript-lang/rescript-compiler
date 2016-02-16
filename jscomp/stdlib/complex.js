@@ -8,35 +8,35 @@ var one = /* float array */[
 ];
 
 function add(x, y) {
-  return /* array */[
+  return /* float array */[
           x[0] + y[0],
           x[1] + y[1]
         ];
 }
 
 function sub(x, y) {
-  return /* array */[
+  return /* float array */[
           x[0] - y[0],
           x[1] - y[1]
         ];
 }
 
 function neg(x) {
-  return /* array */[
+  return /* float array */[
           -x[0],
           -x[1]
         ];
 }
 
 function conj(x) {
-  return /* array */[
+  return /* float array */[
           x[0],
           -x[1]
         ];
 }
 
 function mul(x, y) {
-  return /* array */[
+  return /* float array */[
           x[0] * y[0] - x[1] * y[1],
           x[0] * y[1] + x[1] * y[0]
         ];
@@ -46,7 +46,7 @@ function div(x, y) {
   if (Math.abs(y[0]) >= Math.abs(y[1])) {
     var r = y[1] / y[0];
     var d = y[0] + r * y[1];
-    return /* array */[
+    return /* float array */[
             (x[0] + r * x[1]) / d,
             (x[1] - r * x[0]) / d
           ];
@@ -54,7 +54,7 @@ function div(x, y) {
   else {
     var r$1 = y[0] / y[1];
     var d$1 = y[1] + r$1 * y[0];
-    return /* array */[
+    return /* float array */[
             (r$1 * x[0] + x[1]) / d$1,
             (r$1 * x[1] - x[0]) / d$1
           ];
@@ -93,7 +93,7 @@ function arg(x) {
 }
 
 function polar(n, a) {
-  return /* array */[
+  return /* float array */[
           Math.cos(a) * n,
           Math.sin(a) * n
         ];
@@ -119,13 +119,13 @@ function sqrt(x) {
       w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
     }
     if (x[0] >= 0.0) {
-      return /* array */[
+      return /* float array */[
               w,
               0.5 * x[1] / w
             ];
     }
     else {
-      return /* array */[
+      return /* float array */[
               0.5 * i / w,
               x[1] >= 0.0 ? w : -w
             ];
@@ -135,14 +135,14 @@ function sqrt(x) {
 
 function exp(x) {
   var e = Math.exp(x[0]);
-  return /* array */[
+  return /* float array */[
           e * Math.cos(x[1]),
           e * Math.sin(x[1])
         ];
 }
 
 function log(x) {
-  return /* array */[
+  return /* float array */[
           Math.log(norm(x)),
           Math.atan2(x[1], x[0])
         ];

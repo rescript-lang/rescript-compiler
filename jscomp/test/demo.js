@@ -7,18 +7,15 @@ var Runtime    = require("@runtime");
 var Caml_curry = require("../runtime/caml_curry");
 
 var data = /* array */[
-  [
-    /* record */0,
+  /* record */[
     "GOOG",
     700.0
   ],
-  [
-    /* record */0,
+  /* record */[
     "AAPL",
     500.0
   ],
-  [
-    /* record */0,
+  /* record */[
     "MSFT",
     300.0
   ]
@@ -26,14 +23,11 @@ var data = /* array */[
 
 function ui_layout(compile, lookup, appContext) {
   var init = Caml_curry.app1(compile, "bid  - ask");
-  var computeFunction = [
-    0,
-    function (env) {
+  var computeFunction = [function (env) {
       return Caml_curry.app1(init, function (key) {
                   return Caml_curry.app2(lookup, env, key);
                 });
-    }
-  ];
+    }];
   var hw1 = new BUI.HostedWindow();
   var hc = new BUI.HostedContent();
   var stackPanel = new UI.StackPanel();
@@ -90,7 +84,7 @@ function ui_layout(compile, lookup, appContext) {
   Caml_curry.app2(button.on, "click", function () {
         try {
           var hot_function = Caml_curry.app1(compile, inputCode.text);
-          computeFunction[1] = function (env) {
+          computeFunction[0] = function (env) {
             return Caml_curry.app1(hot_function, function (key) {
                         return Caml_curry.app2(lookup, env, key);
                       });
@@ -103,10 +97,10 @@ function ui_layout(compile, lookup, appContext) {
       });
   Runtime.setInterval(function () {
         return grid.dataSource = Array.prototype.map.call(data, function (param) {
-                    var price = param[2];
+                    var price = param[1];
                     var bid = price + 20 * Math.random();
                     var ask = price + 20 * Math.random();
-                    var result = Caml_curry.app1(computeFunction[1], {
+                    var result = Caml_curry.app1(computeFunction[0], {
                           "bid": bid,
                           "ask": ask
                         });
@@ -116,7 +110,7 @@ function ui_layout(compile, lookup, appContext) {
                     return /* array */[
                             {
                               "label": {
-                                "text": param[1]
+                                "text": param[0]
                               }
                             },
                             {

@@ -11,7 +11,7 @@ function f1(g, x) {
   return Caml_curry.app1(g, x);
 }
 
-var X = [0];
+var X = [];
 
 function f2(g, x) {
   return Caml_curry.app1(g, x);
@@ -37,7 +37,7 @@ function f7(g, x) {
   return Caml_curry.app1(g, x);
 }
 
-var X0 = [0];
+var X0 = [];
 
 function f8(g, x) {
   return Caml_curry.app1(g, x);
@@ -63,10 +63,7 @@ function f13(g, x) {
   return Caml_curry.app1(g, x);
 }
 
-var X2 = [
-  0,
-  f13
-];
+var X2 = [f13];
 
 function f14(h, g, x) {
   return Caml_curry.app2(h, g, x);

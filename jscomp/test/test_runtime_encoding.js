@@ -3,22 +3,21 @@
 
 
 function g(x) {
-  return /* array */[
+  return /* float array */[
           3,
           x
         ];
 }
 
 function ff(v, u) {
-  return [
-          /* record */0,
+  return /* record */[
           v,
           u
         ];
 }
 
 function fff(vv, uu) {
-  return /* array */[
+  return /* float array */[
           vv,
           uu
         ];
@@ -33,7 +32,7 @@ function aa(x) {
 }
 
 function aaa(x) {
-  return x[1];
+  return x[0];
 }
 
 function aaaa(x) {

@@ -23,10 +23,8 @@ function bool_equal(x, y) {
 function assertions() {
   if (!bool_equal(/* true */1, /* true */1)) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_bool_equal.ml",
             21,
             2
@@ -35,10 +33,8 @@ function assertions() {
   }
   if (!bool_equal(/* false */0, /* false */0)) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_bool_equal.ml",
             22,
             2
@@ -47,10 +43,8 @@ function assertions() {
   }
   if (bool_equal(/* true */1, /* false */0)) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_bool_equal.ml",
             23,
             2
@@ -59,10 +53,8 @@ function assertions() {
   }
   if (bool_equal(/* false */0, /* true */1)) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "test_bool_equal.ml",
             24,
             2

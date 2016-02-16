@@ -7,10 +7,7 @@ var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
 function for_3(x) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -18,7 +15,7 @@ function for_3(x) {
     var j = i * 2;
     arr[i] = (function(j){
     return function () {
-      v[1] += j;
+      v[0] += j;
       return /* () */0;
     }
     }(j));
@@ -26,14 +23,11 @@ function for_3(x) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_4(x) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -42,7 +36,7 @@ function for_4(x) {
     var k = 2 * j;
     arr[i] = (function(k){
     return function () {
-      v[1] += k;
+      v[0] += k;
       return /* () */0;
     }
     }(k));
@@ -50,14 +44,11 @@ function for_4(x) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_5(x, u) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -65,7 +56,7 @@ function for_5(x, u) {
     var k = 2 * u * u;
     arr[i] = (function(k){
     return function () {
-      v[1] += k;
+      v[0] += k;
       return /* () */0;
     }
     }(k));
@@ -73,55 +64,43 @@ function for_5(x, u) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_6(x, u) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  var v4 = [
-    0,
-    0
-  ];
-  var v5 = [
-    0,
-    0
-  ];
+  var v4 = [0];
+  var v5 = [0];
   var inspect_3 = -1;
-  ++ v4[1];
+  ++ v4[0];
   for(var j = 0; j<= 1; ++j){
-    ++ v5[1];
-    var v2 = [
-      0,
-      0
-    ];
+    ++ v5[0];
+    var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
       var k = 2 * u * u;
-      var h = 2 * v5[1];
-      ++ v2[1];
+      var h = 2 * v5[0];
+      ++ v2[0];
       arr[i] = (function(k,h){
       return function () {
-        v[1] = v[1] + k + v2[1] + v4[1] + v5[1] + h + u;
+        v[0] = v[0] + k + v2[0] + v4[0] + v5[0] + h + u;
         return /* () */0;
       }
       }(k,h));
     }
     }(v2));
-    inspect_3 = v2[1];
+    inspect_3 = v2[0];
   }
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return /* array */[
-          v[1],
-          v4[1],
-          v5[1],
+  return /* int array */[
+          v[0],
+          v4[0],
+          v5[0],
           inspect_3
         ];
 }
@@ -129,10 +108,7 @@ function for_6(x, u) {
 function for_7() {
   var i_len = 7;
   var j_len = 3;
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
         return /* () */0;
       });
@@ -141,7 +117,7 @@ function for_7() {
     for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
       arr[i * j_len + j] = (function(j){
       return function () {
-        v[1] = v[1] + i + j;
+        v[0] = v[0] + i + j;
         return /* () */0;
       }
       }(j));
@@ -151,16 +127,13 @@ function for_7() {
   $$Array.iter(function (f) {
         return Caml_curry.app1(f, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_8() {
   var i_len = 7;
   var j_len = 3;
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
         return /* () */0;
       });
@@ -171,7 +144,7 @@ function for_8() {
       var h = i + j;
       arr[i * j_len + j] = (function(j,h){
       return function () {
-        v[1] = v[1] + i + j + h + k;
+        v[0] = v[0] + i + j + h + k;
         return /* () */0;
       }
       }(j,h));
@@ -181,36 +154,26 @@ function for_8() {
   $$Array.iter(function (f) {
         return Caml_curry.app1(f, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_9() {
-  var v = [
-    0,
-    /* [] */0
-  ];
-  var match_001 = function (x) {
-    v[1] = [
-      /* :: */0,
+  var v = [/* [] */0];
+  var match_000 = function (x) {
+    v[0] = /* :: */[
       x,
-      v[1]
+      v[0]
     ];
     return /* () */0;
   };
-  var match_002 = function () {
-    return $$Array.of_list(List.rev(v[1]));
+  var match_001 = function () {
+    return $$Array.of_list(List.rev(v[0]));
   };
-  var collect = match_001;
+  var collect = match_000;
   var i_len = 2;
   var j_len = 2;
-  var vv = [
-    0,
-    0
-  ];
-  var vv2 = [
-    0,
-    0
-  ];
+  var vv = [0];
+  var vv2 = [0];
   var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
         return /* () */0;
       });
@@ -218,24 +181,21 @@ function for_9() {
         return /* () */0;
       });
   for(var i = 0 ,i_finish = i_len - 1; i<= i_finish; ++i){
-    var v$1 = [
-      0,
-      0
-    ];
-    v$1[1] += i;
+    var v$1 = [0];
+    v$1[0] += i;
     (function(v$1){
     for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
-      ++ v$1[1];
-      Caml_curry.app1(collect, v$1[1]);
+      ++ v$1[0];
+      Caml_curry.app1(collect, v$1[0]);
       arr[i * j_len + j] = function () {
-        vv[1] += v$1[1];
+        vv[0] += v$1[0];
         return /* () */0;
       };
     }
     }(v$1));
     arr2[i] = (function(v$1){
     return function () {
-      vv2[1] += v$1[1];
+      vv2[0] += v$1[0];
       return /* () */0;
     }
     }(v$1));
@@ -246,108 +206,98 @@ function for_9() {
   $$Array.iter(function (f) {
         return Caml_curry.app1(f, /* () */0);
       }, arr2);
-  return /* array */[[
-            /* tuple */0,
-            vv[1],
-            Caml_curry.app1(match_002, /* () */0),
-            vv2[1]
+  return /* array */[/* tuple */[
+            vv[0],
+            Caml_curry.app1(match_001, /* () */0),
+            vv2[0]
           ]];
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "for_loop_test_3",
   function () {
-    return [
-            /* Eq */0,
-            90,
-            for_3(Caml_array.caml_make_vect(10, 2))
-          ];
+    return /* Eq */{
+            0: 90,
+            1: for_3(Caml_array.caml_make_vect(10, 2)),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "for_loop_test_4",
     function () {
-      return [
-              /* Eq */0,
-              180,
-              for_4(Caml_array.caml_make_vect(10, 2))
-            ];
+      return /* Eq */{
+              0: 180,
+              1: for_4(Caml_array.caml_make_vect(10, 2)),
+              length: 2,
+              tag: 0
+            };
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "for_loop_test_5",
       function () {
-        return [
-                /* Eq */0,
-                2420,
-                for_5(Caml_array.caml_make_vect(10, 2), 11)
-              ];
+        return /* Eq */{
+                0: 2420,
+                1: for_5(Caml_array.caml_make_vect(10, 2), 11),
+                length: 2,
+                tag: 0
+              };
       }
     ],
-    [
-      /* :: */0,
-      [
-        /* tuple */0,
+    /* :: */[
+      /* tuple */[
         "for_loop_test_6",
         function () {
-          return [
-                  /* Eq */0,
-                  /* array */[
+          return /* Eq */{
+                  0: /* int array */[
                     30,
                     1,
                     2,
                     3
                   ],
-                  for_6(Caml_array.caml_make_vect(3, 0), 0)
-                ];
+                  1: for_6(Caml_array.caml_make_vect(3, 0), 0),
+                  length: 2,
+                  tag: 0
+                };
         }
       ],
-      [
-        /* :: */0,
-        [
-          /* tuple */0,
+      /* :: */[
+        /* tuple */[
           "for_loop_test_7",
           function () {
-            return [
-                    /* Eq */0,
-                    84,
-                    for_7(/* () */0)
-                  ];
+            return /* Eq */{
+                    0: 84,
+                    1: for_7(/* () */0),
+                    length: 2,
+                    tag: 0
+                  };
           }
         ],
-        [
-          /* :: */0,
-          [
-            /* tuple */0,
+        /* :: */[
+          /* tuple */[
             "for_loop_test_8",
             function () {
-              return [
-                      /* Eq */0,
-                      294,
-                      for_8(/* () */0)
-                    ];
+              return /* Eq */{
+                      0: 294,
+                      1: for_8(/* () */0),
+                      length: 2,
+                      tag: 0
+                    };
             }
           ],
-          [
-            /* :: */0,
-            [
-              /* tuple */0,
+          /* :: */[
+            /* tuple */[
               "for_loop_test_9",
               function () {
-                return [
-                        /* Eq */0,
-                        /* array */[[
-                            /* tuple */0,
+                return /* Eq */{
+                        0: /* array */[/* tuple */[
                             10,
-                            /* array */[
+                            /* int array */[
                               1,
                               2,
                               2,
@@ -355,8 +305,10 @@ var suites_002 = [
                             ],
                             5
                           ]],
-                        for_9(/* () */0)
-                      ];
+                        1: for_9(/* () */0),
+                        length: 2,
+                        tag: 0
+                      };
               }
             ],
             /* [] */0
@@ -367,10 +319,9 @@ var suites_002 = [
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 exports.for_3  = for_3;

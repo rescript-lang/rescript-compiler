@@ -2,132 +2,97 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj_runtime        = require("../runtime/caml_obj_runtime");
-var Obj                     = require("./obj");
+var Caml_obj                = require("../runtime/caml_obj");
 var CamlinternalOO          = require("./camlinternalOO");
-var $$Array                 = require("./array");
-var Caml_curry              = require("../runtime/caml_curry");
 
 function init_mod(loc, shape) {
-  if (typeof shape === "number") {
-    switch (shape) {
-      case 0 : 
-          return function () {
-            throw [
-                  0,
-                  Caml_builtin_exceptions.Undefined_recursive_module,
-                  loc
-                ];
-          };
-      case 1 : 
-          return [
-                  246,
-                  function () {
-                    throw [
-                          0,
-                          Caml_builtin_exceptions.Undefined_recursive_module,
-                          loc
-                        ];
-                  }
-                ];
-      case 2 : 
-          return CamlinternalOO.dummy_class(loc);
-      
-    }
-  }
-  else if (shape[0]) {
-    return shape[1];
-  }
-  else {
-    return $$Array.map(function (param) {
-                return init_mod(loc, param);
-              }, shape[1]);
-  }
-}
-
-function overwrite(o, n) {
-  if (o.length < n.length) {
+  var undef_module = function () {
     throw [
-          0,
-          Caml_builtin_exceptions.Assert_failure,
-          [
-            0,
-            "camlinternalMod.ml",
-            40,
-            2
-          ]
+          Caml_builtin_exceptions.Undefined_recursive_module,
+          loc
         ];
-  }
-  for(var i = 0 ,i_finish = n.length - 1; i<= i_finish; ++i){
-    o[i] = n[i];
-  }
-  return /* () */0;
+  };
+  var loop = function (shape, struct_, idx) {
+    if (typeof shape === "number") {
+      switch (shape) {
+        case 0 : 
+        case 1 : 
+            struct_[idx] = undef_module;
+            return /* () */0;
+        case 2 : 
+            struct_[idx] = CamlinternalOO.dummy_class(loc);
+            return /* () */0;
+        
+      }
+    }
+    else if (shape.tag) {
+      struct_[idx] = shape[0];
+      return /* () */0;
+    }
+    else {
+      var comps = shape[0];
+      var v = /* array */[];
+      struct_[idx] = v;
+      var len = comps.length;
+      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+        loop(comps[i], v, i);
+      }
+      return /* () */0;
+    }
+  };
+  var res = /* array */[];
+  loop(shape, res, 0);
+  return res[0];
 }
 
 function update_mod(shape, o, n) {
-  if (typeof shape === "number") {
-    switch (shape) {
-      case 0 : 
-          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.closure_tag && n.length <= o.length) {
-            overwrite(o, n);
-            return Caml_obj_runtime.caml_obj_truncate(o, n.length);
-          }
-          else {
-            return overwrite(o, function (x) {
-                        return Caml_curry.app1(n, x);
-                      });
-          }
-      case 1 : 
-          if (Caml_obj_runtime.caml_obj_tag(n) === Obj.lazy_tag) {
-            o[0] = n[0];
+  var aux = function (shape, o, n, parent, i) {
+    if (typeof shape === "number") {
+      switch (shape) {
+        case 0 : 
+            parent[i] = n;
             return /* () */0;
-          }
-          else if (Caml_obj_runtime.caml_obj_tag(n) === Obj.forward_tag) {
-            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
-            o[0] = n[0];
-            return /* () */0;
-          }
-          else {
-            Caml_obj_runtime.caml_obj_set_tag(o, Obj.forward_tag);
-            o[0] = n;
-            return /* () */0;
-          }
-      case 2 : 
-          if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length === 4)) {
-            throw [
-                  0,
-                  Caml_builtin_exceptions.Assert_failure,
-                  [
-                    0,
-                    "camlinternalMod.ml",
-                    63,
-                    6
-                  ]
-                ];
-          }
-          return overwrite(o, n);
-      
+        case 1 : 
+        case 2 : 
+            return Caml_obj.caml_update_dummy(o, n);
+        
+      }
     }
+    else if (shape.tag) {
+      return /* () */0;
+    }
+    else {
+      var comps = shape[0];
+      for(var i$1 = 0 ,i_finish = comps.length - 1; i$1<= i_finish; ++i$1){
+        aux(comps[i$1], o[i$1], n[i$1], o, i$1);
+      }
+      return /* () */0;
+    }
+  };
+  if (typeof shape === "number") {
+    throw [
+          Caml_builtin_exceptions.Assert_failure,
+          [
+            "camlinternalMod.ml",
+            122,
+            10
+          ]
+        ];
   }
-  else if (shape[0]) {
-    return /* () */0;
+  else if (shape.tag) {
+    throw [
+          Caml_builtin_exceptions.Assert_failure,
+          [
+            "camlinternalMod.ml",
+            122,
+            10
+          ]
+        ];
   }
   else {
-    var comps = shape[1];
-    if (!(Caml_obj_runtime.caml_obj_tag(n) === 0 && n.length >= comps.length)) {
-      throw [
-            0,
-            Caml_builtin_exceptions.Assert_failure,
-            [
-              0,
-              "camlinternalMod.ml",
-              66,
-              6
-            ]
-          ];
-    }
+    var comps = shape[0];
     for(var i = 0 ,i_finish = comps.length - 1; i<= i_finish; ++i){
-      update_mod(comps[i], o[i], n[i]);
+      aux(comps[i], o[i], n[i], o, i);
     }
     return /* () */0;
   }

@@ -12,10 +12,8 @@ var v = "gso";
 function bytes_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "buffer_test.ml",
             9,
             4
@@ -24,10 +22,8 @@ function bytes_equal() {
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "buffer_test.ml",
             10,
             4
@@ -38,10 +34,8 @@ function bytes_equal() {
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "buffer_test.ml",
             13,
             4
@@ -53,10 +47,8 @@ function bytes_equal() {
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "buffer_test.ml",
             14,
             4
@@ -65,16 +57,13 @@ function bytes_equal() {
   }
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "equal",
   bytes_equal
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "buffer",
     function () {
       var v = Buffer.create(30);
@@ -88,10 +77,9 @@ var suites_002 = [
   /* [] */0
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_suites("buffer_test.ml", suites);

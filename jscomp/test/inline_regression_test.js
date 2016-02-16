@@ -50,21 +50,20 @@ function basename(param) {
             }, Filename.current_dir_name, param);
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "basename",
   function () {
-    return [
-            /* Eq */0,
-            basename("b/c/a.b"),
-            "a.b"
-          ];
+    return /* Eq */{
+            0: basename("b/c/a.b"),
+            1: "a.b",
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

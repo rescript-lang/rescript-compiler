@@ -247,8 +247,6 @@ Some known issues are listed as below:
 
 1. Language features:
 
-   Recursive modules, Lazy modules, have not looked into it yet.
-
    Int32 operations, currently, Int use Float operations, this should
    be fixed in the near future.
    

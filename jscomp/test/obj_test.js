@@ -7,13 +7,11 @@ var CamlinternalOO = require("../stdlib/camlinternalOO");
 var Caml_curry     = require("../runtime/caml_curry");
 
 var shared = [
-  0,
   "hi",
   "add"
 ];
 
 var shared$1 = [
-  0,
   "hi",
   "hello"
 ];
@@ -22,9 +20,9 @@ var $$class = CamlinternalOO.create_table(shared$1);
 
 var ids = CamlinternalOO.get_method_labels($$class, shared$1);
 
-var hi = ids[1];
+var hi = ids[0];
 
-var hello = ids[2];
+var hello = ids[1];
 
 CamlinternalOO.set_methods($$class, /* array */[
       hi,
@@ -33,7 +31,7 @@ CamlinternalOO.set_methods($$class, /* array */[
       },
       hello,
       function (self$neg1, z) {
-        return Caml_curry.app3(self$neg1[1][hi], self$neg1, 10, z);
+        return Caml_curry.app3(self$neg1[0][hi], self$neg1, 10, z);
       }
     ]);
 
@@ -42,20 +40,18 @@ CamlinternalOO.init_class($$class);
 var vv = CamlinternalOO.create_object_opt(0, $$class);
 
 var $$class$1 = CamlinternalOO.create_table([
-      0,
       "x",
       "y"
     ]);
 
 var ids$1 = CamlinternalOO.get_method_labels($$class$1, [
-      0,
       "y",
       "x"
     ]);
 
-var y = ids$1[1];
+var y = ids$1[0];
 
-var x = ids$1[2];
+var x = ids$1[1];
 
 CamlinternalOO.set_methods($$class$1, /* array */[
       x,
@@ -73,7 +69,6 @@ CamlinternalOO.init_class($$class$1);
 var v = CamlinternalOO.create_object_opt(0, $$class$1);
 
 var $$class$2 = CamlinternalOO.create_table([
-      0,
       "hi",
       "id1",
       "id2",
@@ -81,20 +76,19 @@ var $$class$2 = CamlinternalOO.create_table([
     ]);
 
 var ids$2 = CamlinternalOO.get_method_labels($$class$2, [
-      0,
       "id2",
       "id1",
       "hi",
       "hello"
     ]);
 
-var id2 = ids$2[1];
+var id2 = ids$2[0];
 
-var id1 = ids$2[2];
+var id1 = ids$2[1];
 
-var hi$1 = ids$2[3];
+var hi$1 = ids$2[2];
 
-var hello$1 = ids$2[4];
+var hello$1 = ids$2[3];
 
 CamlinternalOO.set_methods($$class$2, /* array */[
       hi$1,
@@ -119,10 +113,7 @@ CamlinternalOO.init_class($$class$2);
 
 var u = CamlinternalOO.create_object_opt(0, $$class$2);
 
-var $$class$3 = CamlinternalOO.create_table([
-      0,
-      "id"
-    ]);
+var $$class$3 = CamlinternalOO.create_table(["id"]);
 
 var id = CamlinternalOO.get_method_label($$class$3, "id");
 
@@ -134,10 +125,7 @@ CamlinternalOO.init_class($$class$3);
 
 var uu = CamlinternalOO.create_object_opt(0, $$class$3);
 
-var $$class$4 = CamlinternalOO.create_table([
-      0,
-      "add"
-    ]);
+var $$class$4 = CamlinternalOO.create_table(["add"]);
 
 var add = CamlinternalOO.get_method_label($$class$4, "add");
 
@@ -153,9 +141,9 @@ var $$class$5 = CamlinternalOO.create_table(shared);
 
 var ids$3 = CamlinternalOO.get_method_labels($$class$5, shared);
 
-var hi$2 = ids$3[1];
+var hi$2 = ids$3[0];
 
-var add$1 = ids$3[2];
+var add$1 = ids$3[1];
 
 CamlinternalOO.set_methods($$class$5, /* array */[
       add$1,
@@ -164,7 +152,7 @@ CamlinternalOO.set_methods($$class$5, /* array */[
       },
       hi$2,
       function (self$neg6, x) {
-        return Caml_curry.app3(self$neg6[1][add$1], self$neg6, x, 32);
+        return Caml_curry.app3(self$neg6[0][add$1], self$neg6, x, 32);
       }
     ]);
 
@@ -172,184 +160,172 @@ CamlinternalOO.init_class($$class$5);
 
 var vvvv = CamlinternalOO.create_object_opt(0, $$class$5);
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "single_obj",
   function () {
-    return [
-            /* Eq */0,
-            /* array */[
+    return /* Eq */{
+            0: /* int array */[
               3,
               32
             ],
-            /* array */[
+            1: /* int array */[
               Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 1), v),
               Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 2), v)
-            ]
-          ];
+            ],
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "single_obj_cache",
     function () {
-      return [
-              /* Eq */0,
-              /* array */[
+      return /* Eq */{
+              0: /* int array */[
                 3,
                 32
               ],
-              /* array */[
+              1: /* int array */[
                 Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 3), v),
                 Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 4), v)
-              ]
-            ];
+              ],
+              length: 2,
+              tag: 0
+            };
     }
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "self_obj",
       function () {
-        return [
-                /* Eq */0,
-                13,
-                Caml_curry.app2(Caml_oo.caml_get_public_method(vv, 616641298, 5), vv, 3)
-              ];
+        return /* Eq */{
+                0: 13,
+                1: Caml_curry.app2(Caml_oo.caml_get_public_method(vv, 616641298, 5), vv, 3),
+                length: 2,
+                tag: 0
+              };
       }
     ],
-    [
-      /* :: */0,
-      [
-        /* tuple */0,
+    /* :: */[
+      /* tuple */[
         "uu_id",
         function () {
-          return [
-                  /* Eq */0,
-                  "uu",
-                  Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 6), uu)
-                ];
+          return /* Eq */{
+                  0: "uu",
+                  1: Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 6), uu),
+                  length: 2,
+                  tag: 0
+                };
         }
       ],
-      [
-        /* :: */0,
-        [
-          /* tuple */0,
+      /* :: */[
+        /* tuple */[
           "uu_add",
           function () {
-            return [
-                    /* Eq */0,
-                    Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 7), uuu, 1, 20),
-                    21
-                  ];
+            return /* Eq */{
+                    0: Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 7), uuu, 1, 20),
+                    1: 21,
+                    length: 2,
+                    tag: 0
+                  };
           }
         ],
-        [
-          /* :: */0,
-          [
-            /* tuple */0,
+        /* :: */[
+          /* tuple */[
             "v_add",
             function () {
-              return [
-                      /* Eq */0,
-                      Caml_curry.app3(Caml_oo.caml_get_public_method(vvvv, 4846113, 8), vvvv, 3, 7),
-                      10
-                    ];
+              return /* Eq */{
+                      0: Caml_curry.app3(Caml_oo.caml_get_public_method(vvvv, 4846113, 8), vvvv, 3, 7),
+                      1: 10,
+                      length: 2,
+                      tag: 0
+                    };
             }
           ],
-          [
-            /* :: */0,
-            [
-              /* tuple */0,
+          /* :: */[
+            /* tuple */[
               "u_id1",
               function () {
-                return [
-                        /* Eq */0,
-                        Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 9), u),
-                        3
-                      ];
+                return /* Eq */{
+                        0: Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 9), u),
+                        1: 3,
+                        length: 2,
+                        tag: 0
+                      };
               }
             ],
-            [
-              /* :: */0,
-              [
-                /* tuple */0,
+            /* :: */[
+              /* tuple */[
                 "u_id2",
                 function () {
-                  return [
-                          /* Eq */0,
-                          Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 10), u),
-                          4
-                        ];
+                  return /* Eq */{
+                          0: Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 10), u),
+                          1: 4,
+                          length: 2,
+                          tag: 0
+                        };
                 }
               ],
-              [
-                /* :: */0,
-                [
-                  /* tuple */0,
+              /* :: */[
+                /* tuple */[
                   "u hi",
                   function () {
-                    return [
-                            /* Eq */0,
-                            Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 11), u, 1, 2),
-                            3
-                          ];
+                    return /* Eq */{
+                            0: Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 11), u, 1, 2),
+                            1: 3,
+                            length: 2,
+                            tag: 0
+                          };
                   }
                 ],
-                [
-                  /* :: */0,
-                  [
-                    /* tuple */0,
+                /* :: */[
+                  /* tuple */[
                     "u hello",
                     function () {
-                      return [
-                              /* Eq */0,
-                              Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 12), u, 32),
-                              32
-                            ];
+                      return /* Eq */{
+                              0: Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 12), u, 32),
+                              1: 32,
+                              length: 2,
+                              tag: 0
+                            };
                     }
                   ],
-                  [
-                    /* :: */0,
-                    [
-                      /* tuple */0,
+                  /* :: */[
+                    /* tuple */[
                       "v hi",
                       function () {
-                        return [
-                                /* Eq */0,
-                                Caml_curry.app2(Caml_oo.caml_get_public_method(vvvv, 23297, 13), vvvv, 31),
-                                63
-                              ];
+                        return /* Eq */{
+                                0: Caml_curry.app2(Caml_oo.caml_get_public_method(vvvv, 23297, 13), vvvv, 31),
+                                1: 63,
+                                length: 2,
+                                tag: 0
+                              };
                       }
                     ],
-                    [
-                      /* :: */0,
-                      [
-                        /* tuple */0,
+                    /* :: */[
+                      /* tuple */[
                         "uuu add",
                         function () {
-                          return [
-                                  /* Eq */0,
-                                  Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 14), uuu, 3, 4),
-                                  7
-                                ];
+                          return /* Eq */{
+                                  0: Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 14), uuu, 3, 4),
+                                  1: 7,
+                                  length: 2,
+                                  tag: 0
+                                };
                         }
                       ],
-                      [
-                        /* :: */0,
-                        [
-                          /* tuple */0,
+                      /* :: */[
+                        /* tuple */[
                           "v x",
                           function () {
-                            return [
-                                    /* Eq */0,
-                                    Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 15), v),
-                                    3
-                                  ];
+                            return /* Eq */{
+                                    0: Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 15), v),
+                                    1: 3,
+                                    length: 2,
+                                    tag: 0
+                                  };
                           }
                         ],
                         /* [] */0
@@ -366,10 +342,9 @@ var suites_002 = [
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_pair_suites("obj_test.ml", suites);

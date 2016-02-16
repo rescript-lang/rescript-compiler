@@ -55,6 +55,7 @@ class virtual map =
         in
           { ident = _x; value = _x_i1; property = _x_i2; ident_info = _x_i3;
           }
+    method tag_info : tag_info -> tag_info = o#unknown
     method statement_desc : statement_desc -> statement_desc =
       function
       | Block _x -> let _x = o#block _x in Block _x
@@ -137,6 +138,7 @@ class virtual map =
      *)
                  (* shallow copy, like [x.slice] *)
                  (* For [caml_array_append]*)
+                 (* | Tag_ml_obj of expression *)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -214,6 +216,20 @@ class virtual map =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
+                 (* [tag] and [size] tailed  for [Obj.new_block] *)
+                 (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+                 (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)
                  (* pure*) (* pure *)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/block
    block can be nested, specified in ES3 
@@ -314,7 +330,7 @@ class virtual map =
         let _x = o#expression _x in { return_value = _x; }
     method required_modules : required_modules -> required_modules =
       o#unknown
-    method property_name : property_name -> property_name = o#string
+    method property_name : property_name -> property_name = o#unknown
     method property_map : property_map -> property_map =
       o#list
         (fun o (_x, _x_i1) ->
@@ -359,7 +375,6 @@ class virtual map =
       | Array_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
-      | Tag_ml_obj _x -> let _x = o#expression _x in Tag_ml_obj _x
       | String_append (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
@@ -418,6 +433,25 @@ class virtual map =
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
+      | Caml_block (_x, _x_i1, _x_i2, _x_i3) ->
+          let _x = o#list (fun o -> o#expression) _x in
+          let _x_i1 = o#mutable_flag _x_i1 in
+          let _x_i2 = o#expression _x_i2 in
+          let _x_i3 = o#tag_info _x_i3
+          in Caml_block (_x, _x_i1, _x_i2, _x_i3)
+      | Caml_uninitialized_obj (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#expression _x_i1
+          in Caml_uninitialized_obj (_x, _x_i1)
+      | Caml_block_tag _x -> let _x = o#expression _x in Caml_block_tag _x
+      | Caml_block_set_tag (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#expression _x_i1 in Caml_block_set_tag (_x, _x_i1)
+      | Caml_block_length _x ->
+          let _x = o#expression _x in Caml_block_length _x
+      | Caml_block_set_length (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#expression _x_i1 in Caml_block_set_length (_x, _x_i1)
       | Number _x -> let _x = o#number _x in Number _x
       | Object _x -> let _x = o#property_map _x in Object _x
     method expression : expression -> expression =

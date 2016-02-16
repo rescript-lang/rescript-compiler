@@ -40,8 +40,8 @@ val oo : string
 
 val sys : string
 
-val lex_parse : string 
-
+val lexer : string 
+val parser : string
 val obj_runtime : string
 
 val array : string
@@ -54,5 +54,5 @@ val float : string
 
 val curry : string 
 
-
+val internalMod : string
 

@@ -19,10 +19,7 @@ function for_2(x) {
 }
 
 function for_3(x) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -30,7 +27,7 @@ function for_3(x) {
     var j = i * 2;
     arr[i] = (function(j){
     return function () {
-      v[1] += j;
+      v[0] += j;
       return /* () */0;
     }
     }(j));
@@ -38,14 +35,11 @@ function for_3(x) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_4(x) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -54,7 +48,7 @@ function for_4(x) {
     var k = 2 * j;
     arr[i] = (function(k){
     return function () {
-      v[1] += k;
+      v[0] += k;
       return /* () */0;
     }
     }(k));
@@ -62,14 +56,11 @@ function for_4(x) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_5(x, u) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
@@ -77,7 +68,7 @@ function for_5(x, u) {
     var k = 2 * u * u;
     arr[i] = (function(k){
     return function () {
-      v[1] += k;
+      v[0] += k;
       return /* () */0;
     }
     }(k));
@@ -85,40 +76,28 @@ function for_5(x, u) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 function for_6(x, u) {
-  var v = [
-    0,
-    0
-  ];
+  var v = [0];
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  var v4 = [
-    0,
-    0
-  ];
-  var v5 = [
-    0,
-    0
-  ];
-  ++ v4[1];
+  var v4 = [0];
+  var v5 = [0];
+  ++ v4[0];
   for(var j = 0; j<= 1; ++j){
-    ++ v5[1];
-    var v2 = [
-      0,
-      0
-    ];
+    ++ v5[0];
+    var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
       var k = 2 * u * u;
-      var h = 2 * v5[1];
-      ++ v2[1];
+      var h = 2 * v5[0];
+      ++ v2[0];
       arr[i] = (function(k,h){
       return function () {
-        v[1] = v[1] + k + v2[1] + u + v4[1] + v5[1] + h;
+        v[0] = v[0] + k + v2[0] + u + v4[0] + v5[0] + h;
         return /* () */0;
       }
       }(k,h));
@@ -128,7 +107,7 @@ function for_6(x, u) {
   $$Array.iter(function (x) {
         return Caml_curry.app1(x, /* () */0);
       }, arr);
-  return v[1];
+  return v[0];
 }
 
 exports.for_  = for_;

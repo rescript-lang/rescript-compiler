@@ -47,13 +47,15 @@ and ident_info = Js_op.ident_info
 
 and exports = Js_op.exports
 
+and tag_info = Js_op.tag_info 
+ 
 and required_modules = Js_op.required_modules
 
 (** object literal, if key is ident, in this case, it might be renamed by 
     Google Closure  optimizer,
     currently we always use quote
  *)
-and property_name =  string
+and property_name =  Js_op.property_name
 
 and ident = Ident.t 
 
@@ -101,8 +103,9 @@ and expression_desc =
      *)
   | Array_copy of expression (* shallow copy, like [x.slice] *)
   | Array_append of expression * expression (* For [caml_array_append]*)
-  | Tag_ml_obj of expression
+  (* | Tag_ml_obj of expression *)
   | String_append of expression * expression 
+
   | Int_of_boolean of expression 
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
@@ -201,6 +204,28 @@ and expression_desc =
        which is better to leave it alone
      *)
   | Array of expression list * mutable_flag
+  | Caml_block of expression list * mutable_flag * expression * tag_info 
+
+  | Caml_uninitialized_obj of expression * expression
+  (* [tag] and [size] tailed  for [Obj.new_block] *)
+
+  (* For setter, it still return the value of expression, 
+     we can not use 
+     {[
+       type 'a access = Get | Set of 'a
+     ]}
+     in another module, since it will break our code generator
+     [Caml_block_tag] can return [undefined], 
+     you have to use [E.tag] in a safe way     
+  *)
+  | Caml_block_tag of expression
+  | Caml_block_set_tag of expression * expression
+  | Caml_block_length of expression
+  | Caml_block_set_length of expression * expression
+  (* It will just fetch tag, to make it safe, when creating it, 
+     we need apply "|0", we don't do it in the 
+     last step since "|0" can potentially be optimized
+  *)      
   | Number of number
   | Object of property_map
 

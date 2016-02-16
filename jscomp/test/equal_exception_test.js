@@ -10,10 +10,8 @@ var v = "gso";
 function is_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "equal_exception_test.ml",
             9,
             4
@@ -22,10 +20,8 @@ function is_equal() {
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "equal_exception_test.ml",
             10,
             4
@@ -36,10 +32,8 @@ function is_equal() {
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "equal_exception_test.ml",
             13,
             4
@@ -51,10 +45,8 @@ function is_equal() {
   }
   else {
     throw [
-          0,
           Caml_builtin_exceptions.Assert_failure,
           [
-            0,
             "equal_exception_test.ml",
             14,
             4
@@ -78,13 +70,13 @@ function is_exception() {
 }
 
 function is_normal_exception() {
-  var A = [
-    248,
-    "A",
-    ++ Caml_builtin_exceptions.caml_oo_last_id
-  ];
+  var A = {
+    0: "A",
+    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    length: 2,
+    tag: 248
+  };
   var v = [
-    0,
     A,
     3
   ];
@@ -92,8 +84,8 @@ function is_normal_exception() {
     throw v;
   }
   catch (exn){
-    if (exn[1] === A) {
-      if (exn[2] !== 3) {
+    if (exn[0] === A) {
+      if (exn[1] !== 3) {
         throw exn;
       }
       else {
@@ -107,11 +99,12 @@ function is_normal_exception() {
 }
 
 function is_arbitrary_exception() {
-  var A = [
-    248,
-    "A",
-    ++ Caml_builtin_exceptions.caml_oo_last_id
-  ];
+  var A = {
+    0: "A",
+    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    length: 2,
+    tag: 248
+  };
   try {
     throw A;
   }
@@ -120,30 +113,23 @@ function is_arbitrary_exception() {
   }
 }
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "is_equal",
   is_equal
 ];
 
-var suites_002 = [
-  /* :: */0,
-  [
-    /* tuple */0,
+var suites_001 = /* :: */[
+  /* tuple */[
     "is_exception",
     is_exception
   ],
-  [
-    /* :: */0,
-    [
-      /* tuple */0,
+  /* :: */[
+    /* tuple */[
       "is_normal_exception",
       is_normal_exception
     ],
-    [
-      /* :: */0,
-      [
-        /* tuple */0,
+    /* :: */[
+      /* tuple */[
         "is_arbitrary_exception",
         is_arbitrary_exception
       ],
@@ -152,10 +138,9 @@ var suites_002 = [
   ]
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
-  suites_002
+var suites = /* :: */[
+  suites_000,
+  suites_001
 ];
 
 Mt.from_suites("exception", suites);

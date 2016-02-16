@@ -5,8 +5,7 @@ var Mt           = require("./mt");
 var Assert       = require("assert");
 var Ext_filename = require("./ext_filename");
 
-var suites_001 = [
-  /* tuple */0,
+var suites_000 = /* tuple */[
   "basic",
   function () {
     var prim = Ext_filename.node_relative_path("./a/b.c", "./a/u/g.c");
@@ -14,9 +13,8 @@ var suites_001 = [
   }
 ];
 
-var suites = [
-  /* :: */0,
-  suites_001,
+var suites = /* :: */[
+  suites_000,
   /* [] */0
 ];
 

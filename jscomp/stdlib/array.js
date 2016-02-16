@@ -9,7 +9,6 @@ function init(l, f) {
   if (l) {
     if (l < 0) {
       throw [
-            0,
             Caml_builtin_exceptions.Invalid_argument,
             "Array.init"
           ];
@@ -63,7 +62,6 @@ function append(a1, a2) {
 function sub(a, ofs, len) {
   if (len < 0 || ofs > a.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Array.sub"
         ];
@@ -76,7 +74,6 @@ function sub(a, ofs, len) {
 function fill(a, ofs, len, v) {
   if (ofs < 0 || len < 0 || ofs > a.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Array.fill"
         ];
@@ -92,7 +89,6 @@ function fill(a, ofs, len, v) {
 function blit(a1, ofs1, a2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
     throw [
-          0,
           Caml_builtin_exceptions.Invalid_argument,
           "Array.blit"
         ];
@@ -154,8 +150,7 @@ function to_list(a) {
       return res;
     }
     else {
-      _res = [
-        /* :: */0,
+      _res = /* :: */[
         a[i],
         res
       ];
@@ -171,7 +166,7 @@ function list_length(_accu, _param) {
     var param = _param;
     var accu = _accu;
     if (param) {
-      _param = param[2];
+      _param = param[1];
       _accu = accu + 1;
       continue ;
       
@@ -184,15 +179,15 @@ function list_length(_accu, _param) {
 
 function of_list(l) {
   if (l) {
-    var a = Caml_array.caml_make_vect(list_length(0, l), l[1]);
+    var a = Caml_array.caml_make_vect(list_length(0, l), l[0]);
     var _i = 1;
-    var _param = l[2];
+    var _param = l[1];
     while(true) {
       var param = _param;
       var i = _i;
       if (param) {
-        a[i] = param[1];
-        _param = param[2];
+        a[i] = param[0];
+        _param = param[1];
         _i = i + 1;
         continue ;
         
@@ -223,11 +218,12 @@ function fold_right(f, a, x) {
   return r;
 }
 
-var Bottom = [
-  248,
-  "Array.Bottom",
-  ++ Caml_builtin_exceptions.caml_oo_last_id
-];
+var Bottom = {
+  0: "Array.Bottom",
+  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  length: 2,
+  tag: 248
+};
 
 function sort(cmp, a) {
   var maxson = function (l, i) {
@@ -250,7 +246,6 @@ function sort(cmp, a) {
     }
     else {
       throw [
-            0,
             Bottom,
             i
           ];
@@ -277,8 +272,8 @@ function sort(cmp, a) {
       };
     }
     catch (exn){
-      if (exn[1] === Bottom) {
-        a[exn[2]] = e;
+      if (exn[0] === Bottom) {
+        a[exn[1]] = e;
         return /* () */0;
       }
       else {
@@ -300,8 +295,8 @@ function sort(cmp, a) {
       };
     }
     catch (exn){
-      if (exn[1] === Bottom) {
-        return exn[2];
+      if (exn[0] === Bottom) {
+        return exn[1];
       }
       else {
         throw exn;
@@ -314,10 +309,8 @@ function sort(cmp, a) {
       var father = (i - 1) / 3 | 0;
       if (i === father) {
         throw [
-              0,
               Caml_builtin_exceptions.Assert_failure,
               [
-                0,
                 "array.ml",
                 168,
                 4
