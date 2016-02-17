@@ -21,7 +21,7 @@
 (** An pattern match on {!caml_set_oo_id args}
     Note that in the trunk, it is immutable by default now 
  *)
-module E = Js_helper.Exp 
+module E = Js_exp_make 
 
 let match_exception_def (args : J.expression list) = 
   match args with   

@@ -21,8 +21,8 @@
 
 
 
-module E = Js_helper.Exp  
-module S = Js_helper.Stmt
+module E = Js_exp_make  
+module S = Js_stmt_make
 
 
 (** 

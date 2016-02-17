@@ -18,7 +18,7 @@
 
 (* Author: Hongbo Zhang  *)
 
-module E = Js_helper.Exp 
+module E = Js_exp_make 
 
 let make ?comment (args : J.expression list) =
   E.make_block 

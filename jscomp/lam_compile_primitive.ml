@@ -20,7 +20,7 @@
 
 
 
-module E = Js_helper.Exp 
+module E = Js_exp_make 
 
 (* If it is the return value, since it is a side-effect call,
    we return unit, otherwise just return it

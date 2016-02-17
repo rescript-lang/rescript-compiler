@@ -20,8 +20,8 @@
 
 
 
-module E = Js_helper.Exp 
-module S = Js_helper.Stmt
+module E = Js_exp_make
+module S = Js_stmt_make
 
 class count  var = object (self : 'self)
   val mutable appears = 0
@@ -126,7 +126,7 @@ let mark_dead = object (self)
       let pure = 
         match value with 
         | None  -> false 
-        | Some x -> ignore (self#expression x); Js_helper.no_side_effect x in
+        | Some x -> ignore (self#expression x); Js_analyzer.no_side_effect_expression x in
       self#scan pure ident ident_info; self
 end
 
