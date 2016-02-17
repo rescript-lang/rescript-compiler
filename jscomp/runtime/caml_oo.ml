@@ -50,3 +50,4 @@ let caml_get_public_method
         aux (i - 2)
     in
     meths.(aux (Obj.magic ((Obj.magic meths.(0) : int) * 2 + 1) : int) - 1)     
+

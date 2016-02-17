@@ -169,8 +169,8 @@ var suites_000 = /* tuple */[
               32
             ],
             1: /* int array */[
-              Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 1), v),
-              Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 2), v)
+              v.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 1), v) : Caml_curry.app0(v.x),
+              v.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 2), v) : Caml_curry.app0(v.y)
             ],
             length: 2,
             tag: 0
@@ -188,8 +188,8 @@ var suites_001 = /* :: */[
                 32
               ],
               1: /* int array */[
-                Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 3), v),
-                Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 4), v)
+                v.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 3), v) : Caml_curry.app0(v.x),
+                v.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(v, 121, 4), v) : Caml_curry.app0(v.y)
               ],
               length: 2,
               tag: 0
@@ -202,7 +202,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */{
                 0: 13,
-                1: Caml_curry.app2(Caml_oo.caml_get_public_method(vv, 616641298, 5), vv, 3),
+                1: vv.tag === 248 ? Caml_curry.app2(Caml_oo.caml_get_public_method(vv, 616641298, 5), vv, 3) : Caml_curry.app1(vv.hello, 3),
                 length: 2,
                 tag: 0
               };
@@ -214,7 +214,7 @@ var suites_001 = /* :: */[
         function () {
           return /* Eq */{
                   0: "uu",
-                  1: Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 6), uu),
+                  1: uu.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 6), uu) : Caml_curry.app0(uu.id),
                   length: 2,
                   tag: 0
                 };
@@ -225,7 +225,7 @@ var suites_001 = /* :: */[
           "uu_add",
           function () {
             return /* Eq */{
-                    0: Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 7), uuu, 1, 20),
+                    0: uuu.tag === 248 ? Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 7), uuu, 1, 20) : Caml_curry.app2(uuu.add, 1, 20),
                     1: 21,
                     length: 2,
                     tag: 0
@@ -237,7 +237,7 @@ var suites_001 = /* :: */[
             "v_add",
             function () {
               return /* Eq */{
-                      0: Caml_curry.app3(Caml_oo.caml_get_public_method(vvvv, 4846113, 8), vvvv, 3, 7),
+                      0: vvvv.tag === 248 ? Caml_curry.app3(Caml_oo.caml_get_public_method(vvvv, 4846113, 8), vvvv, 3, 7) : Caml_curry.app2(vvvv.add, 3, 7),
                       1: 10,
                       length: 2,
                       tag: 0
@@ -249,7 +249,7 @@ var suites_001 = /* :: */[
               "u_id1",
               function () {
                 return /* Eq */{
-                        0: Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 9), u),
+                        0: u.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 9), u) : Caml_curry.app0(u.id1),
                         1: 3,
                         length: 2,
                         tag: 0
@@ -261,7 +261,7 @@ var suites_001 = /* :: */[
                 "u_id2",
                 function () {
                   return /* Eq */{
-                          0: Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 10), u),
+                          0: u.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 10), u) : Caml_curry.app0(u.id2),
                           1: 4,
                           length: 2,
                           tag: 0
@@ -273,7 +273,7 @@ var suites_001 = /* :: */[
                   "u hi",
                   function () {
                     return /* Eq */{
-                            0: Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 11), u, 1, 2),
+                            0: u.tag === 248 ? Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 11), u, 1, 2) : Caml_curry.app2(u.hi, 1, 2),
                             1: 3,
                             length: 2,
                             tag: 0
@@ -285,7 +285,7 @@ var suites_001 = /* :: */[
                     "u hello",
                     function () {
                       return /* Eq */{
-                              0: Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 12), u, 32),
+                              0: u.tag === 248 ? Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 12), u, 32) : Caml_curry.app1(u.hello, 32),
                               1: 32,
                               length: 2,
                               tag: 0
@@ -297,7 +297,7 @@ var suites_001 = /* :: */[
                       "v hi",
                       function () {
                         return /* Eq */{
-                                0: Caml_curry.app2(Caml_oo.caml_get_public_method(vvvv, 23297, 13), vvvv, 31),
+                                0: vvvv.tag === 248 ? Caml_curry.app2(Caml_oo.caml_get_public_method(vvvv, 23297, 13), vvvv, 31) : Caml_curry.app1(vvvv.hi, 31),
                                 1: 63,
                                 length: 2,
                                 tag: 0
@@ -309,7 +309,7 @@ var suites_001 = /* :: */[
                         "uuu add",
                         function () {
                           return /* Eq */{
-                                  0: Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 14), uuu, 3, 4),
+                                  0: uuu.tag === 248 ? Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 14), uuu, 3, 4) : Caml_curry.app2(uuu.add, 3, 4),
                                   1: 7,
                                   length: 2,
                                   tag: 0
@@ -321,7 +321,7 @@ var suites_001 = /* :: */[
                           "v x",
                           function () {
                             return /* Eq */{
-                                    0: Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 15), v),
+                                    0: v.tag === 248 ? Caml_curry.app1(Caml_oo.caml_get_public_method(v, 120, 15), v) : Caml_curry.app0(v.x),
                                     1: 3,
                                     length: 2,
                                     tag: 0

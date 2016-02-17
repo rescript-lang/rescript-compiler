@@ -203,11 +203,12 @@ module Exp = struct
     {expression_desc = FlatCall (e0,es); comment }
 
   (* Dot .....................**)        
-  let runtime_call module_name fn_name args = 
-    call ~info:{arity=Full} (runtime_var_dot  module_name fn_name) args
+  let runtime_call ?comment module_name fn_name args = 
+    call ?comment ~info:{arity=Full} (runtime_var_dot  module_name fn_name) args
 
   let runtime_ref module_name fn_name = 
     runtime_var_dot  module_name fn_name
+
 
   (* only used in property access, 
       Invariant: it should not call an external module .. *)
@@ -685,6 +686,19 @@ module Exp = struct
     {expression_desc = 
        Bin (Bor, {expression_desc = Caml_block_tag e; comment }, int 0 );
        comment = None }    
+
+  let public_method_call meth_name obj label cache args = 
+    let len = List.length args in 
+    (** FIXME: not caml object *)
+    econd (int_equal (tag obj ) (int 248))
+      (call (runtime_call Js_config.oo 
+               "caml_get_public_method" [obj;label; int cache]) (obj::args))
+      (* TODO: handle arbitrary length of args .. 
+         we can reduce part of the overhead by using
+         `__js`
+       *)
+      (runtime_call Js_config.curry ("app"^string_of_int len) (dot obj meth_name ::  args))
+
   let set_tag ?comment e tag : t = 
     seq {expression_desc = Caml_block_set_tag (e,tag); comment } (unit ())
 

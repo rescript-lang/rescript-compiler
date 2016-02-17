@@ -106,6 +106,7 @@ let app1 o x =
   if len = 1 || len = 0 then apply1 o x 
   else Obj.magic (curry1 o x len )
 
+  
 let app2 o x y = 
   let len = function_length o in 
   if len = 2 then apply2 o  x y
