@@ -123,6 +123,8 @@ inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
+js_obj_test.cmo : mt.cmi
+js_obj_test.cmx : mt.cmx
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmx : mt.cmx ../stdlib/lazy.cmx
 lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
@@ -511,6 +513,8 @@ inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
+js_obj_test.cmo : mt.cmi
+js_obj_test.cmj : mt.cmj
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \

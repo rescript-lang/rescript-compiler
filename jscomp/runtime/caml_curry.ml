@@ -71,7 +71,7 @@ external append : 'a array -> 'a array -> 'a array  = "caml_array_append"
 
 external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
-let rec curry f args = 
+let rec app f args = 
   let arity = function_length f in
   let len = Array.length args in
   let d = arity - len in 
@@ -79,10 +79,10 @@ let rec curry f args =
     apply_args f  args (**f.apply (null,args) *)
   else if d < 0 then 
     (** TODO: could avoid copy by tracking the index *)
-    curry (Obj.magic (apply_args f (sub args 0 arity)))
+    app (Obj.magic (apply_args f (sub args 0 arity)))
       (sub args arity (-d))
   else 
-    Obj.magic (fun x -> curry f (append args [|x|] ))
+    Obj.magic (fun x -> app f (append args [|x|] ))
 
 (* Generated code 
    [if/else]
@@ -99,51 +99,110 @@ let curry1 o x arity =
   | 5 -> apply5 (Obj.magic o) x
   | 6 -> apply6 (Obj.magic o) x 
   | 7 -> apply7 (Obj.magic o) x 
-  | _ -> (fun a -> curry o [|x; a |]))
+  | _ -> (fun a -> app o [|x; a |]))
 
 let app1 o x = 
   let len = function_length o in
   if len = 1 || len = 0 then apply1 o x 
   else Obj.magic (curry1 o x len )
 
+  
 let app2 o x y = 
   let len = function_length o in 
   if len = 2 then apply2 o  x y
-  else Obj.magic (curry o [|x; y|])
+  else Obj.magic (app o [|x; y|])
+
+
 
 let app3 o a0 a1 a2 =  
   let len = function_length o in 
   if len = 3 then apply3 o a0 a1 a2 
   else 
-    Obj.magic (curry o [|a0;a1;a2|])
+    Obj.magic (app o [|a0;a1;a2|])
+
 
 let app4 o a0 a1 a2 a3 =  
   let len = function_length o in 
   if len = 4 then apply4 o a0 a1 a2 a3
   else 
-    Obj.magic (curry o [|a0;a1;a2; a3 |])
+    Obj.magic (app o [|a0;a1;a2; a3 |])
 
 let app5 o a0 a1 a2 a3 a4 =  
   let len = function_length o in 
   if len = 5 then apply5 o a0 a1 a2 a3 a4
   else 
-    Obj.magic (curry o [|a0;a1;a2; a3; a4 |])
+    Obj.magic (app o [|a0;a1;a2; a3; a4 |])
 
 
 let app6 o a0 a1 a2 a3 a4 a5  =  
   let len = function_length o in 
   if len = 6 then apply6 o a0 a1 a2 a3 a4 a5
   else 
-    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5 |])
+    Obj.magic (app o [|a0;a1;a2; a3; a4; a5 |])
 
 let app7 o a0 a1 a2 a3 a4 a5 a6 =  
   let len = function_length o in 
   if len = 7 then apply7 o a0 a1 a2 a3 a4 a5 a6 
   else 
-    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5; a6 |])
+    Obj.magic (app o [|a0;a1;a2; a3; a4; a5; a6 |])
 
 let app8 o a0 a1 a2 a3 a4 a5 a6 a7  =  
   let len = function_length o in 
   if len = 8 then apply8 o a0 a1 a2 a3 a4 a5 a6 a7 
   else 
-    Obj.magic (curry o [|a0;a1;a2; a3; a4; a5; a6; a7|])
+    Obj.magic (app o [|a0;a1;a2; a3; a4; a5; a6; a7|])
+
+(** For efficiency, [args.(0)] would contain obj as well  *)
+let js label cacheid obj args = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app meth args
+
+
+(* example like [x#hi] *)
+let js1   label cacheid obj = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app1 meth obj 
+
+let js2   label cacheid obj a1 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app2 meth obj a1 
+
+let js3  label cacheid obj  a1 a2 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app3 meth obj a1 a2
+
+let js4  label cacheid obj a1 a2 a3 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app4 meth obj a1 a2 a3 
+
+
+let js5  label cacheid obj a1 a2 a3 a4 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app5 meth obj a1 a2 a3 a4
+
+let js6  label cacheid obj a1 a2 a3 a4 a5 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app6 meth obj a1 a2 a3 a4 a5
+
+let js7  label cacheid obj a1 a2 a3 a4 a5 a6= 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app7 meth obj a1 a2 a3 a4 a5 a6
+
+let js8  label cacheid obj a1 a2 a3 a4 a5 a6 a7 = 
+  let meth = 
+    (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
+  app8 meth obj a1 a2 a3 a4 a5 a6 a7 
+
+
+
+
+
+

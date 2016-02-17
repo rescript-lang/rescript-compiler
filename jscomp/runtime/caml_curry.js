@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_oo    = require("./caml_oo");
 var Caml_array = require("./caml_array");
 
-function curry(_f, _args) {
+function app(_f, _args) {
   while(true) {
     var args = _args;
     var f = _f;
@@ -20,7 +21,7 @@ function curry(_f, _args) {
       else {
         return (function(f,args){
         return function (x) {
-          return curry(f, args.concat(/* array */[x]));
+          return app(f, args.concat(/* array */[x]));
         }
         }(f,args));
       }
@@ -34,7 +35,7 @@ function curry(_f, _args) {
 function curry1(o, x, arity) {
   if (arity > 7 || arity < 0) {
     return function (a) {
-      return curry(o, /* array */[
+      return app(o, /* array */[
                   x,
                   a
                 ]);
@@ -90,7 +91,7 @@ function app2(o, x, y) {
     return o(x, y);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 x,
                 y
               ]);
@@ -103,7 +104,7 @@ function app3(o, a0, a1, a2) {
     return o(a0, a1, a2);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2
@@ -117,7 +118,7 @@ function app4(o, a0, a1, a2, a3) {
     return o(a0, a1, a2, a3);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2,
@@ -132,7 +133,7 @@ function app5(o, a0, a1, a2, a3, a4) {
     return o(a0, a1, a2, a3, a4);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2,
@@ -148,7 +149,7 @@ function app6(o, a0, a1, a2, a3, a4, a5) {
     return o(a0, a1, a2, a3, a4, a5);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2,
@@ -165,7 +166,7 @@ function app7(o, a0, a1, a2, a3, a4, a5, a6) {
     return o(a0, a1, a2, a3, a4, a5, a6);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2,
@@ -183,7 +184,7 @@ function app8(o, a0, a1, a2, a3, a4, a5, a6, a7) {
     return o(a0, a1, a2, a3, a4, a5, a6, a7);
   }
   else {
-    return curry(o, /* array */[
+    return app(o, /* array */[
                 a0,
                 a1,
                 a2,
@@ -196,7 +197,52 @@ function app8(o, a0, a1, a2, a3, a4, a5, a6, a7) {
   }
 }
 
-exports.curry  = curry;
+function js(label, cacheid, obj, args) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app(meth, args);
+}
+
+function js1(label, cacheid, obj) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app1(meth, obj);
+}
+
+function js2(label, cacheid, obj, a1) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app2(meth, obj, a1);
+}
+
+function js3(label, cacheid, obj, a1, a2) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app3(meth, obj, a1, a2);
+}
+
+function js4(label, cacheid, obj, a1, a2, a3) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app4(meth, obj, a1, a2, a3);
+}
+
+function js5(label, cacheid, obj, a1, a2, a3, a4) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app5(meth, obj, a1, a2, a3, a4);
+}
+
+function js6(label, cacheid, obj, a1, a2, a3, a4, a5) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app6(meth, obj, a1, a2, a3, a4, a5);
+}
+
+function js7(label, cacheid, obj, a1, a2, a3, a4, a5, a6) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app7(meth, obj, a1, a2, a3, a4, a5, a6);
+}
+
+function js8(label, cacheid, obj, a1, a2, a3, a4, a5, a6, a7) {
+  var meth = Caml_oo.caml_get_public_method(obj, label, cacheid);
+  return app8(meth, obj, a1, a2, a3, a4, a5, a6, a7);
+}
+
+exports.app    = app;
 exports.curry1 = curry1;
 exports.app1   = app1;
 exports.app2   = app2;
@@ -206,4 +252,13 @@ exports.app5   = app5;
 exports.app6   = app6;
 exports.app7   = app7;
 exports.app8   = app8;
+exports.js     = js;
+exports.js1    = js1;
+exports.js2    = js2;
+exports.js3    = js3;
+exports.js4    = js4;
+exports.js5    = js5;
+exports.js6    = js6;
+exports.js7    = js7;
+exports.js8    = js8;
 /* No side effect */

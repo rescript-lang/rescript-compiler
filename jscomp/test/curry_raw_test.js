@@ -41,7 +41,7 @@ describe("curry", function(){
     });
     it("printf4",function(){
         assert.deepEqual(
-            curry.curry(printf.sprintf,
+            curry.app(printf.sprintf,
                 [test_formatter.f(),
                     32,
                     "ss",
