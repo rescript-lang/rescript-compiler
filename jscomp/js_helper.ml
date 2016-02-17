@@ -695,7 +695,9 @@ module Exp = struct
                "caml_get_public_method" [obj;label; int cache]) (obj::args))
       (* TODO: handle arbitrary length of args .. 
          we can reduce part of the overhead by using
-         `__js`
+         `__js` -- a easy ppx {{ x ##.hh }} 
+         the downside is that no way to swap ocaml/js implementation 
+         for object part
        *)
       (runtime_call Js_config.curry ("app"^string_of_int len) (dot obj meth_name ::  args))
 
