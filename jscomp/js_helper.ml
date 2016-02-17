@@ -697,7 +697,8 @@ module Exp = struct
          we can reduce part of the overhead by using
          `__js` -- a easy ppx {{ x ##.hh }} 
          the downside is that no way to swap ocaml/js implementation 
-         for object part
+         for object part, also need encode arity..
+         how about x#|getElementById|2|
        *)
       (runtime_call Js_config.curry ("app"^string_of_int len) (dot obj meth_name ::  args))
 
