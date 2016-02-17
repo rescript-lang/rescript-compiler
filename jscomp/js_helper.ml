@@ -203,11 +203,12 @@ module Exp = struct
     {expression_desc = FlatCall (e0,es); comment }
 
   (* Dot .....................**)        
-  let runtime_call module_name fn_name args = 
-    call ~info:{arity=Full} (runtime_var_dot  module_name fn_name) args
+  let runtime_call ?comment module_name fn_name args = 
+    call ?comment ~info:{arity=Full} (runtime_var_dot  module_name fn_name) args
 
   let runtime_ref module_name fn_name = 
     runtime_var_dot  module_name fn_name
+
 
   (* only used in property access, 
       Invariant: it should not call an external module .. *)
@@ -685,6 +686,43 @@ module Exp = struct
     {expression_desc = 
        Bin (Bor, {expression_desc = Caml_block_tag e; comment }, int 0 );
        comment = None }    
+
+  let public_method_call meth_name obj label cache args = 
+    let len = List.length args in 
+    (** FIXME: not caml object *)
+
+
+    econd (int_equal (tag obj ) (int 248))
+      (
+        if len <= 7 then          
+          runtime_call Js_config.curry 
+            ("js" ^ string_of_int (len + 1) )
+            (label:: ( int cache) :: obj::args)
+        else 
+          runtime_call Js_config.curry "js"
+            [label; 
+             int cache;
+             obj ;  
+             arr NA (obj::args)
+            ]
+      )
+      (* TODO: handle arbitrary length of args .. 
+         we can reduce part of the overhead by using
+         `__js` -- a easy ppx {{ x ##.hh }} 
+         the downside is that no way to swap ocaml/js implementation 
+         for object part, also need encode arity..
+         how about x#|getElementById|2|
+       *)
+      (
+        if len <=8 then 
+          let len_str = string_of_int len in
+          runtime_call Js_config.curry ("app"^len_str) 
+            (dot obj meth_name ::  args)
+        else 
+          runtime_call Js_config.curry "app"           
+           [dot obj meth_name ; arr NA args ]            
+      )
+
   let set_tag ?comment e tag : t = 
     seq {expression_desc = Caml_block_set_tag (e,tag); comment } (unit ())
 

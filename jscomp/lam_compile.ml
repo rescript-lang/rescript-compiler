@@ -1379,8 +1379,7 @@ and
               end in
               (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
               Js_output.handle_block_return st should_return lam (List.concat args_code)
-                (E.call (E.runtime_call Js_config.oo "caml_get_public_method"
-                           [obj'; label; E.int cache]) (obj'::args))
+                (E.public_method_call name obj' label cache args )
                 (* avoid duplicated compuattion *)
           end
       end

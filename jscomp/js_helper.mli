@@ -70,8 +70,8 @@ module Exp : sig
 
   val ml_var : ?comment:string -> Ident.t -> t
 
-  val runtime_call : string -> string -> t list -> t
-
+  val runtime_call : ?comment:string -> string -> string -> t list -> t
+  val public_method_call : string -> t -> t -> int -> t list -> t
   val runtime_ref : string -> string -> t
 
   val str : ?pure:bool -> ?comment:string -> string -> t 

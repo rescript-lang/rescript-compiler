@@ -2,7 +2,6 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_oo                 = require("../runtime/caml_oo");
 var CamlinternalOO          = require("../stdlib/camlinternalOO");
 var Caml_curry              = require("../runtime/caml_curry");
 
@@ -90,7 +89,9 @@ CamlinternalOO.init_class($$class$3);
 var v = CamlinternalOO.create_object_opt(0, $$class$3);
 
 function test() {
-  if (Caml_curry.app1(Caml_oo.caml_get_public_method(uu, 23515, 1), uu) !== "uu") {
+  if ((
+      uu.tag === 248 ? Caml_curry.js1(23515, 1, uu) : Caml_curry.app0(uu.id)
+    ) !== "uu") {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -100,7 +101,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app3(Caml_oo.caml_get_public_method(uuu, 4846113, 2), uuu, 1, 20) !== 21) {
+  if ((
+      uuu.tag === 248 ? Caml_curry.js3(4846113, 2, uuu, 1, 20) : Caml_curry.app2(uuu.add, 1, 20)
+    ) !== 21) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -110,7 +113,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app3(Caml_oo.caml_get_public_method(v, 4846113, 3), v, 3, 7) !== 10) {
+  if ((
+      v.tag === 248 ? Caml_curry.js3(4846113, 3, v, 3, 7) : Caml_curry.app2(v.add, 3, 7)
+    ) !== 10) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -120,7 +125,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243894, 4), u) !== 3) {
+  if ((
+      u.tag === 248 ? Caml_curry.js1(5243894, 4, u) : Caml_curry.app0(u.id1)
+    ) !== 3) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -130,7 +137,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app1(Caml_oo.caml_get_public_method(u, 5243895, 5), u) !== 4) {
+  if ((
+      u.tag === 248 ? Caml_curry.js1(5243895, 5, u) : Caml_curry.app0(u.id2)
+    ) !== 4) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -140,7 +149,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app3(Caml_oo.caml_get_public_method(u, 23297, 6), u, 1, 2) !== 3) {
+  if ((
+      u.tag === 248 ? Caml_curry.js3(23297, 6, u, 1, 2) : Caml_curry.app2(u.hi, 1, 2)
+    ) !== 3) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -150,7 +161,9 @@ function test() {
           ]
         ];
   }
-  if (Caml_curry.app2(Caml_oo.caml_get_public_method(u, 616641298, 7), u, 32) === 32) {
+  if ((
+      u.tag === 248 ? Caml_curry.js2(616641298, 7, u, 32) : Caml_curry.app1(u.hello, 32)
+    ) === 32) {
     return 0;
   }
   else {
