@@ -18,7 +18,7 @@
 
 (* Author: Hongbo Zhang  *)
 
-module E = Js_helper.Exp 
+module E = Js_exp_make 
 
 let get_double_feild e i = E.index e i 
 

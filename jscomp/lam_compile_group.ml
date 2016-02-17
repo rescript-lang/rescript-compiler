@@ -20,8 +20,8 @@
 
 
 
-module E = Js_helper.Exp 
-module S = Js_helper.Stmt  
+module E = Js_exp_make 
+module S = Js_stmt_make  
 
 open Js_output.Ops
 
@@ -124,7 +124,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
   | Single (kind, id, lam), _ -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)
     (* can not apply again, it's wrong USE it with care*)
-    (* ([Js_helper.Stmt.comment (Gen_of_env.query_type id  env )], None)  ++ *)
+    (* ([Js_stmt_make.comment (Gen_of_env.query_type id  env )], None)  ++ *)
     Lam_compile.compile_let  kind { st = Declare (kind, id);
                                     should_return = False;
                                     jmp_table = Lam_compile_defs.empty_handler_map;

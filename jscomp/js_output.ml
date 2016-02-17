@@ -20,8 +20,8 @@
 
 
 
-module E = Js_helper.Exp 
-module S = Js_helper.Stmt 
+module E = Js_exp_make 
+module S = Js_stmt_make 
 
 type finished = 
   | True 
@@ -84,7 +84,7 @@ let handle_block_return
 let statement_of_opt_expr (x : J.expression option) : J.statement =
   match x with 
   | None -> S.empty ()
-  | Some x when Js_helper.no_side_effect x -> S.empty ()
+  | Some x when Js_analyzer.no_side_effect_expression x -> S.empty ()
         (* TODO, pure analysis in lambda instead *)
   | Some x -> S.exp x 
 
@@ -101,7 +101,7 @@ let to_block ( x : t)  : J.block =
       else 
         begin match opt with 
         | None -> block (* TODO, pure analysis in lambda instead *)
-        | Some x when Js_helper.no_side_effect x -> block
+        | Some x when Js_analyzer.no_side_effect_expression x -> block
         | Some x -> block @ [S.exp x ]
         end
 
@@ -128,7 +128,7 @@ let rec append  (x : t ) (y : t ) : t =
     | {block = []; value= None; _ }, y  -> y 
     | {block = []; value= Some _; _}, {block = []; value= None; _ } -> x 
     | {block = []; value =  Some e1; _}, ({block = []; value = Some e2; finished } as z) -> 
-        if Js_helper.no_side_effect e1 
+        if Js_analyzer.no_side_effect_expression e1 
         then z
             (* It would optimize cases like [module aliases]
                 Bigarray, List 

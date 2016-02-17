@@ -21,7 +21,7 @@
 
 
 
-module E = Js_helper.Exp
+module E = Js_exp_make
 
 module A = struct 
 

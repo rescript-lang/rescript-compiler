@@ -20,7 +20,7 @@
 
 
 
-module E = Js_helper.Exp 
+module E = Js_exp_make
 
 (* TODO: it would be even better, if the [tag_info] contains more information
    about immutablility

@@ -20,7 +20,7 @@
 
 
 
-module E = Js_helper.Exp
+module E = Js_exp_make
 
 open Parsetree_util
 

@@ -57,7 +57,7 @@ class count_hard_dependencies =
     method! expression x = 
       match  x with
       | {expression_desc = Call (_,_, {arity = NA}); _}
-        (* see [Js_helper.Exp.runtime_var_dot] *)
+        (* see [Js_exp_make.runtime_var_dot] *)
         -> begin 
             Hash_set.add hard_dependencies 
               (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));

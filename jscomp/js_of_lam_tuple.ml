@@ -20,7 +20,7 @@
 
 
 
-module E = Js_helper.Exp 
+module E = Js_exp_make
 
 let make (args : J.expression list) =
   E.make_block ~comment:"tuple" (E.int 0) Tuple args Immutable

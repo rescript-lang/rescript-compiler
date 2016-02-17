@@ -42,7 +42,7 @@
 
  *)
 
-module E  = Js_helper.Exp 
+module E  = Js_exp_make
 
 let make_array mt (kind : Lambda.array_kind) args = 
   match kind with 

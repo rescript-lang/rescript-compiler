@@ -22,9 +22,9 @@
 
 open Js_output.Ops 
 
-module E = Js_helper.Exp 
+module E = Js_exp_make 
 
-module S = Js_helper.Stmt  
+module S = Js_stmt_make  
 
 let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
@@ -769,8 +769,8 @@ and
           | EffectCall, False , {block = []; value =  Some out1}, 
             {block = []; value =  Some out2} ->
             begin
-              match Js_helper.extract_non_pure out1 ,
-                    Js_helper.extract_non_pure out2 with
+              match Js_exp_make.extract_non_pure out1 ,
+                    Js_exp_make.extract_non_pure out2 with
               | None, None -> Js_output.make b
               | Some out1, Some out2 -> 
                 Js_output.make b  ~value:(E.econd e  out1 out2)
@@ -787,7 +787,7 @@ and
                 TODO: here we re-compile two branches since
                 its context is different -- could be improved
             *)
-            if Js_helper.no_side_effect out1 then 
+            if Js_analyzer.no_side_effect_expression out1 then 
               Js_output.make
                 (b @[ S.if_ (E.not e)
                         (Js_output.to_block @@
@@ -803,7 +803,7 @@ and
 
           | EffectCall , False , _, {block = []; value = Some out2} -> 
             let else_ = 
-              if  Js_helper.no_side_effect out2 then  
+              if  Js_analyzer.no_side_effect_expression out2 then  
                 None 
               else 
                 Some (
@@ -1112,7 +1112,7 @@ and
                          (Js_output.to_block @@ 
                           compile_lambda {cxt with should_return = False ; st = EffectCall}
                             body) ]
-              | _, _ when Js_helper.no_side_effect e1 
+              | _, _ when Js_analyzer.no_side_effect_expression e1 
                 (* 
                      e1 > b2 > e2
                      re-order 
