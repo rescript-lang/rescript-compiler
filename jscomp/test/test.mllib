@@ -175,3 +175,4 @@ rec_module_test
 guide_for_ext
 local_exception_test
 js_obj_test
+extensible_variant_test
