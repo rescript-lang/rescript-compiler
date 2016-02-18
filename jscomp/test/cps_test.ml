@@ -29,14 +29,14 @@ let test_closure2 () =
   !v 
 
 
-open Mt 
 
-;; from_suites __FILE__ [
+
+;; Mt.from_pair_suites __FILE__  Mt.[
 "cps_test_sum", (fun _ -> 
-  assert_equal 55 (test()));
+  Eq (55, (test())));
  "cps_test_closure", (fun _ -> 
-   assert_equal 15 (test_closure ()));
+   Eq (15, (test_closure ())));
   "cps_test_closure2", (fun _ -> 
-       assert_equal 30 (test_closure2 ()));
+    Eq (30, (test_closure2 ())));
                        
 ]

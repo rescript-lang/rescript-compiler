@@ -3,14 +3,10 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
-var Test_inline_map2        = require("./test_inline_map2");
 var Mt                      = require("./mt");
-var Test_map_find           = require("./test_map_find");
-var Assert                  = require("assert");
 var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("../stdlib/list");
-var Test_inline_map         = require("./test_inline_map");
 
 function height(param) {
   if (param) {
@@ -428,19 +424,12 @@ var int_map_suites_000 = /* tuple */[
             ]
           ]
         ]);
-    if (cardinal(v) === 3) {
-      return 0;
-    }
-    else {
-      throw [
-            Caml_builtin_exceptions.Assert_failure,
-            [
-              "map_test.ml",
-              16,
-              4
-            ]
-          ];
-    }
+    return /* Eq */{
+            0: cardinal(v),
+            1: 3,
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
@@ -486,21 +475,14 @@ var int_map_suites_001 = /* :: */[
               ]
             ]
           ]);
-      if (compare(function (prim, prim$1) {
-              return Caml_obj.caml_compare(prim, prim$1);
-            }, u, v)) {
-        throw [
-              Caml_builtin_exceptions.Assert_failure,
-              [
-                "map_test.ml",
-                21,
-                4
-              ]
-            ];
-      }
-      else {
-        return 0;
-      }
+      return /* Eq */{
+              0: compare(function (prim, prim$1) {
+                    return Caml_obj.caml_compare(prim, prim$1);
+                  }, u, v),
+              1: 0,
+              length: 2,
+              tag: 0
+            };
     }
   ],
   /* :: */[
@@ -545,65 +527,41 @@ var int_map_suites_001 = /* :: */[
                 ]
               ]
             ]);
-        if (equal(function (x, y) {
-                return +(x === y);
-              }, u, v)) {
-          return 0;
-        }
-        else {
-          throw [
-                Caml_builtin_exceptions.Assert_failure,
-                [
-                  "map_test.ml",
-                  26,
-                  4
-                ]
-              ];
-        }
+        return /* Eq */{
+                0: /* true */1,
+                1: equal(function (x, y) {
+                      return +(x === y);
+                    }, u, v),
+                length: 2,
+                tag: 0
+              };
       }
     ],
     /* :: */[
       /* tuple */[
-        "test_inline_map",
-        Test_inline_map.assertions
+        "iteration",
+        function () {
+          var m = /* Empty */0;
+          var count = 10000;
+          for(var i = 0; i<= count; ++i){
+            m = add$1("" + i, "" + i, m);
+          }
+          var v = -1;
+          for(var i$1 = 0; i$1<= count; ++i$1){
+            if (find("" + i$1, m) !== "" + i$1) {
+              v = i$1;
+            }
+            
+          }
+          return /* Eq */{
+                  0: v,
+                  1: -1,
+                  length: 2,
+                  tag: 0
+                };
+        }
       ],
-      /* :: */[
-        /* tuple */[
-          "test_inline_map2",
-          Test_inline_map2.assertions1
-        ],
-        /* :: */[
-          /* tuple */[
-            "test_inline_map2_1",
-            Test_inline_map2.assertions2
-          ],
-          /* :: */[
-            /* tuple */[
-              "test_map_find",
-              Test_map_find.assert_test
-            ],
-            /* :: */[
-              /* tuple */[
-                "iteration",
-                function () {
-                  var m = /* Empty */0;
-                  var count = 10000;
-                  for(var i = 0; i<= count; ++i){
-                    m = add$1("" + i, "" + i, m);
-                  }
-                  for(var i$1 = 0; i$1<= count; ++i$1){
-                    var prim = "" + i$1;
-                    var prim$1 = find("" + i$1, m);
-                    Assert.deepEqual(prim$1, prim);
-                  }
-                  return /* () */0;
-                }
-              ],
-              /* [] */0
-            ]
-          ]
-        ]
-      ]
+      /* [] */0
     ]
   ]
 ];
@@ -613,6 +571,6 @@ var int_map_suites = /* :: */[
   int_map_suites_001
 ];
 
-Mt.from_suites("map_test", int_map_suites);
+Mt.from_pair_suites("map_test.ml", int_map_suites);
 
 /*  Not a pure module */

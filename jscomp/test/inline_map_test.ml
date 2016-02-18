@@ -293,11 +293,12 @@ let compare (x : int) (y : int) = compare x y
 let m = List.fold_left (fun acc (k,v) -> add k v  acc ) empty [(10,'a'); (3,'b'); (7,'c'); (20,'d') ]
 
 external log : 'a -> unit = "" [@@js.call "console.log"]
-let assertions () = 
-  begin
-    Mt.assert_equal  (find 10 m ) 'a'
 
-  end
+;; Mt.from_pair_suites __FILE__
+  [ "find", (fun _ ->
+    Mt.Eq  (find 10 m , 'a'))
+ ]
+  
 
 
 

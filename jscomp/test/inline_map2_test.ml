@@ -355,13 +355,11 @@ let s =
      ("20",'d') ]
 external log : 'a -> unit = "" [@@js.call "console.log"]
 
-let assertions1 () = 
-  begin
-    Mt.assert_equal ( IntMap.find 10 m)  'a' ;
-  end
 
-let assertions2 () = 
-  Mt.assert_equal (SMap.find "10"  s)  'a'
+;; Mt.from_pair_suites __FILE__ Mt.[
+"assertion1", (fun _ -> Eq (( IntMap.find 10 m),  'a'));
+"assertion2", (fun _ -> Eq ((SMap.find "10"  s),  'a'))
+]
 
 
 

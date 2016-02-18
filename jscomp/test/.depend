@@ -4,11 +4,10 @@ ari_regress_test.cmi :
 array_test.cmi :
 const_block_test.cmi :
 inline_edge_cases.cmi :
+inline_map_test.cmi :
 map_test.cmi :
 mt.cmi :
 test_for_map2.cmi :
-test_inline_map.cmi :
-test_inline_map2.cmi :
 test_is_js.cmi :
 ui_defs.cmi :
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
@@ -119,6 +118,10 @@ hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
     ../stdlib/array.cmx
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmx : inline_edge_cases.cmi
+inline_map2_test.cmo : mt.cmi ../stdlib/list.cmi
+inline_map2_test.cmx : mt.cmx ../stdlib/list.cmx
+inline_map_test.cmo : mt.cmi ../stdlib/list.cmi inline_map_test.cmi
+inline_map_test.cmx : mt.cmx ../stdlib/list.cmx inline_map_test.cmi
 inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
@@ -145,12 +148,12 @@ loop_regression_test.cmo : mt.cmi
 loop_regression_test.cmx : mt.cmx
 loop_suites_test.cmo : mt.cmi for_loop_test.cmo
 loop_suites_test.cmx : mt.cmx for_loop_test.cmx
-map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \
-    ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi ../stdlib/map.cmi \
-    ../stdlib/list.cmi map_test.cmi
-map_test.cmx : test_map_find.cmx test_inline_map2.cmx test_inline_map.cmx \
-    ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx ../stdlib/map.cmx \
-    ../stdlib/list.cmx map_test.cmi
+map_find_test.cmo : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
+map_find_test.cmx : mt.cmx ../stdlib/map.cmx ../stdlib/list.cmx
+map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
+    ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
+map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
+    ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmo : ../stdlib/list.cmi mt.cmi
@@ -275,10 +278,6 @@ test_incomplete.cmo :
 test_incomplete.cmx :
 test_incr_ref.cmo :
 test_incr_ref.cmx :
-test_inline_map.cmo : mt.cmi ../stdlib/list.cmi test_inline_map.cmi
-test_inline_map.cmx : mt.cmx ../stdlib/list.cmx test_inline_map.cmi
-test_inline_map2.cmo : mt.cmi ../stdlib/list.cmi test_inline_map2.cmi
-test_inline_map2.cmx : mt.cmx ../stdlib/list.cmx test_inline_map2.cmi
 test_int_map_find.cmo : ../stdlib/map.cmi ../stdlib/list.cmi
 test_int_map_find.cmx : ../stdlib/map.cmx ../stdlib/list.cmx
 test_internalOO.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \
@@ -297,8 +296,6 @@ test_list.cmo : ../stdlib/list.cmi
 test_list.cmx : ../stdlib/list.cmx
 test_literal.cmo :
 test_literal.cmx :
-test_map_find.cmo : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
-test_map_find.cmx : mt.cmx ../stdlib/map.cmx ../stdlib/list.cmx
 test_match_exception.cmo :
 test_match_exception.cmx :
 test_nat64.cmo :
@@ -511,6 +508,10 @@ hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
     ../stdlib/array.cmj
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
+inline_map2_test.cmo : mt.cmi ../stdlib/list.cmi
+inline_map2_test.cmj : mt.cmj ../stdlib/list.cmj
+inline_map_test.cmo : mt.cmi ../stdlib/list.cmi inline_map_test.cmi
+inline_map_test.cmj : mt.cmj ../stdlib/list.cmj inline_map_test.cmi
 inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
@@ -537,12 +538,12 @@ loop_regression_test.cmo : mt.cmi
 loop_regression_test.cmj : mt.cmj
 loop_suites_test.cmo : mt.cmi for_loop_test.cmo
 loop_suites_test.cmj : mt.cmj for_loop_test.cmj
-map_test.cmo : test_map_find.cmo test_inline_map2.cmi test_inline_map.cmi \
-    ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi ../stdlib/map.cmi \
-    ../stdlib/list.cmi map_test.cmi
-map_test.cmj : test_map_find.cmj test_inline_map2.cmj test_inline_map.cmj \
-    ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj ../stdlib/map.cmj \
-    ../stdlib/list.cmj map_test.cmi
+map_find_test.cmo : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
+map_find_test.cmj : mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj
+map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
+    ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
+map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
+    ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi mt.cmi
@@ -667,10 +668,6 @@ test_incomplete.cmo :
 test_incomplete.cmj :
 test_incr_ref.cmo :
 test_incr_ref.cmj :
-test_inline_map.cmo : mt.cmi ../stdlib/list.cmi test_inline_map.cmi
-test_inline_map.cmj : mt.cmj ../stdlib/list.cmj test_inline_map.cmi
-test_inline_map2.cmo : mt.cmi ../stdlib/list.cmi test_inline_map2.cmi
-test_inline_map2.cmj : mt.cmj ../stdlib/list.cmj test_inline_map2.cmi
 test_int_map_find.cmo : ../stdlib/map.cmi ../stdlib/list.cmi
 test_int_map_find.cmj : ../stdlib/map.cmj ../stdlib/list.cmj
 test_internalOO.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \
@@ -689,8 +686,6 @@ test_list.cmo : ../stdlib/list.cmi
 test_list.cmj : ../stdlib/list.cmj
 test_literal.cmo :
 test_literal.cmj :
-test_map_find.cmo : mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi
-test_map_find.cmj : mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 test_match_exception.cmo :
 test_match_exception.cmj :
 test_nat64.cmo :

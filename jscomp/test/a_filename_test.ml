@@ -1,10 +1,10 @@
-open Mt
 
-let suites = [
+
+let suites = Mt.[
   "basic", (fun _ -> 
-    assert_equal (Ext_filename.node_relative_path 
+     Eq((Ext_filename.node_relative_path 
       "./a/b.c"
-      "./a/u/g.c") "./u/g"
+      "./a/u/g.c"), "./u/g")
            )
 ]
-;; from_suites __FILE__ suites
+;; Mt.from_pair_suites __FILE__ suites

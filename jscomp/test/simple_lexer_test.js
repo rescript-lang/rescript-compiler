@@ -3,7 +3,6 @@
 
 var Mt         = require("./mt");
 var Lexing     = require("../stdlib/lexing");
-var Assert     = require("assert");
 var Caml_curry = require("../runtime/caml_curry");
 var $$String   = require("../stdlib/string");
 
@@ -54,8 +53,12 @@ var suites_000 = /* tuple */[
   "translate",
   function () {
     var lexbuf = Lexing.from_string("-- current_directory --");
-    var prim = __ocaml_lex_translate_rec(lexbuf, 0);
-    return Assert.deepEqual(prim, "-- . --");
+    return /* Eq */{
+            0: __ocaml_lex_translate_rec(lexbuf, 0),
+            1: "-- . --",
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
@@ -64,7 +67,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_suites("simple_lexer", suites);
+Mt.from_pair_suites("simple_lexer_test.mll", suites);
 
 exports.__ocaml_lex_tables        = __ocaml_lex_tables;
 exports.translate                 = translate;

@@ -16,9 +16,10 @@ let s =
      ("20",'d') ]
 external log : 'a -> unit = "" [@@js.call "console.log"]
 
-let assert_test () = 
-  begin
-    Mt.assert_equal ( IntMap.find 10 m)  'a';
-    Mt.assert_equal (SMap.find "10"  s)  'a'
-  end
-end : sig val assert_test : unit -> unit end)
+;; Mt.from_pair_suites __FILE__ @@ [
+                                  "int",  (fun _ -> 
+    Eq (( IntMap.find 10 m),  'a'));
+                                   "string",(fun _ -> 
+    Eq (SMap.find "10"  s,  'a'))
+  ]
+end : sig  end)

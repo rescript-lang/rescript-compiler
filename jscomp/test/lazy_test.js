@@ -3,7 +3,6 @@
 
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 var Mt               = require("./mt");
-var Assert           = require("assert");
 
 var u = [3];
 
@@ -34,15 +33,19 @@ function lazy_test() {
         ];
 }
 
-Mt.from_suites("lazy", /* :: */[
+Mt.from_pair_suites("lazy_test.ml", /* :: */[
       /* tuple */[
         "simple",
         function () {
-          var prim = lazy_test(/* () */0);
-          return Assert.deepEqual(prim, /* tuple */[
-                      3,
-                      32
-                    ]);
+          return /* Eq */{
+                  0: lazy_test(/* () */0),
+                  1: /* tuple */[
+                    3,
+                    32
+                  ],
+                  length: 2,
+                  tag: 0
+                };
         }
       ],
       /* [] */0
