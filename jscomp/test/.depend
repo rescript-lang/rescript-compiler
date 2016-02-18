@@ -93,6 +93,8 @@ ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/bytes.cmx
+extensible_variant_test.cmo : mt.cmi
+extensible_variant_test.cmx : mt.cmx
 fib.cmo :
 fib.cmx :
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
@@ -483,6 +485,8 @@ ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/bytes.cmj
+extensible_variant_test.cmo : mt.cmi
+extensible_variant_test.cmj : mt.cmj
 fib.cmo :
 fib.cmj :
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
