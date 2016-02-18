@@ -11,11 +11,11 @@ let test2 () =
   !v
 open Mt 
 
-let suites = 
-  [ "for_order", (fun _ -> assert_equal 10 (test2 ()))]
+let suites = Mt.
+  [ "for_order", (fun _ -> Eq (10, (test2 ())))]
 ;;
 
-from_suites __FILE__ suites
+Mt.from_pair_suites __FILE__ suites
 (**
    {[
    var i = console.log("hi"),0;

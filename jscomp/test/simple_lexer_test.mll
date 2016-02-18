@@ -8,16 +8,17 @@ rule translate = parse
 
 
 {
-open Mt
-let suites = [
+
+let suites = Mt.[
   "translate", (fun _ -> 
-    assert_equal 
+    Eq
       (translate
-         (Lexing.from_string "-- current_directory --"))
-      "-- . --")
+         (Lexing.from_string "-- current_directory --"),
+      "-- . --"))
 ]
 
-;; from_suites "simple_lexer" suites
+
+;; Mt.from_pair_suites __FILE__ suites
     (* 
        print_string @@ translate @@ 
        Lexing.from_string "-- current_directory --"  *)

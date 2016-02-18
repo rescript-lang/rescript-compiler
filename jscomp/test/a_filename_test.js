@@ -2,14 +2,17 @@
 'use strict';
 
 var Mt           = require("./mt");
-var Assert       = require("assert");
 var Ext_filename = require("./ext_filename");
 
 var suites_000 = /* tuple */[
   "basic",
   function () {
-    var prim = Ext_filename.node_relative_path("./a/b.c", "./a/u/g.c");
-    return Assert.deepEqual(prim, "./u/g");
+    return /* Eq */{
+            0: Ext_filename.node_relative_path("./a/b.c", "./a/u/g.c"),
+            1: "./u/g",
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
@@ -18,7 +21,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_suites("a_filename_test.ml", suites);
+Mt.from_pair_suites("a_filename_test.ml", suites);
 
 exports.suites = suites;
 /*  Not a pure module */

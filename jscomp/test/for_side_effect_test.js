@@ -1,8 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt     = require("./mt");
-var Assert = require("assert");
+var Mt = require("./mt");
 
 function tst() {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i<= i_finish; ++i){
@@ -24,8 +23,12 @@ function test2() {
 var suites_000 = /* tuple */[
   "for_order",
   function () {
-    var prim = test2(/* () */0);
-    return Assert.deepEqual(10, prim);
+    return /* Eq */{
+            0: 10,
+            1: test2(/* () */0),
+            length: 2,
+            tag: 0
+          };
   }
 ];
 
@@ -34,7 +37,7 @@ var suites = /* :: */[
   /* [] */0
 ];
 
-Mt.from_suites("for_side_effect_test.ml", suites);
+Mt.from_pair_suites("for_side_effect_test.ml", suites);
 
 exports.tst    = tst;
 exports.test2  = test2;

@@ -3,7 +3,6 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
-var Assert                  = require("assert");
 var Mt                      = require("./mt");
 var List                    = require("../stdlib/list");
 var Caml_string             = require("../runtime/caml_string");
@@ -366,16 +365,32 @@ var s = List.fold_left(function (acc, param) {
       ]
     ]);
 
-function assertions1() {
-  var prim = find(10, m);
-  return Assert.deepEqual(prim, /* "a" */97);
-}
+Mt.from_pair_suites("map_find_test.ml", /* :: */[
+      /* tuple */[
+        "int",
+        function () {
+          return /* Eq */{
+                  0: find(10, m),
+                  1: /* "a" */97,
+                  length: 2,
+                  tag: 0
+                };
+        }
+      ],
+      /* :: */[
+        /* tuple */[
+          "string",
+          function () {
+            return /* Eq */{
+                    0: find$1("10", s),
+                    1: /* "a" */97,
+                    length: 2,
+                    tag: 0
+                  };
+          }
+        ],
+        /* [] */0
+      ]
+    ]);
 
-function assertions2() {
-  var prim = find$1("10", s);
-  return Assert.deepEqual(prim, /* "a" */97);
-}
-
-exports.assertions1 = assertions1;
-exports.assertions2 = assertions2;
 /* m Not a pure module */
