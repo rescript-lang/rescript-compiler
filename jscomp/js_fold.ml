@@ -1,4 +1,4 @@
-(* OCamlScript compiler
+(* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -74,7 +74,7 @@ class virtual fold =
           let o =
             o#list
               (fun o ->
-                 (* OCamlScript compiler
+                 (* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify

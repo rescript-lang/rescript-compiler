@@ -1,4 +1,4 @@
-(* OCamlScript compiler
+(* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ class virtual map =
           let _x = o#list (fun o -> o#string) _x in Const_float_array _x
       | Const_immstring _x -> let _x = o#string _x in Const_immstring _x
     method shared_code : shared_code -> shared_code =
-      (* OCamlScript compiler
+      (* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify
