@@ -1,5 +1,5 @@
 var CONFIG = {
-  document_title: "Documentation to OCamlScript",
+  document_title: "Documentation to BuckleScript",
   index: "README.md",
   sidebar_file: "sidebar.md",
   base_url: "https://github.com/bloomberg/ocamlscript/blob/master",

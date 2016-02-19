@@ -1,11 +1,11 @@
-# [OCamlScript]()
+# [BuckleScript]()
 
 
 
 
 ## Table of Contents
 1. [ReadME](#README)
-1. [Why OCamlScript](#docs/intro)
+1. [Why BuckleScript](#docs/intro)
 1. [Get Started](#docs/start)
 1. [FFI](#docs/ffi)
 1. [Internal Structure](#jscomp/README)

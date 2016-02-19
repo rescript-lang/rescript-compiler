@@ -9,9 +9,9 @@ Another important factor is that modern Javascript VM's are quite fast and
 will become enven faster, so it is possible to deliver large applications
 purely running on the Javascript platform.
 
-# Why OCamlScript
+# Why BuckleScript
 
-OCamlScript is mainly designed to solve the problem of large scale
+BuckleScript is mainly designed to solve the problem of large scale
 Javascript programming:
 
 1. Industrial strength type system, while not verbose typing required
