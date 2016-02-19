@@ -1,4 +1,4 @@
-(* OCamlScript compiler
+(* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ class virtual fold =
       | Const_float_array _x -> let o = o#list (fun o -> o#string) _x in o
       | Const_immstring _x -> let o = o#string _x in o
     method shared_code : shared_code -> 'self_type =
-      (* OCamlScript compiler
+      (* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
  * This program is free software; you can redistribute it and/or modify
