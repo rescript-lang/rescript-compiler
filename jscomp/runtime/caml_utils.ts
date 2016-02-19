@@ -1,4 +1,4 @@
- // OCamlScript compiler
+ // BuckleScript compiler
  // Copyright (C) 2015 Bloomberg Finance L.P.
 
 
