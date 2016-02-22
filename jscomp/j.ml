@@ -165,6 +165,11 @@ and expression_desc =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
+  | Bind of expression * expression
+  (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
   | Call of expression * expression list * Js_call_info.t
     (* Analysze over J expression is hard since, 
         some primitive  call is translated 

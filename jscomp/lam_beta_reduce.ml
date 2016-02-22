@@ -222,7 +222,7 @@ let propogate_beta_reduce
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 
@@ -277,7 +277,7 @@ let propogate_beta_reduce_with_map
          (* alias meta param ident (Module (Global ident)) Strict *)
          | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 

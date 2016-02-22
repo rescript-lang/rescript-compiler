@@ -43,3 +43,6 @@ val make_unused : unit -> Ident.t
 val is_unused_ident : Ident.t -> bool 
 
 val convert : string -> string
+val undefined : Ident.t 
+val is_js_or_global : Ident.t -> bool
+val null : Ident.t

@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Bytes                   = require("../stdlib/bytes");
 var Mt                      = require("./mt");
+var Ext_string              = require("./ext_string");
 var $$String                = require("../stdlib/string");
 
 function ff(x) {
@@ -247,7 +248,98 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                             };
                     }
                   ],
-                  /* [] */0
+                  /* :: */[
+                    /* tuple */[
+                      "split_empty",
+                      function () {
+                        return /* Eq */{
+                                0: /* [] */0,
+                                1: Ext_string.split(/* None */0, "", /* "_" */95),
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "rfind",
+                        function () {
+                          return /* Eq */{
+                                  0: 7,
+                                  1: Ext_string.rfind("__", "__index__js"),
+                                  length: 2,
+                                  tag: 0
+                                };
+                        }
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "rfind_2",
+                          function () {
+                            return /* Eq */{
+                                    0: 0,
+                                    1: Ext_string.rfind("__", "__index_js"),
+                                    length: 2,
+                                    tag: 0
+                                  };
+                          }
+                        ],
+                        /* :: */[
+                          /* tuple */[
+                            "rfind_3",
+                            function () {
+                              return /* Eq */{
+                                      0: -1,
+                                      1: Ext_string.rfind("__", "_index_js"),
+                                      length: 2,
+                                      tag: 0
+                                    };
+                            }
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "find",
+                              function () {
+                                return /* Eq */{
+                                        0: 0,
+                                        1: Ext_string.find(/* None */0, "__", "__index__js"),
+                                        length: 2,
+                                        tag: 0
+                                      };
+                              }
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "find_2",
+                                function () {
+                                  return /* Eq */{
+                                          0: 6,
+                                          1: Ext_string.find(/* None */0, "__", "_index__js"),
+                                          length: 2,
+                                          tag: 0
+                                        };
+                                }
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "find_3",
+                                  function () {
+                                    return /* Eq */{
+                                            0: -1,
+                                            1: Ext_string.find(/* None */0, "__", "_index_js"),
+                                            length: 2,
+                                            tag: 0
+                                          };
+                                  }
+                                ],
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
                 ]
               ]
             ]

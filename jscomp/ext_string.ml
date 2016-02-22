@@ -38,6 +38,7 @@ let split_by ?(keep_empty=false) is_delim str =
   loop [] len (len - 1)
 
 let split ?keep_empty  str on = 
+  if str = "" then [] else 
   split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
 
 let starts_with s beg = 
@@ -102,3 +103,49 @@ let repeat n s  =
   Bytes.to_string res
 
 let equal (x : string) y  = x = y
+
+
+
+let _is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let i = ref start in
+  let module M = struct exception Exit end  in
+  try
+    while !i + n <= String.length s do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      incr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      decr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)

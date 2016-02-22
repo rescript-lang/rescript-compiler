@@ -1248,6 +1248,9 @@ and
             match x with 
             | Lprim (Pgetglobal i, []) -> 
               [], Lam_compile_global.get_exp  (i, env, true)
+            | Lprim (Pccall {prim_name ; _}, []) (* nullary external call*)
+              -> 
+              [], E.var (Ext_ident.create_js prim_name)
             | _ -> 
               begin
                 match compile_lambda {cxt with st = NeedValue; should_return = False}
@@ -1324,62 +1327,109 @@ and
           (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
           Js_output.handle_block_return st should_return lam (List.concat args_code)
             (E.call (E.call get [obj'; label; E.int cache]) (obj'::args)) (* avoid duplicated compuattion *)
-
         | Public (Some name) -> 
-          let set_prefix = "_set_" in
-          let get_prefix = "_get_" in
-          let set_prefix_len = String.length "_set_" in
-          let get_prefix_len = String.length "_get_" in
-          let is_getter s = 
-            if Ext_string.starts_with s get_prefix  then 
-              Some (String.sub s get_prefix_len (String.length s - get_prefix_len))
-            else None in
-          let is_setter s = 
-            if Ext_string.starts_with s set_prefix  then 
-              Some (String.sub s set_prefix_len (String.length s - set_prefix_len))
-            else None in
-
-          let js_call obj = 
-            match args with
-            | [] -> 
-              E.var_dot obj @@
-              begin
-                match is_getter name with 
-                | Some v ->  v
-                | None ->  name
-              end
-            | y::ys -> 
-              begin
-                match is_setter name with 
-                | Some v -> 
-                  E.assign (E.var_dot obj v ) y
-                | None -> 
-                  E.call (E.var_dot obj name  ) args 
-              end
-          in
+          let cont =
+            Js_output.handle_block_return st should_return lam (List.concat args_code) in           
           begin
-            match obj with 
-            | Lprim (Pccall {prim_name; _}, []) -> 
-              (* we know obj is a truly js object, 
+            match Lam_methname.process name, obj with
+            | (Js_index, _name), _  ->
+              let aux args =
+                match args with
+                | [] ->
+                  let i = Ext_ident.create "i" in
+                  E.fun_ [i]
+                    S.[return (Js_array.ref_array obj' (E.var i)) ]
+                | [x] -> 
+                  Js_array.ref_array obj' x 
+                |  x :: rest  ->
+                  E.call (Js_array.ref_array obj' x ) rest in
+              cont @@ aux args
+
+            | (Js_set_index, _name), _  ->
+              let aux args =
+                match args with
+                | [] ->
+                  let i = Ext_ident.create "i" in
+                  let v = Ext_ident.create "v" in 
+                  E.fun_ [i; v ]
+                    S.[return (E.seq (Js_array.set_array obj' (E.var i) (E.var v)) (E.unit ())) ]
+                | [ i ]
+                  -> 
+                  let v = Ext_ident.create "v" in 
+                  E.fun_ [v]
+                    S.[return (E.seq (Js_array.set_array obj' i (E.var v))  (E.unit ()))]
+                | [x; y] -> 
+                  Js_array.set_array obj' x y 
+                |  x :: y:: rest  ->
+                  E.call (Js_array.set_array obj' x y ) rest in
+              cont @@ aux args
+            | (Js_set, name), _ -> 
+              let  aux args =
+                match args with
+                | [] ->
+                  let v = Ext_ident.create "v" in
+                  E.fun_ [v]
+                    S.[return (E.assign (E.dot obj' name) (E.var v)) ]
+                | [v] ->
+                  E.assign (E.dot obj' name)  v
+                |  _ :: _  -> 
+                  (* TODO: better error message *)
+                  assert false
+                  
+              in
+              cont @@ aux args
+            | (Js (Some arity), name), _  -> 
+              cont @@
+              let args, n, rest = 
+                Ext_list.try_take arity args  in
+              if n = arity then 
+                match rest with
+                | [] -> E.call ~info:{arity=Full} (E.dot obj' name) args 
+                | _ ->  
+                  E.call (E.call ~info:{arity=Full} (E.dot obj' name) args )
+                    rest 
+              else 
+                let rest = Ext_list.init 
+                    (arity - n) (fun i -> Ext_ident.create "prim") in
+                E.fun_ rest 
+                  S.[return (E.call ~info:{arity=Full } (E.dot obj' name)
+                               (args @ List.map E.var rest )                               
+                            ) ]                  
+            | (Js None, p_name), _  -> 
+              cont begin match args with 
+                | [] -> E.dot obj' p_name (* [name] *)                
+                | _ -> E.bind_call obj' p_name args end
+
+            | _ , Lprim (Pccall {prim_name = _; _}, []) ->
+              (* we know obj is a truly js object,
                   shall it always be global?
                   shall it introduce dependency?
               *)
-              Js_output.handle_block_return st should_return lam (List.concat args_code)
-              @@  js_call (Ext_ident.create_js prim_name)
+              cont begin match args with
+                | [] -> E.dot obj' name 
+                | _ -> E.bind_call obj' name args end
+              
 
             (*TODO: if js has such variable -- all ocaml variables should be aliased *)
-            | Lvar id when Ext_ident.is_js_object id (*TODO#11: check alias table as well *)-> 
-              Js_output.handle_block_return st should_return lam (List.concat args_code) @@ 
-              js_call id
+            | _, Lvar id when Ext_ident.is_js_object id
+            (*TODO#11: check alias table as well,
+              here we do flow analysis
+              TODO#22: we can also track whether it's an ocaml object
+            *)->
+              
+              cont begin match args with 
+              | [] -> E.dot obj' name 
+              | _ -> E.bind_call obj' name args
+              end
 
-            | _ -> 
+            | ((Ml _ | Unknown _), _), _  ->
+              (* For [Ml] or [Unknown]  the name is untouched *)
               let cache = !method_cache_id in
               let () = begin
                 incr method_cache_id ;
               end in
               (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
-              Js_output.handle_block_return st should_return lam (List.concat args_code)
-                (E.public_method_call name obj' label cache args )
+              cont (E.public_method_call name obj' label cache args )
                 (* avoid duplicated compuattion *)
           end
       end

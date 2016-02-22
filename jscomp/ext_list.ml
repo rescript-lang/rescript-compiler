@@ -116,6 +116,13 @@ let take n l =
   else (Array.to_list (Array.sub arr 0 n ), 
         Array.to_list (Array.sub arr n (arr_length - n)))
 
+let try_take n l = 
+  let arr = Array.of_list l in 
+  let arr_length =  Array.length arr in
+  if arr_length  <= n then 
+    l,  arr_length, []
+  else Array.to_list (Array.sub arr 0 n ), n, (Array.to_list (Array.sub arr n (arr_length - n)))
+
 let exclude_tail (x : 'a list) : 'a list = 
   let rec aux acc x = 
     match x with 

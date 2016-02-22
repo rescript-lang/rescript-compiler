@@ -8,7 +8,7 @@ function f(x) {
     return Caml_curry.js1(623642069, 1, x);
   }
   else {
-    return Caml_curry.app0(x.say_hi);
+    return x.say_hi;
   }
 }
 

@@ -45,7 +45,7 @@ ocaml/man
 *~
 *.annot
 *.mj
-jscomp/bench/*.js
+
 *.bak
 .vscode
 *.jsx

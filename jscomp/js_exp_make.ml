@@ -188,6 +188,9 @@ let index ?comment (e0 : t)  (e1 : int) : t =
   match e0.expression_desc with
   | Array (l,_mutable_flag)  when no_side_effect e0 -> 
     List.nth l  e1  (* Float i -- should not appear here *)
+  | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
+    List.nth l  e1  (* Float i -- should not appear here *)
+
   | _ -> { expression_desc = Access (e0, int e1); comment} 
 
 let call ?comment ?info e0 args : t = 
@@ -237,7 +240,7 @@ let is_caml_block ?comment (e : t) : t =
 let array_length ?comment (e : t) : t = 
   match e.expression_desc with 
   (* TODO: use array instead? *)
-  | Array (l, _) -> int ?comment (List.length l)
+  | (Array (l, _) | Caml_block(l,_,_,_)) when no_side_effect e -> int ?comment (List.length l)
   | _ -> { expression_desc = Length (e, Array) ; comment }
 
 let string_length ?comment (e : t) : t =
@@ -329,6 +332,18 @@ let tag_ml_obj ?comment e : t =
 *)
 let var_dot ?comment (x : Ident.t)  (e1 : string) : t = 
   {expression_desc = Dot (var x,  e1, true); comment} 
+
+let bind_call ?comment obj  (e1 : string) args  : t = 
+  call {expression_desc = 
+     Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
+   comment = None } args 
+
+let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
+  let obj =  var x in 
+  call {expression_desc = 
+     Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
+   comment = None } args 
+
 
 (* Dot .....................**)        
 
@@ -466,7 +481,7 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
 
   | Number ((Int { i = 0; _}) ), _, _ 
     -> f  (* TODO: constant folding: could be refined *)
-  | (Number _ | Array _), _, _ 
+  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b &&  no_side_effect f 
     -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
   | (Bin (Bor, v , {expression_desc = Number (Int {i = 0 ; _})})), _, _
     -> econd v t f 
@@ -687,6 +702,9 @@ let tag ?comment e : t =
      Bin (Bor, {expression_desc = Caml_block_tag e; comment }, int 0 );
    comment = None }    
 
+let bind ?comment fn obj  : t = 
+  {expression_desc = Bind (fn, obj) ; comment }
+
 let public_method_call meth_name obj label cache args = 
   let len = List.length args in 
   (** FIXME: not caml object *)
@@ -714,13 +732,26 @@ let public_method_call meth_name obj label cache args =
        how about x#|getElementById|2|
     *)
     (
-      if len <=8 then 
+      let fn = bind (dot obj meth_name) obj in
+      if len = 0 then 
+        dot obj meth_name
+        (* Note that when no args supplied, 
+           it is not necessarily a function, [bind]
+           is dangerous
+           so if user write such code
+           {[
+             let  u = x # say in
+             u 3              
+           ]}    
+           It's reasonable to drop [this] support       
+        *)
+      else if len <=8 then 
         let len_str = string_of_int len in
         runtime_call Js_config.curry ("app"^len_str) 
-          (dot obj meth_name ::  args)
+          (fn ::  args)
       else 
         runtime_call Js_config.curry "app"           
-          [dot obj meth_name ; arr NA args ]            
+          [fn  ; arr NA args ]            
     )
 
 let set_tag ?comment e tag : t = 

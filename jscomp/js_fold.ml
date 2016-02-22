@@ -176,6 +176,10 @@ class virtual fold =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
+                 (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -369,6 +373,8 @@ class virtual fold =
           let o = o#binop _x in
           let o = o#expression _x_i1 in let o = o#expression _x_i2 in o
       | FlatCall (_x, _x_i1) ->
+          let o = o#expression _x in let o = o#expression _x_i1 in o
+      | Bind (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Call (_x, _x_i1, _x_i2) ->
           let o = o#expression _x in

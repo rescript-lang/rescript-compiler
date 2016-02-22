@@ -35,6 +35,9 @@ let js_object_flag = 32 (* javascript object flags *)
 let is_js (i : Ident.t) = 
   i.flags land js_flag <> 0 
 
+let is_js_or_global (i : Ident.t) = 
+  i.flags land (8 lor 1) <> 0 
+
 let is_js_module (i : Ident.t) =
   i.flags land js_module_flag <> 0 
 
@@ -234,3 +237,6 @@ let reset () =
   begin
     Hashtbl.clear js_module_table
   end
+
+let undefined = create_js "undefined"
+let null = create_js "null"

@@ -60,9 +60,15 @@ type element =
   | NA 
   | SimpleForm of Lambda.lambda
 
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Normal 
+
 type kind = 
-  | ImmutableBlock of element array
-  | MutableBlock of element array
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array 
   | Constant of Lambda.structured_constant
   | Module of Ident.t
         (** Global module, local module is treated as an array
@@ -72,7 +78,19 @@ type kind =
   | Parameter
       (** For this case, it can help us determine whether it should be inlined or not *)
   | NA 
+  (* | Boxed_nullable of Ident.t  *)
+    (** 
+       {[ let v/2 =  js_from_nullable u]} 
 
+       {[ let v/2 = js_from_nullable exp]}
+       can be translated into 
+       {[
+         let v/1 = exp in 
+         let v/2 =a js_from_nullable exp 
+       ]}
+       so that [Pfield v/2 0] will be replaced by [v/1], 
+       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
+    *)
 type ident_tbl = (Ident.t, kind) Hashtbl.t 
 
 type state = 

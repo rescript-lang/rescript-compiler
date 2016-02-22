@@ -9,8 +9,8 @@ let suites =
     Eq (split ~keep_empty:true "hihi" 'i', ["h";"h";""]));
    "split_non_empty", (fun _ -> 
     Eq (split  "hihi" 'i', ["h";"h"]));
-   "splitempty", (fun _ -> 
-    Eq (split ~keep_empty:true "" 'i', [""]));
+   "split_empty", (fun _ -> 
+    Eq (split ~keep_empty:true "" 'i', []));
    "split_normal", (fun _ ->
     Eq (split ~keep_empty:true "h i i" ' ', ["h"; "i"; "i"]
                    ));

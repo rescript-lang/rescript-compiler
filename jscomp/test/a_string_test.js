@@ -50,14 +50,11 @@ var suites_001 = /* :: */[
   ],
   /* :: */[
     /* tuple */[
-      "splitempty",
+      "split_empty",
       function () {
         return /* Eq */{
                 0: split(/* Some */[/* true */1], "", /* "i" */105),
-                1: /* :: */[
-                  "",
-                  /* [] */0
-                ],
+                1: /* [] */0,
                 length: 2,
                 tag: 0
               };
