@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
-  "\n OCamlScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "02/08-09:29"]
+  "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
+[@@@ocaml.doc "02/22-09:11"]
 include
   struct
     module Js_op =
@@ -13,6 +13,7 @@ include
           | And
           | EqEqEq
           | NotEqEq
+          | InstanceOf
           | Lt
           | Le
           | Gt
@@ -55,6 +56,14 @@ include
           | Alias
           | StrictOpt
           | Variable
+        type property_name =
+          | Key of string
+          | Int_key of int
+          | Tag
+          | Length
+        type 'a access =
+          | Getter
+          | Setter
         type int_or_char = {
           i: int;
           c: char option;}
@@ -83,8 +92,22 @@ include
         type ident_info = {
           mutable used_stats: used_stats;}
         type exports = Ident.t list
-        type required_modules = (Ident.t* string) list[@@ocaml.doc
-                                                        " TODO: define constant - for better constant folding  "]
+        type required_modules = (Ident.t* string) list
+        type tag_info = Lambda.tag_info =
+          | Constructor of string
+          | Tuple
+          | Array
+          | Variant of string
+          | Record
+          | NA
+        type length_object =
+          | Array
+          | String
+          | Bytes
+          | Function
+          |
+          Caml_block[@ocaml.doc
+                      " TODO: define constant - for better constant folding  "]
       end
     module Ext_format :
       sig
@@ -432,9 +455,10 @@ include
         and mutable_flag = Js_op.mutable_flag
         and ident_info = Js_op.ident_info
         and exports = Js_op.exports
+        and tag_info = Js_op.tag_info
         and required_modules = Js_op.required_modules
-        and property_name = string[@@ocaml.doc
-                                    " object literal, if key is ident, in this case, it might be renamed by \n    Google Closure  optimizer,\n    currently we always use quote\n "]
+        and property_name = Js_op.property_name[@@ocaml.doc
+                                                 " object literal, if key is ident, in this case, it might be renamed by \n    Google Closure  optimizer,\n    currently we always use quote\n "]
         and ident = Ident.t
         and vident =
           | Id of ident
@@ -443,18 +467,15 @@ include
         and for_ident = ident
         and for_direction = Asttypes.direction_flag
         and property_map = (property_name* expression) list
+        and length_object = Js_op.length_object
         and expression_desc =
           | Math of string* expression list
-          | Array_length of expression
-          | String_length of expression
-          | Bytes_length of expression
-          | Function_length of expression
+          | Length of expression* length_object
           | Char_of_int of expression
           | Char_to_int of expression
           | Array_of_size of expression
           | Array_copy of expression
           | Array_append of expression* expression
-          | Tag_ml_obj of expression
           | String_append of expression* expression
           | Int_of_boolean of expression
           | Typeof of expression
@@ -476,6 +497,12 @@ include
           | Fun of ident list* block* Js_fun_env.t
           | Str of bool* string
           | Array of expression list* mutable_flag
+          | Caml_block of expression list* mutable_flag* expression*
+          tag_info
+          | Caml_uninitialized_obj of expression* expression
+          | Caml_block_tag of expression
+          | Caml_block_set_tag of expression* expression
+          | Caml_block_set_length of expression* expression
           | Number of number
           | Object of property_map
         and for_ident_expression = expression
@@ -755,12 +782,16 @@ include
         type stats = {
           mutable top: bool;
           mutable times: int;}
+        val is_closed_with_map :
+          Ident_set.t ->
+            Ident.t list -> Lambda.lambda -> (bool* stats Ident_map.t)
         val param_map_of_list : Ident.t list -> stats Ident_map.t
         val free_variables :
           Ident_set.t ->
             stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
         val small_inline_size : int
         val exit_inline_size : int
+        val safe_to_inline : Lambda.lambda -> bool
       end =
       struct
         let rec no_side_effects (lam : Lambda.lambda) =
@@ -1021,8 +1052,20 @@ include
         let is_closed_by set lam =
           Ident_map.is_empty (free_variables set Ident_map.empty lam)
         let is_closed lam =
-          Ident_map.is_empty
-            (free_variables Ident_set.empty Ident_map.empty lam)
+          Ident_map.for_all (fun k  -> fun _  -> Ident.global k)
+            (free_variables Ident_set.empty Ident_map.empty lam)[@@ocaml.doc
+                                                                  " A bit consverative , it should be empty "]
+        let is_closed_with_map exports params body =
+          let param_map =
+            free_variables exports (param_map_of_list params) body in
+          let old_count = List.length params in
+          let new_count = Ident_map.cardinal param_map in
+          ((old_count = new_count), param_map)
+        let safe_to_inline (lam : Lambda.lambda) =
+          match lam with
+          | Lfunction _ -> true
+          | Lconst (Const_pointer _|Const_immstring _) -> true
+          | _ -> false
       end 
     module Js_fold =
       struct
@@ -1061,6 +1104,7 @@ include
                 let o = o#ident _x in
                 let o = o#option (fun o  -> o#expression) _x_i1 in
                 let o = o#property _x_i2 in let o = o#ident_info _x_i3 in o
+            method tag_info : tag_info -> 'self_type= o#unknown
             method statement_desc : statement_desc -> 'self_type=
               function
               | Block _x -> let o = o#block _x in o
@@ -1112,7 +1156,7 @@ include
               fun { return_value = _x }  -> let o = o#expression _x in o
             method required_modules : required_modules -> 'self_type=
               o#unknown
-            method property_name : property_name -> 'self_type= o#string
+            method property_name : property_name -> 'self_type= o#unknown
             method property_map : property_map -> 'self_type=
               o#list
                 (fun o  ->
@@ -1130,6 +1174,7 @@ include
                 let o = o#exports _x_i2 in let o = o#unknown _x_i3 in o
             method number : number -> 'self_type= o#unknown
             method mutable_flag : mutable_flag -> 'self_type= o#unknown
+            method length_object : length_object -> 'self_type= o#unknown
             method label : label -> 'self_type= o#string
             method kind : kind -> 'self_type= o#unknown
             method int_op : int_op -> 'self_type= o#unknown
@@ -1146,17 +1191,15 @@ include
               | Math (_x,_x_i1) ->
                   let o = o#string _x in
                   let o = o#list (fun o  -> o#expression) _x_i1 in o
-              | Array_length _x -> let o = o#expression _x in o
-              | String_length _x -> let o = o#expression _x in o
-              | Bytes_length _x -> let o = o#expression _x in o
-              | Function_length _x -> let o = o#expression _x in o
+              | Length (_x,_x_i1) ->
+                  let o = o#expression _x in
+                  let o = o#length_object _x_i1 in o
               | Char_of_int _x -> let o = o#expression _x in o
               | Char_to_int _x -> let o = o#expression _x in o
               | Array_of_size _x -> let o = o#expression _x in o
               | Array_copy _x -> let o = o#expression _x in o
               | Array_append (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
-              | Tag_ml_obj _x -> let o = o#expression _x in o
               | String_append (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
               | Int_of_boolean _x -> let o = o#expression _x in o
@@ -1206,6 +1249,17 @@ include
               | Array (_x,_x_i1) ->
                   let o = o#list (fun o  -> o#expression) _x in
                   let o = o#mutable_flag _x_i1 in o
+              | Caml_block (_x,_x_i1,_x_i2,_x_i3) ->
+                  let o = o#list (fun o  -> o#expression) _x in
+                  let o = o#mutable_flag _x_i1 in
+                  let o = o#expression _x_i2 in let o = o#tag_info _x_i3 in o
+              | Caml_uninitialized_obj (_x,_x_i1) ->
+                  let o = o#expression _x in let o = o#expression _x_i1 in o
+              | Caml_block_tag _x -> let o = o#expression _x in o
+              | Caml_block_set_tag (_x,_x_i1) ->
+                  let o = o#expression _x in let o = o#expression _x_i1 in o
+              | Caml_block_set_length (_x,_x_i1) ->
+                  let o = o#expression _x in let o = o#expression _x_i1 in o
               | Number _x -> let o = o#number _x in o
               | Object _x -> let o = o#property_map _x in o
             method expression : expression -> 'self_type=
@@ -1248,17 +1302,19 @@ include
         val runtime_set : String_set.t
         val stdlib_set : String_set.t
         val prim : string
-        val exceptions : string
+        val builtin_exceptions : string
         val io : string
         val oo : string
         val sys : string
-        val lex_parse : string
+        val lexer : string
+        val parser : string
         val obj_runtime : string
         val array : string
         val format : string
         val string : string
         val float : string
         val curry : string
+        val internalMod : string
       end =
       struct
         type env =
@@ -1322,7 +1378,7 @@ include
           String_set.of_list
             ["caml_array.js";
             "caml_float.js";
-            "caml_obj_runtime.js";
+            "caml_obj.js";
             "caml_bigarray.js";
             "caml_format.js";
             "caml_oo.js";
@@ -1330,23 +1386,27 @@ include
             "caml_int64.js";
             "caml_primitive.js";
             "caml_utils.js";
+            "caml_builtin_exceptions.js";
             "caml_exceptions.js";
             "caml_curry.js";
             "caml_file.js";
             "caml_lexer.js";
+            "caml_parser.js";
             "caml_string.js"]
         let prim = "Caml_primitive"
-        let exceptions = "Caml_exceptions"
+        let builtin_exceptions = "Caml_builtin_exceptions"
         let io = "Caml_io"
         let sys = "Caml_sys"
-        let lex_parse = "Caml_lexer"
-        let obj_runtime = "Caml_obj_runtime"
+        let lexer = "Caml_lexer"
+        let parser = "Caml_parser"
+        let obj_runtime = "Caml_obj"
         let array = "Caml_array"
         let format = "Caml_format"
         let string = "Caml_string"
         let float = "Caml_float"
         let oo = "Caml_oo"
         let curry = "Caml_curry"
+        let internalMod = "Caml_internalMod"
       end 
     module Ext_bytes :
       sig
@@ -1825,6 +1885,8 @@ include
           ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
         val lam_true : Lambda.lambda
         val lam_false : Lambda.lambda
+        val not_function : Lambda.lambda -> bool
+        val is_function : Lambda.lambda -> bool
       end =
       struct
         let string_of_lambda = Format.asprintf "%a" Printlambda.lambda
@@ -2005,6 +2067,10 @@ include
           Lconst (Const_pointer (1, (NullConstructor "true")))
         let lam_false: Lambda.lambda =
           Lconst (Const_pointer (0, (NullConstructor "false")))
+        let is_function (lam : Lambda.lambda) =
+          match lam with | Lfunction _ -> true | _ -> false
+        let not_function (lam : Lambda.lambda) =
+          match lam with | Lfunction _ -> false | _ -> true
       end 
     module Lam_group :
       sig
@@ -2399,6 +2465,1383 @@ include
         let of_list (xs : ('a* 'b) list) =
           List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty xs
       end 
+    module Lam_compile_util :
+      sig
+        [@@@ocaml.text " Some utilities for lambda compilation"]
+        val jsop_of_comp : Lambda.comparison -> Js_op.binop
+        val comment_of_tag_info : Lambda.tag_info -> string option
+        val comment_of_pointer_info : Lambda.pointer_info -> string option
+      end =
+      struct
+        let jsop_of_comp (cmp : Lambda.comparison) =
+          (match cmp with
+           | Ceq  -> EqEqEq
+           | Cneq  -> NotEqEq
+           | Clt  -> Lt
+           | Cgt  -> Gt
+           | Cle  -> Le
+           | Cge  -> Ge : Js_op.binop)
+        let comment_of_tag_info (x : Lambda.tag_info) =
+          match x with
+          | Constructor n -> Some n
+          | Tuple  -> Some "tuple"
+          | Variant x -> Some ("`" ^ x)
+          | Record  -> Some "record"
+          | Array  -> Some "array"
+          | NA  -> None
+        let comment_of_pointer_info (x : Lambda.pointer_info) =
+          match x with
+          | NullConstructor x -> Some x
+          | NullVariant x -> Some x
+          | NAPointer  -> None
+      end 
+    module Js_op_util :
+      sig
+        [@@@ocaml.text " Some basic utilties around {!Js_op} module "]
+        val op_prec : Js_op.binop -> (int* int* int)
+        val op_str : Js_op.binop -> string
+        val op_int_prec : Js_op.int_op -> (int* int* int)
+        val op_int_str : Js_op.int_op -> string
+        val str_of_used_stats : Js_op.used_stats -> string
+        val update_used_stats : J.ident_info -> Js_op.used_stats -> unit
+        val same_vident : J.vident -> J.vident -> bool
+        val of_lam_mutable_flag : Asttypes.mutable_flag -> Js_op.mutable_flag
+      end =
+      struct
+        let op_prec (op : Js_op.binop) =
+          match op with
+          | Eq  -> (1, 13, 1)
+          | Or  -> (3, 3, 3)
+          | And  -> (4, 4, 4)
+          | EqEqEq |NotEqEq  -> (8, 8, 9)
+          | Gt |Ge |Lt |Le |InstanceOf  -> (9, 9, 10)
+          | Bor  -> (5, 5, 5)
+          | Bxor  -> (6, 6, 6)
+          | Band  -> (7, 7, 7)
+          | Lsl |Lsr |Asr  -> (10, 10, 11)
+          | Plus |Minus  -> (11, 11, 12)
+          | Mul |Div |Mod  -> (12, 12, 13)
+        let op_int_prec (op : Js_op.int_op) =
+          match op with
+          | Bor  -> (5, 5, 5)
+          | Bxor  -> (6, 6, 6)
+          | Band  -> (7, 7, 7)
+          | Lsl |Lsr |Asr  -> (10, 10, 11)
+          | Plus |Minus  -> (11, 11, 12)
+          | Mul |Div |Mod  -> (12, 12, 13)
+        let op_str (op : Js_op.binop) =
+          match op with
+          | Bor  -> "|"
+          | Bxor  -> "^"
+          | Band  -> "&"
+          | Lsl  -> "<<"
+          | Lsr  -> ">>>"
+          | Asr  -> ">>"
+          | Plus  -> "+"
+          | Minus  -> "-"
+          | Mul  -> "*"
+          | Div  -> "/"
+          | Mod  -> "%"
+          | Eq  -> "="
+          | Or  -> "||"
+          | And  -> "&&"
+          | EqEqEq  -> "==="
+          | NotEqEq  -> "!=="
+          | Lt  -> "<"
+          | Le  -> "<="
+          | Gt  -> ">"
+          | Ge  -> ">="
+          | InstanceOf  -> "instanceof"
+        let op_int_str (op : Js_op.int_op) =
+          match op with
+          | Bor  -> "|"
+          | Bxor  -> "^"
+          | Band  -> "&"
+          | Lsl  -> "<<"
+          | Lsr  -> ">>>"
+          | Asr  -> ">>"
+          | Plus  -> "+"
+          | Minus  -> "-"
+          | Mul  -> "*"
+          | Div  -> "/"
+          | Mod  -> "%"
+        let str_of_used_stats x =
+          match (x : Js_op.used_stats) with
+          | Js_op.Dead_pure  -> "Dead_pure"
+          | Dead_non_pure  -> "Dead_non_pure"
+          | Exported  -> "Exported"
+          | Once_pure  -> "Once_pure"
+          | Used  -> "Used"
+          | Scanning_pure  -> "Scanning_pure"
+          | Scanning_non_pure  -> "Scanning_non_pure"
+          | NA  -> "NA"
+        let update_used_stats (ident_info : J.ident_info) used_stats =
+          match ident_info.used_stats with
+          | Dead_pure |Dead_non_pure |Exported  -> ()
+          | Scanning_pure |Scanning_non_pure |Used |Once_pure |NA  ->
+              ident_info.used_stats <- used_stats
+        let same_kind (x : Js_op.kind) (y : Js_op.kind) =
+          match (x, y) with
+          | (Ml ,Ml )|(Runtime ,Runtime ) -> true
+          | (External (u : string),External v) -> u = v
+          | (_,_) -> false
+        let same_str_opt (x : string option) (y : string option) =
+          match (x, y) with
+          | (None ,None ) -> true
+          | (Some x0,Some y0) -> x0 = y0
+          | (None ,Some _)|(Some _,None ) -> false
+        let same_vident (x : J.vident) (y : J.vident) =
+          match (x, y) with
+          | (Id x0,Id y0) -> Ident.same x0 y0
+          | (Qualified (x0,k0,str_opt0),Qualified (y0,k1,str_opt1)) ->
+              (Ident.same x0 y0) &&
+                ((same_kind k0 k1) && (same_str_opt str_opt0 str_opt1))
+          | (Id _,Qualified _)|(Qualified _,Id _) -> false
+        let of_lam_mutable_flag (x : Asttypes.mutable_flag) =
+          (match x with | Immutable  -> Immutable | Mutable  -> Mutable : 
+          Js_op.mutable_flag)
+      end 
+    module Js_analyzer :
+      sig
+        [@@@ocaml.text " Analyzing utilities for [J] module "]
+        [@@@ocaml.text " for example, whether it has side effect or not.\n "]
+        val free_variables_of_statement :
+          Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
+        val free_variables_of_expression :
+          Ident_set.t ->
+            Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+        val no_side_effect_expression : J.expression -> bool[@@ocaml.doc
+                                                              " [no_side_effect] means this expression has no side effect, \n    but it might *depend on value store*, so you can not just move it around,\n\n    for example,\n    when you want to do a deep copy, the expression passed to you is pure\n    but you still have to call the function to make a copy, \n    since it maybe changed later\n "]
+        val no_side_effect_statement : J.statement -> bool[@@ocaml.doc
+                                                            " \n    here we say \n    {[ var x = no_side_effect_expression ]}\n    is [no side effect], but it is actually side effect, \n    since  we are defining a variable, however, if it is not exported or used, \n    then it's fine, so we delay this check later\n "]
+        val eq_expression : J.expression -> J.expression -> bool
+        val eq_statement : J.statement -> J.statement -> bool
+        val rev_flatten_seq : J.expression -> J.block
+        val rev_toplevel_flatten : J.block -> J.block[@@ocaml.doc
+                                                       " return the block in reverse order "]
+        val is_constant : J.expression -> bool
+      end =
+      struct
+        let free_variables used_idents defined_idents =
+          object (self)
+            inherit  Js_fold.fold as super
+            val defined_idents = defined_idents
+            val used_idents = used_idents
+            method! variable_declaration st =
+              match st with
+              | { ident; value = None  } ->
+                  {<defined_idents = Ident_set.add ident defined_idents>}
+              | { ident; value = Some v } ->
+                  ({<defined_idents = Ident_set.add ident defined_idents>})#expression
+                    v
+            method! ident id =
+              if Ident_set.mem id defined_idents
+              then self
+              else {<used_idents = Ident_set.add id used_idents>}
+            method! expression exp =
+              match exp.expression_desc with
+              | Fun (_,_,env) ->
+                  {<used_idents =
+                      Ident_set.union (Js_fun_env.get_bound env) used_idents>}
+              | _ -> super#expression exp
+            method get_depenencies =
+              Ident_set.diff used_idents defined_idents
+            method get_used_idents = used_idents
+            method get_defined_idents = defined_idents
+          end
+        let free_variables_of_statement used_idents defined_idents st =
+          ((free_variables used_idents defined_idents)#statement st)#get_depenencies
+        let free_variables_of_expression used_idents defined_idents st =
+          ((free_variables used_idents defined_idents)#expression st)#get_depenencies
+        let rec no_side_effect (x : J.expression) =
+          match x.expression_desc with
+          | Var _ -> true
+          | Access (a,b) -> (no_side_effect a) && (no_side_effect b)
+          | Str (b,_) -> b
+          | Fun _ -> true
+          | Number _ -> true
+          | Array (xs,_mutable_flag)|Caml_block (xs,_mutable_flag,_,_) ->
+              List.for_all no_side_effect xs
+          | Array_append (a,b)|String_append (a,b)|Seq (a,b) ->
+              (no_side_effect a) && (no_side_effect b)
+          | Length (e,_)|Char_of_int e|Char_to_int e|Caml_block_tag e|Typeof
+            e -> no_side_effect e
+          | Bin (op,a,b) ->
+              (op != Eq) && ((no_side_effect a) && (no_side_effect b))
+          | Math _|Array_of_size _|Array_copy _|Int_of_boolean _|Not _
+            |String_of_small_int_array _|Json_stringify _|Anything_to_string
+            _|Dump _|Cond _|FlatCall _|Call _|Dot _|New _
+            |Caml_uninitialized_obj _|String_access _|Object _
+            |Caml_block_set_tag _|Caml_block_set_length _ -> false
+        let no_side_effect_expression (x : J.expression) = no_side_effect x
+        let no_side_effect init =
+          object (self)
+            inherit  Js_fold.fold as super
+            val no_side_effect = init
+            method get_no_side_effect = no_side_effect
+            method! statement s =
+              if not no_side_effect
+              then self
+              else
+                (match s.statement_desc with
+                 | Throw _ -> {<no_side_effect = false>}
+                 | _ -> super#statement s)
+            method! list f x =
+              if not self#get_no_side_effect then self else super#list f x
+            method! expression s =
+              if not no_side_effect
+              then self
+              else {<no_side_effect = no_side_effect_expression s>}
+            [@@@ocaml.text " only expression would cause side effec "]
+          end
+        let no_side_effect_statement st =
+          ((no_side_effect true)#statement st)#get_no_side_effect
+        let rec eq_expression (x : J.expression) (y : J.expression) =
+          match ((x.expression_desc), (y.expression_desc)) with
+          | (Number (Int i),Number (Int j)) -> i = j
+          | (Number (Float i),Number (Float j)) -> false
+          | (Math (name00,args00),Math (name10,args10)) ->
+              (name00 = name10) && (eq_expression_list args00 args10)
+          | (Access (a0,a1),Access (b0,b1)) ->
+              (eq_expression a0 b0) && (eq_expression a1 b1)
+          | (Call (a0,args00,_),Call (b0,args10,_)) ->
+              (eq_expression a0 b0) && (eq_expression_list args00 args10)
+          | (Var (Id i),Var (Id j)) -> Ident.same i j
+          | (Bin (op0,a0,b0),Bin (op1,a1,b1)) ->
+              (op0 = op1) && ((eq_expression a0 a1) && (eq_expression b0 b1))
+          | (_,_) -> false
+        and eq_expression_list xs ys =
+          let rec aux xs ys =
+            match (xs, ys) with
+            | ([],[]) -> true
+            | ([],_) -> false
+            | (_,[]) -> false
+            | (x::xs,y::ys) -> (eq_expression x y) && (aux xs ys) in
+          aux xs ys
+        and eq_statement (x : J.statement) (y : J.statement) =
+          match ((x.statement_desc), (y.statement_desc)) with
+          | (Exp a,Exp b)
+            |(Return { return_value = a;_},Return { return_value = b;_}) ->
+              eq_expression a b
+          | (_,_) -> false
+        let rev_flatten_seq (x : J.expression) =
+          let rec aux acc (x : J.expression) =
+            (match x.expression_desc with
+             | Seq (a,b) -> aux (aux acc a) b
+             | _ -> { statement_desc = (Exp x); comment = None } :: acc : 
+            J.block) in
+          aux [] x
+        let rev_toplevel_flatten block =
+          let rec aux acc (xs : J.block) =
+            (match xs with
+             | [] -> acc
+             | {
+                 statement_desc = Variable
+                   ({ ident_info = { used_stats = Dead_pure  };_}
+                    |{ ident_info = { used_stats = Dead_non_pure  };
+                       value = None  })
+                 }::xs -> aux acc xs
+             | { statement_desc = Block b;_}::xs -> aux (aux acc b) xs
+             | x::xs -> aux (x :: acc) xs : J.block) in
+          aux [] block
+        let rec is_constant (x : J.expression) =
+          match x.expression_desc with
+          | Access (a,b) -> (is_constant a) && (is_constant b)
+          | Str (b,_) -> b
+          | Number _ -> true
+          | Array (xs,_mutable_flag) -> List.for_all is_constant xs
+          | Caml_block (xs,Immutable ,tag,_) ->
+              (List.for_all is_constant xs) && (is_constant tag)
+          | _ -> false
+      end 
+    module Js_exp_make :
+      sig
+        [@@@ocaml.text " Creator utilities for the [J] module "]
+        [@@@ocaml.text
+          " check if a javascript ast is constant \n\n    The better signature might be \n    {[\n      J.expresssion -> Js_output.t\n    ]}\n    for exmaple\n    {[\n      e ?print_int(3) :  0\n                         --->\n                         if(e){print_int(3)}\n    ]}\n"]
+        val extract_non_pure : J.expression -> J.expression option
+        type binary_op =
+          ?comment:string -> J.expression -> J.expression -> J.expression
+        type unary_op = ?comment:string -> J.expression -> J.expression
+        type t = J.expression
+        val mk : ?comment:string -> J.expression_desc -> t
+        val access : binary_op
+        val string_access : binary_op
+        val var : ?comment:string -> J.ident -> t
+        val runtime_var_dot : ?comment:string -> string -> string -> t
+        val runtime_var_vid : string -> string -> J.vident
+        val ml_var_dot : ?comment:string -> Ident.t -> string -> t
+        val external_var_dot :
+          ?comment:string -> Ident.t -> string -> string -> t
+        val ml_var : ?comment:string -> Ident.t -> t
+        val runtime_call : ?comment:string -> string -> string -> t list -> t
+        val public_method_call : string -> t -> t -> int -> t list -> t
+        val runtime_ref : string -> string -> t
+        val str : ?pure:bool -> ?comment:string -> string -> t
+        val fun_ :
+          ?comment:string ->
+            ?immutable_mask:bool array -> J.ident list -> J.block -> t
+        val econd : ?comment:string -> t -> t -> t -> t
+        val int : ?comment:string -> ?c:char -> int -> t
+        val float : ?comment:string -> string -> t
+        val zero_float_lit : t[@@ocaml.doc
+                                " [is_out e range] is equivalent to [e > range or e <0]\n\n"]
+        val is_out : binary_op[@@ocaml.doc
+                                " [is_out e range] is equivalent to [e > range or e <0]\n\n"]
+        val dot : ?comment:string -> t -> string -> t
+        val array_length : unary_op
+        val string_length : unary_op
+        val string_of_small_int_array : unary_op
+        val bytes_length : unary_op
+        val function_length : unary_op
+        val char_of_int : unary_op
+        val char_to_int : unary_op
+        val array_append : binary_op
+        val array_copy : unary_op
+        val string_append : binary_op[@@ocaml.doc
+                                       "\n   When in ES6 mode, we can use Symbol to guarantee its uniquess,\n   we can not tag [js] object, since it can be frozen \n"]
+        val tag_ml_obj : unary_op
+        val var_dot : ?comment:string -> Ident.t -> string -> t
+        val js_global_dot : ?comment:string -> string -> string -> t
+        val index : ?comment:string -> t -> int -> t
+        val assign : binary_op
+        val triple_equal : binary_op
+        val float_equal : binary_op
+        val int_equal : binary_op
+        val string_equal : binary_op
+        val is_type_number : unary_op
+        val typeof : unary_op
+        val to_int32 : unary_op
+        val to_uint32 : unary_op
+        val int32_add : binary_op
+        val int32_minus : binary_op
+        val int32_mul : binary_op
+        val int32_div : binary_op
+        val int32_lsl : binary_op
+        val int32_lsr : binary_op
+        val int32_asr : binary_op
+        val int32_mod : binary_op
+        val int32_bxor : binary_op
+        val int32_band : binary_op
+        val int32_bor : binary_op
+        val float_add : binary_op
+        val float_minus : binary_op
+        val float_mul : binary_op
+        val float_div : binary_op
+        val float_notequal : binary_op
+        val float_mod : binary_op
+        val int_comp : Lambda.comparison -> binary_op
+        val string_comp : Js_op.binop -> binary_op
+        val float_comp : Lambda.comparison -> binary_op
+        val bin : ?comment:string -> J.binop -> t -> t -> t
+        val not : t -> t
+        val call :
+          ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
+        val flat_call : binary_op
+        val dump : ?comment:string -> Js_op.level -> t list -> t
+        val anything_to_string : unary_op
+        val int_to_string : unary_op
+        val to_json_string : unary_op
+        val new_ : ?comment:string -> J.expression -> J.expression list -> t
+        val arr : ?comment:string -> J.mutable_flag -> J.expression list -> t
+        val make_block :
+          ?comment:string ->
+            J.expression ->
+              J.tag_info -> J.expression list -> J.mutable_flag -> t
+        val uninitialized_object :
+          ?comment:string -> J.expression -> J.expression -> t
+        val uninitialized_array : unary_op
+        val seq : binary_op
+        val obj : ?comment:string -> J.property_map -> t
+        val true_ : t
+        val false_ : t
+        val bool : bool -> t
+        val unknown_lambda : ?comment:string -> Lambda.lambda -> t
+        val unit : unit -> t[@@ocaml.doc
+                              " [unit] in ocaml will be compiled into [0]  in js "]
+        val js_var : ?comment:string -> string -> t
+        val js_global : ?comment:string -> string -> t
+        val undefined : t
+        val is_caml_block : ?comment:string -> t -> t
+        val math : ?comment:string -> string -> t list -> t[@@ocaml.doc
+                                                             " [math \"abs\"] --> Math[\"abs\"] "]
+        val inc : unary_op
+        val dec : unary_op
+        val prefix_inc : ?comment:string -> J.vident -> t
+        val prefix_dec : ?comment:string -> J.vident -> t
+        val null : ?comment:string -> unit -> t
+        val tag : ?comment:string -> J.expression -> t
+        val set_tag : ?comment:string -> J.expression -> J.expression -> t
+        [@@@ocaml.text
+          " Note that this is coupled with how we encode block, if we use the \n    `Object.defineProperty(..)` since the array already hold the length,\n    this should be a nop \n"]
+        val set_length : ?comment:string -> J.expression -> J.expression -> t
+        val obj_length : ?comment:string -> J.expression -> t
+        val to_ocaml_boolean : unary_op
+        val and_ : binary_op
+        val or_ : binary_op
+        val is_instance_array : unary_op[@@ocaml.doc
+                                          " we don't expose a general interface, since a general interface is generally not safe "]
+        [@@ocaml.doc " used combined with [caml_update_dummy]"]
+        val dummy_obj : ?comment:string -> unit -> t[@@ocaml.doc
+                                                      " used combined with [caml_update_dummy]"]
+        val of_block :
+          ?comment:string -> J.statement list -> J.expression -> t[@@ocaml.doc
+                                                                    " convert a block to expresion by using IIFE "]
+      end =
+      struct
+        let no_side_effect = Js_analyzer.no_side_effect_expression
+        type binary_op =
+          ?comment:string -> J.expression -> J.expression -> J.expression
+        type unary_op = ?comment:string -> J.expression -> J.expression
+        let rec extract_non_pure (x : J.expression) =
+          match x.expression_desc with
+          | Var _|Str _|Number _ -> None
+          | Access (a,b) ->
+              (match ((extract_non_pure a), (extract_non_pure b)) with
+               | (None ,None ) -> None
+               | (_,_) -> Some x)
+          | Array (xs,_mutable_flag) ->
+              if List.for_all (fun x  -> (extract_non_pure x) = None) xs
+              then None
+              else Some x
+          | Seq (a,b) ->
+              (match ((extract_non_pure a), (extract_non_pure b)) with
+               | (None ,None ) -> None
+               | (Some u,Some v) ->
+                   Some { x with expression_desc = (Seq (u, v)) }
+               | (None ,(Some _ as v)) -> v
+               | ((Some _ as u),None ) -> u)
+          | _ -> Some x
+        type t = J.expression
+        let mk ?comment  exp = ({ expression_desc = exp; comment } : t)
+        let var ?comment  id =
+          ({ expression_desc = (Var (Id id)); comment } : t)
+        let runtime_var_dot ?comment  (x : string) (e1 : string) =
+          ({
+             expression_desc =
+               (Var (Qualified ((Ext_ident.create_js x), Runtime, (Some e1))));
+             comment
+           } : J.expression)
+        let runtime_var_vid x e1 =
+          (Qualified ((Ext_ident.create_js x), Runtime, (Some e1)) : 
+          J.vident)
+        let ml_var_dot ?comment  (id : Ident.t) e =
+          ({ expression_desc = (Var (Qualified (id, Ml, (Some e)))); comment
+           } : J.expression)
+        let external_var_dot ?comment  (id : Ident.t) name fn =
+          ({
+             expression_desc =
+               (Var (Qualified (id, (External name), (Some fn))));
+             comment
+           } : t)
+        let ml_var ?comment  (id : Ident.t) =
+          ({ expression_desc = (Var (Qualified (id, Ml, None))); comment } : 
+          t)
+        let str ?(pure= true)  ?comment  s =
+          ({ expression_desc = (Str (pure, s)); comment } : t)
+        let anything_to_string ?comment  (e : t) =
+          (match e.expression_desc with
+           | Str _ -> e
+           | _ -> { expression_desc = (Anything_to_string e); comment } : 
+          t)
+        let int_to_string ?comment  (e : t) =
+          (anything_to_string ?comment e : t)
+        let fun_ ?comment  ?immutable_mask  params block =
+          (let len = List.length params in
+           {
+             expression_desc =
+               (Fun (params, block, (Js_fun_env.empty ?immutable_mask len)));
+             comment
+           } : t)
+        let dummy_obj ?comment  () =
+          ({ comment; expression_desc = (Object []) } : t)
+        let is_instance_array ?comment  e =
+          ({ comment; expression_desc = (Bin (InstanceOf, e, (str "Array")))
+           } : t)
+        let rec seq ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | ((Seq (a,{ expression_desc = Number _ })|Seq
+               ({ expression_desc = Number _ },a)),_) -> seq ?comment a e1
+           | (_,Seq ({ expression_desc = Number _ },a)) -> seq ?comment e0 a
+           | (_,Seq (a,({ expression_desc = Number _ } as v))) ->
+               seq ?comment (seq e0 a) v
+           | _ -> { expression_desc = (Seq (e0, e1)); comment } : t)
+        let int ?comment  ?c  i =
+          ({ expression_desc = (Number (Int { i; c })); comment } : t)
+        let access ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Array (l,_mutable_flag),Number (Int { i;_})) when
+               no_side_effect e0 -> List.nth l i
+           | _ -> { expression_desc = (Access (e0, e1)); comment } : 
+          t)
+        let string_access ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Str (_,s),Number (Int { i;_})) when
+               (i >= 0) && (i < (String.length s)) ->
+               str (String.make 1 (s.[i]))
+           | _ -> { expression_desc = (String_access (e0, e1)); comment } : 
+          t)
+        let index ?comment  (e0 : t) (e1 : int) =
+          (match e0.expression_desc with
+           | Array (l,_mutable_flag) when no_side_effect e0 -> List.nth l e1
+           | _ -> { expression_desc = (Access (e0, (int e1))); comment } : 
+          t)
+        let call ?comment  ?info  e0 args =
+          (let info =
+             match info with | None  -> Js_call_info.dummy | Some x -> x in
+           { expression_desc = (Call (e0, args, info)); comment } : t)
+        let flat_call ?comment  e0 es =
+          ({ expression_desc = (FlatCall (e0, es)); comment } : t)
+        let runtime_call ?comment  module_name fn_name args =
+          call ?comment ~info:{ arity = Full }
+            (runtime_var_dot module_name fn_name) args
+        let runtime_ref module_name fn_name =
+          runtime_var_dot module_name fn_name
+        let js_var ?comment  (v : string) =
+          var ?comment (Ext_ident.create_js v)
+        let js_global ?comment  (v : string) =
+          var ?comment (Ext_ident.create_js v)
+        let dot ?comment  (e0 : t) (e1 : string) =
+          ({ expression_desc = (Dot (e0, e1, true)); comment } : t)[@@ocaml.doc
+                                                                    " used in normal property\n    like [e.length], no dependency introduced\n"]
+        let undefined = js_global "undefined"
+        let is_caml_block ?comment  (e : t) =
+          ({
+             expression_desc = (Bin (NotEqEq, (dot e "length"), undefined));
+             comment
+           } : t)[@@ocaml.doc " coupled with the runtime "]
+        let array_length ?comment  (e : t) =
+          (match e.expression_desc with
+           | Array (l,_) -> int ?comment (List.length l)
+           | _ -> { expression_desc = (Length (e, Array)); comment } : 
+          t)
+        let string_length ?comment  (e : t) =
+          (match e.expression_desc with
+           | Str (_,v) -> int ?comment (String.length v)
+           | _ -> { expression_desc = (Length (e, String)); comment } : 
+          t)
+        let bytes_length ?comment  (e : t) =
+          (match e.expression_desc with
+           | Array (l,_) -> int ?comment (List.length l)
+           | Str (_,v) -> int ?comment (String.length v)
+           | _ -> { expression_desc = (Length (e, Bytes)); comment } : 
+          t)
+        let function_length ?comment  (e : t) =
+          (match e.expression_desc with
+           | Fun (params,_,_) -> int ?comment (List.length params)
+           | _ -> { expression_desc = (Length (e, Function)); comment } : 
+          t)
+        let js_global_dot ?comment  (x : string) (e1 : string) =
+          ({ expression_desc = (Dot ((js_var x), e1, true)); comment } : 
+          t)[@@ocaml.doc " no dependency introduced "]
+        let char_of_int ?comment  (v : t) =
+          (match v.expression_desc with
+           | Number (Int { i;_}) -> str (String.make 1 (Char.chr i))
+           | Char_to_int v -> v
+           | _ -> { comment; expression_desc = (Char_of_int v) } : t)
+        let char_to_int ?comment  (v : t) =
+          (match v.expression_desc with
+           | Str (_,x) ->
+               (assert ((String.length x) = 1);
+                int ~comment:(Printf.sprintf "%S" x) (Char.code (x.[0])))
+           | Char_of_int v -> v
+           | _ -> { comment; expression_desc = (Char_to_int v) } : t)
+        let array_append ?comment  e el =
+          ({ comment; expression_desc = (Array_append (e, el)) } : t)
+        let array_copy ?comment  e =
+          ({ comment; expression_desc = (Array_copy e) } : t)
+        let dump ?comment  level el =
+          ({ comment; expression_desc = (Dump (level, el)) } : t)
+        let to_json_string ?comment  e =
+          ({ comment; expression_desc = (Json_stringify e) } : t)
+        let rec string_append ?comment  (e : t) (el : t) =
+          (match ((e.expression_desc), (el.expression_desc)) with
+           | (Str (_,a),String_append ({ expression_desc = Str (_,b) },c)) ->
+               string_append ?comment (str (a ^ b)) c
+           | (String_append (c,{ expression_desc = Str (_,b) }),Str (_,a)) ->
+               string_append ?comment c (str (b ^ a))
+           | (String_append (a,{ expression_desc = Str (_,b) }),String_append
+              ({ expression_desc = Str (_,c) },d)) ->
+               string_append ?comment (string_append a (str (b ^ c))) d
+           | (Str (_,a),Str (_,b)) -> str ?comment (a ^ b)
+           | (_,Anything_to_string b) -> string_append ?comment e b
+           | (Anything_to_string b,_) -> string_append ?comment b el
+           | (_,_) -> { comment; expression_desc = (String_append (e, el)) } : 
+          t)
+        let float_mod ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
+        let obj ?comment  properties =
+          ({ expression_desc = (Object properties); comment } : t)
+        let tag_ml_obj ?comment  e = (e : t)
+        let var_dot ?comment  (x : Ident.t) (e1 : string) =
+          ({ expression_desc = (Dot ((var x), e1, true)); comment } : 
+          t)
+        let float ?comment  f =
+          ({ expression_desc = (Number (Float { f })); comment } : t)
+        let zero_float_lit: t =
+          { expression_desc = (Number (Float { f = "0." })); comment = None }
+        let assign ?comment  e0 e1 =
+          ({ expression_desc = (Bin (Eq, e0, e1)); comment } : t)
+        let to_ocaml_boolean ?comment  (e : t) =
+          (match e.expression_desc with
+           | Int_of_boolean _|Number _ -> e
+           | _ -> { comment; expression_desc = (Int_of_boolean e) } : 
+          t)[@@ocaml.doc
+              " Convert a javascript boolean to ocaml boolean\n    It's necessary for return value\n     this should be optmized away for [if] ,[cond] to produce \n    more readable code\n"]
+        let true_ = int ~comment:"true" 1
+        let false_ = int ~comment:"false" 0
+        let bool v = if v then true_ else false_
+        let rec triple_equal ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Str (_,x),Str (_,y)) -> bool (Ext_string.equal x y)
+           | (Char_to_int a,Char_to_int b) -> triple_equal ?comment a b
+           | (Char_to_int a,Number (Int { i; c = Some v }))
+             |(Number (Int { i; c = Some v }),Char_to_int a) ->
+               triple_equal ?comment a (str (String.make 1 v))
+           | (Number (Int { i = i0;_}),Number (Int { i = i1;_})) ->
+               bool (i0 = i1)
+           | (Char_of_int a,Char_of_int b) -> triple_equal ?comment a b
+           | _ ->
+               to_ocaml_boolean
+                 { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+          t)
+        let bin ?comment  (op : J.binop) e0 e1 =
+          (match op with
+           | EqEqEq  -> triple_equal ?comment e0 e1
+           | _ -> { expression_desc = (Bin (op, e0, e1)); comment } : 
+          t)
+        let rec and_ ?comment  (e1 : t) (e2 : t) =
+          match ((e1.expression_desc), (e2.expression_desc)) with
+          | ((Bin
+              (NotEqEq
+               ,e1,{
+                     expression_desc = Var (Id
+                       ({ name = "undefined";_} as id))
+                     })|Bin
+              (NotEqEq
+               ,{ expression_desc = Var (Id ({ name = "undefined";_} as id))
+                  },e1)),_)
+              when Ext_ident.is_js id -> and_ e1 e2
+          | (Int_of_boolean e1,Int_of_boolean e2) -> and_ ?comment e1 e2
+          | (Int_of_boolean e1,_) -> and_ ?comment e1 e2
+          | (_,Int_of_boolean e2) -> and_ ?comment e1 e2
+          | (Var i,Var j) when Js_op_util.same_vident i j ->
+              to_ocaml_boolean e1
+          | (Var
+             i,(Bin (And ,{ expression_desc = Var j;_},_)|Bin
+                (And ,_,{ expression_desc = Var j;_})))
+              when Js_op_util.same_vident i j -> to_ocaml_boolean e2
+          | (_,_) -> to_ocaml_boolean @@ (bin ?comment And e1 e2)
+        let rec or_ ?comment  (e1 : t) (e2 : t) =
+          match ((e1.expression_desc), (e2.expression_desc)) with
+          | (Int_of_boolean e1,Int_of_boolean e2) -> or_ ?comment e1 e2
+          | (Int_of_boolean e1,_) -> or_ ?comment e1 e2
+          | (_,Int_of_boolean e2) -> or_ ?comment e1 e2
+          | (Var i,Var j) when Js_op_util.same_vident i j ->
+              to_ocaml_boolean e1
+          | (Var
+             i,(Bin (Or ,{ expression_desc = Var j;_},_)|Bin
+                (Or ,_,{ expression_desc = Var j;_})))
+              when Js_op_util.same_vident i j -> to_ocaml_boolean e2
+          | (_,_) -> to_ocaml_boolean @@ (bin ?comment Or e1 e2)
+        let rec not (({ expression_desc; comment } as e) : t) =
+          (match expression_desc with
+           | Bin (EqEqEq ,e0,e1) ->
+               { expression_desc = (Bin (NotEqEq, e0, e1)); comment }
+           | Bin (NotEqEq ,e0,e1) ->
+               { expression_desc = (Bin (EqEqEq, e0, e1)); comment }
+           | Bin (Lt ,a,b) -> { e with expression_desc = (Bin (Ge, a, b)) }
+           | Bin (Ge ,a,b) -> { e with expression_desc = (Bin (Lt, a, b)) }
+           | Bin (Le ,a,b) -> { e with expression_desc = (Bin (Gt, a, b)) }
+           | Bin (Gt ,a,b) -> { e with expression_desc = (Bin (Le, a, b)) }
+           | Number (Int { i;_}) -> if i != 0 then false_ else true_
+           | Int_of_boolean e -> not e
+           | Not e -> e
+           | x -> { expression_desc = (Not e); comment = None } : t)
+        let rec econd ?comment  (b : t) (t : t) (f : t) =
+          (match ((b.expression_desc), (t.expression_desc),
+                   (f.expression_desc))
+           with
+           | (Number (Int { i = 0;_}),_,_) -> f
+           | ((Number _|Array _),_,_) -> t
+           | (Bin (Bor ,v,{ expression_desc = Number (Int { i = 0;_}) }),_,_)
+               -> econd v t f
+           | (Bin
+              (NotEqEq
+               ,e1,{
+                     expression_desc = Var (Id
+                       ({ name = "undefined";_} as id))
+                     }),_,_)
+               when Ext_ident.is_js id -> econd e1 t f
+           | ((Bin (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},x)
+               |Bin
+               (EqEqEq ,x,{ expression_desc = Number (Int { i = 0;_});_})),_,_)
+               -> econd ?comment x f t
+           | (Bin
+              (Ge
+               ,{ expression_desc = Length _;_},{
+                                                  expression_desc = Number
+                                                    (Int { i = 0;_})
+                                                  }),_,_)
+               -> f
+           | (Bin
+              (Gt
+               ,({ expression_desc = Length _;_} as pred),{
+                                                            expression_desc =
+                                                              Number (Int
+                                                              { i = 0 })
+                                                            }),_,_)
+               -> econd ?comment pred t f
+           | (_,Cond (p1,branch_code0,branch_code1),_) when
+               Js_analyzer.eq_expression branch_code1 f ->
+               econd (and_ b p1) branch_code0 f
+           | (_,Cond (p1,branch_code0,branch_code1),_) when
+               Js_analyzer.eq_expression branch_code0 f ->
+               econd (and_ b (not p1)) branch_code1 f
+           | (_,_,Cond (p1',branch_code0,branch_code1)) when
+               Js_analyzer.eq_expression t branch_code0 ->
+               econd (or_ b p1') t branch_code1
+           | (_,_,Cond (p1',branch_code0,branch_code1)) when
+               Js_analyzer.eq_expression t branch_code1 ->
+               econd (or_ b (not p1')) t branch_code0
+           | (Not e,_,_) -> econd ?comment e f t
+           | (Int_of_boolean b,_,_) -> econd ?comment b t f
+           | _ ->
+               if Js_analyzer.eq_expression t f
+               then (if no_side_effect b then t else seq ?comment b t)
+               else { expression_desc = (Cond (b, t, f)); comment } : 
+          t)
+        let rec float_equal ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Number (Int { i = i0;_}),Number (Int { i = i1 })) ->
+               bool (i0 = i1)
+           | ((Bin
+               (Bor
+                ,{ expression_desc = Number (Int { i = 0;_}) },({
+                                                                  expression_desc
+                                                                    =
+                                                                    Caml_block_tag
+                                                                    _;_}
+                                                                  as a))|Bin
+               (Bor
+                ,({ expression_desc = Caml_block_tag _;_} as a),{
+                                                                  expression_desc
+                                                                    = Number
+                                                                    (Int
+                                                                    {
+                                                                    i = 0;_})
+                                                                  })),Number
+              (Int { i = 0;_})) -> not a
+           | ((Bin
+               (Bor
+                ,{ expression_desc = Number (Int { i = 0;_}) },({
+                                                                  expression_desc
+                                                                    =
+                                                                    Caml_block_tag
+                                                                    _;_}
+                                                                  as a))|Bin
+               (Bor
+                ,({ expression_desc = Caml_block_tag _;_} as a),{
+                                                                  expression_desc
+                                                                    = Number
+                                                                    (Int
+                                                                    {
+                                                                    i = 0;_})
+                                                                  })),Number
+              _) -> float_equal ?comment a e1
+           | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
+               f0 = f1 -> true_
+           | (Char_to_int a,Char_to_int b) -> float_equal ?comment a b
+           | (Char_to_int a,Number (Int { i; c = Some v }))
+             |(Number (Int { i; c = Some v }),Char_to_int a) ->
+               float_equal ?comment a (str (String.make 1 v))
+           | (Char_of_int a,Char_of_int b) -> float_equal ?comment a b
+           | _ ->
+               to_ocaml_boolean
+                 { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+          t)
+        let int_equal = float_equal
+        let rec string_equal ?comment  (e0 : t) (e1 : t) =
+          (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Str (_,a0),Str (_,b0)) -> bool (Ext_string.equal a0 b0)
+           | (_,_) ->
+               to_ocaml_boolean
+                 { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
+          t)
+        let arr ?comment  mt es =
+          ({ expression_desc = (Array (es, mt)); comment } : t)
+        let make_block ?comment  tag tag_info es mutable_flag =
+          ({
+             expression_desc = (Caml_block (es, mutable_flag, tag, tag_info));
+             comment =
+               (match comment with
+                | None  -> Lam_compile_util.comment_of_tag_info tag_info
+                | _ -> comment)
+           } : t)
+        let uninitialized_object ?comment  tag size =
+          ({ expression_desc = (Caml_uninitialized_obj (tag, size)); comment
+           } : t)
+        let uninitialized_array ?comment  (e : t) =
+          (match e.expression_desc with
+           | Number (Int { i = 0;_}) -> arr ?comment NA []
+           | _ -> { comment; expression_desc = (Array_of_size e) } : 
+          t)
+        let typeof ?comment  (e : t) =
+          (match e.expression_desc with
+           | Number _|Length _ -> str ?comment "number"
+           | Str _ -> str ?comment "string"
+           | Array _ -> str ?comment "object"
+           | _ -> { expression_desc = (Typeof e); comment } : t)
+        let is_type_number ?comment  (e : t) =
+          (string_equal ?comment (typeof e) (str "number") : t)
+        let new_ ?comment  e0 args =
+          ({ expression_desc = (New (e0, (Some args))); comment } : t)
+        let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
+          (str ~pure:false ~comment (Lam_util.string_of_lambda lam) : 
+          t)[@@ocaml.doc " cannot use [boolean] in js   "]
+        let unit () = int ~comment:"()" 0
+        let math ?comment  v args =
+          ({ comment; expression_desc = (Math (v, args)) } : t)
+        let inc ?comment  (e : t) =
+          match e with
+          | { expression_desc = Number (Int ({ i;_} as v));_} ->
+              {
+                e with
+                expression_desc = (Number (Int { v with i = (i + 1) }))
+              }
+          | _ -> bin ?comment Plus e (int 1)
+        let string_of_small_int_array ?comment  xs =
+          ({ expression_desc = (String_of_small_int_array xs); comment } : 
+          t)
+        let dec ?comment  (e : t) =
+          match e with
+          | { expression_desc = Number (Int ({ i;_} as v));_} ->
+              {
+                e with
+                expression_desc = (Number (Int { v with i = (i - 1) }))
+              }
+          | _ -> bin ?comment Minus e (int 1)
+        let null ?comment  () = js_global ?comment "null"
+        let tag ?comment  e =
+          ({
+             expression_desc =
+               (Bin
+                  (Bor, { expression_desc = (Caml_block_tag e); comment },
+                    (int 0)));
+             comment = None
+           } : t)
+        let public_method_call meth_name obj label cache args =
+          let len = List.length args in
+          econd (int_equal (tag obj) (int 248))
+            (if len <= 7
+             then
+               runtime_call Js_config.curry
+                 ("js" ^ (string_of_int (len + 1))) (label :: (int cache) ::
+                 obj :: args)
+             else
+               runtime_call Js_config.curry "js"
+                 [label; int cache; obj; arr NA (obj :: args)])
+            (if len <= 8
+             then
+               let len_str = string_of_int len in
+               runtime_call Js_config.curry ("app" ^ len_str)
+                 ((dot obj meth_name) :: args)
+             else
+               runtime_call Js_config.curry "app"
+                 [dot obj meth_name; arr NA args])
+        let set_tag ?comment  e tag =
+          (seq { expression_desc = (Caml_block_set_tag (e, tag)); comment }
+             (unit ()) : t)
+        let set_length ?comment  e tag =
+          (seq
+             { expression_desc = (Caml_block_set_length (e, tag)); comment }
+             (unit ()) : t)
+        let obj_length ?comment  e =
+          ({ expression_desc = (Length (e, Caml_block)); comment } : 
+          t)
+        let rec to_int32 ?comment  (e : J.expression) =
+          (let expression_desc = e.expression_desc in
+           match expression_desc with
+           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 });_}) ->
+               to_int32 ?comment a
+           | _ ->
+               {
+                 comment;
+                 expression_desc =
+                   (Bin (Bor, { comment = None; expression_desc }, (int 0)))
+               } : J.expression)
+        let rec to_uint32 ?comment  (e : J.expression) =
+          ({ comment; expression_desc = (Bin (Lsr, e, (int 0))) } : J.expression)
+        let string_comp cmp ?comment  e0 e1 =
+          to_ocaml_boolean @@ (bin ?comment cmp e0 e1)
+        let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t)
+          (e1 : t) =
+          match (cmp, (e0.expression_desc), (e1.expression_desc)) with
+          | (_,Call
+             ({
+                expression_desc = Var (Qualified
+                  (_,Runtime ,Some ("caml_int_compare"|"caml_int32_compare")));_},l::r::[],_),Number
+             (Int { i = 0 })) -> int_comp cmp l r
+          | (Ceq ,_,_) -> int_equal e0 e1
+          | _ ->
+              to_ocaml_boolean @@
+                (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
+        let float_comp cmp ?comment  e0 e1 =
+          to_ocaml_boolean @@
+            (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
+        let is_out ?comment  (e : t) (range : t) =
+          (match ((range.expression_desc), (e.expression_desc)) with
+           | (Number (Int { i = 1 }),Var _) ->
+               not (or_ (triple_equal e (int 0)) (triple_equal e (int 1)))
+           | (Number (Int
+              { i = 1 }),(Bin
+                          (Plus
+                           ,{ expression_desc = Number (Int { i;_}) },
+                           { expression_desc = Var _;_})|Bin
+                          (Plus
+                           ,{ expression_desc = Var _;_},{
+                                                           expression_desc =
+                                                             Number (Int
+                                                             { i;_})
+                                                           })))
+               ->
+               not
+                 (or_ (triple_equal e (int (- i)))
+                    (triple_equal e (int (1 - i))))
+           | (Number (Int { i = 1 }),Bin
+              (Minus
+               ,({ expression_desc = Var _;_} as x),{
+                                                      expression_desc =
+                                                        Number (Int { i;_})
+                                                      }))
+               ->
+               not
+                 (or_ (triple_equal x (int (i + 1))) (triple_equal x (int i)))
+           | (Number (Int { i = k }),Bin
+              (Minus
+               ,({ expression_desc = Var _;_} as x),{
+                                                      expression_desc =
+                                                        Number (Int { i;_})
+                                                      }))
+               -> or_ (int_comp Cgt x (int (i + k))) (int_comp Clt x (int i))
+           | (Number (Int { i = k }),Var _) ->
+               or_ (int_comp Cgt e (int k)) (int_comp Clt e (int 0))
+           | (_,_) -> int_comp ?comment Cgt (to_uint32 e) range : t)
+        let rec float_add ?comment  (e1 : t) (e2 : t) =
+          match ((e1.expression_desc), (e2.expression_desc)) with
+          | (Number (Int { i;_}),Number (Int { i = j;_})) ->
+              int ?comment (i + j)
+          | (_,Number (Int { i = j; c })) when j < 0 ->
+              float_minus ?comment e1
+                { e2 with expression_desc = (Number (Int { i = (- j); c })) }
+          | (Bin
+             (Plus ,a1,{ expression_desc = Number (Int { i = k;_}) }),Number
+             (Int { i = j;_})) -> bin ?comment Plus a1 (int (k + j))
+          | _ -> bin ?comment Plus e1 e2
+        and float_minus ?comment  (e1 : t) (e2 : t) =
+          (match ((e1.expression_desc), (e2.expression_desc)) with
+           | (Number (Int { i;_}),Number (Int { i = j;_})) ->
+               int ?comment (i - j)
+           | _ -> bin ?comment Minus e1 e2 : t)
+        let int32_add ?comment  e1 e2 = float_add ?comment e1 e2
+        let int32_minus ?comment  e1 e2 =
+          (float_minus ?comment e1 e2 : J.expression)
+        let prefix_inc ?comment  (i : J.vident) =
+          let v: t = { expression_desc = (Var i); comment = None } in
+          assign ?comment v (int32_add v (int 1))
+        let prefix_dec ?comment  i =
+          let v: t = { expression_desc = (Var i); comment = None } in
+          assign ?comment v (int32_minus v (int 1))
+        let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
+        let float_div ?comment  e1 e2 = bin ?comment Div e1 e2
+        let float_notequal ?comment  e1 e2 = bin ?comment NotEqEq e1 e2
+        let int32_div ?comment  e1 e2 =
+          (to_int32 (float_div ?comment e1 e2) : J.expression)
+        let int32_mul ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
+        let int32_mod ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
+        let int32_lsl ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Lsl, e1, e2)) } : J.expression)
+        let int32_lsr ?comment  (e1 : J.expression) (e2 : J.expression) =
+          (match ((e1.expression_desc), (e2.expression_desc)) with
+           | (Number (Int { i = i1 }),Number (Int { i = i2 })) ->
+               int @@
+                 (Int32.to_int
+                    (Int32.shift_right_logical (Int32.of_int i1) i2))
+           | (_,Number (Int { i = i2 })) ->
+               if i2 = 0
+               then e1
+               else { comment; expression_desc = (Bin (Lsr, e1, e2)) }
+           | (_,_) ->
+               to_int32 { comment; expression_desc = (Bin (Lsr, e1, e2)) } : 
+          J.expression)
+        let int32_asr ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Asr, e1, e2)) } : J.expression)
+        let int32_bxor ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Bxor, e1, e2)) } : J.expression)
+        let rec int32_band ?comment  (e1 : J.expression) (e2 : J.expression)
+          =
+          (match e1.expression_desc with
+           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 }) }) ->
+               int32_band a e2
+           | _ -> { comment; expression_desc = (Bin (Band, e1, e2)) } : 
+          J.expression)
+        let int32_bor ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Bor, e1, e2)) } : J.expression)
+        let of_block ?comment  block e =
+          (call ~info:{ arity = Full }
+             {
+               comment;
+               expression_desc =
+                 (Fun
+                    ([],
+                      (block @
+                         [{
+                            J.statement_desc = (Return { return_value = e });
+                            comment
+                          }]), (Js_fun_env.empty 0)))
+             } [] : t)
+      end 
+    module Js_stmt_make :
+      sig
+        [@@@ocaml.text " Creator utilities for the [J] module "]
+        type t = J.statement
+        val mk : ?comment:string -> J.statement_desc -> t
+        val empty : ?comment:string -> unit -> t
+        val throw : ?comment:string -> J.expression -> t
+        val if_ :
+          ?comment:string ->
+            ?declaration:(Lambda.let_kind* Ident.t) ->
+              ?else_:J.block -> J.expression -> J.block -> t
+        val block : ?comment:string -> J.block -> t
+        val int_switch :
+          ?comment:string ->
+            ?declaration:(Lambda.let_kind* Ident.t) ->
+              ?default:J.block -> J.expression -> int J.case_clause list -> t
+        val string_switch :
+          ?comment:string ->
+            ?declaration:(Lambda.let_kind* Ident.t) ->
+              ?default:J.block ->
+                J.expression -> string J.case_clause list -> t
+        val declare_variable :
+          ?comment:string ->
+            ?ident_info:J.ident_info -> kind:Lambda.let_kind -> Ident.t -> t
+        val define :
+          ?comment:string ->
+            ?ident_info:J.ident_info ->
+              kind:Lambda.let_kind -> Ident.t -> J.expression -> t
+        val alias_variable :
+          ?comment:string -> ?exp:J.expression -> Ident.t -> t
+        val assign : ?comment:string -> J.ident -> J.expression -> t
+        val assign_unit : ?comment:string -> J.ident -> t
+        val declare_unit : ?comment:string -> J.ident -> t
+        val while_ :
+          ?comment:string ->
+            ?label:J.label ->
+              ?env:Js_closure.t -> J.expression -> J.block -> t
+        val for_ :
+          ?comment:string ->
+            ?env:Js_closure.t ->
+              J.for_ident_expression option ->
+                J.finish_ident_expression ->
+                  J.for_ident -> J.for_direction -> J.block -> t
+        val try_ :
+          ?comment:string ->
+            ?with_:(J.ident* J.block) -> ?finally:J.block -> J.block -> t
+        val exp : ?comment:string -> J.expression -> t
+        val return : ?comment:string -> J.expression -> t
+        val unknown_lambda : ?comment:string -> Lambda.lambda -> t
+        val return_unit : ?comment:string -> unit -> t[@@ocaml.doc
+                                                        " for ocaml function which returns unit \n    it will be compiled into [return 0] in js "]
+        val break : ?comment:string -> unit -> t
+        val continue : ?comment:string -> ?label:J.label -> unit -> t
+        [@@ocaml.doc " if [label] is not set, it will default to empty "]
+      end =
+      struct
+        module E = Js_exp_make
+        type t = J.statement
+        let return ?comment  e =
+          ({ statement_desc = (Return { return_value = e }); comment } : 
+          t)
+        let return_unit ?comment  () = (return ?comment (E.unit ()) : t)
+        let break ?comment  () = ({ comment; statement_desc = Break } : t)
+        let mk ?comment  statement_desc = ({ statement_desc; comment } : t)
+        let empty ?comment  () =
+          ({ statement_desc = (Block []); comment } : t)
+        let throw ?comment  v =
+          ({ statement_desc = (J.Throw v); comment } : t)
+        let rec block ?comment  (b : J.block) =
+          (match b with
+           | { statement_desc = Block bs }::[] -> block bs
+           | b::[] -> b
+           | [] -> empty ?comment ()
+           | _ -> { statement_desc = (Block b); comment } : t)
+        let rec exp ?comment  (e : E.t) =
+          (match e.expression_desc with
+           | Seq ({ expression_desc = Number _ },b)|Seq
+             (b,{ expression_desc = Number _ }) -> exp ?comment b
+           | Number _ -> block []
+           | _ -> { statement_desc = (Exp e); comment } : t)
+        let declare_variable ?comment  ?ident_info  ~kind  (v : Ident.t) =
+          (let property: J.property = kind in
+           let ident_info: J.ident_info =
+             match ident_info with
+             | None  -> { used_stats = NA }
+             | Some x -> x in
+           {
+             statement_desc =
+               (Variable { ident = v; value = None; property; ident_info });
+             comment
+           } : t)
+        let define ?comment  ?ident_info  ~kind  (v : Ident.t) exp =
+          (let property: J.property = kind in
+           let ident_info: J.ident_info =
+             match ident_info with
+             | None  -> { used_stats = NA }
+             | Some x -> x in
+           {
+             statement_desc =
+               (Variable
+                  { ident = v; value = (Some exp); property; ident_info });
+             comment
+           } : t)
+        let int_switch ?comment  ?declaration  ?default  (e : J.expression)
+          clauses =
+          (match e.expression_desc with
+           | Number (Int { i;_}) ->
+               let continuation =
+                 match List.find (fun (x : int J.case_clause)  -> x.case = i)
+                         clauses
+                 with
+                 | case -> fst case.body
+                 | exception Not_found  ->
+                     (match default with
+                      | Some x -> x
+                      | None  -> assert false) in
+               (match (declaration, continuation) with
+                | (Some
+                   (kind,did),{
+                                statement_desc = Exp
+                                  {
+                                    expression_desc = Bin
+                                      (Eq
+                                       ,{ expression_desc = Var (Id id);_},e0);_};_}::[])
+                    when Ident.same did id -> define ?comment ~kind id e0
+                | (Some (kind,did),_) ->
+                    block ((declare_variable ?comment ~kind did) ::
+                      continuation)
+                | (None ,_) -> block continuation)
+           | _ ->
+               (match declaration with
+                | Some (kind,did) ->
+                    block
+                      [declare_variable ?comment ~kind did;
+                      {
+                        statement_desc = (J.Int_switch (e, clauses, default));
+                        comment
+                      }]
+                | None  ->
+                    {
+                      statement_desc = (J.Int_switch (e, clauses, default));
+                      comment
+                    }) : t)
+        let string_switch ?comment  ?declaration  ?default 
+          (e : J.expression) clauses =
+          (match e.expression_desc with
+           | Str (_,s) ->
+               let continuation =
+                 match List.find
+                         (fun (x : string J.case_clause)  -> x.case = s)
+                         clauses
+                 with
+                 | case -> fst case.body
+                 | exception Not_found  ->
+                     (match default with
+                      | Some x -> x
+                      | None  -> assert false) in
+               (match (declaration, continuation) with
+                | (Some
+                   (kind,did),{
+                                statement_desc = Exp
+                                  {
+                                    expression_desc = Bin
+                                      (Eq
+                                       ,{ expression_desc = Var (Id id);_},e0);_};_}::[])
+                    when Ident.same did id -> define ?comment ~kind id e0
+                | (Some (kind,did),_) ->
+                    block @@ ((declare_variable ?comment ~kind did) ::
+                      continuation)
+                | (None ,_) -> block continuation)
+           | _ ->
+               (match declaration with
+                | Some (kind,did) ->
+                    block
+                      [declare_variable ?comment ~kind did;
+                      {
+                        statement_desc =
+                          (String_switch (e, clauses, default));
+                        comment
+                      }]
+                | None  ->
+                    {
+                      statement_desc = (String_switch (e, clauses, default));
+                      comment
+                    }) : t)
+        let rec if_ ?comment  ?declaration  ?else_  (e : J.expression)
+          (then_ : J.block) =
+          (let declared = ref false in
+           let rec aux ?comment  (e : J.expression) (then_ : J.block)
+             (else_ : J.block) acc =
+             match ((e.expression_desc), then_, (else_ : J.block)) with
+             | (_,{ statement_desc = Return { return_value = b;_};_}::[],
+                { statement_desc = Return { return_value = a;_};_}::[]) ->
+                 (return (E.econd e b a)) :: acc
+             | (_,{
+                    statement_desc = Exp
+                      {
+                        expression_desc = Bin
+                          (Eq
+                           ,({ expression_desc = Var (Id id0);_} as l0),a0);_};_}::[],
+                {
+                  statement_desc = Exp
+                    {
+                      expression_desc = Bin
+                        (Eq ,{ expression_desc = Var (Id id1);_},b0);_};_}::[])
+                 when Ident.same id0 id1 ->
+                 (match declaration with
+                  | Some (kind,did) when Ident.same did id0 ->
+                      (declared := true;
+                       (define ~kind id0 (E.econd e a0 b0))
+                       ::
+                       acc)
+                  | _ -> (exp (E.assign l0 (E.econd e a0 b0))) :: acc)
+             | (_,_,{ statement_desc = Exp { expression_desc = Number _ };_}::[])
+                 -> aux ?comment e then_ [] acc
+             | (_,{ statement_desc = Exp { expression_desc = Number _ };_}::[],_)
+                 -> aux ?comment e [] else_ acc
+             | (_,{ statement_desc = Exp b;_}::[],{ statement_desc = Exp a;_}::[])
+                 -> (exp (E.econd e b a)) :: acc
+             | (_,[],[]) -> (exp e) :: acc
+             | (Not e,_,_::_) -> aux ?comment e else_ then_ acc
+             | (_,[],_) -> aux ?comment (E.not e) else_ [] acc
+             | (_,y::ys,x::xs) when
+                 let open Js_analyzer in
+                   (eq_statement x y) && (no_side_effect_expression e)
+                 -> aux ?comment e ys xs (y :: acc)
+             | (Number (Int { i = 0;_}),_,_) ->
+                 (match else_ with | [] -> acc | _ -> (block else_) :: acc)
+             | (Number _,_,_)
+               |(Bin
+                 (Ge
+                  ,{ expression_desc = Length _;_},{
+                                                     expression_desc = Number
+                                                       (Int { i = 0;_})
+                                                     }),_,_)
+                 -> (block then_) :: acc
+             | (Bin
+                (Bor ,a,{ expression_desc = Number (Int { i = 0;_}) }),_,_)
+               |(Bin
+                 (Bor ,{ expression_desc = Number (Int { i = 0;_}) },a),_,_)
+                 -> aux ?comment a then_ else_ acc
+             | ((Bin
+                 (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},e)
+                 |Bin
+                 (EqEqEq ,e,{ expression_desc = Number (Int { i = 0;_});_})),_,else_)
+                 -> aux ?comment e else_ then_ acc
+             | (Bin
+                (NotEqEq
+                 ,e1,{
+                       expression_desc = Var (Id
+                         ({ name = "undefined";_} as id))
+                       }),_,_)
+                 when Ext_ident.is_js id -> aux ?comment e1 then_ else_ acc
+             | ((Bin
+                 (Gt
+                  ,({ expression_desc = Length _;_} as e),{
+                                                            expression_desc =
+                                                              Number (Int
+                                                              { i = 0;_})
+                                                            })|Int_of_boolean
+                 e),_,_) -> aux ?comment e then_ else_ acc
+             | _ ->
+                 {
+                   statement_desc =
+                     (If
+                        (e, then_,
+                          ((match else_ with | [] -> None | v -> Some v))));
+                   comment
+                 } :: acc in
+           let if_block =
+             aux ?comment e then_
+               (match else_ with | None  -> [] | Some v -> v) [] in
+           match ((!declared), declaration) with
+           | (true ,_)|(_,None ) -> block (List.rev if_block)
+           | (false ,Some (kind,did)) ->
+               block ((declare_variable ~kind did) :: (List.rev if_block)) : 
+          t)
+        let alias_variable ?comment  ?exp  (v : Ident.t) =
+          ({
+             statement_desc =
+               (Variable
+                  {
+                    ident = v;
+                    value = exp;
+                    property = Alias;
+                    ident_info = { used_stats = NA }
+                  });
+             comment
+           } : t)
+        let assign ?comment  id e =
+          ({ statement_desc = (J.Exp (E.bin Eq (E.var id) e)); comment } : 
+          t)
+        let assign_unit ?comment  id =
+          ({
+             statement_desc = (J.Exp (E.bin Eq (E.var id) (E.unit ())));
+             comment
+           } : t)
+        let declare_unit ?comment  id =
+          ({
+             statement_desc =
+               (J.Variable
+                  {
+                    ident = id;
+                    value = (Some (E.unit ()));
+                    property = Variable;
+                    ident_info = { used_stats = NA }
+                  });
+             comment
+           } : t)
+        let rec while_ ?comment  ?label  ?env  (e : E.t) (st : J.block) =
+          (match e with
+           | { expression_desc = Int_of_boolean e;_} ->
+               while_ ?comment ?label e st
+           | _ ->
+               let env =
+                 match env with | None  -> Js_closure.empty () | Some x -> x in
+               { statement_desc = (While (label, e, st, env)); comment } : 
+          t)
+        let for_ ?comment  ?env  for_ident_expression finish_ident_expression
+          id direction (b : J.block) =
+          (let env =
+             match env with | None  -> Js_closure.empty () | Some x -> x in
+           {
+             statement_desc =
+               (ForRange
+                  (for_ident_expression, finish_ident_expression, id,
+                    direction, b, env));
+             comment
+           } : t)
+        let try_ ?comment  ?with_  ?finally  body =
+          ({ statement_desc = (Try (body, with_, finally)); comment } : 
+          t)
+        let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
+          (exp @@
+             (E.str ~comment ~pure:false (Lam_util.string_of_lambda lam)) : 
+          t)
+        let continue ?comment  ?(label= "")  unit =
+          ({ statement_desc = (J.Continue label); comment } : t)
+      end 
     module Lam_compile_defs :
       sig
         [@@@ocaml.text
@@ -2486,1306 +3929,6 @@ include
                      order_id, ((order_id, lam) :: handlers)))
               (m, (HandlerMap.cardinal m), []) code_table in
           (map, (List.rev handlers))
-      end 
-    module Lam_compile_util :
-      sig
-        [@@@ocaml.text " Some utilities for lambda compilation"]
-        val jsop_of_comp : Lambda.comparison -> Js_op.binop
-        val comment_of_tag_info : Lambda.tag_info -> string option
-        val comment_of_pointer_info : Lambda.pointer_info -> string option
-      end =
-      struct
-        let jsop_of_comp (cmp : Lambda.comparison) =
-          (match cmp with
-           | Ceq  -> EqEqEq
-           | Cneq  -> NotEqEq
-           | Clt  -> Lt
-           | Cgt  -> Gt
-           | Cle  -> Le
-           | Cge  -> Ge : Js_op.binop)
-        let comment_of_tag_info (x : Lambda.tag_info) =
-          match x with
-          | Constructor n -> Some n
-          | Tuple  -> Some "tuple"
-          | Variant x -> Some ("`" ^ x)
-          | Record  -> Some "record"
-          | Array  -> Some "array"
-          | NA  -> None
-        let comment_of_pointer_info (x : Lambda.pointer_info) =
-          match x with
-          | NullConstructor x -> Some x
-          | NullVariant x -> Some x
-          | NAPointer  -> None
-      end 
-    module Js_op_util :
-      sig
-        [@@@ocaml.text " Some basic utilties around {!Js_op} module "]
-        val op_prec : Js_op.binop -> (int* int* int)
-        val op_str : Js_op.binop -> string
-        val op_int_prec : Js_op.int_op -> (int* int* int)
-        val op_int_str : Js_op.int_op -> string
-        val str_of_used_stats : Js_op.used_stats -> string
-        val update_used_stats : J.ident_info -> Js_op.used_stats -> unit
-        val same_vident : J.vident -> J.vident -> bool
-      end =
-      struct
-        let op_prec (op : Js_op.binop) =
-          match op with
-          | Eq  -> (1, 13, 1)
-          | Or  -> (3, 3, 3)
-          | And  -> (4, 4, 4)
-          | EqEqEq |NotEqEq  -> (8, 8, 9)
-          | Gt |Ge |Lt |Le  -> (9, 9, 10)
-          | Bor  -> (5, 5, 5)
-          | Bxor  -> (6, 6, 6)
-          | Band  -> (7, 7, 7)
-          | Lsl |Lsr |Asr  -> (10, 10, 11)
-          | Plus |Minus  -> (11, 11, 12)
-          | Mul |Div |Mod  -> (12, 12, 13)
-        let op_int_prec (op : Js_op.int_op) =
-          match op with
-          | Bor  -> (5, 5, 5)
-          | Bxor  -> (6, 6, 6)
-          | Band  -> (7, 7, 7)
-          | Lsl |Lsr |Asr  -> (10, 10, 11)
-          | Plus |Minus  -> (11, 11, 12)
-          | Mul |Div |Mod  -> (12, 12, 13)
-        let op_str (op : Js_op.binop) =
-          match op with
-          | Bor  -> "|"
-          | Bxor  -> "^"
-          | Band  -> "&"
-          | Lsl  -> "<<"
-          | Lsr  -> ">>>"
-          | Asr  -> ">>"
-          | Plus  -> "+"
-          | Minus  -> "-"
-          | Mul  -> "*"
-          | Div  -> "/"
-          | Mod  -> "%"
-          | Eq  -> "="
-          | Or  -> "||"
-          | And  -> "&&"
-          | EqEqEq  -> "==="
-          | NotEqEq  -> "!=="
-          | Lt  -> "<"
-          | Le  -> "<="
-          | Gt  -> ">"
-          | Ge  -> ">="
-        let op_int_str (op : Js_op.int_op) =
-          match op with
-          | Bor  -> "|"
-          | Bxor  -> "^"
-          | Band  -> "&"
-          | Lsl  -> "<<"
-          | Lsr  -> ">>>"
-          | Asr  -> ">>"
-          | Plus  -> "+"
-          | Minus  -> "-"
-          | Mul  -> "*"
-          | Div  -> "/"
-          | Mod  -> "%"
-        let str_of_used_stats x =
-          match (x : Js_op.used_stats) with
-          | Js_op.Dead_pure  -> "Dead_pure"
-          | Dead_non_pure  -> "Dead_non_pure"
-          | Exported  -> "Exported"
-          | Once_pure  -> "Once_pure"
-          | Used  -> "Used"
-          | Scanning_pure  -> "Scanning_pure"
-          | Scanning_non_pure  -> "Scanning_non_pure"
-          | NA  -> "NA"
-        let update_used_stats (ident_info : J.ident_info) used_stats =
-          match ident_info.used_stats with
-          | Dead_pure |Dead_non_pure |Exported  -> ()
-          | Scanning_pure |Scanning_non_pure |Used |Once_pure |NA  ->
-              ident_info.used_stats <- used_stats
-        let same_kind (x : Js_op.kind) (y : Js_op.kind) =
-          match (x, y) with
-          | (Ml ,Ml )|(Runtime ,Runtime ) -> true
-          | (External (u : string),External v) -> u = v
-          | (_,_) -> false
-        let same_str_opt (x : string option) (y : string option) =
-          match (x, y) with
-          | (None ,None ) -> true
-          | (Some x0,Some y0) -> x0 = y0
-          | (None ,Some _)|(Some _,None ) -> false
-        let same_vident (x : J.vident) (y : J.vident) =
-          match (x, y) with
-          | (Id x0,Id y0) -> Ident.same x0 y0
-          | (Qualified (x0,k0,str_opt0),Qualified (y0,k1,str_opt1)) ->
-              (Ident.same x0 y0) &&
-                ((same_kind k0 k1) && (same_str_opt str_opt0 str_opt1))
-          | (Id _,Qualified _)|(Qualified _,Id _) -> false
-      end 
-    module Js_analyzer :
-      sig
-        [@@@ocaml.text " Analyzing utilities for [J] module "]
-        [@@@ocaml.text " for example, whether it has side effect or not.\n "]
-        val free_variables_of_statement :
-          Ident_set.t -> Ident_set.t -> J.statement -> Ident_set.t
-        val free_variables_of_expression :
-          Ident_set.t ->
-            Ident_set.t -> J.finish_ident_expression -> Ident_set.t
-        val no_side_effect_expression : J.expression -> bool[@@ocaml.doc
-                                                              " [no_side_effect] means this expression has no side effect, \n    but it might *depend on value store*, so you can not just move it around,\n\n    for example,\n    when you want to do a deep copy, the expression passed to you is pure\n    but you still have to call the function to make a copy, \n    since it maybe changed later\n "]
-        val no_side_effect_statement : J.statement -> bool[@@ocaml.doc
-                                                            " \n    here we say \n    {[ var x = no_side_effect_expression ]}\n    is [no side effect], but it is actually side effect, \n    since  we are defining a variable, however, if it is not exported or used, \n    then it's fine, so we delay this check later\n "]
-        val eq_expression : J.expression -> J.expression -> bool
-        val eq_statement : J.statement -> J.statement -> bool
-        val rev_flatten_seq : J.expression -> J.block
-        val rev_toplevel_flatten : J.block -> J.block[@@ocaml.doc
-                                                       " return the block in reverse order "]
-      end =
-      struct
-        let free_variables used_idents defined_idents =
-          object (self)
-            inherit  Js_fold.fold as super
-            val defined_idents = defined_idents
-            val used_idents = used_idents
-            method! variable_declaration st =
-              match st with
-              | { ident; value = None  } ->
-                  {<defined_idents = Ident_set.add ident defined_idents>}
-              | { ident; value = Some v } ->
-                  ({<defined_idents = Ident_set.add ident defined_idents>})#expression
-                    v
-            method! ident id =
-              if Ident_set.mem id defined_idents
-              then self
-              else {<used_idents = Ident_set.add id used_idents>}
-            method! expression exp =
-              match exp.expression_desc with
-              | Fun (_,_,env) ->
-                  {<used_idents =
-                      Ident_set.union (Js_fun_env.get_bound env) used_idents>}
-              | _ -> super#expression exp
-            method get_depenencies =
-              Ident_set.diff used_idents defined_idents
-            method get_used_idents = used_idents
-            method get_defined_idents = defined_idents
-          end
-        let free_variables_of_statement used_idents defined_idents st =
-          ((free_variables used_idents defined_idents)#statement st)#get_depenencies
-        let free_variables_of_expression used_idents defined_idents st =
-          ((free_variables used_idents defined_idents)#expression st)#get_depenencies
-        let rec no_side_effect (x : J.expression) =
-          match x.expression_desc with
-          | Var _ -> true
-          | Access (a,b) -> (no_side_effect a) && (no_side_effect b)
-          | Str (b,_) -> b
-          | Fun _ -> true
-          | Number _ -> true
-          | Array (xs,_mutable_flag) -> List.for_all no_side_effect xs
-          | Seq (a,b) -> (no_side_effect a) && (no_side_effect b)
-          | _ -> false
-        let no_side_effect_expression (x : J.expression) = no_side_effect x
-        let no_side_effect init =
-          object (self)
-            inherit  Js_fold.fold as super
-            val no_side_effect = init
-            method get_no_side_effect = no_side_effect
-            method! statement s =
-              if not no_side_effect
-              then self
-              else
-                (match s.statement_desc with
-                 | Throw _ -> {<no_side_effect = false>}
-                 | _ -> super#statement s)
-            method! list f x =
-              if not self#get_no_side_effect then self else super#list f x
-            method! expression s =
-              if not no_side_effect
-              then self
-              else {<no_side_effect = no_side_effect_expression s>}
-            [@@@ocaml.text " only expression would cause side effec "]
-          end
-        let no_side_effect_statement st =
-          ((no_side_effect true)#statement st)#get_no_side_effect
-        let rec eq_expression (x : J.expression) (y : J.expression) =
-          match ((x.expression_desc), (y.expression_desc)) with
-          | (Number (Int i),Number (Int j)) -> i = j
-          | (Number (Float i),Number (Float j)) -> false
-          | (Math (name00,args00),Math (name10,args10)) ->
-              (name00 = name10) && (eq_expression_list args00 args10)
-          | (Access (a0,a1),Access (b0,b1)) ->
-              (eq_expression a0 b0) && (eq_expression a1 b1)
-          | (Call (a0,args00,_),Call (b0,args10,_)) ->
-              (eq_expression a0 b0) && (eq_expression_list args00 args10)
-          | (Var (Id i),Var (Id j)) -> Ident.same i j
-          | (Bin (op0,a0,b0),Bin (op1,a1,b1)) ->
-              (op0 = op1) && ((eq_expression a0 a1) && (eq_expression b0 b1))
-          | (_,_) -> false
-        and eq_expression_list xs ys =
-          let rec aux xs ys =
-            match (xs, ys) with
-            | ([],[]) -> true
-            | ([],_) -> false
-            | (_,[]) -> false
-            | (x::xs,y::ys) -> (eq_expression x y) && (aux xs ys) in
-          aux xs ys
-        and eq_statement (x : J.statement) (y : J.statement) =
-          match ((x.statement_desc), (y.statement_desc)) with
-          | (Exp a,Exp b)
-            |(Return { return_value = a;_},Return { return_value = b;_}) ->
-              eq_expression a b
-          | (_,_) -> false
-        let rev_flatten_seq (x : J.expression) =
-          let rec aux acc (x : J.expression) =
-            (match x.expression_desc with
-             | Seq (a,b) -> aux (aux acc a) b
-             | _ -> { statement_desc = (Exp x); comment = None } :: acc : 
-            J.block) in
-          aux [] x
-        let rev_toplevel_flatten block =
-          let rec aux acc (xs : J.block) =
-            (match xs with
-             | [] -> acc
-             | {
-                 statement_desc = Variable
-                   ({ ident_info = { used_stats = Dead_pure  };_}
-                    |{ ident_info = { used_stats = Dead_non_pure  };
-                       value = None  })
-                 }::xs -> aux acc xs
-             | { statement_desc = Block b;_}::xs -> aux (aux acc b) xs
-             | x::xs -> aux (x :: acc) xs : J.block) in
-          aux [] block
-      end 
-    module Js_helper :
-      sig
-        [@@@ocaml.text " Creator utilities for the [J] module "]
-        val no_side_effect : J.expression -> bool
-        val is_constant : J.expression -> bool[@@ocaml.doc
-                                                " check if a javascript ast is constant \n    \n    The better signature might be \n    {[\n    J.expresssion -> Js_output.t\n    ]}\n    for exmaple\n    {[\n    e ?print_int(3) :  0\n    --->\n    if(e){print_int(3)}\n    ]}\n"]
-        val extract_non_pure : J.expression -> J.expression option
-        type binary_op =
-          ?comment:string -> J.expression -> J.expression -> J.expression
-        type unary_op = ?comment:string -> J.expression -> J.expression
-        module Exp :
-        sig
-          type t = J.expression
-          val mk : ?comment:string -> J.expression_desc -> t
-          val access : binary_op
-          val string_access : binary_op
-          val var : ?comment:string -> J.ident -> t
-          val runtime_var_dot : ?comment:string -> string -> string -> t
-          val runtime_var_vid : string -> string -> J.vident
-          val ml_var_dot : ?comment:string -> Ident.t -> string -> t
-          val external_var_dot :
-            ?comment:string -> Ident.t -> string -> string -> t
-          val ml_var : ?comment:string -> Ident.t -> t
-          val runtime_call : string -> string -> t list -> t
-          val runtime_ref : string -> string -> t
-          val str : ?pure:bool -> ?comment:string -> string -> t
-          val fun_ :
-            ?comment:string ->
-              ?immutable_mask:bool array -> J.ident list -> J.block -> t
-          val econd : ?comment:string -> t -> t -> t -> t
-          val int : ?comment:string -> ?c:char -> int -> t
-          val float : ?comment:string -> string -> t
-          val zero_float_lit : t[@@ocaml.doc
-                                  " [is_out e range] is equivalent to [e > range or e <0]\n      \n  "]
-          val is_out : binary_op[@@ocaml.doc
-                                  " [is_out e range] is equivalent to [e > range or e <0]\n      \n  "]
-          val dot : ?comment:string -> t -> string -> t
-          val array_length : unary_op
-          val string_length : unary_op
-          val string_of_small_int_array : unary_op
-          val bytes_length : unary_op
-          val function_length : unary_op
-          val char_of_int : unary_op
-          val char_to_int : unary_op
-          val array_append : binary_op
-          val array_copy : unary_op
-          val string_append : binary_op[@@ocaml.doc
-                                         "\n     When in ES6 mode, we can use Symbol to guarantee its uniquess,\n     we can not tag [js] object, since it can be frozen \n   "]
-          val tag_ml_obj : unary_op
-          val var_dot : ?comment:string -> Ident.t -> string -> t
-          val js_global_dot : ?comment:string -> string -> string -> t
-          val index : ?comment:string -> t -> int -> t
-          val assign : binary_op
-          val triple_equal : binary_op
-          val float_equal : binary_op
-          val int_equal : binary_op
-          val string_equal : binary_op
-          val is_type_number : unary_op
-          val typeof : unary_op
-          val to_int32 : unary_op
-          val to_uint32 : unary_op
-          val int32_add : binary_op
-          val int32_minus : binary_op
-          val int32_mul : binary_op
-          val int32_div : binary_op
-          val int32_lsl : binary_op
-          val int32_lsr : binary_op
-          val int32_asr : binary_op
-          val int32_mod : binary_op
-          val int32_bxor : binary_op
-          val int32_band : binary_op
-          val int32_bor : binary_op
-          val float_add : binary_op
-          val float_minus : binary_op
-          val float_mul : binary_op
-          val float_div : binary_op
-          val float_notequal : binary_op
-          val float_mod : binary_op
-          val int_comp : Lambda.comparison -> binary_op
-          val string_comp : Js_op.binop -> binary_op
-          val float_comp : Lambda.comparison -> binary_op
-          val not : t -> t
-          val call :
-            ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
-          val flat_call : binary_op
-          val dump : ?comment:string -> Js_op.level -> t list -> t
-          val anything_to_string : unary_op
-          val int_to_string : unary_op
-          val to_json_string : unary_op
-          val new_ :
-            ?comment:string -> J.expression -> J.expression list -> t
-          val arr :
-            ?comment:string -> J.mutable_flag -> J.expression list -> t
-          val uninitialized_array : unary_op
-          val seq : binary_op
-          val obj : ?comment:string -> J.property_map -> t
-          val true_ : t
-          val false_ : t
-          val bool : bool -> t
-          val unknown_lambda : ?comment:string -> Lambda.lambda -> t
-          val unit : unit -> t[@@ocaml.doc
-                                " [unit] in ocaml will be compiled into [0]  in js "]
-          val js_var : ?comment:string -> string -> t
-          val js_global : ?comment:string -> string -> t
-          val undefined : ?comment:string -> unit -> t
-          val math : ?comment:string -> string -> t list -> t[@@ocaml.doc
-                                                               " [math \"abs\"] --> Math[\"abs\"] "]
-          val inc : unary_op
-          val dec : unary_op
-          val prefix_inc : ?comment:string -> J.vident -> t
-          val prefix_dec : ?comment:string -> J.vident -> t
-          val null : ?comment:string -> unit -> t
-          val tag : ?comment:string -> J.expression -> t
-          val to_ocaml_boolean : unary_op
-          val and_ : binary_op
-          val or_ : binary_op
-          val of_block :
-            ?comment:string -> J.statement list -> J.expression -> t[@@ocaml.doc
-                                                                    " convert a block to expresion by using IIFE "]
-        end
-        module Stmt :
-        sig
-          type t = J.statement
-          val mk : ?comment:string -> J.statement_desc -> t
-          val empty : ?comment:string -> unit -> t
-          val throw : ?comment:string -> J.expression -> t
-          val if_ :
-            ?comment:string ->
-              ?declaration:(Lambda.let_kind* Ident.t) ->
-                ?else_:J.block -> J.expression -> J.block -> t
-          val block : ?comment:string -> J.block -> t
-          val int_switch :
-            ?comment:string ->
-              ?declaration:(Lambda.let_kind* Ident.t) ->
-                ?default:J.block ->
-                  J.expression -> int J.case_clause list -> t
-          val string_switch :
-            ?comment:string ->
-              ?declaration:(Lambda.let_kind* Ident.t) ->
-                ?default:J.block ->
-                  J.expression -> string J.case_clause list -> t
-          val declare_variable :
-            ?comment:string ->
-              ?ident_info:J.ident_info ->
-                kind:Lambda.let_kind -> Ident.t -> t
-          val define :
-            ?comment:string ->
-              ?ident_info:J.ident_info ->
-                kind:Lambda.let_kind -> Ident.t -> J.expression -> t
-          val alias_variable :
-            ?comment:string -> ?exp:J.expression -> Ident.t -> t
-          val assign : ?comment:string -> J.ident -> J.expression -> t
-          val assign_unit : ?comment:string -> J.ident -> t
-          val declare_unit : ?comment:string -> J.ident -> t
-          val while_ :
-            ?comment:string ->
-              ?label:J.label -> ?env:Js_closure.t -> Exp.t -> J.block -> t
-          val for_ :
-            ?comment:string ->
-              ?env:Js_closure.t ->
-                J.for_ident_expression option ->
-                  J.finish_ident_expression ->
-                    J.for_ident -> J.for_direction -> J.block -> t
-          val try_ :
-            ?comment:string ->
-              ?with_:(J.ident* J.block) -> ?finally:J.block -> J.block -> t
-          val exp : ?comment:string -> J.expression -> t
-          val return : ?comment:string -> J.expression -> t
-          val unknown_lambda : ?comment:string -> Lambda.lambda -> t
-          val return_unit : ?comment:string -> unit -> t[@@ocaml.doc
-                                                          " for ocaml function which returns unit \n      it will be compiled into [return 0] in js "]
-          val break : ?comment:string -> unit -> t
-          val continue : ?comment:string -> ?label:J.label -> unit -> t
-          [@@ocaml.doc " if [label] is not set, it will default to empty "]
-        end
-      end =
-      struct
-        let no_side_effect = Js_analyzer.no_side_effect_expression
-        type binary_op =
-          ?comment:string -> J.expression -> J.expression -> J.expression
-        type unary_op = ?comment:string -> J.expression -> J.expression
-        let rec extract_non_pure (x : J.expression) =
-          match x.expression_desc with
-          | Var _|Str _|Number _ -> None
-          | Access (a,b) ->
-              (match ((extract_non_pure a), (extract_non_pure b)) with
-               | (None ,None ) -> None
-               | (_,_) -> Some x)
-          | Array (xs,_mutable_flag) ->
-              if List.for_all (fun x  -> (extract_non_pure x) = None) xs
-              then None
-              else Some x
-          | Seq (a,b) ->
-              (match ((extract_non_pure a), (extract_non_pure b)) with
-               | (None ,None ) -> None
-               | (Some u,Some v) ->
-                   Some { x with expression_desc = (Seq (u, v)) }
-               | (None ,(Some _ as v)) -> v
-               | ((Some _ as u),None ) -> u)
-          | _ -> Some x
-        let rec is_constant (x : J.expression) =
-          match x.expression_desc with
-          | Access (a,b) -> (is_constant a) && (is_constant b)
-          | Str (b,_) -> b
-          | Number _ -> true
-          | Array (xs,_mutable_flag) -> List.for_all is_constant xs
-          | _ -> false
-        module Exp =
-          struct
-            type t = J.expression
-            let mk ?comment  exp = ({ expression_desc = exp; comment } : t)
-            let var ?comment  id =
-              ({ expression_desc = (Var (Id id)); comment } : t)
-            let runtime_var_dot ?comment  (x : string) (e1 : string) =
-              ({
-                 expression_desc =
-                   (Var
-                      (Qualified
-                         ((Ext_ident.create_js x), Runtime, (Some e1))));
-                 comment
-               } : J.expression)
-            let runtime_var_vid x e1 =
-              (Qualified ((Ext_ident.create_js x), Runtime, (Some e1)) : 
-              J.vident)
-            let ml_var_dot ?comment  (id : Ident.t) e =
-              ({
-                 expression_desc = (Var (Qualified (id, Ml, (Some e))));
-                 comment
-               } : J.expression)
-            let external_var_dot ?comment  (id : Ident.t) name fn =
-              ({
-                 expression_desc =
-                   (Var (Qualified (id, (External name), (Some fn))));
-                 comment
-               } : t)
-            let ml_var ?comment  (id : Ident.t) =
-              ({ expression_desc = (Var (Qualified (id, Ml, None))); comment
-               } : t)
-            let str ?(pure= true)  ?comment  s =
-              ({ expression_desc = (Str (pure, s)); comment } : t)
-            let anything_to_string ?comment  (e : t) =
-              (match e.expression_desc with
-               | Str _ -> e
-               | _ -> { expression_desc = (Anything_to_string e); comment } : 
-              t)
-            let int_to_string ?comment  (e : t) =
-              (anything_to_string ?comment e : t)
-            let fun_ ?comment  ?immutable_mask  params block =
-              (let len = List.length params in
-               {
-                 expression_desc =
-                   (Fun
-                      (params, block, (Js_fun_env.empty ?immutable_mask len)));
-                 comment
-               } : t)
-            let rec seq ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | ((Seq (a,{ expression_desc = Number _ })|Seq
-                   ({ expression_desc = Number _ },a)),_) ->
-                   seq ?comment a e1
-               | (_,Seq ({ expression_desc = Number _ },a)) ->
-                   seq ?comment e0 a
-               | (_,Seq (a,({ expression_desc = Number _ } as v))) ->
-                   seq ?comment (seq e0 a) v
-               | _ -> { expression_desc = (Seq (e0, e1)); comment } : 
-              t)
-            let int ?comment  ?c  i =
-              ({ expression_desc = (Number (Int { i; c })); comment } : 
-              t)
-            let access ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Array (l,_mutable_flag),Number (Int { i;_})) when
-                   no_side_effect e0 -> List.nth l i
-               | _ -> { expression_desc = (Access (e0, e1)); comment } : 
-              t)
-            let string_access ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Str (_,s),Number (Int { i;_})) when
-                   (i >= 0) && (i < (String.length s)) ->
-                   str (String.make 1 (s.[i]))
-               | _ -> { expression_desc = (String_access (e0, e1)); comment } : 
-              t)
-            let index ?comment  (e0 : t) (e1 : int) =
-              (match e0.expression_desc with
-               | Array (l,_mutable_flag) when no_side_effect e0 ->
-                   List.nth l e1
-               | _ -> { expression_desc = (Access (e0, (int e1))); comment } : 
-              t)
-            let call ?comment  ?info  e0 args =
-              (let info =
-                 match info with | None  -> Js_call_info.dummy | Some x -> x in
-               { expression_desc = (Call (e0, args, info)); comment } : 
-              t)
-            let flat_call ?comment  e0 es =
-              ({ expression_desc = (FlatCall (e0, es)); comment } : t)
-            let runtime_call module_name fn_name args =
-              call ~info:{ arity = Full }
-                (runtime_var_dot module_name fn_name) args
-            let runtime_ref module_name fn_name =
-              runtime_var_dot module_name fn_name
-            let js_var ?comment  (v : string) =
-              var ?comment (Ext_ident.create_js v)
-            let js_global ?comment  (v : string) =
-              var ?comment (Ext_ident.create_js v)
-            let dot ?comment  (e0 : t) (e1 : string) =
-              ({ expression_desc = (Dot (e0, e1, true)); comment } : 
-              t)[@@ocaml.doc
-                  " used in normal property\n      like [e.length], no dependency introduced\n   "]
-            let array_length ?comment  (e : t) =
-              (match e.expression_desc with
-               | Array (l,_) -> int ?comment (List.length l)
-               | _ -> { expression_desc = (Array_length e); comment } : 
-              t)
-            let string_length ?comment  (e : t) =
-              (match e.expression_desc with
-               | Str (_,v) -> int ?comment (String.length v)
-               | _ -> { expression_desc = (String_length e); comment } : 
-              t)
-            let bytes_length ?comment  (e : t) =
-              (match e.expression_desc with
-               | Array (l,_) -> int ?comment (List.length l)
-               | Str (_,v) -> int ?comment (String.length v)
-               | _ -> { expression_desc = (Bytes_length e); comment } : 
-              t)
-            let function_length ?comment  (e : t) =
-              (match e.expression_desc with
-               | Fun (params,_,_) -> int ?comment (List.length params)
-               | _ -> { expression_desc = (Function_length e); comment } : 
-              t)
-            let js_global_dot ?comment  (x : string) (e1 : string) =
-              ({ expression_desc = (Dot ((js_var x), e1, true)); comment } : 
-              t)[@@ocaml.doc " no dependency introduced "]
-            let char_of_int ?comment  (v : t) =
-              (match v.expression_desc with
-               | Number (Int { i;_}) -> str (String.make 1 (Char.chr i))
-               | Char_to_int v -> v
-               | _ -> { comment; expression_desc = (Char_of_int v) } : 
-              t)
-            let char_to_int ?comment  (v : t) =
-              (match v.expression_desc with
-               | Str (_,x) ->
-                   (assert ((String.length x) = 1);
-                    int ~comment:(Printf.sprintf "%S" x) (Char.code (x.[0])))
-               | Char_of_int v -> v
-               | _ -> { comment; expression_desc = (Char_to_int v) } : 
-              t)
-            let array_append ?comment  e el =
-              ({ comment; expression_desc = (Array_append (e, el)) } : 
-              t)
-            let array_copy ?comment  e =
-              ({ comment; expression_desc = (Array_copy e) } : t)
-            let dump ?comment  level el =
-              ({ comment; expression_desc = (Dump (level, el)) } : t)
-            let to_json_string ?comment  e =
-              ({ comment; expression_desc = (Json_stringify e) } : t)
-            let rec string_append ?comment  (e : t) (el : t) =
-              (match ((e.expression_desc), (el.expression_desc)) with
-               | (Str (_,a),String_append
-                  ({ expression_desc = Str (_,b) },c)) ->
-                   string_append ?comment (str (a ^ b)) c
-               | (String_append (c,{ expression_desc = Str (_,b) }),Str
-                  (_,a)) -> string_append ?comment c (str (b ^ a))
-               | (String_append
-                  (a,{ expression_desc = Str (_,b) }),String_append
-                  ({ expression_desc = Str (_,c) },d)) ->
-                   string_append ?comment (string_append a (str (b ^ c))) d
-               | (Str (_,a),Str (_,b)) -> str ?comment (a ^ b)
-               | (_,Anything_to_string b) -> string_append ?comment e b
-               | (Anything_to_string b,_) -> string_append ?comment b el
-               | (_,_) ->
-                   { comment; expression_desc = (String_append (e, el)) } : 
-              t)
-            let float_mod ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
-            let obj ?comment  properties =
-              ({ expression_desc = (Object properties); comment } : t)
-            let tag_ml_obj ?comment  e =
-              ({ comment; expression_desc = (Tag_ml_obj e) } : t)
-            let var_dot ?comment  (x : Ident.t) (e1 : string) =
-              ({ expression_desc = (Dot ((var x), e1, true)); comment } : 
-              t)
-            let float ?comment  f =
-              ({ expression_desc = (Number (Float { f })); comment } : 
-              t)
-            let zero_float_lit: t =
-              {
-                expression_desc = (Number (Float { f = "0." }));
-                comment = None
-              }
-            let assign ?comment  e0 e1 =
-              ({ expression_desc = (Bin (Eq, e0, e1)); comment } : t)
-            let to_ocaml_boolean ?comment  (e : t) =
-              (match e.expression_desc with
-               | Int_of_boolean _|Number _ -> e
-               | _ -> { comment; expression_desc = (Int_of_boolean e) } : 
-              t)[@@ocaml.doc
-                  " Convert a javascript boolean to ocaml boolean\n      It's necessary for return value\n       this should be optmized away for [if] ,[cond] to produce \n      more readable code\n   "]
-            let true_ = int ~comment:"true" 1
-            let false_ = int ~comment:"false" 0
-            let bool v = if v then true_ else false_
-            let rec triple_equal ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Str (_,x),Str (_,y)) -> bool (Ext_string.equal x y)
-               | (Char_to_int a,Char_to_int b) -> triple_equal ?comment a b
-               | (Char_to_int a,Number (Int { i; c = Some v }))
-                 |(Number (Int { i; c = Some v }),Char_to_int a) ->
-                   triple_equal ?comment a (str (String.make 1 v))
-               | (Number (Int { i = i0;_}),Number (Int { i = i1;_})) ->
-                   bool (i0 = i1)
-               | (Char_of_int a,Char_of_int b) -> triple_equal ?comment a b
-               | _ ->
-                   to_ocaml_boolean
-                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
-              t)
-            let bin ?comment  (op : J.binop) e0 e1 =
-              (match op with
-               | EqEqEq  -> triple_equal ?comment e0 e1
-               | _ -> { expression_desc = (Bin (op, e0, e1)); comment } : 
-              t)
-            let rec and_ ?comment  (e1 : t) (e2 : t) =
-              match ((e1.expression_desc), (e2.expression_desc)) with
-              | (Int_of_boolean e1,Int_of_boolean e2) -> and_ ?comment e1 e2
-              | (Int_of_boolean e1,_) -> and_ ?comment e1 e2
-              | (_,Int_of_boolean e2) -> and_ ?comment e1 e2
-              | (Var i,Var j) when Js_op_util.same_vident i j ->
-                  to_ocaml_boolean e1
-              | (Var
-                 i,(Bin (And ,{ expression_desc = Var j;_},_)|Bin
-                    (And ,_,{ expression_desc = Var j;_})))
-                  when Js_op_util.same_vident i j -> to_ocaml_boolean e2
-              | (_,_) -> to_ocaml_boolean @@ (bin ?comment And e1 e2)
-            let rec or_ ?comment  (e1 : t) (e2 : t) =
-              match ((e1.expression_desc), (e2.expression_desc)) with
-              | (Int_of_boolean e1,Int_of_boolean e2) -> or_ ?comment e1 e2
-              | (Int_of_boolean e1,_) -> or_ ?comment e1 e2
-              | (_,Int_of_boolean e2) -> or_ ?comment e1 e2
-              | (Var i,Var j) when Js_op_util.same_vident i j ->
-                  to_ocaml_boolean e1
-              | (Var
-                 i,(Bin (Or ,{ expression_desc = Var j;_},_)|Bin
-                    (Or ,_,{ expression_desc = Var j;_})))
-                  when Js_op_util.same_vident i j -> to_ocaml_boolean e2
-              | (_,_) -> to_ocaml_boolean @@ (bin ?comment Or e1 e2)
-            let rec not (({ expression_desc; comment } as e) : t) =
-              (match expression_desc with
-               | Bin (EqEqEq ,e0,e1) ->
-                   { expression_desc = (Bin (NotEqEq, e0, e1)); comment }
-               | Bin (NotEqEq ,e0,e1) ->
-                   { expression_desc = (Bin (EqEqEq, e0, e1)); comment }
-               | Bin (Lt ,a,b) ->
-                   { e with expression_desc = (Bin (Ge, a, b)) }
-               | Bin (Ge ,a,b) ->
-                   { e with expression_desc = (Bin (Lt, a, b)) }
-               | Bin (Le ,a,b) ->
-                   { e with expression_desc = (Bin (Gt, a, b)) }
-               | Bin (Gt ,a,b) ->
-                   { e with expression_desc = (Bin (Le, a, b)) }
-               | Number (Int { i;_}) -> if i != 0 then false_ else true_
-               | Int_of_boolean e -> not e
-               | Not e -> e
-               | x -> { expression_desc = (Not e); comment = None } : 
-              t)
-            let rec econd ?comment  (b : t) (t : t) (f : t) =
-              (match ((b.expression_desc), (t.expression_desc),
-                       (f.expression_desc))
-               with
-               | (Number (Int { i = 0;_}),_,_) -> f
-               | ((Number _|Array _),_,_) -> t
-               | ((Bin
-                   (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},x)
-                   |Bin
-                   (EqEqEq ,x,{ expression_desc = Number (Int { i = 0;_});_})),_,_)
-                   -> econd ?comment x f t
-               | (Bin
-                  (Ge
-                   ,{
-                      expression_desc =
-                        (String_length _|Array_length _|Bytes_length _
-                         |Function_length _);_},{
-                                                  expression_desc = Number
-                                                    (Int { i = 0;_})
-                                                  }),_,_)
-                   -> f
-               | (Bin
-                  (Gt
-                   ,({
-                       expression_desc =
-                         (String_length _|Array_length _|Bytes_length _
-                          |Function_length _);_}
-                       as pred),{ expression_desc = Number (Int { i = 0 }) }),_,_)
-                   -> econd ?comment pred t f
-               | (_,Cond (p1,branch_code0,branch_code1),_) when
-                   Js_analyzer.eq_expression branch_code1 f ->
-                   econd (and_ b p1) branch_code0 f
-               | (_,Cond (p1,branch_code0,branch_code1),_) when
-                   Js_analyzer.eq_expression branch_code0 f ->
-                   econd (and_ b (not p1)) branch_code1 f
-               | (_,_,Cond (p1',branch_code0,branch_code1)) when
-                   Js_analyzer.eq_expression t branch_code0 ->
-                   econd (or_ b p1') t branch_code1
-               | (_,_,Cond (p1',branch_code0,branch_code1)) when
-                   Js_analyzer.eq_expression t branch_code1 ->
-                   econd (or_ b (not p1')) t branch_code0
-               | (Not e,_,_) -> econd ?comment e f t
-               | (Int_of_boolean b,_,_) -> econd ?comment b t f
-               | _ ->
-                   if Js_analyzer.eq_expression t f
-                   then (if no_side_effect b then t else seq ?comment b t)
-                   else { expression_desc = (Cond (b, t, f)); comment } : 
-              t)
-            let rec float_equal ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Number (Int { i = i0;_}),Number (Int { i = i1 })) ->
-                   bool (i0 = i1)
-               | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
-                   f0 = f1 -> true_
-               | _ ->
-                   to_ocaml_boolean
-                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
-              t)
-            let int_equal = float_equal
-            let rec string_equal ?comment  (e0 : t) (e1 : t) =
-              (match ((e0.expression_desc), (e1.expression_desc)) with
-               | (Str (_,a0),Str (_,b0)) -> bool (Ext_string.equal a0 b0)
-               | (_,_) ->
-                   to_ocaml_boolean
-                     { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
-              t)
-            let arr ?comment  mt es =
-              ({ expression_desc = (Array (es, mt)); comment } : t)
-            let uninitialized_array ?comment  (e : t) =
-              (match e.expression_desc with
-               | Number (Int { i = 0;_}) -> arr ?comment NA []
-               | _ -> { comment; expression_desc = (Array_of_size e) } : 
-              t)
-            let typeof ?comment  (e : t) =
-              (match e.expression_desc with
-               | Number _|Array_length _|String_length _ ->
-                   str ?comment "number"
-               | Str _ -> str ?comment "string"
-               | Array _ -> str ?comment "object"
-               | _ -> { expression_desc = (Typeof e); comment } : t)
-            let is_type_number ?comment  (e : t) =
-              (string_equal ?comment (typeof e) (str "number") : t)
-            let new_ ?comment  e0 args =
-              ({ expression_desc = (New (e0, (Some args))); comment } : 
-              t)
-            let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
-              (str ~pure:false ~comment (Lam_util.string_of_lambda lam) : 
-              t)[@@ocaml.doc " cannot use [boolean] in js   "]
-            let unit () = int ~comment:"()" 0
-            let undefined ?comment  () = js_global ?comment "undefined"
-            let math ?comment  v args =
-              ({ comment; expression_desc = (Math (v, args)) } : t)
-            let inc ?comment  (e : t) =
-              match e with
-              | { expression_desc = Number (Int ({ i;_} as v));_} ->
-                  {
-                    e with
-                    expression_desc = (Number (Int { v with i = (i + 1) }))
-                  }
-              | _ -> bin ?comment Plus e (int 1)
-            let string_of_small_int_array ?comment  xs =
-              ({ expression_desc = (String_of_small_int_array xs); comment } : 
-              t)
-            let dec ?comment  (e : t) =
-              match e with
-              | { expression_desc = Number (Int ({ i;_} as v));_} ->
-                  {
-                    e with
-                    expression_desc = (Number (Int { v with i = (i - 1) }))
-                  }
-              | _ -> bin ?comment Minus e (int 1)
-            let null ?comment  () = js_global ?comment "null"
-            let tag ?comment  e = index ?comment e 0
-            let rec to_int32 ?comment  (e : J.expression) =
-              (let expression_desc = e.expression_desc in
-               match expression_desc with
-               | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 });_})
-                   -> to_int32 ?comment a
-               | _ ->
-                   {
-                     comment;
-                     expression_desc =
-                       (Bin
-                          (Bor, { comment = None; expression_desc }, (int 0)))
-                   } : J.expression)
-            let rec to_uint32 ?comment  (e : J.expression) =
-              ({ comment; expression_desc = (Bin (Lsr, e, (int 0))) } : 
-              J.expression)
-            let string_comp cmp ?comment  e0 e1 =
-              to_ocaml_boolean @@ (bin ?comment cmp e0 e1)
-            let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t)
-              (e1 : t) =
-              match (cmp, (e0.expression_desc), (e1.expression_desc)) with
-              | (_,Call
-                 ({
-                    expression_desc = Var (Qualified
-                      (_,Runtime ,Some
-                       ("caml_int_compare"|"caml_int32_compare")));_},l::r::[],_),Number
-                 (Int { i = 0 })) -> int_comp cmp l r
-              | _ ->
-                  to_ocaml_boolean @@
-                    (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
-            let float_comp cmp ?comment  e0 e1 =
-              to_ocaml_boolean @@
-                (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
-            let is_out ?comment  (e : t) (range : t) =
-              (match ((range.expression_desc), (e.expression_desc)) with
-               | (Number (Int { i = 1 }),Var _) ->
-                   not
-                     (or_ (triple_equal e (int 0)) (triple_equal e (int 1)))
-               | (Number (Int
-                  { i = 1 }),(Bin
-                              (Plus
-                               ,{ expression_desc = Number (Int { i;_}) },
-                               { expression_desc = Var _;_})|Bin
-                              (Plus
-                               ,{ expression_desc = Var _;_},{
-                                                               expression_desc
-                                                                 = Number
-                                                                 (Int 
-                                                                 { i;_})
-                                                               })))
-                   ->
-                   not
-                     (or_ (triple_equal e (int (- i)))
-                        (triple_equal e (int (1 - i))))
-               | (Number (Int { i = 1 }),Bin
-                  (Minus
-                   ,({ expression_desc = Var _;_} as x),{
-                                                          expression_desc =
-                                                            Number (Int
-                                                            { i;_})
-                                                          }))
-                   ->
-                   not
-                     (or_ (triple_equal x (int (i + 1)))
-                        (triple_equal x (int i)))
-               | (Number (Int { i = k }),Bin
-                  (Minus
-                   ,({ expression_desc = Var _;_} as x),{
-                                                          expression_desc =
-                                                            Number (Int
-                                                            { i;_})
-                                                          }))
-                   ->
-                   or_ (int_comp Cgt x (int (i + k)))
-                     (int_comp Clt x (int i))
-               | (Number (Int { i = k }),Var _) ->
-                   or_ (int_comp Cgt e (int k)) (int_comp Clt e (int 0))
-               | (_,_) -> int_comp ?comment Cgt (to_uint32 e) range : 
-              t)
-            let rec float_add ?comment  (e1 : t) (e2 : t) =
-              match ((e1.expression_desc), (e2.expression_desc)) with
-              | (Number (Int { i;_}),Number (Int { i = j;_})) ->
-                  int ?comment (i + j)
-              | (_,Number (Int { i = j; c })) when j < 0 ->
-                  float_minus ?comment e1
-                    {
-                      e2 with
-                      expression_desc = (Number (Int { i = (- j); c }))
-                    }
-              | (Bin
-                 (Plus ,a1,{ expression_desc = Number (Int { i = k;_}) }),Number
-                 (Int { i = j;_})) -> bin ?comment Plus a1 (int (k + j))
-              | _ -> bin ?comment Plus e1 e2
-            and float_minus ?comment  (e1 : t) (e2 : t) =
-              (match ((e1.expression_desc), (e2.expression_desc)) with
-               | (Number (Int { i;_}),Number (Int { i = j;_})) ->
-                   int ?comment (i - j)
-               | _ -> bin ?comment Minus e1 e2 : t)
-            let int32_add ?comment  e1 e2 = float_add ?comment e1 e2
-            let int32_minus ?comment  e1 e2 =
-              (float_minus ?comment e1 e2 : J.expression)
-            let prefix_inc ?comment  (i : J.vident) =
-              let v: t = { expression_desc = (Var i); comment = None } in
-              assign ?comment v (int32_add v (int 1))
-            let prefix_dec ?comment  i =
-              let v: t = { expression_desc = (Var i); comment = None } in
-              assign ?comment v (int32_minus v (int 1))
-            let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
-            let float_div ?comment  e1 e2 = bin ?comment Div e1 e2
-            let float_notequal ?comment  e1 e2 = bin ?comment NotEqEq e1 e2
-            let int32_div ?comment  e1 e2 =
-              (to_int32 (float_div ?comment e1 e2) : J.expression)
-            let int32_mul ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
-            let int32_mod ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
-            let int32_lsl ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Lsl, e1, e2)) } : J.expression)
-            let int32_lsr ?comment  (e1 : J.expression) (e2 : J.expression) =
-              (match ((e1.expression_desc), (e2.expression_desc)) with
-               | (Number (Int { i = i1 }),Number (Int { i = i2 })) ->
-                   int @@
-                     (Int32.to_int
-                        (Int32.shift_right_logical (Int32.of_int i1) i2))
-               | (_,Number (Int { i = i2 })) ->
-                   if i2 = 0
-                   then e1
-                   else { comment; expression_desc = (Bin (Lsr, e1, e2)) }
-               | (_,_) ->
-                   to_int32
-                     { comment; expression_desc = (Bin (Lsr, e1, e2)) } : 
-              J.expression)
-            let int32_asr ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Asr, e1, e2)) } : J.expression)
-            let int32_bxor ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Bxor, e1, e2)) } : 
-              J.expression)
-            let rec int32_band ?comment  (e1 : J.expression)
-              (e2 : J.expression) =
-              (match e1.expression_desc with
-               | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 }) }) ->
-                   int32_band a e2
-               | _ -> { comment; expression_desc = (Bin (Band, e1, e2)) } : 
-              J.expression)
-            let int32_bor ?comment  e1 e2 =
-              ({ comment; expression_desc = (Bin (Bor, e1, e2)) } : J.expression)
-            let of_block ?comment  block e =
-              (call ~info:{ arity = Full }
-                 {
-                   comment;
-                   expression_desc =
-                     (Fun
-                        ([],
-                          (block @
-                             [{
-                                J.statement_desc =
-                                  (Return { return_value = e });
-                                comment
-                              }]), (Js_fun_env.empty 0)))
-                 } [] : t)
-          end
-        module Stmt =
-          struct
-            type t = J.statement
-            let return ?comment  e =
-              ({ statement_desc = (Return { return_value = e }); comment } : 
-              t)
-            let return_unit ?comment  () =
-              (return ?comment (Exp.unit ()) : t)
-            let break ?comment  () =
-              ({ comment; statement_desc = Break } : t)
-            let mk ?comment  statement_desc =
-              ({ statement_desc; comment } : t)
-            let empty ?comment  () =
-              ({ statement_desc = (Block []); comment } : t)
-            let throw ?comment  v =
-              ({ statement_desc = (J.Throw v); comment } : t)
-            let rec block ?comment  (b : J.block) =
-              (match b with
-               | { statement_desc = Block bs }::[] -> block bs
-               | b::[] -> b
-               | [] -> empty ?comment ()
-               | _ -> { statement_desc = (Block b); comment } : t)
-            let rec exp ?comment  (e : Exp.t) =
-              (match e.expression_desc with
-               | Seq ({ expression_desc = Number _ },b)|Seq
-                 (b,{ expression_desc = Number _ }) -> exp ?comment b
-               | Number _ -> block []
-               | _ -> { statement_desc = (Exp e); comment } : t)
-            let declare_variable ?comment  ?ident_info  ~kind  (v : Ident.t)
-              =
-              (let property: J.property = kind in
-               let ident_info: J.ident_info =
-                 match ident_info with
-                 | None  -> { used_stats = NA }
-                 | Some x -> x in
-               {
-                 statement_desc =
-                   (Variable
-                      { ident = v; value = None; property; ident_info });
-                 comment
-               } : t)
-            let define ?comment  ?ident_info  ~kind  (v : Ident.t) exp =
-              (let property: J.property = kind in
-               let ident_info: J.ident_info =
-                 match ident_info with
-                 | None  -> { used_stats = NA }
-                 | Some x -> x in
-               {
-                 statement_desc =
-                   (Variable
-                      { ident = v; value = (Some exp); property; ident_info });
-                 comment
-               } : t)
-            let int_switch ?comment  ?declaration  ?default 
-              (e : J.expression) clauses =
-              (match e.expression_desc with
-               | Number (Int { i;_}) ->
-                   let continuation =
-                     match List.find
-                             (fun (x : int J.case_clause)  -> x.case = i)
-                             clauses
-                     with
-                     | case -> fst case.body
-                     | exception Not_found  ->
-                         (match default with
-                          | Some x -> x
-                          | None  -> assert false) in
-                   (match (declaration, continuation) with
-                    | (Some
-                       (kind,did),{
-                                    statement_desc = Exp
-                                      {
-                                        expression_desc = Bin
-                                          (Eq
-                                           ,{
-                                              expression_desc = Var (Id id);_},e0);_};_}::[])
-                        when Ident.same did id -> define ?comment ~kind id e0
-                    | (Some (kind,did),_) ->
-                        block ((declare_variable ?comment ~kind did) ::
-                          continuation)
-                    | (None ,_) -> block continuation)
-               | _ ->
-                   (match declaration with
-                    | Some (kind,did) ->
-                        block
-                          [declare_variable ?comment ~kind did;
-                          {
-                            statement_desc =
-                              (J.Int_switch (e, clauses, default));
-                            comment
-                          }]
-                    | None  ->
-                        {
-                          statement_desc =
-                            (J.Int_switch (e, clauses, default));
-                          comment
-                        }) : t)
-            let string_switch ?comment  ?declaration  ?default 
-              (e : J.expression) clauses =
-              (match e.expression_desc with
-               | Str (_,s) ->
-                   let continuation =
-                     match List.find
-                             (fun (x : string J.case_clause)  -> x.case = s)
-                             clauses
-                     with
-                     | case -> fst case.body
-                     | exception Not_found  ->
-                         (match default with
-                          | Some x -> x
-                          | None  -> assert false) in
-                   (match (declaration, continuation) with
-                    | (Some
-                       (kind,did),{
-                                    statement_desc = Exp
-                                      {
-                                        expression_desc = Bin
-                                          (Eq
-                                           ,{
-                                              expression_desc = Var (Id id);_},e0);_};_}::[])
-                        when Ident.same did id -> define ?comment ~kind id e0
-                    | (Some (kind,did),_) ->
-                        block @@ ((declare_variable ?comment ~kind did) ::
-                          continuation)
-                    | (None ,_) -> block continuation)
-               | _ ->
-                   (match declaration with
-                    | Some (kind,did) ->
-                        block
-                          [declare_variable ?comment ~kind did;
-                          {
-                            statement_desc =
-                              (String_switch (e, clauses, default));
-                            comment
-                          }]
-                    | None  ->
-                        {
-                          statement_desc =
-                            (String_switch (e, clauses, default));
-                          comment
-                        }) : t)
-            let rec if_ ?comment  ?declaration  ?else_  (e : J.expression)
-              (then_ : J.block) =
-              (let declared = ref false in
-               let rec aux ?comment  (e : J.expression) (then_ : J.block)
-                 (else_ : J.block) acc =
-                 match ((e.expression_desc), then_, (else_ : J.block)) with
-                 | (_,{ statement_desc = Return { return_value = b;_};_}::[],
-                    { statement_desc = Return { return_value = a;_};_}::[])
-                     -> (return (Exp.econd e b a)) :: acc
-                 | (_,{
-                        statement_desc = Exp
-                          {
-                            expression_desc = Bin
-                              (Eq
-                               ,({ expression_desc = Var (Id id0);_} as l0),a0);_};_}::[],
-                    {
-                      statement_desc = Exp
-                        {
-                          expression_desc = Bin
-                            (Eq ,{ expression_desc = Var (Id id1);_},b0);_};_}::[])
-                     when Ident.same id0 id1 ->
-                     (match declaration with
-                      | Some (kind,did) when Ident.same did id0 ->
-                          (declared := true;
-                           (define ~kind id0 (Exp.econd e a0 b0))
-                           ::
-                           acc)
-                      | _ -> (exp (Exp.assign l0 (Exp.econd e a0 b0))) :: acc)
-                 | (_,_,{
-                          statement_desc = Exp { expression_desc = Number _ };_}::[])
-                     -> aux ?comment e then_ [] acc
-                 | (_,{
-                        statement_desc = Exp { expression_desc = Number _ };_}::[],_)
-                     -> aux ?comment e [] else_ acc
-                 | (_,{ statement_desc = Exp b;_}::[],{
-                                                        statement_desc = Exp
-                                                          a;_}::[])
-                     -> (exp (Exp.econd e b a)) :: acc
-                 | (_,[],[]) -> (exp e) :: acc
-                 | (Not e,_,_::_) -> aux ?comment e else_ then_ acc
-                 | (_,[],_) -> aux ?comment (Exp.not e) else_ [] acc
-                 | (_,y::ys,x::xs) when
-                     let open Js_analyzer in
-                       (eq_statement x y) && (no_side_effect e)
-                     -> aux ?comment e ys xs (y :: acc)
-                 | (Number (Int { i = 0;_}),_,_) ->
-                     (match else_ with
-                      | [] -> acc
-                      | _ -> (block else_) :: acc)
-                 | (Number _,_,_)
-                   |(Bin
-                     (Ge
-                      ,{
-                         expression_desc =
-                           (String_length _|Array_length _|Bytes_length _
-                            |Function_length _);_},{
-                                                     expression_desc = Number
-                                                       (Int { i = 0;_})
-                                                     }),_,_)
-                     -> (block then_) :: acc
-                 | ((Bin
-                     (EqEqEq
-                      ,{ expression_desc = Number (Int { i = 0;_});_},e)|Bin
-                     (EqEqEq
-                      ,e,{ expression_desc = Number (Int { i = 0;_});_})),_,else_)
-                     -> aux ?comment e else_ then_ acc
-                 | ((Bin
-                     (Gt
-                      ,({
-                          expression_desc =
-                            (String_length _|Array_length _|Bytes_length _
-                             |Function_length _);_}
-                          as e),{ expression_desc = Number (Int { i = 0;_}) })
-                     |Int_of_boolean e),_,_) ->
-                     aux ?comment e then_ else_ acc
-                 | _ ->
-                     {
-                       statement_desc =
-                         (If
-                            (e, then_,
-                              ((match else_ with | [] -> None | v -> Some v))));
-                       comment
-                     } :: acc in
-               let if_block =
-                 aux ?comment e then_
-                   (match else_ with | None  -> [] | Some v -> v) [] in
-               match ((!declared), declaration) with
-               | (true ,_)|(_,None ) -> block (List.rev if_block)
-               | (false ,Some (kind,did)) ->
-                   block ((declare_variable ~kind did) ::
-                     (List.rev if_block)) : t)
-            let alias_variable ?comment  ?exp  (v : Ident.t) =
-              ({
-                 statement_desc =
-                   (Variable
-                      {
-                        ident = v;
-                        value = exp;
-                        property = Alias;
-                        ident_info = { used_stats = NA }
-                      });
-                 comment
-               } : t)
-            let assign ?comment  id e =
-              ({
-                 statement_desc = (J.Exp (Exp.bin Eq (Exp.var id) e));
-                 comment
-               } : t)
-            let assign_unit ?comment  id =
-              ({
-                 statement_desc =
-                   (J.Exp (Exp.bin Eq (Exp.var id) (Exp.unit ())));
-                 comment
-               } : t)
-            let declare_unit ?comment  id =
-              ({
-                 statement_desc =
-                   (J.Variable
-                      {
-                        ident = id;
-                        value = (Some (Exp.unit ()));
-                        property = Variable;
-                        ident_info = { used_stats = NA }
-                      });
-                 comment
-               } : t)
-            let rec while_ ?comment  ?label  ?env  (e : Exp.t) (st : J.block)
-              =
-              (match e with
-               | { expression_desc = Int_of_boolean e;_} ->
-                   while_ ?comment ?label e st
-               | _ ->
-                   let env =
-                     match env with
-                     | None  -> Js_closure.empty ()
-                     | Some x -> x in
-                   { statement_desc = (While (label, e, st, env)); comment } : 
-              t)
-            let for_ ?comment  ?env  for_ident_expression
-              finish_ident_expression id direction (b : J.block) =
-              (let env =
-                 match env with | None  -> Js_closure.empty () | Some x -> x in
-               {
-                 statement_desc =
-                   (ForRange
-                      (for_ident_expression, finish_ident_expression, id,
-                        direction, b, env));
-                 comment
-               } : t)
-            let try_ ?comment  ?with_  ?finally  body =
-              ({ statement_desc = (Try (body, with_, finally)); comment } : 
-              t)
-            let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
-              (exp @@
-                 (Exp.str ~comment ~pure:false
-                    (Lam_util.string_of_lambda lam)) : t)
-            let continue ?comment  ?(label= "")  unit =
-              ({ statement_desc = (J.Continue label); comment } : t)
-          end
       end 
     module Js_number :
       sig
@@ -4040,8 +4183,8 @@ include
       end =
       struct
         module P = Ext_pp
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         module L =
           struct
             let function_ = "function"
@@ -4076,6 +4219,7 @@ include
             let break = "break"
             let strict_directive = "'use strict';"
             let curry = "curry"
+            let tag = "tag"
           end
         let return_indent = (String.length L.return) / Ext_pp.indent_length
         let throw_indent = (String.length L.throw) / Ext_pp.indent_length
@@ -4293,19 +4437,6 @@ include
                                  (fun _  ->
                                     arguments cxt f [e; E.arr Mutable el]))))) in
                if l > 15 then P.paren_group f 1 action else action ()
-           | Tag_ml_obj e ->
-               P.group f 1
-                 (fun _  ->
-                    P.string f "Object.defineProperty";
-                    P.paren_group f 1
-                      (fun _  ->
-                         let cxt = expression 1 cxt f e in
-                         P.string f L.comma;
-                         P.space f;
-                         P.string f {|"##ml"|};
-                         P.string f L.comma;
-                         P.string f {|{"value" : true, "writable" : false}|};
-                         cxt))
            | FlatCall (e,el) ->
                P.group f 1
                  (fun _  ->
@@ -4414,6 +4545,20 @@ include
                if l > 13 then P.paren_group f 1 action else action ()
            | Typeof e ->
                (P.string f "typeof"; P.space f; expression 13 cxt f e)
+           | Caml_block_set_tag (a,b) ->
+               expression_desc cxt l f
+                 (Bin
+                    (Eq,
+                      { expression_desc = (Caml_block_tag a); comment = None
+                      }, b))
+           | Caml_block_set_length (a,b) ->
+               expression_desc cxt l f
+                 (Bin
+                    (Eq,
+                      {
+                        expression_desc = (Length (a, Caml_block));
+                        comment = None
+                      }, b))
            | Bin
                (Eq
                 ,{ expression_desc = Var i },{
@@ -4548,6 +4693,31 @@ include
                 | _ ->
                     (P.bracket_vgroup f 1) @@
                       ((fun _  -> array_element_list cxt f el)))
+           | Caml_uninitialized_obj (tag,size) ->
+               expression_desc cxt l f (Object [(Length, size); (Tag, tag)])
+           | Caml_block (el,mutable_flag,tag,tag_info) ->
+               (match ((tag.expression_desc), tag_info) with
+                | (Number (Int
+                   { i = 0;_}),(Tuple |Array |Variant _|Record |NA 
+                                |Constructor ("Some"|"::")))
+                    -> expression_desc cxt l f (Array (el, mutable_flag))
+                | (_,_) ->
+                    expression_desc cxt l f
+                      (J.Object
+                         (let (length,rev_list) =
+                            List.fold_left
+                              (fun (i,acc)  ->
+                                 fun v  ->
+                                   ((i + 1), (((Js_op.Int_key i), v) :: acc)))
+                              (0, []) el in
+                          List.rev_append rev_list
+                            [(Js_op.Length, (E.int length));
+                            (Js_op.Tag, tag)])))
+           | Caml_block_tag e ->
+               P.group f 1
+                 (fun _  ->
+                    let cxt = expression 15 cxt f e in
+                    P.string f L.dot; P.string f L.tag; cxt)
            | Access (e,e')|String_access (e,e') ->
                let action () =
                  (P.group f 1) @@
@@ -4556,8 +4726,7 @@ include
                       (P.bracket_group f 1) @@
                         (fun _  -> expression 0 cxt f e')) in
                if l > 15 then P.paren_group f 1 action else action ()
-           | Array_length e|String_length e|Bytes_length e|Function_length e
-               ->
+           | Length (e,_) ->
                let action () =
                  let cxt = expression 15 cxt f e in
                  P.string f L.dot; P.string f L.length; cxt in
@@ -4620,25 +4789,27 @@ include
                  ((fun _  -> property_name_and_value_list cxt f lst)) : 
           Ext_pp_scope.t)
         and property_name cxt f (s : J.property_name) =
-          (pp_string f ~utf:true ~quote:(best_string_quote s) s; cxt : 
-          Ext_pp_scope.t)
+          (match s with
+           | Tag  -> P.string f L.tag
+           | Length  -> P.string f L.length
+           | Key s -> pp_string f ~utf:true ~quote:(best_string_quote s) s
+           | Int_key i -> P.string f (string_of_int i) : unit)
         and property_name_and_value_list cxt f l =
           (match l with
            | [] -> cxt
            | (pn,e)::[] ->
-               (P.group f 0) @@
-                 ((fun _  ->
-                     let cxt = property_name cxt f pn in
-                     P.string f L.colon; P.space f; expression 1 cxt f e))
+               (property_name cxt f pn;
+                P.string f L.colon;
+                P.space f;
+                expression 1 cxt f e)
            | (pn,e)::r ->
-               let cxt =
-                 (P.group f 0) @@
-                   (fun _  ->
-                      let cxt = property_name cxt f pn in
-                      P.string f L.colon; P.space f; expression 1 cxt f e) in
-               (P.string f L.comma;
-                P.newline f;
-                property_name_and_value_list cxt f r) : Ext_pp_scope.t)
+               (property_name cxt f pn;
+                P.string f L.colon;
+                P.space f;
+                (let cxt = expression 1 cxt f e in
+                 P.string f L.comma;
+                 P.newline f;
+                 property_name_and_value_list cxt f r)) : Ext_pp_scope.t)
         and array_element_list cxt f el =
           (match el with
            | [] -> cxt
@@ -4707,15 +4878,15 @@ include
                let rec need_paren (e : J.expression) =
                  match e.expression_desc with
                  | Call ({ expression_desc = Fun _ },_,_) -> true
-                 | Fun _|Object _ -> true
-                 | Anything_to_string _|String_of_small_int_array _|Call _
-                   |Array_append _|Array_copy _|Tag_ml_obj _|Seq _|Dot _|Cond
-                   _|Bin _|String_access _|Access _|Array_of_size _
-                   |Array_length _|String_length _|Bytes_length _
+                 | Caml_uninitialized_obj _|Fun _|Object _ -> true
+                 | Caml_block_set_tag _|Length _|Caml_block_set_length _
+                   |Anything_to_string _|String_of_small_int_array _|Call _
+                   |Array_append _|Array_copy _|Caml_block_tag _|Seq _|Dot _
+                   |Cond _|Bin _|String_access _|Access _|Array_of_size _
                    |String_append _|Char_of_int _|Char_to_int _|Dump _
-                   |Json_stringify _|Math _|Var _|Str _|Array _|FlatCall _
-                   |Typeof _|Function_length _|Number _|Not _|New _
-                   |Int_of_boolean _ -> false in
+                   |Json_stringify _|Math _|Var _|Str _|Array _|Caml_block _
+                   |FlatCall _|Typeof _|Number _|Not _|New _|Int_of_boolean _
+                     -> false in
                let cxt =
                  (if need_paren e then P.paren_group f 1 else P.group f 0)
                    (fun _  -> expression 0 cxt f e) in
@@ -5123,8 +5294,8 @@ include
         val to_string : t -> string
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         type finished =
           | True
           | False
@@ -5176,7 +5347,8 @@ include
         let statement_of_opt_expr (x : J.expression option) =
           (match x with
            | None  -> S.empty ()
-           | Some x when Js_helper.no_side_effect x -> S.empty ()
+           | Some x when Js_analyzer.no_side_effect_expression x ->
+               S.empty ()
            | Some x -> S.exp x : J.statement)
         let rec unroll_block (block : J.block) =
           match block with
@@ -5191,7 +5363,8 @@ include
                else
                  (match opt with
                   | None  -> block
-                  | Some x when Js_helper.no_side_effect x -> block
+                  | Some x when Js_analyzer.no_side_effect_expression x ->
+                      block
                   | Some x -> block @ [S.exp x]) : J.block)
         let to_break_block (x : t) =
           (match x with
@@ -5217,7 +5390,7 @@ include
                                                   value = Some e2; finished }
                                                   as z))
                ->
-               if Js_helper.no_side_effect e1
+               if Js_analyzer.no_side_effect_expression e1
                then z
                else { block = []; value = (Some (E.seq e1 e2)); finished }
            | ({ block = block1; value = opt_e1;_},{ block = block2;
@@ -5300,7 +5473,7 @@ include
             ("array.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002\229\000\000\000\232\000\000\003\r\000\000\002\247\160\208\208\208@&append\160\176@\160\160B\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@@\208\208@$copy\160\176@\160\160A\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004n@\208\208\208@#map\160\176@\160\160B\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\143@@ABC#sub\160\176@\160\160C\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\160\176\001\0044!a@@@@@@ADEF@")));
+                    "\132\149\166\190\000\000\003u\000\000\001\016\000\000\003\141\000\000\003r\160\208\208\208@&append\160\176@\160\160B\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@\144\179@\160\176\001\004\159$prim@@\166\155\2401caml_array_concatAA @@\144\176\193 \176\179\144\176I$list@\160\176\179\144\176H%array@\160\176\150\176\144\144!a\002\005\245\225\000\001\003\136\001\003\249\001\003v@\144@\002\005\245\225\000\001\003x@\144@\002\005\245\225\000\001\003}\176\179\004\014\160\004\011@\144@\002\005\245\225\000\001\003\130@\002\005\245\225\000\001\003\134\160\144\004%@\208\208@$copy\160\176@\160\160A\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004n@\208\208\208@#map\160\176@\160\160B\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\143@@ABC#sub\160\176@\160\160C\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\160\176\001\0044!a@@@@@@ADEF@")));
             ("arrayLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5308,11 +5481,11 @@ include
             ("buffer.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002\252\000\000\000\229\000\000\003\b\000\000\002\240\160\208\208\208\208\208@*add_buffer\160\176A\160\160B\160\176\001\004/!b@\160\176\001\0040\"bs@@@@@@A)add_bytes\160\176A\160\160B\160\176\001\004,!b@\160\176\001\004-!s@@@@@\208@+add_channel\160\176A\160\160C\160\176\001\0042!b@\160\176\001\0043\"ic@\160\176\001\0044#len@@@@@@AB(add_char\160\176A\160\160B\160\176\001\004\024!b@\160\176\001\004\025!c@@@@@\208\208@*add_string\160\176A\160\160B\160\176\001\004'!b@\160\176\001\004(!s@@@@@@A,add_subbytes\160\176A\160\160D\160\176\001\004\"!b@\160\176\001\004#!s@\160\176\001\004$&offset@\160\176\001\004%#len@@@@@\208\208@.add_substitute\160\176@\160\160C\160\176\001\004R!b@\160\176\001\004S!f@\160\176\001\004T!s@@@@@@A-add_substring\160\176A\160\160D\160\176\001\004\028!b@\160\176\001\004\029!s@\160\176\001\004\030&offset@\160\176\001\004\031#len@@@@@@BCD$blit\160\176@\160\160E\160\176\001\004\003#src@\160\176\001\004\004&srcoff@\160\176\001\004\005#dst@\160\176\001\004\006&dstoff@\160\176\001\004\007#len@@@@@\208\208@%clear\160\176A\160\160A\160\176\001\004\014!b@@@@@@A(contents\160\176A\160\160A\160\176\001\003\251!b@@@@@@BE&create\160\176A\160\160A\160\176\001\003\246!n@@@@@\208\208\208@&length\160\176@\160\160A\160\176\001\004\012!b@@@@@@A#nth\160\176A\160\160B\160\176\001\004\t!b@\160\176\001\004\n#ofs@@@@@\208\208@-output_buffer\160\176@\160\160B\160\176\001\0046\"oc@\160\176\001\0047!b@@@@@@A%reset\160\176A\160\160A\160\176\001\004\016!b@@@@@@BC#sub\160\176A\160\160C\160\176\001\003\255!b@\160\176\001\004\000#ofs@\160\176\001\004\001#len@@@@@\208@(to_bytes\160\176@\160\160A\160\176\001\003\253!b@@@@@@ADF@")));
+                    "\132\149\166\190\000\000\003\026\000\000\000\245\000\000\0032\000\000\003\026\160\208\208\208\208\208@*add_buffer\160\176A\160\160B\160\176\001\004/!b@\160\176\001\0040\"bs@@@@@@A)add_bytes\160\176A\160\160B\160\176\001\004,!b@\160\176\001\004-!s@@@@@\208@+add_channel\160\176A\160\160C\160\176\001\0042!b@\160\176\001\0043\"ic@\160\176\001\0044#len@@@@@@AB(add_char\160\176A\160\160B\160\176\001\004\024!b@\160\176\001\004\025!c@@@@@\208\208@*add_string\160\176A\160\160B\160\176\001\004'!b@\160\176\001\004(!s@@@@@@A,add_subbytes\160\176A\160\160D\160\176\001\004\"!b@\160\176\001\004#!s@\160\176\001\004$&offset@\160\176\001\004%#len@@@@@\208\208@.add_substitute\160\176@\160\160C\160\176\001\004R!b@\160\176\001\004S!f@\160\176\001\004T!s@@@@@@A-add_substring\160\176A\160\160D\160\176\001\004\028!b@\160\176\001\004\029!s@\160\176\001\004\030&offset@\160\176\001\004\031#len@@@@@@BCD$blit\160\176@\160\160E\160\176\001\004\003#src@\160\176\001\004\004&srcoff@\160\176\001\004\005#dst@\160\176\001\004\006&dstoff@\160\176\001\004\007#len@@@@@\208\208@%clear\160\176A\160\160A\160\176\001\004\014!b@@@@\144\179@\004\005\166\167A@\160\144\004\b\160\145\144\144@@@A(contents\160\176A\160\160A\160\176\001\003\251!b@@@@@@BE&create\160\176A\160\160A\160\176\001\003\246!n@@@@@\208\208\208@&length\160\176@\160\160A\160\176\001\004\012!b@@@@\144\179@\004\005\166\150A\160\144\004\b@@A#nth\160\176A\160\160B\160\176\001\004\t!b@\160\176\001\004\n#ofs@@@@@\208\208@-output_buffer\160\176@\160\160B\160\176\001\0046\"oc@\160\176\001\0047!b@@@@@@A%reset\160\176A\160\160A\160\176\001\004\016!b@@@@@@BC#sub\160\176A\160\160C\160\176\001\003\255!b@\160\176\001\004\000#ofs@\160\176\001\004\001#len@@@@@\208@(to_bytes\160\176@\160\160A\160\176\001\003\253!b@@@@@@ADF@")));
             ("bytes.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\005\023\000\000\001\145\000\000\005R\000\000\005(\160\208\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004&\"s1@\160\176\001\004'$ofs1@\160\176\001\004(\"s2@\160\176\001\004)$ofs2@\160\176\001\004*#len@@@@@@A+blit_string\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208\208@*capitalize\160\176@\160\160A\160\176\001\004r!s@@@@@@A#cat\160\176@\160\160B\160\176\001\004E\"s1@\160\176\001\004F\"s2@@@@@\208@'compare\160\176@\160\160B\160\176\001\004\155!x@\160\176\001\004\156!y@@@@@@ABC&concat\160\176@\160\160B\160\176\001\004:#sep@\160\176\001\004;!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\004\147!s@\160\176\001\004\148!c@@@@@\208\208@-contains_from\160\176A\160\160C\160\176\001\004\142!s@\160\176\001\004\143!i@\160\176\001\004\144!c@@@@@@A$copy\160\176@\160\160A\160\176\001\004\007!s@@@@@@BCD%empty\160\176@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004T!s@@@@@@A&extend\160\176@\160\160C\160\176\001\004\024!s@\160\176\001\004\025$left@\160\176\001\004\026%right@@@@@\208@$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004{!s@\160\176\001\004|!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\004~!s@\160\176\001\004\127!i@\160\176\001\004\128!c@@@@@@ABCDE$init\160\176@\160\160B\160\176\001\004\001!n@\160\176\001\004\002!f@@@@@\208\208\208@$iter\160\176A\160\160B\160\176\001\0042!f@\160\176\001\0043!a@@@@@\208@%iteri\160\176A\160\160B\160\176\001\0046!f@\160\176\001\0047!a@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004l!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\253!n@\160\176\001\003\254!c@@@@@\208@#map\160\176@\160\160B\160\176\001\004^!f@\160\176\001\004_!s@@@@@\208@$mapi\160\176@\160\160B\160\176\001\004d!f@\160\176\001\004e!s@@@@@@ABD)of_string\160\176@\160\160A\160\176\001\004\r!s@@@@@\208\208\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004\150!s@\160\176\001\004\151!i@\160\176\001\004\152!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004\135!s@\160\176\001\004\136!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\004\138!s@\160\176\001\004\139!i@\160\176\001\004\140!c@@@@@@AB#sub\160\176@\160\160C\160\176\001\004\015!s@\160\176\001\004\016#ofs@\160\176\001\004\017#len@@@@@\208@*sub_string\160\176A\160\160C\160\176\001\004\020!b@\160\176\001\004\021#ofs@\160\176\001\004\022#len@@@@@@AC)to_string\160\176A\160\160A\160\176\001\004\011!b@@@@@\208\208@$trim\160\176@\160\160A\160\176\001\004O!s@@@@@@A,uncapitalize\160\176@\160\160A\160\176\001\004t!s@@@@@\208\208\208@0unsafe_of_string\160@@@A0unsafe_to_string\160@@@B)uppercase\160\176@\160\160A\160\176\001\004j!s@@@@@@CDEFG@")));
+                    "\132\149\166\190\000\000\005a\000\000\001\171\000\000\005\163\000\000\005v\160\208\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004&\"s1@\160\176\001\004'$ofs1@\160\176\001\004(\"s2@\160\176\001\004)$ofs2@\160\176\001\004*#len@@@@@@A+blit_string\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208\208@*capitalize\160\176@\160\160A\160\176\001\004r!s@@@@@@A#cat\160\176@\160\160B\160\176\001\004E\"s1@\160\176\001\004F\"s2@@@@@\208@'compare\160\176@\160\160B\160\176\001\004\155!x@\160\176\001\004\156!y@@@@\144\179@\004\b\166\155\240,caml_compareBA @@@\160\144\004\014\160\144\004\r@@ABC&concat\160\176@\160\160B\160\176\001\004:#sep@\160\176\001\004;!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\004\147!s@\160\176\001\004\148!c@@@@@\208\208@-contains_from\160\176A\160\160C\160\176\001\004\142!s@\160\176\001\004\143!i@\160\176\001\004\144!c@@@@@@A$copy\160\176@\160\160A\160\176\001\004\007!s@@@@@@BCD%empty\160\176@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004T!s@@@@@@A&extend\160\176@\160\160C\160\176\001\004\024!s@\160\176\001\004\025$left@\160\176\001\004\026%right@@@@@\208@$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004{!s@\160\176\001\004|!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\004~!s@\160\176\001\004\127!i@\160\176\001\004\128!c@@@@@@ABCDE$init\160\176@\160\160B\160\176\001\004\001!n@\160\176\001\004\002!f@@@@@\208\208\208@$iter\160\176A\160\160B\160\176\001\0042!f@\160\176\001\0043!a@@@@@\208@%iteri\160\176A\160\160B\160\176\001\0046!f@\160\176\001\0047!a@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004l!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\253!n@\160\176\001\003\254!c@@@@@\208@#map\160\176@\160\160B\160\176\001\004^!f@\160\176\001\004_!s@@@@@\208@$mapi\160\176@\160\160B\160\176\001\004d!f@\160\176\001\004e!s@@@@@@ABD)of_string\160\176@\160\160A\160\176\001\004\r!s@@@@@\208\208\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004\150!s@\160\176\001\004\151!i@\160\176\001\004\152!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004\135!s@\160\176\001\004\136!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\004\138!s@\160\176\001\004\139!i@\160\176\001\004\140!c@@@@@@AB#sub\160\176@\160\160C\160\176\001\004\015!s@\160\176\001\004\016#ofs@\160\176\001\004\017#len@@@@@\208@*sub_string\160\176A\160\160C\160\176\001\004\020!b@\160\176\001\004\021#ofs@\160\176\001\004\022#len@@@@@@AC)to_string\160\176A\160\160A\160\176\001\004\011!b@@@@@\208\208@$trim\160\176@\160\160A\160\176\001\004O!s@@@@@@A,uncapitalize\160\176@\160\160A\160\176\001\004t!s@@@@@\208\208\208@0unsafe_of_string\160@\144\179@\160\176\001\004\158$prim@@\166B\160\144\004\005@@A0unsafe_to_string\160@\144\179@\160\176\001\004\157\004\n@@\166A\160\144\004\004@@B)uppercase\160\176@\160\160A\160\176\001\004j!s@@@@@@CDEFG@")));
             ("bytesLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5320,11 +5493,11 @@ include
             ("callback.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000a\000\000\000\025\000\000\000Y\000\000\000T\160\208@(register\160\176@\160\160B\160\176\001\003\242$name@\160\176\001\003\243!v@@@@@\208@2register_exception\160\176@\160\160B\160\176\001\003\245$name@\160\176\001\003\246#exn@@@@@@AB@")));
+                    "\132\149\166\190\000\000\000\242\000\000\000>\000\000\000\212\000\000\000\202\160\208@(register\160\176@\160\160B\160\176\001\003\242$name@\160\176\001\003\243!v@@@@\144\179@\004\b\166\155\2409caml_register_named_valueBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\002\234\176\193\004\t\176\179\177\144\176@#ObjA!t\000\255@\144@\002\005\245\225\000\001\003U\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\003X@\002\005\245\225\000\001\003[@\002\005\245\225\000\001\003\\\160\144\004(\160\144\004'@\208@2register_exception\160\176@\160\160B\160\176\001\003\245$name@\160\176\001\003\246#exn@@@@@@AB@")));
             ("camlinternalFormat.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\004v\000\000\000\251\000\000\003\153\000\000\003]\160\208\208\208@/add_in_char_set\160\176A\160\160B\160\176\001\003\243(char_set@\160\176\001\003\244!c@@@@@\208@*bufput_acc\160\176A\160\160B\160\176\002\000\000\245\012!b@\160\176\002\000\000\245\r#acc@@@@@\208@-char_of_iconv\160\176A\160\160A\160\176\001\004v%iconv@@@@@@ABC/create_char_set\160\176@\160\160A\160\176\002\000\001)b%param@@@@@\208\208@1fmt_ebb_of_string\160\176@\160\160B\160\176\002\000\000\249[/legacy_behavior@\160\176\002\000\000\249\\#str@@@@@@A6format_of_string_fmtty\160\176@\160\160B\160\176\002\000\001&Z#str@\160\176\002\000\001&[%fmtty@@@@@\208\208@7format_of_string_format\160\176@\160\160B\160\176\002\000\001&`#str@\160\176\002\000\001&f\004%@@@@@@A/freeze_char_set\160\176A\160\160A\160\176\001\003\249(char_set@@@@@@BCD.is_in_char_set\160\176A\160\160B\160\176\001\003\255(char_set@\160\176\001\004\000!c@@@@@\208\208@+make_printf\160\176@\160\160D\160\176\002\000\000\243i!k@\160\176\002\000\000\243j!o@\160\176\002\000\000\243k#acc@\160\176\002\000\000\243l#fmt@@@@@\208\208@2open_box_of_string\160\176A\160\160A\160\176\002\000\000\245?#str@@@@@@A*output_acc\160\176@\160\160B\160\176\002\000\000\244\245!o@\160\176\002\000\000\244\246#acc@@@@@@BC>param_format_of_ignored_format\160\176A\160\160B\160\176\001\004\022#ign@\160\176\001\004\023#fmt@@@@@\208\208\208\208@&recast\160\176@\160\160B\160\176\002\000\000\243 #fmt@\160\176\002\000\000\243!%fmtty@@@@@@A,rev_char_set\160\176@\160\160A\160\176\001\003\251(char_set@@@@@\208@-string_of_fmt\160\176A\160\160A\160\176\001\t@#fmt@@@@@@AB/string_of_fmtty\160\176A\160\160A\160\176\002\000\000\243Y%fmtty@@@@@\208@8string_of_formatting_gen\160\176@\160\160A\160\176\001\004\215.formatting_gen@@@@@@AC8string_of_formatting_lit\160\176@\160\160A\160\176\001\004\203.formatting_lit@@@@@\208\208@*strput_acc\160\176A\160\160B\160\176\002\000\000\245#!b@\160\176\002\000\000\245$#acc@@@@@@A$symm\160\176A\160\160A\160\176\002\000\001)9\004\184@@@@@\208\208@%trans\160\176A\160\160B\160\176\002\000\000\170R#ty1@\160\176\002\000\000\170S#ty2@@@A@@A+type_format\160\176@\160\160B\160\176\002\000\000\179\135#fmt@\160\176\002\000\000\179\136%fmtty@@@@@@BCDEF@")));
+                    "\132\149\166\190\000\000\004\246\000\000\001\"\000\000\004\021\000\000\003\212\160\208\208\208@/add_in_char_set\160\176A\160\160B\160\176\001\003\243(char_set@\160\176\001\003\244!c@@@@@\208@*bufput_acc\160\176A\160\160B\160\176\002\000\000\245\012!b@\160\176\002\000\000\245\r#acc@@@@@\208@-char_of_iconv\160\176A\160\160A\160\176\001\004v%iconv@@@@@@ABC/create_char_set\160\176@\160\160A\160\176\002\000\001)b%param@@@@\144\179@\004\005\178\166\150@\160\166\147\176@%BytesA@@\160\145\144\144`\160\145\144\145@@\160\176\1925camlinternalFormat.mlI\001\001\007\001\001 \192\004\002I\001\001\007\001\0014@A\208\208@1fmt_ebb_of_string\160\176@\160\160B\160\176\002\000\000\249[/legacy_behavior@\160\176\002\000\000\249\\#str@@@@@@A6format_of_string_fmtty\160\176@\160\160B\160\176\002\000\001&Z#str@\160\176\002\000\001&[%fmtty@@@@@\208\208@7format_of_string_format\160\176@\160\160B\160\176\002\000\001&`#str@\160\176\002\000\001&f\004<@@@@@@A/freeze_char_set\160\176A\160\160A\160\176\001\003\249(char_set@@@@\144\179@\004\005\178\166\150E\160\166\147\176@%BytesA@@\160\144\004\014@\160\176\192\004=S\001\002^\001\002`\192\004>S\001\002^\001\002x@A@BCD.is_in_char_set\160\176A\160\160B\160\176\001\003\255(char_set@\160\176\001\004\000!c@@@@@\208\208@+make_printf\160\176@\160\160D\160\176\002\000\000\243i!k@\160\176\002\000\000\243j!o@\160\176\002\000\000\243k#acc@\160\176\002\000\000\243l#fmt@@@@@\208\208@2open_box_of_string\160\176A\160\160A\160\176\002\000\000\245?#str@@@@@@A*output_acc\160\176@\160\160B\160\176\002\000\000\244\245!o@\160\176\002\000\000\244\246#acc@@@@@@BC>param_format_of_ignored_format\160\176A\160\160B\160\176\001\004\022#ign@\160\176\001\004\023#fmt@@@@@\208\208\208\208@&recast\160\176@\160\160B\160\176\002\000\000\243 #fmt@\160\176\002\000\000\243!%fmtty@@@@@@A,rev_char_set\160\176A\160\160A\160\176\001\003\251(char_set@@@@@\208@-string_of_fmt\160\176A\160\160A\160\176\001\t@#fmt@@@@@@AB/string_of_fmtty\160\176A\160\160A\160\176\002\000\000\243Y%fmtty@@@@@\208@8string_of_formatting_gen\160\176@\160\160A\160\176\001\004\215.formatting_gen@@@@@@AC8string_of_formatting_lit\160\176@\160\160A\160\176\001\004\203.formatting_lit@@@@@\208\208@*strput_acc\160\176A\160\160B\160\176\002\000\000\245#!b@\160\176\002\000\000\245$#acc@@@@@@A$symm\160\176A\160\160A\160\176\002\000\001)9\004\223@@@@@\208\208@%trans\160\176A\160\160B\160\176\002\000\000\170R#ty1@\160\176\002\000\000\170S#ty2@@@A@@A+type_format\160\176@\160\160B\160\176\002\000\000\179\135#fmt@\160\176\002\000\000\179\136%fmtty@@@@@@BCDEF@")));
             ("camlinternalFormatBasics.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5336,11 +5509,11 @@ include
             ("camlinternalMod.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000c\000\000\000\028\000\000\000`\000\000\000\\\160\208@(init_mod\160\176@\160\160B\160\176\001\003\247#loc@\160\176\001\003\248%shape@@@@@\208@*update_mod\160\176@\160\160C\160\176\001\004\b%shape@\160\176\001\004\t!o@\160\176\001\004\n!n@@@@@@AB@")));
+                    "\132\149\166\190\000\000\000c\000\000\000\028\000\000\000`\000\000\000\\\160\208@(init_mod\160\176A\160\160B\160\176\001\003\247#loc@\160\176\001\003\248%shape@@@@@\208@*update_mod\160\176A\160\160C\160\176\001\004\006%shape@\160\176\001\004\007!o@\160\176\001\004\b!n@@@@@@AB@")));
             ("camlinternalOO.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\005\229\000\000\001[\000\000\004\252\000\000\004\152\160\208\208\208\208\208\208@/add_initializer\160\176A\160\160B\160\176\001\004\201%table@\160\176\001\004\202!f@@@@@@A$copy\160\176@\160\160A\160\176\001\003\243!o@@@@@@B-create_object\160\176@\160\160A\160\176\001\004\240%table@@@@@\208\208\208@\t\"create_object_and_run_initializers\160\176@\160\160B\160\176\001\005\004%obj_0@\160\176\001\005\005%table@@@@@@A1create_object_opt\160\176@\160\160B\160\176\001\004\243%obj_0@\160\176\001\004\244%table@@@@@@B,create_table\160\176@\160\160A\160\176\001\004\204.public_methods@@@@@\208@+dummy_class\160\176A\160\160A\160\176\001\004\237#loc@@@@@@ACD+dummy_table\160\176A@@@\208\208@*get_method\160\176@\160\160B\160\176\001\004\136%table@\160\176\001\004\137%label@@@@@@A0get_method_label\160\176@\160\160B\160\176\001\004}%table@\160\176\001\004~$name@@@@@\208@1get_method_labels\160\176@\160\160B\160\176\001\004\129%table@\160\176\001\004\130%names@@@@@@ABE,get_variable\160\176@\160\160B\160\176\001\004\195%table@\160\176\001\004\196$name@@@@@\208\208@-get_variables\160\176@\160\160B\160\176\001\004\198%table@\160\176\001\004\199%names@@@@@\208@(inherits\160\176@\160\160F\160\176\001\004\213#cla@\160\176\001\004\214$vals@\160\176\001\004\215*virt_meths@\160\176\001\004\216+concr_meths@\160\176\001\006\005%param@\160\176\001\004\219#top@@@@@@AB*init_class\160\176A\160\160A\160\176\001\004\211%table@@@@@\208\208\208@-lookup_tables\160\176@\160\160B\160\176\001\005#$root@\160\176\001\005$$keys@@@@@@A*make_class\160\176A\160\160B\160\176\001\004\223)pub_meths@\160\176\001\004\224*class_init@@@@@\208@0make_class_store\160\176A\160\160C\160\176\001\004\231)pub_meths@\160\176\001\004\232*class_init@\160\176\001\004\233*init_table@@@@@@AB&narrow\160\176A\160\160D\160\176\001\004\141%table@\160\176\001\004\142$vars@\160\176\001\004\143*virt_meths@\160\176\001\004\144+concr_meths@@@@@@CDF*new_method\160\176@\160\160A\160\176\001\004z%table@@@@@\208\208\208@5new_methods_variables\160\176@\160\160C\160\176\001\004\185%table@\160\176\001\004\186%meths@\160\176\001\004\187$vals@@@@@@A,new_variable\160\176@\160\160B\160\176\001\004\179%table@\160\176\001\004\180$name@@@@@\208@&params\160\004\189@@AB3public_method_label\160\176@\160\160A\160\176\001\004\r!s@@@@@\208\208@0run_initializers\160\176@\160\160B\160\176\001\004\251#obj@\160\176\001\004\252%table@@@@@\208@4run_initializers_opt\160\176@\160\160C\160\176\001\004\255%obj_0@\160\176\001\005\000#obj@\160\176\001\005\001%table@@@@@@AB*set_method\160\176A\160\160C\160\176\001\004\132%table@\160\176\001\004\133%label@\160\176\001\004\134'element@@@@@\208@+set_methods\160\176A\160\160B\160\176\001\005\240%table@\160\176\001\005\241'methods@@@@@\208\208@%stats\160\176A\160\160A\160\176\001\005\251%param@@@@@@A%widen\160\176A\160\160A\160\176\001\004\163%table@@@@@@BCDEG@")));
+                    "\132\149\166\190\000\000\006q\000\000\001\129\000\000\005x\000\000\005\016\160\208\208\208\208\208\208@/add_initializer\160\176A\160\160B\160\176\001\004\201%table@\160\176\001\004\202!f@@@@@@A$copy\160\176@\160\160A\160\176\001\003\243!o@@@@\144\179@\004\005\166\155\240.caml_set_oo_idA@ @@\144\176\193 \176\150\176\144\144!a\002\005\245\225\000\001\003U\001\003\240\001\003R\004\006@\002\005\245\225\000\001\003S\160\166\155\240,caml_obj_dupAA @@\144\176\193 \176\179\144\176\001\003\240!t@@\144@\002\005\245\225\000\001\003e\176\179\004\006@\144@\002\005\245\225\000\001\003h@\002\005\245\225\000\001\003k\160\144\004(@@@B-create_object\160\176@\160\160A\160\176\001\004\240%table@@@@@\208\208\208@\t\"create_object_and_run_initializers\160\176@\160\160B\160\176\001\005\004%obj_0@\160\176\001\005\005%table@@@@@@A1create_object_opt\160\176@\160\160B\160\176\001\004\243%obj_0@\160\176\001\004\244%table@@@@@@B,create_table\160\176@\160\160A\160\176\001\004\204.public_methods@@@@@\208@+dummy_class\160\176A\160\160A\160\176\001\004\237#loc@@@@@@ACD+dummy_table\160\176A@@@\208\208@*get_method\160\176@\160\160B\160\176\001\004\136%table@\160\176\001\004\137%label@@@@@@A0get_method_label\160\176@\160\160B\160\176\001\004}%table@\160\176\001\004~$name@@@@@\208@1get_method_labels\160\176@\160\160B\160\176\001\004\129%table@\160\176\001\004\130%names@@@@@@ABE,get_variable\160\176@\160\160B\160\176\001\004\195%table@\160\176\001\004\196$name@@@@@\208\208@-get_variables\160\176@\160\160B\160\176\001\004\198%table@\160\176\001\004\199%names@@@@@\208@(inherits\160\176@\160\160F\160\176\001\004\213#cla@\160\176\001\004\214$vals@\160\176\001\004\215*virt_meths@\160\176\001\004\216+concr_meths@\160\176\001\006\005%param@\160\176\001\004\219#top@@@@@@AB*init_class\160\176A\160\160A\160\176\001\004\211%table@@@@@\208\208\208@-lookup_tables\160\176@\160\160B\160\176\001\005#$root@\160\176\001\005$$keys@@@@@@A*make_class\160\176A\160\160B\160\176\001\004\223)pub_meths@\160\176\001\004\224*class_init@@@@@\208@0make_class_store\160\176A\160\160C\160\176\001\004\231)pub_meths@\160\176\001\004\232*class_init@\160\176\001\004\233*init_table@@@@@@AB&narrow\160\176A\160\160D\160\176\001\004\141%table@\160\176\001\004\142$vars@\160\176\001\004\143*virt_meths@\160\176\001\004\144+concr_meths@@@@@@CDF*new_method\160\176@\160\160A\160\176\001\004z%table@@@@@\208\208\208@5new_methods_variables\160\176@\160\160C\160\176\001\004\185%table@\160\176\001\004\186%meths@\160\176\001\004\187$vals@@@@@@A,new_variable\160\176@\160\160B\160\176\001\004\179%table@\160\176\001\004\180$name@@@@@\208@&params\160\004\189@@AB3public_method_label\160\176@\160\160A\160\176\001\004\r!s@@@@@\208\208@0run_initializers\160\176@\160\160B\160\176\001\004\251#obj@\160\176\001\004\252%table@@@@@\208@4run_initializers_opt\160\176@\160\160C\160\176\001\004\255%obj_0@\160\176\001\005\000#obj@\160\176\001\005\001%table@@@@@@AB*set_method\160\176A\160\160C\160\176\001\004\132%table@\160\176\001\004\133%label@\160\176\001\004\134'element@@@@@\208@+set_methods\160\176A\160\160B\160\176\001\005\240%table@\160\176\001\005\241'methods@@@@@\208\208@%stats\160\176A\160\160A\160\176\001\005\251%param@@@@@@A%widen\160\176A\160\160A\160\176\001\004\163%table@@@@@@BCDEG@")));
             ("char.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5352,7 +5525,7 @@ include
             ("digest.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\001m\000\000\000m\000\000\001w\000\000\001i\160\208\208\208@%bytes\160\176@\160\160A\160\176\001\003\247!b@@@@@@A'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@@@B$file\160\176@\160\160A\160\176\001\004\001(filename@@@@@\208\208\208\208@(from_hex\160\176@\160\160A\160\176\001\004\018!s@@@@@@A%input\160\176A\160\160A\160\176\001\004\t$chan@@@@@@B&output\160\176@\160\160B\160\176\001\004\006$chan@\160\176\001\004\007&digest@@@@@@C&string\160\176@\160\160A\160\176\001\003\245#str@@@@@\208\208@(subbytes\160\176@\160\160C\160\176\001\003\253!b@\160\176\001\003\254#ofs@\160\176\001\003\255#len@@@@@@A)substring\160\176@\160\160C\160\176\001\003\249#str@\160\176\001\003\250#ofs@\160\176\001\003\251#len@@@@@\208@&to_hex\160\176@\160\160A\160\176\001\004\r!d@@@@@@ABDE@")));
+                    "\132\149\166\190\000\000\001\227\000\000\000\146\000\000\001\235\000\000\001\219\160\208\208\208@%bytes\160\176@\160\160A\160\176\001\003\247!b@@@@@@A'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@@@B$file\160\176@\160\160A\160\176\001\004\001(filename@@@@@\208\208\208\208@(from_hex\160\176A\160\160A\160\176\001\004\018!s@@@@@@A%input\160\176A\160\160A\160\176\001\004\t$chan@@@@\144\179@\004\005\178\166\150\000D\160\166\147\176@*PervasivesA@@\160\144\004\014\160\145\144\144P@\160\176\192)digest.mll\001\006f\001\006w\192\004\002l\001\006f\001\006\146@A@B&output\160\176@\160\160B\160\176\001\004\006$chan@\160\176\001\004\007&digest@@@@\144\179@\004\b\178\166\150p\160\166\147\004 @@\160\144\004\015\160\144\004\014@\160\176\192\004\028j\001\006I\001\006K\192\004\029j\001\006I\001\006d@A@C&string\160\176@\160\160A\160\176\001\003\245#str@@@@@\208\208@(subbytes\160\176@\160\160C\160\176\001\003\253!b@\160\176\001\003\254#ofs@\160\176\001\003\255#len@@@@@@A)substring\160\176@\160\160C\160\176\001\003\249#str@\160\176\001\003\250#ofs@\160\176\001\003\251#len@@@@@\208@&to_hex\160\176A\160\160A\160\176\001\004\r!d@@@@@@ABDE@")));
             ("filename.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5360,11 +5533,11 @@ include
             ("format.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\020\215\000\000\004\166\000\000\017\134\000\000\016Z\160\208\208\208\208\208\208\208@(asprintf\160\176@\160\160A\160\176\001\006V%param@@@@@\208@'bprintf\160\176@\160\160B\160\176\001\006N!b@\160\176\001\006T\004\012@@@@@@AB)close_box\160\176A\160\160A\160\176\001\007k%param@@@@@\208@)close_tag\160\176A\160\160A\160\176\001\007i\004\t@@@@@@AC*close_tbox\160\176A\160\160A\160\176\001\007X\004\016@@@@@\208\208@'eprintf\160\176@\160\160A\160\176\001\006;#fmt@@@@@@A-err_formatter\160\176@@@@\208@3flush_str_formatter\160\176@\160\160A\160\176\001\006\171\0048@@@@@@ABD-force_newline\160\176@\160\160A\160\176\001\007]\004,@@@@@\208\208\208\208@3formatter_of_buffer\160\176@\160\160A\160\176\001\005\149!b@@@@@@A8formatter_of_out_channel\160\176@\160\160A\160\176\001\005\147\"oc@@@@@\208@'fprintf\160\176@\160\160B\160\176\001\0063#ppf@\160\176\001\0064#fmt@@@@@\208@\t\"get_all_formatter_output_functions\160\176A\160\160A\160\176\001\007@\004T@@@@@@ABC1get_ellipsis_text\160\176@\160\160A\160\176\001\007K\004[@@@@@\208\208@;get_formatter_out_functions\160\176A\160\160A\160\176\001\007H\004d@@@@@@A>get_formatter_output_functions\160\176A\160\160A\160\176\001\007E\004k@@@@@\208@;get_formatter_tag_functions\160\176A\160\160A\160\176\001\007>\004s@@@@@@ABD*get_margin\160\176@\160\160A\160\176\001\007R\004z@@@@@\208\208@-get_mark_tags\160\176@\160\160A\160\176\001\007:\004\131@@@@@@A-get_max_boxes\160\176@\160\160A\160\176\001\007N\004\138@@@@@@BEF.get_max_indent\160\176@\160\160A\160\176\001\007P\004\145@@@@@\208\208\208\208@.get_print_tags\160\176@\160\160A\160\176\001\007<\004\156@@@@@@A(ifprintf\160\176@\160\160B\160\176\001\0066#ppf@\160\176\001\0067#fmt@@@@@\208\208@)ikfprintf\160\176@\160\160C\160\176\001\006/!k@\160\176\001\0060!x@\160\176\001\006]\004\201@@@@@@A(kfprintf\160\176@\160\160C\160\176\001\006)!k@\160\176\001\006*!o@\160\176\001\006a\004\214@@@@@\208\208@'kprintf\160\176@\160\160B\160\176\001\006=!k@\160\176\001\006X\004\226@@@@@@A(ksprintf\160\004\n@@BCD.make_formatter\160\176@\160\160B\160\176\001\005\143&output@\160\176\001\005\144%flush@@@@@\208\208@(open_box\160\176@\160\160A\160\176\001\007l\004\229@@@@@@A)open_hbox\160\176@\160\160A\160\176\001\007p\004\236@@@@@\208@+open_hovbox\160\176@\160\160A\160\176\001\007m\004\244@@@@@@ABE*open_hvbox\160\176@\160\160A\160\176\001\007n\004\251@@@@@\208\208\208\208@(open_tag\160\176A\160\160A\160\176\001\007j\005\001\006@@@@@@A)open_tbox\160\176@\160\160A\160\176\001\007Y\005\001\r@@@@@@B)open_vbox\160\176@\160\160A\160\176\001\007o\005\001\020@@@@@\208\208@.over_max_boxes\160\176A\160\160A\160\176\001\007M\005\001\029@@@@@@A,pp_close_box\160\176A\160\160B\160\176\001\004\198%state@\160\176\001\006\218\005\001:@@@@@\208@,pp_close_tag\160\176A\160\160B\160\176\001\004\203%state@\160\176\001\006\213\005\001E@@@@@\208@-pp_close_tbox\160\176A\160\160B\160\176\001\005\"%state@\160\176\001\006\199\005\001P@@@@@@ABCD0pp_force_newline\160\176@\160\160B\160\176\001\005\018%state@\160\176\001\006\204\005\001Z@@@@@\208\208\208\208@\t%pp_get_all_formatter_output_functions\160\176A\160\160B\160\176\001\005v%state@\160\176\001\006\181\005\001h@@@@@@A4pp_get_ellipsis_text\160\176@\160\160B\160\176\001\005I%state@\160\176\001\006\188\005\001r@@@@@\208@>pp_get_formatter_out_functions\160\176A\160\160B\160\176\001\005h%state@\160\176\001\006\183\005\001}@@@@@@AB\t!pp_get_formatter_output_functions\160\176A\160\160B\160\176\001\005n%state@\160\176\001\006\182\005\001\135@@@@@\208\208@>pp_get_formatter_tag_functions\160\176A\160\160B\160\176\001\004\220%state@\160\176\001\006\209\005\001\147@@@@@@A-pp_get_margin\160\176@\160\160B\160\176\001\005[%state@\160\176\001\006\186\005\001\157@@@@@@BC0pp_get_mark_tags\160\176@\160\160B\160\176\001\004\215%state@\160\176\001\006\211\005\001\167@@@@@\208\208\208@0pp_get_max_boxes\160\176@\160\160B\160\176\001\005B%state@\160\176\001\006\190\005\001\180@@@@@@A1pp_get_max_indent\160\176@\160\160B\160\176\001\005T%state@\160\176\001\006\187\005\001\190@@@@@@B1pp_get_print_tags\160\176@\160\160B\160\176\001\004\213%state@\160\176\001\006\212\005\001\200@@@@@\208@+pp_open_box\160\176@\160\160B\160\176\001\005\011%state@\160\176\001\005\012&indent@@@@@@ACDEFG,pp_open_hbox\160\176@\160\160B\160\176\001\005\004%state@\160\176\001\006\207\005\001\222@@@@@\208\208\208\208@.pp_open_hovbox\160\176@\160\160B\160\176\001\005\t%state@\160\176\001\005\n&indent@@@@@@A-pp_open_hvbox\160\176@\160\160B\160\176\001\005\007%state@\160\176\001\005\b&indent@@@@@\208@+pp_open_tag\160\176A\160\160B\160\176\001\004\200%state@\160\176\001\004\201(tag_name@@@@@\208@,pp_open_tbox\160\176@\160\160B\160\176\001\005\031%state@\160\176\001\006\200\005\002\015@@@@@@ABC,pp_open_vbox\160\176@\160\160B\160\176\001\005\005%state@\160\176\001\005\006&indent@@@@@\208\208@1pp_over_max_boxes\160\176A\160\160B\160\176\001\005D%state@\160\176\001\006\189\005\002&@@@@@@A+pp_print_as\160\176@\160\160C\160\176\001\004\237%state@\160\176\001\004\238%isize@\160\176\001\004\239!s@@@@@\208@-pp_print_bool\160\176@\160\160B\160\176\001\004\250%state@\160\176\001\004\251!b@@@@@\208@.pp_print_break\160\176A\160\160C\160\176\001\005\022%state@\160\176\001\005\023%width@\160\176\001\005\024&offset@@@@@@ABCD-pp_print_char\160\176@\160\160B\160\176\001\004\253%state@\160\176\001\004\254!c@@@@@\208\208\208\208@,pp_print_cut\160\176A\160\160B\160\176\001\005\029%state@\160\176\001\006\201\005\002h@@@@@@A.pp_print_float\160\176@\160\160B\160\176\001\004\247%state@\160\176\001\004\248!f@@@@@\208@.pp_print_flush\160\176@\160\160B\160\176\001\005\016%state@\160\176\001\006\205\005\002~@@@@@\208@3pp_print_if_newline\160\176@\160\160B\160\176\001\005\020%state@\160\176\001\006\203\005\002\137@@@@@@ABC,pp_print_int\160\176@\160\160B\160\176\001\004\244%state@\160\176\001\004\245!i@@@@@\208\208\208\208@-pp_print_list\160\176@\160\160D\160\176\001\005/%*opt*@\160\176\001\0052$pp_v@\160\176\001\0053#ppf@\160\176\001\006\194%param@@@@@@A0pp_print_newline\160\176@\160\160B\160\176\001\005\015%state@\160\176\001\006\206\005\002\179@@@@@@B.pp_print_space\160\176A\160\160B\160\176\001\005\028%state@\160\176\001\006\202\005\002\189@@@@@@C/pp_print_string\160\176@\160\160B\160\176\001\004\241%state@\160\176\001\004\242!s@@@@@\208@,pp_print_tab\160\176A\160\160B\160\176\001\005*%state@\160\176\001\006\198\005\002\211@@@@@@ADE/pp_print_tbreak\160\176A\160\160C\160\176\001\005%%state@\160\176\001\005&%width@\160\176\001\005'&offset@@@@@\208\208\208\208@-pp_print_text\160\176A\160\160B\160\176\001\0058#ppf@\160\176\001\0059!s@@@@@\208@\t%pp_set_all_formatter_output_functions\160\176A\160\160E\160\176\001\005p%state@\160\176\001\005q!f@\160\176\001\005r!g@\160\176\001\005s!h@\160\176\001\005t!i@@@@@@AB4pp_set_ellipsis_text\160\176A\160\160B\160\176\001\005G%state@\160\176\001\005H!s@@@@@@C<pp_set_formatter_out_channel\160\176A\160\160B\160\176\001\005~%state@\160\176\001\005\127\"os@@@@@\208\208\208@>pp_set_formatter_out_functions\160\176A\160\160B\160\176\001\005b%state@\160\176\001\006\185\005\003(@@@@@@A\t!pp_set_formatter_output_functions\160\176A\160\160C\160\176\001\005j%state@\160\176\001\005k!f@\160\176\001\005l!g@@@@@\208@>pp_set_formatter_tag_functions\160\176A\160\160B\160\176\001\004\222%state@\160\176\001\006\208\005\003A@@@@@@AB-pp_set_margin\160\176@\160\160B\160\176\001\005V%state@\160\176\001\005W!n@@@@@@CD0pp_set_mark_tags\160\176A\160\160B\160\176\001\004\210%state@\160\176\001\004\211!b@@@@@\208\208\208@0pp_set_max_boxes\160\176A\160\160B\160\176\001\005?%state@\160\176\001\005@!n@@@@@@A1pp_set_max_indent\160\176@\160\160B\160\176\001\005Q%state@\160\176\001\005R!n@@@@@@B1pp_set_print_tags\160\176A\160\160B\160\176\001\004\207%state@\160\176\001\004\208!b@@@@@\208@*pp_set_tab\160\176@\160\160B\160\176\001\005,%state@\160\176\001\006\197\005\003\134@@@@@\208@+pp_set_tags\160\176A\160\160B\160\176\001\004\217%state@\160\176\001\004\218!b@@@@@@ABCEFGH(print_as\160\176@\160\160B\160\176\001\007g\005\003\134@\160\176\001\007h\005\003\136@@@@@\208\208\208@*print_bool\160\176@\160\160A\160\176\001\007b\005\003\146@@@@@\208@+print_break\160\176A\160\160B\160\176\001\007`\005\003\154@\160\176\001\007a\005\003\156@@@@@@AB*print_char\160\176@\160\160A\160\176\001\007c\005\003\163@@@@@\208\208@)print_cut\160\176A\160\160A\160\176\001\007_\005\003\172@@@@@@A+print_float\160\176@\160\160A\160\176\001\007d\005\003\179@@@@@\208@+print_flush\160\176@\160\160A\160\176\001\007\\\005\003\187@@@@@\208@0print_if_newline\160\176@\160\160A\160\176\001\007Z\005\003\195@@@@@@ABCD)print_int\160\176@\160\160A\160\176\001\007e\005\003\202@@@@@\208\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\007[\005\003\214@@@@@@A+print_space\160\176A\160\160A\160\176\001\007^\005\003\221@@@@@@B,print_string\160\176@\160\160A\160\176\001\007f\005\003\228@@@@@\208@)print_tab\160\176A\160\160A\160\176\001\007T\005\003\236@@@@@@AC,print_tbreak\160\176A\160\160B\160\176\001\007V\005\003\243@\160\176\001\007W\005\003\245@@@@@\208\208\208@&printf\160\176@\160\160A\160\176\001\0069#fmt@@@@@\208@\t\"set_all_formatter_output_functions\160\176A\160\160D\160\176\001\007A\005\004\b@\160\176\001\007B\005\004\n@\160\176\001\007C\005\004\012@\160\176\001\007D\005\004\014@@@@@@AB1set_ellipsis_text\160\176A\160\160A\160\176\001\007L\005\004\021@@@@@@C9set_formatter_out_channel\160\176A\160\160A\160\176\001\007J\005\004\028@@@@@\208\208@;set_formatter_out_functions\160\176A\160\160A\160\176\001\007I\005\004%@@@@@@A>set_formatter_output_functions\160\176A\160\160B\160\176\001\007F\005\004,@\160\176\001\007G\005\004.@@@@@\208@;set_formatter_tag_functions\160\176A\160\160A\160\176\001\007?\005\0046@@@@@@ABDE*set_margin\160\176@\160\160A\160\176\001\007S\005\004=@@@@@\208\208\208@-set_mark_tags\160\176A\160\160A\160\176\001\007;\005\004G@@@@@@A-set_max_boxes\160\176A\160\160A\160\176\001\007O\005\004N@@@@@@B.set_max_indent\160\176@\160\160A\160\176\001\007Q\005\004U@@@@@\208\208@.set_print_tags\160\176A\160\160A\160\176\001\007=\005\004^@@@@@@A'set_tab\160\176@\160\160A\160\176\001\007U\005\004e@@@@@\208\208@(set_tags\160\176A\160\160A\160\176\001\0079\005\004n@@@@@\208@'sprintf\160\176@\160\160A\160\176\001\006D#fmt@@@@@@AB-std_formatter\160\176@@@@\208@&stdbuf\160\176A@@@\208@-str_formatter\160\176@@@@@ABCDEFGI\144*blank_line")));
+                    "\132\149\166\190\000\000\021R\000\000\004\226\000\000\018(\000\000\016\252\160\208\208\208\208\208\208\208@(asprintf\160\176@\160\160A\160\176\001\006V%param@@@@@\208@'bprintf\160\176@\160\160B\160\176\001\006N!b@\160\176\001\006T\004\012@@@@@@AB)close_box\160\176A\160\160A\160\176\001\007k%param@@@@@\208@)close_tag\160\176A\160\160A\160\176\001\007i\004\t@@@@@@AC*close_tbox\160\176A\160\160A\160\176\001\007X\004\016@@@@@\208\208@'eprintf\160\176@\160\160A\160\176\001\006;#fmt@@@@@@A-err_formatter\160\176@@@@\208@3flush_str_formatter\160\176@\160\160A\160\176\001\006\171\0048@@@@@@ABD-force_newline\160\176@\160\160A\160\176\001\007]\004,@@@@@\208\208\208\208@3formatter_of_buffer\160\176@\160\160A\160\176\001\005\149!b@@@@@@A8formatter_of_out_channel\160\176@\160\160A\160\176\001\005\147\"oc@@@@@\208@'fprintf\160\176@\160\160B\160\176\001\0063#ppf@\160\176\001\0064#fmt@@@@@\208@\t\"get_all_formatter_output_functions\160\176A\160\160A\160\176\001\007@\004T@@@@@@ABC1get_ellipsis_text\160\176@\160\160A\160\176\001\007K\004[@@@@@\208\208@;get_formatter_out_functions\160\176A\160\160A\160\176\001\007H\004d@@@@@@A>get_formatter_output_functions\160\176A\160\160A\160\176\001\007E\004k@@@@@\208@;get_formatter_tag_functions\160\176A\160\160A\160\176\001\007>\004s@@@@@@ABD*get_margin\160\176@\160\160A\160\176\001\007R\004z@@@@@\208\208@-get_mark_tags\160\176@\160\160A\160\176\001\007:\004\131@@@@@@A-get_max_boxes\160\176@\160\160A\160\176\001\007N\004\138@@@@@@BEF.get_max_indent\160\176@\160\160A\160\176\001\007P\004\145@@@@@\208\208\208\208@.get_print_tags\160\176@\160\160A\160\176\001\007<\004\156@@@@@@A(ifprintf\160\176@\160\160B\160\176\001\0066#ppf@\160\176\001\0067#fmt@@@@@\208\208@)ikfprintf\160\176@\160\160C\160\176\001\006/!k@\160\176\001\0060!x@\160\176\001\006]\004\201@@@@@@A(kfprintf\160\176@\160\160C\160\176\001\006)!k@\160\176\001\006*!o@\160\176\001\006a\004\214@@@@@\208\208@'kprintf\160\176@\160\160B\160\176\001\006=!k@\160\176\001\006X\004\226@@@@@@A(ksprintf\160\004\n@@BCD.make_formatter\160\176@\160\160B\160\176\001\005\143&output@\160\176\001\005\144%flush@@@@@\208\208@(open_box\160\176@\160\160A\160\176\001\007l\004\229@@@@@@A)open_hbox\160\176@\160\160A\160\176\001\007p\004\236@@@@@\208@+open_hovbox\160\176@\160\160A\160\176\001\007m\004\244@@@@@@ABE*open_hvbox\160\176@\160\160A\160\176\001\007n\004\251@@@@@\208\208\208\208@(open_tag\160\176A\160\160A\160\176\001\007j\005\001\006@@@@@@A)open_tbox\160\176@\160\160A\160\176\001\007Y\005\001\r@@@@@@B)open_vbox\160\176@\160\160A\160\176\001\007o\005\001\020@@@@@\208\208@.over_max_boxes\160\176A\160\160A\160\176\001\007M\005\001\029@@@@@@A,pp_close_box\160\176A\160\160B\160\176\001\004\198%state@\160\176\001\006\218\005\001:@@@@@\208@,pp_close_tag\160\176A\160\160B\160\176\001\004\203%state@\160\176\001\006\213\005\001E@@@@@\208@-pp_close_tbox\160\176A\160\160B\160\176\001\005\"%state@\160\176\001\006\199\005\001P@@@@@@ABCD0pp_force_newline\160\176@\160\160B\160\176\001\005\018%state@\160\176\001\006\204\005\001Z@@@@@\208\208\208\208@\t%pp_get_all_formatter_output_functions\160\176A\160\160B\160\176\001\005v%state@\160\176\001\006\181\005\001h@@@@@@A4pp_get_ellipsis_text\160\176@\160\160B\160\176\001\005I%state@\160\176\001\006\188\005\001r@@@@\144\179@\004\007\166\150O\160\144\004\n@\208@>pp_get_formatter_out_functions\160\176A\160\160B\160\176\001\005h%state@\160\176\001\006\183\005\001\131@@@@@@AB\t!pp_get_formatter_output_functions\160\176A\160\160B\160\176\001\005n%state@\160\176\001\006\182\005\001\141@@@@@\208\208@>pp_get_formatter_tag_functions\160\176A\160\160B\160\176\001\004\220%state@\160\176\001\006\209\005\001\153@@@@@@A-pp_get_margin\160\176@\160\160B\160\176\001\005[%state@\160\176\001\006\186\005\001\163@@@@\144\179@\004\007\166\150E\160\144\004\n@@BC0pp_get_mark_tags\160\176@\160\160B\160\176\001\004\215%state@\160\176\001\006\211\005\001\179@@@@\144\179@\004\007\166\150U\160\144\004\n@\208\208\208@0pp_get_max_boxes\160\176@\160\160B\160\176\001\005B%state@\160\176\001\006\190\005\001\198@@@@\144\179@\004\007\166\150N\160\144\004\n@@A1pp_get_max_indent\160\176@\160\160B\160\176\001\005T%state@\160\176\001\006\187\005\001\214@@@@\144\179@\004\007\166\150G\160\144\004\n@@B1pp_get_print_tags\160\176@\160\160B\160\176\001\004\213%state@\160\176\001\006\212\005\001\230@@@@\144\179@\004\007\166\150T\160\144\004\n@\208@+pp_open_box\160\176@\160\160B\160\176\001\005\011%state@\160\176\001\005\012&indent@@@@@@ACDEFG,pp_open_hbox\160\176@\160\160B\160\176\001\005\004%state@\160\176\001\006\207\005\002\002@@@@@\208\208\208\208@.pp_open_hovbox\160\176@\160\160B\160\176\001\005\t%state@\160\176\001\005\n&indent@@@@@@A-pp_open_hvbox\160\176@\160\160B\160\176\001\005\007%state@\160\176\001\005\b&indent@@@@@\208@+pp_open_tag\160\176A\160\160B\160\176\001\004\200%state@\160\176\001\004\201(tag_name@@@@@\208@,pp_open_tbox\160\176@\160\160B\160\176\001\005\031%state@\160\176\001\006\200\005\0023@@@@@@ABC,pp_open_vbox\160\176@\160\160B\160\176\001\005\005%state@\160\176\001\005\006&indent@@@@@\208\208@1pp_over_max_boxes\160\176A\160\160B\160\176\001\005D%state@\160\176\001\006\189\005\002J@@@@@@A+pp_print_as\160\176@\160\160C\160\176\001\004\237%state@\160\176\001\004\238%isize@\160\176\001\004\239!s@@@@@\208@-pp_print_bool\160\176@\160\160B\160\176\001\004\250%state@\160\176\001\004\251!b@@@@@\208@.pp_print_break\160\176A\160\160C\160\176\001\005\022%state@\160\176\001\005\023%width@\160\176\001\005\024&offset@@@@@@ABCD-pp_print_char\160\176@\160\160B\160\176\001\004\253%state@\160\176\001\004\254!c@@@@@\208\208\208\208@,pp_print_cut\160\176A\160\160B\160\176\001\005\029%state@\160\176\001\006\201\005\002\140@@@@@@A.pp_print_float\160\176@\160\160B\160\176\001\004\247%state@\160\176\001\004\248!f@@@@@\208@.pp_print_flush\160\176@\160\160B\160\176\001\005\016%state@\160\176\001\006\205\005\002\162@@@@@\208@3pp_print_if_newline\160\176@\160\160B\160\176\001\005\020%state@\160\176\001\006\203\005\002\173@@@@@@ABC,pp_print_int\160\176@\160\160B\160\176\001\004\244%state@\160\176\001\004\245!i@@@@@\208\208\208\208@-pp_print_list\160\176@\160\160D\160\176\001\005/%*opt*@\160\176\001\0052$pp_v@\160\176\001\0053#ppf@\160\176\001\006\194%param@@@@@@A0pp_print_newline\160\176@\160\160B\160\176\001\005\015%state@\160\176\001\006\206\005\002\215@@@@@@B.pp_print_space\160\176A\160\160B\160\176\001\005\028%state@\160\176\001\006\202\005\002\225@@@@@@C/pp_print_string\160\176@\160\160B\160\176\001\004\241%state@\160\176\001\004\242!s@@@@@\208@,pp_print_tab\160\176A\160\160B\160\176\001\005*%state@\160\176\001\006\198\005\002\247@@@@@@ADE/pp_print_tbreak\160\176A\160\160C\160\176\001\005%%state@\160\176\001\005&%width@\160\176\001\005'&offset@@@@@\208\208\208\208@-pp_print_text\160\176A\160\160B\160\176\001\0058#ppf@\160\176\001\0059!s@@@@@\208@\t%pp_set_all_formatter_output_functions\160\176A\160\160E\160\176\001\005p%state@\160\176\001\005q!f@\160\176\001\005r!g@\160\176\001\005s!h@\160\176\001\005t!i@@@@@@AB4pp_set_ellipsis_text\160\176A\160\160B\160\176\001\005G%state@\160\176\001\005H!s@@@@\144\179@\004\b\166\167OA\160\144\004\011\160\144\004\n@@C<pp_set_formatter_out_channel\160\176A\160\160B\160\176\001\005~%state@\160\176\001\005\127\"os@@@@@\208\208\208@>pp_set_formatter_out_functions\160\176A\160\160B\160\176\001\005b%state@\160\176\001\006\185\005\003T@@@@@@A\t!pp_set_formatter_output_functions\160\176A\160\160C\160\176\001\005j%state@\160\176\001\005k!f@\160\176\001\005l!g@@@@@\208@>pp_set_formatter_tag_functions\160\176A\160\160B\160\176\001\004\222%state@\160\176\001\006\208\005\003m@@@@@@AB-pp_set_margin\160\176@\160\160B\160\176\001\005V%state@\160\176\001\005W!n@@@@@@CD0pp_set_mark_tags\160\176A\160\160B\160\176\001\004\210%state@\160\176\001\004\211!b@@@@\144\179@\004\b\166\167U@\160\144\004\011\160\144\004\n@\208\208\208@0pp_set_max_boxes\160\176A\160\160B\160\176\001\005?%state@\160\176\001\005@!n@@@@@@A1pp_set_max_indent\160\176@\160\160B\160\176\001\005Q%state@\160\176\001\005R!n@@@@@@B1pp_set_print_tags\160\176A\160\160B\160\176\001\004\207%state@\160\176\001\004\208!b@@@@\144\179@\004\b\166\167T@\160\144\004\011\160\144\004\n@\208@*pp_set_tab\160\176@\160\160B\160\176\001\005,%state@\160\176\001\006\197\005\003\194@@@@@\208@+pp_set_tags\160\176A\160\160B\160\176\001\004\217%state@\160\176\001\004\218!b@@@@@@ABCEFGH(print_as\160\176@\160\160B\160\176\001\007g\005\003\194@\160\176\001\007h\005\003\196@@@@@\208\208\208@*print_bool\160\176@\160\160A\160\176\001\007b\005\003\206@@@@@\208@+print_break\160\176A\160\160B\160\176\001\007`\005\003\214@\160\176\001\007a\005\003\216@@@@@@AB*print_char\160\176@\160\160A\160\176\001\007c\005\003\223@@@@@\208\208@)print_cut\160\176A\160\160A\160\176\001\007_\005\003\232@@@@@@A+print_float\160\176@\160\160A\160\176\001\007d\005\003\239@@@@@\208@+print_flush\160\176@\160\160A\160\176\001\007\\\005\003\247@@@@@\208@0print_if_newline\160\176@\160\160A\160\176\001\007Z\005\003\255@@@@@@ABCD)print_int\160\176@\160\160A\160\176\001\007e\005\004\006@@@@@\208\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\007[\005\004\018@@@@@@A+print_space\160\176A\160\160A\160\176\001\007^\005\004\025@@@@@@B,print_string\160\176@\160\160A\160\176\001\007f\005\004 @@@@@\208@)print_tab\160\176A\160\160A\160\176\001\007T\005\004(@@@@@@AC,print_tbreak\160\176A\160\160B\160\176\001\007V\005\004/@\160\176\001\007W\005\0041@@@@@\208\208\208@&printf\160\176@\160\160A\160\176\001\0069#fmt@@@@@\208@\t\"set_all_formatter_output_functions\160\176A\160\160D\160\176\001\007A\005\004D@\160\176\001\007B\005\004F@\160\176\001\007C\005\004H@\160\176\001\007D\005\004J@@@@@@AB1set_ellipsis_text\160\176A\160\160A\160\176\001\007L\005\004Q@@@@@@C9set_formatter_out_channel\160\176A\160\160A\160\176\001\007J\005\004X@@@@@\208\208@;set_formatter_out_functions\160\176A\160\160A\160\176\001\007I\005\004a@@@@@@A>set_formatter_output_functions\160\176A\160\160B\160\176\001\007F\005\004h@\160\176\001\007G\005\004j@@@@@\208@;set_formatter_tag_functions\160\176A\160\160A\160\176\001\007?\005\004r@@@@@@ABDE*set_margin\160\176@\160\160A\160\176\001\007S\005\004y@@@@@\208\208\208@-set_mark_tags\160\176A\160\160A\160\176\001\007;\005\004\131@@@@@@A-set_max_boxes\160\176A\160\160A\160\176\001\007O\005\004\138@@@@@@B.set_max_indent\160\176@\160\160A\160\176\001\007Q\005\004\145@@@@@\208\208@.set_print_tags\160\176A\160\160A\160\176\001\007=\005\004\154@@@@@@A'set_tab\160\176@\160\160A\160\176\001\007U\005\004\161@@@@@\208\208@(set_tags\160\176A\160\160A\160\176\001\0079\005\004\170@@@@@\208@'sprintf\160\176@\160\160A\160\176\001\006D#fmt@@@@@@AB-std_formatter\160\176@@@@\208@&stdbuf\160\176A@@@\208@-str_formatter\160\176@@@@@ABCDEFGI\144*blank_line")));
             ("gc.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000\182\000\000\000+\000\000\000\163\000\000\000\152\160\208\208@/allocated_bytes\160\176A\160\160A\160\176\001\004+%param@@@@@\208@,create_alarm\160\176@\160\160A\160\176\001\004#!f@@@@@\208@,delete_alarm\160\176A\160\160A\160\176\001\004&!a@@@@@@ABC(finalise\160@@\208\208@0finalise_release\160@@@A*print_stat\160\176@\160\160A\160\176\001\004\020!c@@@@@@BD@")));
+                    "\132\149\166\190\000\000\001\196\000\000\000p\000\000\001\135\000\000\001u\160\208\208@/allocated_bytes\160\176A\160\160A\160\176\001\004+%param@@@@@\208@,create_alarm\160\176@\160\160A\160\176\001\004#!f@@@@@\208@,delete_alarm\160\176A\160\160A\160\176\001\004&!a@@@@\144\179@\004\005\166\167@@\160\144\004\b\160\145\161@\144%false@@ABC(finalise\160@\144\179@\160\176\001\004($prim@\160\176\001\004'\004\003@@\166\155\2403caml_final_registerBA @@\144\176\193 \176\193\004\003\176\150\176\144\144!a\002\005\245\225\000\001\017\022\001\004\026\001\017\011\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\017\012@\002\005\245\225\000\001\017\015\176\193\004\017\004\014\176\179\004\b@\144@\002\005\245\225\000\001\017\016@\002\005\245\225\000\001\017\019@\002\005\245\225\000\001\017\020\160\144\004\"\160\144\004!@\208\208@0finalise_release\160@\144\179@\160\176\001\004)\004+@@\166\155\2402caml_final_releaseAA\004(@@\144\176\193\004'\176\179\004\030@\144@\002\005\245\225\000\001\017\023\176\179\004!@\144@\002\005\245\225\000\001\017\026@\002\005\245\225\000\001\017\029\160\144\004\016@@A*print_stat\160\176@\160\160A\160\176\001\004\020!c@@@@@@BD@")));
             ("genlex.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5372,23 +5545,23 @@ include
             ("hashtbl.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\003\001\000\000\000\231\000\000\003\025\000\000\002\251\160\208\208\208\208@$Make\160\176A\160\160A\160\176\001\005\022!H@@@@@\208@*MakeSeeded\160\176A\160\160A\160\176\001\004\191!H@@@@@@AB#add\160\176A\160\160C\160\176\001\0049!h@\160\176\001\004:#key@\160\176\001\004;$info@@@@@@C%clear\160\176A\160\160A\160\176\001\004\030!h@@@@@\208@$copy\160\176A\160\160A\160\176\001\004%!h@@@@@@AD&create\160\176A\160\160B\160\176\001\004\023%*opt*@\160\176\001\004\026,initial_size@@@@@\208\208\208\208@$find\160\176@\160\160B\160\176\001\004L!h@\160\176\001\004M#key@@@@@@A(find_all\160\176@\160\160B\160\176\001\004X!h@\160\176\001\004Y#key@@@@@@B$fold\160\176@\160\160C\160\176\001\004y!f@\160\176\001\004z!h@\160\176\001\004{$init@@@@@\208\208@$hash\160\176@\160\160A\160\176\001\003\243!x@@@@@\208@*hash_param\160\176@\160\160C\160\176\001\003\245\"n1@\160\176\001\003\246\"n2@\160\176\001\003\247!x@@@@@@AB$iter\160\176A\160\160B\160\176\001\004p!f@\160\176\001\004q!h@@@@@\208@&length\160\176@\160\160A\160\176\001\004'!h@@@@@@ACD#mem\160\176A\160\160B\160\176\001\004i!h@\160\176\001\004j#key@@@@@\208\208\208@)randomize\160\176A\160\160A\160\176\001\005\171%param@@@@@@A&remove\160\176A\160\160B\160\176\001\004?!h@\160\176\001\004@#key@@@@@\208@'replace\160\176A\160\160C\160\176\001\004_!h@\160\176\001\004`#key@\160\176\001\004a$info@@@@@@AB%reset\160\176A\160\160A\160\176\001\004\"!h@@@@@\208\208@+seeded_hash\160\176@\160\160B\160\176\001\003\249$seed@\160\176\001\003\250!x@@@@@\208@1seeded_hash_param\160@@@AB%stats\160\176A\160\160A\160\176\001\004\142!h@@@@@@CDEF\1442randomized_default")));
+                    "\132\149\166\190\000\000\003\r\000\000\000\237\000\000\003)\000\000\003\011\160\208\208\208\208@$Make\160\176A\160\160A\160\176\001\005\022!H@@@@@\208@*MakeSeeded\160\176A\160\160A\160\176\001\004\191!H@@@@@@AB#add\160\176A\160\160C\160\176\001\0049!h@\160\176\001\004:#key@\160\176\001\004;$info@@@@@@C%clear\160\176A\160\160A\160\176\001\004\030!h@@@@@\208@$copy\160\176A\160\160A\160\176\001\004%!h@@@@@@AD&create\160\176A\160\160B\160\176\001\004\023%*opt*@\160\176\001\004\026,initial_size@@@@@\208\208\208\208@$find\160\176@\160\160B\160\176\001\004L!h@\160\176\001\004M#key@@@@@@A(find_all\160\176@\160\160B\160\176\001\004X!h@\160\176\001\004Y#key@@@@@@B$fold\160\176@\160\160C\160\176\001\004y!f@\160\176\001\004z!h@\160\176\001\004{$init@@@@@\208\208@$hash\160\176@\160\160A\160\176\001\003\243!x@@@@@\208@*hash_param\160\176@\160\160C\160\176\001\003\245\"n1@\160\176\001\003\246\"n2@\160\176\001\003\247!x@@@@@@AB$iter\160\176A\160\160B\160\176\001\004p!f@\160\176\001\004q!h@@@@@\208@&length\160\176@\160\160A\160\176\001\004'!h@@@@\144\179@\004\005\166\150@\160\144\004\b@@ACD#mem\160\176A\160\160B\160\176\001\004i!h@\160\176\001\004j#key@@@@@\208\208\208@)randomize\160\176A\160\160A\160\176\001\005\171%param@@@@@@A&remove\160\176A\160\160B\160\176\001\004?!h@\160\176\001\004@#key@@@@@\208@'replace\160\176A\160\160C\160\176\001\004_!h@\160\176\001\004`#key@\160\176\001\004a$info@@@@@@AB%reset\160\176A\160\160A\160\176\001\004\"!h@@@@@\208\208@+seeded_hash\160\176@\160\160B\160\176\001\003\249$seed@\160\176\001\003\250!x@@@@@\208@1seeded_hash_param\160@@@AB%stats\160\176A\160\160A\160\176\001\004\142!h@@@@@@CDEF\1442randomized_default")));
             ("int32.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000\241\000\000\000I\000\000\001\002\000\000\000\249\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\021!x@\160\176\001\004\022!y@@@@@@A&lognot\160\176A\160\160A\160\176\001\004\014!n@@@@@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\b!n@@@@@@A$succ\160\176A\160\160A\160\176\001\004\006!n@@@@@\208\208@)to_string\160\176@\160\160A\160\176\001\004\017!n@@@@@@A$zero\160@@@BCE@")));
+                    "\132\149\166\190\000\000\001\241\000\000\000\152\000\000\001\237\000\000\001\222\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\021!x@\160\176\001\004\022!y@@@@\144\179@\004\b\166\155\2402caml_int32_compareB@ @@@\160\144\004\014\160\144\004\r@@A&lognot\160\176A\160\160A\160\176\001\004\014!n@@@@\144\179@\004\005\166\b\000\000\004\"A\160\144\004\b\160\145\144\148\018_i\000\255\255\255\255@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\b!n@@@@\144\179@\004\005\166\b\000\000\004\028A\160\144\004\b\160\145\144\148\018_i\000\000\000\000\001@@A$succ\160\176A\160\160A\160\176\001\004\006!n@@@@\144\179@\004\005\166\b\000\000\004\027A\160\144\004\b\160\145\144\148\018_i\000\000\000\000\001@\208\208@)to_string\160\176@\160\160A\160\176\001\004\017!n@@@@\144\179@\004\005\166\155\2401caml_int32_formatBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\236\176\193\004\t\176\179\144\176L%int32@@\144@\002\005\245\225\000\001\003\239\176\179\004\014@\144@\002\005\245\225\000\001\003\242@\002\005\245\225\000\001\003\245@\002\005\245\225\000\001\003\246\160\145\144\162\"%d@\160\144\004%@@A$zero\160@@@BCE@")));
             ("int64.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000\241\000\000\000I\000\000\001\002\000\000\000\249\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\012!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\025!x@\160\176\001\004\026!y@@@@@@A&lognot\160\176A\160\160A\160\176\001\004\016!n@@@@@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\n!n@@@@@@A$succ\160\176A\160\160A\160\176\001\004\b!n@@@@@\208\208@)to_string\160\176@\160\160A\160\176\001\004\019!n@@@@@@A$zero\160@@@BCE@")));
+                    "\132\149\166\190\000\000\001\253\000\000\000\152\000\000\001\240\000\000\001\222\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\012!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\025!x@\160\176\001\004\026!y@@@@\144\179@\004\b\166\155\2402caml_int64_compareB@ @@@\160\144\004\014\160\144\004\r@@A&lognot\160\176A\160\160A\160\176\001\004\016!n@@@@\144\179@\004\005\166\b\000\000\004\"B\160\144\004\b\160\145\144\149\018_j\000\255\255\255\255\255\255\255\255@@BC'max_int\160@@\208\208@'min_int\160@@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\n!n@@@@\144\179@\004\005\166\b\000\000\004\028B\160\144\004\b\160\145\144\149\018_j\000\000\000\000\000\000\000\000\001@@A$succ\160\176A\160\160A\160\176\001\004\b!n@@@@\144\179@\004\005\166\b\000\000\004\027B\160\144\004\b\160\145\144\149\018_j\000\000\000\000\000\000\000\000\001@\208\208@)to_string\160\176@\160\160A\160\176\001\004\019!n@@@@\144\179@\004\005\166\155\2401caml_int64_formatBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\250\176\193\004\t\176\179\144\176M%int64@@\144@\002\005\245\225\000\001\003\253\176\179\004\014@\144@\002\005\245\225\000\001\004\000@\002\005\245\225\000\001\004\003@\002\005\245\225\000\001\004\004\160\145\144\162\"%d@\160\144\004%@@A$zero\160@@@BCE@")));
             ("lazy.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000\232\000\000\000:\000\000\000\213\000\000\000\201\160\208\208\208@)Undefined\160\176@@@\144\166\150@\160\166\147\176@0CamlinternalLazyA@@@A)force_val\160\176@\160\160A\160\176\001\004\000#lzv@@@@@\208@(from_fun\160\176@\160\160A\160\176\001\003\246!f@@@@@@AB(from_val\160\176@\160\160A\160\176\001\003\249!v@@@@@\208\208@&is_val\160\176A\160\160A\160\176\001\003\252!l@@@@@@A-lazy_from_fun\160\004\026@\208@-lazy_from_val\160\004\021@\208@+lazy_is_val\160\004\014@@ABCD@")));
+                    "\132\149\166\190\000\000\0016\000\000\000V\000\000\001*\000\000\001\030\160\208\208\208@)Undefined\160\176@@@@@A)force_val\160\176@\160\160A\160\176\001\004\000#lzv@@@@@\208@(from_fun\160\176@\160\160A\160\176\001\003\246!f@@@@@@AB(from_val\160\176@\160\160A\160\176\001\003\249!v@@@@@\208\208@&is_val\160\176A\160\160A\160\176\001\003\252!l@@@@\144\179@\004\005\166\157A\160\166\155\240,caml_obj_tagAA @@\144\176\193 \176\179\144\176\001\003\240!t@@\144@\002\005\245\225\000\001\003\r\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\016@\002\005\245\225\000\001\003\019\160\144\004\030@\160\166\150D\160\166\147\176@#ObjA@@@@A-lazy_from_fun\160\004>@\208@-lazy_from_val\160\0049@\208@+lazy_is_val\160\0042@@ABCD@")));
             ("lexing.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002\240\000\000\000\190\000\000\002\167\000\000\002\128\160\208\208\208@)dummy_pos\160@@\208\208@&engine\160\176@\160\160C\160\176\001\004\018#tbl@\160\176\001\004\019%state@\160\176\001\004\020#buf@@@@@@A+flush_input\160\176A\160\160A\160\176\001\004S\"lb@@@@@@BC,from_channel\160\176A\160\160A\160\176\001\004+\"ic@@@@@\208@-from_function\160\176A\160\160A\160\176\001\004)!f@@@@@@AD+from_string\160\176A\160\160A\160\176\001\004/!s@@@@@\208\208\208@&lexeme\160\176A\160\160A\160\176\001\0042&lexbuf@@@@@@A+lexeme_char\160\176A\160\160B\160\176\001\004E&lexbuf@\160\176\001\004F!i@@@@@\208@*lexeme_end\160\176@\160\160A\160\176\001\004J&lexbuf@@@@@\208@,lexeme_end_p\160\176@\160\160A\160\176\001\004N&lexbuf@@@@@@ABC,lexeme_start\160\176@\160\160A\160\176\001\004H&lexbuf@@@@@\208\208@.lexeme_start_p\160\176@\160\160A\160\176\001\004L&lexbuf@@@@@\208@*new_engine\160\176@\160\160C\160\176\001\004\023#tbl@\160\176\001\004\024%state@\160\176\001\004\025#buf@@@@@@AB(new_line\160\176A\160\160A\160\176\001\004P&lexbuf@@@@@\208\208@*sub_lexeme\160\176A\160\160C\160\176\001\0045&lexbuf@\160\176\001\0046\"i1@\160\176\001\0047\"i2@@@@@@A/sub_lexeme_char\160\176A\160\160B\160\176\001\004?&lexbuf@\160\176\001\004@!i@@@@@\208\208@3sub_lexeme_char_opt\160\176A\160\160B\160\176\001\004B&lexbuf@\160\176\001\004C!i@@@@@@A.sub_lexeme_opt\160\176A\160\160C\160\176\001\004:&lexbuf@\160\176\001\004;\"i1@\160\176\001\004<\"i2@@@@@@BCDEF@")));
+                    "\132\149\166\190\000\000\003>\000\000\000\230\000\000\003\018\000\000\002\235\160\208\208\208@)dummy_pos\160@@\208\208@&engine\160\176@\160\160C\160\176\001\004\018#tbl@\160\176\001\004\019%state@\160\176\001\004\020#buf@@@@@@A+flush_input\160\176A\160\160A\160\176\001\004S\"lb@@@@@@BC,from_channel\160\176A\160\160A\160\176\001\004+\"ic@@@@@\208@-from_function\160\176A\160\160A\160\176\001\004)!f@@@@@@AD+from_string\160\176A\160\160A\160\176\001\004/!s@@@@@\208\208\208@&lexeme\160\176A\160\160A\160\176\001\0042&lexbuf@@@@@@A+lexeme_char\160\176A\160\160B\160\176\001\004E&lexbuf@\160\176\001\004F!i@@@@@\208@*lexeme_end\160\176@\160\160A\160\176\001\004J&lexbuf@@@@\144\179@\004\005\166\150C\160\166\150K\160\144\004\011@@\208@,lexeme_end_p\160\176@\160\160A\160\176\001\004N&lexbuf@@@@\144\179@\004\005\166\150K\160\144\004\b@@ABC,lexeme_start\160\176@\160\160A\160\176\001\004H&lexbuf@@@@\144\179@\004\005\166\150C\160\166\150J\160\144\004\011@@\208\208@.lexeme_start_p\160\176@\160\160A\160\176\001\004L&lexbuf@@@@\144\179@\004\005\166\150J\160\144\004\b@\208@*new_engine\160\176@\160\160C\160\176\001\004\023#tbl@\160\176\001\004\024%state@\160\176\001\004\025#buf@@@@@@AB(new_line\160\176A\160\160A\160\176\001\004P&lexbuf@@@@@\208\208@*sub_lexeme\160\176A\160\160C\160\176\001\0045&lexbuf@\160\176\001\0046\"i1@\160\176\001\0047\"i2@@@@@@A/sub_lexeme_char\160\176A\160\160B\160\176\001\004?&lexbuf@\160\176\001\004@!i@@@@\144\179@\004\b\166g\160\166\150A\160\144\004\r@\160\144\004\012@\208\208@3sub_lexeme_char_opt\160\176A\160\160B\160\176\001\004B&lexbuf@\160\176\001\004C!i@@@@@@A.sub_lexeme_opt\160\176A\160\160C\160\176\001\004:&lexbuf@\160\176\001\004;\"i1@\160\176\001\004<\"i2@@@@@@BCDEF@")));
             ("list.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5400,23 +5573,23 @@ include
             ("map.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000%\217\000\000\011;\000\000#\211\000\000#\149\160\208@$Make\160\176A\160\160A\160\176\001\004\014#Ord@@@@\144\179@\160\176\001\005\128&funarg@@\196B\176\001\005\222&height@\179@\160\176\001\005\223%param@@\188\144\004\004\166\150D\160\004\004@\145\144\144@\196B\176\001\005\229&create@\179@\160\176\001\005\230!l@\160\176\001\005\231!x@\160\176\001\005\232!d@\160\176\001\005\233!r@@\196@\176\001\005\234\"hl@\178\144\004#\160\144\004\018@\160\176\192&map.ml\000@\001\t8\001\tG\192\004\002\000@\001\t8\001\tO@A\196@\176\001\005\235\"hr@\178\004\012\160\144\004\020@\160\176\192\004\011\000@\001\t8\001\tY\192\004\012\000@\001\t8\001\ta@A\166\181@\144$Node@\160\004\021\160\144\004%\160\144\004$\160\004\015\160\188\166\157E\160\144\004%\160\144\004\027@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\236)singleton@\179@\160\176\001\005\237!x@\160\176\001\005\238!d@@\166\181@\144\004(@\160\145\161@\144%Empty\160\144\004\015\160\144\004\014\160\145\161@\144\004\t\160\145\144\144A@\196B\176\001\005\239#bal@\179@\160\176\001\005\240!l@\160\176\001\005\241!x@\160\176\001\005\242!d@\160\176\001\005\243!r@@\196B\176\001\005\244\"hl@\188\144\004\016\166\150D\160\004\004@\145\144\144@\196B\176\001\005\250\"hr@\188\144\004\018\166\150D\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\006\001\"lr@\166\150C\160\004&@\196A\176\001\006\002\"ld@\166\150B\160\004,@\196A\176\001\006\003\"lv@\166\150A\160\0042@\196A\176\001\006\004\"ll@\166\150@\160\0048@\188\166\004}\160\178\004\158\160\144\004\011@\160\176\192\004\157\000L\001\n\244\001\011\003\192\004\158\000L\001\n\244\001\011\012@A\160\178\004\166\160\144\004%@\160\176\192\004\165\000L\001\n\244\001\011\016\192\004\166\000L\001\n\244\001\011\025@A@\178\144\004\193\160\004\016\160\144\004\"\160\144\004*\160\178\004\b\160\004\015\160\144\004b\160\144\004a\160\004N@\160\176\192\004\184\000M\001\011\031\001\011=\192\004\185\000M\001\011\031\001\011N@A@\160\176\192\004\188\000M\001\011\031\001\011-\004\004@A\188\004\028\178\004\023\160\178\004\025\160\004(\160\004\024\160\004\023\160\166\150@\160\004&@@\160\176\192\004\202\000R\001\011\223\001\011\248\192\004\203\000R\001\011\223\001\012\r@A\160\166\150A\160\004.@\160\166\150B\160\0042@\160\178\004.\160\166\150C\160\0048@\160\004)\160\004(\160\004u@\160\176\192\004\223\000R\001\011\223\001\012\022\192\004\224\000R\001\011\223\001\012(@A@\160\176\192\004\227\000R\001\011\223\001\011\241\004\004@A\178\166\150@\160\166\147\176@*PervasivesA@@\160\145\144\162'Map.bal@@\160\176\192\004\243\000P\001\011\130\001\011\155\192\004\244\000P\001\011\130\001\011\176@A\178\166\150@\160\166\147\004\017@@\160\145\144\162'Map.bal@@\160\176\192\005\001\002\000J\001\n\166\001\n\185\192\005\001\003\000J\001\n\166\001\n\206@A\188\166\004\149\160\004\144\160\166L\160\004\151\160\145\144\144B@@\188\004\167\196A\176\001\006\011\"rr@\166\150C\160\004\173@\196A\176\001\006\012\"rd@\166\150B\160\004\179@\196A\176\001\006\r\"rv@\166\150A\160\004\185@\196A\176\001\006\014\"rl@\166\150@\160\004\191@\188\166\005\001\015\160\178\005\0010\160\144\004\029@\160\176\192\005\001/\000X\001\012\197\001\012\212\192\005\0010\000X\001\012\197\001\012\221@A\160\178\005\0018\160\144\004\019@\160\176\192\005\0017\000X\001\012\197\001\012\225\192\005\0018\000X\001\012\197\001\012\234@A@\178\004\146\160\178\004\148\160\004\224\160\004\140\160\004\139\160\004\012@\160\176\192\005\001B\000Y\001\012\240\001\r\005\192\005\001C\000Y\001\012\240\001\r\022@A\160\144\004*\160\144\0042\160\004\029@\160\176\192\005\001K\000Y\001\012\240\001\012\254\192\005\001L\000Y\001\012\240\001\r\031@A\188\004\026\178\004\167\160\178\004\169\160\004\245\160\004\161\160\004\160\160\166\150@\160\004$@@\160\176\192\005\001Z\000^\001\r\177\001\r\202\192\005\001[\000^\001\r\177\001\r\220@A\160\166\150A\160\004,@\160\166\150B\160\0040@\160\178\004\190\160\166\150C\160\0046@\160\004&\160\004%\160\004A@\160\176\192\005\001o\000^\001\r\177\001\r\229\192\005\001p\000^\001\r\177\001\r\250@A@\160\176\192\005\001s\000^\001\r\177\001\r\195\004\004@A\178\166\150@\160\166\147\004\144@@\160\145\144\162'Map.bal@@\160\176\192\005\001\129\000\\\001\rS\001\rl\192\005\001\130\000\\\001\rS\001\r\129@A\178\166\150@\160\166\147\004\159@@\160\145\144\162'Map.bal@@\160\176\192\005\001\144\000V\001\012w\001\012\138\192\005\001\145\000V\001\012w\001\012\159@A\166\181@\144\005\001\133@\160\005\0019\160\004\229\160\004\228\160\005\0011\160\188\166\005\001\130\160\005\001*\160\005\001'@\166L\160\005\001-\160\145\144\144A@\166L\160\005\001/\160\145\144\144A@@\196B\176\001\006\021(is_empty@\179@\160\176\001\006\022\005\001\210@@\188\144\004\003\145\161@\144%false\145\161A\144$true\165\160\160\176\001\006\023#add@\179@\160\176\001\006\024!x@\160\176\001\006\025$data@\160\176\001\006\026\005\001\234@@\188\144\004\003\196A\176\001\006\028!r@\166\150C\160\004\007@\196A\176\001\006\029!d@\166\150B\160\004\r@\196A\176\001\006\030!v@\166\150A\160\004\019@\196A\176\001\006\031!l@\166\150@\160\004\025@\196@\176\001\006 !c@\178\166\150@\160\144\005\002\020@\160\144\004+\160\144\004\023@\160\176\192\005\001\240\000k\001\015%\001\0157\192\005\001\241\000k\001\015%\001\015F@@\188\166\157@\160\144\004\020\160\145\144\144@@\166\181@\144\005\001\238@\160\144\004#\160\004\022\160\144\004?\160\144\004:\160\166\150D\160\004@@@\188\166\157B\160\004\023\160\145\144\144@@\178\144\005\001\201\160\178\144\004Y\160\004,\160\004\022\160\004\026@\160\176\192\005\002\027\000o\001\015\162\001\015\178\192\005\002\028\000o\001\015\162\001\015\192@A\160\0041\160\144\004O\160\004\029@\160\176\192\005\002#\000o\001\015\162\001\015\174\192\005\002$\000o\001\015\162\001\015\198@A\178\004\020\160\004(\160\004;\160\004\n\160\178\004\022\160\004A\160\004+\160\004*@\160\176\192\005\0020\000q\001\015\214\001\015\236\192\005\0021\000q\001\015\214\001\015\250@A@\160\176\192\005\0024\000q\001\015\214\001\015\226\004\004@A\166\181@\144\005\002(@\160\145\161@\144\005\002\000\160\004R\160\004<\160\145\161@\144\005\002\006\160\145\144\144A@@\165\160\160\176\001\006!$find@\179@\160\176\001\006\"!x@\160\176\001\006#\005\002s@@\188\144\004\003\196@\176\001\006)!c@\178\166\150@\160\004q@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002b\000w\001\016d\001\016v\192\005\002c\000w\001\016d\001\016\133@@\188\166\004r\160\144\004\020\160\145\144\144@@\166\150B\160\004\029@\178\144\004(\160\004\023\160\188\166\004j\160\004\015\160\145\144\144@@\166\150@\160\004+@\166\150C\160\004.@@\160\176\192\005\002\130\000y\001\016\163\001\016\178\192\005\002\131\000y\001\016\163\001\016\209@A\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\006*#mem@\179@\160\176\001\006+!x@\160\176\001\006,\005\002\184@@\188\144\004\003\196@\176\001\0062!c@\178\166\150@\160\004\182@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002\167\000\127\001\0170\001\017B\192\005\002\168\000\127\001\0170\001\017Q@@\166I\160\166\004\184\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\004\174\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150C\160\004-@@\160\176\192\005\002\198\001\000\128\001\017U\001\017h\192\005\002\199\001\000\128\001\017U\001\017\134@A@\145\161@\144\005\001\022@\165\160\160\176\001\0063+min_binding@\179@\160\176\001\0064\005\002\245@@\188\144\004\003\196A\176\001\0065!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\226\001\000\133\001\017\246\001\018\021\192\005\002\227\001\000\133\001\017\246\001\018\"@A\166\181@@@\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\166\156@\160\166\147\004j@@@\165\160\160\176\001\006>+max_binding@\179@\160\176\001\006?\005\003\029@@\188\144\004\003\196A\176\001\006@!r@\166\150C\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\003\n\001\000\138\001\018\146\001\018\177\192\005\003\011\001\000\138\001\018\146\001\018\190@A\166\004(\160\166\150A\160\004\021@\160\166\150B\160\004\025@@\166\156@\160\166\147\004\145@@@\165\160\160\176\001\006I2remove_min_binding@\179@\160\176\001\006J\005\003D@@\188\144\004\003\196A\176\001\006K!l@\166\150@\160\004\007@\188\144\004\007\178\005\001\027\160\178\144\004\019\160\004\006@\160\176\192\005\0033\001\000\143\001\019A\001\019d\192\005\0034\001\000\143\001\019A\001\019z@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\166\150C\160\004\030@@\160\176\192\005\003C\001\000\143\001\019A\001\019`\192\005\003D\001\000\143\001\019A\001\019\128@A\166\004\007\160\004$@\178\166\150@\160\166\147\005\002c@@\160\145\144\1622Map.remove_min_elt@@\160\176\192\005\003T\001\000\141\001\018\234\001\018\251\192\005\003U\001\000\141\001\018\234\001\019\027@A@\196B\176\001\006T%merge@\179@\160\176\001\006U\"t1@\160\176\001\006V\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006Y%match@\178\004\138\160\144\004\012@\160\176\192\005\003l\001\000\150\001\019\244\001\020\011\192\005\003m\001\000\150\001\019\244\001\020\025@A\178\005\001]\160\144\004\022\160\166\150@\160\144\004\017@\160\166\150A\160\004\005@\160\178\004M\160\004\020@\160\176\192\005\003\127\001\000\151\001\020\029\001\0202\192\005\003\128\001\000\151\001\020\029\001\020I@A@\160\176\192\005\003\131\001\000\151\001\020\029\001\020'\004\004@A\144\004*\144\004(\165\160\160\176\001\006\\&remove@\179@\160\176\001\006]!x@\160\176\001\006^\005\003\179@@\188\144\004\003\196A\176\001\006`!r@\166\150C\160\004\007@\196A\176\001\006a!d@\166\150B\160\004\r@\196A\176\001\006b!v@\166\150A\160\004\019@\196A\176\001\006c!l@\166\150@\160\004\025@\196@\176\001\006d!c@\178\166\150@\160\005\001\201@\160\144\004'\160\144\004\022@\160\176\192\005\003\184\001\000\157\001\020\171\001\020\189\192\005\003\185\001\000\157\001\020\171\001\020\204@@\188\166\005\001\200\160\144\004\018\160\145\144\144@@\178\144\004m\160\144\004 \160\144\0044@\160\176\192\005\003\202\001\000\159\001\020\232\001\020\244\192\005\003\203\001\000\159\001\020\232\001\020\253@A\188\166\005\001\195\160\004\018\160\145\144\144@@\178\005\001\194\160\178\144\004N\160\004%\160\004\020@\160\176\192\005\003\219\001\000\161\001\021\027\001\021+\192\005\003\220\001\000\161\001\021\027\001\0217@A\160\004)\160\144\004F\160\004\026@\160\176\192\005\003\227\001\000\161\001\021\027\001\021'\192\005\003\228\001\000\161\001\021\027\001\021=@A\178\005\001\212\160\004\"\160\0043\160\004\n\160\178\004\021\160\0049\160\004&@\160\176\192\005\003\239\001\000\163\001\021M\001\021c\192\005\003\240\001\000\163\001\021M\001\021o@A@\160\176\192\005\003\243\001\000\163\001\021M\001\021Y\004\004@A\145\161@\144\005\003\187@\165\160\160\176\001\006e$iter@\179@\160\176\001\006f!f@\160\176\001\006g\005\004$@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\004\015\001\000\168\001\021\194\001\021\204\192\005\004\016\001\000\168\001\021\194\001\021\212@A\173\178\004\011\160\166\150A\160\004\020@\160\166\150B\160\004\024@@\160\176\192\005\004\029\001\000\168\001\021\194\001\021\214\192\005\004\030\001\000\168\001\021\194\001\021\219@@\178\004\026\160\004\025\160\166\150C\160\004\"@@\160\176\192\005\004'\001\000\168\001\021\194\001\021\221\192\005\004(\001\000\168\001\021\194\001\021\229@A\145\161@\144\"()@\165\160\160\176\001\006m#map@\179@\160\176\001\006n!f@\160\176\001\006o\005\004Z@@\188\144\004\003\196@\176\001\006u\"l'@\178\144\004\015\160\144\004\r\160\166\150@\160\004\012@@\160\176\192\005\004G\001\000\174\001\022D\001\022W\192\005\004H\001\000\174\001\022D\001\022^@A\196@\176\001\006v\"d'@\178\004\r\160\166\150B\160\004\024@@\160\176\192\005\004S\001\000\175\001\022b\001\022u\192\005\004T\001\000\175\001\022b\001\022x@@\196@\176\001\006w\"r'@\178\004\027\160\004\026\160\166\150C\160\004%@@\160\176\192\005\004`\001\000\176\001\022|\001\022\143\192\005\004a\001\000\176\001\022|\001\022\150@A\166\181@\144\005\004U@\160\144\004,\160\166\150A\160\0042@\160\144\004#\160\144\004\025\160\166\150D\160\004:@@\145\161@\144\005\004:@\165\160\160\176\001\006x$mapi@\179@\160\176\001\006y!f@\160\176\001\006z\005\004\163@@\188\144\004\003\196A\176\001\006~!v@\166\150A\160\004\007@\196@\176\001\006\128\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\004\150\001\000\183\001\023\026\001\023-\192\005\004\151\001\000\183\001\023\026\001\0235@A\196@\176\001\006\129\"d'@\178\004\r\160\144\004\026\160\166\150B\160\004 @@\160\176\192\005\004\164\001\000\184\001\0239\001\023L\192\005\004\165\001\000\184\001\0239\001\023Q@@\196@\176\001\006\130\"r'@\178\004\029\160\004\028\160\166\150C\160\004-@@\160\176\192\005\004\177\001\000\185\001\023U\001\023h\192\005\004\178\001\000\185\001\023U\001\023p@A\166\181@\144\005\004\166@\160\144\004.\160\004\028\160\144\004\"\160\144\004\022\160\166\150D\160\004?@@\145\161@\144\005\004\136@\165\160\160\176\001\006\131$fold@\179@\160\176\001\006\132!f@\160\176\001\006\133!m@\160\176\001\006\134$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150C\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\166\150B\160\004\019@\160\178\004\019\160\004\018\160\166\150@\160\004\026@\160\144\004\031@\160\176\192\005\004\242\001\000\192\001\023\250\001\024\020\192\005\004\243\001\000\192\001\023\250\001\024#@A@\160\176\192\005\004\246\001\000\192\001\023\250\001\024\r\192\005\004\247\001\000\192\001\023\250\001\024$@@@\160\176\192\005\004\250\001\000\192\001\023\250\001\024\004\004\004@A\004\012@\165\160\160\176\001\006\140'for_all@\179@\160\176\001\006\141!p@\160\176\001\006\142\005\005(@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\005\022\001\000\196\001\024]\001\024|\192\005\005\023\001\000\196\001\024]\001\024\129@@\160\166H\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005$\001\000\196\001\024]\001\024\133\192\005\005%\001\000\196\001\024]\001\024\144@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005/\001\000\196\001\024]\001\024\148\192\005\0050\001\000\196\001\024]\001\024\159@A@@\145\161A\144\005\003{@\165\160\160\176\001\006\148&exists@\179@\160\176\001\006\149!p@\160\176\001\006\150\005\005a@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\005O\001\000\200\001\024\216\001\024\247\192\005\005P\001\000\200\001\024\216\001\024\252@@\160\166I\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005]\001\000\200\001\024\216\001\025\000\192\005\005^\001\000\200\001\024\216\001\025\n@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005h\001\000\200\001\024\216\001\025\014\192\005\005i\001\000\200\001\024\216\001\025\024@A@@\145\161@\144\005\003\184@\165\160\160\176\001\006\156/add_min_binding@\179@\160\176\001\006\157!k@\160\176\001\006\158!v@\160\176\001\006\159\005\005\157@@\188\144\004\003\178\005\003l\160\178\144\004\017\160\144\004\015\160\144\004\014\160\166\150@\160\004\r@@\160\176\192\005\005\139\001\000\213\001\026\199\001\026\211\192\005\005\140\001\000\213\001\026\199\001\026\234@A\160\166\150A\160\004\021@\160\166\150B\160\004\025@\160\166\150C\160\004\029@@\160\176\192\005\005\155\001\000\213\001\026\199\001\026\207\192\005\005\156\001\000\213\001\026\199\001\026\240@A\178\144\005\005s\160\004\030\160\004\029@\160\176\192\005\005\163\001\000\211\001\026\136\001\026\153\192\005\005\164\001\000\211\001\026\136\001\026\166@A@\165\160\160\176\001\006\165/add_max_binding@\179@\160\176\001\006\166!k@\160\176\001\006\167!v@\160\176\001\006\168\005\005\213@@\188\144\004\003\178\005\003\164\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\166\150B\160\004\014@\160\178\144\004\029\160\144\004\027\160\144\004\026\160\166\150C\160\004\025@@\160\176\192\005\005\207\001\000\218\001\027\\\001\027n\192\005\005\208\001\000\218\001\027\\\001\027\133@A@\160\176\192\005\005\211\001\000\218\001\027\\\001\027d\004\004@A\178\0047\160\004\016\160\004\015@\160\176\192\005\005\217\001\000\216\001\027\029\001\027.\192\005\005\218\001\000\216\001\027\029\001\027;@A@\165\160\160\176\001\006\174$join@\179@\160\176\001\006\175!l@\160\176\001\006\176!v@\160\176\001\006\177!d@\160\176\001\006\178!r@@\188\144\004\r\188\144\004\006\196A\176\001\006\181\"rh@\166\150D\160\144\004\r@\196A\176\001\006\186\"lh@\166\150D\160\144\004\029@\188\166\005\005\144\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\005\003\250\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\178\144\004=\160\166\150C\160\004!@\160\144\004<\160\144\004;\160\144\004:@\160\176\192\005\006'\001\000\228\001\028\188\001\028\231\192\005\006(\001\000\228\001\028\188\001\028\246@A@\160\176\192\005\006+\001\000\228\001\028\188\001\028\218\004\004@A\188\166\005\005\189\160\004)\160\166L\160\0040\160\145\144\144B@@\178\005\004%\160\178\004\031\160\144\004Y\160\004\028\160\004\027\160\166\150@\160\004J@@\160\176\192\005\006C\001\000\229\001\028\252\001\029\030\192\005\006D\001\000\229\001\028\252\001\029-@A\160\166\150A\160\004R@\160\166\150B\160\004V@\160\166\150C\160\004Z@@\160\176\192\005\006S\001\000\229\001\028\252\001\029\026\192\005\006T\001\000\229\001\028\252\001\0296@A\178\005\005\174\160\004\029\160\0048\160\0047\160\0046@\160\176\192\005\006\\\001\000\230\001\029<\001\029F\192\005\006]\001\000\230\001\029<\001\029T@A\178\004\155\160\004@\160\004?\160\004(@\160\176\192\005\006d\001\000\226\001\028P\001\028f\192\005\006e\001\000\226\001\028P\001\028{@A\178\004\231\160\004H\160\004G\160\004F@\160\176\192\005\006l\001\000\225\001\028$\001\028:\192\005\006m\001\000\225\001\028$\001\028O@A@\196B\176\001\006\191&concat@\179@\160\176\001\006\192\"t1@\160\176\001\006\193\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006\196\005\003\024@\178\005\003\161\160\144\004\011@\160\176\192\005\006\131\001\000\241\001\030_\001\030v\192\005\006\132\001\000\241\001\030_\001\030\132@A\178\004l\160\144\004\021\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\003d\160\004\020@\160\176\192\005\006\150\001\000\242\001\030\136\001\030\158\192\005\006\151\001\000\242\001\030\136\001\030\181@A@\160\176\192\005\006\154\001\000\242\001\030\136\001\030\146\004\004@A\144\004)\144\004'\196B\176\001\006\199.concat_or_join@\179@\160\176\001\006\200\"t1@\160\176\001\006\201!v@\160\176\001\006\202!d@\160\176\001\006\203\"t2@@\188\144\004\007\178\004\150\160\144\004\016\160\144\004\015\160\166\150@\160\004\n@\160\144\004\015@\160\176\192\005\006\188\001\000\246\001\030\237\001\030\255\192\005\006\189\001\000\246\001\030\237\001\031\r@A\178\144\004Q\160\004\016\160\004\t@\160\176\192\005\006\196\001\000\247\001\031\014\001\031\030\192\005\006\197\001\000\247\001\031\014\001\031*@A\165\160\160\176\001\006\205%split@\179@\160\176\001\006\206!x@\160\176\001\006\207\005\006\243@@\188\144\004\003\196A\176\001\006\209!r@\166\150C\160\004\007@\196A\176\001\006\210!d@\166\150B\160\004\r@\196A\176\001\006\211!v@\166\150A\160\004\019@\196A\176\001\006\212!l@\166\150@\160\004\025@\196@\176\001\006\213!c@\178\166\150@\160\005\005\t@\160\144\004'\160\144\004\022@\160\176\192\005\006\248\001\000\253\001\031\154\001\031\172\192\005\006\249\001\000\253\001\031\154\001\031\187@@\188\166\005\005\b\160\144\004\018\160\145\144\144@@\166\005\004\030\160\144\004\031\160\166\181@\144$Some@\160\144\0042@\160\144\004:@\188\166\005\005\005\160\004\020\160\145\144\144@@\196@\176\001\006\214\005\003\177@\178\144\004P\160\004'\160\004\023@\160\176\192\005\007\029\001\001\000\001 \003\001 $\192\005\007\030\001\001\000\001 \003\001 -@A\166\005\004;\160\166\150@\160\144\004\015@\160\166\150A\160\004\005@\160\178\005\001\017\160\166\150B\160\004\011@\160\004;\160\004&\160\004%@\160\176\192\005\0074\001\001\000\001 \003\001 <\192\005\0075\001\001\000\001 \003\001 I@A@\196@\176\001\006\218\005\003\210@\178\004!\160\004G\160\004.@\160\176\192\005\007=\001\001\002\001 Z\001 {\192\005\007>\001\001\002\001 Z\001 \132@A\166\005\004[\160\178\005\001(\160\004?\160\004O\160\004:\160\166\150@\160\144\004\019@@\160\176\192\005\007L\001\001\002\001 Z\001 \137\192\005\007M\001\001\002\001 Z\001 \150@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\007\031\160\161@\144$None\160\161@\144\005\007&@@\165\160\160\176\001\006\222%merge@\179@\160\176\001\006\223!f@\160\176\001\006\224\"s1@\160\176\001\006\225\"s2@@\186\188\144\004\b\196A\176\001\006\231\"v1@\166\150A\160\144\004\015@\188\166\005\007c\160\166\150D\160\004\007@\160\178\005\007\136\160\144\004\022@\160\176\192\005\007\135\001\001\007\001 \249\001!+\192\005\007\136\001\001\007\001 \249\001!4@A@\196@\176\001\006\233\005\004%@\178\004t\160\144\004\025\160\004\011@\160\176\192\005\007\145\001\001\b\001!8\001!U\192\005\007\146\001\001\b\001!8\001!`@A\178\144\004\247\160\178\144\0043\160\144\0041\160\166\150@\160\004$@\160\166\150@\160\144\004\025@@\160\176\192\005\007\165\001\001\t\001!d\001!}\192\005\007\166\001\001\t\001!d\001!\140@A\160\004\027\160\178\004\017\160\004\030\160\166\181@\144\004\166@\160\166\150B\160\0049@@\160\166\150A\160\004\021@@\160\176\192\005\007\185\001\001\t\001!d\001!\144\192\005\007\186\001\001\t\001!d\001!\163@@\160\178\004&\160\004%\160\166\150C\160\004H@\160\166\150B\160\004$@@\160\176\192\005\007\200\001\001\t\001!d\001!\164\192\005\007\201\001\001\t\001!d\001!\179@A@\160\176\192\005\007\204\001\001\t\001!d\001!n\004\004@A\169T@\188\144\004a\169T@\145\161@\144\005\007\152\160T@\188\144\004h\196A\176\001\006\240\"v2@\166\150A\160\144\004o@\196@\176\001\006\242\005\004z@\178\004\201\160\144\004\011\160\144\004y@\160\176\192\005\007\231\001\001\011\001!\222\001!\251\192\005\007\232\001\001\011\001!\222\001\"\006@A\178\004V\160\178\004U\160\004T\160\166\150@\160\144\004\019@\160\166\150@\160\004\025@@\160\176\192\005\007\248\001\001\012\001\"\n\001\"#\192\005\007\249\001\001\012\001\"\n\001\"2@A\160\004\025\160\178\004d\160\004\028\160\166\150A\160\004\017@\160\166\181@\144\004\253@\160\166\150B\160\004-@@@\160\176\192\005\b\012\001\001\012\001\"\n\001\"6\192\005\b\r\001\001\012\001\"\n\001\"I@@\160\178\004y\160\004x\160\166\150B\160\004$@\160\166\150C\160\004<@@\160\176\192\005\b\027\001\001\012\001\"\n\001\"J\192\005\b\028\001\001\012\001\"\n\001\"Y@A@\160\176\192\005\b\031\001\001\012\001\"\n\001\"\020\004\004@A\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\b/@\160\144\144\001\001\014\160\144\144J@@@@\165\160\160\176\001\006\246&filter@\179@\160\176\001\006\247!p@\160\176\001\006\248\005\bc@@\188\144\004\003\196A\176\001\006\251!d@\166\150B\160\004\007@\196A\176\001\006\252!v@\166\150A\160\004\r@\196@\176\001\006\254\"l'@\178\144\004\027\160\144\004\025\160\166\150@\160\004\024@@\160\176\192\005\b\\\001\001\020\001#\018\001#%\192\005\b]\001\001\020\001#\018\001#/@A\196@\176\001\006\255#pvd@\178\004\r\160\144\004\026\160\144\004\"@\160\176\192\005\bh\001\001\021\001#3\001#G\192\005\bi\001\001\021\001#3\001#L@@\196@\176\001\007\000\"r'@\178\004\027\160\004\026\160\166\150C\160\0041@@\160\176\192\005\bu\001\001\022\001#P\001#c\192\005\bv\001\001\022\001#P\001#m@A\188\144\004\026\178\005\002`\160\144\004,\160\004\026\160\004\025\160\144\004\021@\160\176\192\005\b\130\001\001\023\001#q\001#\135\192\005\b\131\001\001\023\001#q\001#\149@A\178\005\001\198\160\004\011\160\004\b@\160\176\192\005\b\137\001\001\023\001#q\001#\155\192\005\b\138\001\001\023\001#q\001#\167@A\145\161@\144\005\bR@\165\160\160\176\001\007\001)partition@\179@\160\176\001\007\002!p@\160\176\001\007\003\005\b\187@@\188\144\004\003\196A\176\001\007\006!d@\166\150B\160\004\007@\196A\176\001\007\007!v@\166\150A\160\004\r@\196@\176\001\007\t\005\005C@\178\144\004\026\160\144\004\024\160\166\150@\160\004\023@@\160\176\192\005\b\179\001\001\029\001$H\001$a\192\005\b\180\001\001\029\001$H\001$n@A\196A\176\001\007\n\"lf@\166\150A\160\144\004\020@\196A\176\001\007\011\"lt@\166\150@\160\004\007@\196@\176\001\007\012#pvd@\178\004\026\160\144\004&\160\144\004.@\160\176\192\005\b\204\001\001\030\001$r\001$\134\192\005\b\205\001\001\030\001$r\001$\139@@\196@\176\001\007\r\005\005j@\178\004'\160\004&\160\166\150C\160\004<@@\160\176\192\005\b\216\001\001\031\001$\143\001$\168\192\005\b\217\001\001\031\001$\143\001$\181@A\196A\176\001\007\014\"rf@\166\150A\160\144\004\018@\196A\176\001\007\015\"rt@\166\150@\160\004\007@\188\144\004&\166\005\006\005\160\178\005\002\210\160\144\0041\160\004(\160\004'\160\144\004\016@\160\176\192\005\b\244\001\001!\001$\202\001$\218\192\005\b\245\001\001!\001$\202\001$\232@A\160\178\005\0029\160\144\004D\160\144\004!@\160\176\192\005\b\254\001\001!\001$\202\001$\234\192\005\b\255\001\001!\001$\202\001$\246@A@\166\005\006\028\160\178\005\002D\160\004\023\160\004\020@\160\176\192\005\t\007\001\001\"\001$\248\001%\b\192\005\t\b\001\001\"\001$\248\001%\020@A\160\178\005\002\241\160\004\019\160\004F\160\004E\160\004\020@\160\176\192\005\t\017\001\001\"\001$\248\001%\022\192\005\t\018\001\001\"\001$\248\001%$@A@\145\178@@\160\161@\144\005\b\220\160\161@\144\005\b\223@@\165\160\160\176\001\007\016)cons_enum@\179@\160\176\001\007\017!m@\160\176\001\007\018!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\166\150C\160\004\024@\160\144\004\029@@\160\176\192\005\tD\001\001)\001%\179\001%\210\192\005\tE\001\001)\001%\179\001%\240@A\004\005@\196B\176\001\007\024'compare@\179@\160\176\001\007\025#cmp@\160\176\001\007\026\"m1@\160\176\001\007\027\"m2@@\165\160\160\176\001\007\028+compare_aux@\179@\160\176\001\007\029\"e1@\160\176\001\007\030\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\007)!c@\178\166\150@\160\005\007\129@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\tv\001\0012\001&\212\001&\232\192\005\tw\001\0012\001&\212\001&\249@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\196@\176\001\007*!c@\178\144\004;\160\166\150A\160\004\028@\160\166\150A\160\004\027@@\160\176\192\005\t\144\001\0014\001'\031\001'3\192\005\t\145\001\0014\001'\031\001'<@@\188\166\004\026\160\144\004\020\160\145\144\144@@\004\005\178\144\004F\160\178\004t\160\166\150B\160\0044@\160\166\150C\160\0048@@\160\176\192\005\t\168\001\0016\001'b\001'z\192\005\t\169\001\0016\001'b\001'\139@A\160\178\004\130\160\166\150B\160\004=@\160\166\150C\160\004A@@\160\176\192\005\t\182\001\0016\001'b\001'\140\192\005\t\183\001\0016\001'b\001'\157@A@\160\176\192\005\t\186\001\0016\001'b\001'n\004\004@A\145\144\144A\188\144\004c\145\144\144\000\255\145\144\144@@\178\004,\160\178\004\159\160\144\004}\160\145\161@\144#End@\160\176\192\005\t\210\001\0017\001'\158\001'\179\192\005\t\211\001\0017\001'\158\001'\197@A\160\178\004\172\160\144\004\135\160\145\161@\144\004\r@\160\176\192\005\t\222\001\0017\001'\158\001'\198\192\005\t\223\001\0017\001'\158\001'\216@A@\160\176\192\005\t\226\001\0017\001'\158\001'\167\004\004@A\196B\176\001\007+%equal@\179@\160\176\001\007,#cmp@\160\176\001\007-\"m1@\160\176\001\007.\"m2@@\165\160\160\176\001\007/)equal_aux@\179@\160\176\001\0070\"e1@\160\176\001\0071\"e2@@\188\144\004\007\188\144\004\006\166H\160\166\005\b\015\160\178\166\150@\160\005\b\031@\160\166\150@\160\144\004\022@\160\166\150@\160\144\004\024@@\160\176\192\005\n\020\001\001@\001(\194\001(\206\192\005\n\021\001\001@\001(\194\001(\223@@\160\145\144\144@@\160\166H\160\178\144\0047\160\166\150A\160\004\023@\160\166\150A\160\004\022@@\160\176\192\005\n)\001\001@\001(\194\001(\231\192\005\n*\001\001@\001(\194\001(\240@@\160\178\144\004;\160\178\005\001\006\160\166\150B\160\004(@\160\166\150C\160\004,@@\160\176\192\005\n:\001\001A\001(\244\001)\n\192\005\n;\001\001A\001(\244\001)\027@A\160\178\005\001\020\160\166\150B\160\0041@\160\166\150C\160\0045@@\160\176\192\005\nH\001\001A\001(\244\001)\028\192\005\nI\001\001A\001(\244\001)-@A@\160\176\192\005\nL\001\001A\001(\244\001)\000\004\004@A@@\145\161@\144\005\b\155\188\144\004X\145\161@\144\005\b\160\145\161A\144\005\b\159@\178\004,\160\178\005\0011\160\144\004r\160\145\161@\144\004\146@\160\176\192\005\nc\001\001B\001).\001)A\192\005\nd\001\001B\001).\001)S@A\160\178\005\001=\160\144\004{\160\145\161@\144\004\158@\160\176\192\005\no\001\001B\001).\001)T\192\005\np\001\001B\001).\001)f@A@\160\176\192\005\ns\001\001B\001).\001)7\004\004@A\165\160\160\176\001\007<(cardinal@\179@\160\176\001\007=\005\n\158@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\n\138\001\001F\001)\155\001)\186\192\005\n\139\001\001F\001)\155\001)\196@A\160\145\144\144A@\160\178\004\015\160\166\150C\160\004\025@@\160\176\192\005\n\152\001\001F\001)\155\001)\203\192\005\n\153\001\001F\001)\155\001)\213@A@\145\144\144@@\165\160\160\176\001\007C,bindings_aux@\179@\160\176\001\007D$accu@\160\176\001\007E\005\n\202@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\005\007\206\160\166\150A\160\004\014@\160\166\150B\160\004\018@@\160\178\004\018\160\144\004\027\160\166\150C\160\004\026@@\160\176\192\005\n\197\001\001J\001*\022\001*M\192\005\n\198\001\001J\001*\022\001*`@A@\160\166\150@\160\004\"@@\160\176\192\005\n\205\001\001J\001*\022\001*5\192\005\n\206\001\001J\001*\022\001*c@A\004\017@\196B\176\001\007K(bindings@\179@\160\176\001\007L!s@@\178\004,\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\n\224\001\001M\001*z\001*\128\192\005\n\225\001\001M\001*z\001*\145@A\166\181@C@\160\145\161@\144\005\n\172\160\144\005\t?\160\005\b7\160\005\b\215\160\005\005O\160\005\007\024\160\005\003X\160\144\005\001\170\160\144\005\001\015\160\005\006\238\160\005\006\031\160\005\005\218\160\005\005\162\160\005\002\165\160\005\002O\160\004w\160\144\004,\160\005\b\031\160\005\007\248\160\144\005\b2\160\005\003\233\160\005\b\146\160\005\006\197\160\005\006w@@A@")));
+                    "\132\149\166\190\000\000%b\000\000\011%\000\000#~\000\000#?\160\208@$Make\160\176A\160\160A\160\176\001\004\014#Ord@@@@\144\179@\160\176\001\005\128&funarg@@\196B\176\001\005\222&height@\179@\160\176\001\005\223%param@@\188\144\004\004\166\150D\160\004\004@\145\144\144@\196B\176\001\005\229&create@\179@\160\176\001\005\230!l@\160\176\001\005\231!x@\160\176\001\005\232!d@\160\176\001\005\233!r@@\196@\176\001\005\234\"hl@\178\144\004#\160\144\004\018@\160\176\192&map.ml\000@\001\t8\001\tG\192\004\002\000@\001\t8\001\tO@A\196@\176\001\005\235\"hr@\178\004\012\160\144\004\020@\160\176\192\004\011\000@\001\t8\001\tY\192\004\012\000@\001\t8\001\ta@A\166\181@\144$Node@\160\004\021\160\144\004%\160\144\004$\160\004\015\160\188\166\157E\160\144\004%\160\144\004\027@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\236)singleton@\179@\160\176\001\005\237!x@\160\176\001\005\238!d@@\166\181@\144\004(@\160\145\161@\144%Empty\160\144\004\015\160\144\004\014\160\145\161@\144\004\t\160\145\144\144A@\196B\176\001\005\239#bal@\179@\160\176\001\005\240!l@\160\176\001\005\241!x@\160\176\001\005\242!d@\160\176\001\005\243!r@@\196B\176\001\005\244\"hl@\188\144\004\016\166\150D\160\004\004@\145\144\144@\196B\176\001\005\250\"hr@\188\144\004\018\166\150D\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\006\001\"lr@\166\150C\160\004&@\196A\176\001\006\002\"ld@\166\150B\160\004,@\196A\176\001\006\003\"lv@\166\150A\160\0042@\196A\176\001\006\004\"ll@\166\150@\160\0048@\188\166\004}\160\178\004\158\160\144\004\011@\160\176\192\004\157\000L\001\n\244\001\011\003\192\004\158\000L\001\n\244\001\011\012@A\160\178\004\166\160\144\004%@\160\176\192\004\165\000L\001\n\244\001\011\016\192\004\166\000L\001\n\244\001\011\025@A@\178\144\004\193\160\004\016\160\144\004\"\160\144\004*\160\178\004\b\160\004\015\160\144\004b\160\144\004a\160\004N@\160\176\192\004\184\000M\001\011\031\001\011=\192\004\185\000M\001\011\031\001\011N@A@\160\176\192\004\188\000M\001\011\031\001\011-\004\004@A\188\004\028\178\004\023\160\178\004\025\160\004(\160\004\024\160\004\023\160\166\150@\160\004&@@\160\176\192\004\202\000R\001\011\223\001\011\248\192\004\203\000R\001\011\223\001\012\r@A\160\166\150A\160\004.@\160\166\150B\160\0042@\160\178\004.\160\166\150C\160\0048@\160\004)\160\004(\160\004u@\160\176\192\004\223\000R\001\011\223\001\012\022\192\004\224\000R\001\011\223\001\012(@A@\160\176\192\004\227\000R\001\011\223\001\011\241\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Map.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Map.bal@@@\188\166\004\142\160\004\137\160\166L\160\004\144\160\145\144\144B@@\188\004\160\196A\176\001\006\011\"rr@\166\150C\160\004\166@\196A\176\001\006\012\"rd@\166\150B\160\004\172@\196A\176\001\006\r\"rv@\166\150A\160\004\178@\196A\176\001\006\014\"rl@\166\150@\160\004\184@\188\166\005\001\b\160\178\005\001)\160\144\004\029@\160\176\192\005\001(\000X\001\012\197\001\012\212\192\005\001)\000X\001\012\197\001\012\221@A\160\178\005\0011\160\144\004\019@\160\176\192\005\0010\000X\001\012\197\001\012\225\192\005\0011\000X\001\012\197\001\012\234@A@\178\004\139\160\178\004\141\160\004\217\160\004\133\160\004\132\160\004\012@\160\176\192\005\001;\000Y\001\012\240\001\r\005\192\005\001<\000Y\001\012\240\001\r\022@A\160\144\004*\160\144\0042\160\004\029@\160\176\192\005\001D\000Y\001\012\240\001\012\254\192\005\001E\000Y\001\012\240\001\r\031@A\188\004\026\178\004\160\160\178\004\162\160\004\238\160\004\154\160\004\153\160\166\150@\160\004$@@\160\176\192\005\001S\000^\001\r\177\001\r\202\192\005\001T\000^\001\r\177\001\r\220@A\160\166\150A\160\004,@\160\166\150B\160\0040@\160\178\004\183\160\166\150C\160\0046@\160\004&\160\004%\160\004A@\160\176\192\005\001h\000^\001\r\177\001\r\229\192\005\001i\000^\001\r\177\001\r\250@A@\160\176\192\005\001l\000^\001\r\177\001\r\195\004\004@A\166\004\137\160\166\004\136\160\166\004\135@\160\145\144\162'Map.bal@@@\166\004\147\160\166\004\146\160\166\004\145@\160\145\144\162'Map.bal@@@\166\181@\144\005\001t@\160\005\001(\160\004\212\160\004\211\160\005\001 \160\188\166\005\001q\160\005\001\025\160\005\001\022@\166L\160\005\001\028\160\145\144\144A@\166L\160\005\001\030\160\145\144\144A@@\196B\176\001\006\021(is_empty@\179@\160\176\001\006\022\005\001\193@@\188\144\004\003\145\161@\144%false\145\161A\144$true\165\160\160\176\001\006\023#add@\179@\160\176\001\006\024!x@\160\176\001\006\025$data@\160\176\001\006\026\005\001\217@@\188\144\004\003\196A\176\001\006\028!r@\166\150C\160\004\007@\196A\176\001\006\029!d@\166\150B\160\004\r@\196A\176\001\006\030!v@\166\150A\160\004\019@\196A\176\001\006\031!l@\166\150@\160\004\025@\196@\176\001\006 !c@\178\166\150@\160\144\005\002\003@\160\144\004+\160\144\004\023@\160\176\192\005\001\223\000k\001\015%\001\0157\192\005\001\224\000k\001\015%\001\015F@@\188\166\157@\160\144\004\020\160\145\144\144@@\166\181@\144\005\001\221@\160\144\004#\160\004\022\160\144\004?\160\144\004:\160\166\150D\160\004@@@\188\166\157B\160\004\023\160\145\144\144@@\178\144\005\001\184\160\178\144\004Y\160\004,\160\004\022\160\004\026@\160\176\192\005\002\n\000o\001\015\162\001\015\178\192\005\002\011\000o\001\015\162\001\015\192@A\160\0041\160\144\004O\160\004\029@\160\176\192\005\002\018\000o\001\015\162\001\015\174\192\005\002\019\000o\001\015\162\001\015\198@A\178\004\020\160\004(\160\004;\160\004\n\160\178\004\022\160\004A\160\004+\160\004*@\160\176\192\005\002\031\000q\001\015\214\001\015\236\192\005\002 \000q\001\015\214\001\015\250@A@\160\176\192\005\002#\000q\001\015\214\001\015\226\004\004@A\166\181@\144\005\002\023@\160\145\161@\144\005\001\239\160\004R\160\004<\160\145\161@\144\005\001\245\160\145\144\144A@@\165\160\160\176\001\006!$find@\179@\160\176\001\006\"!x@\160\176\001\006#\005\002b@@\188\144\004\003\196@\176\001\006)!c@\178\166\150@\160\004q@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002Q\000w\001\016d\001\016v\192\005\002R\000w\001\016d\001\016\133@@\188\166\004r\160\144\004\020\160\145\144\144@@\166\150B\160\004\029@\178\144\004(\160\004\023\160\188\166\004j\160\004\015\160\145\144\144@@\166\150@\160\004+@\166\150C\160\004.@@\160\176\192\005\002q\000y\001\016\163\001\016\178\192\005\002r\000y\001\016\163\001\016\209@A\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\006*#mem@\179@\160\176\001\006+!x@\160\176\001\006,\005\002\167@@\188\144\004\003\196@\176\001\0062!c@\178\166\150@\160\004\182@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002\150\000\127\001\0170\001\017B\192\005\002\151\000\127\001\0170\001\017Q@@\166I\160\166\004\184\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\004\174\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150C\160\004-@@\160\176\192\005\002\181\001\000\128\001\017U\001\017h\192\005\002\182\001\000\128\001\017U\001\017\134@A@\145\161@\144\005\001\022@\165\160\160\176\001\0063+min_binding@\179@\160\176\001\0064\005\002\228@@\188\144\004\003\196A\176\001\0065!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\209\001\000\133\001\017\246\001\018\021\192\005\002\210\001\000\133\001\017\246\001\018\"@A\166\181@@@\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\166\156@\160\166\147\004j@@@\165\160\160\176\001\006>+max_binding@\179@\160\176\001\006?\005\003\012@@\188\144\004\003\196A\176\001\006@!r@\166\150C\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\249\001\000\138\001\018\146\001\018\177\192\005\002\250\001\000\138\001\018\146\001\018\190@A\166\004(\160\166\150A\160\004\021@\160\166\150B\160\004\025@@\166\156@\160\166\147\004\145@@@\165\160\160\176\001\006I2remove_min_binding@\179@\160\176\001\006J\005\0033@@\188\144\004\003\196A\176\001\006K!l@\166\150@\160\004\007@\188\144\004\007\178\005\001\027\160\178\144\004\019\160\004\006@\160\176\192\005\003\"\001\000\143\001\019A\001\019d\192\005\003#\001\000\143\001\019A\001\019z@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\166\150C\160\004\030@@\160\176\192\005\0032\001\000\143\001\019A\001\019`\192\005\0033\001\000\143\001\019A\001\019\128@A\166\004\007\160\004$@\166\005\002R\160\166\005\002Q\160\166\005\002P@\160\145\144\1622Map.remove_min_elt@@@@\196B\176\001\006T%merge@\179@\160\176\001\006U\"t1@\160\176\001\006V\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006Y%match@\178\004\133\160\144\004\012@\160\176\192\005\003V\001\000\150\001\019\244\001\020\011\192\005\003W\001\000\150\001\019\244\001\020\025@A\178\005\001X\160\144\004\022\160\166\150@\160\144\004\017@\160\166\150A\160\004\005@\160\178\004H\160\004\020@\160\176\192\005\003i\001\000\151\001\020\029\001\0202\192\005\003j\001\000\151\001\020\029\001\020I@A@\160\176\192\005\003m\001\000\151\001\020\029\001\020'\004\004@A\144\004*\144\004(\165\160\160\176\001\006\\&remove@\179@\160\176\001\006]!x@\160\176\001\006^\005\003\157@@\188\144\004\003\196A\176\001\006`!r@\166\150C\160\004\007@\196A\176\001\006a!d@\166\150B\160\004\r@\196A\176\001\006b!v@\166\150A\160\004\019@\196A\176\001\006c!l@\166\150@\160\004\025@\196@\176\001\006d!c@\178\166\150@\160\005\001\196@\160\144\004'\160\144\004\022@\160\176\192\005\003\162\001\000\157\001\020\171\001\020\189\192\005\003\163\001\000\157\001\020\171\001\020\204@@\188\166\005\001\195\160\144\004\018\160\145\144\144@@\178\144\004m\160\144\004 \160\144\0044@\160\176\192\005\003\180\001\000\159\001\020\232\001\020\244\192\005\003\181\001\000\159\001\020\232\001\020\253@A\188\166\005\001\190\160\004\018\160\145\144\144@@\178\005\001\189\160\178\144\004N\160\004%\160\004\020@\160\176\192\005\003\197\001\000\161\001\021\027\001\021+\192\005\003\198\001\000\161\001\021\027\001\0217@A\160\004)\160\144\004F\160\004\026@\160\176\192\005\003\205\001\000\161\001\021\027\001\021'\192\005\003\206\001\000\161\001\021\027\001\021=@A\178\005\001\207\160\004\"\160\0043\160\004\n\160\178\004\021\160\0049\160\004&@\160\176\192\005\003\217\001\000\163\001\021M\001\021c\192\005\003\218\001\000\163\001\021M\001\021o@A@\160\176\192\005\003\221\001\000\163\001\021M\001\021Y\004\004@A\145\161@\144\005\003\165@\165\160\160\176\001\006e$iter@\179@\160\176\001\006f!f@\160\176\001\006g\005\004\014@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\003\249\001\000\168\001\021\194\001\021\204\192\005\003\250\001\000\168\001\021\194\001\021\212@A\173\178\004\011\160\166\150A\160\004\020@\160\166\150B\160\004\024@@\160\176\192\005\004\007\001\000\168\001\021\194\001\021\214\192\005\004\b\001\000\168\001\021\194\001\021\219@@\178\004\026\160\004\025\160\166\150C\160\004\"@@\160\176\192\005\004\017\001\000\168\001\021\194\001\021\221\192\005\004\018\001\000\168\001\021\194\001\021\229@A\145\161@\144\"()@\165\160\160\176\001\006m#map@\179@\160\176\001\006n!f@\160\176\001\006o\005\004D@@\188\144\004\003\196@\176\001\006u\"l'@\178\144\004\015\160\144\004\r\160\166\150@\160\004\012@@\160\176\192\005\0041\001\000\174\001\022D\001\022W\192\005\0042\001\000\174\001\022D\001\022^@A\196@\176\001\006v\"d'@\178\004\r\160\166\150B\160\004\024@@\160\176\192\005\004=\001\000\175\001\022b\001\022u\192\005\004>\001\000\175\001\022b\001\022x@@\196@\176\001\006w\"r'@\178\004\027\160\004\026\160\166\150C\160\004%@@\160\176\192\005\004J\001\000\176\001\022|\001\022\143\192\005\004K\001\000\176\001\022|\001\022\150@A\166\181@\144\005\004?@\160\144\004,\160\166\150A\160\0042@\160\144\004#\160\144\004\025\160\166\150D\160\004:@@\145\161@\144\005\004$@\165\160\160\176\001\006x$mapi@\179@\160\176\001\006y!f@\160\176\001\006z\005\004\141@@\188\144\004\003\196A\176\001\006~!v@\166\150A\160\004\007@\196@\176\001\006\128\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\004\128\001\000\183\001\023\026\001\023-\192\005\004\129\001\000\183\001\023\026\001\0235@A\196@\176\001\006\129\"d'@\178\004\r\160\144\004\026\160\166\150B\160\004 @@\160\176\192\005\004\142\001\000\184\001\0239\001\023L\192\005\004\143\001\000\184\001\0239\001\023Q@@\196@\176\001\006\130\"r'@\178\004\029\160\004\028\160\166\150C\160\004-@@\160\176\192\005\004\155\001\000\185\001\023U\001\023h\192\005\004\156\001\000\185\001\023U\001\023p@A\166\181@\144\005\004\144@\160\144\004.\160\004\028\160\144\004\"\160\144\004\022\160\166\150D\160\004?@@\145\161@\144\005\004r@\165\160\160\176\001\006\131$fold@\179@\160\176\001\006\132!f@\160\176\001\006\133!m@\160\176\001\006\134$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150C\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\166\150B\160\004\019@\160\178\004\019\160\004\018\160\166\150@\160\004\026@\160\144\004\031@\160\176\192\005\004\220\001\000\192\001\023\250\001\024\020\192\005\004\221\001\000\192\001\023\250\001\024#@A@\160\176\192\005\004\224\001\000\192\001\023\250\001\024\r\192\005\004\225\001\000\192\001\023\250\001\024$@@@\160\176\192\005\004\228\001\000\192\001\023\250\001\024\004\004\004@A\004\012@\165\160\160\176\001\006\140'for_all@\179@\160\176\001\006\141!p@\160\176\001\006\142\005\005\018@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\005\000\001\000\196\001\024]\001\024|\192\005\005\001\001\000\196\001\024]\001\024\129@@\160\166H\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005\014\001\000\196\001\024]\001\024\133\192\005\005\015\001\000\196\001\024]\001\024\144@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005\025\001\000\196\001\024]\001\024\148\192\005\005\026\001\000\196\001\024]\001\024\159@A@@\145\161A\144\005\003v@\165\160\160\176\001\006\148&exists@\179@\160\176\001\006\149!p@\160\176\001\006\150\005\005K@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\0059\001\000\200\001\024\216\001\024\247\192\005\005:\001\000\200\001\024\216\001\024\252@@\160\166I\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005G\001\000\200\001\024\216\001\025\000\192\005\005H\001\000\200\001\024\216\001\025\n@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005R\001\000\200\001\024\216\001\025\014\192\005\005S\001\000\200\001\024\216\001\025\024@A@@\145\161@\144\005\003\179@\165\160\160\176\001\006\156/add_min_binding@\179@\160\176\001\006\157!k@\160\176\001\006\158!v@\160\176\001\006\159\005\005\135@@\188\144\004\003\178\005\003g\160\178\144\004\017\160\144\004\015\160\144\004\014\160\166\150@\160\004\r@@\160\176\192\005\005u\001\000\213\001\026\199\001\026\211\192\005\005v\001\000\213\001\026\199\001\026\234@A\160\166\150A\160\004\021@\160\166\150B\160\004\025@\160\166\150C\160\004\029@@\160\176\192\005\005\133\001\000\213\001\026\199\001\026\207\192\005\005\134\001\000\213\001\026\199\001\026\240@A\178\144\005\005]\160\004\030\160\004\029@\160\176\192\005\005\141\001\000\211\001\026\136\001\026\153\192\005\005\142\001\000\211\001\026\136\001\026\166@A@\165\160\160\176\001\006\165/add_max_binding@\179@\160\176\001\006\166!k@\160\176\001\006\167!v@\160\176\001\006\168\005\005\191@@\188\144\004\003\178\005\003\159\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\166\150B\160\004\014@\160\178\144\004\029\160\144\004\027\160\144\004\026\160\166\150C\160\004\025@@\160\176\192\005\005\185\001\000\218\001\027\\\001\027n\192\005\005\186\001\000\218\001\027\\\001\027\133@A@\160\176\192\005\005\189\001\000\218\001\027\\\001\027d\004\004@A\178\0047\160\004\016\160\004\015@\160\176\192\005\005\195\001\000\216\001\027\029\001\027.\192\005\005\196\001\000\216\001\027\029\001\027;@A@\165\160\160\176\001\006\174$join@\179@\160\176\001\006\175!l@\160\176\001\006\176!v@\160\176\001\006\177!d@\160\176\001\006\178!r@@\188\144\004\r\188\144\004\006\196A\176\001\006\181\"rh@\166\150D\160\144\004\r@\196A\176\001\006\186\"lh@\166\150D\160\144\004\029@\188\166\005\005z\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\005\003\245\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\178\144\004=\160\166\150C\160\004!@\160\144\004<\160\144\004;\160\144\004:@\160\176\192\005\006\017\001\000\228\001\028\188\001\028\231\192\005\006\018\001\000\228\001\028\188\001\028\246@A@\160\176\192\005\006\021\001\000\228\001\028\188\001\028\218\004\004@A\188\166\005\005\167\160\004)\160\166L\160\0040\160\145\144\144B@@\178\005\004 \160\178\004\031\160\144\004Y\160\004\028\160\004\027\160\166\150@\160\004J@@\160\176\192\005\006-\001\000\229\001\028\252\001\029\030\192\005\006.\001\000\229\001\028\252\001\029-@A\160\166\150A\160\004R@\160\166\150B\160\004V@\160\166\150C\160\004Z@@\160\176\192\005\006=\001\000\229\001\028\252\001\029\026\192\005\006>\001\000\229\001\028\252\001\0296@A\178\005\005\152\160\004\029\160\0048\160\0047\160\0046@\160\176\192\005\006F\001\000\230\001\029<\001\029F\192\005\006G\001\000\230\001\029<\001\029T@A\178\004\155\160\004@\160\004?\160\004(@\160\176\192\005\006N\001\000\226\001\028P\001\028f\192\005\006O\001\000\226\001\028P\001\028{@A\178\004\231\160\004H\160\004G\160\004F@\160\176\192\005\006V\001\000\225\001\028$\001\028:\192\005\006W\001\000\225\001\028$\001\028O@A@\196B\176\001\006\191&concat@\179@\160\176\001\006\192\"t1@\160\176\001\006\193\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006\196\005\003\024@\178\005\003\156\160\144\004\011@\160\176\192\005\006m\001\000\241\001\030_\001\030v\192\005\006n\001\000\241\001\030_\001\030\132@A\178\004l\160\144\004\021\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\003_\160\004\020@\160\176\192\005\006\128\001\000\242\001\030\136\001\030\158\192\005\006\129\001\000\242\001\030\136\001\030\181@A@\160\176\192\005\006\132\001\000\242\001\030\136\001\030\146\004\004@A\144\004)\144\004'\196B\176\001\006\199.concat_or_join@\179@\160\176\001\006\200\"t1@\160\176\001\006\201!v@\160\176\001\006\202!d@\160\176\001\006\203\"t2@@\188\144\004\007\178\004\150\160\144\004\016\160\144\004\015\160\166\150@\160\004\n@\160\144\004\015@\160\176\192\005\006\166\001\000\246\001\030\237\001\030\255\192\005\006\167\001\000\246\001\030\237\001\031\r@A\178\144\004Q\160\004\016\160\004\t@\160\176\192\005\006\174\001\000\247\001\031\014\001\031\030\192\005\006\175\001\000\247\001\031\014\001\031*@A\165\160\160\176\001\006\205%split@\179@\160\176\001\006\206!x@\160\176\001\006\207\005\006\221@@\188\144\004\003\196A\176\001\006\209!r@\166\150C\160\004\007@\196A\176\001\006\210!d@\166\150B\160\004\r@\196A\176\001\006\211!v@\166\150A\160\004\019@\196A\176\001\006\212!l@\166\150@\160\004\025@\196@\176\001\006\213!c@\178\166\150@\160\005\005\004@\160\144\004'\160\144\004\022@\160\176\192\005\006\226\001\000\253\001\031\154\001\031\172\192\005\006\227\001\000\253\001\031\154\001\031\187@@\188\166\005\005\003\160\144\004\018\160\145\144\144@@\166\005\004\025\160\144\004\031\160\166\181@\144$Some@\160\144\0042@\160\144\004:@\188\166\005\005\000\160\004\020\160\145\144\144@@\196@\176\001\006\214\005\003\177@\178\144\004P\160\004'\160\004\023@\160\176\192\005\007\007\001\001\000\001 \003\001 $\192\005\007\b\001\001\000\001 \003\001 -@A\166\005\0046\160\166\150@\160\144\004\015@\160\166\150A\160\004\005@\160\178\005\001\017\160\166\150B\160\004\011@\160\004;\160\004&\160\004%@\160\176\192\005\007\030\001\001\000\001 \003\001 <\192\005\007\031\001\001\000\001 \003\001 I@A@\196@\176\001\006\218\005\003\210@\178\004!\160\004G\160\004.@\160\176\192\005\007'\001\001\002\001 Z\001 {\192\005\007(\001\001\002\001 Z\001 \132@A\166\005\004V\160\178\005\001(\160\004?\160\004O\160\004:\160\166\150@\160\144\004\019@@\160\176\192\005\0076\001\001\002\001 Z\001 \137\192\005\0077\001\001\002\001 Z\001 \150@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\007\t\160\161@\144$None\160\161@\144\005\007\016@@\165\160\160\176\001\006\222%merge@\179@\160\176\001\006\223!f@\160\176\001\006\224\"s1@\160\176\001\006\225\"s2@@\186\188\144\004\b\196A\176\001\006\231\"v1@\166\150A\160\144\004\015@\188\166\005\007M\160\166\150D\160\004\007@\160\178\005\007r\160\144\004\022@\160\176\192\005\007q\001\001\007\001 \249\001!+\192\005\007r\001\001\007\001 \249\001!4@A@\196@\176\001\006\233\005\004%@\178\004t\160\144\004\025\160\004\011@\160\176\192\005\007{\001\001\b\001!8\001!U\192\005\007|\001\001\b\001!8\001!`@A\178\144\004\247\160\178\144\0043\160\144\0041\160\166\150@\160\004$@\160\166\150@\160\144\004\025@@\160\176\192\005\007\143\001\001\t\001!d\001!}\192\005\007\144\001\001\t\001!d\001!\140@A\160\004\027\160\178\004\017\160\004\030\160\166\181@\144\004\166@\160\166\150B\160\0049@@\160\166\150A\160\004\021@@\160\176\192\005\007\163\001\001\t\001!d\001!\144\192\005\007\164\001\001\t\001!d\001!\163@@\160\178\004&\160\004%\160\166\150C\160\004H@\160\166\150B\160\004$@@\160\176\192\005\007\178\001\001\t\001!d\001!\164\192\005\007\179\001\001\t\001!d\001!\179@A@\160\176\192\005\007\182\001\001\t\001!d\001!n\004\004@A\169T@\188\144\004a\169T@\145\161@\144\005\007\130\160T@\188\144\004h\196A\176\001\006\240\"v2@\166\150A\160\144\004o@\196@\176\001\006\242\005\004z@\178\004\201\160\144\004\011\160\144\004y@\160\176\192\005\007\209\001\001\011\001!\222\001!\251\192\005\007\210\001\001\011\001!\222\001\"\006@A\178\004V\160\178\004U\160\004T\160\166\150@\160\144\004\019@\160\166\150@\160\004\025@@\160\176\192\005\007\226\001\001\012\001\"\n\001\"#\192\005\007\227\001\001\012\001\"\n\001\"2@A\160\004\025\160\178\004d\160\004\028\160\166\150A\160\004\017@\160\166\181@\144\004\253@\160\166\150B\160\004-@@@\160\176\192\005\007\246\001\001\012\001\"\n\001\"6\192\005\007\247\001\001\012\001\"\n\001\"I@@\160\178\004y\160\004x\160\166\150B\160\004$@\160\166\150C\160\004<@@\160\176\192\005\b\005\001\001\012\001\"\n\001\"J\192\005\b\006\001\001\012\001\"\n\001\"Y@A@\160\176\192\005\b\t\001\001\012\001\"\n\001\"\020\004\004@A\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\b\025@\160\144\144\001\001\014\160\144\144J@@@@\165\160\160\176\001\006\246&filter@\179@\160\176\001\006\247!p@\160\176\001\006\248\005\bM@@\188\144\004\003\196A\176\001\006\251!d@\166\150B\160\004\007@\196A\176\001\006\252!v@\166\150A\160\004\r@\196@\176\001\006\254\"l'@\178\144\004\027\160\144\004\025\160\166\150@\160\004\024@@\160\176\192\005\bF\001\001\020\001#\018\001#%\192\005\bG\001\001\020\001#\018\001#/@A\196@\176\001\006\255#pvd@\178\004\r\160\144\004\026\160\144\004\"@\160\176\192\005\bR\001\001\021\001#3\001#G\192\005\bS\001\001\021\001#3\001#L@@\196@\176\001\007\000\"r'@\178\004\027\160\004\026\160\166\150C\160\0041@@\160\176\192\005\b_\001\001\022\001#P\001#c\192\005\b`\001\001\022\001#P\001#m@A\188\144\004\026\178\005\002`\160\144\004,\160\004\026\160\004\025\160\144\004\021@\160\176\192\005\bl\001\001\023\001#q\001#\135\192\005\bm\001\001\023\001#q\001#\149@A\178\005\001\198\160\004\011\160\004\b@\160\176\192\005\bs\001\001\023\001#q\001#\155\192\005\bt\001\001\023\001#q\001#\167@A\145\161@\144\005\b<@\165\160\160\176\001\007\001)partition@\179@\160\176\001\007\002!p@\160\176\001\007\003\005\b\165@@\188\144\004\003\196A\176\001\007\006!d@\166\150B\160\004\007@\196A\176\001\007\007!v@\166\150A\160\004\r@\196@\176\001\007\t\005\005C@\178\144\004\026\160\144\004\024\160\166\150@\160\004\023@@\160\176\192\005\b\157\001\001\029\001$H\001$a\192\005\b\158\001\001\029\001$H\001$n@A\196A\176\001\007\n\"lf@\166\150A\160\144\004\020@\196A\176\001\007\011\"lt@\166\150@\160\004\007@\196@\176\001\007\012#pvd@\178\004\026\160\144\004&\160\144\004.@\160\176\192\005\b\182\001\001\030\001$r\001$\134\192\005\b\183\001\001\030\001$r\001$\139@@\196@\176\001\007\r\005\005j@\178\004'\160\004&\160\166\150C\160\004<@@\160\176\192\005\b\194\001\001\031\001$\143\001$\168\192\005\b\195\001\001\031\001$\143\001$\181@A\196A\176\001\007\014\"rf@\166\150A\160\144\004\018@\196A\176\001\007\015\"rt@\166\150@\160\004\007@\188\144\004&\166\005\006\000\160\178\005\002\210\160\144\0041\160\004(\160\004'\160\144\004\016@\160\176\192\005\b\222\001\001!\001$\202\001$\218\192\005\b\223\001\001!\001$\202\001$\232@A\160\178\005\0029\160\144\004D\160\144\004!@\160\176\192\005\b\232\001\001!\001$\202\001$\234\192\005\b\233\001\001!\001$\202\001$\246@A@\166\005\006\023\160\178\005\002D\160\004\023\160\004\020@\160\176\192\005\b\241\001\001\"\001$\248\001%\b\192\005\b\242\001\001\"\001$\248\001%\020@A\160\178\005\002\241\160\004\019\160\004F\160\004E\160\004\020@\160\176\192\005\b\251\001\001\"\001$\248\001%\022\192\005\b\252\001\001\"\001$\248\001%$@A@\145\178@@\160\161@\144\005\b\198\160\161@\144\005\b\201@@\165\160\160\176\001\007\016)cons_enum@\179@\160\176\001\007\017!m@\160\176\001\007\018!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\166\150C\160\004\024@\160\144\004\029@@\160\176\192\005\t.\001\001)\001%\179\001%\210\192\005\t/\001\001)\001%\179\001%\240@A\004\005@\196B\176\001\007\024'compare@\179@\160\176\001\007\025#cmp@\160\176\001\007\026\"m1@\160\176\001\007\027\"m2@@\165\160\160\176\001\007\028+compare_aux@\179@\160\176\001\007\029\"e1@\160\176\001\007\030\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\007)!c@\178\166\150@\160\005\007|@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\t`\001\0012\001&\212\001&\232\192\005\ta\001\0012\001&\212\001&\249@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\196@\176\001\007*!c@\178\144\004;\160\166\150A\160\004\028@\160\166\150A\160\004\027@@\160\176\192\005\tz\001\0014\001'\031\001'3\192\005\t{\001\0014\001'\031\001'<@@\188\166\004\026\160\144\004\020\160\145\144\144@@\004\005\178\144\004F\160\178\004t\160\166\150B\160\0044@\160\166\150C\160\0048@@\160\176\192\005\t\146\001\0016\001'b\001'z\192\005\t\147\001\0016\001'b\001'\139@A\160\178\004\130\160\166\150B\160\004=@\160\166\150C\160\004A@@\160\176\192\005\t\160\001\0016\001'b\001'\140\192\005\t\161\001\0016\001'b\001'\157@A@\160\176\192\005\t\164\001\0016\001'b\001'n\004\004@A\145\144\144A\188\144\004c\145\144\144\000\255\145\144\144@@\178\004,\160\178\004\159\160\144\004}\160\145\161@\144#End@\160\176\192\005\t\188\001\0017\001'\158\001'\179\192\005\t\189\001\0017\001'\158\001'\197@A\160\178\004\172\160\144\004\135\160\145\161@\144\004\r@\160\176\192\005\t\200\001\0017\001'\158\001'\198\192\005\t\201\001\0017\001'\158\001'\216@A@\160\176\192\005\t\204\001\0017\001'\158\001'\167\004\004@A\196B\176\001\007+%equal@\179@\160\176\001\007,#cmp@\160\176\001\007-\"m1@\160\176\001\007.\"m2@@\165\160\160\176\001\007/)equal_aux@\179@\160\176\001\0070\"e1@\160\176\001\0071\"e2@@\188\144\004\007\188\144\004\006\166H\160\166\005\b\n\160\178\166\150@\160\005\b\026@\160\166\150@\160\144\004\022@\160\166\150@\160\144\004\024@@\160\176\192\005\t\254\001\001@\001(\194\001(\206\192\005\t\255\001\001@\001(\194\001(\223@@\160\145\144\144@@\160\166H\160\178\144\0047\160\166\150A\160\004\023@\160\166\150A\160\004\022@@\160\176\192\005\n\019\001\001@\001(\194\001(\231\192\005\n\020\001\001@\001(\194\001(\240@@\160\178\144\004;\160\178\005\001\006\160\166\150B\160\004(@\160\166\150C\160\004,@@\160\176\192\005\n$\001\001A\001(\244\001)\n\192\005\n%\001\001A\001(\244\001)\027@A\160\178\005\001\020\160\166\150B\160\0041@\160\166\150C\160\0045@@\160\176\192\005\n2\001\001A\001(\244\001)\028\192\005\n3\001\001A\001(\244\001)-@A@\160\176\192\005\n6\001\001A\001(\244\001)\000\004\004@A@@\145\161@\144\005\b\150\188\144\004X\145\161@\144\005\b\155\145\161A\144\005\b\154@\178\004,\160\178\005\0011\160\144\004r\160\145\161@\144\004\146@\160\176\192\005\nM\001\001B\001).\001)A\192\005\nN\001\001B\001).\001)S@A\160\178\005\001=\160\144\004{\160\145\161@\144\004\158@\160\176\192\005\nY\001\001B\001).\001)T\192\005\nZ\001\001B\001).\001)f@A@\160\176\192\005\n]\001\001B\001).\001)7\004\004@A\165\160\160\176\001\007<(cardinal@\179@\160\176\001\007=\005\n\136@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\nt\001\001F\001)\155\001)\186\192\005\nu\001\001F\001)\155\001)\196@A\160\145\144\144A@\160\178\004\015\160\166\150C\160\004\025@@\160\176\192\005\n\130\001\001F\001)\155\001)\203\192\005\n\131\001\001F\001)\155\001)\213@A@\145\144\144@@\165\160\160\176\001\007C,bindings_aux@\179@\160\176\001\007D$accu@\160\176\001\007E\005\n\180@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\005\007\201\160\166\150A\160\004\014@\160\166\150B\160\004\018@@\160\178\004\018\160\144\004\027\160\166\150C\160\004\026@@\160\176\192\005\n\175\001\001J\001*\022\001*M\192\005\n\176\001\001J\001*\022\001*`@A@\160\166\150@\160\004\"@@\160\176\192\005\n\183\001\001J\001*\022\001*5\192\005\n\184\001\001J\001*\022\001*c@A\004\017@\196B\176\001\007K(bindings@\179@\160\176\001\007L!s@@\178\004,\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\n\202\001\001M\001*z\001*\128\192\005\n\203\001\001M\001*z\001*\145@A\166\181@C@\160\145\161@\144\005\n\150\160\144\005\t:\160\005\b2\160\005\b\210\160\005\005O\160\005\007\024\160\005\003X\160\144\005\001\170\160\144\005\001\015\160\005\006\238\160\005\006\031\160\005\005\218\160\005\005\162\160\005\002\165\160\005\002O\160\004w\160\144\004,\160\005\b\026\160\005\007\243\160\144\005\b-\160\005\003\233\160\005\b\141\160\005\006\197\160\005\006w@@A@")));
             ("marshal.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\0017\000\000\000O\000\000\001\025\000\000\001\n\160\208\208\208\208@)data_size\160\176@\160\160B\160\176\001\004\003$buff@\160\176\001\004\004#ofs@@@@@@A*from_bytes\160\176@\160\160B\160\176\001\004\t$buff@\160\176\001\004\n#ofs@@@@@@B,from_channel\160@@\208@+from_string\160\176@\160\160B\160\176\001\004\r$buff@\160\176\001\004\014#ofs@@@@@\208@+header_size\160@@@ABC)to_buffer\160\176@\160\160E\160\176\001\003\249$buff@\160\176\001\003\250#ofs@\160\176\001\003\251#len@\160\176\001\003\252!v@\160\176\001\003\253%flags@@@@@\208@*to_channel\160@@\208@*total_size\160\176A\160\160B\160\176\001\004\006$buff@\160\176\001\004\007#ofs@@@@@@ABD@")));
+                    "\132\149\166\190\000\000\002\154\000\000\000\164\000\000\0026\000\000\002\027\160\208\208\208\208@)data_size\160\176@\160\160B\160\176\001\004\003$buff@\160\176\001\004\004#ofs@@@@@@A*from_bytes\160\176@\160\160B\160\176\001\004\t$buff@\160\176\001\004\n#ofs@@@@@@B,from_channel\160@\144\179@\160\176\001\004\018$prim@@\166\155\2400caml_input_valueAA @@\144\176\193 \176\179\177\144\176@*PervasivesA*in_channel\000\255@\144@\002\005\245\225\000\001\007U\176\150\176\144\144!a\002\005\245\225\000\001\007[\001\003\254\001\007X@\002\005\245\225\000\001\007Y\160\144\004\027@\208@+from_string\160\176@\160\160B\160\176\001\004\r$buff@\160\176\001\004\014#ofs@@@@@\208@+header_size\160@@@ABC)to_buffer\160\176@\160\160E\160\176\001\003\249$buff@\160\176\001\003\250#ofs@\160\176\001\003\251#len@\160\176\001\003\252!v@\160\176\001\003\253%flags@@@@@\208@*to_channel\160@\144\179@\160\176\001\004\017\004D@\160\176\001\004\016\004F@\160\176\001\004\015\004H@@\166\155\2401caml_output_valueCA\004G@@\144\176\193\004F\176\179\177\004E+out_channel\000\255@\144@\002\005\245\225\000\001\002\237\176\193\004M\176\150\176\144\144!a\002\005\245\225\000\001\005\174\001\003\244\001\005\158\176\193\004U\176\179\144\176I$list@\160\176\179\144\176\001\003\240,extern_flags@@\144@\002\005\245\225\000\001\005\159@\144@\002\005\245\225\000\001\005\163\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\005\167@\002\005\245\225\000\001\005\170@\002\005\245\225\000\001\005\171@\002\005\245\225\000\001\005\172\160\144\0040\160\144\0040\160\144\0040@\208@*total_size\160\176A\160\160B\160\176\001\004\006$buff@\160\176\001\004\007#ofs@@@@@@ABD@")));
             ("moreLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000I\000\000\000\026\000\000\000O\000\000\000M\160\208@'Hashtbl\160@\144\166\147\176@'HashtblA@\208@#Map\160@\144\166\147\176@#MapA@\208@#Set\160@\144\166\147\176@#SetA@@ABC\144\004\018")));
+                    "\132\149\166\190\000\000\000-\000\000\000\012\000\000\000*\000\000\000(\160\208@'Hashtbl\160@@\208@#Map\160@@\208@#Set\160@@@ABC\144'Hashtbl")));
             ("nativeint.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\001\003\000\000\000N\000\000\001\022\000\000\001\012\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\022!x@\160\176\001\004\023!y@@@@@@A&lognot\160\176A\160\160A\160\176\001\004\015!n@@@@@@BC'max_int\160\176A@@@\208\208@'min_int\160\004\005@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\b!n@@@@@\208@$size\160\176A@@@@AB$succ\160\176A\160\160A\160\176\001\004\006!n@@@@@\208\208@)to_string\160\176@\160\160A\160\176\001\004\018!n@@@@@@A$zero\160@@@BCE@")));
+                    "\132\149\166\190\000\000\002\018\000\000\000\157\000\000\002\004\000\000\001\242\160\208\208\208@#abs\160\176@\160\160A\160\176\001\004\n!n@@@@@\208\208@'compare\160\176@\160\160B\160\176\001\004\022!x@\160\176\001\004\023!y@@@@\144\179@\004\b\166\155\2406caml_nativeint_compareB@ @@@\160\144\004\014\160\144\004\r@@A&lognot\160\176A\160\160A\160\176\001\004\015!n@@@@\144\179@\004\005\166\b\000\000\004\"@\160\144\004\b\160\145\144\150\018_n\000\001\255\255\255\255@@BC'max_int\160\176A@@@\208\208@'min_int\160\004\005@@A)minus_one\160@@@BD#one\160@@\208\208@$pred\160\176A\160\160A\160\176\001\004\b!n@@@@\144\179@\004\005\166\b\000\000\004\028@\160\144\004\b\160\145\144\150\018_n\000\001\000\000\000\001@\208@$size\160\176A@@@@AB$succ\160\176A\160\160A\160\176\001\004\006!n@@@@\144\179@\004\005\166\b\000\000\004\027@\160\144\004\b\160\145\144\150\018_n\000\001\000\000\000\001@\208\208@)to_string\160\176@\160\160A\160\176\001\004\018!n@@@@\144\179@\004\005\166\155\2405caml_nativeint_formatBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\004c\176\193\004\t\176\179\144\176K)nativeint@@\144@\002\005\245\225\000\001\004f\176\179\004\014@\144@\002\005\245\225\000\001\004i@\002\005\245\225\000\001\004l@\002\005\245\225\000\001\004m\160\145\144\162\"%d@\160\144\004%@@A$zero\160@@@BCE@")));
             ("obj.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002u\000\000\000\127\000\000\001\249\000\000\001\210\160\208\208\208\208@,abstract_tag\160@@@A+closure_tag\160@@\208\208@*custom_tag\160@@@A0double_array_tag\160@@@BC,double_field\160\176A\160\160B\160\176\001\003\252!x@\160\176\001\003\253!i@@@@@\208\208@*double_tag\160@@\208@,extension_id\160\176A\160\160A\160\176\001\004%!x@@@@@@AB.extension_name\160\176A\160\160A\160\176\001\004\"!x@@@@@\208\208@.extension_slot\160\176@\160\160A\160\176\001\004(!x@@@@@@A)final_tag\160@@@BCD\t\"first_non_constant_constructor_tag\160@@\208\208\208\208@+forward_tag\160@@@A)infix_tag\160@@\208@'int_tag\160@@@AB\t!last_non_constant_constructor_tag\160@@@C(lazy_tag\160@@\208\208\208\208@'marshal\160\176@\160\160A\160\176\001\004\007#obj@@@@@@A+no_scan_tag\160@@@B*object_tag\160@@\208@/out_of_heap_tag\160@@@AC0set_double_field\160\176A\160\160C\160\176\001\003\255!x@\160\176\001\004\000!i@\160\176\001\004\001!v@@@@@\208@*string_tag\160@@\208@-unaligned_tag\160@@\208@)unmarshal\160\176A\160\160B\160\176\001\004\t#str@\160\176\001\004\n#pos@@@@@@ABCDEF@")));
+                    "\132\149\166\190\000\000\004]\000\000\000\209\000\000\003*\000\000\002\225\160\208\208\208\208@,abstract_tag\160@@@A+closure_tag\160@@\208\208@*custom_tag\160@@@A0double_array_tag\160@@@BC,double_field\160\176A\160\160B\160\176\001\003\252!x@\160\176\001\003\253!i@@@@\144\179@\004\b\166\b\000\000\004\021C\160\144\004\011\160\144\004\n@\208\208@*double_tag\160@@\208@,extension_id\160\176A\160\160A\160\176\001\004%!x@@@@@@AB.extension_name\160\176A\160\160A\160\176\001\004\"!x@@@@@\208\208@.extension_slot\160\176@\160\160A\160\176\001\004(!x@@@@@@A)final_tag\160@@@BCD\t\"first_non_constant_constructor_tag\160@@\208\208\208\208@+forward_tag\160@@@A)infix_tag\160@@\208@'int_tag\160@@@AB\t!last_non_constant_constructor_tag\160@@@C(lazy_tag\160@@\208\208\208\208@'marshal\160\176@\160\160A\160\176\001\004\007#obj@@@@\144\179@\004\005\166\155\240;caml_output_value_to_stringBA @\160\160\160)ocaml.doc\176\192&_none_A@\000\255\004\002A\144\160\160\160\176\145\162\t\188 [Marshal.to_bytes v flags] returns a byte sequence containing\n   the representation of [v].\n   The [flags] argument has the same meaning as for\n   {!Marshal.to_channel}.\n   @since 4.02.0 @\176\192+marshal.mli\000r\001\024\164\001\024\164\192\004\002\000v\001\025R\001\025e@@@\004\004@@\144\176\193 \176\150\176\144\144!a\002\005\245\225\000\001\005\190\001\003\245\001\005\175\176\193\004\t\176\179\144\176I$list@\160\176\179\144\176\001\003\240,extern_flags@@\144@\002\005\245\225\000\001\005\176@\144@\002\005\245\225\000\001\005\180\176\179\144\176O%bytes@@\144@\002\005\245\225\000\001\005\184@\002\005\245\225\000\001\005\187@\002\005\245\225\000\001\005\188\160\144\004=\160\145\161@\144\"[]@@A+no_scan_tag\160@@@B*object_tag\160@@\208@/out_of_heap_tag\160@@@AC0set_double_field\160\176A\160\160C\160\176\001\003\255!x@\160\176\001\004\000!i@\160\176\001\004\001!v@@@@\144\179@\004\011\166\b\000\000\004\022C\160\144\004\014\160\144\004\r\160\144\004\012@\208@*string_tag\160@@\208@-unaligned_tag\160@@\208@)unmarshal\160\176A\160\160B\160\176\001\004\t#str@\160\176\001\004\n#pos@@@@@@ABCDEF@")));
             ("oo.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5424,15 +5597,15 @@ include
             ("parsing.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002&\000\000\000\136\000\000\001\245\000\000\001\217\160\208\208\208\208@+Parse_error\160\176@@@@\208@&YYexit\160\004\004@@AB,clear_parser\160\176A\160\160A\160\176\001\004g%param@@@@@\208@4is_current_lookahead\160\176@\160\160A\160\176\001\004Y#tok@@@@@\208@+parse_error\160\176A\160\160A\160\176\001\004[#msg@@@@@@ABC(peek_val\160\176A\160\160B\160\176\001\004F#env@\160\176\001\004G!n@@@@@\208@'rhs_end\160\176@\160\160A\160\176\001\004W!n@@@@@\208@+rhs_end_pos\160\176A\160\160A\160\176\001\004Q!n@@@@@@ABD)rhs_start\160\176@\160\160A\160\176\001\004U!n@@@@@\208\208@-rhs_start_pos\160\176A\160\160A\160\176\001\004O!n@@@@@\208@)set_trace\160@@@AB*symbol_end\160\176@\160\160A\160\176\001\004]\004L@@@@@\208\208@.symbol_end_pos\160\176A\160\160A\160\176\001\004_\004U@@@@@@A,symbol_start\160\176@\160\160A\160\176\001\004^\004\\@@@@@\208@0symbol_start_pos\160\176@\160\160A\160\176\001\004`\004d@@@@@\208@'yyparse\160\176@\160\160D\160\176\001\0040&tables@\160\176\001\0041%start@\160\176\001\0042%lexer@\160\176\001\0043&lexbuf@@@@@@ABCDE@")));
+                    "\132\149\166\190\000\000\002\148\000\000\000\167\000\000\002Y\000\000\0028\160\208\208\208\208@+Parse_error\160\176@@@@\208@&YYexit\160\004\004@@AB,clear_parser\160\176A\160\160A\160\176\001\004g%param@@@@@\208@4is_current_lookahead\160\176@\160\160A\160\176\001\004Y#tok@@@@@\208@+parse_error\160\176A\160\160A\160\176\001\004[#msg@@@@\144\179@\004\005\145\161@\144\"()@ABC(peek_val\160\176A\160\160B\160\176\001\004F#env@\160\176\001\004G!n@@@@@\208@'rhs_end\160\176@\160\160A\160\176\001\004W!n@@@@@\208@+rhs_end_pos\160\176A\160\160A\160\176\001\004Q!n@@@@@@ABD)rhs_start\160\176@\160\160A\160\176\001\004U!n@@@@@\208\208@-rhs_start_pos\160\176A\160\160A\160\176\001\004O!n@@@@@\208@)set_trace\160@\144\179@\160\176\001\004\\$prim@@\166\155\2405caml_set_parser_traceAA @@\144\176\193 \176\179\144\176E$bool@@\144@\002\005\245\225\000\001\005\242\176\179\004\006@\144@\002\005\245\225\000\001\005\245@\002\005\245\225\000\001\005\248\160\144\004\022@@AB*symbol_end\160\176@\160\160A\160\176\001\004]\004k@@@@@\208\208@.symbol_end_pos\160\176A\160\160A\160\176\001\004_\004t@@@@@@A,symbol_start\160\176@\160\160A\160\176\001\004^\004{@@@@@\208@0symbol_start_pos\160\176@\160\160A\160\176\001\004`\004\131@@@@@\208@'yyparse\160\176@\160\160D\160\176\001\0040&tables@\160\176\001\0041%start@\160\176\001\0042%lexer@\160\176\001\0043&lexbuf@@@@@@ABCDE@")));
             ("pervasives.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\r\006\000\000\0036\000\000\011\170\000\000\011\026\160\208\208\208\208\208\208@!@\160\176@\160\160B\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A$Exit\160\176@@@@\208\208@)LargeFile\160@\144\166\181@C@\160\179@\160\176\001\005T$prim@\160\176\001\005S\004\003@@\166\155\2403caml_ml_seek_out_64BA @@\144\176\193 \176\179\144\176\001\004\137+out_channel@@\144@\002\005\245\225\000\001\014a\176\193\004\t\176\179\144\176M%int64@@\144@\002\005\245\225\000\001\014d\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\014g@\002\005\245\225\000\001\014j@\002\005\245\225\000\001\014k\160\144\004#\160\144\004\"@\160\179@\160\176\001\005U\004(@@\166\155\2402caml_ml_pos_out_64AA\004%@@\144\176\193\004$\176\179\004#@\144@\002\005\245\225\000\001\014l\176\179\004\030@\144@\002\005\245\225\000\001\014o@\002\005\245\225\000\001\014r\160\144\004\016@\160\179@\160\176\001\005V\004;@@\166\155\2407caml_ml_channel_size_64AA\0048@@\144\176\193\0047\176\179\0046@\144@\002\005\245\225\000\001\014s\176\179\0041@\144@\002\005\245\225\000\001\014v@\002\005\245\225\000\001\014y\160\144\004\016@\160\179@\160\176\001\005X\004N@\160\176\001\005W\004P@@\166\155\2402caml_ml_seek_in_64BA\004M@@\144\176\193\004L\176\179\144\176\001\004\136*in_channel@@\144@\002\005\245\225\000\001\014z\176\193\004T\176\179\004K@\144@\002\005\245\225\000\001\014}\176\179\004H@\144@\002\005\245\225\000\001\014\128@\002\005\245\225\000\001\014\131@\002\005\245\225\000\001\014\132\160\144\004\026\160\144\004\026@\160\179@\160\176\001\005Y\004m@@\166\155\2401caml_ml_pos_in_64AA\004j@@\144\176\193\004i\176\179\004\029@\144@\002\005\245\225\000\001\014\133\176\179\004c@\144@\002\005\245\225\000\001\014\136@\002\005\245\225\000\001\014\139\160\144\004\016@\160\179@\160\176\001\005Z\004\128@@\166\155\2407caml_ml_channel_size_64AA\004}@@\144\176\193\004|\176\179\0040@\144@\002\005\245\225\000\001\014\140\176\179\004v@\144@\002\005\245\225\000\001\014\143@\002\005\245\225\000\001\014\146\160\144\004\016@@@A!^\160\176A\160\160B\160\176\001\004_\"s1@\160\176\001\004`\"s2@@@@@\208@\"^^\160\176A\160\160B\160\176\001\005]%param@\160\176\001\005^%param@@@@@@ABC#abs\160\176@\160\160A\160\176\001\004\026!x@@@@@\208\208\208@'at_exit\160\176A\160\160A\160\176\001\0056!f@@@@@@A.bool_of_string\160\176A\160\160A\160\176\001\005q\004\027@@@@@@B+char_of_int\160\176@\160\160A\160\176\001\004g!n@@@@@\208\208@(close_in\160@@\208@.close_in_noerr\160\176@\160\160A\160\176\001\005\000\"ic@@@@@@AB)close_out\160\176@\160\160A\160\176\001\004\198\"oc@@@@@\208@/close_out_noerr\160\176@\160\160A\160\176\001\004\200\"oc@@@@@\208@*do_at_exit\160\176@\160\160A\160\176\001\005[\004I@@@@@@ABCDE-epsilon_float\160\004\252@\208\208\208\208@$exit\160\176@\160\160A\160\176\001\005:'retcode@@@@@@A(failwith\160\176A\160\160A\160\176\001\003\238!s@@@A@@B%flush\160@@\208@)flush_all\160\176@\160\160A\160\176\001\005k\004i@@@@@\208@1in_channel_length\160@@@ABC(infinity\160\005\001\031@\208\208@%input\160\176@\160\160D\160\176\001\004\213\"ic@\160\176\001\004\214!s@\160\176\001\004\215#ofs@\160\176\001\004\216#len@@@@@\208\208@0input_binary_int\160@@@A*input_byte\160@@@BC*input_char\160@@\208@*input_line\160\176A\160\160A\160\176\001\004\234$chan@@@@@\208@+input_value\160@@@ABDEF+invalid_arg\160\176A\160\160A\160\176\001\003\240!s@@@A@\208\208\208@$lnot\160\176A\160\160A\160\176\001\004\031!x@@@@@@A#max\160\176@\160\160B\160\176\001\004\007!x@\160\176\001\004\b!y@@@@@\208\208@)max_float\160\005\001h@@A'max_int\160\176A@@@@BC#min\160\176@\160\160B\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208\208@)min_float\160\005\001z@@A'min_int\160\004\018@\208@#nan\160\005\001\127@@ABDG,neg_infinity\160\005\001\129@\208\208\208\208\208\208@'open_in\160\176@\160\160A\160\176\001\004\207$name@@@@@\208@+open_in_bin\160\176@\160\160A\160\176\001\004\209$name@@@@@\208@+open_in_gen\160\176@\160\160C\160\176\001\004\203$mode@\160\176\001\004\204$perm@\160\176\001\004\205$name@@@@@@ABC(open_out\160\176@\160\160A\160\176\001\004\159$name@@@@@\208@,open_out_bin\160\176@\160\160A\160\176\001\004\161$name@@@@@@AD,open_out_gen\160\176@\160\160C\160\176\001\004\155$mode@\160\176\001\004\156$perm@\160\176\001\004\157$name@@@@@\208\208\208@2out_channel_length\160@@@A&output\160\176@\160\160D\160\176\001\004\178\"oc@\160\176\001\004\179!s@\160\176\001\004\180#ofs@\160\176\001\004\181#len@@@@@\208@1output_binary_int\160@@@AB+output_byte\160@@\208@,output_bytes\160\176@\160\160B\160\176\001\004\172\"oc@\160\176\001\004\173!s@@@@@@ACE+output_char\160@@\208\208@-output_string\160\176@\160\160B\160\176\001\004\175\"oc@\160\176\001\004\176!s@@@@@@A0output_substring\160\176@\160\160D\160\176\001\004\183\"oc@\160\176\001\004\184!s@\160\176\001\004\185#ofs@\160\176\001\004\186#len@@@@@\208\208@,output_value\160\176@\160\160B\160\176\001\004\191$chan@\160\176\001\004\192!v@@@@@\208@&pos_in\160@@@AB'pos_out\160@@\208@+prerr_bytes\160\176@\160\160A\160\176\001\005\020!s@@@@@@ACDF*prerr_char\160\176@\160\160A\160\176\001\005\016!c@@@@@\208\208\208@-prerr_endline\160\176@\160\160A\160\176\001\005\026!s@@@@@@A+prerr_float\160\176@\160\160A\160\176\001\005\024!f@@@@@@B)prerr_int\160\176@\160\160A\160\176\001\005\022!i@@@@@\208\208\208@-prerr_newline\160\176@\160\160A\160\176\001\005c\005\001\164@@@@@@A,prerr_string\160\176@\160\160A\160\176\001\005\018!s@@@@@\208@+print_bytes\160\176@\160\160A\160\176\001\005\007!s@@@@@@AB*print_char\160\176@\160\160A\160\176\001\005\003!c@@@@@\208\208@-print_endline\160\176@\160\160A\160\176\001\005\r!s@@@@@@A+print_float\160\176@\160\160A\160\176\001\005\011!f@@@@@@BCDG)print_int\160\176@\160\160A\160\176\001\005\t!i@@@@@\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\005d\005\001\226@@@@@@A,print_string\160\176@\160\160A\160\176\001\005\005!s@@@@@\208\208@*read_float\160\176@\160\160A\160\176\001\005`\005\001\243@@@@@@A(read_int\160\176@\160\160A\160\176\001\005a\005\001\250@@@@@@BC)read_line\160\176A\160\160A\160\176\001\005b\005\002\001@@@@@\208\208@,really_input\160\176@\160\160D\160\176\001\004\224\"ic@\160\176\001\004\225!s@\160\176\001\004\226#ofs@\160\176\001\004\227#len@@@@@\208@3really_input_string\160\176A\160\160B\160\176\001\004\229\"ic@\160\176\001\004\230#len@@@@@\208@'seek_in\160@@@ABC(seek_out\160@@\208\208\208@2set_binary_mode_in\160@@@A3set_binary_mode_out\160@@@B&stderr\160\005\002\223@@CDE%stdin\160\005\002\225@\208\208@&stdout\160\005\002\229@@A.string_of_bool\160\176A\160\160A\160\176\001\004u!b@@@@@\208\208@/string_of_float\160\176@\160\160A\160\176\001\004\129!f@@@@@\208@0string_of_format\160\176@\160\160A\160\176\001\005_\005\002N@@@@@@AB-string_of_int\160\176@\160\160A\160\176\001\004x!n@@@@@\208\208@3unsafe_really_input\160\176@\160\160D\160\176\001\004\218\"ic@\160\176\001\004\219!s@\160\176\001\004\220#ofs@\160\176\001\004\221#len@@@@@@A1valid_float_lexem\160\176@\160\160A\160\176\001\004|!s@@@@@@BCDFHI@")));
+                    "\132\149\166\190\000\000\019\241\000\000\004\208\000\000\017\015\000\000\016W\160\208\208\208\208\208\208@!@\160\176@\160\160B\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A$Exit\160\176@@@@\208\208@)LargeFile\160@@@A!^\160\176A\160\160B\160\176\001\004_\"s1@\160\176\001\004`\"s2@@@@@\208@\"^^\160\176A\160\160B\160\176\001\005]%param@\160\176\001\005^%param@@@@@@ABC#abs\160\176@\160\160A\160\176\001\004\026!x@@@@@\208\208\208@'at_exit\160\176A\160\160A\160\176\001\0056!f@@@@@@A.bool_of_string\160\176A\160\160A\160\176\001\005q\004\027@@@@@@B+char_of_int\160\176@\160\160A\160\176\001\004g!n@@@@@\208\208@(close_in\160@\144\179@\160\176\001\005P$prim@@\166\155\2405caml_ml_close_channelAA @@\144\176\193 \176\179\144\176\001\004\136*in_channel@@\144@\002\005\245\225\000\001\012\161\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\012\164@\002\005\245\225\000\001\012\167\160\144\004\025@\208@.close_in_noerr\160\176@\160\160A\160\176\001\005\000\"ic@@@@@@AB)close_out\160\176@\160\160A\160\176\001\004\198\"oc@@@@\144\179@\004\005\173\166\155\240-caml_ml_flushAA\004+@@\144\176\193\004*\176\179\144\176\001\004\137+out_channel@@\144@\002\005\245\225\000\001\006\185\176\179\004)@\144@\002\005\245\225\000\001\006\188@\002\005\245\225\000\001\006\191\160\144\004\023@\166\155\2405caml_ml_close_channelAA\004=@@\144\176\193\004<\176\179\004\018@\144@\002\005\245\225\000\001\b\192\176\179\0048@\144@\002\005\245\225\000\001\b\195@\002\005\245\225\000\001\b\198\160\144\004&@\208@/close_out_noerr\160\176@\160\160A\160\176\001\004\200\"oc@@@@@\208@*do_at_exit\160\176@\160\160A\160\176\001\005[\004\137@@@@@@ABCDE-epsilon_float\160\004\166@\208\208\208\208@$exit\160\176@\160\160A\160\176\001\005:'retcode@@@@@@A(failwith\160\176A\160\160A\160\176\001\003\238!s@@@A\144\179@\004\005\166\156@\160\166\181@C@\160\166\147\176S'FailureC@\160\144\004\016@@@B%flush\160@\144\179@\160\176\001\005;\004\136@@\166\155\004\\\160\144\004\005@\208@)flush_all\160\176@\160\160A\160\176\001\005k\004\191@@@@@\208@1in_channel_length\160@\144\179@\160\176\001\005O\004\155@@\166\155\2404caml_ml_channel_sizeAA\004\154@@\144\176\193\004\153\176\179\004\152@\144@\002\005\245\225\000\001\012\154\176\179\144\176A#int@@\144@\002\005\245\225\000\001\012\157@\002\005\245\225\000\001\012\160\160\144\004\019@@ABC(infinity\160\004\245@\208\208@%input\160\176@\160\160D\160\176\001\004\213\"ic@\160\176\001\004\214!s@\160\176\001\004\215#ofs@\160\176\001\004\216#len@@@@@\208\208@0input_binary_int\160@\144\179@\160\176\001\005J\004\202@@\166\155\2401caml_ml_input_intAA\004\201@@\144\176\193\004\200\176\179\004\199@\144@\002\005\245\225\000\001\012z\176\179\004/@\144@\002\005\245\225\000\001\012}@\002\005\245\225\000\001\012\128\160\144\004\016@@A*input_byte\160@\144\179@\160\176\001\005I\004\223@@\166\155\2402caml_ml_input_charAA\004\222@@\144\176\193\004\221\176\179\004\220@\144@\002\005\245\225\000\001\012s\176\179\004D@\144@\002\005\245\225\000\001\012v@\002\005\245\225\000\001\012y\160\144\004\016@@BC*input_char\160@\144\179@\160\176\001\005H\004\244@@\166\155\2402caml_ml_input_charAA\004\243@@\144\176\193\004\242\176\179\004\241@\144@\002\005\245\225\000\001\tq\176\179\144\176B$char@@\144@\002\005\245\225\000\001\tt@\002\005\245\225\000\001\tw\160\144\004\019@\208@*input_line\160\176A\160\160A\160\176\001\004\234$chan@@@@@\208@+input_value\160@\144\179@\160\176\001\005K\005\001\022@@\166\155\2400caml_input_valueAA\005\001\021@@\144\176\193\005\001\020\176\179\005\001\019@\144@\002\005\245\225\000\001\012\129\176\150\176\144\144!a\002\005\245\225\000\001\012\135\001\004\250\001\012\132@\002\005\245\225\000\001\012\133\160\144\004\019@@ABDEF+invalid_arg\160\176A\160\160A\160\176\001\003\240!s@@@A\144\179@\004\005\166\156@\160\166\004\188\160\166\147\176R0Invalid_argumentC@\160\144\004\015@@\208\208\208@$lnot\160\176A\160\160A\160\176\001\004\031!x@@@@\144\179@\004\005\166S\160\144\004\007\160\145\144\144\000\255@@A#max\160\176@\160\160B\160\176\001\004\007!x@\160\176\001\004\b!y@@@@@\208\208@)max_float\160\005\001\166@@A'max_int\160\176A@@@@BC#min\160\176@\160\160B\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208\208@)min_float\160\005\001\184@@A'min_int\160\004\018@\208@#nan\160\005\001\189@@ABDG,neg_infinity\160\005\001\191@\208\208\208\208\208\208@'open_in\160\176@\160\160A\160\176\001\004\207$name@@@@@\208@+open_in_bin\160\176@\160\160A\160\176\001\004\209$name@@@@@\208@+open_in_gen\160\176@\160\160C\160\176\001\004\203$mode@\160\176\001\004\204$perm@\160\176\001\004\205$name@@@@@@ABC(open_out\160\176@\160\160A\160\176\001\004\159$name@@@@@\208@,open_out_bin\160\176@\160\160A\160\176\001\004\161$name@@@@@@AD,open_out_gen\160\176@\160\160C\160\176\001\004\155$mode@\160\176\001\004\156$perm@\160\176\001\004\157$name@@@@@\208\208\208@2out_channel_length\160@\144\179@\160\176\001\005E\005\001\199@@\166\155\2404caml_ml_channel_sizeAA\005\001\198@@\144\176\193\005\001\197\176\179\005\001\155@\144@\002\005\245\225\000\001\b\185\176\179\005\001,@\144@\002\005\245\225\000\001\b\188@\002\005\245\225\000\001\b\191\160\144\004\016@@A&output\160\176@\160\160D\160\176\001\004\178\"oc@\160\176\001\004\179!s@\160\176\001\004\180#ofs@\160\176\001\004\181#len@@@@@\208@1output_binary_int\160@\144\179@\160\176\001\005A\005\001\238@\160\176\001\005@\005\001\240@@\166\155\2402caml_ml_output_intBA\005\001\239@@\144\176\193\005\001\238\176\179\005\001\196@\144@\002\005\245\225\000\001\bj\176\193\005\001\243\176\179\005\001W@\144@\002\005\245\225\000\001\bm\176\179\005\001\239@\144@\002\005\245\225\000\001\bp@\002\005\245\225\000\001\bs@\002\005\245\225\000\001\bt\160\144\004\023\160\144\004\023@@AB+output_byte\160@\144\179@\160\176\001\005?\005\002\012@\160\176\001\005>\005\002\014@@\166\155\2403caml_ml_output_charBA\005\002\r@@\144\176\193\005\002\012\176\179\005\001\226@\144@\002\005\245\225\000\001\b_\176\193\005\002\017\176\179\005\001u@\144@\002\005\245\225\000\001\bb\176\179\005\002\r@\144@\002\005\245\225\000\001\be@\002\005\245\225\000\001\bh@\002\005\245\225\000\001\bi\160\144\004\023\160\144\004\023@\208@,output_bytes\160\176@\160\160B\160\176\001\004\172\"oc@\160\176\001\004\173!s@@@@@@ACE+output_char\160@\144\179@\160\176\001\005=\005\0026@\160\176\001\005<\005\0028@@\166\155\2403caml_ml_output_charBA\005\0027@@\144\176\193\005\0026\176\179\005\002\012@\144@\002\005\245\225\000\001\007,\176\193\005\002;\176\179\005\001F@\144@\002\005\245\225\000\001\007/\176\179\005\0027@\144@\002\005\245\225\000\001\0072@\002\005\245\225\000\001\0075@\002\005\245\225\000\001\0076\160\144\004\023\160\144\004\023@\208\208@-output_string\160\176@\160\160B\160\176\001\004\175\"oc@\160\176\001\004\176!s@@@@@@A0output_substring\160\176@\160\160D\160\176\001\004\183\"oc@\160\176\001\004\184!s@\160\176\001\004\185#ofs@\160\176\001\004\186#len@@@@@\208\208@,output_value\160\176@\160\160B\160\176\001\004\191$chan@\160\176\001\004\192!v@@@@\144\179@\004\b\166\155\2401caml_output_valueCA\005\002z@@\144\176\193\005\002y\176\179\005\002O@\144@\002\005\245\225\000\001\bu\176\193\005\002~\176\150\176\144\144!a\002\005\245\225\000\001\b\136\001\004\189\001\bx\176\193\005\002\134\176\179\144\176I$list@\160\176\179\005\002\133@\144@\002\005\245\225\000\001\by@\144@\002\005\245\225\000\001\b}\176\179\005\002\137@\144@\002\005\245\225\000\001\b\129@\002\005\245\225\000\001\b\132@\002\005\245\225\000\001\b\133@\002\005\245\225\000\001\b\134\160\144\004*\160\144\004)\160\145\161@\144\"[]@\208@&pos_in\160@\144\179@\160\176\001\005N\005\002\172@@\166\155\240.caml_ml_pos_inAA\005\002\171@@\144\176\193\005\002\170\176\179\005\002\169@\144@\002\005\245\225\000\001\012\147\176\179\005\002\017@\144@\002\005\245\225\000\001\012\150@\002\005\245\225\000\001\012\153\160\144\004\016@@AB'pos_out\160@\144\179@\160\176\001\005D\005\002\193@@\166\155\240/caml_ml_pos_outAA\005\002\192@@\144\176\193\005\002\191\176\179\005\002\149@\144@\002\005\245\225\000\001\b\178\176\179\005\002&@\144@\002\005\245\225\000\001\b\181@\002\005\245\225\000\001\b\184\160\144\004\016@\208@+prerr_bytes\160\176@\160\160A\160\176\001\005\020!s@@@@@@ACDF*prerr_char\160\176@\160\160A\160\176\001\005\016!c@@@@@\208\208\208@-prerr_endline\160\176@\160\160A\160\176\001\005\026!s@@@@@@A+prerr_float\160\176@\160\160A\160\176\001\005\024!f@@@@@@B)prerr_int\160\176@\160\160A\160\176\001\005\022!i@@@@@\208\208\208@-prerr_newline\160\176@\160\160A\160\176\001\005c\005\0031@@@@@@A,prerr_string\160\176@\160\160A\160\176\001\005\018!s@@@@@\208@+print_bytes\160\176@\160\160A\160\176\001\005\007!s@@@@@@AB*print_char\160\176@\160\160A\160\176\001\005\003!c@@@@@\208\208@-print_endline\160\176@\160\160A\160\176\001\005\r!s@@@@@@A+print_float\160\176@\160\160A\160\176\001\005\011!f@@@@@@BCDG)print_int\160\176@\160\160A\160\176\001\005\t!i@@@@@\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\005d\005\003o@@@@@@A,print_string\160\176@\160\160A\160\176\001\005\005!s@@@@@\208\208@*read_float\160\176@\160\160A\160\176\001\005`\005\003\128@@@@@@A(read_int\160\176@\160\160A\160\176\001\005a\005\003\135@@@@@@BC)read_line\160\176A\160\160A\160\176\001\005b\005\003\142@@@@@\208\208@,really_input\160\176@\160\160D\160\176\001\004\224\"ic@\160\176\001\004\225!s@\160\176\001\004\226#ofs@\160\176\001\004\227#len@@@@@\208@3really_input_string\160\176A\160\160B\160\176\001\004\229\"ic@\160\176\001\004\230#len@@@@@\208@'seek_in\160@\144\179@\160\176\001\005M\005\003\137@\160\176\001\005L\005\003\139@@\166\155\240/caml_ml_seek_inBA\005\003\138@@\144\176\193\005\003\137\176\179\005\003\136@\144@\002\005\245\225\000\001\012\136\176\193\005\003\142\176\179\005\002\242@\144@\002\005\245\225\000\001\012\139\176\179\005\003\138@\144@\002\005\245\225\000\001\012\142@\002\005\245\225\000\001\012\145@\002\005\245\225\000\001\012\146\160\144\004\023\160\144\004\023@@ABC(seek_out\160@\144\179@\160\176\001\005C\005\003\167@\160\176\001\005B\005\003\169@@\166\155\2400caml_ml_seek_outBA\005\003\168@@\144\176\193\005\003\167\176\179\005\003}@\144@\002\005\245\225\000\001\b\167\176\193\005\003\172\176\179\005\003\016@\144@\002\005\245\225\000\001\b\170\176\179\005\003\168@\144@\002\005\245\225\000\001\b\173@\002\005\245\225\000\001\b\176@\002\005\245\225\000\001\b\177\160\144\004\023\160\144\004\023@\208\208\208@2set_binary_mode_in\160@\144\179@\160\176\001\005R\005\003\200@\160\176\001\005Q\005\003\202@@\166\155\2407caml_ml_set_binary_modeBA\005\003\201@@\144\176\193\005\003\200\176\179\005\003\199@\144@\002\005\245\225\000\001\012\187\176\193\005\003\205\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\012\190\176\179\005\003\204@\144@\002\005\245\225\000\001\012\193@\002\005\245\225\000\001\012\196@\002\005\245\225\000\001\012\197\160\144\004\026\160\144\004\026@@A3set_binary_mode_out\160@\144\179@\160\176\001\005G\005\003\233@\160\176\001\005F\005\003\235@@\166\155\2407caml_ml_set_binary_modeBA\005\003\234@@\144\176\193\005\003\233\176\179\005\003\191@\144@\002\005\245\225\000\001\b\253\176\193\005\003\238\176\179\004!@\144@\002\005\245\225\000\001\t\000\176\179\005\003\234@\144@\002\005\245\225\000\001\t\003@\002\005\245\225\000\001\t\006@\002\005\245\225\000\001\t\007\160\144\004\023\160\144\004\023@@B&stderr\160\005\004I@@CDE%stdin\160\005\004K@\208\208@&stdout\160\005\004O@@A.string_of_bool\160\176A\160\160A\160\176\001\004u!b@@@@\144\179@\004\005\188\144\004\006\145\144\162$true@\145\144\162%false@\208\208@/string_of_float\160\176@\160\160A\160\176\001\004\129!f@@@@@\208@0string_of_format\160\176@\160\160A\160\176\001\005_\005\004Z@@@@\144\179@\004\004\166\150A\160\144\004\007@@AB-string_of_int\160\176@\160\160A\160\176\001\004x!n@@@@\144\179@\004\005\166\155\240/caml_format_intBA\005\004>@@\144\176\193\005\004=\176\179\144\176C&string@@\144@\002\005\245\225\000\001\004\250\176\193\005\004E\176\179\005\003\169@\144@\002\005\245\225\000\001\004\253\176\179\004\011@\144@\002\005\245\225\000\001\005\000@\002\005\245\225\000\001\005\003@\002\005\245\225\000\001\005\004\160\145\144\162\"%d@\160\144\004 @\208\208@3unsafe_really_input\160\176@\160\160D\160\176\001\004\218\"ic@\160\176\001\004\219!s@\160\176\001\004\220#ofs@\160\176\001\004\221#len@@@@@@A1valid_float_lexem\160\176@\160\160A\160\176\001\004|!s@@@@@@BCDFHI@")));
             ("printexc.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002\249\000\000\000\157\000\000\002a\000\000\002-\160\208\208\208\208\208@$Slot\160@@@A/backtrace_slots\160\176A\160\160A\160\176\001\004J-raw_backtrace@@@@@@B0backtrace_status\160@@@C%catch\160\176@\160\160B\160\176\001\004\018#fct@\160\176\001\004\019#arg@@@@@\208\208@:convert_raw_backtrace_slot\160@@\208@+exn_slot_id\160\176A\160\160A\160\176\001\004c!x@@@@@\208@-exn_slot_name\160\176A\160\160A\160\176\001\004f!x@@@@@@ABC-get_backtrace\160\176A\160\160A\160\176\001\004\133%param@@@@@\208\208@-get_callstack\160@@@A1get_raw_backtrace\160@@\208@6get_raw_backtrace_slot\160\176A\160\160B\160\176\001\004W$bckt@\160\176\001\004X!i@@@@@@ABDE%print\160\176@\160\160B\160\176\001\004\014#fct@\160\176\001\004\015#arg@@@@@\208\208\208@/print_backtrace\160\176@\160\160A\160\176\001\0042'outchan@@@@@@A3print_raw_backtrace\160\176@\160\160B\160\176\001\004/'outchan@\160\176\001\0040-raw_backtrace@@@@@\208\208@4raw_backtrace_length\160\176A\160\160A\160\176\001\004U$bckt@@@@@@A7raw_backtrace_to_string\160\176A\160\160A\160\176\001\004:-raw_backtrace@@@@@@BC0record_backtrace\160@@\208\208@0register_printer\160\176A\160\160A\160\176\001\004]\"fn@@@@@\208@>set_uncaught_exception_handler\160\176A\160\160A\160\176\001\004j\"fn@@@@@@AB)to_string\160\176@\160\160A\160\176\001\003\253!x@@@@@@CDF@")));
+                    "\132\149\166\190\000\000\005P\000\000\001\031\000\000\004(\000\000\003\218\160\208\208\208\208\208@$Slot\160@@@A/backtrace_slots\160\176A\160\160A\160\176\001\004J-raw_backtrace@@@@@@B0backtrace_status\160@\144\179@\160\176\001\004y$prim@@\166\155\2405caml_backtrace_statusAA @@\144\176\193 \176\179\144\176F$unit@@\144@\002\005\245\225\000\001\022)\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\022,@\002\005\245\225\000\001\022/\160\144\004\025@@C%catch\160\176@\160\160B\160\176\001\004\018#fct@\160\176\001\004\019#arg@@@@@\208\208@:convert_raw_backtrace_slot\160@\144\179@\160\176\001\004|\004+@@\166\155\240?caml_convert_raw_backtrace_slotAA\004*@@\144\176\193\004)\176\179\144\176\001\004\0212raw_backtrace_slot@@\144@\002\005\245\225\000\001\016A\176\179\144\176\001\004\024.backtrace_slot@@\144@\002\005\245\225\000\001\016D@\002\005\245\225\000\001\016G\160\144\004\022@\208@+exn_slot_id\160\176A\160\160A\160\176\001\004c!x@@@@@\208@-exn_slot_name\160\176A\160\160A\160\176\001\004f!x@@@@@@ABC-get_backtrace\160\176A\160\160A\160\176\001\004\133%param@@@@@\208\208@-get_callstack\160@\144\179@\160\176\001\004{\004b@@\166\155\240:caml_get_current_callstackAA\004a@@\144\176\193\004`\176\179\144\176A#int@@\144@\002\005\245\225\000\001\022M\176\179\144\176\001\004\022-raw_backtrace@@\144@\002\005\245\225\000\001\022P@\002\005\245\225\000\001\022S\160\144\004\022@@A1get_raw_backtrace\160@\144\179@\160\176\001\004z\004}@@\166\155\240\t caml_get_exception_raw_backtraceAA\004|@@\144\176\193\004{\176\179\004z@\144@\002\005\245\225\000\001\015\246\176\179\004\024@\144@\002\005\245\225\000\001\015\249@\002\005\245\225\000\001\015\252\160\144\004\016@\208@6get_raw_backtrace_slot\160\176A\160\160B\160\176\001\004W$bckt@\160\176\001\004X!i@@@@\144\179@\004\b\166\b\000\000\004\021@\160\144\004\011\160\144\004\n@@ABDE%print\160\176@\160\160B\160\176\001\004\014#fct@\160\176\001\004\015#arg@@@@@\208\208\208@/print_backtrace\160\176@\160\160A\160\176\001\0042'outchan@@@@@@A3print_raw_backtrace\160\176@\160\160B\160\176\001\004/'outchan@\160\176\001\0040-raw_backtrace@@@@@\208\208@4raw_backtrace_length\160\176A\160\160A\160\176\001\004U$bckt@@@@\144\179@\004\005\166\b\000\000\004\018@\160\144\004\b@@A7raw_backtrace_to_string\160\176A\160\160A\160\176\001\004:-raw_backtrace@@@@@@BC0record_backtrace\160@\144\179@\160\176\001\004x\004\223@@\166\155\2405caml_record_backtraceAA\004\222@@\144\176\193\004\221\176\179\004\214@\144@\002\005\245\225\000\001\022\"\176\179\004\223@\144@\002\005\245\225\000\001\022%@\002\005\245\225\000\001\022(\160\144\004\016@\208\208@0register_printer\160\176A\160\160A\160\176\001\004]\"fn@@@@@\208@>set_uncaught_exception_handler\160\176A\160\160A\160\176\001\004j\"fn@@@@@@AB)to_string\160\176@\160\160A\160\176\001\003\253!x@@@@@@CDF@")));
             ("printf.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5440,7 +5613,7 @@ include
             ("queue.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\001\143\000\000\000\128\000\000\001\186\000\000\001\172\160\208\208\208@%Empty\160\176@@@@@A#add\160\176A\160\160B\160\176\001\003\251!x@\160\176\001\003\252!q@@@@@\208@%clear\160\176A\160\160A\160\176\001\003\249!q@@@@@\208@$copy\160\176A\160\160A\160\176\001\004\011!q@@@@@@ABC&create\160\176A\160\160A\160\176\001\0042%param@@@@@\208\208\208\208@$fold\160\176@\160\160C\160\176\001\004\029!f@\160\176\001\004\030$accu@\160\176\001\004\031!q@@@@@@A(is_empty\160\176A\160\160A\160\176\001\004\019!q@@@@@\208\208@$iter\160\176@\160\160B\160\176\001\004\023!f@\160\176\001\004\024!q@@@@@@A&length\160\176@\160\160A\160\176\001\004\021!q@@@@@@BC$peek\160\176@\160\160A\160\176\001\004\003!q@@@@@\208@#pop\160\176@\160\160A\160\176\001\004\006!q@@@@@@AD$push\160\004e@\208@$take\160\004\011@\208@#top\160\004\023@\208@(transfer\160\176A\160\160B\160\176\001\004&\"q1@\160\176\001\004'\"q2@@@@@@ABCEF@")));
+                    "\132\149\166\190\000\000\001\202\000\000\000\160\000\000\002\014\000\000\001\255\160\208\208\208@%Empty\160\176@@@@@A#add\160\176A\160\160B\160\176\001\003\251!x@\160\176\001\003\252!q@@@@@\208@%clear\160\176A\160\160A\160\176\001\003\249!q@@@@@\208@$copy\160\176A\160\160A\160\176\001\004\011!q@@@@@@ABC&create\160\176A\160\160A\160\176\001\0042%param@@@@\144\179@\004\005\166\181@BA\160\145\144\144@\160\145\161@\144$None@\208\208\208\208@$fold\160\176@\160\160C\160\176\001\004\029!f@\160\176\001\004\030$accu@\160\176\001\004\031!q@@@@@@A(is_empty\160\176A\160\160A\160\176\001\004\019!q@@@@\144\179@\004\005\166\157@\160\166\150@\160\144\004\011@\160\145\144\144@@\208\208@$iter\160\176@\160\160B\160\176\001\004\023!f@\160\176\001\004\024!q@@@@@@A&length\160\176@\160\160A\160\176\001\004\021!q@@@@\144\179@\004\005\166\150@\160\144\004\b@@BC$peek\160\176@\160\160A\160\176\001\004\003!q@@@@@\208@#pop\160\176@\160\160A\160\176\001\004\006!q@@@@@@AD$push\160\004\133@\208@$take\160\004\011@\208@#top\160\004\023@\208@(transfer\160\176A\160\160B\160\176\001\004&\"q1@\160\176\001\004'\"q2@@@@@@ABCEF@")));
             ("random.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5452,7 +5625,7 @@ include
             ("set.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000*\214\000\000\012\159\000\000(T\000\000(\020\160\208@$Make\160\176A\160\160A\160\176\001\004\016#Ord@@@@\144\179@\160\176\001\005[&funarg@@\196B\176\001\005\217&height@\179@\160\176\001\005\218%param@@\188\144\004\004\166\150C\160\004\004@\145\144\144@\196B\176\001\005\223&create@\179@\160\176\001\005\224!l@\160\176\001\005\225!v@\160\176\001\005\226!r@@\196B\176\001\005\227\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\232\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\166\181@\144$Node@\160\004\023\160\144\004\"\160\004\015\160\188\166\157E\160\144\004#\160\144\004\026@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\237#bal@\179@\160\176\001\005\238!l@\160\176\001\005\239!v@\160\176\001\005\240!r@@\196B\176\001\005\241\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\246\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\005\252\"lr@\166\150B\160\004&@\196A\176\001\005\253\"lv@\166\150A\160\004,@\196A\176\001\005\254\"ll@\166\150@\160\0042@\188\166\004V\160\178\144\004\149\160\144\004\012@\160\176\192&set.ml\000X\001\012o\001\012~\192\004\002\000X\001\012o\001\012\135@A\160\178\004\n\160\144\004!@\160\176\192\004\t\000X\001\012o\001\012\139\192\004\n\000X\001\012o\001\012\148@A@\178\144\004\151\160\004\017\160\144\004$\160\178\004\006\160\004\r\160\144\004Y\160\004F@\160\176\192\004\024\000Y\001\012\154\001\012\181\192\004\025\000Y\001\012\154\001\012\196@A@\160\176\192\004\028\000Y\001\012\154\001\012\168\004\004@A\188\004\024\178\004\019\160\178\004\021\160\004%\160\004\020\160\166\150@\160\004!@@\160\176\192\004)\000^\001\rP\001\ri\192\004*\000^\001\rP\001\r{@A\160\166\150A\160\004)@\160\178\004%\160\166\150B\160\004/@\160\004\"\160\004g@\160\176\192\0049\000^\001\rP\001\r\128\192\004:\000^\001\rP\001\r\144@A@\160\176\192\004=\000^\001\rP\001\rb\004\004@A\178\166\150@\160\166\147\176@*PervasivesA@@\160\145\144\162'Set.bal@@\160\176\192\004M\000\\\001\012\248\001\r\017\192\004N\000\\\001\012\248\001\r&@A\178\166\150@\160\166\147\004\017@@\160\145\144\162'Set.bal@@\160\176\192\004\\\000V\001\012%\001\0128\192\004]\000V\001\012%\001\012M@A\188\166\004\135\160\004\130\160\166L\160\004\137\160\145\144\144B@@\188\004\153\196A\176\001\006\004\"rr@\166\150B\160\004\159@\196A\176\001\006\005\"rv@\166\150A\160\004\165@\196A\176\001\006\006\"rl@\166\150@\160\004\171@\188\166\004\218\160\178\004\132\160\144\004\023@\160\176\192\004\131\000d\001\014)\001\0148\192\004\132\000d\001\014)\001\014A@A\160\178\004\140\160\144\004\019@\160\176\192\004\139\000d\001\014)\001\014E\192\004\140\000d\001\014)\001\014N@A@\178\004\130\160\178\004\132\160\004\204\160\004~\160\004\011@\160\176\192\004\149\000e\001\014T\001\014i\192\004\150\000e\001\014T\001\014x@A\160\144\004)\160\004\026@\160\176\192\004\156\000e\001\014T\001\014b\192\004\157\000e\001\014T\001\014~@A\188\004\023\178\004\148\160\178\004\150\160\004\222\160\004\144\160\166\150@\160\004 @@\160\176\192\004\170\000j\001\015\011\001\015$\192\004\171\000j\001\015\011\001\0154@A\160\166\150A\160\004(@\160\178\004\166\160\166\150B\160\004.@\160\004\031\160\0048@\160\176\192\004\186\000j\001\015\011\001\0159\192\004\187\000j\001\015\011\001\015K@A@\160\176\192\004\190\000j\001\015\011\001\015\029\004\004@A\178\166\150@\160\166\147\004\129@@\160\145\144\162'Set.bal@@\160\176\192\004\204\000h\001\014\178\001\014\203\192\004\205\000h\001\014\178\001\014\224@A\178\166\150@\160\166\147\004\144@@\160\145\144\162'Set.bal@@\160\176\192\004\219\000b\001\r\223\001\r\242\192\004\220\000b\001\r\223\001\014\007@A\166\181@\144\005\001E@\160\005\001\028\160\004\206\160\005\001\019\160\188\166\005\001C\160\005\001\012\160\005\001\t@\166L\160\005\001\015\160\145\144\144A@\166L\160\005\001\017\160\145\144\144A@@\165\160\160\176\001\006\011#add@\179@\160\176\001\006\012!x@\160\176\001\006\r!t@@\188\144\004\004\196A\176\001\006\015!r@\166\150B\160\004\007@\196A\176\001\006\016!v@\166\150A\160\004\r@\196A\176\001\006\017!l@\166\150@\160\004\019@\196@\176\001\006\018!c@\178\166\150@\160\144\005\001\184@\160\144\004#\160\144\004\023@\160\176\192\005\001\"\000t\001\0165\001\016G\192\005\001#\000t\001\0165\001\016V@@\188\166\157@\160\144\004\020\160\145\144\144@@\004,\188\166\157B\160\004\t\160\145\144\144@@\178\144\005\001\130\160\178\144\004C\160\004\030\160\144\004.@\160\176\192\005\001?\000v\001\016y\001\016\149\192\005\001@\000v\001\016y\001\016\158@A\160\004#\160\144\004A@\160\176\192\005\001F\000v\001\016y\001\016\145\192\005\001G\000v\001\016y\001\016\162@A\178\004\019\160\004\014\160\004,\160\178\004\020\160\0041\160\004\012@\160\176\192\005\001Q\000v\001\016y\001\016\176\192\005\001R\000v\001\016y\001\016\185@A@\160\176\192\005\001U\000v\001\016y\001\016\168\004\004@A\166\181@\144\005\001\190@\160\145\161@\144%Empty\160\004B\160\145\161@\144\004\006\160\145\144\144A@@\196B\176\001\006\019)singleton@\179@\160\176\001\006\020!x@@\166\181@\144\005\001\214@\160\145\161@\144\004\024\160\144\004\011\160\145\161@\144\004\030\160\145\144\144A@\165\160\160\176\001\006\021/add_min_element@\179@\160\176\001\006\022!v@\160\176\001\006\023\005\002\030@@\188\144\004\003\178\004W\160\178\144\004\014\160\144\004\012\160\166\150@\160\004\011@@\160\176\192\005\001\152\001\000\132\001\018\152\001\018\164\192\005\001\153\001\000\132\001\018\152\001\018\185@A\160\166\150A\160\004\019@\160\166\150B\160\004\023@@\160\176\192\005\001\164\001\000\132\001\018\152\001\018\160\192\005\001\165\001\000\132\001\018\152\001\018\189@A\178\144\004@\160\004\024@\160\176\192\005\001\171\001\000\130\001\018^\001\018o\192\005\001\172\001\000\130\001\018^\001\018z@A@\165\160\160\176\001\006\028/add_max_element@\179@\160\176\001\006\029!v@\160\176\001\006\030\005\002L@@\188\144\004\003\178\004\133\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\178\144\004\022\160\144\004\020\160\166\150B\160\004\019@@\160\176\192\005\001\206\001\000\137\001\019\"\001\0192\192\005\001\207\001\000\137\001\019\"\001\019G@A@\160\176\192\005\001\210\001\000\137\001\019\"\001\019*\004\004@A\178\004-\160\004\014@\160\176\192\005\001\215\001\000\135\001\018\232\001\018\249\192\005\001\216\001\000\135\001\018\232\001\019\004@A@\165\160\160\176\001\006#$join@\179@\160\176\001\006$!l@\160\176\001\006%!v@\160\176\001\006&!r@@\188\144\004\n\188\144\004\006\196A\176\001\006)\"rh@\166\150C\160\144\004\r@\196A\176\001\006-\"lh@\166\150C\160\144\004\026@\188\166\005\002#\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\004\209\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\178\144\0046\160\166\150B\160\004\029@\160\144\0045\160\144\0044@\160\176\192\005\002\028\001\000\147\001\020p\001\020\152\192\005\002\029\001\000\147\001\020p\001\020\165@A@\160\176\192\005\002 \001\000\147\001\020p\001\020\142\004\004@A\188\166\005\002J\160\004#\160\166L\160\004*\160\145\144\144B@@\178\004\246\160\178\004\029\160\144\004P\160\004\026\160\166\150@\160\004C@@\160\176\192\005\0027\001\000\148\001\020\171\001\020\205\192\005\0028\001\000\148\001\020\171\001\020\218@A\160\166\150A\160\004K@\160\166\150B\160\004O@@\160\176\192\005\002C\001\000\148\001\020\171\001\020\201\192\005\002D\001\000\148\001\020\171\001\020\224@A\178\005\002:\160\004\024\160\0041\160\0040@\160\176\192\005\002K\001\000\149\001\020\230\001\020\240\192\005\002L\001\000\149\001\020\230\001\020\252@A\178\004\137\160\0048\160\004!@\160\176\192\005\002R\001\000\145\001\020\014\001\020$\192\005\002S\001\000\145\001\020\014\001\0207@A\178\004\198\160\004?\160\004>@\160\176\192\005\002Y\001\000\144\001\019\228\001\019\250\192\005\002Z\001\000\144\001\019\228\001\020\r@A@\165\160\160\176\001\0061'min_elt@\179@\160\176\001\0062\005\002\247@@\188\144\004\003\196A\176\001\0063!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002r\001\000\156\001\021\146\001\021\174\192\005\002s\001\000\156\001\021\146\001\021\183@A\166\150A\160\004\019@\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\0069'max_elt@\179@\160\176\001\006:\005\003\026@@\188\144\004\003\196A\176\001\006;!r@\166\150B\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\149\001\000\161\001\022\027\001\0227\192\005\002\150\001\000\161\001\022\027\001\022@@A\166\150A\160\004\019@\166\156@\160\166\147\004#@@@\165\160\160\176\001\006B.remove_min_elt@\179@\160\176\001\006C\005\003;@@\188\144\004\003\196A\176\001\006D!l@\166\150@\160\004\007@\188\144\004\007\178\005\001|\160\178\144\004\019\160\004\006@\160\176\192\005\002\184\001\000\168\001\022\244\001\023\020\192\005\002\185\001\000\168\001\022\244\001\023&@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\160\176\192\005\002\196\001\000\168\001\022\244\001\023\016\192\005\002\197\001\000\168\001\022\244\001\023*@A\166\004\007\160\004 @\178\166\150@\160\166\147\005\002\138@@\160\145\144\1622Set.remove_min_elt@@\160\176\192\005\002\213\001\000\166\001\022\160\001\022\177\192\005\002\214\001\000\166\001\022\160\001\022\209@A@\196B\176\001\006K%merge@\179@\160\176\001\006L\"t1@\160\176\001\006M\"t2@@\188\144\004\007\188\144\004\006\178\005\001\176\160\144\004\012\160\178\004|\160\144\004\r@\160\176\192\005\002\238\001\000\178\001\024\030\001\0247\192\005\002\239\001\000\178\001\024\030\001\024C@A\160\178\004>\160\004\b@\160\176\192\005\002\245\001\000\178\001\024\030\001\024D\192\005\002\246\001\000\178\001\024\030\001\024W@A@\160\176\192\005\002\249\001\000\178\001\024\030\001\0240\004\004@A\144\004\031\144\004\029\196B\176\001\006P&concat@\179@\160\176\001\006Q\"t1@\160\176\001\006R\"t2@@\188\144\004\007\188\144\004\006\178\004\250\160\144\004\012\160\178\004\161\160\144\004\r@\160\176\192\005\003\019\001\000\188\001\025P\001\025j\192\005\003\020\001\000\188\001\025P\001\025v@A\160\178\004c\160\004\b@\160\176\192\005\003\026\001\000\188\001\025P\001\025w\192\005\003\027\001\000\188\001\025P\001\025\138@A@\160\176\192\005\003\030\001\000\188\001\025P\001\025b\004\004@A\144\004\031\144\004\029\165\160\160\176\001\006U%split@\179@\160\176\001\006V!x@\160\176\001\006W\005\003\192@@\188\144\004\003\196A\176\001\006Y!r@\166\150B\160\004\007@\196A\176\001\006Z!v@\166\150A\160\004\r@\196A\176\001\006[!l@\166\150@\160\004\019@\196@\176\001\006\\!c@\178\166\150@\160\005\002,@\160\144\004!\160\144\004\022@\160\176\192\005\003M\001\000\200\001\027!\001\0273\192\005\003N\001\000\200\001\027!\001\027B@@\188\166\005\002+\160\144\004\018\160\145\144\144@@\166\181@@@\160\144\004 \160\145\161A\144$true\160\144\0043@\188\166\005\0025\160\004\019\160\145\144\144@@\196@\176\001\006]%match@\178\144\004J\160\004'\160\004\022@\160\176\192\005\003r\001\000\203\001\027\136\001\027\169\192\005\003s\001\000\203\001\027\136\001\027\178@A\166\004\029\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\001o\160\166\150B\160\004\011@\160\004;\160\004%@\160\176\192\005\003\136\001\000\203\001\027\136\001\027\193\192\005\003\137\001\000\203\001\027\136\001\027\204@A@\196@\176\001\006a\004!@\178\004 \160\004F\160\004.@\160\176\192\005\003\145\001\000\205\001\027\221\001\027\254\192\005\003\146\001\000\205\001\027\221\001\028\007@A\166\004<\160\178\005\001\133\160\004=\160\004N\160\166\150@\160\144\004\018@@\160\176\192\005\003\159\001\000\205\001\027\221\001\028\012\192\005\003\160\001\000\205\001\027\221\001\028\023@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\002Q\160\161@\144%false\160\161@\144\005\002X@@\196A\176\001\006e%empty@\145\161@\144\005\002^\196B\176\001\006f(is_empty@\179@\160\176\001\006g\005\004U@@\188\144\004\003\145\161@\144\004\021\145\161A\144\004j\165\160\160\176\001\006h#mem@\179@\160\176\001\006i!x@\160\176\001\006j\005\004h@@\188\144\004\003\196@\176\001\006o!c@\178\166\150@\160\005\002\194@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\003\229\001\000\216\001\028\243\001\029\005\192\005\003\230\001\000\216\001\028\243\001\029\020@@\166I\160\166\005\002\196\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\005\002\200\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150B\160\004-@@\160\176\192\005\004\004\001\000\217\001\029\024\001\029+\192\005\004\005\001\000\217\001\029\024\001\029I@A@\145\161@\144\004X@\165\160\160\176\001\006p&remove@\179@\160\176\001\006q!x@\160\176\001\006r\005\004\168@@\188\144\004\003\196A\176\001\006t!r@\166\150B\160\004\007@\196A\176\001\006u!v@\166\150A\160\004\r@\196A\176\001\006v!l@\166\150@\160\004\019@\196@\176\001\006w!c@\178\166\150@\160\005\003\020@\160\144\004!\160\144\004\022@\160\176\192\005\0045\001\000\222\001\029\158\001\029\176\192\005\0046\001\000\222\001\029\158\001\029\191@@\188\166\005\003\019\160\144\004\018\160\145\144\144@@\178\144\005\001i\160\144\004 \160\144\004.@\160\176\192\005\004G\001\000\223\001\029\195\001\029\219\192\005\004H\001\000\223\001\029\195\001\029\228@A\188\166\005\003\028\160\004\018\160\145\144\144@@\178\005\003\027\160\178\144\004H\160\004%\160\004\020@\160\176\192\005\004X\001\000\224\001\029\234\001\030\006\192\005\004Y\001\000\224\001\029\234\001\030\018@A\160\004)\160\004\024@\160\176\192\005\004^\001\000\224\001\029\234\001\030\002\192\005\004_\001\000\224\001\029\234\001\030\022@A\178\005\003+\160\004 \160\0041\160\178\004\018\160\0046\160\004#@\160\176\192\005\004i\001\000\224\001\029\234\001\030$\192\005\004j\001\000\224\001\029\234\001\0300@A@\160\176\192\005\004m\001\000\224\001\029\234\001\030\028\004\004@A\145\161@\144\005\003\020@\165\160\160\176\001\006x%union@\179@\160\176\001\006y\"s1@\160\176\001\006z\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006}\"h2@\166\150C\160\144\004\r@\196A\176\001\006\127\"v2@\166\150A\160\004\007@\196A\176\001\006\129\"h1@\166\150C\160\144\004\029@\196A\176\001\006\131\"v1@\166\150A\160\004\007@\188\166\005\004\250\160\144\004\016\160\144\004\031@\188\166\005\003}\160\004\004\160\145\144\144A@\178\005\003p\160\144\004\"\160\144\0045@\160\176\192\005\004\175\001\000\232\001\030\237\001\031\b\192\005\004\176\001\000\232\001\030\237\001\031\017@A\196@\176\001\006\133\005\001H@\178\005\001G\160\144\004 \160\144\004=@\160\176\192\005\004\186\001\000\233\001\031\029\001\031=\192\005\004\187\001\000\233\001\031\029\001\031H@A\178\005\002\172\160\178\144\004L\160\166\150@\160\0040@\160\166\150@\160\144\004\023@@\160\176\192\005\004\203\001\000\234\001\031L\001\031_\192\005\004\204\001\000\234\001\031L\001\031l@A\160\004\025\160\178\004\017\160\166\150B\160\004@@\160\166\150B\160\004\016@@\160\176\192\005\004\218\001\000\234\001\031L\001\031p\192\005\004\219\001\000\234\001\031L\001\031}@A@\160\176\192\005\004\222\001\000\234\001\031L\001\031Z\004\004@A\188\166\005\003\187\160\004D\160\145\144\144A@\178\005\003\174\160\0043\160\0042@\160\176\192\005\004\235\001\000\237\001\031\157\001\031\184\192\005\004\236\001\000\237\001\031\157\001\031\193@A\196@\176\001\006\137\005\001\132@\178\005\001\131\160\004G\160\004F@\160\176\192\005\004\244\001\000\238\001\031\205\001\031\237\192\005\004\245\001\000\238\001\031\205\001\031\248@A\178\005\002\230\160\178\004:\160\166\150@\160\144\004\016@\160\166\150@\160\004{@@\160\176\192\005\005\004\001\000\239\001\031\252\001 \015\192\005\005\005\001\000\239\001\031\252\001 \028@A\160\004]\160\178\004J\160\166\150B\160\004\016@\160\166\150B\160\004\138@@\160\176\192\005\005\019\001\000\239\001\031\252\001  \192\005\005\020\001\000\239\001\031\252\001 -@A@\160\176\192\005\005\023\001\000\239\001\031\252\001 \n\004\004@A\144\004\161\144\004\159@\165\160\160\176\001\006\141%inter@\179@\160\176\001\006\142\"s1@\160\176\001\006\143\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\150\"r1@\166\150B\160\144\004\016@\196A\176\001\006\151\"v1@\166\150A\160\004\007@\196A\176\001\006\152\"l1@\166\150@\160\004\r@\196@\176\001\006\153\005\001\212@\178\005\001\211\160\144\004\016\160\144\004 @\160\176\192\005\005F\001\000\247\001 \210\001 \226\192\005\005G\001\000\247\001 \210\001 \237@A\196A\176\001\006\155\"l2@\166\150@\160\144\004\017@\188\166\157A\160\166\150A\160\004\b@\160\145\144\144@@\178\005\003J\160\178\144\004A\160\144\004(\160\144\004\025@\160\176\192\005\005d\001\000\251\001!a\001!t\192\005\005e\001\000\251\001!a\001!\129@A\160\004&\160\178\004\012\160\144\004@\160\166\150B\160\004!@@\160\176\192\005\005q\001\000\251\001!a\001!\133\192\005\005r\001\000\251\001!a\001!\146@A@\160\176\192\005\005u\001\000\251\001!a\001!o\004\004@A\178\144\005\002{\160\178\004\029\160\004\028\160\144\0044@\160\176\192\005\005\127\001\000\249\001!\018\001!'\192\005\005\128\001\000\249\001!\018\001!4@A\160\178\004&\160\004\026\160\166\004\025\160\0049@@\160\176\192\005\005\137\001\000\249\001!\018\001!5\192\005\005\138\001\000\249\001!\018\001!B@A@\160\176\192\005\005\141\001\000\249\001!\018\001! \004\004@A\145\161@\144\005\0044\145\161@\144\005\0047@\165\160\160\176\001\006\159$diff@\179@\160\176\001\006\160\"s1@\160\176\001\006\161\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\167\"r1@\166\150B\160\144\004\016@\196A\176\001\006\168\"v1@\166\150A\160\004\007@\196A\176\001\006\169\"l1@\166\150@\160\004\r@\196@\176\001\006\170\005\002N@\178\005\002M\160\144\004\016\160\144\004 @\160\176\192\005\005\192\001\001\002\001\"#\001\"3\192\005\005\193\001\001\002\001\"#\001\">@A\196A\176\001\006\172\"l2@\166\150@\160\144\004\017@\188\166\004z\160\166\150A\160\004\007@\160\145\144\144@@\178\004]\160\178\144\004@\160\144\004'\160\144\004\024@\160\176\192\005\005\221\001\001\006\001\"\177\001\"\198\192\005\005\222\001\001\006\001\"\177\001\"\210@A\160\178\004\011\160\144\004>\160\166\150B\160\004\031@@\160\176\192\005\005\233\001\001\006\001\"\177\001\"\211\192\005\005\234\001\001\006\001\"\177\001\"\223@A@\160\176\192\005\005\237\001\001\006\001\"\177\001\"\191\004\004@A\178\005\003\222\160\178\004\027\160\004\026\160\144\0041@\160\176\192\005\005\246\001\001\004\001\"c\001\"v\192\005\005\247\001\001\004\001\"c\001\"\130@A\160\004>\160\178\004%\160\004\026\160\166\004\025\160\0047@@\160\176\192\005\006\001\001\001\004\001\"c\001\"\134\192\005\006\002\001\001\004\001\"c\001\"\146@A@\160\176\192\005\006\005\001\001\004\001\"c\001\"q\004\004@A\144\004l\145\161@\144\005\004\173@\165\160\160\176\001\006\176)cons_enum@\179@\160\176\001\006\177!s@\160\176\001\006\178!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\144\004\025@@\160\176\192\005\006/\001\001\r\001#_\001#{\192\005\0060\001\001\r\001#_\001#\150@A\004\005@\165\160\160\176\001\006\183+compare_aux@\179@\160\176\001\006\184\"e1@\160\176\001\006\185\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\006\194!c@\178\166\150@\160\005\005-@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\006T\001\001\021\001$J\001$\\\192\005\006U\001\001\021\001$J\001$m@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\178\144\004-\160\178\004J\160\166\150A\160\004\027@\160\166\150B\160\004\031@@\160\176\192\005\006m\001\001\024\001$\150\001$\177\192\005\006n\001\001\024\001$\150\001$\194@A\160\178\004X\160\166\150A\160\004$@\160\166\150B\160\004(@@\160\176\192\005\006{\001\001\024\001$\150\001$\195\192\005\006|\001\001\024\001$\150\001$\212@A@\160\176\192\005\006\127\001\001\024\001$\150\001$\165\004\004@A\145\144\144A\188\144\004J\145\144\144\000\255\145\144\144@@\196B\176\001\006\195'compare@\179@\160\176\001\006\196\"s1@\160\176\001\006\197\"s2@@\178\0046\160\178\004\127\160\144\004\n\160\145\161@\144#End@\160\176\192\005\006\161\001\001\027\001$\238\001%\000\192\005\006\162\001\001\027\001$\238\001%\018@A\160\178\004\140\160\144\004\020\160\145\161@\144\004\r@\160\176\192\005\006\173\001\001\027\001$\238\001%\019\192\005\006\174\001\001\027\001$\238\001%%@A@\160\176\192\005\006\177\001\001\027\001$\238\001$\244\004\004@A\196B\176\001\006\198%equal@\179@\160\176\001\006\199\"s1@\160\176\001\006\200\"s2@@\166\005\005\151\160\178\144\0044\160\144\004\011\160\144\004\n@\160\176\192\005\006\198\001\001\030\001%=\001%C\192\005\006\199\001\001\030\001%=\001%P@A\160\145\144\144@@\165\160\160\176\001\006\201&subset@\179@\160\176\001\006\202\"s1@\160\176\001\006\203\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\208\"r2@\166\150B\160\144\004\r@\196A\176\001\006\210\"l2@\166\150@\160\004\007@\196A\176\001\006\212\"r1@\166\150B\160\144\004\029@\196A\176\001\006\213\"v1@\166\150A\160\004\007@\196A\176\001\006\214\"l1@\166\150@\160\004\r@\196@\176\001\006\215!c@\178\166\150@\160\005\005\232@\160\144\004\020\160\166\150A\160\004'@@\160\176\192\005\007\011\001\001'\001&\016\001&\"\192\005\007\012\001\001'\001&\016\001&3@@\188\166\005\005\233\160\144\004\020\160\145\144\144@@\166H\160\178\144\004J\160\144\004$\160\144\0049@\160\176\192\005\007\031\001\001)\001&O\001&[\192\005\007 \001\001)\001&O\001&g@A\160\178\004\011\160\144\004;\160\144\004J@\160\176\192\005\007)\001\001)\001&O\001&k\192\005\007*\001\001)\001&O\001&w@A@\188\166\005\005\254\160\004\030\160\145\144\144@@\166H\160\178\004\029\160\166\181@\144\005\007\158@\160\004 \160\0047\160\145\161@\144\005\005\226\160\145\144\144@@\160\004(@\160\176\192\005\007F\001\001+\001&\149\001&\161\192\005\007G\001\001+\001&\149\001&\196@A\160\178\0042\160\004'\160\144\004w@\160\176\192\005\007O\001\001+\001&\149\001&\200\192\005\007P\001\001+\001&\149\001&\212@A@\166H\160\178\004<\160\166\181@\144\005\007\189@\160\145\161@\144\005\005\255\160\004Y\160\004:\160\145\144\144@@\160\004=@\160\176\192\005\007e\001\001-\001&\228\001&\240\192\005\007f\001\001-\001&\228\001'\019@A\160\178\004Q\160\004P\160\144\004\150@\160\176\192\005\007n\001\001-\001&\228\001'\023\192\005\007o\001\001-\001&\228\001'#@A@\145\161@\144\005\003\194\145\161A\144\005\004\023@\165\160\160\176\001\006\216$iter@\179@\160\176\001\006\217!f@\160\176\001\006\218\005\b\021@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\007\142\001\0011\001'W\001's\192\005\007\143\001\0011\001'W\001'{@A\173\178\004\011\160\166\150A\160\004\020@@\160\176\192\005\007\152\001\0011\001'W\001'}\192\005\007\153\001\0011\001'W\001'\128@@\178\004\022\160\004\021\160\166\150B\160\004\030@@\160\176\192\005\007\162\001\0011\001'W\001'\130\192\005\007\163\001\0011\001'W\001'\138@A\145\161@\144\"()@\165\160\160\176\001\006\223$fold@\179@\160\176\001\006\224!f@\160\176\001\006\225!s@\160\176\001\006\226$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150B\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\178\004\015\160\004\014\160\166\150@\160\004\022@\160\144\004\027@\160\176\192\005\007\210\001\0016\001'\209\001'\251\192\005\007\211\001\0016\001'\209\001(\n@A@\160\176\192\005\007\214\001\0016\001'\209\001'\246\192\005\007\215\001\0016\001'\209\001(\011@@@\160\176\192\005\007\218\001\0016\001'\209\001'\237\004\004@A\004\012@\165\160\160\176\001\006\231'for_all@\179@\160\176\001\006\232!p@\160\176\001\006\233\005\bz@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\007\242\001\001:\001(D\001(`\192\005\007\243\001\001:\001(D\001(c@@\160\166H\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\b\000\001\001:\001(D\001(g\192\005\b\001\001\001:\001(D\001(r@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\b\011\001\001:\001(D\001(v\192\005\b\012\001\001:\001(D\001(\129@A@@\145\161A\144\005\004\177@\165\160\160\176\001\006\238&exists@\179@\160\176\001\006\239!p@\160\176\001\006\240\005\b\175@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\b'\001\001>\001(\186\001(\214\192\005\b(\001\001>\001(\186\001(\217@@\160\166I\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\b5\001\001>\001(\186\001(\221\192\005\b6\001\001>\001(\186\001(\231@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\b@\001\001>\001(\186\001(\235\192\005\bA\001\001>\001(\186\001(\245@A@@\145\161@\144\005\004\148@\165\160\160\176\001\006\245&filter@\179@\160\176\001\006\246!p@\160\176\001\006\247\005\b\228@@\188\144\004\003\196A\176\001\006\250!v@\166\150A\160\004\007@\196@\176\001\006\252\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\be\001\001D\001)\135\001)\154\192\005\bf\001\001D\001)\135\001)\164@A\196@\176\001\006\253\"pv@\178\004\r\160\144\004\026@\160\176\192\005\bo\001\001E\001)\168\001)\187\192\005\bp\001\001E\001)\168\001)\190@@\196@\176\001\006\254\"r'@\178\004\025\160\004\024\160\166\150B\160\004)@@\160\176\192\005\b|\001\001F\001)\194\001)\213\192\005\b}\001\001F\001)\194\001)\223@A\188\144\004\024\178\005\006p\160\144\004*\160\004\024\160\144\004\020@\160\176\192\005\b\136\001\001G\001)\227\001)\248\192\005\b\137\001\001G\001)\227\001*\004@A\178\005\003\020\160\004\n\160\004\b@\160\176\192\005\b\143\001\001G\001)\227\001*\n\192\005\b\144\001\001G\001)\227\001*\022@A\145\161@\144\005\0077@\165\160\160\176\001\006\255)partition@\179@\160\176\001\007\000!p@\160\176\001\007\001\005\t3@@\188\144\004\003\196A\176\001\007\004!v@\166\150A\160\004\007@\196@\176\001\007\006\005\005>@\178\144\004\020\160\144\004\018\160\166\150@\160\004\017@@\160\176\192\005\b\179\001\001M\001*\180\001*\205\192\005\b\180\001\001M\001*\180\001*\218@A\196A\176\001\007\007\"lf@\166\150A\160\144\004\020@\196A\176\001\007\b\"lt@\166\150@\160\004\007@\196@\176\001\007\t\"pv@\178\004\026\160\144\004&@\160\176\192\005\b\202\001\001N\001*\222\001*\241\192\005\b\203\001\001N\001*\222\001*\244@@\196@\176\001\007\n\005\005c@\178\004%\160\004$\160\166\150B\160\0044@@\160\176\192\005\b\214\001\001O\001*\248\001+\017\192\005\b\215\001\001O\001*\248\001+\030@A\196A\176\001\007\011\"rf@\166\150A\160\144\004\018@\196A\176\001\007\012\"rt@\166\150@\160\004\007@\188\144\004$\166\005\005\144\160\178\005\006\217\160\144\004/\160\004&\160\144\004\015@\160\176\192\005\b\241\001\001Q\001+2\001+B\192\005\b\242\001\001Q\001+2\001+N@A\160\178\005\003~\160\144\004A\160\144\004 @\160\176\192\005\b\251\001\001Q\001+2\001+P\192\005\b\252\001\001Q\001+2\001+\\@A@\166\005\005\166\160\178\005\003\137\160\004\022\160\004\020@\160\176\192\005\t\004\001\001R\001+^\001+n\192\005\t\005\001\001R\001+^\001+z@A\160\178\005\006\247\160\004\019\160\004C\160\004\019@\160\176\192\005\t\r\001\001R\001+^\001+|\192\005\t\014\001\001R\001+^\001+\136@A@\145\178@@\160\161@\144\005\007\183\160\161@\144\005\007\186@@\165\160\160\176\001\007\r(cardinal@\179@\160\176\001\007\014\005\t\179@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\t-\001\001V\001+\190\001+\218\192\005\t.\001\001V\001+\190\001+\228@A\160\145\144\144A@\160\178\004\015\160\166\150B\160\004\025@@\160\176\192\005\t;\001\001V\001+\190\001+\235\192\005\t<\001\001V\001+\190\001+\245@A@\145\144\144@@\165\160\160\176\001\007\019,elements_aux@\179@\160\176\001\007\020$accu@\160\176\001\007\021\005\t\223@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\150A\160\004\012@\160\178\004\012\160\144\004\021\160\166\150B\160\004\020@@\160\176\192\005\tb\001\001Z\001,6\001,e\192\005\tc\001\001Z\001,6\001,x@A@\160\166\150@\160\004\028@@\160\176\192\005\tj\001\001Z\001,6\001,R\192\005\tk\001\001Z\001,6\001,{@A\004\017@\196B\176\001\007\026(elements@\179@\160\176\001\007\027!s@@\178\004&\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\t}\001\001]\001,\146\001,\152\192\005\t~\001\001]\001,\146\001,\169@A\165\160\160\176\001\007\029$find@\179@\160\176\001\007\030!x@\160\176\001\007\031\005\n\030@@\188\144\004\003\196A\176\001\007\"!v@\166\150A\160\004\007@\196@\176\001\007$!c@\178\166\150@\160\005\b~@\160\144\004\021\160\144\004\016@\160\176\192\005\t\159\001\001d\001- \001-2\192\005\t\160\001\001d\001- \001-A@@\188\166\005\b}\160\144\004\018\160\145\144\144@@\004\r\178\144\004)\160\004\018\160\188\166\005\b\128\160\004\012\160\145\144\144@@\166\150@\160\004,@\166\150B\160\004/@@\160\176\192\005\t\188\001\001f\001-_\001-n\192\005\t\189\001\001f\001-_\001-\141@A\166\156@\160\166\147\005\007G@@@\196B\176\001\007%.of_sorted_list@\179@\160\176\001\007&!l@@\165\160\160\176\001\007'#sub@\179@\160\176\001\007(!n@\160\176\001\007)!l@@\186\188\166j\160\145\144\144C\160\144\004\014@\169F@\167\144\004\017\208D\160\160@\166\005\006\142\160\145\161@\144\005\b\141\160\144\004\024@\160\160A\188\144\004\028\166\005\006\153\160\166\181@\144\005\nZ@\160\145\161@\144\005\b\156\160\166\150@\160\144\004*@\160\145\161@\144\005\b\165\160\145\144\144A@\160\166\150A\160\004\r@@\169F@\160\160B\188\144\004;\196A\176\001\007/\005\006\166@\166\150A\160\004\023@\188\144\004\006\166\005\006\191\160\166\181@\144\005\n\128@\160\166\181@\144\005\n\132@\160\145\161@\144\005\b\198\160\166\150@\160\004*@\160\145\161@\144\005\b\206\160\145\144\144A@\160\166\150@\160\004\030@\160\145\161@\144\005\b\218\160\145\144\144B@\160\166\150A\160\004*@@\169F@\169F@\160\160C\188\144\004q\196A\176\001\0073\005\006\220@\166\150A\160\004M@\188\144\004\006\196A\176\001\0074\005\006\227@\166\150A\160\004\006@\188\144\004\006\166\005\006\252\160\166\181@\144\005\n\189@\160\166\181@\144\005\n\193@\160\145\161@\144\005\t\003\160\166\150@\160\004g@\160\145\161@\144\005\t\011\160\145\144\144A@\160\166\150@\160\004%@\160\166\181@\144\005\n\217@\160\145\161@\144\005\t\027\160\166\150@\160\004*@\160\145\161@\144\005\t#\160\145\144\144A@\160\145\144\144B@\160\166\150A\160\004:@@\169F@\169F@\169F@@@@@\160F@\196B\176\001\007;\"nl@\166O\160\144\004\197\160\145\144\144B@\196@\176\001\007<\005\0071@\178\144\004\209\160\144\004\015\160\144\004\206@\160\176\192\005\n\164\001\001r\001/\030\001/6\192\005\n\165\001\001r\001/\030\001/>@A\196A\176\001\007=!l@\166\150A\160\144\004\018@\188\144\004\b\196@\176\001\007A\005\007F@\178\004\021\160\166M\160\166M\160\144\004\231\160\004\026@\160\145\144\144A@\160\166\150A\160\004\019@@\160\176\192\005\n\195\001\001v\001/\144\001/\171\192\005\n\196\001\001v\001/\144\001/\189@A\166\005\007n\160\178\005\n\188\160\166\150@\160\004 @\160\166\150@\160\004\"@\160\166\150@\160\144\004%@@\160\176\192\005\n\215\001\001w\001/\193\001/\205\192\005\n\216\001\001w\001/\193\001/\226@A\160\166\150A\160\004\t@@\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\n\236@\160\144\144\001\001t\160\144\144R@@@@\166\150@\160\178\004Z\160\178\166\150@\160\166\147\176@$ListA@@\160\144\005\001:@\160\176\192\005\011\004\001\001y\001/\239\001/\254\192\005\011\005\001\001y\001/\239\0010\r@A\160\004\006@\160\176\192\005\011\t\001\001y\001/\239\001/\249\192\005\011\n\001\001y\001/\239\0010\016@A@\196B\176\001\007D'of_list@\179@\160\176\001\007E!l@@\188\144\004\004\196A\176\001\007F\005\007\171@\166\150A\160\004\006@\196A\176\001\007G\"x0@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007H\005\007\184@\166\150A\160\004\006@\196A\176\001\007I\"x1@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007J\005\007\197@\166\150A\160\004\006@\196A\176\001\007K\"x2@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007L\005\007\210@\166\150A\160\004\006@\196A\176\001\007M\"x3@\166\150@\160\004\012@\188\144\004\012\188\166\150A\160\004\005@\178\144\005\001\138\160\178\166\150j\160\166\147\176@$ListA@@\160\166\150@\160\005\n@@\160\004I@\160\176\192\005\011^\001\001\131\0011`\0011|\192\005\011_\001\001\131\0011`\0011\154@A@\160\176\192\005\011b\001\001\131\0011`\0011m\004\004@A\178\005\n+\160\166\150@\160\004!@\160\178\005\n1\160\144\004+\160\178\005\n5\160\144\004<\160\178\005\n9\160\144\004M\160\178\005\t\207\160\144\004^@\160\176\192\005\011z\001\001\130\0011\015\0011N\192\005\011{\001\001\130\0011\015\0011\\@A@\160\176\192\005\011~\001\001\130\0011\015\0011F\192\005\011\127\001\001\130\0011\015\0011]@A@\160\176\192\005\011\130\001\001\130\0011\015\0011>\192\005\011\131\001\001\130\0011\015\0011^@A@\160\176\192\005\011\134\001\001\130\0011\015\00116\192\005\011\135\001\001\130\0011\015\0011_@A@\160\176\192\005\011\138\001\001\130\0011\015\0011/\004\004@A\178\005\nS\160\144\004M\160\178\005\nW\160\144\004^\160\178\005\n[\160\144\004o\160\178\005\t\241\160\144\004\128@\160\176\192\005\011\156\001\001\129\0010\203\0010\254\192\005\011\157\001\001\129\0010\203\0011\012@A@\160\176\192\005\011\160\001\001\129\0010\203\0010\246\192\005\011\161\001\001\129\0010\203\0011\r@A@\160\176\192\005\011\164\001\001\129\0010\203\0010\238\192\005\011\165\001\001\129\0010\203\0011\014@A@\160\176\192\005\011\168\001\001\129\0010\203\0010\231\004\004@A\178\005\nq\160\144\004x\160\178\005\nu\160\144\004\137\160\178\005\n\011\160\144\004\154@\160\176\192\005\011\182\001\001\128\0010\148\0010\187\192\005\011\183\001\001\128\0010\148\0010\201@A@\160\176\192\005\011\186\001\001\128\0010\148\0010\179\192\005\011\187\001\001\128\0010\148\0010\202@A@\160\176\192\005\011\190\001\001\128\0010\148\0010\172\004\004@A\178\005\n\135\160\144\004\155\160\178\005\n\029\160\144\004\172@\160\176\192\005\011\200\001\001\127\0010j\0010\133\192\005\011\201\001\001\127\0010j\0010\147@A@\160\176\192\005\011\204\001\001\127\0010j\0010~\004\004@A\178\005\n'\160\144\004\182@\160\176\192\005\011\210\001\001~\0010M\0010]\192\005\011\211\001\001~\0010M\0010i@A\144\005\b\031\166\181@C@\160\004\004\160\144\005\b\030\160\005\007\233\160\005\n\163\160\005\n6\160\005\007\139\160\005\007 \160\005\006\131\160\005\006\011\160\005\005#\160\144\005\0051\160\005\004\205\160\005\004a\160\005\004-\160\005\003\240\160\005\003\188\160\005\003\142\160\005\003A\160\005\002\198\160\144\005\002\129\160\005\t\129\160\005\t_\160\144\005\t\148\160\005\b\134\160\005\002J\160\144\004\234@@A@")));
+                    "\132\149\166\190\000\000*b\000\000\012\137\000\000'\255\000\000'\190\160\208@$Make\160\176A\160\160A\160\176\001\004\016#Ord@@@@\144\179@\160\176\001\005[&funarg@@\196B\176\001\005\217&height@\179@\160\176\001\005\218%param@@\188\144\004\004\166\150C\160\004\004@\145\144\144@\196B\176\001\005\223&create@\179@\160\176\001\005\224!l@\160\176\001\005\225!v@\160\176\001\005\226!r@@\196B\176\001\005\227\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\232\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\166\181@\144$Node@\160\004\023\160\144\004\"\160\004\015\160\188\166\157E\160\144\004#\160\144\004\026@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\237#bal@\179@\160\176\001\005\238!l@\160\176\001\005\239!v@\160\176\001\005\240!r@@\196B\176\001\005\241\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\246\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\005\252\"lr@\166\150B\160\004&@\196A\176\001\005\253\"lv@\166\150A\160\004,@\196A\176\001\005\254\"ll@\166\150@\160\0042@\188\166\004V\160\178\144\004\149\160\144\004\012@\160\176\192&set.ml\000X\001\012o\001\012~\192\004\002\000X\001\012o\001\012\135@A\160\178\004\n\160\144\004!@\160\176\192\004\t\000X\001\012o\001\012\139\192\004\n\000X\001\012o\001\012\148@A@\178\144\004\151\160\004\017\160\144\004$\160\178\004\006\160\004\r\160\144\004Y\160\004F@\160\176\192\004\024\000Y\001\012\154\001\012\181\192\004\025\000Y\001\012\154\001\012\196@A@\160\176\192\004\028\000Y\001\012\154\001\012\168\004\004@A\188\004\024\178\004\019\160\178\004\021\160\004%\160\004\020\160\166\150@\160\004!@@\160\176\192\004)\000^\001\rP\001\ri\192\004*\000^\001\rP\001\r{@A\160\166\150A\160\004)@\160\178\004%\160\166\150B\160\004/@\160\004\"\160\004g@\160\176\192\0049\000^\001\rP\001\r\128\192\004:\000^\001\rP\001\r\144@A@\160\176\192\004=\000^\001\rP\001\rb\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Set.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Set.bal@@@\188\166\004\128\160\004{\160\166L\160\004\130\160\145\144\144B@@\188\004\146\196A\176\001\006\004\"rr@\166\150B\160\004\152@\196A\176\001\006\005\"rv@\166\150A\160\004\158@\196A\176\001\006\006\"rl@\166\150@\160\004\164@\188\166\004\211\160\178\004}\160\144\004\023@\160\176\192\004|\000d\001\014)\001\0148\192\004}\000d\001\014)\001\014A@A\160\178\004\133\160\144\004\019@\160\176\192\004\132\000d\001\014)\001\014E\192\004\133\000d\001\014)\001\014N@A@\178\004{\160\178\004}\160\004\197\160\004w\160\004\011@\160\176\192\004\142\000e\001\014T\001\014i\192\004\143\000e\001\014T\001\014x@A\160\144\004)\160\004\026@\160\176\192\004\149\000e\001\014T\001\014b\192\004\150\000e\001\014T\001\014~@A\188\004\023\178\004\141\160\178\004\143\160\004\215\160\004\137\160\166\150@\160\004 @@\160\176\192\004\163\000j\001\015\011\001\015$\192\004\164\000j\001\015\011\001\0154@A\160\166\150A\160\004(@\160\178\004\159\160\166\150B\160\004.@\160\004\031\160\0048@\160\176\192\004\179\000j\001\015\011\001\0159\192\004\180\000j\001\015\011\001\015K@A@\160\176\192\004\183\000j\001\015\011\001\015\029\004\004@A\166\004z\160\166\004y\160\166\004x@\160\145\144\162'Set.bal@@@\166\004\132\160\166\004\131\160\166\004\130@\160\145\144\162'Set.bal@@@\166\181@\144\005\0014@\160\005\001\011\160\004\189\160\005\001\002\160\188\166\005\0012\160\004\251\160\004\248@\166L\160\004\254\160\145\144\144A@\166L\160\005\001\000\160\145\144\144A@@\165\160\160\176\001\006\011#add@\179@\160\176\001\006\012!x@\160\176\001\006\r!t@@\188\144\004\004\196A\176\001\006\015!r@\166\150B\160\004\007@\196A\176\001\006\016!v@\166\150A\160\004\r@\196A\176\001\006\017!l@\166\150@\160\004\019@\196@\176\001\006\018!c@\178\166\150@\160\144\005\001\167@\160\144\004#\160\144\004\023@\160\176\192\005\001\017\000t\001\0165\001\016G\192\005\001\018\000t\001\0165\001\016V@@\188\166\157@\160\144\004\020\160\145\144\144@@\004,\188\166\157B\160\004\t\160\145\144\144@@\178\144\005\001q\160\178\144\004C\160\004\030\160\144\004.@\160\176\192\005\001.\000v\001\016y\001\016\149\192\005\001/\000v\001\016y\001\016\158@A\160\004#\160\144\004A@\160\176\192\005\0015\000v\001\016y\001\016\145\192\005\0016\000v\001\016y\001\016\162@A\178\004\019\160\004\014\160\004,\160\178\004\020\160\0041\160\004\012@\160\176\192\005\001@\000v\001\016y\001\016\176\192\005\001A\000v\001\016y\001\016\185@A@\160\176\192\005\001D\000v\001\016y\001\016\168\004\004@A\166\181@\144\005\001\173@\160\145\161@\144%Empty\160\004B\160\145\161@\144\004\006\160\145\144\144A@@\196B\176\001\006\019)singleton@\179@\160\176\001\006\020!x@@\166\181@\144\005\001\197@\160\145\161@\144\004\024\160\144\004\011\160\145\161@\144\004\030\160\145\144\144A@\165\160\160\176\001\006\021/add_min_element@\179@\160\176\001\006\022!v@\160\176\001\006\023\005\002\r@@\188\144\004\003\178\004W\160\178\144\004\014\160\144\004\012\160\166\150@\160\004\011@@\160\176\192\005\001\135\001\000\132\001\018\152\001\018\164\192\005\001\136\001\000\132\001\018\152\001\018\185@A\160\166\150A\160\004\019@\160\166\150B\160\004\023@@\160\176\192\005\001\147\001\000\132\001\018\152\001\018\160\192\005\001\148\001\000\132\001\018\152\001\018\189@A\178\144\004@\160\004\024@\160\176\192\005\001\154\001\000\130\001\018^\001\018o\192\005\001\155\001\000\130\001\018^\001\018z@A@\165\160\160\176\001\006\028/add_max_element@\179@\160\176\001\006\029!v@\160\176\001\006\030\005\002;@@\188\144\004\003\178\004\133\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\178\144\004\022\160\144\004\020\160\166\150B\160\004\019@@\160\176\192\005\001\189\001\000\137\001\019\"\001\0192\192\005\001\190\001\000\137\001\019\"\001\019G@A@\160\176\192\005\001\193\001\000\137\001\019\"\001\019*\004\004@A\178\004-\160\004\014@\160\176\192\005\001\198\001\000\135\001\018\232\001\018\249\192\005\001\199\001\000\135\001\018\232\001\019\004@A@\165\160\160\176\001\006#$join@\179@\160\176\001\006$!l@\160\176\001\006%!v@\160\176\001\006&!r@@\188\144\004\n\188\144\004\006\196A\176\001\006)\"rh@\166\150C\160\144\004\r@\196A\176\001\006-\"lh@\166\150C\160\144\004\026@\188\166\005\002\018\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\004\209\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\178\144\0046\160\166\150B\160\004\029@\160\144\0045\160\144\0044@\160\176\192\005\002\011\001\000\147\001\020p\001\020\152\192\005\002\012\001\000\147\001\020p\001\020\165@A@\160\176\192\005\002\015\001\000\147\001\020p\001\020\142\004\004@A\188\166\005\0029\160\004#\160\166L\160\004*\160\145\144\144B@@\178\004\246\160\178\004\029\160\144\004P\160\004\026\160\166\150@\160\004C@@\160\176\192\005\002&\001\000\148\001\020\171\001\020\205\192\005\002'\001\000\148\001\020\171\001\020\218@A\160\166\150A\160\004K@\160\166\150B\160\004O@@\160\176\192\005\0022\001\000\148\001\020\171\001\020\201\192\005\0023\001\000\148\001\020\171\001\020\224@A\178\005\002)\160\004\024\160\0041\160\0040@\160\176\192\005\002:\001\000\149\001\020\230\001\020\240\192\005\002;\001\000\149\001\020\230\001\020\252@A\178\004\137\160\0048\160\004!@\160\176\192\005\002A\001\000\145\001\020\014\001\020$\192\005\002B\001\000\145\001\020\014\001\0207@A\178\004\198\160\004?\160\004>@\160\176\192\005\002H\001\000\144\001\019\228\001\019\250\192\005\002I\001\000\144\001\019\228\001\020\r@A@\165\160\160\176\001\0061'min_elt@\179@\160\176\001\0062\005\002\230@@\188\144\004\003\196A\176\001\0063!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002a\001\000\156\001\021\146\001\021\174\192\005\002b\001\000\156\001\021\146\001\021\183@A\166\150A\160\004\019@\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\0069'max_elt@\179@\160\176\001\006:\005\003\t@@\188\144\004\003\196A\176\001\006;!r@\166\150B\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\132\001\000\161\001\022\027\001\0227\192\005\002\133\001\000\161\001\022\027\001\022@@A\166\150A\160\004\019@\166\156@\160\166\147\004#@@@\165\160\160\176\001\006B.remove_min_elt@\179@\160\176\001\006C\005\003*@@\188\144\004\003\196A\176\001\006D!l@\166\150@\160\004\007@\188\144\004\007\178\005\001|\160\178\144\004\019\160\004\006@\160\176\192\005\002\167\001\000\168\001\022\244\001\023\020\192\005\002\168\001\000\168\001\022\244\001\023&@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\160\176\192\005\002\179\001\000\168\001\022\244\001\023\016\192\005\002\180\001\000\168\001\022\244\001\023*@A\166\004\007\160\004 @\166\005\002y\160\166\005\002x\160\166\005\002w@\160\145\144\1622Set.remove_min_elt@@@@\196B\176\001\006K%merge@\179@\160\176\001\006L\"t1@\160\176\001\006M\"t2@@\188\144\004\007\188\144\004\006\178\005\001\171\160\144\004\012\160\178\004w\160\144\004\r@\160\176\192\005\002\216\001\000\178\001\024\030\001\0247\192\005\002\217\001\000\178\001\024\030\001\024C@A\160\178\0049\160\004\b@\160\176\192\005\002\223\001\000\178\001\024\030\001\024D\192\005\002\224\001\000\178\001\024\030\001\024W@A@\160\176\192\005\002\227\001\000\178\001\024\030\001\0240\004\004@A\144\004\031\144\004\029\196B\176\001\006P&concat@\179@\160\176\001\006Q\"t1@\160\176\001\006R\"t2@@\188\144\004\007\188\144\004\006\178\004\245\160\144\004\012\160\178\004\156\160\144\004\r@\160\176\192\005\002\253\001\000\188\001\025P\001\025j\192\005\002\254\001\000\188\001\025P\001\025v@A\160\178\004^\160\004\b@\160\176\192\005\003\004\001\000\188\001\025P\001\025w\192\005\003\005\001\000\188\001\025P\001\025\138@A@\160\176\192\005\003\b\001\000\188\001\025P\001\025b\004\004@A\144\004\031\144\004\029\165\160\160\176\001\006U%split@\179@\160\176\001\006V!x@\160\176\001\006W\005\003\170@@\188\144\004\003\196A\176\001\006Y!r@\166\150B\160\004\007@\196A\176\001\006Z!v@\166\150A\160\004\r@\196A\176\001\006[!l@\166\150@\160\004\019@\196@\176\001\006\\!c@\178\166\150@\160\005\002'@\160\144\004!\160\144\004\022@\160\176\192\005\0037\001\000\200\001\027!\001\0273\192\005\0038\001\000\200\001\027!\001\027B@@\188\166\005\002&\160\144\004\018\160\145\144\144@@\166\181@@@\160\144\004 \160\145\161A\144$true\160\144\0043@\188\166\005\0020\160\004\019\160\145\144\144@@\196@\176\001\006]%match@\178\144\004J\160\004'\160\004\022@\160\176\192\005\003\\\001\000\203\001\027\136\001\027\169\192\005\003]\001\000\203\001\027\136\001\027\178@A\166\004\029\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\001j\160\166\150B\160\004\011@\160\004;\160\004%@\160\176\192\005\003r\001\000\203\001\027\136\001\027\193\192\005\003s\001\000\203\001\027\136\001\027\204@A@\196@\176\001\006a\004!@\178\004 \160\004F\160\004.@\160\176\192\005\003{\001\000\205\001\027\221\001\027\254\192\005\003|\001\000\205\001\027\221\001\028\007@A\166\004<\160\178\005\001\128\160\004=\160\004N\160\166\150@\160\144\004\018@@\160\176\192\005\003\137\001\000\205\001\027\221\001\028\012\192\005\003\138\001\000\205\001\027\221\001\028\023@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\002L\160\161@\144%false\160\161@\144\005\002S@@\196A\176\001\006e%empty@\145\161@\144\005\002Y\196B\176\001\006f(is_empty@\179@\160\176\001\006g\005\004?@@\188\144\004\003\145\161@\144\004\021\145\161A\144\004j\165\160\160\176\001\006h#mem@\179@\160\176\001\006i!x@\160\176\001\006j\005\004R@@\188\144\004\003\196@\176\001\006o!c@\178\166\150@\160\005\002\189@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\003\207\001\000\216\001\028\243\001\029\005\192\005\003\208\001\000\216\001\028\243\001\029\020@@\166I\160\166\005\002\191\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\005\002\195\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150B\160\004-@@\160\176\192\005\003\238\001\000\217\001\029\024\001\029+\192\005\003\239\001\000\217\001\029\024\001\029I@A@\145\161@\144\004X@\165\160\160\176\001\006p&remove@\179@\160\176\001\006q!x@\160\176\001\006r\005\004\146@@\188\144\004\003\196A\176\001\006t!r@\166\150B\160\004\007@\196A\176\001\006u!v@\166\150A\160\004\r@\196A\176\001\006v!l@\166\150@\160\004\019@\196@\176\001\006w!c@\178\166\150@\160\005\003\015@\160\144\004!\160\144\004\022@\160\176\192\005\004\031\001\000\222\001\029\158\001\029\176\192\005\004 \001\000\222\001\029\158\001\029\191@@\188\166\005\003\014\160\144\004\018\160\145\144\144@@\178\144\005\001i\160\144\004 \160\144\004.@\160\176\192\005\0041\001\000\223\001\029\195\001\029\219\192\005\0042\001\000\223\001\029\195\001\029\228@A\188\166\005\003\023\160\004\018\160\145\144\144@@\178\005\003\022\160\178\144\004H\160\004%\160\004\020@\160\176\192\005\004B\001\000\224\001\029\234\001\030\006\192\005\004C\001\000\224\001\029\234\001\030\018@A\160\004)\160\004\024@\160\176\192\005\004H\001\000\224\001\029\234\001\030\002\192\005\004I\001\000\224\001\029\234\001\030\022@A\178\005\003&\160\004 \160\0041\160\178\004\018\160\0046\160\004#@\160\176\192\005\004S\001\000\224\001\029\234\001\030$\192\005\004T\001\000\224\001\029\234\001\0300@A@\160\176\192\005\004W\001\000\224\001\029\234\001\030\028\004\004@A\145\161@\144\005\003\015@\165\160\160\176\001\006x%union@\179@\160\176\001\006y\"s1@\160\176\001\006z\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006}\"h2@\166\150C\160\144\004\r@\196A\176\001\006\127\"v2@\166\150A\160\004\007@\196A\176\001\006\129\"h1@\166\150C\160\144\004\029@\196A\176\001\006\131\"v1@\166\150A\160\004\007@\188\166\005\004\228\160\144\004\016\160\144\004\031@\188\166\005\003x\160\004\004\160\145\144\144A@\178\005\003k\160\144\004\"\160\144\0045@\160\176\192\005\004\153\001\000\232\001\030\237\001\031\b\192\005\004\154\001\000\232\001\030\237\001\031\017@A\196@\176\001\006\133\005\001H@\178\005\001G\160\144\004 \160\144\004=@\160\176\192\005\004\164\001\000\233\001\031\029\001\031=\192\005\004\165\001\000\233\001\031\029\001\031H@A\178\005\002\167\160\178\144\004L\160\166\150@\160\0040@\160\166\150@\160\144\004\023@@\160\176\192\005\004\181\001\000\234\001\031L\001\031_\192\005\004\182\001\000\234\001\031L\001\031l@A\160\004\025\160\178\004\017\160\166\150B\160\004@@\160\166\150B\160\004\016@@\160\176\192\005\004\196\001\000\234\001\031L\001\031p\192\005\004\197\001\000\234\001\031L\001\031}@A@\160\176\192\005\004\200\001\000\234\001\031L\001\031Z\004\004@A\188\166\005\003\182\160\004D\160\145\144\144A@\178\005\003\169\160\0043\160\0042@\160\176\192\005\004\213\001\000\237\001\031\157\001\031\184\192\005\004\214\001\000\237\001\031\157\001\031\193@A\196@\176\001\006\137\005\001\132@\178\005\001\131\160\004G\160\004F@\160\176\192\005\004\222\001\000\238\001\031\205\001\031\237\192\005\004\223\001\000\238\001\031\205\001\031\248@A\178\005\002\225\160\178\004:\160\166\150@\160\144\004\016@\160\166\150@\160\004{@@\160\176\192\005\004\238\001\000\239\001\031\252\001 \015\192\005\004\239\001\000\239\001\031\252\001 \028@A\160\004]\160\178\004J\160\166\150B\160\004\016@\160\166\150B\160\004\138@@\160\176\192\005\004\253\001\000\239\001\031\252\001  \192\005\004\254\001\000\239\001\031\252\001 -@A@\160\176\192\005\005\001\001\000\239\001\031\252\001 \n\004\004@A\144\004\161\144\004\159@\165\160\160\176\001\006\141%inter@\179@\160\176\001\006\142\"s1@\160\176\001\006\143\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\150\"r1@\166\150B\160\144\004\016@\196A\176\001\006\151\"v1@\166\150A\160\004\007@\196A\176\001\006\152\"l1@\166\150@\160\004\r@\196@\176\001\006\153\005\001\212@\178\005\001\211\160\144\004\016\160\144\004 @\160\176\192\005\0050\001\000\247\001 \210\001 \226\192\005\0051\001\000\247\001 \210\001 \237@A\196A\176\001\006\155\"l2@\166\150@\160\144\004\017@\188\166\157A\160\166\150A\160\004\b@\160\145\144\144@@\178\005\003E\160\178\144\004A\160\144\004(\160\144\004\025@\160\176\192\005\005N\001\000\251\001!a\001!t\192\005\005O\001\000\251\001!a\001!\129@A\160\004&\160\178\004\012\160\144\004@\160\166\150B\160\004!@@\160\176\192\005\005[\001\000\251\001!a\001!\133\192\005\005\\\001\000\251\001!a\001!\146@A@\160\176\192\005\005_\001\000\251\001!a\001!o\004\004@A\178\144\005\002{\160\178\004\029\160\004\028\160\144\0044@\160\176\192\005\005i\001\000\249\001!\018\001!'\192\005\005j\001\000\249\001!\018\001!4@A\160\178\004&\160\004\026\160\166\004\025\160\0049@@\160\176\192\005\005s\001\000\249\001!\018\001!5\192\005\005t\001\000\249\001!\018\001!B@A@\160\176\192\005\005w\001\000\249\001!\018\001! \004\004@A\145\161@\144\005\004/\145\161@\144\005\0042@\165\160\160\176\001\006\159$diff@\179@\160\176\001\006\160\"s1@\160\176\001\006\161\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\167\"r1@\166\150B\160\144\004\016@\196A\176\001\006\168\"v1@\166\150A\160\004\007@\196A\176\001\006\169\"l1@\166\150@\160\004\r@\196@\176\001\006\170\005\002N@\178\005\002M\160\144\004\016\160\144\004 @\160\176\192\005\005\170\001\001\002\001\"#\001\"3\192\005\005\171\001\001\002\001\"#\001\">@A\196A\176\001\006\172\"l2@\166\150@\160\144\004\017@\188\166\004z\160\166\150A\160\004\007@\160\145\144\144@@\178\004]\160\178\144\004@\160\144\004'\160\144\004\024@\160\176\192\005\005\199\001\001\006\001\"\177\001\"\198\192\005\005\200\001\001\006\001\"\177\001\"\210@A\160\178\004\011\160\144\004>\160\166\150B\160\004\031@@\160\176\192\005\005\211\001\001\006\001\"\177\001\"\211\192\005\005\212\001\001\006\001\"\177\001\"\223@A@\160\176\192\005\005\215\001\001\006\001\"\177\001\"\191\004\004@A\178\005\003\217\160\178\004\027\160\004\026\160\144\0041@\160\176\192\005\005\224\001\001\004\001\"c\001\"v\192\005\005\225\001\001\004\001\"c\001\"\130@A\160\004>\160\178\004%\160\004\026\160\166\004\025\160\0047@@\160\176\192\005\005\235\001\001\004\001\"c\001\"\134\192\005\005\236\001\001\004\001\"c\001\"\146@A@\160\176\192\005\005\239\001\001\004\001\"c\001\"q\004\004@A\144\004l\145\161@\144\005\004\168@\165\160\160\176\001\006\176)cons_enum@\179@\160\176\001\006\177!s@\160\176\001\006\178!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\144\004\025@@\160\176\192\005\006\025\001\001\r\001#_\001#{\192\005\006\026\001\001\r\001#_\001#\150@A\004\005@\165\160\160\176\001\006\183+compare_aux@\179@\160\176\001\006\184\"e1@\160\176\001\006\185\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\006\194!c@\178\166\150@\160\005\005(@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\006>\001\001\021\001$J\001$\\\192\005\006?\001\001\021\001$J\001$m@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\178\144\004-\160\178\004J\160\166\150A\160\004\027@\160\166\150B\160\004\031@@\160\176\192\005\006W\001\001\024\001$\150\001$\177\192\005\006X\001\001\024\001$\150\001$\194@A\160\178\004X\160\166\150A\160\004$@\160\166\150B\160\004(@@\160\176\192\005\006e\001\001\024\001$\150\001$\195\192\005\006f\001\001\024\001$\150\001$\212@A@\160\176\192\005\006i\001\001\024\001$\150\001$\165\004\004@A\145\144\144A\188\144\004J\145\144\144\000\255\145\144\144@@\196B\176\001\006\195'compare@\179@\160\176\001\006\196\"s1@\160\176\001\006\197\"s2@@\178\0046\160\178\004\127\160\144\004\n\160\145\161@\144#End@\160\176\192\005\006\139\001\001\027\001$\238\001%\000\192\005\006\140\001\001\027\001$\238\001%\018@A\160\178\004\140\160\144\004\020\160\145\161@\144\004\r@\160\176\192\005\006\151\001\001\027\001$\238\001%\019\192\005\006\152\001\001\027\001$\238\001%%@A@\160\176\192\005\006\155\001\001\027\001$\238\001$\244\004\004@A\196B\176\001\006\198%equal@\179@\160\176\001\006\199\"s1@\160\176\001\006\200\"s2@@\166\005\005\146\160\178\144\0044\160\144\004\011\160\144\004\n@\160\176\192\005\006\176\001\001\030\001%=\001%C\192\005\006\177\001\001\030\001%=\001%P@A\160\145\144\144@@\165\160\160\176\001\006\201&subset@\179@\160\176\001\006\202\"s1@\160\176\001\006\203\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\208\"r2@\166\150B\160\144\004\r@\196A\176\001\006\210\"l2@\166\150@\160\004\007@\196A\176\001\006\212\"r1@\166\150B\160\144\004\029@\196A\176\001\006\213\"v1@\166\150A\160\004\007@\196A\176\001\006\214\"l1@\166\150@\160\004\r@\196@\176\001\006\215!c@\178\166\150@\160\005\005\227@\160\144\004\020\160\166\150A\160\004'@@\160\176\192\005\006\245\001\001'\001&\016\001&\"\192\005\006\246\001\001'\001&\016\001&3@@\188\166\005\005\228\160\144\004\020\160\145\144\144@@\166H\160\178\144\004J\160\144\004$\160\144\0049@\160\176\192\005\007\t\001\001)\001&O\001&[\192\005\007\n\001\001)\001&O\001&g@A\160\178\004\011\160\144\004;\160\144\004J@\160\176\192\005\007\019\001\001)\001&O\001&k\192\005\007\020\001\001)\001&O\001&w@A@\188\166\005\005\249\160\004\030\160\145\144\144@@\166H\160\178\004\029\160\166\181@\144\005\007\136@\160\004 \160\0047\160\145\161@\144\005\005\221\160\145\144\144@@\160\004(@\160\176\192\005\0070\001\001+\001&\149\001&\161\192\005\0071\001\001+\001&\149\001&\196@A\160\178\0042\160\004'\160\144\004w@\160\176\192\005\0079\001\001+\001&\149\001&\200\192\005\007:\001\001+\001&\149\001&\212@A@\166H\160\178\004<\160\166\181@\144\005\007\167@\160\145\161@\144\005\005\250\160\004Y\160\004:\160\145\144\144@@\160\004=@\160\176\192\005\007O\001\001-\001&\228\001&\240\192\005\007P\001\001-\001&\228\001'\019@A\160\178\004Q\160\004P\160\144\004\150@\160\176\192\005\007X\001\001-\001&\228\001'\023\192\005\007Y\001\001-\001&\228\001'#@A@\145\161@\144\005\003\194\145\161A\144\005\004\023@\165\160\160\176\001\006\216$iter@\179@\160\176\001\006\217!f@\160\176\001\006\218\005\007\255@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\007x\001\0011\001'W\001's\192\005\007y\001\0011\001'W\001'{@A\173\178\004\011\160\166\150A\160\004\020@@\160\176\192\005\007\130\001\0011\001'W\001'}\192\005\007\131\001\0011\001'W\001'\128@@\178\004\022\160\004\021\160\166\150B\160\004\030@@\160\176\192\005\007\140\001\0011\001'W\001'\130\192\005\007\141\001\0011\001'W\001'\138@A\145\161@\144\"()@\165\160\160\176\001\006\223$fold@\179@\160\176\001\006\224!f@\160\176\001\006\225!s@\160\176\001\006\226$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150B\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\178\004\015\160\004\014\160\166\150@\160\004\022@\160\144\004\027@\160\176\192\005\007\188\001\0016\001'\209\001'\251\192\005\007\189\001\0016\001'\209\001(\n@A@\160\176\192\005\007\192\001\0016\001'\209\001'\246\192\005\007\193\001\0016\001'\209\001(\011@@@\160\176\192\005\007\196\001\0016\001'\209\001'\237\004\004@A\004\012@\165\160\160\176\001\006\231'for_all@\179@\160\176\001\006\232!p@\160\176\001\006\233\005\bd@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\007\220\001\001:\001(D\001(`\192\005\007\221\001\001:\001(D\001(c@@\160\166H\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\007\234\001\001:\001(D\001(g\192\005\007\235\001\001:\001(D\001(r@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\007\245\001\001:\001(D\001(v\192\005\007\246\001\001:\001(D\001(\129@A@@\145\161A\144\005\004\177@\165\160\160\176\001\006\238&exists@\179@\160\176\001\006\239!p@\160\176\001\006\240\005\b\153@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\b\017\001\001>\001(\186\001(\214\192\005\b\018\001\001>\001(\186\001(\217@@\160\166I\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\b\031\001\001>\001(\186\001(\221\192\005\b \001\001>\001(\186\001(\231@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\b*\001\001>\001(\186\001(\235\192\005\b+\001\001>\001(\186\001(\245@A@@\145\161@\144\005\004\148@\165\160\160\176\001\006\245&filter@\179@\160\176\001\006\246!p@\160\176\001\006\247\005\b\206@@\188\144\004\003\196A\176\001\006\250!v@\166\150A\160\004\007@\196@\176\001\006\252\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\bO\001\001D\001)\135\001)\154\192\005\bP\001\001D\001)\135\001)\164@A\196@\176\001\006\253\"pv@\178\004\r\160\144\004\026@\160\176\192\005\bY\001\001E\001)\168\001)\187\192\005\bZ\001\001E\001)\168\001)\190@@\196@\176\001\006\254\"r'@\178\004\025\160\004\024\160\166\150B\160\004)@@\160\176\192\005\bf\001\001F\001)\194\001)\213\192\005\bg\001\001F\001)\194\001)\223@A\188\144\004\024\178\005\006k\160\144\004*\160\004\024\160\144\004\020@\160\176\192\005\br\001\001G\001)\227\001)\248\192\005\bs\001\001G\001)\227\001*\004@A\178\005\003\020\160\004\n\160\004\b@\160\176\192\005\by\001\001G\001)\227\001*\n\192\005\bz\001\001G\001)\227\001*\022@A\145\161@\144\005\0072@\165\160\160\176\001\006\255)partition@\179@\160\176\001\007\000!p@\160\176\001\007\001\005\t\029@@\188\144\004\003\196A\176\001\007\004!v@\166\150A\160\004\007@\196@\176\001\007\006\005\005>@\178\144\004\020\160\144\004\018\160\166\150@\160\004\017@@\160\176\192\005\b\157\001\001M\001*\180\001*\205\192\005\b\158\001\001M\001*\180\001*\218@A\196A\176\001\007\007\"lf@\166\150A\160\144\004\020@\196A\176\001\007\b\"lt@\166\150@\160\004\007@\196@\176\001\007\t\"pv@\178\004\026\160\144\004&@\160\176\192\005\b\180\001\001N\001*\222\001*\241\192\005\b\181\001\001N\001*\222\001*\244@@\196@\176\001\007\n\005\005c@\178\004%\160\004$\160\166\150B\160\0044@@\160\176\192\005\b\192\001\001O\001*\248\001+\017\192\005\b\193\001\001O\001*\248\001+\030@A\196A\176\001\007\011\"rf@\166\150A\160\144\004\018@\196A\176\001\007\012\"rt@\166\150@\160\004\007@\188\144\004$\166\005\005\144\160\178\005\006\212\160\144\004/\160\004&\160\144\004\015@\160\176\192\005\b\219\001\001Q\001+2\001+B\192\005\b\220\001\001Q\001+2\001+N@A\160\178\005\003~\160\144\004A\160\144\004 @\160\176\192\005\b\229\001\001Q\001+2\001+P\192\005\b\230\001\001Q\001+2\001+\\@A@\166\005\005\166\160\178\005\003\137\160\004\022\160\004\020@\160\176\192\005\b\238\001\001R\001+^\001+n\192\005\b\239\001\001R\001+^\001+z@A\160\178\005\006\242\160\004\019\160\004C\160\004\019@\160\176\192\005\b\247\001\001R\001+^\001+|\192\005\b\248\001\001R\001+^\001+\136@A@\145\178@@\160\161@\144\005\007\178\160\161@\144\005\007\181@@\165\160\160\176\001\007\r(cardinal@\179@\160\176\001\007\014\005\t\157@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\t\023\001\001V\001+\190\001+\218\192\005\t\024\001\001V\001+\190\001+\228@A\160\145\144\144A@\160\178\004\015\160\166\150B\160\004\025@@\160\176\192\005\t%\001\001V\001+\190\001+\235\192\005\t&\001\001V\001+\190\001+\245@A@\145\144\144@@\165\160\160\176\001\007\019,elements_aux@\179@\160\176\001\007\020$accu@\160\176\001\007\021\005\t\201@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\150A\160\004\012@\160\178\004\012\160\144\004\021\160\166\150B\160\004\020@@\160\176\192\005\tL\001\001Z\001,6\001,e\192\005\tM\001\001Z\001,6\001,x@A@\160\166\150@\160\004\028@@\160\176\192\005\tT\001\001Z\001,6\001,R\192\005\tU\001\001Z\001,6\001,{@A\004\017@\196B\176\001\007\026(elements@\179@\160\176\001\007\027!s@@\178\004&\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\tg\001\001]\001,\146\001,\152\192\005\th\001\001]\001,\146\001,\169@A\165\160\160\176\001\007\029$find@\179@\160\176\001\007\030!x@\160\176\001\007\031\005\n\b@@\188\144\004\003\196A\176\001\007\"!v@\166\150A\160\004\007@\196@\176\001\007$!c@\178\166\150@\160\005\by@\160\144\004\021\160\144\004\016@\160\176\192\005\t\137\001\001d\001- \001-2\192\005\t\138\001\001d\001- \001-A@@\188\166\005\bx\160\144\004\018\160\145\144\144@@\004\r\178\144\004)\160\004\018\160\188\166\005\b{\160\004\012\160\145\144\144@@\166\150@\160\004,@\166\150B\160\004/@@\160\176\192\005\t\166\001\001f\001-_\001-n\192\005\t\167\001\001f\001-_\001-\141@A\166\156@\160\166\147\005\007B@@@\196B\176\001\007%.of_sorted_list@\179@\160\176\001\007&!l@@\165\160\160\176\001\007'#sub@\179@\160\176\001\007(!n@\160\176\001\007)!l@@\186\188\166j\160\145\144\144C\160\144\004\014@\169F@\167\144\004\017\208D\160\160@\166\005\006\142\160\145\161@\144\005\b\136\160\144\004\024@\160\160A\188\144\004\028\166\005\006\153\160\166\181@\144\005\nD@\160\145\161@\144\005\b\151\160\166\150@\160\144\004*@\160\145\161@\144\005\b\160\160\145\144\144A@\160\166\150A\160\004\r@@\169F@\160\160B\188\144\004;\196A\176\001\007/\005\006\166@\166\150A\160\004\023@\188\144\004\006\166\005\006\191\160\166\181@\144\005\nj@\160\166\181@\144\005\nn@\160\145\161@\144\005\b\193\160\166\150@\160\004*@\160\145\161@\144\005\b\201\160\145\144\144A@\160\166\150@\160\004\030@\160\145\161@\144\005\b\213\160\145\144\144B@\160\166\150A\160\004*@@\169F@\169F@\160\160C\188\144\004q\196A\176\001\0073\005\006\220@\166\150A\160\004M@\188\144\004\006\196A\176\001\0074\005\006\227@\166\150A\160\004\006@\188\144\004\006\166\005\006\252\160\166\181@\144\005\n\167@\160\166\181@\144\005\n\171@\160\145\161@\144\005\b\254\160\166\150@\160\004g@\160\145\161@\144\005\t\006\160\145\144\144A@\160\166\150@\160\004%@\160\166\181@\144\005\n\195@\160\145\161@\144\005\t\022\160\166\150@\160\004*@\160\145\161@\144\005\t\030\160\145\144\144A@\160\145\144\144B@\160\166\150A\160\004:@@\169F@\169F@\169F@@@@@\160F@\196B\176\001\007;\"nl@\166O\160\144\004\197\160\145\144\144B@\196@\176\001\007<\005\0071@\178\144\004\209\160\144\004\015\160\144\004\206@\160\176\192\005\n\142\001\001r\001/\030\001/6\192\005\n\143\001\001r\001/\030\001/>@A\196A\176\001\007=!l@\166\150A\160\144\004\018@\188\144\004\b\196@\176\001\007A\005\007F@\178\004\021\160\166M\160\166M\160\144\004\231\160\004\026@\160\145\144\144A@\160\166\150A\160\004\019@@\160\176\192\005\n\173\001\001v\001/\144\001/\171\192\005\n\174\001\001v\001/\144\001/\189@A\166\005\007n\160\178\005\n\166\160\166\150@\160\004 @\160\166\150@\160\004\"@\160\166\150@\160\144\004%@@\160\176\192\005\n\193\001\001w\001/\193\001/\205\192\005\n\194\001\001w\001/\193\001/\226@A\160\166\150A\160\004\t@@\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\n\214@\160\144\144\001\001t\160\144\144R@@@@\166\150@\160\178\004Z\160\178\166\150@\160\166\147\176@$ListA@@\160\144\005\001:@\160\176\192\005\n\238\001\001y\001/\239\001/\254\192\005\n\239\001\001y\001/\239\0010\r@A\160\004\006@\160\176\192\005\n\243\001\001y\001/\239\001/\249\192\005\n\244\001\001y\001/\239\0010\016@A@\196B\176\001\007D'of_list@\179@\160\176\001\007E!l@@\188\144\004\004\196A\176\001\007F\005\007\171@\166\150A\160\004\006@\196A\176\001\007G\"x0@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007H\005\007\184@\166\150A\160\004\006@\196A\176\001\007I\"x1@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007J\005\007\197@\166\150A\160\004\006@\196A\176\001\007K\"x2@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007L\005\007\210@\166\150A\160\004\006@\196A\176\001\007M\"x3@\166\150@\160\004\012@\188\144\004\012\188\166\150A\160\004\005@\178\144\005\001\138\160\178\166\150j\160\166\147\176@$ListA@@\160\166\150@\160\005\n;@\160\004I@\160\176\192\005\011H\001\001\131\0011`\0011|\192\005\011I\001\001\131\0011`\0011\154@A@\160\176\192\005\011L\001\001\131\0011`\0011m\004\004@A\178\005\n&\160\166\150@\160\004!@\160\178\005\n,\160\144\004+\160\178\005\n0\160\144\004<\160\178\005\n4\160\144\004M\160\178\005\t\202\160\144\004^@\160\176\192\005\011d\001\001\130\0011\015\0011N\192\005\011e\001\001\130\0011\015\0011\\@A@\160\176\192\005\011h\001\001\130\0011\015\0011F\192\005\011i\001\001\130\0011\015\0011]@A@\160\176\192\005\011l\001\001\130\0011\015\0011>\192\005\011m\001\001\130\0011\015\0011^@A@\160\176\192\005\011p\001\001\130\0011\015\00116\192\005\011q\001\001\130\0011\015\0011_@A@\160\176\192\005\011t\001\001\130\0011\015\0011/\004\004@A\178\005\nN\160\144\004M\160\178\005\nR\160\144\004^\160\178\005\nV\160\144\004o\160\178\005\t\236\160\144\004\128@\160\176\192\005\011\134\001\001\129\0010\203\0010\254\192\005\011\135\001\001\129\0010\203\0011\012@A@\160\176\192\005\011\138\001\001\129\0010\203\0010\246\192\005\011\139\001\001\129\0010\203\0011\r@A@\160\176\192\005\011\142\001\001\129\0010\203\0010\238\192\005\011\143\001\001\129\0010\203\0011\014@A@\160\176\192\005\011\146\001\001\129\0010\203\0010\231\004\004@A\178\005\nl\160\144\004x\160\178\005\np\160\144\004\137\160\178\005\n\006\160\144\004\154@\160\176\192\005\011\160\001\001\128\0010\148\0010\187\192\005\011\161\001\001\128\0010\148\0010\201@A@\160\176\192\005\011\164\001\001\128\0010\148\0010\179\192\005\011\165\001\001\128\0010\148\0010\202@A@\160\176\192\005\011\168\001\001\128\0010\148\0010\172\004\004@A\178\005\n\130\160\144\004\155\160\178\005\n\024\160\144\004\172@\160\176\192\005\011\178\001\001\127\0010j\0010\133\192\005\011\179\001\001\127\0010j\0010\147@A@\160\176\192\005\011\182\001\001\127\0010j\0010~\004\004@A\178\005\n\"\160\144\004\182@\160\176\192\005\011\188\001\001~\0010M\0010]\192\005\011\189\001\001~\0010M\0010i@A\144\005\b\031\166\181@C@\160\004\004\160\144\005\b\030\160\005\007\233\160\005\n\158\160\005\n1\160\005\007\139\160\005\007 \160\005\006\131\160\005\006\011\160\005\005#\160\144\005\0051\160\005\004\205\160\005\004a\160\005\004-\160\005\003\240\160\005\003\188\160\005\003\142\160\005\003A\160\005\002\198\160\144\005\002\129\160\005\t|\160\005\tZ\160\144\005\t\143\160\005\b\134\160\005\002J\160\144\004\234@@A@")));
             ("sort.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5460,7 +5633,7 @@ include
             ("stack.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\001\023\000\000\000\\\000\000\001<\000\000\0013\160\208\208@%Empty\160\176@@@@\208@%clear\160\176A\160\160A\160\176\001\003\245!s@@@@@\208@$copy\160\176A\160\160A\160\176\001\003\247!s@@@@@@ABC&create\160\176A\160\160A\160\176\001\004\015%param@@@@@\208\208\208@(is_empty\160\176A\160\160A\160\176\001\004\003!s@@@@@\208@$iter\160\176@\160\160B\160\176\001\004\007!f@\160\176\001\004\b!s@@@@@@AB&length\160\176@\160\160A\160\176\001\004\005!s@@@@@\208@#pop\160\176@\160\160A\160\176\001\003\252!s@@@@@@AC$push\160\176A\160\160B\160\176\001\003\249!x@\160\176\001\003\250!s@@@@@\208@#top\160\176@\160\160A\160\176\001\004\000!s@@@@@@ADE@")));
+                    "\132\149\166\190\000\000\001\225\000\000\000\174\000\000\002-\000\000\002!\160\208\208@%Empty\160\176@@@@\208@%clear\160\176A\160\160A\160\176\001\003\245!s@@@@\144\179@\004\005\166\167@A\160\144\004\b\160\145\161@\144\"[]@\208@$copy\160\176A\160\160A\160\176\001\003\247!s@@@@\144\179@\004\005\166\181@BA\160\166\150@\160\144\004\011@@@ABC&create\160\176A\160\160A\160\176\001\004\015%param@@@@\144\179@\004\005\166\181@BA\160\145\161@\144\004#@\208\208\208@(is_empty\160\176A\160\160A\160\176\001\004\003!s@@@@\144\179@\004\005\166\157@\160\166\150@\160\144\004\011@\160\145\161@\144\004;@\208@$iter\160\176@\160\160B\160\176\001\004\007!f@\160\176\001\004\b!s@@@@\144\179@\004\b\178\166\150I\160\166\147\176@$ListA@@\160\144\004\017\160\166\150@\160\144\004\019@@\160\176\192(stack.mlh\001\004\247\001\005\006\192\004\002h\001\004\247\001\005\021@A@AB&length\160\176@\160\160A\160\176\001\004\005!s@@@@\144\179@\004\005\178\166\150@\160\166\147\176@$ListA@@\160\166\150@\160\144\004\017@@\160\176\192\004\028f\001\004\215\001\004\230\192\004\029f\001\004\215\001\004\245@A\208@#pop\160\176@\160\160A\160\176\001\003\252!s@@@@@@AC$push\160\176A\160\160B\160\176\001\003\249!x@\160\176\001\003\250!s@@@@@\208@#top\160\176@\160\160A\160\176\001\004\000!s@@@@@@ADE@")));
             ("stdLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5472,23 +5645,23 @@ include
             ("stream.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002}\000\000\000\206\000\000\002\199\000\000\002\175\160\208\208\208\208@%Error\160\176@@@@@A'Failure\160\004\003@\208\208@%count\160@@\208@$dump\160\176@\160\160B\160\176\001\004e!f@\160\176\001\004f!s@@@@@@AB%empty\160\176A\160\160A\160\176\001\004:!s@@@@@@CD$from\160\176A\160\160A\160\176\001\004A!f@@@@@\208@$iapp\160\176A\160\160B\160\176\001\004Q!i@\160\176\001\004R!s@@@@@\208@%icons\160\176A\160\160B\160\176\001\004T!i@\160\176\001\004U!s@@@@@\208@%ising\160\176A\160\160A\160\176\001\004W!i@@@@@@ABCE$iter\160\176@\160\160B\160\176\001\004<!f@\160\176\001\004=$strm@@@@@\208\208\208\208@$junk\160\176@\160\160A\160\176\001\004%!s@@@@@@A$lapp\160\176A\160\160B\160\176\001\004Y!f@\160\176\001\004Z!s@@@@@\208@%lcons\160\176A\160\160B\160\176\001\004\\!f@\160\176\001\004]!s@@@@@\208@%lsing\160\176A\160\160A\160\176\001\004_!f@@@@@@ABC$next\160\176@\160\160A\160\176\001\0047!s@@@@@\208@%npeek\160\176@\160\160B\160\176\001\0041!n@\160\176\001\0042!s@@@@@@AD(of_bytes\160\176A\160\160A\160\176\001\004K!s@@@@@\208\208@*of_channel\160\176A\160\160A\160\176\001\004O\"ic@@@@@@A'of_list\160\176A\160\160A\160\176\001\004C!l@@@@@\208\208@)of_string\160\176A\160\160A\160\176\001\004G!s@@@@@@A$peek\160\176@\160\160A\160\176\001\004\027!s@@@@@\208@&sempty\160@@\208@%slazy\160\176A\160\160A\160\176\001\004b!f@@@@@@ABCDEF@")));
+                    "\132\149\166\190\000\000\002\147\000\000\000\215\000\000\002\225\000\000\002\200\160\208\208\208\208@%Error\160\176@@@@@A'Failure\160\004\003@\208\208@%count\160@\144\179@\160\176\001\004m$prim@@\166\150@\160\144\004\006@\208@$dump\160\176@\160\160B\160\176\001\004e!f@\160\176\001\004f!s@@@@@@AB%empty\160\176A\160\160A\160\176\001\004:!s@@@@@@CD$from\160\176A\160\160A\160\176\001\004A!f@@@@@\208@$iapp\160\176A\160\160B\160\176\001\004Q!i@\160\176\001\004R!s@@@@@\208@%icons\160\176A\160\160B\160\176\001\004T!i@\160\176\001\004U!s@@@@@\208@%ising\160\176A\160\160A\160\176\001\004W!i@@@@@@ABCE$iter\160\176@\160\160B\160\176\001\004<!f@\160\176\001\004=$strm@@@@@\208\208\208\208@$junk\160\176@\160\160A\160\176\001\004%!s@@@@@@A$lapp\160\176A\160\160B\160\176\001\004Y!f@\160\176\001\004Z!s@@@@@\208@%lcons\160\176A\160\160B\160\176\001\004\\!f@\160\176\001\004]!s@@@@@\208@%lsing\160\176A\160\160A\160\176\001\004_!f@@@@@@ABC$next\160\176@\160\160A\160\176\001\0047!s@@@@@\208@%npeek\160\176@\160\160B\160\176\001\0041!n@\160\176\001\0042!s@@@@@@AD(of_bytes\160\176A\160\160A\160\176\001\004K!s@@@@@\208\208@*of_channel\160\176A\160\160A\160\176\001\004O\"ic@@@@@@A'of_list\160\176A\160\160A\160\176\001\004C!l@@@@@\208\208@)of_string\160\176A\160\160A\160\176\001\004G!s@@@@@@A$peek\160\176@\160\160A\160\176\001\004\027!s@@@@@\208@&sempty\160@@\208@%slazy\160\176A\160\160A\160\176\001\004b!f@@@@@@ABCDEF@")));
             ("string.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\003\199\000\000\0016\000\000\004\018\000\000\003\246\160\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\160\176\001\004G!s@@@@@\208@'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@@@ABC&concat\160\176@\160\160B\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\0048!s@\160\176\001\0049!c@@@@@\208@-contains_from\160\176A\160\160C\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004*!s@\160\176\001\004+!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004E!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004-!s@\160\176\001\004.!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\160\176\001\004I!s@@@@@@A)uppercase\160\176@\160\160A\160\176\001\004C!s@@@@@@BCDEF@")));
+                    "\132\149\166\190\000\000\003\241\000\000\001A\000\000\0047\000\000\004\025\160\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\160\176\001\004G!s@@@@@\208@'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@\144\179@\004\b\166\155\2403caml_string_compareB@ @@@\160\144\004\014\160\144\004\r@@ABC&concat\160\176A\160\160B\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\0048!s@\160\176\001\0049!c@@@@@\208@-contains_from\160\176A\160\160C\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004*!s@\160\176\001\004+!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004E!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004-!s@\160\176\001\004.!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\160\176\001\004I!s@@@@@@A)uppercase\160\176@\160\160A\160\176\001\004C!s@@@@@@BCDEF@")));
             ("stringLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\003\199\000\000\0016\000\000\004\018\000\000\003\246\160\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\160\176\001\004G!s@@@@@\208@'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@@@ABC&concat\160\176@\160\160B\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\0048!s@\160\176\001\0049!c@@@@@\208@-contains_from\160\176A\160\160C\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004*!s@\160\176\001\004+!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004E!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004-!s@\160\176\001\004.!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\160\176\001\004I!s@@@@@@A)uppercase\160\176@\160\160A\160\176\001\004C!s@@@@@@BCDEF@")));
+                    "\132\149\166\190\000\000\003\199\000\000\0016\000\000\004\018\000\000\003\246\160\208\208\208\208@$blit\160\176@\160\160E\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\160\176\001\004G!s@@@@@\208@'compare\160\176@\160\160B\160\176\001\004L!x@\160\176\001\004M!y@@@@@@ABC&concat\160\176A\160\160B\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\160\176\001\0048!s@\160\176\001\0049!c@@@@@\208@-contains_from\160\176A\160\160C\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\160\176\001\004*!s@\160\176\001\004+!c@@@@@\208@*index_from\160\176@\160\160C\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\160\176\001\004E!s@@@@@@ABC$make\160\176@\160\160B\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\160\176\001\004-!s@\160\176\001\004.!c@@@@@\208@+rindex_from\160\176@\160\160C\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\160\176\001\004I!s@@@@@@A)uppercase\160\176@\160\160A\160\176\001\004C!s@@@@@@BCDEF@")));
             ("sys.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002l\000\000\000\129\000\000\002\b\000\000\001\221\160\208\208\208\208\208@%Break\160\176@@@@@A$argv\160@@\208\208@*big_endian\160\176A@@@\208@+catch_break\160\176A\160\160A\160\176\001\004-\"on@@@@@@AB&cygwin\160\004\012@@CD/executable_name\160@@\208\208@+interactive\160\004\018@@A%is_js\160\004\027@\208\208@0max_array_length\160\004\024@@A1max_string_length\160\004\026@\208@-ocaml_version\160@@@ABCE'os_type\160@@\208\208\208@*set_signal\160\176A\160\160B\160\176\001\004\020'sig_num@\160\176\001\004\021'sig_beh@@@@@@A'sigabrt\160@@@B'sigalrm\160@@\208\208@'sigchld\160@@\208@'sigcont\160@@@AB&sigfpe\160@@\208@&sighup\160@@@ACDF&sigill\160@@\208\208\208\208@&sigint\160@@@A'sigkill\160@@\208@'sigpipe\160@@\208@'sigprof\160@@@ABC'sigquit\160@@\208@'sigsegv\160@@\208@'sigstop\160@@@ABD'sigterm\160@@\208\208\208@'sigtstp\160@@\208@'sigttin\160@@\208@'sigttou\160@@@ABC'sigusr1\160@@\208@'sigusr2\160@@\208@)sigvtalrm\160@@@ABD$unix\160\004l@\208@%win32\160\004o@\208@)word_size\160\004r@@ABEFG@")));
+                    "\132\149\166\190\000\000\003\002\000\000\000\163\000\000\002|\000\000\002L\160\208\208\208\208\208@%Break\160\176@@@@@A$argv\160@@\208\208@*big_endian\160\176A@@@\208@+catch_break\160\176A\160\160A\160\176\001\004-\"on@@@@@@AB&cygwin\160\004\012@@CD/executable_name\160@@\208\208@+interactive\160\004\018@@A%is_js\160\004\027@\208\208@0max_array_length\160\004\024@@A1max_string_length\160\004\026@\208@-ocaml_version\160@@@ABCE'os_type\160@@\208\208\208@*set_signal\160\176A\160\160B\160\176\001\004\020'sig_num@\160\176\001\004\021'sig_beh@@@@\144\179@\004\b\166F\160\166\155\240;caml_install_signal_handlerBA @@\144\176\193 \176\179\144\176A#int@@\144@\002\005\245\225\000\001\006\215\176\193\004\t\176\179\144\176\001\004\014/signal_behavior@@\144@\002\005\245\225\000\001\006\218\176\179\004\006@\144@\002\005\245\225\000\001\006\221@\002\005\245\225\000\001\006\224@\002\005\245\225\000\001\006\225\160\144\004%\160\144\004$@@@A'sigabrt\160@@@B'sigalrm\160@@\208\208@'sigchld\160@@\208@'sigcont\160@@@AB&sigfpe\160@@\208@&sighup\160@@@ACDF&sigill\160@@\208\208\208\208@&sigint\160@@@A'sigkill\160@@\208@'sigpipe\160@@\208@'sigprof\160@@@ABC'sigquit\160@@\208@'sigsegv\160@@\208@'sigstop\160@@@ABD'sigterm\160@@\208\208\208@'sigtstp\160@@\208@'sigttin\160@@\208@'sigttou\160@@@ABC'sigusr1\160@@\208@'sigusr2\160@@\208@)sigvtalrm\160@@@ABD$unix\160\004\142@\208@%win32\160\004\145@\208@)word_size\160\004\148@@ABEFG@")));
             ("weak.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\000\183\000\000\0007\000\000\000\194\000\000\000\187\160\208\208\208\208\208@$Make\160\176A\160\160A\160\176\001\0044!H@@@@@@A$blit\160@@@B%check\160@@@C&create\160@@\208@$fill\160\176A\160\160D\160\176\001\003\250\"ar@\160\176\001\003\251#ofs@\160\176\001\003\252#len@\160\176\001\003\253!x@@@@@@AD#get\160@@\208\208@(get_copy\160@@@A&length\160\176A\160\160A\160\176\001\003\243!x@@@@@\208@#set\160@@@ABE@")));
+                    "\132\149\166\190\000\000\003\220\000\000\001\007\000\000\003g\000\000\003R\160\208\208\208\208\208@$Make\160\176A\160\160A\160\176\001\0044!H@@@@@@A$blit\160@@@B%check\160@\144\179@\160\176\001\004\252$prim@\160\176\001\004\251\004\003@@\166\155\240/caml_weak_checkBA @@\144\176\193 \176\179\144\176\001\003\240!t@\160\176\150\176\144\144!a\002\005\245\225\000\001\003\200\001\003\247\001\003\185@\144@\002\005\245\225\000\001\003\187\176\193\004\016\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\191\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\003\194@\002\005\245\225\000\001\003\197@\002\005\245\225\000\001\003\198\160\144\004*\160\144\004)@@C&create\160@\144\179@\160\176\001\004\243\0041@@\166\155\2400caml_weak_createAA\004.@@\144\176\193\004-\176\179\004\029@\144@\002\005\245\225\000\001\002\237\176\179\004/\160\176\150\176\144\144!a\002\005\245\225\000\001\002\248\001\003\241\001\002\240@\144@\002\005\245\225\000\001\002\242@\002\005\245\225\000\001\002\246\160\144\004\023@\208@$fill\160\176A\160\160D\160\176\001\003\250\"ar@\160\176\001\003\251#ofs@\160\176\001\003\252#len@\160\176\001\003\253!x@@@@@@AD#get\160@\144\179@\160\176\001\004\248\004_@\160\176\001\004\247\004a@@\166\155\240-caml_weak_getBA\004^@@\144\176\193\004]\176\179\004\\\160\176\150\176\144\144!a\002\005\245\225\000\001\003\166\001\003\245\001\003\149@\144@\002\005\245\225\000\001\003\151\176\193\004i\176\179\004Y@\144@\002\005\245\225\000\001\003\155\176\179\144\176J&option@\160\004\018@\144@\002\005\245\225\000\001\003\159@\002\005\245\225\000\001\003\163@\002\005\245\225\000\001\003\164\160\144\004\"\160\144\004\"@\208\208@(get_copy\160@\144\179@\160\176\001\004\250\004\138@\160\176\001\004\249\004\140@@\166\155\2402caml_weak_get_copyBA\004\137@@\144\176\193\004\136\176\179\004\135\160\176\150\176\144\144!a\002\005\245\225\000\001\003\184\001\003\246\001\003\167@\144@\002\005\245\225\000\001\003\169\176\193\004\148\176\179\004\132@\144@\002\005\245\225\000\001\003\173\176\179\004+\160\004\015@\144@\002\005\245\225\000\001\003\177@\002\005\245\225\000\001\003\181@\002\005\245\225\000\001\003\182\160\144\004\031\160\144\004\031@@A&length\160\176A\160\160A\160\176\001\003\243!x@@@@\144\179@\004\005\166M\160\166\b\000\000\004\018@\160\144\004\n@\160\145\144\144A@\208@#set\160@\144\179@\160\176\001\004\246\004\197@\160\176\001\004\245\004\199@\160\176\001\004\244\004\201@@\166\155\240-caml_weak_setCA\004\198@@\144\176\193\004\197\176\179\004\196\160\176\150\176\144\144!a\002\005\245\225\000\001\003\148\001\003\244\001\003\127@\144@\002\005\245\225\000\001\003\129\176\193\004\209\176\179\004\193@\144@\002\005\245\225\000\001\003\133\176\193\004\214\176\179\004j\160\004\017@\144@\002\005\245\225\000\001\003\137\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\003\141@\002\005\245\225\000\001\003\144@\002\005\245\225\000\001\003\145@\002\005\245\225\000\001\003\146\160\144\004)\160\144\004)\160\144\004)@@ABE@")));
             ("caml_array.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5496,7 +5669,15 @@ include
             ("caml_curry.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002j\000\000\000\208\000\000\002\154\000\000\002\142\160\208\208\208@$app1\160\176@\160\160B\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A$app2\160\176@\160\160C\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B$app3\160\176@\160\160D\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208\208@$app4\160\176@\160\160E\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A$app5\160\176@\160\160F\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@B$app6\160\176@\160\160G\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208@$app7\160\176@\160\160H\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@$app8\160\176@\160\160I\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB%curry\160\176@\160\160B\160\176\001\003\253!f@\160\176\001\003\254$args@@@@@\208@&curry1\160\176@\160\160C\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@ACDE@")));
+                    "\132\149\166\190\000\000\005K\000\000\001\174\000\000\005a\000\000\005C\160\208\208\208\208@#app\160\176@\160\160B\160\176\001\003\253!f@\160\176\001\003\254$args@@@@@@A$app1\160\176@\160\160B\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@\208@$app2\160\176@\160\160C\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@AB$app3\160\176@\160\160D\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208@$app4\160\176@\160\160E\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A$app5\160\176@\160\160F\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@\208@$app6\160\176@\160\160G\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@@ABC$app7\160\176@\160\160H\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208\208\208@$app8\160\176@\160\160I\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@A&curry1\160\176@\160\160C\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@\208@\"js\160\176@\160\160D\160\176\001\004E%label@\160\176\001\004F'cacheid@\160\176\001\004G#obj@\160\176\001\004H$args@@@@@@AB#js1\160\176@\160\160C\160\176\001\004K%label@\160\176\001\004L'cacheid@\160\176\001\004M#obj@@@@@\208\208\208@#js2\160\176@\160\160D\160\176\001\004P%label@\160\176\001\004Q'cacheid@\160\176\001\004R#obj@\160\176\001\004S\"a1@@@@@@A#js3\160\176@\160\160E\160\176\001\004V%label@\160\176\001\004W'cacheid@\160\176\001\004X#obj@\160\176\001\004Y\"a1@\160\176\001\004Z\"a2@@@@@\208@#js4\160\176@\160\160F\160\176\001\004]%label@\160\176\001\004^'cacheid@\160\176\001\004_#obj@\160\176\001\004`\"a1@\160\176\001\004a\"a2@\160\176\001\004b\"a3@@@@@@AB#js5\160\176@\160\160G\160\176\001\004e%label@\160\176\001\004f'cacheid@\160\176\001\004g#obj@\160\176\001\004h\"a1@\160\176\001\004i\"a2@\160\176\001\004j\"a3@\160\176\001\004k\"a4@@@@@\208@#js6\160\176@\160\160H\160\176\001\004n%label@\160\176\001\004o'cacheid@\160\176\001\004p#obj@\160\176\001\004q\"a1@\160\176\001\004r\"a2@\160\176\001\004s\"a3@\160\176\001\004t\"a4@\160\176\001\004u\"a5@@@@@\208@#js7\160\176@\160\160I\160\176\001\004x%label@\160\176\001\004y'cacheid@\160\176\001\004z#obj@\160\176\001\004{\"a1@\160\176\001\004|\"a2@\160\176\001\004}\"a3@\160\176\001\004~\"a4@\160\176\001\004\127\"a5@\160\176\001\004\128\"a6@@@@@\208@#js8\160\176@\160\160J\160\176\001\004\131%label@\160\176\001\004\132'cacheid@\160\176\001\004\133#obj@\160\176\001\004\134\"a1@\160\176\001\004\135\"a2@\160\176\001\004\136\"a3@\160\176\001\004\137\"a4@\160\176\001\004\138\"a5@\160\176\001\004\139\"a6@\160\176\001\004\140\"a7@@@@@@ABCDEF@")));
+            ("caml_exceptions.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\0021\000\000\000\147\000\000\001\244\000\000\001\212\160\208\208\208@6caml_array_bound_error\160\176A\160\160A\160\176\001\003\253%param@@@A\144\179@\004\005\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\1623index out of bounds@@@@A-caml_failwith\160\176A\160\160A\160\176\001\003\243!s@@@A\144\179@\004\005\166\156@\160\166\004\025\160\166\147\176S'FailureC@\160\144\004\015@@\208@5caml_invalid_argument\160\176A\160\160A\160\176\001\003\245!s@@@A\144\179@\004\005\166\156@\160\166\004/\160\166\147\004.@\160\144\004\r@@\208@4caml_raise_not_found\160\176A\160\160A\160\176\001\003\251\004C@@@A\144\179@\004\004\166\156@\160\166\147\176T)Not_foundC@@@ABC4caml_raise_sys_error\160\176A\160\160A\160\176\001\003\241#msg@@@A\144\179@\004\005\166\156@\160\166\004S\160\166\147\176U)Sys_errorC@\160\144\004\015@@\208@6caml_raise_zero_divide\160\176A\160\160A\160\176\001\003\252\004i@@@A\144\179@\004\004\166\156@\160\166\147\176W0Division_by_zeroC@@\208@1caml_undef_module\160\176A\160\160A\160\176\001\003\250#loc@@@A\144\179@\004\005\166\156@\160\166\004z\160\166\147\176[:Undefined_recursive_moduleC@\160\144\004\015@@@ABD@")));
+            ("caml_obj.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\002]\000\000\000\151\000\000\002\"\000\000\002\004\160\208\208\208\208@,caml_compare\160\176@\160\160B\160\176\001\004\019!a@\160\176\001\004\020!b@@@@@@A*caml_equal\160\176@\160\160B\160\176\001\004+!a@\160\176\001\004,!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\160\176\001\004;!a@\160\176\001\004<!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\160\176\001\004>!a@\160\176\001\004?!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\160\176\001\004\n!x@\160\176\001\004\011!y@@@@@\208@0caml_int_compare\160\004\012@@AD6caml_lazy_make_forward\160\176A\160\160A\160\176\001\004\003!x@@@@\144\179@\004\005\166\181\001\000\250C@\160\144\004\b@\208\208\208\208@.caml_lessequal\160\176A\160\160B\160\176\001\004A!a@\160\176\001\004B!b@@@@@@A-caml_lessthan\160\176A\160\160B\160\176\001\004D!a@\160\176\001\004E!b@@@@@@B6caml_nativeint_compare\160\0046@\208@-caml_notequal\160\176A\160\160B\160\176\001\0046!a@\160\176\001\0047!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\160\176\001\003\249!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\160\176\001\003\254!x@\160\176\001\003\255(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\160\176\001\004\005!x@\160\176\001\004\006!y@@@@@@ABDE@")));
             ("caml_oo.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5504,7 +5685,7 @@ include
             ("caml_string.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\002*\000\000\000\141\000\000\001\241\000\000\001\218\160\208\208\208@#add\160\176@\160\160B\160\176\001\0044$prim@\160\176\001\0043\004\003@@@@@@A/bytes_of_string\160\176@\160\160A\160\176\001\004\026!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\160\176\001\004)!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\160\176\001\004\016\"s1@\160\176\001\004\017\"i1@\160\176\001\004\018\"s2@\160\176\001\004\019\"i2@\160\176\001\004\020#len@@@@@@AB0caml_blit_string\160\176A\160\160E\160\176\001\004\006\"s1@\160\176\001\004\007\"i1@\160\176\001\004\b\"s2@\160\176\001\004\t\"i2@\160\176\001\004\n#len@@@@@\208@2caml_create_string\160\176@\160\160A\160\176\001\003\251#len@@@@@\208@0caml_fill_string\160\176A\160\160D\160\176\001\004\000!s@\160\176\001\004\001!i@\160\176\001\004\002!l@\160\176\001\004\003!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\160\176\001\0040!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\160\176\001\003\253\"s1@\160\176\001\003\254\"s2@@@@@@A/caml_string_get\160\176A\160\160B\160\176\001\003\248!s@\160\176\001\003\249!i@@@@@@B9caml_string_of_char_array\160\176@\160\160A\160\176\001\004+%chars@@@@@@CE@")))]
+                    "\132\149\166\190\000\000\002\160\000\000\000\170\000\000\002S\000\000\0029\160\208\208\208@#add\160\176@\160\160B\160\176\001\0044$prim@\160\176\001\0043\004\003@@@@\144\179@\004\007\166\155\2400js_string_appendBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\002\234\176\193\004\t\176\179\004\b@\144@\002\005\245\225\000\001\002\237\176\179\004\011@\144@\002\005\245\225\000\001\002\240@\002\005\245\225\000\001\002\243@\002\005\245\225\000\001\002\244\160\144\004\031\160\144\004\030@@A/bytes_of_string\160\176@\160\160A\160\176\001\004\026!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\160\176\001\004)!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\160\176\001\004\016\"s1@\160\176\001\004\017\"i1@\160\176\001\004\018\"s2@\160\176\001\004\019\"i2@\160\176\001\004\020#len@@@@@@AB0caml_blit_string\160\176A\160\160E\160\176\001\004\006\"s1@\160\176\001\004\007\"i1@\160\176\001\004\b\"s2@\160\176\001\004\t\"i2@\160\176\001\004\n#len@@@@@\208@2caml_create_string\160\176@\160\160A\160\176\001\003\251#len@@@@@\208@0caml_fill_string\160\176A\160\160D\160\176\001\004\000!s@\160\176\001\004\001!i@\160\176\001\004\002!l@\160\176\001\004\003!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\160\176\001\0040!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\160\176\001\003\253\"s1@\160\176\001\003\254\"s2@@@@@@A/caml_string_get\160\176A\160\160B\160\176\001\003\248!s@\160\176\001\003\249!i@@@@@@B9caml_string_of_char_array\160\176@\160\160A\160\176\001\004+%chars@@@@@@CE@")))]
       end 
     module Config_util :
       sig
@@ -5535,12 +5716,8 @@ include
           " Helper for global Ocaml module index into meaningful names  "]
         type primitive_description =
           Types.type_expr option Primitive.description
-        type key =
-          | GetGlobal of Ident.t* int* Env.t
-          | QueryGlobal of Ident.t* Env.t*
-          bool[@ocaml.doc
-                " the boolean is expand or not\n      when it's passed as module, it should be expanded, \n      otherwise for alias, [include Array], it's okay to return an identifier\n      TODO: be more clear about its concept\n  "]
-          | CamlRuntimePrimitive of primitive_description* J.expression list
+        type key = (Ident.t* Env.t* bool)[@@ocaml.doc
+                                           " the boolean is expand or not\n      when it's passed as module, it should be expanded, \n      otherwise for alias, [include Array], it's okay to return an identifier\n      TODO: be more clear about its concept\n  "]
         type ident_info =
           {
           id: Ident.t;
@@ -5569,8 +5746,8 @@ include
               Lam_module_ident.t Hash_set.hashset -> Lam_module_ident.t list
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         type module_id = Lam_module_ident.t
         type ml_module_info =
           {
@@ -5589,12 +5766,8 @@ include
           pure: bool;}
         type primitive_description =
           Types.type_expr option Primitive.description
-        type key =
-          | GetGlobal of Ident.t* int* Env.t
-          | QueryGlobal of Ident.t* Env.t*
-          bool[@ocaml.doc
-                " we need register which global variable is an dependency "]
-          | CamlRuntimePrimitive of primitive_description* J.expression list
+        type key = (Ident.t* Env.t* bool)[@@ocaml.doc
+                                           " we need register which global variable is an dependency "]
         type ident_info =
           {
           id: Ident.t;
@@ -5700,26 +5873,169 @@ include
              extras;
            Hash_set.elements hard_dependencies : module_id list)
       end 
+    module Js_of_lam_module :
+      sig
+        val make : ?comment:string -> J.expression list -> J.expression
+        val is_empty_shape : J.expression -> bool
+      end =
+      struct
+        module E = Js_exp_make
+        let make ?comment  (args : J.expression list) =
+          E.make_block ?comment (E.int 0) NA args Immutable
+        let is_empty_shape (shape : J.expression) =
+          match shape with
+          | {
+              expression_desc = Caml_block
+                ({ expression_desc = Caml_block ([],_,_,_);_}::[],_,_,_);_}
+              -> true
+          | _ -> false
+      end 
+    module Lam_compile_global :
+      sig
+        [@@@ocaml.text
+          " Compile ocaml external module call , e.g [List.length] to  JS IR "]
+        val get_exp : Lam_compile_env.key -> J.expression
+        val query_lambda : Ident.t -> Env.t -> Lambda.lambda
+      end =
+      struct
+        module E = Js_exp_make
+        module S = Js_stmt_make
+        open Js_output.Ops
+        let query_lambda id env =
+          Lam_compile_env.query_and_add_if_not_exist
+            (Lam_module_ident.of_ml id) env
+            ~not_found:(fun id  -> assert false)
+            ~found:(fun { signature = sigs;_}  ->
+                      Lambda.Lprim
+                        ((Pmakeblock (0, NA, Immutable)),
+                          ((List.mapi
+                              (fun i  ->
+                                 fun _  ->
+                                   Lambda.Lprim
+                                     ((Pfield i),
+                                       [Lprim ((Pgetglobal id), [])]))) sigs)))
+        let get_exp (key : Lam_compile_env.key) =
+          (match key with
+           | (id,env,expand) ->
+               if Ident.is_predef_exn id
+               then E.runtime_ref Js_config.builtin_exceptions id.name
+               else
+                 Lam_compile_env.query_and_add_if_not_exist
+                   (Lam_module_ident.of_ml id) env
+                   ~not_found:(fun id  -> assert false)
+                   ~found:(fun { signature = sigs;_}  ->
+                             if expand
+                             then
+                               let len = List.length sigs in
+                               Js_of_lam_module.make ~comment:(id.name)
+                                 (Ext_list.init len
+                                    (fun i  ->
+                                       E.ml_var_dot id
+                                         (Type_util.get_name sigs i)))
+                             else E.ml_var id) : J.expression)
+      end 
+    module Parsetree_util :
+      sig
+        val is_single_string : Parsetree.payload -> string option
+        val is_string_or_strings :
+          Parsetree.payload ->
+            [ `None  | `Single of string  | `Some of string list ]
+      end =
+      struct
+        let is_single_string (x : Parsetree.payload) =
+          match x with
+          | Parsetree.PStr
+              ({
+                 pstr_desc = Pstr_eval
+                   ({ pexp_desc = Pexp_constant (Const_string (name,_));_},_);_}::[])
+              -> Some name
+          | _ -> None
+        let is_string_or_strings (x : Parsetree.payload) =
+          (let module M = struct exception Not_str end in
+             match x with
+             | PStr
+                 ({
+                    pstr_desc = Pstr_eval
+                      ({
+                         pexp_desc = Pexp_apply
+                           ({
+                              pexp_desc = Pexp_constant (Const_string
+                                (name,_));_},args);_},_);_}::[])
+                 ->
+                 (try
+                    `Some (name ::
+                      (args |>
+                         (List.map
+                            (fun (_label,e)  ->
+                               match (e : Parsetree.expression) with
+                               | {
+                                   pexp_desc = Pexp_constant (Const_string
+                                     (name,_));_}
+                                   -> name
+                               | _ -> raise M.Not_str))))
+                  with | M.Not_str  -> `None)
+             | Parsetree.PStr
+                 ({
+                    pstr_desc = Pstr_eval
+                      ({ pexp_desc = Pexp_constant (Const_string (name,_));_},_);_}::[])
+                 -> `Single name
+             | _ -> `None : [ `None  | `Single of string 
+                            | `Some of string list ])
+      end 
     module Js_of_lam_tuple :
       sig
         [@@@ocaml.text " Utilities for compiling lambda tuple into JS IR "]
         val make : J.expression list -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let make (args : J.expression list) =
-          E.arr Immutable ((E.int 0) :: args)
+          E.make_block ~comment:"tuple" (E.int 0) Tuple args Immutable
       end 
     module Js_of_lam_record :
       sig
         [@@@ocaml.text " Utilities for compiling lambda record into JS IR "]
         val make :
           J.mutable_flag -> (string* J.expression) list -> J.expression
+        val field : J.expression -> int -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let make mutable_flag (args : (string* J.expression) list) =
-          E.arr mutable_flag ((E.int 0) :: (List.map snd args))
+          E.make_block ~comment:"record" (E.int 0) Record (List.map snd args)
+            mutable_flag
+        let field e i = E.index e i
+      end 
+    module Js_of_lam_exception :
+      sig
+        val match_exception_def :
+          J.expression list -> (J.expression* J.mutable_flag) option
+        val make_exception :
+          J.expression -> J.expression -> J.mutable_flag -> J.expression
+      end =
+      struct
+        module E = Js_exp_make[@@ocaml.doc
+                                " An pattern match on {!caml_set_oo_id args}\n    Note that in the trunk, it is immutable by default now \n "]
+        let match_exception_def (args : J.expression list) =
+          match args with
+          | {
+              expression_desc = Caml_block
+                (exception_str::{
+                                  expression_desc = J.Number (Int { i = 0;_});_}::[],mutable_flag,
+                 { expression_desc = J.Number (Int { i = object_tag;_});_},_);_}::[]
+              ->
+              if object_tag = Obj.object_tag
+              then Some (exception_str, mutable_flag)
+              else None
+          | _ -> None
+        let make_exception id exception_str mutable_flag =
+          ({
+             expression_desc =
+               (Caml_block
+                  ([exception_str; id], mutable_flag, (E.int Obj.object_tag),
+                    NA));
+             comment = None
+           } : J.expression)
       end 
     module Js_of_lam_array :
       sig
@@ -5735,11 +6051,12 @@ include
         val ref_array : J.expression -> J.expression -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let make_array mt (kind : Lambda.array_kind) args =
           match kind with
-          | Pgenarray |Paddrarray |Pintarray |Pfloatarray  ->
-              E.arr ~comment:"array" mt args
+          | Pgenarray |Paddrarray  -> E.arr ~comment:"array" mt args
+          | Pintarray  -> E.arr ~comment:"int array" mt args
+          | Pfloatarray  -> E.arr ~comment:"float array" mt args
         let set_array e e0 e1 = E.assign (E.access e e0) e1
         let ref_array e e0 = E.access e e0
       end 
@@ -5753,8 +6070,8 @@ include
                                                " \n    @return None when the primitives are not handled in  pre-processing\n "]
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         let query (prim : Lam_compile_env.primitive_description)
           (args : J.expression list) =
           (match prim.prim_name with
@@ -5952,36 +6269,25 @@ include
                  (let open E in
                     [zero_float_lit; zero_float_lit; zero_float_lit])
            | "caml_gc_get" ->
-               E.arr NA
-                 [E.int 0;
-                 E.int ~comment:"minor_heap_size" 0;
-                 E.int ~comment:"major_heap_increment" 0;
-                 E.int ~comment:"space_overhead" 0;
-                 E.int ~comment:"verbose" 0;
-                 E.int ~comment:"max_overhead" 0;
-                 E.int ~comment:"stack_limit" 0;
-                 E.int ~comment:"allocation_policy" 0]
+               Js_of_lam_record.make NA
+                 (let open E in
+                    [("minor_heap_size", (int 0));
+                    ("major_heap_increment", (int 0));
+                    ("space_overhead", (int 0));
+                    ("verbose", (int 0));
+                    ("max_overhead", (int 0));
+                    ("stack_limit", (int 0));
+                    ("allocation_policy", (int 0))])
            | "caml_set_oo_id" ->
-               (match args with
-                | ({
-                     expression_desc = Array
-                       (tag::str::{
-                                    expression_desc = J.Number (Int
-                                      { i = 0;_});_}::[],flag);_}
-                     as v)::[]
-                    ->
-                    {
-                      v with
-                      expression_desc =
-                        (J.Array
-                           ([tag;
-                            str;
-                            E.prefix_inc
-                              (E.runtime_var_vid Js_config.exceptions
-                                 "caml_oo_last_id")], flag))
-                    }
+               (match Js_of_lam_exception.match_exception_def args with
+                | Some (exception_str,mutable_flag) ->
+                    Js_of_lam_exception.make_exception
+                      (E.prefix_inc
+                         (E.runtime_var_vid Js_config.builtin_exceptions
+                            "caml_oo_last_id")) exception_str mutable_flag
                 | _ ->
-                    E.runtime_call Js_config.exceptions prim.prim_name args)
+                    E.runtime_call Js_config.builtin_exceptions
+                      prim.prim_name args)
            | "caml_sys_const_big_endian" -> E.bool Sys.big_endian
            | "caml_sys_const_word_size" -> E.int Sys.word_size
            | "caml_sys_const_ostype_cygwin" -> E.false_
@@ -5994,13 +6300,15 @@ include
                  E.int Sys.word_size;
                  E.bool Sys.big_endian]
            | "caml_sys_get_argv" ->
-               Js_of_lam_tuple.make [E.str "cmd"; E.arr NA []]
+               Js_of_lam_tuple.make
+                 [E.str "cmd"; Js_of_lam_array.make_array NA Pgenarray []]
            | "caml_sys_time"|"caml_sys_random_seed"|"caml_sys_getenv"
              |"caml_sys_system_command" ->
                E.runtime_call Js_config.sys prim.prim_name args
-           | "caml_lex_engine"|"caml_new_lex_engine"|"caml_parse_engine"
-             |"caml_set_parser_trace" ->
-               E.runtime_call Js_config.lex_parse prim.prim_name args
+           | "caml_lex_engine"|"caml_new_lex_engine" ->
+               E.runtime_call Js_config.lexer prim.prim_name args
+           | "caml_parse_engine"|"caml_set_parser_trace" ->
+               E.runtime_call Js_config.parser prim.prim_name args
            | "caml_array_sub"|"caml_array_concat"|"caml_array_blit"
              |"caml_make_vect" ->
                E.runtime_call Js_config.array prim.prim_name args
@@ -6008,34 +6316,44 @@ include
              |"caml_ml_open_descriptor_in"|"caml_ml_open_descriptor_out"
              |"caml_ml_output_char"|"caml_ml_output"|"caml_ml_input_char" ->
                E.runtime_call Js_config.io prim.prim_name args
-           | "caml_obj_dup" ->
+           | "caml_update_dummy"|"caml_obj_dup" ->
                (match args with
-                | a::[] when Js_helper.is_constant a -> a
+                | a::[] when Js_analyzer.is_constant a -> a
                 | _ ->
                     E.runtime_call Js_config.obj_runtime prim.prim_name args)
            | "caml_obj_block" ->
                (match args with
-                | { expression_desc = Number (Int { i = tag;_});_}::{
-                                                                    expression_desc
-                                                                    = Number
-                                                                    (Int
-                                                                    {
-                                                                    i = 0;_});_}::[]
-                    -> E.arr Immutable [E.int tag]
-                | _ ->
-                    E.runtime_call Js_config.obj_runtime prim.prim_name args)
-           | "caml_obj_is_block"|"caml_obj_tag"|"caml_obj_set_tag"
-             |"caml_obj_truncate"|"caml_lazy_make_forward" ->
-               E.runtime_call Js_config.obj_runtime prim.prim_name args
-           | "caml_format_float"|"caml_format_int"|"caml_nativeint_format"
-             |"caml_int32_format"|"caml_float_of_string"|"caml_int_of_string"
+                | tag::{ expression_desc = Number (Int { i;_});_}::[] ->
+                    E.make_block tag NA (Ext_list.init i (fun _  -> E.int 0))
+                      NA
+                | tag::size::[] -> E.uninitialized_object tag size
+                | _ -> assert false)
+           | "caml_format_float"|"caml_nativeint_format"|"caml_int32_format"
+             |"caml_float_of_string"|"caml_int_of_string"
              |"caml_int32_of_string"|"caml_nativeint_of_string" ->
                E.runtime_call Js_config.format prim.prim_name args
-           | "caml_update_dummy"|"caml_compare"|"caml_int_compare"
-             |"caml_int32_compare"|"caml_nativeint_compare"|"caml_equal"
-             |"caml_notequal"|"caml_greaterequal"|"caml_greaterthan"
-             |"caml_lessequal"|"caml_lessthan"
-             |"caml_convert_raw_backtrace_slot"|"caml_bswap16"
+           | "caml_format_int" ->
+               (match args with
+                | { expression_desc = Str (_,"%d");_}::v::[] ->
+                    E.int_to_string v
+                | _ -> E.runtime_call Js_config.format prim.prim_name args)
+           | "caml_obj_is_block" ->
+               (match args with
+                | e::[] -> E.is_caml_block e
+                | _ -> assert false)
+           | "caml_obj_truncate"|"caml_lazy_make_forward"|"caml_compare"
+             |"caml_int_compare"|"caml_int32_compare"
+             |"caml_nativeint_compare"|"caml_equal"|"caml_notequal"
+             |"caml_greaterequal"|"caml_greaterthan"|"caml_lessequal"
+             |"caml_lessthan" ->
+               E.runtime_call Js_config.obj_runtime prim.prim_name args
+           | "caml_obj_set_tag" ->
+               (match args with
+                | a::b::[] -> E.set_tag a b
+                | _ -> assert false)
+           | "caml_obj_tag" ->
+               (match args with | e::[] -> E.tag e | _ -> assert false)
+           | "caml_convert_raw_backtrace_slot"|"caml_bswap16"
              |"caml_int32_bswap"|"caml_nativeint_bswap"|"caml_int64_bswap" ->
                E.runtime_call Js_config.prim prim.prim_name args
            | "caml_get_public_method" ->
@@ -6081,6 +6399,10 @@ include
                (match args with
                 | e::[] -> E.string_of_small_int_array e
                 | _ -> assert false)
+           | "js_is_instance_array" ->
+               (match args with
+                | e::[] -> E.is_instance_array e
+                | _ -> assert false)
            | "js_typeof" ->
                (match args with | e::[] -> E.typeof e | _ -> assert false)
            | "js_dump" -> E.seq (E.dump Log args) (E.unit ())
@@ -6097,6 +6419,16 @@ include
                (match args with
                 | fn::rest -> E.call ~info:{ arity = Full } fn rest
                 | _ -> assert false)
+           | "js_uninitialized_object" ->
+               (match args with
+                | tag::size::[] -> E.uninitialized_object tag size
+                | _ -> assert false)
+           | "js_obj_length" ->
+               (match args with | e::[] -> E.obj_length e | _ -> assert false)
+           | "js_obj_set_length" ->
+               (match args with
+                | a::b::[] -> E.set_length a b
+                | _ -> assert false)
            | _ ->
                let comment = "Missing primitve" in
                (Ext_log.warn __LOC__ "%s"
@@ -6105,154 +6437,6 @@ include
                   [E.str ~comment ~pure:false prim.prim_name]) : J.expression)
           [@@ocaml.doc
             " \nThere are two things we need consider:\n1.  For some primitives we can replace caml-primitive with js primitives directly\n2.  For some standard library functions, we prefer to replace with javascript primitives\n    For example [Pervasives[\"^\"] -> ^]\n    We can collect all mli files in OCaml and replace it with an efficient javascript runtime\n"]
-      end 
-    module Lam_compile_global :
-      sig
-        [@@@ocaml.text
-          " Compile ocaml external module call , e.g [List.length] to  JS IR "]
-        val get_exp : Lam_compile_env.key -> J.expression
-        val get_exp_with_args :
-          Ident.t -> int -> Env.t -> J.expression list -> J.expression
-        val query_lambda : Ident.t -> Env.t -> Lambda.lambda
-      end =
-      struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
-        open Js_output.Ops
-        let query_lambda id env =
-          Lam_compile_env.query_and_add_if_not_exist
-            (Lam_module_ident.of_ml id) env
-            ~not_found:(fun id  -> assert false)
-            ~found:(fun { signature = sigs;_}  ->
-                      Lambda.Lprim
-                        ((Pmakeblock (0, NA, Immutable)),
-                          ((List.mapi
-                              (fun i  ->
-                                 fun _  ->
-                                   Lambda.Lprim
-                                     ((Pfield i),
-                                       [Lprim ((Pgetglobal id), [])]))) sigs)))
-        let get_exp (key : Lam_compile_env.key) =
-          (match key with
-           | GetGlobal ((id : Ident.t),(pos : int),env) ->
-               Lam_compile_env.find_and_add_if_not_exist (id, pos) env
-                 ~not_found:(fun id  ->
-                               E.str ~pure:false
-                                 (Printf.sprintf "Err %s %d %d" id.name
-                                    id.flags pos))
-                 ~found:(fun { id; name;_}  ->
-                           match (id, name) with
-                           | ({ name = "Sys";_},"os_type") ->
-                               E.str Sys.os_type
-                           | _ -> E.ml_var_dot id name)
-           | QueryGlobal (id,env,expand) ->
-               if Ident.is_predef_exn id
-               then E.runtime_ref Js_config.exceptions id.name
-               else
-                 Lam_compile_env.query_and_add_if_not_exist
-                   (Lam_module_ident.of_ml id) env
-                   ~not_found:(fun id  -> assert false)
-                   ~found:(fun { signature = sigs;_}  ->
-                             if expand
-                             then
-                               let len = List.length sigs in
-                               E.arr Immutable ((E.int ~comment:(id.name) 0)
-                                 ::
-                                 (Ext_list.init len
-                                    (fun i  ->
-                                       E.ml_var_dot id
-                                         (Type_util.get_name sigs i))))
-                             else E.ml_var id)
-           | CamlRuntimePrimitive (prim,args) ->
-               Lam_dispatch_primitive.query prim args : J.expression)
-        let get_exp_with_args (id : Ident.t) (pos : int) env
-          (args : J.expression list) =
-          (Lam_compile_env.find_and_add_if_not_exist (id, pos) env
-             ~not_found:(fun id  ->
-                           E.str ~pure:false
-                             (Printf.sprintf "Err %s %d %d" id.name id.flags
-                                pos))
-             ~found:(fun { id; name; arity;_}  ->
-                       match (id, name, args) with
-                       | ({ name = "Pervasives";_},"^",e0::e1::[]) ->
-                           E.string_append e0 e1
-                       | ({ name = "Pervasives";_},"string_of_int",e::[]) ->
-                           E.int_to_string e
-                       | ({ name = "Pervasives";_},"print_endline",(_::[] as
-                                                                    args))
-                           -> E.seq (E.dump Log args) (E.unit ())
-                       | ({ name = "Pervasives";_},"prerr_endline",(_::[] as
-                                                                    args))
-                           -> E.seq (E.dump Error args) (E.unit ())
-                       | _ ->
-                           let rec aux (acc : J.expression)
-                             (arity : Lam_stats.function_arities) args
-                             (len : int) =
-                             match (arity, len) with
-                             | (_,0) -> acc
-                             | (Determin (a,(x,_)::rest,b),len) ->
-                                 let x = if x = 0 then 1 else x in
-                                 if len >= x
-                                 then
-                                   let (first_part,continue) =
-                                     Ext_list.take x args in
-                                   aux
-                                     (E.call ~info:{ arity = Full } acc
-                                        first_part) (Determin (a, rest, b))
-                                     continue (len - x)
-                                 else acc
-                             | (Determin (a,[],b),_) -> E.call acc args
-                             | (NA ,_) -> E.call acc args in
-                           aux (E.ml_var_dot id name) arity args
-                             (List.length args)) : J.expression)
-      end 
-    module Parsetree_util :
-      sig
-        val is_single_string : Parsetree.payload -> string option
-        val is_string_or_strings :
-          Parsetree.payload ->
-            [ `None  | `Single of string  | `Some of string list ]
-      end =
-      struct
-        let is_single_string (x : Parsetree.payload) =
-          match x with
-          | Parsetree.PStr
-              ({
-                 pstr_desc = Pstr_eval
-                   ({ pexp_desc = Pexp_constant (Const_string (name,_));_},_);_}::[])
-              -> Some name
-          | _ -> None
-        let is_string_or_strings (x : Parsetree.payload) =
-          (let module M = struct exception Not_str end in
-             match x with
-             | PStr
-                 ({
-                    pstr_desc = Pstr_eval
-                      ({
-                         pexp_desc = Pexp_apply
-                           ({
-                              pexp_desc = Pexp_constant (Const_string
-                                (name,_));_},args);_},_);_}::[])
-                 ->
-                 (try
-                    `Some (name ::
-                      (args |>
-                         (List.map
-                            (fun (_label,e)  ->
-                               match (e : Parsetree.expression) with
-                               | {
-                                   pexp_desc = Pexp_constant (Const_string
-                                     (name,_));_}
-                                   -> name
-                               | _ -> raise M.Not_str))))
-                  with | M.Not_str  -> `None)
-             | Parsetree.PStr
-                 ({
-                    pstr_desc = Pstr_eval
-                      ({ pexp_desc = Pexp_constant (Const_string (name,_));_},_);_}::[])
-                 -> `Single name
-             | _ -> `None : [ `None  | `Single of string 
-                            | `Some of string list ])
       end 
     module Lam_compile_external_call :
       sig
@@ -6267,7 +6451,7 @@ include
               J.expression list -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         open Parsetree_util
         type external_module_name =
           | Single of string
@@ -6423,7 +6607,7 @@ include
                   (match arg.expression_desc with
                    | Array (x::y::[],_mutable_flag) -> [y]
                    | Number _ -> [E.null ()]
-                   | _ -> [E.econd arg (E.undefined ()) (E.index arg 1)])
+                   | _ -> [E.econd arg E.undefined (E.index arg 1)])
               | _ -> [arg]) : E.t list)
         let translate (cxt : Lam_compile_defs.cxt)
           (({ prim_attributes; prim_ty } as prim) :
@@ -6434,7 +6618,7 @@ include
               (match prim_ty with
                | Some ty ->
                    let (_return_type,arg_types) = Type_util.list_of_arrow ty in
-                   let kvs =
+                   let kvs: J.property_map =
                      Ext_list.filter_map2
                        (fun (label,(ty : Types.type_expr))  ->
                           fun (arg : J.expression)  ->
@@ -6446,22 +6630,24 @@ include
                                 Path.same p Predef.path_bool ->
                                 (match arg.expression_desc with
                                  | Number (Int { i = 0;_}) ->
-                                     Some (label, E.false_)
-                                 | Number _ -> Some (label, E.true_)
+                                     Some ((Js_op.Key label), E.false_)
+                                 | Number _ ->
+                                     Some ((Js_op.Key label), E.true_)
                                  | _ ->
                                      Some
-                                       (label,
+                                       ((Js_op.Key label),
                                          (E.econd arg E.true_ E.false_)))
-                            | (_,`Label label) -> Some (label, arg)
+                            | (_,`Label label) ->
+                                Some ((Js_op.Key label), arg)
                             | (_,`Optional label) ->
                                 (match arg.expression_desc with
                                  | Array (x::y::[],_mutable_flag) ->
-                                     Some (label, y)
+                                     Some ((Js_op.Key label), y)
                                  | Number _ -> None
                                  | _ ->
                                      Some
-                                       (label,
-                                         (E.econd arg (E.undefined ())
+                                       ((Key label),
+                                         (E.econd arg E.undefined
                                             (E.index arg 1))))) arg_types
                        args in
                    E.obj kvs
@@ -6517,8 +6703,7 @@ include
                      E.call ~info:{ arity = Full } (E.dot self name) args)
                    [@warning "-8"])
                | _ -> assert false)
-          | Normal  ->
-              Lam_compile_global.get_exp (CamlRuntimePrimitive (prim, args))
+          | Normal  -> Lam_dispatch_primitive.query prim args
       end 
     module Js_of_lam_string :
       sig
@@ -6537,7 +6722,7 @@ include
         val bytes_of_string : J.expression -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         module A =
           struct
             let const_char (i : char) = E.str (String.make 1 i)
@@ -6584,7 +6769,7 @@ include
         val get_double_feild : J.expression -> int -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let get_double_feild e i = E.index e i
         let set_double_field e i e0 = E.assign (E.index e i) e0
       end 
@@ -6594,28 +6779,20 @@ include
           " Utilities for creating block of lambda expression in JS IR "]
         val make_block :
           Js_op.mutable_flag ->
-            Lambda.tag_info -> int -> J.expression list -> J.expression
+            Lambda.tag_info ->
+              J.expression -> J.expression list -> J.expression
         val field : J.expression -> int -> J.expression
         val set_field : J.expression -> int -> J.expression -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let make_block mutable_flag (tag_info : Lambda.tag_info) tag args =
           match (mutable_flag, tag_info) with
           | (_,Array ) ->
               Js_of_lam_array.make_array mutable_flag Pgenarray args
-          | (_,(Tuple |Variant _)) ->
-              E.arr Immutable
-                ((E.int
-                    ?comment:(Lam_compile_util.comment_of_tag_info tag_info)
-                    tag) :: args)
-          | (_,_) ->
-              E.arr mutable_flag
-                ((E.int
-                    ?comment:(Lam_compile_util.comment_of_tag_info tag_info)
-                    tag) :: args)
-        let field e i = E.index e (i + 1)
-        let set_field e i e0 = E.assign (E.index e (i + 1)) e0
+          | (_,_) -> E.make_block tag tag_info args mutable_flag
+        let field e i = E.index e i
+        let set_field e i e0 = E.assign (E.index e i) e0
       end 
     module Lam_compile_primitive :
       sig
@@ -6625,7 +6802,7 @@ include
             Lambda.primitive -> J.expression list -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let decorate_side_effect
           ({ st; should_return;_} : Lam_compile_defs.cxt) e =
           (match (st, should_return) with
@@ -6636,11 +6813,9 @@ include
           (prim : Lambda.primitive) (args : J.expression list) =
           (match prim with
            | Pmakeblock (tag,tag_info,mutable_flag) ->
-               (match mutable_flag with
-                | Immutable  ->
-                    Js_of_lam_block.make_block Immutable tag_info tag args
-                | Mutable  ->
-                    Js_of_lam_block.make_block Mutable tag_info tag args)
+               Js_of_lam_block.make_block
+                 (Js_op_util.of_lam_mutable_flag mutable_flag) tag_info
+                 (E.int tag) args
            | Pfield i ->
                (match args with
                 | e::[] -> Js_of_lam_block.field e i
@@ -6784,8 +6959,7 @@ include
                (match args with
                 | e1::e2::[] -> E.int_comp cmp e1 e2
                 | _ -> assert false)
-           | Pgetglobal i ->
-               Lam_compile_global.get_exp (QueryGlobal (i, env, false))
+           | Pgetglobal i -> Lam_compile_global.get_exp (i, env, false)
            | Praise _raise_kind -> assert false
            | Prevapply _ ->
                (match args with
@@ -6871,7 +7045,7 @@ include
         val translate : Lambda.structured_constant -> J.expression
       end =
       struct
-        module E = Js_helper.Exp
+        module E = Js_exp_make
         let rec translate (x : Lambda.structured_constant) =
           (match x with
            | Const_base c ->
@@ -6888,1183 +7062,12 @@ include
                  ?comment:(Lam_compile_util.comment_of_pointer_info
                              pointer_info) c
            | Const_block (tag,tag_info,xs) ->
-               Js_of_lam_block.make_block NA tag_info tag
+               Js_of_lam_block.make_block NA tag_info (E.int tag)
                  (List.map translate xs)
            | Const_float_array ars ->
-               E.arr Mutable ~comment:"float array"
+               Js_of_lam_array.make_array Mutable Pfloatarray
                  (List.map (fun x  -> E.float x) ars)
            | Const_immstring s -> E.str s : J.expression)
-      end 
-    module Lam_compile :
-      sig
-        [@@@ocaml.text " Compile single lambda IR to JS IR  "]
-        val compile_let :
-          Lambda.let_kind ->
-            Lam_compile_defs.cxt -> J.ident -> Lambda.lambda -> Js_output.t
-        val compile_recursive_lets :
-          Lam_compile_defs.cxt ->
-            (Ident.t* Lambda.lambda) list -> Js_output.t
-        val compile_lambda :
-          Lam_compile_defs.cxt -> Lambda.lambda -> Js_output.t
-      end =
-      struct
-        open Js_output.Ops
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
-        let method_cache_id = ref 1
-        let rec flat_catches acc (x : Lambda.lambda) =
-          (match x with
-           | Lstaticcatch (l,(code,bindings),handler) ->
-               flat_catches ((code, handler, bindings) :: acc) l
-           | _ -> (acc, x) : ((int* Lambda.lambda* Ident.t list) list*
-                               Lambda.lambda))
-        let translate_dispatch = ref (fun _  -> assert false)
-        type default_case =
-          | Default of Lambda.lambda
-          | Complete
-          | NonComplete
-        let rec compile_let flag (cxt : Lam_compile_defs.cxt) id
-          (arg : Lambda.lambda) =
-          (match (flag, arg) with
-           | (let_kind,_) ->
-               compile_lambda
-                 {
-                   cxt with
-                   st = (Declare (let_kind, id));
-                   should_return = False
-                 } arg : Js_output.t)
-        and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t)
-          (arg : Lambda.lambda) =
-          match arg with
-          | Lfunction (kind,params,body) ->
-              let continue_label = Lam_util.generate_label ~name:(id.name) () in
-              ((Js_output.handle_name_tail (Declare (Alias, id)) False arg
-                  (let ret: Lam_compile_defs.return_label =
-                     {
-                       id;
-                       label = continue_label;
-                       params;
-                       immutable_mask =
-                         (Array.make (List.length params) true);
-                       new_params = Ident_map.empty;
-                       triggered = false
-                     } in
-                   let output =
-                     compile_lambda
-                       {
-                         cxt with
-                         st = EffectCall;
-                         should_return = (True (Some ret));
-                         jmp_table = Lam_compile_defs.empty_handler_map
-                       } body in
-                   if ret.triggered
-                   then
-                     let body_block = Js_output.to_block output in
-                     E.fun_ ~immutable_mask:(ret.immutable_mask)
-                       (List.map
-                          (fun x  ->
-                             try Ident_map.find x ret.new_params
-                             with | Not_found  -> x) params)
-                       [S.while_ E.true_
-                          (Ident_map.fold
-                             (fun old  ->
-                                fun new_param  ->
-                                  fun acc  ->
-                                    (S.define ~kind:Alias old
-                                       (E.var new_param))
-                                    :: acc) ret.new_params body_block)]
-                   else E.fun_ params (Js_output.to_block output))), [])
-          | Lprim (Pmakeblock _,_) ->
-              (match compile_lambda
-                       { cxt with st = NeedValue; should_return = False } arg
-               with
-               | { block = b; value = Some v } ->
-                   ((Js_output.of_block
-                       (b @
-                          [S.exp
-                             (E.runtime_call Js_config.prim
-                                "caml_update_dummy" [E.var id; v])])), 
-                     [id])
-               | _ -> assert false)
-          | Lvar _ ->
-              ((compile_lambda
-                  {
-                    cxt with
-                    st = (Declare (Alias, id));
-                    should_return = False
-                  } arg), [])
-          | _ ->
-              ((compile_lambda
-                  {
-                    cxt with
-                    st = (Declare (Alias, id));
-                    should_return = False
-                  } arg), [])
-        and compile_recursive_lets cxt id_args =
-          (let (output_code,ids) =
-             List.fold_right
-               (fun (ident,arg)  ->
-                  fun (acc,ids)  ->
-                    let (code,declare_ids) =
-                      compile_recursive_let cxt ident arg in
-                    ((code ++ acc), (declare_ids @ ids))) id_args
-               (Js_output.dummy, []) in
-           match ids with
-           | [] -> output_code
-           | _ ->
-               (Js_output.of_block @@
-                  (List.map
-                     (fun id  ->
-                        S.define ~kind:Variable id (E.arr Mutable [])) ids))
-                 ++ output_code : Js_output.t)
-        and compile_general_cases :
-          'a .
-            ('a -> J.expression) ->
-              Lam_compile_defs.cxt ->
-                (?default:J.block ->
-                   ?declaration:(Lambda.let_kind* Ident.t) ->
-                     _ -> 'a J.case_clause list -> J.statement)
-                  -> _ -> ('a* Lambda.lambda) list -> default_case -> J.block=
-          fun f  ->
-            fun cxt  ->
-              fun switch  ->
-                fun v  ->
-                  fun table  ->
-                    fun default  ->
-                      let wrap (cxt : Lam_compile_defs.cxt) k =
-                        let (cxt,define) =
-                          match cxt.st with
-                          | Declare (kind,did) ->
-                              ({ cxt with st = (Assign did) },
-                                (Some (kind, did)))
-                          | _ -> (cxt, None) in
-                        k cxt define in
-                      match (table, default) with
-                      | ([],Default lam) ->
-                          Js_output.to_block (compile_lambda cxt lam)
-                      | ([],(Complete |NonComplete )) -> []
-                      | ((id,lam)::[],Complete ) ->
-                          Js_output.to_block @@ (compile_lambda cxt lam)
-                      | ((id,lam)::[],NonComplete ) ->
-                          (wrap cxt) @@
-                            ((fun cxt  ->
-                                fun define  ->
-                                  [S.if_ ?declaration:define
-                                     (E.triple_equal v (f id))
-                                     (Js_output.to_block @@
-                                        (compile_lambda cxt lam))]))
-                      | ((id,lam)::[],Default x)
-                        |((id,lam)::(_,x)::[],Complete ) ->
-                          (wrap cxt) @@
-                            ((fun cxt  ->
-                                fun define  ->
-                                  let else_block =
-                                    Js_output.to_block (compile_lambda cxt x) in
-                                  let then_block =
-                                    Js_output.to_block
-                                      (compile_lambda cxt lam) in
-                                  [S.if_ ?declaration:define
-                                     (E.triple_equal v (f id)) then_block
-                                     ~else_:else_block]))
-                      | (_,_) ->
-                          (wrap cxt) @@
-                            ((fun cxt  ->
-                                fun declaration  ->
-                                  let default =
-                                    match default with
-                                    | Complete  -> None
-                                    | NonComplete  -> None
-                                    | Default lam ->
-                                        Some
-                                          (Js_output.to_block
-                                             (compile_lambda cxt lam)) in
-                                  let body =
-                                    (table |>
-                                       (Ext_list.stable_group
-                                          (fun (_,lam)  ->
-                                             fun (_,lam1)  ->
-                                               Lam_analysis.eq_lambda lam
-                                                 lam1)))
-                                      |>
-                                      (Ext_list.flat_map
-                                         (fun group  ->
-                                            group |>
-                                              (Ext_list.map_last
-                                                 (fun last  ->
-                                                    fun (x,lam)  ->
-                                                      if last
-                                                      then
-                                                        {
-                                                          J.case = x;
-                                                          body =
-                                                            (Js_output.to_break_block
-                                                               (compile_lambda
-                                                                  cxt lam))
-                                                        }
-                                                      else
-                                                        {
-                                                          case = x;
-                                                          body = ([], false)
-                                                        })))) in
-                                  [switch ?default ?declaration v body]))
-        and compile_cases cxt =
-          compile_general_cases E.int cxt
-            (fun ?default  ->
-               fun ?declaration  ->
-                 fun e  ->
-                   fun clauses  ->
-                     S.int_switch ?default ?declaration e clauses)
-        and compile_string_cases cxt =
-          compile_general_cases E.str cxt
-            (fun ?default  ->
-               fun ?declaration  ->
-                 fun e  ->
-                   fun clauses  ->
-                     S.string_switch ?default ?declaration e clauses)
-        and compile_lambda
-          (({ st; should_return; jmp_table; meta = { env;_} } as cxt) :
-            Lam_compile_defs.cxt)
-          (lam : Lambda.lambda) =
-          (match lam with
-           | Lfunction (kind,params,body) ->
-               Js_output.handle_name_tail st should_return lam
-                 (E.fun_ params
-                    (Js_output.to_block
-                       (compile_lambda
-                          {
-                            cxt with
-                            st = EffectCall;
-                            should_return = (True None);
-                            jmp_table = Lam_compile_defs.empty_handler_map
-                          } body)))
-           | Lapply
-               (Lapply
-                (an,args',({ apply_status = NA  } as _info1)),args,({
-                                                                    apply_status
-                                                                    = NA  }
-                                                                    as _info2))
-               ->
-               compile_lambda cxt
-                 (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
-           | Lapply
-               (Lprim
-                (Pfield n,(Lprim (Pgetglobal id,[]))::[]),args_lambda,_info)
-               ->
-               ((let (args_code,args) =
-                   (args_lambda |>
-                      (List.map
-                         (fun (x : Lambda.lambda)  ->
-                            match x with
-                            | Lprim (Pgetglobal i,[]) ->
-                                ([],
-                                  (Lam_compile_global.get_exp
-                                     (QueryGlobal (i, env, true))))
-                            | _ ->
-                                (match compile_lambda
-                                         {
-                                           cxt with
-                                           st = NeedValue;
-                                           should_return = False
-                                         } x
-                                 with
-                                 | { block = a; value = Some b } -> (a, b)
-                                 | _ -> assert false))))
-                     |> List.split in
-                 Js_output.handle_block_return st should_return lam
-                   (List.concat args_code)
-                   (Lam_compile_global.get_exp_with_args id n env args))
-               [@warning "-8"])
-           | Lapply (fn,args_lambda,info) ->
-               ((let (args_code,fn_code::args) =
-                   ((fn :: args_lambda) |>
-                      (List.map
-                         (fun (x : Lambda.lambda)  ->
-                            match x with
-                            | Lprim (Pgetglobal ident,[]) ->
-                                ([],
-                                  (Lam_compile_global.get_exp
-                                     (QueryGlobal (ident, env, true))))
-                            | _ ->
-                                (match compile_lambda
-                                         {
-                                           cxt with
-                                           st = NeedValue;
-                                           should_return = False
-                                         } x
-                                 with
-                                 | { block = a; value = Some b } -> (a, b)
-                                 | _ -> assert false))))
-                     |> List.split in
-                 (match (fn, should_return) with
-                  | (Lvar id',True (Some ({ id; label; params;_} as ret)))
-                      when Ident.same id id' ->
-                      (ret.triggered <- true;
-                       (let block =
-                          (List.concat args_code) @
-                            ((let (_,assigned_params,new_params) =
-                                List.fold_left2
-                                  (fun (i,assigns,new_params)  ->
-                                     fun param  ->
-                                       fun (arg : J.expression)  ->
-                                         match arg with
-                                         | { expression_desc = Var (Id x);_}
-                                             when Ident.same x param ->
-                                             ((i + 1), assigns, new_params)
-                                         | _ ->
-                                             let (new_param,m) =
-                                               match Ident_map.find param
-                                                       ret.new_params
-                                               with
-                                               | exception Not_found  ->
-                                                   ((ret.immutable_mask).(i)
-                                                    <- false;
-                                                    (let v =
-                                                       Ext_ident.create
-                                                         ("_" ^
-                                                            param.Ident.name) in
-                                                     (v,
-                                                       (Ident_map.add param v
-                                                          new_params))))
-                                               | v -> (v, new_params) in
-                                             ((i + 1), ((new_param, arg) ::
-                                               assigns), m))
-                                  (0, [], Ident_map.empty) params args in
-                              let () =
-                                ret.new_params <-
-                                  let open Ident_map in
-                                    merge_disjoint new_params ret.new_params in
-                              assigned_params |>
-                                (List.map
-                                   (fun (param,arg)  -> S.assign param arg)))
-                               @ [S.continue ()]) in
-                        Js_output.of_block ~finished:True block))
-                  | _ ->
-                      Js_output.handle_block_return st should_return lam
-                        (List.concat args_code)
-                        (E.call
-                           ~info:(match (fn, info) with
-                                  | (_,{ apply_status = Full  }) ->
-                                      { arity = Full }
-                                  | (_,{ apply_status = NA  }) ->
-                                      { arity = NA }) fn_code args)))
-               [@warning "-8"])
-           | Llet (let_kind,id,arg,body) ->
-               let args_code = compile_let let_kind cxt id arg in
-               args_code ++ (compile_lambda cxt body)
-           | Lletrec (id_args,body) ->
-               let v = compile_recursive_lets cxt id_args in
-               v ++ (compile_lambda cxt body)
-           | Lvar id ->
-               Js_output.handle_name_tail st should_return lam (E.var id)
-           | Lconst c ->
-               Js_output.handle_name_tail st should_return lam
-                 (Lam_compile_const.translate c)
-           | Lprim (Pfield n,(Lprim (Pgetglobal id,[]))::[]) ->
-               Js_output.handle_name_tail st should_return lam
-                 (Lam_compile_global.get_exp (GetGlobal (id, n, env)))
-           | Lprim (Praise _raise_kind,e::[]) ->
-               (match compile_lambda
-                        { cxt with should_return = False; st = NeedValue } e
-                with
-                | { block = b; value = Some v } ->
-                    Js_output.make (b @ [S.throw v]) ~value:(E.undefined ())
-                      ~finished:True
-                | { value = None ;_} -> assert false)
-           | Lprim (Psequand ,l::r::[]) ->
-               (match cxt with
-                | { should_return = True _ } ->
-                    compile_lambda cxt
-                      (Lifthenelse (l, r, Lam_util.lam_false))
-                | _ ->
-                    let (l_block,l_expr) =
-                      match compile_lambda
-                              {
-                                cxt with
-                                st = NeedValue;
-                                should_return = False
-                              } l
-                      with
-                      | { block = a; value = Some b } -> (a, b)
-                      | _ -> assert false in
-                    let (r_block,r_expr) =
-                      match compile_lambda
-                              {
-                                cxt with
-                                st = NeedValue;
-                                should_return = False
-                              } r
-                      with
-                      | { block = a; value = Some b } -> (a, b)
-                      | _ -> assert false in
-                    let args_code = l_block @ r_block in
-                    let exp = E.and_ l_expr r_expr in
-                    Js_output.handle_block_return st should_return lam
-                      args_code exp)
-           | Lprim (Psequor ,l::r::[]) ->
-               (match cxt with
-                | { should_return = True _ } ->
-                    compile_lambda cxt
-                      (Lifthenelse (l, Lam_util.lam_true, r))
-                | _ ->
-                    let (l_block,l_expr) =
-                      match compile_lambda
-                              {
-                                cxt with
-                                st = NeedValue;
-                                should_return = False
-                              } l
-                      with
-                      | { block = a; value = Some b } -> (a, b)
-                      | _ -> assert false in
-                    let (r_block,r_expr) =
-                      match compile_lambda
-                              {
-                                cxt with
-                                st = NeedValue;
-                                should_return = False
-                              } r
-                      with
-                      | { block = a; value = Some b } -> (a, b)
-                      | _ -> assert false in
-                    let args_code = l_block @ r_block in
-                    let exp = E.or_ l_expr r_expr in
-                    Js_output.handle_block_return st should_return lam
-                      args_code exp)
-           | Lprim (prim,args_lambda) ->
-               let (args_block,args_expr) =
-                 (args_lambda |>
-                    (List.map
-                       (fun (x : Lambda.lambda)  ->
-                          match compile_lambda
-                                  {
-                                    cxt with
-                                    st = NeedValue;
-                                    should_return = False
-                                  } x
-                          with
-                          | { block = a; value = Some b } -> (a, b)
-                          | _ -> assert false)))
-                   |> List.split in
-               let args_code = List.concat args_block in
-               let exp = Lam_compile_primitive.translate cxt prim args_expr in
-               Js_output.handle_block_return st should_return lam args_code
-                 exp
-           | Lsequence (l1,l2) ->
-               let output_l1 =
-                 compile_lambda
-                   { cxt with st = EffectCall; should_return = False } l1 in
-               let output_l2 = compile_lambda cxt l2 in
-               let result = output_l1 ++ output_l2 in result
-           | Lifthenelse (p,t_br,f_br) ->
-               (match compile_lambda
-                        { cxt with st = NeedValue; should_return = False } p
-                with
-                | { block = b; value = Some e } ->
-                    (match (st, should_return,
-                             (compile_lambda { cxt with st = NeedValue } t_br),
-                             (compile_lambda { cxt with st = NeedValue } f_br))
-                     with
-                     | (NeedValue
-                        ,_,{ block = []; value = Some out1 },{ block = [];
-                                                               value = Some
-                                                                 out2
-                                                               })
-                         -> Js_output.make b ~value:(E.econd e out1 out2)
-                     | (NeedValue ,_,_,_) ->
-                         let id = Ext_ident.gen_js () in
-                         (match ((compile_lambda
-                                    { cxt with st = (Assign id) } t_br),
-                                  (compile_lambda
-                                     { cxt with st = (Assign id) } f_br))
-                          with
-                          | (out1,out2) ->
-                              Js_output.make
-                                (((S.declare_variable ~kind:Variable id) ::
-                                   b) @
-                                   [S.if_ e (Js_output.to_block out1)
-                                      ~else_:(Js_output.to_block out2)])
-                                ~value:(E.var id))
-                     | (Declare
-                        (kind,id),_,{ block = []; value = Some out1 },
-                        { block = []; value = Some out2 }) ->
-                         Js_output.make
-                           [S.define ~kind id (E.econd e out1 out2)]
-                     | (Declare (kind,id),_,_,_) ->
-                         Js_output.make
-                           (b @
-                              [S.if_ ~declaration:(kind, id) e
-                                 (Js_output.to_block @@
-                                    (compile_lambda
-                                       { cxt with st = (Assign id) } t_br))
-                                 ~else_:(Js_output.to_block @@
-                                           (compile_lambda
-                                              { cxt with st = (Assign id) }
-                                              f_br))])
-                     | (Assign
-                        id,_,{ block = []; value = Some out1 },{ block = [];
-                                                                 value = Some
-                                                                   out2
-                                                                 })
-                         ->
-                         Js_output.make [S.assign id (E.econd e out1 out2)]
-                     | (EffectCall ,True
-                        _,{ block = []; value = Some out1 },{ block = [];
-                                                              value = Some
-                                                                out2
-                                                              })
-                         ->
-                         Js_output.make [S.return (E.econd e out1 out2)]
-                           ~finished:True
-                     | (EffectCall ,False
-                        ,{ block = []; value = Some out1 },{ block = [];
-                                                             value = Some
-                                                               out2
-                                                             })
-                         ->
-                         (match ((Js_helper.extract_non_pure out1),
-                                  (Js_helper.extract_non_pure out2))
-                          with
-                          | (None ,None ) -> Js_output.make b
-                          | (Some out1,Some out2) ->
-                              Js_output.make b ~value:(E.econd e out1 out2)
-                          | (Some out1,None ) ->
-                              Js_output.make (b @ [S.if_ e [S.exp out1]])
-                          | (None ,Some out2) ->
-                              Js_output.make @@
-                                (b @ [S.if_ (E.not e) [S.exp out2]]))
-                     | (EffectCall ,False
-                        ,{ block = []; value = Some out1 },_) ->
-                         if Js_helper.no_side_effect out1
-                         then
-                           Js_output.make
-                             (b @
-                                [S.if_ (E.not e)
-                                   (Js_output.to_block @@
-                                      (compile_lambda cxt f_br))])
-                         else
-                           Js_output.make
-                             (b @
-                                [S.if_ e
-                                   (Js_output.to_block @@
-                                      (compile_lambda cxt t_br))
-                                   ~else_:(Js_output.to_block @@
-                                             (compile_lambda cxt f_br))])
-                     | (EffectCall ,False
-                        ,_,{ block = []; value = Some out2 }) ->
-                         let else_ =
-                           if Js_helper.no_side_effect out2
-                           then None
-                           else
-                             Some
-                               (Js_output.to_block @@
-                                  (compile_lambda cxt f_br)) in
-                         Js_output.make
-                           (b @
-                              [S.if_ e
-                                 (Js_output.to_block @@
-                                    (compile_lambda cxt t_br)) ?else_])
-                     | ((Assign _|EffectCall ),_,_,_) ->
-                         let then_output =
-                           Js_output.to_block @@ (compile_lambda cxt t_br) in
-                         let else_output =
-                           Js_output.to_block @@ (compile_lambda cxt f_br) in
-                         Js_output.make
-                           (b @ [S.if_ e then_output ~else_:else_output]))
-                | _ -> assert false)
-           | Lstringswitch (l,cases,default) ->
-               (match compile_lambda
-                        { cxt with should_return = False; st = NeedValue } l
-                with
-                | { block; value = Some e } ->
-                    let default =
-                      match default with
-                      | Some x -> Default x
-                      | None  -> Complete in
-                    (match st with
-                     | NeedValue  ->
-                         let v = Ext_ident.gen_js () in
-                         Js_output.make
-                           (block @
-                              (compile_string_cases
-                                 { cxt with st = (Declare (Variable, v)) } e
-                                 cases default)) ~value:(E.var v)
-                     | _ ->
-                         Js_output.make
-                           (block @
-                              (compile_string_cases cxt e cases default)))
-                | _ -> assert false)
-           | Lswitch
-               (lam,{ sw_numconsts; sw_consts; sw_numblocks; sw_blocks;
-                      sw_failaction = default })
-               ->
-               let default: default_case =
-                 match default with | None  -> Complete | Some x -> Default x in
-               let compile_whole (({ st;_} as cxt) : Lam_compile_defs.cxt) =
-                 match (sw_numconsts, sw_numblocks,
-                         (compile_lambda
-                            { cxt with should_return = False; st = NeedValue
-                            } lam))
-                 with
-                 | (0,_,{ block; value = Some e }) ->
-                     compile_cases cxt (E.tag e) sw_blocks default
-                 | (_,0,{ block; value = Some e }) ->
-                     compile_cases cxt e sw_consts default
-                 | (_,_,{ block; value = Some e }) ->
-                     let dispatch e =
-                       [S.if_ (E.is_type_number e)
-                          (compile_cases cxt e sw_consts default)
-                          ~else_:(compile_cases cxt (E.tag e) sw_blocks
-                                    default)] in
-                     (match e.expression_desc with
-                      | J.Var _ -> dispatch e
-                      | _ ->
-                          let v = Ext_ident.gen_js () in
-                          (S.define ~kind:Variable v e) ::
-                            (dispatch (E.var v)))
-                 | (_,_,{ value = None ;_}) -> assert false in
-               (match st with
-                | NeedValue  ->
-                    let v = Ext_ident.gen_js () in
-                    Js_output.make ((S.declare_variable ~kind:Variable v) ::
-                      (compile_whole { cxt with st = (Assign v) }))
-                      ~value:(E.var v)
-                | Declare (kind,id) ->
-                    Js_output.make ((S.declare_variable ~kind id) ::
-                      (compile_whole { cxt with st = (Assign id) }))
-                | EffectCall |Assign _ -> Js_output.make (compile_whole cxt))
-           | Lstaticraise (i,largs) ->
-               (match Lam_compile_defs.HandlerMap.find i cxt.jmp_table with
-                | { exit_id; args; order_id } ->
-                    let args_code =
-                      Js_output.concat @@
-                        (List.map2
-                           (fun (x : Lambda.lambda)  ->
-                              fun (arg : Ident.t)  ->
-                                match x with
-                                | Lvar id ->
-                                    Js_output.make [S.assign arg (E.var id)]
-                                | _ ->
-                                    compile_lambda
-                                      {
-                                        cxt with
-                                        st = (Assign arg);
-                                        should_return = False
-                                      } x) largs (args : Ident.t list)) in
-                    args_code ++
-                      (Js_output.make [S.assign exit_id (E.int order_id)]
-                         ~value:(E.undefined ()))
-                | exception Not_found  ->
-                    Js_output.make [S.unknown_lambda ~comment:"error" lam])
-           | Lstaticcatch _ ->
-               let (code_table,body) = flat_catches [] lam in
-               let exit_id = Ext_ident.gen_js ~name:"exit" () in
-               let exit_expr = E.var exit_id in
-               let bindings =
-                 Ext_list.flat_map (fun (_,_,bindings)  -> bindings)
-                   code_table in
-               let (jmp_table,handlers) =
-                 Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
-               let declares = (S.define ~kind:Variable exit_id (E.int 0)) ::
-                 (List.map (fun x  -> S.declare_variable ~kind:Variable x)
-                    bindings) in
-               (match st with
-                | NeedValue  ->
-                    let v = Ext_ident.gen_js () in
-                    let lbody =
-                      compile_lambda { cxt with jmp_table; st = (Assign v) }
-                        body in
-                    ((Js_output.make ((S.declare_variable ~kind:Variable v)
-                        :: declares))
-                       ++ lbody)
-                      ++
-                      (Js_output.make
-                         (compile_cases
-                            { cxt with st = (Assign v); jmp_table } exit_expr
-                            handlers NonComplete) ~value:(E.var v))
-                | Declare (kind,id) ->
-                    let declares = (S.declare_variable ~kind id) :: declares in
-                    let lbody =
-                      compile_lambda { cxt with jmp_table; st = (Assign id) }
-                        body in
-                    ((Js_output.make declares) ++ lbody) ++
-                      (Js_output.make
-                         (compile_cases
-                            { cxt with jmp_table; st = (Assign id) }
-                            exit_expr handlers NonComplete))
-                | EffectCall |Assign _ ->
-                    let lbody = compile_lambda { cxt with jmp_table } body in
-                    ((Js_output.make declares) ++ lbody) ++
-                      (Js_output.make
-                         (compile_cases { cxt with jmp_table } exit_expr
-                            handlers NonComplete)))
-           | Lwhile (p,body) ->
-               (match compile_lambda
-                        { cxt with st = NeedValue; should_return = False } p
-                with
-                | { block; value = Some e } ->
-                    let e =
-                      match block with | [] -> e | _ -> E.of_block block e in
-                    let block =
-                      [S.while_ e
-                         (Js_output.to_block @@
-                            (compile_lambda
-                               {
-                                 cxt with
-                                 st = EffectCall;
-                                 should_return = False
-                               } body))] in
-                    (match (st, should_return) with
-                     | (Declare (_kind,x),_) ->
-                         Js_output.make (block @ [S.declare_unit x])
-                     | (Assign x,_) ->
-                         Js_output.make (block @ [S.assign_unit x])
-                     | (EffectCall ,True _) ->
-                         Js_output.make (block @ [S.return_unit ()])
-                           ~finished:True
-                     | (EffectCall ,_) -> Js_output.make block
-                     | (NeedValue ,_) ->
-                         Js_output.make block ~value:(E.unit ()))
-                | _ -> assert false)
-           | Lfor (id,start,finish,direction,body) ->
-               let block =
-                 match ((compile_lambda
-                           { cxt with st = NeedValue; should_return = False }
-                           start),
-                         (compile_lambda
-                            { cxt with st = NeedValue; should_return = False
-                            } finish))
-                 with
-                 | ({ block = b1; value = Some e1 },{ block = b2;
-                                                      value = Some e2 })
-                     ->
-                     (match (b1, b2) with
-                      | (_,[]) ->
-                          b1 @
-                            [S.for_ (Some e1) e2 id direction
-                               (Js_output.to_block @@
-                                  (compile_lambda
-                                     {
-                                       cxt with
-                                       should_return = False;
-                                       st = EffectCall
-                                     } body))]
-                      | (_,_) when Js_helper.no_side_effect e1 ->
-                          b1 @
-                            (b2 @
-                               [S.for_ (Some e1) e2 id direction
-                                  (Js_output.to_block @@
-                                     (compile_lambda
-                                        {
-                                          cxt with
-                                          should_return = False;
-                                          st = EffectCall
-                                        } body))])
-                      | (_,_) ->
-                          b1 @
-                            (((S.define ~kind:Variable id e1) :: b2) @
-                               [S.for_ None e2 id direction
-                                  (Js_output.to_block @@
-                                     (compile_lambda
-                                        {
-                                          cxt with
-                                          should_return = False;
-                                          st = EffectCall
-                                        } body))]))
-                 | _ -> assert false in
-               (match (st, should_return) with
-                | (EffectCall ,False ) -> Js_output.make block
-                | (EffectCall ,True _) ->
-                    Js_output.make (block @ [S.return_unit ()])
-                      ~finished:True
-                | ((Declare _|Assign _),True _) ->
-                    Js_output.make [S.unknown_lambda lam]
-                | (Declare (_kind,x),False ) ->
-                    Js_output.make (block @ [S.declare_unit x])
-                | (Assign x,False ) ->
-                    Js_output.make (block @ [S.assign_unit x])
-                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
-           | Lassign (id,lambda) ->
-               let block =
-                 match lambda with
-                 | Lprim (Poffsetint v,(Lvar id')::[]) when Ident.same id id'
-                     ->
-                     [S.exp
-                        (E.assign (E.var id)
-                           (E.int32_add (E.var id) (E.int v)))]
-                 | _ ->
-                     (match compile_lambda
-                              {
-                                cxt with
-                                st = NeedValue;
-                                should_return = False
-                              } lambda
-                      with
-                      | { block = b; value = Some v } -> b @ [S.assign id v]
-                      | _ -> assert false) in
-               (match (st, should_return) with
-                | (EffectCall ,False ) -> Js_output.make block
-                | (EffectCall ,True _) ->
-                    Js_output.make (block @ [S.return_unit ()])
-                      ~finished:True
-                | ((Declare _|Assign _),True _) ->
-                    Js_output.make [S.unknown_lambda lam]
-                | (Declare (_kind,x),False ) ->
-                    Js_output.make (block @ [S.declare_unit x])
-                | (Assign x,False ) ->
-                    Js_output.make (block @ [S.assign_unit x])
-                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
-           | Ltrywith (lam,id,catch) ->
-               let aux st =
-                 [S.try_
-                    (Js_output.to_block (compile_lambda { cxt with st } lam))
-                    ~with_:(id,
-                             (Js_output.to_block @@
-                                (compile_lambda { cxt with st } catch)))] in
-               (match st with
-                | NeedValue  ->
-                    let v = Ext_ident.gen_js () in
-                    Js_output.make ((S.declare_variable ~kind:Variable v) ::
-                      (aux (Assign v))) ~value:(E.var v)
-                | Declare (kind,id) ->
-                    Js_output.make ((S.declare_variable ~kind id) ::
-                      (aux (Assign id)))
-                | Assign _|EffectCall  -> Js_output.make (aux st))
-           | Lsend (meth_kind,met,obj,args,loc) ->
-               ((let (args_code,label::obj'::args) =
-                   ((met :: obj :: args) |>
-                      (List.map
-                         (fun (x : Lambda.lambda)  ->
-                            match x with
-                            | Lprim (Pgetglobal i,[]) ->
-                                ([],
-                                  (Lam_compile_global.get_exp
-                                     (QueryGlobal (i, env, true))))
-                            | _ ->
-                                (match compile_lambda
-                                         {
-                                           cxt with
-                                           st = NeedValue;
-                                           should_return = False
-                                         } x
-                                 with
-                                 | { block = a; value = Some b } -> (a, b)
-                                 | _ -> assert false))))
-                     |> List.split in
-                 (match meth_kind with
-                  | Self  ->
-                      Js_output.handle_block_return st should_return lam
-                        (List.concat args_code)
-                        (E.call
-                           (Js_of_lam_array.ref_array (E.index obj' 1) label)
-                           (obj' :: args))
-                  | Cached |Public (None ) ->
-                      let get =
-                        E.runtime_ref Js_config.oo "caml_get_public_method" in
-                      let cache = !method_cache_id in
-                      let () = incr method_cache_id in
-                      Js_output.handle_block_return st should_return lam
-                        (List.concat args_code)
-                        (E.call (E.call get [obj'; label; E.int cache]) (obj'
-                           :: args))
-                  | Public (Some name) ->
-                      let set_prefix = "_set_" in
-                      let get_prefix = "_get_" in
-                      let set_prefix_len = String.length "_set_" in
-                      let get_prefix_len = String.length "_get_" in
-                      let is_getter s =
-                        if Ext_string.starts_with s get_prefix
-                        then
-                          Some
-                            (String.sub s get_prefix_len
-                               ((String.length s) - get_prefix_len))
-                        else None in
-                      let is_setter s =
-                        if Ext_string.starts_with s set_prefix
-                        then
-                          Some
-                            (String.sub s set_prefix_len
-                               ((String.length s) - set_prefix_len))
-                        else None in
-                      let js_call obj =
-                        match args with
-                        | [] ->
-                            (E.var_dot obj) @@
-                              ((match is_getter name with
-                                | Some v -> v
-                                | None  -> name))
-                        | y::ys ->
-                            (match is_setter name with
-                             | Some v -> E.assign (E.var_dot obj v) y
-                             | None  -> E.call (E.var_dot obj name) args) in
-                      (match obj with
-                       | Lprim (Pccall { prim_name;_},[]) ->
-                           (Js_output.handle_block_return st should_return
-                              lam (List.concat args_code))
-                             @@ (js_call (Ext_ident.create_js prim_name))
-                       | Lvar id when Ext_ident.is_js_object id ->
-                           (Js_output.handle_block_return st should_return
-                              lam (List.concat args_code))
-                             @@ (js_call id)
-                       | _ ->
-                           let cache = !method_cache_id in
-                           let () = incr method_cache_id in
-                           Js_output.handle_block_return st should_return lam
-                             (List.concat args_code)
-                             (E.call
-                                (E.runtime_call Js_config.oo
-                                   "caml_get_public_method"
-                                   [obj'; label; E.int cache]) (obj' :: args)))))
-               [@warning "-8"])
-           | Levent (lam,_lam_event) -> compile_lambda cxt lam
-           | Lifused (_,lam) -> compile_lambda cxt lam : Js_output.t)
-      end 
-    module Lam_inline_util :
-      sig
-        [@@@ocaml.text " Utilities for lambda inlining "]
-        val maybe_functor : string -> bool
-      end =
-      struct
-        let maybe_functor (name : string) =
-          ((name.[0]) >= 'A') && ((name.[0]) <= 'Z')
-        let app_definitely_inlined (body : Lambda.lambda) =
-          match body with
-          | Lvar _|Lconst _|Lprim _|Lapply _ -> true
-          | Llet _|Lletrec _|Lstringswitch _|Lswitch _|Lstaticraise _
-            |Lfunction _|Lstaticcatch _|Ltrywith _|Lifthenelse _|Lsequence _
-            |Lwhile _|Lfor _|Lassign _|Lsend _|Levent _|Lifused _ -> false
-      end 
-    module Ext_option :
-      sig
-        [@@@ocaml.text " Utilities for [option] type "]
-        val bind : 'a option -> ('a -> 'b) -> 'b option
-      end =
-      struct
-        let bind v f = match v with | None  -> None | Some x -> Some (f x)
-      end 
-    module Lam_stats_util :
-      sig
-        [@@@ocaml.text " Utilities for lambda analysis "]
-        val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl -> unit
-        val pp_arities :
-          Format.formatter -> Lam_stats.function_arities -> unit
-        val get_arity :
-          Lam_stats.meta -> Lambda.lambda -> Lam_stats.function_arities
-        val export_to_cmj :
-          Lam_stats.meta ->
-            string option ->
-              Lam_module_ident.t list ->
-                Lambda.lambda list -> Js_cmj_format.cmj_table
-        val find_unused_exit_code : int Hash_set.hashset -> int
-      end =
-      struct
-        let pp = Format.fprintf
-        let pp_arities (fmt : Format.formatter)
-          (x : Lam_stats.function_arities) =
-          match x with
-          | NA  -> pp fmt "?"
-          | Determin (b,ls,tail) ->
-              (pp fmt "@[";
-               if not b then pp fmt "~";
-               pp fmt "[";
-               Format.pp_print_list
-                 ~pp_sep:(fun fmt  -> fun ()  -> pp fmt ",")
-                 (fun fmt  -> fun (x,_)  -> Format.pp_print_int fmt x) fmt ls;
-               if tail then pp fmt "@ *";
-               pp fmt "]@]")
-        let pp_arities_tbl (fmt : Format.formatter)
-          (arities_tbl : (Ident.t,Lam_stats.function_arities ref) Hashtbl.t)
-          =
-          Hashtbl.fold
-            (fun (i : Ident.t)  ->
-               fun (v : Lam_stats.function_arities ref)  ->
-                 fun _  ->
-                   pp Format.err_formatter "@[%s -> %a@]@." i.name pp_arities
-                     (!v)) arities_tbl ()
-        let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
-          Hashtbl.iter
-            (fun k  ->
-               fun v  -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
-            tbl
-        let merge (((n : int),params) as y) (x : Lam_stats.function_arities)
-          =
-          (match x with
-           | NA  -> Determin (false, [y], false)
-           | Determin (b,xs,tail) -> Determin (b, (y :: xs), tail) : 
-          Lam_stats.function_arities)
-        let rec get_arity (meta : Lam_stats.meta) (lam : Lambda.lambda) =
-          (match lam with
-           | Lconst _ -> Determin (true, [], false)
-           | Lvar v ->
-               (match Hashtbl.find meta.ident_tbl v with
-                | exception Not_found  -> (NA : Lam_stats.function_arities)
-                | Function { arity;_} -> arity
-                | _ -> (NA : Lam_stats.function_arities))
-           | Llet (_,_,_,l) -> get_arity meta l
-           | Lprim (Pfield n,(Lprim (Pgetglobal id,[]))::[]) ->
-               Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
-                 ~not_found:(fun _  -> assert false)
-                 ~found:(fun x  -> x.arity)
-           | Lprim (Pfield _,_) -> NA
-           | Lprim (Praise _,_) -> Determin (true, [], true)
-           | Lprim (Pccall _,_) -> Determin (false, [], false)
-           | Lprim _ -> Determin (true, [], false)
-           | Lletrec (_,body) -> get_arity meta body
-           | Lapply (app,args,_info) ->
-               let fn = get_arity meta app in
-               (match fn with
-                | NA  -> NA
-                | Determin (b,xs,tail) ->
-                    let rec take (xs : _ list) arg_length =
-                      match xs with
-                      | (x,y)::xs ->
-                          if arg_length = x
-                          then Lam_stats.Determin (b, xs, tail)
-                          else
-                            if arg_length > x
-                            then take xs (arg_length - x)
-                            else
-                              Determin
-                                (b,
-                                  (((x - arg_length),
-                                     (Ext_list.drop arg_length y)) :: xs),
-                                  tail)
-                      | [] ->
-                          if tail
-                          then Determin (b, [], tail)
-                          else
-                            if not b
-                            then NA
-                            else failwith (Lam_util.string_of_lambda lam) in
-                    take xs (List.length args))
-           | Lfunction (kind,params,l) ->
-               let n = List.length params in
-               merge (n, params) (get_arity meta l)
-           | Lswitch
-               (l,{ sw_failaction; sw_consts; sw_blocks; sw_numblocks = _;
-                    sw_numconsts = _ })
-               ->
-               all_lambdas meta
-                 (let rest =
-                    (sw_consts |> (List.map snd)) @
-                      (sw_blocks |> (List.map snd)) in
-                  match sw_failaction with
-                  | None  -> rest
-                  | Some x -> x :: rest)
-           | Lstringswitch (l,sw,d) ->
-               (match d with
-                | None  -> all_lambdas meta (List.map snd sw)
-                | Some v -> all_lambdas meta (v :: (List.map snd sw)))
-           | Lstaticraise _ -> NA
-           | Lstaticcatch (_,_,handler) -> get_arity meta handler
-           | Ltrywith (l1,_,l2) -> all_lambdas meta [l1; l2]
-           | Lifthenelse (l1,l2,l3) -> all_lambdas meta [l2; l3]
-           | Lsequence (_,l2) -> get_arity meta l2
-           | Lsend (u,m,o,ll,v) -> NA
-           | Levent (l,event) -> NA
-           | Lifused (v,l) -> NA
-           | Lwhile _|Lfor _|Lassign _ -> Determin (true, [], false) : 
-          Lam_stats.function_arities)
-        and all_lambdas meta (xs : Lambda.lambda list) =
-          match xs with
-          | y::ys ->
-              let arity = get_arity meta y in
-              List.fold_left
-                (fun exist  ->
-                   fun (v : Lambda.lambda)  ->
-                     match (exist : Lam_stats.function_arities) with
-                     | NA  -> NA
-                     | Determin (b,xs,tail) ->
-                         (match get_arity meta v with
-                          | NA  -> NA
-                          | Determin (u,ys,tail2) ->
-                              let rec aux (b,acc) xs ys =
-                                match (xs, ys) with
-                                | ([],[]) ->
-                                    (b, (List.rev acc), (tail && tail2))
-                                | ([],y::ys) when tail ->
-                                    aux (b, (y :: acc)) [] ys
-                                | (x::xs,[]) when tail2 ->
-                                    aux (b, (x :: acc)) [] xs
-                                | (x::xs,y::ys) when x = y ->
-                                    aux (b, (y :: acc)) xs ys
-                                | (_,_) -> (false, (List.rev acc), false) in
-                              let (b,acc,tail3) = aux ((u && b), []) xs ys in
-                              Determin (b, acc, tail3))) arity ys
-          | _ -> assert false
-        let pp = Format.fprintf
-        let meaningless_names = ["*opt*"; "param"]
-        let rec dump_ident fmt (id : Ident.t)
-          (arity : Lam_stats.function_arities) =
-          pp fmt "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name)
-            dump_arity arity
-        and dump_arity fmt (arity : Lam_stats.function_arities) =
-          match arity with
-          | NA  -> pp fmt "any"
-          | Determin (_,[],_) -> pp fmt "any"
-          | Determin (_,(_,args)::xs,_) ->
-              pp fmt "@[(%a)@ =>@ any@]"
-                (Format.pp_print_list
-                   ~pp_sep:(fun fmt  ->
-                              fun _  ->
-                                Format.pp_print_string fmt ",";
-                                Format.pp_print_space fmt ())
-                   (fun fmt  ->
-                      fun ident  ->
-                        pp fmt "@[%s@ :@ any@]"
-                          (Ext_ident.convert @@ (Ident.name ident)))) args
-        let export_to_cmj (meta : Lam_stats.meta) maybe_pure external_ids
-          lambda_exports =
-          (let values =
-             List.fold_left2
-               (fun acc  ->
-                  fun (x : Ident.t)  ->
-                    fun (lambda : Lambda.lambda)  ->
-                      let arity = get_arity meta (Lvar x) in
-                      let closed_lambda =
-                        if Lam_inline_util.maybe_functor x.name
-                        then
-                          (if Lam_analysis.is_closed lambda
-                           then Some lambda
-                           else None)
-                        else None in
-                      String_map.add x.name
-                        (let open Js_cmj_format in { arity; closed_lambda })
-                        acc) String_map.empty meta.exports lambda_exports in
-           let rec dump fmt ids =
-             match ids with
-             | [] -> ()
-             | x::xs ->
-                 (dump_ident fmt x (get_arity meta (Lvar x));
-                  Format.pp_print_space fmt ();
-                  dump fmt xs) in
-           let () =
-             if not @@ (Ext_string.is_empty meta.filename)
-             then
-               (Ext_pervasives.with_file_as_pp
-                  ((Ext_filename.chop_extension ~loc:__LOC__ meta.filename) ^
-                     ".d.ts"))
-                 @@ (fun fmt  -> pp fmt "@[<v>%a@]@." dump meta.exports) in
-           let pure =
-             match maybe_pure with
-             | None  ->
-                 Ext_option.bind
-                   (Ext_list.for_all_ret
-                      (fun (id : Lam_module_ident.t)  ->
-                         Lam_compile_env.query_and_add_if_not_exist id
-                           meta.env ~not_found:(fun _  -> false)
-                           ~found:(fun i  -> i.pure)) external_ids)
-                   (fun x  -> Lam_module_ident.name x)
-             | Some _ -> maybe_pure in
-           { values; pure } : Js_cmj_format.cmj_table)
-        let find_unused_exit_code hash_set =
-          let rec aux i =
-            if not @@ (Hash_set.mem hash_set i)
-            then i
-            else
-              if not @@ (Hash_set.mem hash_set (- i))
-              then - i
-              else aux (i + 1) in
-          aux 0
       end 
     module Ext_hashtbl :
       sig
@@ -8096,8 +7099,9 @@ include
         val propogate_beta_reduce_with_map :
           Lam_stats.meta ->
             Lam_analysis.stats Ident_map.t ->
-              Ident_map.key list ->
-                Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+              Ident.t list ->
+                Lambda.lambda -> Lambda.lambda list -> Lambda.lambda[@@ocaml.doc
+                                                                    " \n   {[ Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args]}\n   [param_map] collect the usage of parameters, \n   it can be  produced by \n   {[!Lam_analysis.free_variables meta.export_idents \n       (Lam_analysis.param_map_of_list params) body]}\n"]
       end =
       struct
         let rewrite (map : (Ident.t,_) Hashtbl.t) (lam : Lambda.lambda) =
@@ -8268,6 +7272,1271 @@ include
                fun param  -> fun arg  -> Lam_util.refine_let param arg l)
             body params args
       end 
+    module Lam_compile :
+      sig
+        [@@@ocaml.text " Compile single lambda IR to JS IR  "]
+        val compile_let :
+          Lambda.let_kind ->
+            Lam_compile_defs.cxt -> J.ident -> Lambda.lambda -> Js_output.t
+        val compile_recursive_lets :
+          Lam_compile_defs.cxt ->
+            (Ident.t* Lambda.lambda) list -> Js_output.t
+        val compile_lambda :
+          Lam_compile_defs.cxt -> Lambda.lambda -> Js_output.t
+      end =
+      struct
+        open Js_output.Ops
+        module E = Js_exp_make
+        module S = Js_stmt_make
+        let method_cache_id = ref 1
+        let rec flat_catches acc (x : Lambda.lambda) =
+          (match x with
+           | Lstaticcatch (l,(code,bindings),handler) ->
+               flat_catches ((code, handler, bindings) :: acc) l
+           | _ -> (acc, x) : ((int* Lambda.lambda* Ident.t list) list*
+                               Lambda.lambda))
+        let translate_dispatch = ref (fun _  -> assert false)
+        type default_case =
+          | Default of Lambda.lambda
+          | Complete
+          | NonComplete
+        let rec get_exp_with_index (cxt : Lam_compile_defs.cxt) lam
+          ((id : Ident.t),(pos : int),env) =
+          (let f = Js_output.handle_name_tail cxt.st cxt.should_return lam in
+           Lam_compile_env.find_and_add_if_not_exist (id, pos) env
+             ~not_found:(fun id  ->
+                           f
+                             (E.str ~pure:false
+                                (Printf.sprintf "Err %s %d %d" id.name
+                                   id.flags pos)))
+             ~found:(fun { id; name; closed_lambda }  ->
+                       match (id, name, closed_lambda) with
+                       | ({ name = "Sys";_},"os_type",_) ->
+                           f (E.str Sys.os_type)
+                       | (_,_,Some lam) when Lam_util.not_function lam ->
+                           compile_lambda cxt lam
+                       | _ -> f (E.ml_var_dot id name)) : Js_output.t)
+        and get_exp_with_args (cxt : Lam_compile_defs.cxt) lam args_lambda
+          (id : Ident.t) (pos : int) env =
+          (Lam_compile_env.find_and_add_if_not_exist (id, pos) env
+             ~not_found:(fun id  -> assert false)
+             ~found:(fun { id; name; arity; closed_lambda;_}  ->
+                       let (args_code,args) =
+                         List.fold_right
+                           (fun (x : Lambda.lambda)  ->
+                              fun (args_code,args)  ->
+                                match x with
+                                | Lprim (Pgetglobal i,[]) ->
+                                    (args_code,
+                                      ((Lam_compile_global.get_exp
+                                          (i, env, true)) :: args))
+                                | _ ->
+                                    (match compile_lambda
+                                             {
+                                               cxt with
+                                               st = NeedValue;
+                                               should_return = False
+                                             } x
+                                     with
+                                     | { block = a; value = Some b } ->
+                                         ((a @ args_code), (b :: args))
+                                     | _ -> assert false)) args_lambda
+                           ([], []) in
+                       match closed_lambda with
+                       | Some (Lfunction (_,params,body)) when
+                           Ext_list.same_length params args_lambda ->
+                           let (_,param_map) =
+                             Lam_analysis.is_closed_with_map Ident_set.empty
+                               params body in
+                           compile_lambda cxt
+                             (Lam_beta_reduce.propogate_beta_reduce_with_map
+                                cxt.meta param_map params body args_lambda)
+                       | _ ->
+                           (Js_output.handle_block_return cxt.st
+                              cxt.should_return lam args_code)
+                             @@
+                             ((match (id, name, args) with
+                               | ({ name = "Pervasives";_},"^",e0::e1::[]) ->
+                                   E.string_append e0 e1
+                               | ({ name = "Pervasives";_},"print_endline",(
+                                  _::[] as args)) ->
+                                   E.seq (E.dump Log args) (E.unit ())
+                               | ({ name = "Pervasives";_},"prerr_endline",(
+                                  _::[] as args)) ->
+                                   E.seq (E.dump Error args) (E.unit ())
+                               | ({ name = "CamlinternalMod";_},"update_mod",shape::_module::_::[])
+                                   when Js_of_lam_module.is_empty_shape shape
+                                   -> E.unit ()
+                               | ({ name = "CamlinternalMod";_},"init_mod",_::shape::[])
+                                   when Js_of_lam_module.is_empty_shape shape
+                                   -> E.dummy_obj ()
+                               | _ ->
+                                   let rec aux (acc : J.expression)
+                                     (arity : Lam_stats.function_arities)
+                                     args (len : int) =
+                                     match (arity, len) with
+                                     | (_,0) -> acc
+                                     | (Determin (a,(x,_)::rest,b),len) ->
+                                         let x = if x = 0 then 1 else x in
+                                         if len >= x
+                                         then
+                                           let (first_part,continue) =
+                                             Ext_list.take x args in
+                                           aux
+                                             (E.call ~info:{ arity = Full }
+                                                acc first_part)
+                                             (Determin (a, rest, b)) continue
+                                             (len - x)
+                                         else acc
+                                     | (Determin (a,[],b),_) ->
+                                         E.call acc args
+                                     | (NA ,_) -> E.call acc args in
+                                   aux (E.ml_var_dot id name) arity args
+                                     (List.length args)))) : Js_output.t)
+        and compile_let flag (cxt : Lam_compile_defs.cxt) id
+          (arg : Lambda.lambda) =
+          (match (flag, arg) with
+           | (let_kind,_) ->
+               compile_lambda
+                 {
+                   cxt with
+                   st = (Declare (let_kind, id));
+                   should_return = False
+                 } arg : Js_output.t)
+        and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t)
+          (arg : Lambda.lambda) =
+          match arg with
+          | Lfunction (kind,params,body) ->
+              let continue_label = Lam_util.generate_label ~name:(id.name) () in
+              ((Js_output.handle_name_tail (Declare (Alias, id)) False arg
+                  (let ret: Lam_compile_defs.return_label =
+                     {
+                       id;
+                       label = continue_label;
+                       params;
+                       immutable_mask =
+                         (Array.make (List.length params) true);
+                       new_params = Ident_map.empty;
+                       triggered = false
+                     } in
+                   let output =
+                     compile_lambda
+                       {
+                         cxt with
+                         st = EffectCall;
+                         should_return = (True (Some ret));
+                         jmp_table = Lam_compile_defs.empty_handler_map
+                       } body in
+                   if ret.triggered
+                   then
+                     let body_block = Js_output.to_block output in
+                     E.fun_ ~immutable_mask:(ret.immutable_mask)
+                       (List.map
+                          (fun x  ->
+                             try Ident_map.find x ret.new_params
+                             with | Not_found  -> x) params)
+                       [S.while_ E.true_
+                          (Ident_map.fold
+                             (fun old  ->
+                                fun new_param  ->
+                                  fun acc  ->
+                                    (S.define ~kind:Alias old
+                                       (E.var new_param))
+                                    :: acc) ret.new_params body_block)]
+                   else E.fun_ params (Js_output.to_block output))), [])
+          | Lprim (Pmakeblock _,_) ->
+              (match compile_lambda
+                       { cxt with st = NeedValue; should_return = False } arg
+               with
+               | { block = b; value = Some v } ->
+                   ((Js_output.of_block
+                       (b @
+                          [S.exp
+                             (E.runtime_call Js_config.obj_runtime
+                                "caml_update_dummy" [E.var id; v])])), 
+                     [id])
+               | _ -> assert false)
+          | Lvar _ ->
+              ((compile_lambda
+                  {
+                    cxt with
+                    st = (Declare (Alias, id));
+                    should_return = False
+                  } arg), [])
+          | _ ->
+              ((compile_lambda
+                  {
+                    cxt with
+                    st = (Declare (Alias, id));
+                    should_return = False
+                  } arg), [])
+        and compile_recursive_lets cxt id_args =
+          (let (output_code,ids) =
+             List.fold_right
+               (fun (ident,arg)  ->
+                  fun (acc,ids)  ->
+                    let (code,declare_ids) =
+                      compile_recursive_let cxt ident arg in
+                    ((code ++ acc), (declare_ids @ ids))) id_args
+               (Js_output.dummy, []) in
+           match ids with
+           | [] -> output_code
+           | _ ->
+               (Js_output.of_block @@
+                  (List.map
+                     (fun id  -> S.define ~kind:Variable id (E.dummy_obj ()))
+                     ids))
+                 ++ output_code : Js_output.t)
+        and compile_general_cases :
+          'a .
+            ('a -> J.expression) ->
+              (J.expression -> J.expression -> J.expression) ->
+                Lam_compile_defs.cxt ->
+                  (?default:J.block ->
+                     ?declaration:(Lambda.let_kind* Ident.t) ->
+                       _ -> 'a J.case_clause list -> J.statement)
+                    ->
+                    _ -> ('a* Lambda.lambda) list -> default_case -> J.block=
+          fun f  ->
+            fun eq  ->
+              fun cxt  ->
+                fun switch  ->
+                  fun v  ->
+                    fun table  ->
+                      fun default  ->
+                        let wrap (cxt : Lam_compile_defs.cxt) k =
+                          let (cxt,define) =
+                            match cxt.st with
+                            | Declare (kind,did) ->
+                                ({ cxt with st = (Assign did) },
+                                  (Some (kind, did)))
+                            | _ -> (cxt, None) in
+                          k cxt define in
+                        match (table, default) with
+                        | ([],Default lam) ->
+                            Js_output.to_block (compile_lambda cxt lam)
+                        | ([],(Complete |NonComplete )) -> []
+                        | ((id,lam)::[],Complete ) ->
+                            Js_output.to_block @@ (compile_lambda cxt lam)
+                        | ((id,lam)::[],NonComplete ) ->
+                            (wrap cxt) @@
+                              ((fun cxt  ->
+                                  fun define  ->
+                                    [S.if_ ?declaration:define (eq v (f id))
+                                       (Js_output.to_block @@
+                                          (compile_lambda cxt lam))]))
+                        | ((id,lam)::[],Default x)
+                          |((id,lam)::(_,x)::[],Complete ) ->
+                            (wrap cxt) @@
+                              ((fun cxt  ->
+                                  fun define  ->
+                                    let else_block =
+                                      Js_output.to_block
+                                        (compile_lambda cxt x) in
+                                    let then_block =
+                                      Js_output.to_block
+                                        (compile_lambda cxt lam) in
+                                    [S.if_ ?declaration:define (eq v (f id))
+                                       then_block ~else_:else_block]))
+                        | (_,_) ->
+                            (wrap cxt) @@
+                              ((fun cxt  ->
+                                  fun declaration  ->
+                                    let default =
+                                      match default with
+                                      | Complete  -> None
+                                      | NonComplete  -> None
+                                      | Default lam ->
+                                          Some
+                                            (Js_output.to_block
+                                               (compile_lambda cxt lam)) in
+                                    let body =
+                                      (table |>
+                                         (Ext_list.stable_group
+                                            (fun (_,lam)  ->
+                                               fun (_,lam1)  ->
+                                                 Lam_analysis.eq_lambda lam
+                                                   lam1)))
+                                        |>
+                                        (Ext_list.flat_map
+                                           (fun group  ->
+                                              group |>
+                                                (Ext_list.map_last
+                                                   (fun last  ->
+                                                      fun (x,lam)  ->
+                                                        if last
+                                                        then
+                                                          {
+                                                            J.case = x;
+                                                            body =
+                                                              (Js_output.to_break_block
+                                                                 (compile_lambda
+                                                                    cxt lam))
+                                                          }
+                                                        else
+                                                          {
+                                                            case = x;
+                                                            body =
+                                                              ([], false)
+                                                          })))) in
+                                    [switch ?default ?declaration v body]))
+        and compile_cases cxt =
+          compile_general_cases E.int E.int_equal cxt
+            (fun ?default  ->
+               fun ?declaration  ->
+                 fun e  ->
+                   fun clauses  ->
+                     S.int_switch ?default ?declaration e clauses)
+        and compile_string_cases cxt =
+          compile_general_cases E.str E.string_equal cxt
+            (fun ?default  ->
+               fun ?declaration  ->
+                 fun e  ->
+                   fun clauses  ->
+                     S.string_switch ?default ?declaration e clauses)
+        and compile_lambda
+          (({ st; should_return; jmp_table; meta = { env;_} } as cxt) :
+            Lam_compile_defs.cxt)
+          (lam : Lambda.lambda) =
+          (match lam with
+           | Lfunction (kind,params,body) ->
+               Js_output.handle_name_tail st should_return lam
+                 (E.fun_ params
+                    (Js_output.to_block
+                       (compile_lambda
+                          {
+                            cxt with
+                            st = EffectCall;
+                            should_return = (True None);
+                            jmp_table = Lam_compile_defs.empty_handler_map
+                          } body)))
+           | Lapply
+               (Lapply
+                (an,args',({ apply_status = NA  } as _info1)),args,({
+                                                                    apply_status
+                                                                    = NA  }
+                                                                    as _info2))
+               ->
+               compile_lambda cxt
+                 (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
+           | Lapply
+               (Lprim
+                (Pfield n,(Lprim (Pgetglobal id,[]))::[]),args_lambda,_info)
+               -> get_exp_with_args cxt lam args_lambda id n env
+           | Lapply (fn,args_lambda,info) ->
+               ((let (args_code,fn_code::args) =
+                   List.fold_right
+                     (fun (x : Lambda.lambda)  ->
+                        fun (args_code,fn_code)  ->
+                          match x with
+                          | Lprim (Pgetglobal ident,[]) ->
+                              (args_code,
+                                ((Lam_compile_global.get_exp
+                                    (ident, env, true)) :: fn_code))
+                          | _ ->
+                              (match compile_lambda
+                                       {
+                                         cxt with
+                                         st = NeedValue;
+                                         should_return = False
+                                       } x
+                               with
+                               | { block = a; value = Some b } ->
+                                   ((a @ args_code), (b :: fn_code))
+                               | _ -> assert false)) (fn :: args_lambda)
+                     ([], []) in
+                 (match (fn, should_return) with
+                  | (Lvar id',True (Some ({ id; label; params;_} as ret)))
+                      when Ident.same id id' ->
+                      (ret.triggered <- true;
+                       (let block =
+                          args_code @
+                            ((let (_,assigned_params,new_params) =
+                                List.fold_left2
+                                  (fun (i,assigns,new_params)  ->
+                                     fun param  ->
+                                       fun (arg : J.expression)  ->
+                                         match arg with
+                                         | { expression_desc = Var (Id x);_}
+                                             when Ident.same x param ->
+                                             ((i + 1), assigns, new_params)
+                                         | _ ->
+                                             let (new_param,m) =
+                                               match Ident_map.find param
+                                                       ret.new_params
+                                               with
+                                               | exception Not_found  ->
+                                                   ((ret.immutable_mask).(i)
+                                                    <- false;
+                                                    (let v =
+                                                       Ext_ident.create
+                                                         ("_" ^
+                                                            param.Ident.name) in
+                                                     (v,
+                                                       (Ident_map.add param v
+                                                          new_params))))
+                                               | v -> (v, new_params) in
+                                             ((i + 1), ((new_param, arg) ::
+                                               assigns), m))
+                                  (0, [], Ident_map.empty) params args in
+                              let () =
+                                ret.new_params <-
+                                  let open Ident_map in
+                                    merge_disjoint new_params ret.new_params in
+                              assigned_params |>
+                                (List.map
+                                   (fun (param,arg)  -> S.assign param arg)))
+                               @ [S.continue ()]) in
+                        Js_output.of_block ~finished:True block))
+                  | _ ->
+                      Js_output.handle_block_return st should_return lam
+                        args_code
+                        (E.call
+                           ~info:(match (fn, info) with
+                                  | (_,{ apply_status = Full  }) ->
+                                      { arity = Full }
+                                  | (_,{ apply_status = NA  }) ->
+                                      { arity = NA }) fn_code args)))
+               [@warning "-8"])
+           | Llet (let_kind,id,arg,body) ->
+               let args_code = compile_let let_kind cxt id arg in
+               args_code ++ (compile_lambda cxt body)
+           | Lletrec (id_args,body) ->
+               let v = compile_recursive_lets cxt id_args in
+               v ++ (compile_lambda cxt body)
+           | Lvar id ->
+               Js_output.handle_name_tail st should_return lam (E.var id)
+           | Lconst c ->
+               Js_output.handle_name_tail st should_return lam
+                 (Lam_compile_const.translate c)
+           | Lprim (Pfield n,(Lprim (Pgetglobal id,[]))::[]) ->
+               get_exp_with_index cxt lam (id, n, env)
+           | Lprim (Praise _raise_kind,e::[]) ->
+               (match compile_lambda
+                        { cxt with should_return = False; st = NeedValue } e
+                with
+                | { block = b; value = Some v } ->
+                    Js_output.make (b @ [S.throw v]) ~value:E.undefined
+                      ~finished:True
+                | { value = None ;_} -> assert false)
+           | Lprim (Psequand ,l::r::[]) ->
+               (match cxt with
+                | { should_return = True _ } ->
+                    compile_lambda cxt
+                      (Lifthenelse (l, r, Lam_util.lam_false))
+                | _ ->
+                    let (l_block,l_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } l
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let (r_block,r_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } r
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let args_code = l_block @ r_block in
+                    let exp = E.and_ l_expr r_expr in
+                    Js_output.handle_block_return st should_return lam
+                      args_code exp)
+           | Lprim (Psequor ,l::r::[]) ->
+               (match cxt with
+                | { should_return = True _ } ->
+                    compile_lambda cxt
+                      (Lifthenelse (l, Lam_util.lam_true, r))
+                | _ ->
+                    let (l_block,l_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } l
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let (r_block,r_expr) =
+                      match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } r
+                      with
+                      | { block = a; value = Some b } -> (a, b)
+                      | _ -> assert false in
+                    let args_code = l_block @ r_block in
+                    let exp = E.or_ l_expr r_expr in
+                    Js_output.handle_block_return st should_return lam
+                      args_code exp)
+           | Lprim (prim,args_lambda) ->
+               let (args_block,args_expr) =
+                 (args_lambda |>
+                    (List.map
+                       (fun (x : Lambda.lambda)  ->
+                          match compile_lambda
+                                  {
+                                    cxt with
+                                    st = NeedValue;
+                                    should_return = False
+                                  } x
+                          with
+                          | { block = a; value = Some b } -> (a, b)
+                          | _ -> assert false)))
+                   |> List.split in
+               let args_code = List.concat args_block in
+               let exp = Lam_compile_primitive.translate cxt prim args_expr in
+               Js_output.handle_block_return st should_return lam args_code
+                 exp
+           | Lsequence (l1,l2) ->
+               let output_l1 =
+                 compile_lambda
+                   { cxt with st = EffectCall; should_return = False } l1 in
+               let output_l2 = compile_lambda cxt l2 in
+               let result = output_l1 ++ output_l2 in result
+           | Lifthenelse (p,t_br,f_br) ->
+               (match compile_lambda
+                        { cxt with st = NeedValue; should_return = False } p
+                with
+                | { block = b; value = Some e } ->
+                    (match (st, should_return,
+                             (compile_lambda { cxt with st = NeedValue } t_br),
+                             (compile_lambda { cxt with st = NeedValue } f_br))
+                     with
+                     | (NeedValue
+                        ,_,{ block = []; value = Some out1 },{ block = [];
+                                                               value = Some
+                                                                 out2
+                                                               })
+                         -> Js_output.make b ~value:(E.econd e out1 out2)
+                     | (NeedValue ,_,_,_) ->
+                         let id = Ext_ident.gen_js () in
+                         (match ((compile_lambda
+                                    { cxt with st = (Assign id) } t_br),
+                                  (compile_lambda
+                                     { cxt with st = (Assign id) } f_br))
+                          with
+                          | (out1,out2) ->
+                              Js_output.make
+                                (((S.declare_variable ~kind:Variable id) ::
+                                   b) @
+                                   [S.if_ e (Js_output.to_block out1)
+                                      ~else_:(Js_output.to_block out2)])
+                                ~value:(E.var id))
+                     | (Declare
+                        (kind,id),_,{ block = []; value = Some out1 },
+                        { block = []; value = Some out2 }) ->
+                         Js_output.make
+                           [S.define ~kind id (E.econd e out1 out2)]
+                     | (Declare (kind,id),_,_,_) ->
+                         Js_output.make
+                           (b @
+                              [S.if_ ~declaration:(kind, id) e
+                                 (Js_output.to_block @@
+                                    (compile_lambda
+                                       { cxt with st = (Assign id) } t_br))
+                                 ~else_:(Js_output.to_block @@
+                                           (compile_lambda
+                                              { cxt with st = (Assign id) }
+                                              f_br))])
+                     | (Assign
+                        id,_,{ block = []; value = Some out1 },{ block = [];
+                                                                 value = Some
+                                                                   out2
+                                                                 })
+                         ->
+                         Js_output.make [S.assign id (E.econd e out1 out2)]
+                     | (EffectCall ,True
+                        _,{ block = []; value = Some out1 },{ block = [];
+                                                              value = Some
+                                                                out2
+                                                              })
+                         ->
+                         Js_output.make [S.return (E.econd e out1 out2)]
+                           ~finished:True
+                     | (EffectCall ,False
+                        ,{ block = []; value = Some out1 },{ block = [];
+                                                             value = Some
+                                                               out2
+                                                             })
+                         ->
+                         (match ((Js_exp_make.extract_non_pure out1),
+                                  (Js_exp_make.extract_non_pure out2))
+                          with
+                          | (None ,None ) -> Js_output.make b
+                          | (Some out1,Some out2) ->
+                              Js_output.make b ~value:(E.econd e out1 out2)
+                          | (Some out1,None ) ->
+                              Js_output.make (b @ [S.if_ e [S.exp out1]])
+                          | (None ,Some out2) ->
+                              Js_output.make @@
+                                (b @ [S.if_ (E.not e) [S.exp out2]]))
+                     | (EffectCall ,False
+                        ,{ block = []; value = Some out1 },_) ->
+                         if Js_analyzer.no_side_effect_expression out1
+                         then
+                           Js_output.make
+                             (b @
+                                [S.if_ (E.not e)
+                                   (Js_output.to_block @@
+                                      (compile_lambda cxt f_br))])
+                         else
+                           Js_output.make
+                             (b @
+                                [S.if_ e
+                                   (Js_output.to_block @@
+                                      (compile_lambda cxt t_br))
+                                   ~else_:(Js_output.to_block @@
+                                             (compile_lambda cxt f_br))])
+                     | (EffectCall ,False
+                        ,_,{ block = []; value = Some out2 }) ->
+                         let else_ =
+                           if Js_analyzer.no_side_effect_expression out2
+                           then None
+                           else
+                             Some
+                               (Js_output.to_block @@
+                                  (compile_lambda cxt f_br)) in
+                         Js_output.make
+                           (b @
+                              [S.if_ e
+                                 (Js_output.to_block @@
+                                    (compile_lambda cxt t_br)) ?else_])
+                     | ((Assign _|EffectCall ),_,_,_) ->
+                         let then_output =
+                           Js_output.to_block @@ (compile_lambda cxt t_br) in
+                         let else_output =
+                           Js_output.to_block @@ (compile_lambda cxt f_br) in
+                         Js_output.make
+                           (b @ [S.if_ e then_output ~else_:else_output]))
+                | _ -> assert false)
+           | Lstringswitch (l,cases,default) ->
+               (match compile_lambda
+                        { cxt with should_return = False; st = NeedValue } l
+                with
+                | { block; value = Some e } ->
+                    let default =
+                      match default with
+                      | Some x -> Default x
+                      | None  -> Complete in
+                    (match st with
+                     | NeedValue  ->
+                         let v = Ext_ident.gen_js () in
+                         Js_output.make
+                           (block @
+                              (compile_string_cases
+                                 { cxt with st = (Declare (Variable, v)) } e
+                                 cases default)) ~value:(E.var v)
+                     | _ ->
+                         Js_output.make
+                           (block @
+                              (compile_string_cases cxt e cases default)))
+                | _ -> assert false)
+           | Lswitch
+               (lam,{ sw_numconsts; sw_consts; sw_numblocks; sw_blocks;
+                      sw_failaction = default })
+               ->
+               let default: default_case =
+                 match default with | None  -> Complete | Some x -> Default x in
+               let compile_whole (({ st;_} as cxt) : Lam_compile_defs.cxt) =
+                 match (sw_numconsts, sw_numblocks,
+                         (compile_lambda
+                            { cxt with should_return = False; st = NeedValue
+                            } lam))
+                 with
+                 | (0,_,{ block; value = Some e }) ->
+                     compile_cases cxt (E.tag e) sw_blocks default
+                 | (_,0,{ block; value = Some e }) ->
+                     compile_cases cxt e sw_consts default
+                 | (_,_,{ block; value = Some e }) ->
+                     let dispatch e =
+                       [S.if_ (E.is_type_number e)
+                          (compile_cases cxt e sw_consts default)
+                          ~else_:(compile_cases cxt (E.tag e) sw_blocks
+                                    default)] in
+                     (match e.expression_desc with
+                      | J.Var _ -> dispatch e
+                      | _ ->
+                          let v = Ext_ident.gen_js () in
+                          (S.define ~kind:Variable v e) ::
+                            (dispatch (E.var v)))
+                 | (_,_,{ value = None ;_}) -> assert false in
+               (match st with
+                | NeedValue  ->
+                    let v = Ext_ident.gen_js () in
+                    Js_output.make ((S.declare_variable ~kind:Variable v) ::
+                      (compile_whole { cxt with st = (Assign v) }))
+                      ~value:(E.var v)
+                | Declare (kind,id) ->
+                    Js_output.make ((S.declare_variable ~kind id) ::
+                      (compile_whole { cxt with st = (Assign id) }))
+                | EffectCall |Assign _ -> Js_output.make (compile_whole cxt))
+           | Lstaticraise (i,largs) ->
+               (match Lam_compile_defs.HandlerMap.find i cxt.jmp_table with
+                | { exit_id; args; order_id } ->
+                    let args_code =
+                      Js_output.concat @@
+                        (List.map2
+                           (fun (x : Lambda.lambda)  ->
+                              fun (arg : Ident.t)  ->
+                                match x with
+                                | Lvar id ->
+                                    Js_output.make [S.assign arg (E.var id)]
+                                | _ ->
+                                    compile_lambda
+                                      {
+                                        cxt with
+                                        st = (Assign arg);
+                                        should_return = False
+                                      } x) largs (args : Ident.t list)) in
+                    args_code ++
+                      (Js_output.make [S.assign exit_id (E.int order_id)]
+                         ~value:E.undefined)
+                | exception Not_found  ->
+                    Js_output.make [S.unknown_lambda ~comment:"error" lam])
+           | Lstaticcatch _ ->
+               let (code_table,body) = flat_catches [] lam in
+               let exit_id = Ext_ident.gen_js ~name:"exit" () in
+               let exit_expr = E.var exit_id in
+               let bindings =
+                 Ext_list.flat_map (fun (_,_,bindings)  -> bindings)
+                   code_table in
+               let (jmp_table,handlers) =
+                 Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
+               let declares = (S.define ~kind:Variable exit_id (E.int 0)) ::
+                 (List.map (fun x  -> S.declare_variable ~kind:Variable x)
+                    bindings) in
+               (match st with
+                | NeedValue  ->
+                    let v = Ext_ident.gen_js () in
+                    let lbody =
+                      compile_lambda { cxt with jmp_table; st = (Assign v) }
+                        body in
+                    ((Js_output.make ((S.declare_variable ~kind:Variable v)
+                        :: declares))
+                       ++ lbody)
+                      ++
+                      (Js_output.make
+                         (compile_cases
+                            { cxt with st = (Assign v); jmp_table } exit_expr
+                            handlers NonComplete) ~value:(E.var v))
+                | Declare (kind,id) ->
+                    let declares = (S.declare_variable ~kind id) :: declares in
+                    let lbody =
+                      compile_lambda { cxt with jmp_table; st = (Assign id) }
+                        body in
+                    ((Js_output.make declares) ++ lbody) ++
+                      (Js_output.make
+                         (compile_cases
+                            { cxt with jmp_table; st = (Assign id) }
+                            exit_expr handlers NonComplete))
+                | EffectCall |Assign _ ->
+                    let lbody = compile_lambda { cxt with jmp_table } body in
+                    ((Js_output.make declares) ++ lbody) ++
+                      (Js_output.make
+                         (compile_cases { cxt with jmp_table } exit_expr
+                            handlers NonComplete)))
+           | Lwhile (p,body) ->
+               (match compile_lambda
+                        { cxt with st = NeedValue; should_return = False } p
+                with
+                | { block; value = Some e } ->
+                    let e =
+                      match block with | [] -> e | _ -> E.of_block block e in
+                    let block =
+                      [S.while_ e
+                         (Js_output.to_block @@
+                            (compile_lambda
+                               {
+                                 cxt with
+                                 st = EffectCall;
+                                 should_return = False
+                               } body))] in
+                    (match (st, should_return) with
+                     | (Declare (_kind,x),_) ->
+                         Js_output.make (block @ [S.declare_unit x])
+                     | (Assign x,_) ->
+                         Js_output.make (block @ [S.assign_unit x])
+                     | (EffectCall ,True _) ->
+                         Js_output.make (block @ [S.return_unit ()])
+                           ~finished:True
+                     | (EffectCall ,_) -> Js_output.make block
+                     | (NeedValue ,_) ->
+                         Js_output.make block ~value:(E.unit ()))
+                | _ -> assert false)
+           | Lfor (id,start,finish,direction,body) ->
+               let block =
+                 match ((compile_lambda
+                           { cxt with st = NeedValue; should_return = False }
+                           start),
+                         (compile_lambda
+                            { cxt with st = NeedValue; should_return = False
+                            } finish))
+                 with
+                 | ({ block = b1; value = Some e1 },{ block = b2;
+                                                      value = Some e2 })
+                     ->
+                     (match (b1, b2) with
+                      | (_,[]) ->
+                          b1 @
+                            [S.for_ (Some e1) e2 id direction
+                               (Js_output.to_block @@
+                                  (compile_lambda
+                                     {
+                                       cxt with
+                                       should_return = False;
+                                       st = EffectCall
+                                     } body))]
+                      | (_,_) when Js_analyzer.no_side_effect_expression e1
+                          ->
+                          b1 @
+                            (b2 @
+                               [S.for_ (Some e1) e2 id direction
+                                  (Js_output.to_block @@
+                                     (compile_lambda
+                                        {
+                                          cxt with
+                                          should_return = False;
+                                          st = EffectCall
+                                        } body))])
+                      | (_,_) ->
+                          b1 @
+                            (((S.define ~kind:Variable id e1) :: b2) @
+                               [S.for_ None e2 id direction
+                                  (Js_output.to_block @@
+                                     (compile_lambda
+                                        {
+                                          cxt with
+                                          should_return = False;
+                                          st = EffectCall
+                                        } body))]))
+                 | _ -> assert false in
+               (match (st, should_return) with
+                | (EffectCall ,False ) -> Js_output.make block
+                | (EffectCall ,True _) ->
+                    Js_output.make (block @ [S.return_unit ()])
+                      ~finished:True
+                | ((Declare _|Assign _),True _) ->
+                    Js_output.make [S.unknown_lambda lam]
+                | (Declare (_kind,x),False ) ->
+                    Js_output.make (block @ [S.declare_unit x])
+                | (Assign x,False ) ->
+                    Js_output.make (block @ [S.assign_unit x])
+                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
+           | Lassign (id,lambda) ->
+               let block =
+                 match lambda with
+                 | Lprim (Poffsetint v,(Lvar id')::[]) when Ident.same id id'
+                     ->
+                     [S.exp
+                        (E.assign (E.var id)
+                           (E.int32_add (E.var id) (E.int v)))]
+                 | _ ->
+                     (match compile_lambda
+                              {
+                                cxt with
+                                st = NeedValue;
+                                should_return = False
+                              } lambda
+                      with
+                      | { block = b; value = Some v } -> b @ [S.assign id v]
+                      | _ -> assert false) in
+               (match (st, should_return) with
+                | (EffectCall ,False ) -> Js_output.make block
+                | (EffectCall ,True _) ->
+                    Js_output.make (block @ [S.return_unit ()])
+                      ~finished:True
+                | ((Declare _|Assign _),True _) ->
+                    Js_output.make [S.unknown_lambda lam]
+                | (Declare (_kind,x),False ) ->
+                    Js_output.make (block @ [S.declare_unit x])
+                | (Assign x,False ) ->
+                    Js_output.make (block @ [S.assign_unit x])
+                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
+           | Ltrywith (lam,id,catch) ->
+               let aux st =
+                 [S.try_
+                    (Js_output.to_block (compile_lambda { cxt with st } lam))
+                    ~with_:(id,
+                             (Js_output.to_block @@
+                                (compile_lambda { cxt with st } catch)))] in
+               (match st with
+                | NeedValue  ->
+                    let v = Ext_ident.gen_js () in
+                    Js_output.make ((S.declare_variable ~kind:Variable v) ::
+                      (aux (Assign v))) ~value:(E.var v)
+                | Declare (kind,id) ->
+                    Js_output.make ((S.declare_variable ~kind id) ::
+                      (aux (Assign id)))
+                | Assign _|EffectCall  -> Js_output.make (aux st))
+           | Lsend (meth_kind,met,obj,args,loc) ->
+               ((let (args_code,label::obj'::args) =
+                   ((met :: obj :: args) |>
+                      (List.map
+                         (fun (x : Lambda.lambda)  ->
+                            match x with
+                            | Lprim (Pgetglobal i,[]) ->
+                                ([],
+                                  (Lam_compile_global.get_exp (i, env, true)))
+                            | _ ->
+                                (match compile_lambda
+                                         {
+                                           cxt with
+                                           st = NeedValue;
+                                           should_return = False
+                                         } x
+                                 with
+                                 | { block = a; value = Some b } -> (a, b)
+                                 | _ -> assert false))))
+                     |> List.split in
+                 (match meth_kind with
+                  | Self  ->
+                      Js_output.handle_block_return st should_return lam
+                        (List.concat args_code)
+                        (E.call
+                           (Js_of_lam_array.ref_array
+                              (Js_of_lam_record.field obj' 0) label) (obj' ::
+                           args))
+                  | Cached |Public (None ) ->
+                      let get =
+                        E.runtime_ref Js_config.oo "caml_get_public_method" in
+                      let cache = !method_cache_id in
+                      let () = incr method_cache_id in
+                      Js_output.handle_block_return st should_return lam
+                        (List.concat args_code)
+                        (E.call (E.call get [obj'; label; E.int cache]) (obj'
+                           :: args))
+                  | Public (Some name) ->
+                      let set_prefix = "_set_" in
+                      let get_prefix = "_get_" in
+                      let set_prefix_len = String.length "_set_" in
+                      let get_prefix_len = String.length "_get_" in
+                      let is_getter s =
+                        if Ext_string.starts_with s get_prefix
+                        then
+                          Some
+                            (String.sub s get_prefix_len
+                               ((String.length s) - get_prefix_len))
+                        else None in
+                      let is_setter s =
+                        if Ext_string.starts_with s set_prefix
+                        then
+                          Some
+                            (String.sub s set_prefix_len
+                               ((String.length s) - set_prefix_len))
+                        else None in
+                      let js_call obj =
+                        match args with
+                        | [] ->
+                            (E.var_dot obj) @@
+                              ((match is_getter name with
+                                | Some v -> v
+                                | None  -> name))
+                        | y::ys ->
+                            (match is_setter name with
+                             | Some v -> E.assign (E.var_dot obj v) y
+                             | None  -> E.call (E.var_dot obj name) args) in
+                      (match obj with
+                       | Lprim (Pccall { prim_name;_},[]) ->
+                           (Js_output.handle_block_return st should_return
+                              lam (List.concat args_code))
+                             @@ (js_call (Ext_ident.create_js prim_name))
+                       | Lvar id when Ext_ident.is_js_object id ->
+                           (Js_output.handle_block_return st should_return
+                              lam (List.concat args_code))
+                             @@ (js_call id)
+                       | _ ->
+                           let cache = !method_cache_id in
+                           let () = incr method_cache_id in
+                           Js_output.handle_block_return st should_return lam
+                             (List.concat args_code)
+                             (E.public_method_call name obj' label cache args))))
+               [@warning "-8"])
+           | Levent (lam,_lam_event) -> compile_lambda cxt lam
+           | Lifused (_,lam) -> compile_lambda cxt lam : Js_output.t)
+      end 
+    module Lam_stats_util :
+      sig
+        [@@@ocaml.text " Utilities for lambda analysis "]
+        val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl -> unit
+        val pp_arities :
+          Format.formatter -> Lam_stats.function_arities -> unit
+        val get_arity :
+          Lam_stats.meta -> Lambda.lambda -> Lam_stats.function_arities
+      end =
+      struct
+        let pp = Format.fprintf
+        let pp_arities (fmt : Format.formatter)
+          (x : Lam_stats.function_arities) =
+          match x with
+          | NA  -> pp fmt "?"
+          | Determin (b,ls,tail) ->
+              (pp fmt "@[";
+               if not b then pp fmt "~";
+               pp fmt "[";
+               Format.pp_print_list
+                 ~pp_sep:(fun fmt  -> fun ()  -> pp fmt ",")
+                 (fun fmt  -> fun (x,_)  -> Format.pp_print_int fmt x) fmt ls;
+               if tail then pp fmt "@ *";
+               pp fmt "]@]")
+        let pp_arities_tbl (fmt : Format.formatter)
+          (arities_tbl : (Ident.t,Lam_stats.function_arities ref) Hashtbl.t)
+          =
+          Hashtbl.fold
+            (fun (i : Ident.t)  ->
+               fun (v : Lam_stats.function_arities ref)  ->
+                 fun _  ->
+                   pp Format.err_formatter "@[%s -> %a@]@." i.name pp_arities
+                     (!v)) arities_tbl ()
+        let pp_alias_tbl fmt (tbl : Lam_stats.alias_tbl) =
+          Hashtbl.iter
+            (fun k  ->
+               fun v  -> pp fmt "@[%a -> %a@]@." Ident.print k Ident.print v)
+            tbl
+        let merge (((n : int),params) as y) (x : Lam_stats.function_arities)
+          =
+          (match x with
+           | NA  -> Determin (false, [y], false)
+           | Determin (b,xs,tail) -> Determin (b, (y :: xs), tail) : 
+          Lam_stats.function_arities)
+        let rec get_arity (meta : Lam_stats.meta) (lam : Lambda.lambda) =
+          (match lam with
+           | Lconst _ -> Determin (true, [], false)
+           | Lvar v ->
+               (match Hashtbl.find meta.ident_tbl v with
+                | exception Not_found  -> (NA : Lam_stats.function_arities)
+                | Function { arity;_} -> arity
+                | _ -> (NA : Lam_stats.function_arities))
+           | Llet (_,_,_,l) -> get_arity meta l
+           | Lprim (Pfield n,(Lprim (Pgetglobal id,[]))::[]) ->
+               Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
+                 ~not_found:(fun _  -> assert false)
+                 ~found:(fun x  -> x.arity)
+           | Lprim (Pfield _,_) -> NA
+           | Lprim (Praise _,_) -> Determin (true, [], true)
+           | Lprim (Pccall _,_) -> Determin (false, [], false)
+           | Lprim _ -> Determin (true, [], false)
+           | Lletrec (_,body) -> get_arity meta body
+           | Lapply (app,args,_info) ->
+               let fn = get_arity meta app in
+               (match fn with
+                | NA  -> NA
+                | Determin (b,xs,tail) ->
+                    let rec take (xs : _ list) arg_length =
+                      match xs with
+                      | (x,y)::xs ->
+                          if arg_length = x
+                          then Lam_stats.Determin (b, xs, tail)
+                          else
+                            if arg_length > x
+                            then take xs (arg_length - x)
+                            else
+                              Determin
+                                (b,
+                                  (((x - arg_length),
+                                     (Ext_list.drop arg_length y)) :: xs),
+                                  tail)
+                      | [] ->
+                          if tail
+                          then Determin (b, [], tail)
+                          else
+                            if not b
+                            then NA
+                            else failwith (Lam_util.string_of_lambda lam) in
+                    take xs (List.length args))
+           | Lfunction (kind,params,l) ->
+               let n = List.length params in
+               merge (n, params) (get_arity meta l)
+           | Lswitch
+               (l,{ sw_failaction; sw_consts; sw_blocks; sw_numblocks = _;
+                    sw_numconsts = _ })
+               ->
+               all_lambdas meta
+                 (let rest =
+                    (sw_consts |> (List.map snd)) @
+                      (sw_blocks |> (List.map snd)) in
+                  match sw_failaction with
+                  | None  -> rest
+                  | Some x -> x :: rest)
+           | Lstringswitch (l,sw,d) ->
+               (match d with
+                | None  -> all_lambdas meta (List.map snd sw)
+                | Some v -> all_lambdas meta (v :: (List.map snd sw)))
+           | Lstaticraise _ -> NA
+           | Lstaticcatch (_,_,handler) -> get_arity meta handler
+           | Ltrywith (l1,_,l2) -> all_lambdas meta [l1; l2]
+           | Lifthenelse (l1,l2,l3) -> all_lambdas meta [l2; l3]
+           | Lsequence (_,l2) -> get_arity meta l2
+           | Lsend (u,m,o,ll,v) -> NA
+           | Levent (l,event) -> NA
+           | Lifused (v,l) -> NA
+           | Lwhile _|Lfor _|Lassign _ -> Determin (true, [], false) : 
+          Lam_stats.function_arities)
+        and all_lambdas meta (xs : Lambda.lambda list) =
+          match xs with
+          | y::ys ->
+              let arity = get_arity meta y in
+              List.fold_left
+                (fun exist  ->
+                   fun (v : Lambda.lambda)  ->
+                     match (exist : Lam_stats.function_arities) with
+                     | NA  -> NA
+                     | Determin (b,xs,tail) ->
+                         (match get_arity meta v with
+                          | NA  -> NA
+                          | Determin (u,ys,tail2) ->
+                              let rec aux (b,acc) xs ys =
+                                match (xs, ys) with
+                                | ([],[]) ->
+                                    (b, (List.rev acc), (tail && tail2))
+                                | ([],y::ys) when tail ->
+                                    aux (b, (y :: acc)) [] ys
+                                | (x::xs,[]) when tail2 ->
+                                    aux (b, (x :: acc)) [] xs
+                                | (x::xs,y::ys) when x = y ->
+                                    aux (b, (y :: acc)) xs ys
+                                | (_,_) -> (false, (List.rev acc), false) in
+                              let (b,acc,tail3) = aux ((u && b), []) xs ys in
+                              Determin (b, acc, tail3))) arity ys
+          | _ -> assert false
+      end 
+    module Lam_inline_util :
+      sig
+        [@@@ocaml.text " Utilities for lambda inlining "]
+        val maybe_functor : string -> bool
+        val should_be_functor : string -> Lambda.lambda -> bool
+      end =
+      struct
+        let maybe_functor (name : string) =
+          ((name.[0]) >= 'A') && ((name.[0]) <= 'Z')
+        let should_be_functor (name : string) lam =
+          (maybe_functor name) &&
+            ((function | Lambda.Lfunction _ -> true | _ -> false) lam)
+        let app_definitely_inlined (body : Lambda.lambda) =
+          match body with
+          | Lvar _|Lconst _|Lprim _|Lapply _ -> true
+          | Llet _|Lletrec _|Lstringswitch _|Lswitch _|Lstaticraise _
+            |Lfunction _|Lstaticcatch _|Ltrywith _|Lifthenelse _|Lsequence _
+            |Lwhile _|Lfor _|Lassign _|Lsend _|Levent _|Lifused _ -> false
+      end 
+    module Ext_option :
+      sig
+        [@@@ocaml.text " Utilities for [option] type "]
+        val bind : 'a option -> ('a -> 'b) -> 'b option
+      end =
+      struct
+        let bind v f = match v with | None  -> None | Some x -> Some (f x)
+      end 
+    module Lam_stats_export :
+      sig
+        val export_to_cmj :
+          Lam_stats.meta ->
+            Js_cmj_format.effect ->
+              Lam_module_ident.t list ->
+                Lambda.lambda Ident_map.t -> Js_cmj_format.cmj_table
+      end =
+      struct
+        let pp = Format.fprintf
+        let meaningless_names = ["*opt*"; "param"]
+        let rec dump_ident fmt (id : Ident.t)
+          (arity : Lam_stats.function_arities) =
+          pp fmt "@[<2>export var %s:@ %a@ ;@]" (Ext_ident.convert id.name)
+            dump_arity arity
+        and dump_arity fmt (arity : Lam_stats.function_arities) =
+          match arity with
+          | NA  -> pp fmt "any"
+          | Determin (_,[],_) -> pp fmt "any"
+          | Determin (_,(_,args)::xs,_) ->
+              pp fmt "@[(%a)@ =>@ any@]"
+                (Format.pp_print_list
+                   ~pp_sep:(fun fmt  ->
+                              fun _  ->
+                                Format.pp_print_string fmt ",";
+                                Format.pp_print_space fmt ())
+                   (fun fmt  ->
+                      fun ident  ->
+                        pp fmt "@[%s@ :@ any@]"
+                          (Ext_ident.convert @@ (Ident.name ident)))) args
+        let export_to_cmj (meta : Lam_stats.meta) maybe_pure external_ids
+          export_map =
+          (let values =
+             List.fold_left
+               (fun acc  ->
+                  fun (x : Ident.t)  ->
+                    let arity = Lam_stats_util.get_arity meta (Lvar x) in
+                    match Ident_map.find x export_map with
+                    | lambda ->
+                        if Lam_analysis.safe_to_inline lambda
+                        then
+                          let closed_lambda =
+                            if
+                              Lam_inline_util.should_be_functor x.name lambda
+                            then
+                              (if Lam_analysis.is_closed lambda
+                               then Some lambda
+                               else None)
+                            else
+                              (let lam_size = Lam_analysis.size lambda in
+                               let free_variables =
+                                 Lam_analysis.free_variables Ident_set.empty
+                                   Ident_map.empty lambda in
+                               if
+                                 (lam_size < Lam_analysis.small_inline_size)
+                                   && (Ident_map.is_empty free_variables)
+                               then
+                                 (Ext_log.dwarn __LOC__
+                                    "%s recorded for inlining @." x.name;
+                                  Some lambda)
+                               else None) in
+                          String_map.add x.name
+                            (let open Js_cmj_format in
+                               { arity; closed_lambda }) acc
+                        else
+                          String_map.add x.name
+                            (let open Js_cmj_format in
+                               { arity; closed_lambda = None }) acc
+                    | exception Not_found  ->
+                        String_map.add x.name
+                          (let open Js_cmj_format in
+                             { arity; closed_lambda = None }) acc)
+               String_map.empty meta.exports in
+           let rec dump fmt ids =
+             match ids with
+             | [] -> ()
+             | x::xs ->
+                 (dump_ident fmt x (Lam_stats_util.get_arity meta (Lvar x));
+                  Format.pp_print_space fmt ();
+                  dump fmt xs) in
+           let () =
+             if not @@ (Ext_string.is_empty meta.filename)
+             then
+               (Ext_pervasives.with_file_as_pp
+                  ((Ext_filename.chop_extension ~loc:__LOC__ meta.filename) ^
+                     ".d.ts"))
+                 @@ (fun fmt  -> pp fmt "@[<v>%a@]@." dump meta.exports) in
+           let pure =
+             match maybe_pure with
+             | None  ->
+                 Ext_option.bind
+                   (Ext_list.for_all_ret
+                      (fun (id : Lam_module_ident.t)  ->
+                         Lam_compile_env.query_and_add_if_not_exist id
+                           meta.env ~not_found:(fun _  -> false)
+                           ~found:(fun i  -> i.pure)) external_ids)
+                   (fun x  -> Lam_module_ident.name x)
+             | Some _ -> maybe_pure in
+           { values; pure } : Js_cmj_format.cmj_table)
+      end 
     module Lam_pass_remove_alias :
       sig
         [@@@ocaml.text " Keep track of the global module Aliases "]
@@ -8308,15 +8577,17 @@ include
                                   closed_lambda = Some (Lfunction
                                     (Curried ,params,body))
                                   } when
-                                  List.for_all
-                                    (fun (arg : Lambda.lambda)  ->
-                                       match arg with
-                                       | Lvar p ->
-                                           (try
-                                              (Hashtbl.find meta.ident_tbl p)
-                                                != Parameter
-                                            with | Not_found  -> true)
-                                       | _ -> true) args
+                                  (Ext_list.same_length params args) &&
+                                    (List.for_all
+                                       (fun (arg : Lambda.lambda)  ->
+                                          match arg with
+                                          | Lvar p ->
+                                              (try
+                                                 (Hashtbl.find meta.ident_tbl
+                                                    p)
+                                                   != Parameter
+                                               with | Not_found  -> true)
+                                          | _ -> true) args)
                                   ->
                                   simpl @@
                                     (Lam_beta_reduce.propogate_beta_reduce
@@ -8341,28 +8612,26 @@ include
                           else
                             if lam_size < Lam_analysis.small_inline_size
                             then
-                              (let param_fresh_map =
-                                 Lam_analysis.param_map_of_list params in
-                               let param_map =
-                                 Lam_analysis.free_variables
-                                   meta.export_idents param_fresh_map body in
-                               let old_count = List.length params in
-                               let new_count = Ident_map.cardinal param_map in
-                               if
-                                 (not (Ident_set.mem v meta.export_idents))
-                                   || (old_count = new_count)
-                               then
-                                 (if rec_flag = Rec
-                                  then
-                                    Lam_beta_reduce.propogate_beta_reduce_with_map
-                                      meta param_map params body args
-                                  else
-                                    simpl
-                                      (Lam_beta_reduce.propogate_beta_reduce_with_map
-                                         meta param_map params body args))
-                               else
-                                 Lapply
-                                   ((simpl l1), (List.map simpl args), info))
+                              (let param_map =
+                                 Lam_analysis.is_closed_with_map
+                                   meta.export_idents params body in
+                               let is_export_id =
+                                 Ident_set.mem v meta.export_idents in
+                               match (is_export_id, param_map) with
+                               | (false ,(_,param_map))
+                                 |(true ,(true ,param_map)) ->
+                                   if rec_flag = Rec
+                                   then
+                                     Lam_beta_reduce.propogate_beta_reduce_with_map
+                                       meta param_map params body args
+                                   else
+                                     simpl
+                                       (Lam_beta_reduce.propogate_beta_reduce_with_map
+                                          meta param_map params body args)
+                               | _ ->
+                                   Lapply
+                                     ((simpl l1), (List.map simpl args),
+                                       info))
                             else
                               Lapply
                                 ((simpl l1), (List.map simpl args), info))
@@ -9188,8 +9457,8 @@ include
         val string_of_module_id : Lam_module_ident.t -> string
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         type module_id = Lam_module_ident.t
         open Js_output.Ops
         let string_of_module_id (x : module_id) =
@@ -9420,6 +9689,7 @@ include
                   property = _x_i2;
                   ident_info = _x_i3
                 }
+            method tag_info : tag_info -> tag_info= o#unknown
             method statement_desc : statement_desc -> statement_desc=
               function
               | Block _x -> let _x = o#block _x in Block _x
@@ -9483,7 +9753,7 @@ include
                 let _x = o#expression _x in { return_value = _x }
             method required_modules : required_modules -> required_modules=
               o#unknown
-            method property_name : property_name -> property_name= o#string
+            method property_name : property_name -> property_name= o#unknown
             method property_map : property_map -> property_map=
               o#list
                 (fun o  ->
@@ -9508,6 +9778,7 @@ include
                 }
             method number : number -> number= o#unknown
             method mutable_flag : mutable_flag -> mutable_flag= o#unknown
+            method length_object : length_object -> length_object= o#unknown
             method label : label -> label= o#string
             method kind : kind -> kind= o#unknown
             method int_op : int_op -> int_op= o#unknown
@@ -9526,14 +9797,9 @@ include
                   let _x = o#string _x in
                   let _x_i1 = o#list (fun o  -> o#expression) _x_i1 in
                   Math (_x, _x_i1)
-              | Array_length _x ->
-                  let _x = o#expression _x in Array_length _x
-              | String_length _x ->
-                  let _x = o#expression _x in String_length _x
-              | Bytes_length _x ->
-                  let _x = o#expression _x in Bytes_length _x
-              | Function_length _x ->
-                  let _x = o#expression _x in Function_length _x
+              | Length (_x,_x_i1) ->
+                  let _x = o#expression _x in
+                  let _x_i1 = o#length_object _x_i1 in Length (_x, _x_i1)
               | Char_of_int _x -> let _x = o#expression _x in Char_of_int _x
               | Char_to_int _x -> let _x = o#expression _x in Char_to_int _x
               | Array_of_size _x ->
@@ -9542,7 +9808,6 @@ include
               | Array_append (_x,_x_i1) ->
                   let _x = o#expression _x in
                   let _x_i1 = o#expression _x_i1 in Array_append (_x, _x_i1)
-              | Tag_ml_obj _x -> let _x = o#expression _x in Tag_ml_obj _x
               | String_append (_x,_x_i1) ->
                   let _x = o#expression _x in
                   let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
@@ -9605,6 +9870,26 @@ include
               | Array (_x,_x_i1) ->
                   let _x = o#list (fun o  -> o#expression) _x in
                   let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
+              | Caml_block (_x,_x_i1,_x_i2,_x_i3) ->
+                  let _x = o#list (fun o  -> o#expression) _x in
+                  let _x_i1 = o#mutable_flag _x_i1 in
+                  let _x_i2 = o#expression _x_i2 in
+                  let _x_i3 = o#tag_info _x_i3 in
+                  Caml_block (_x, _x_i1, _x_i2, _x_i3)
+              | Caml_uninitialized_obj (_x,_x_i1) ->
+                  let _x = o#expression _x in
+                  let _x_i1 = o#expression _x_i1 in
+                  Caml_uninitialized_obj (_x, _x_i1)
+              | Caml_block_tag _x ->
+                  let _x = o#expression _x in Caml_block_tag _x
+              | Caml_block_set_tag (_x,_x_i1) ->
+                  let _x = o#expression _x in
+                  let _x_i1 = o#expression _x_i1 in
+                  Caml_block_set_tag (_x, _x_i1)
+              | Caml_block_set_length (_x,_x_i1) ->
+                  let _x = o#expression _x in
+                  let _x_i1 = o#expression _x_i1 in
+                  Caml_block_set_length (_x, _x_i1)
               | Number _x -> let _x = o#number _x in Number _x
               | Object _x -> let _x = o#property_map _x in Object _x
             method expression : expression -> expression=
@@ -9645,8 +9930,8 @@ include
         val program : J.program -> J.program
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         class count var =
           object (self : 'self)
             val mutable appears = 0
@@ -9727,7 +10012,7 @@ include
                     | None  -> false
                     | Some x ->
                         (ignore (self#expression x);
-                         Js_helper.no_side_effect x) in
+                         Js_analyzer.no_side_effect_expression x) in
                   (self#scan pure ident ident_info; self)
           end
         let mark_dead_code js =
@@ -9755,29 +10040,32 @@ include
                   ({ ident; property = (Strict |StrictOpt |Alias );
                      value = Some
                        ({
-                          expression_desc = Array
-                            ((_::_::_ as ls),Immutable )
-                          } as array)
+                          expression_desc = Caml_block
+                            ((_::_::_ as ls),Immutable ,tag,tag_info)
+                          } as block)
                      } as variable)
                   ->
-                  let bindings = ref [] in
-                  let e =
-                    List.mapi
-                      (fun i  ->
+                  let (_,e,bindings) =
+                    List.fold_left
+                      (fun (i,e,acc)  ->
                          fun (x : J.expression)  ->
                            match x.expression_desc with
-                           | J.Var _|Number _|Str _ -> x
+                           | J.Var _|Number _|Str _ ->
+                               ((i + 1), (x :: e), acc)
                            | _ ->
                                let v' = self#expression x in
                                let match_id =
                                  Ext_ident.create
                                    (Printf.sprintf "%s_%03d" ident.name i) in
-                               (bindings := ((match_id, v') :: (!bindings));
-                                E.var match_id)) ls in
+                               ((i + 1), ((E.var match_id) :: e),
+                                 ((match_id, v') :: acc))) (0, [], []) ls in
                   let e =
-                    { array with expression_desc = (Array (e, Immutable)) } in
+                    {
+                      block with
+                      expression_desc =
+                        (Caml_block ((List.rev e), Immutable, tag, tag_info))
+                    } in
                   let () = self#add_substitue ident e in
-                  let bindings = !bindings in
                   let original_statement =
                     {
                       v with
@@ -9787,11 +10075,10 @@ include
                   (match bindings with
                    | [] -> original_statement
                    | _ ->
-                       (self#add_substitue ident e;
-                        S.block @@
-                          (Ext_list.rev_map_acc [original_statement]
-                             (fun (id,v)  -> S.define ~kind:Strict id v)
-                             bindings)))
+                       S.block @@
+                         (Ext_list.rev_map_acc [original_statement]
+                            (fun (id,v)  -> S.define ~kind:Strict id v)
+                            bindings))
               | _ -> super#statement v
             method! expression x =
               match x.expression_desc with
@@ -9803,7 +10090,7 @@ include
                                                        })
                   ->
                   (match Hashtbl.find self#get_substitution id with
-                   | { expression_desc = Array (ls,Immutable ) } ->
+                   | { expression_desc = Caml_block (ls,Immutable ,_,_) } ->
                        (match List.nth ls i with
                         | { expression_desc = (J.Var _|Number _|Str _) } as x
                             -> x
@@ -9827,8 +10114,8 @@ include
         val program : J.program -> J.program
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         let flatten_map =
           object (self)
             inherit  Js_map.map as super
@@ -9914,8 +10201,8 @@ include
         val inline_and_shake : J.program -> J.program
       end =
       struct
-        module S = Js_helper.Stmt
-        module E = Js_helper.Exp
+        module S = Js_stmt_make
+        module E = Js_exp_make
         let count_collects () =
           object (self)
             inherit  Js_fold.fold as super
@@ -9946,7 +10233,8 @@ include
                             let pure =
                               match v.value with
                               | None  -> false
-                              | Some x -> Js_helper.no_side_effect x in
+                              | Some x ->
+                                  Js_analyzer.no_side_effect_expression x in
                             Js_op_util.update_used_stats v.ident_info
                               (if pure then Dead_pure else Dead_non_pure)
                         | num ->
@@ -9955,7 +10243,8 @@ include
                               let pure =
                                 match v.value with
                                 | None  -> false
-                                | Some x -> Js_helper.no_side_effect x in
+                                | Some x ->
+                                    Js_analyzer.no_side_effect_expression x in
                               Js_op_util.update_used_stats v.ident_info
                                 (if pure then Once_pure else Used)))
                 defined_idents;
@@ -10146,8 +10435,8 @@ include
           Env.t -> Types.signature -> string -> Lambda.lambda -> unit
       end =
       struct
-        module E = Js_helper.Exp
-        module S = Js_helper.Stmt
+        module E = Js_exp_make
+        module S = Js_stmt_make
         open Js_output.Ops
         exception Not_a_module
         let compile_group
@@ -10277,10 +10566,10 @@ include
             let lam = Lam_pass_remove_alias.simplify_alias meta lam in
             let lam = Lam_group.deep_flatten lam in
             let () = Lam_pass_collect.collect_helper meta lam in
-            let () = ignore @@ (_d lam) in
             let lam =
-              (lam |> (Lam_pass_alpha_conversion.alpha_conversion meta)) |>
-                Lam_pass_exits.simplify_exits in
+              ((lam |> _d) |>
+                 (Lam_pass_alpha_conversion.alpha_conversion meta))
+                |> Lam_pass_exits.simplify_exits in
             let () = Lam_pass_collect.collect_helper meta lam in
             (((((lam |> _d) |> (Lam_pass_remove_alias.simplify_alias meta))
                  |> _d)
@@ -10291,30 +10580,46 @@ include
           | Lprim (Psetglobal id,biglambda::[]) ->
               (match Lam_group.flatten [] biglambda with
                | (Lprim (Pmakeblock (_,_,_),lambda_exports),rest) ->
-                   let (coercion_groups,new_exports) =
+                   let (coercion_groups,new_exports,new_export_set,export_map)
+                     =
                      if non_export
-                     then ([], [])
+                     then ([], [], Ident_set.empty, Ident_map.empty)
                      else
                        List.fold_right2
                          (fun eid  ->
                             fun lam  ->
-                              fun (coercions,new_exports)  ->
+                              fun
+                                (coercions,new_exports,new_export_set,export_map)
+                                 ->
                                 match (lam : Lambda.lambda) with
                                 | Lvar id when
                                     (Ident.name id) = (Ident.name eid) ->
-                                    (coercions, (id :: new_exports))
+                                    (coercions, (id :: new_exports),
+                                      (Ident_set.add id new_export_set),
+                                      export_map)
                                 | _ ->
                                     (((Lam_group.Single (Strict, eid, lam))
-                                      :: coercions), (eid :: new_exports)))
-                         meta.exports lambda_exports ([], []) in
+                                      :: coercions), (eid :: new_exports),
+                                      (Ident_set.add eid new_export_set),
+                                      (Ident_map.add eid lam export_map)))
+                         meta.exports lambda_exports
+                         ([], [], Ident_set.empty, Ident_map.empty) in
                    let meta =
                      {
                        meta with
-                       export_idents =
-                         (Lam_util.ident_set_of_list new_exports);
+                       export_idents = new_export_set;
                        exports = new_exports
                      } in
-                   let rest = List.rev_append rest coercion_groups in
+                   let (export_map,rest) =
+                     List.fold_left
+                       (fun (export_map,acc)  ->
+                          fun x  ->
+                            ((match (x : Lam_group.t) with
+                              | Single (_,id,lam) when
+                                  Ident_set.mem id new_export_set ->
+                                  Ident_map.add id lam export_map
+                              | _ -> export_map), (x :: acc)))
+                       (export_map, coercion_groups) rest in
                    let () =
                      if not @@ (Ext_string.is_empty filename)
                      then
@@ -10384,9 +10689,11 @@ include
                                     (Js_program_loader.string_of_module_id id)))
                                external_module_ids in
                            let v =
-                             Lam_stats_util.export_to_cmj meta maybe_pure
+                             Lam_stats_export.export_to_cmj meta maybe_pure
                                external_module_ids
-                               (if non_export then [] else lambda_exports) in
+                               (if non_export
+                                then Ident_map.empty
+                                else export_map) in
                            if not @@ (Ext_string.is_empty filename)
                            then
                              Js_cmj_format.to_file
@@ -10401,7 +10708,7 @@ include
         let lambda_as_module env (sigs : Types.signature) (filename : string)
           (lam : Lambda.lambda) =
           Lam_current_unit.set_file filename;
-          Lam_current_unit.iset_debug_file "format_regression.ml";
+          Lam_current_unit.iset_debug_file "rec_module_test.ml";
           Ext_pervasives.with_file_as_chan
             ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^ ".js")
             (fun chan  ->
@@ -10438,7 +10745,7 @@ include
             (fun x  -> Ext_log.err __LOC__ "@[%a@]@." Ident.print x) set
           [@@ocaml.text " Utilities for [ident] type "]
       end
-    module Lam_runtime =
+    module Lam_runtime : sig  end =
       struct
         [@@@ocaml.text " Pre-defined runtime function name "]
         let builtin_modules =
@@ -10448,7 +10755,7 @@ include
           ("caml_sys", true);
           ("caml_bigarray", true);
           ("caml_hash", true);
-          ("caml_obj_runtime", true);
+          ("caml_obj", true);
           ("caml_c_ffi", true);
           ("caml_int64", true);
           ("caml_polyfill", true);
@@ -10463,7 +10770,7 @@ include
           ("caml_marshal", true);
           ("caml_string", true)][@@ocaml.text
                                   " Pre-defined runtime function name "]
-      end
+      end 
     module Js_implementation :
       sig
         [@@@ocaml.text " High level compilation module "]
