@@ -22,7 +22,7 @@ module E = Js_exp_make
 
 let make ?comment (args : J.expression list) =
   E.make_block 
-    ?comment (E.int 0)
+    ?comment E.zero_int_literal
     NA (* TODO: it should be Module*) args Immutable 
 
 let is_empty_shape (shape : J.expression) =

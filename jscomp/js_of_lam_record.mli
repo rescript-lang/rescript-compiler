@@ -22,4 +22,4 @@
 
 val make : J.mutable_flag -> (string * J.expression) list -> J.expression
 
-val field : J.expression -> int ->J.expression
+val field : J.expression -> J.jsint ->J.expression

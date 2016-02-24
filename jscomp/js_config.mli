@@ -56,3 +56,5 @@ val curry : string
 
 val internalMod : string
 
+val bigarray : string
+val unix : string

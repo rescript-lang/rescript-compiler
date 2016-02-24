@@ -26,7 +26,7 @@ let return ?comment e : t =
   {statement_desc = Return {return_value = e; } ; comment}
 
 let return_unit ?comment () : t =              
-  return ?comment  (E.unit ())
+  return ?comment  E.unit 
 
 let break ?comment () : t = 
   {comment ; statement_desc = Break }
@@ -83,7 +83,7 @@ let int_switch ?comment   ?declaration ?default (e : J.expression)  clauses : t 
   match e.expression_desc with 
   | Number (Int {i; _}) -> 
     let continuation =  
-      begin match List.find (fun (x : int J.case_clause) -> x.case = i) clauses
+      begin match List.find (fun (x : _ J.case_clause) -> x.case = (Int32.to_int i)) clauses
         with 
         | case -> fst case.body
         | exception Not_found -> 
@@ -214,7 +214,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       *)
       aux ?comment e ys xs (y::acc)
 
-    |  Number ( Int { i = 0; _}) , _,  _
+    |  Number ( Int { i = 0l; _}) , _,  _
       ->  
       begin match else_ with 
         | [] -> acc 
@@ -223,19 +223,19 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     |  (Number _ , _, _
        | (Bin (Ge, 
                ({expression_desc = Length _;
-                 _}), {expression_desc = Number (Int { i = 0; _})})), _ , _)
+                 _}), {expression_desc = Number (Int { i = 0l; _})})), _ , _)
       (* TODO: always 
           turn [Le] -> into [Ge]
       *)
       -> block then_ :: acc 
-    | Bin (Bor , a, {expression_desc = Number (Int { i = 0 ; _})}), _, _ 
-    | Bin (Bor , {expression_desc = Number (Int { i = 0 ; _})}, a), _, _ 
+    | Bin (Bor , a, {expression_desc = Number (Int { i = 0l ; _})}), _, _ 
+    | Bin (Bor , {expression_desc = Number (Int { i = 0l ; _})}, a), _, _ 
       -> 
       aux ?comment a  then_ else_ acc
 
     | (
-      (Bin (((EqEqEq ), {expression_desc = Number (Int {i = 0; _}); _},e)) |
-       Bin ((EqEqEq ), e,{expression_desc = Number (Int {i = 0; _});_}))
+      (Bin (((EqEqEq ), {expression_desc = Number (Int {i = 0l; _}); _},e)) |
+       Bin ((EqEqEq ), e,{expression_desc = Number (Int {i = 0l; _});_}))
     ),  _,  else_ 
       (* TODO: optimize in general of preciate information based on type system 
           like: [if_], [econd]
@@ -252,7 +252,7 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
     | ((Bin (Gt, 
              ({expression_desc = 
                  Length _;
-               _} as e ), {expression_desc = Number (Int { i = 0; _})}))
+               _} as e ), {expression_desc = Number (Int { i = 0l; _})}))
 
       | Int_of_boolean e), _ , _
       ->
@@ -285,19 +285,19 @@ let alias_variable ?comment  ?exp (v:Ident.t)  : t=
 
 let assign ?comment  id e : t = 
   {
-    statement_desc = J.Exp ( (E.bin Eq (E.var id) e)) ;
+    statement_desc = J.Exp ( E.assign (E.var id) e ) ;
     comment
   }
 let assign_unit ?comment  id :  t = 
   {
-    statement_desc = J.Exp(E.bin Eq (E.var id) (E.unit ()));
+    statement_desc = J.Exp( E.assign (E.var id) E.unit);
     comment
   }
 let declare_unit ?comment  id :  t = 
   {
     statement_desc = 
       J.Variable { ident =  id; 
-                   value = Some (E.unit ()) ;
+                   value = Some E.unit;
                    property = Variable;
                    ident_info = {used_stats = NA}
                  };

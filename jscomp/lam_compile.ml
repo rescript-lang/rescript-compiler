@@ -172,15 +172,15 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
            | {name = "Pervasives"; _}, "^", [ e0 ; e1] ->  
              E.string_append e0 e1 
            | {name = "Pervasives"; _}, "print_endline", ([ _ ] as args) ->  
-             E.seq (E.dump Log args) (E.unit ())
+             E.seq (E.dump Log args) E.unit
            | {name = "Pervasives"; _}, "prerr_endline", ([ _ ] as args) ->  
-             E.seq (E.dump Error args) (E.unit ())
+             E.seq (E.dump Error args) E.unit
            | {name = "CamlinternalMod"; _}, "update_mod" ,
              [  shape  ;
                 _module ; 
                 _ ] when Js_of_lam_module.is_empty_shape shape
              ->
-             E.unit ()
+             E.unit
            | {name = "CamlinternalMod"; _}, "init_mod" ,
              [ 
                 _ ;
@@ -424,7 +424,7 @@ and compile_general_cases :
       in
       [switch ?default ?declaration v body] 
 
-and compile_cases cxt = compile_general_cases E.int E.int_equal cxt 
+and compile_cases cxt = compile_general_cases (fun x -> E.small_int  x) E.int_equal cxt 
     (fun  ?default ?declaration e clauses    -> S.int_switch ?default  ?declaration e clauses)
 
 and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt 
@@ -940,7 +940,7 @@ and
               ) largs (args : Ident.t list)) 
           in
           args_code ++ (* Declared in [Lstaticraise ]*)
-          Js_output.make [S.assign exit_id (E.int order_id)]
+          Js_output.make [S.assign exit_id (E.small_int  order_id)]
             ~value:E.undefined
         | exception Not_found ->
           Js_output.make [S.unknown_lambda ~comment:"error" lam]
@@ -996,7 +996,7 @@ and
         *)
       let declares = 
         S.define ~kind:Variable exit_id
-          (E.int 0) :: 
+          E.zero_int_literal :: 
         (* we should always make it zero here, since [zero] is reserved in our mapping*)
         List.map (fun x -> S.declare_variable ~kind:Variable x ) bindings in
 
@@ -1073,7 +1073,7 @@ and
            | EffectCall, True _  -> 
              Js_output.make (block @ [S.return_unit ()]) ~finished:True
            | EffectCall, _ -> Js_output.make block
-           | NeedValue, _ -> Js_output.make block ~value:(E.unit ()) end
+           | NeedValue, _ -> Js_output.make block ~value:E.unit end
        | _ -> assert false )
 
     | Lfor (id,start,finish,direction,body) -> 
@@ -1168,7 +1168,7 @@ and
         | Assign x, False  -> Js_output.make (block @ [S.assign_unit x ])
         | NeedValue, _ 
           ->  
-          Js_output.make block ~value:(E.unit ())
+          Js_output.make block ~value:E.unit
           (* TODO: fixme, here it's ok*)
       end
     | Lassign(id,lambda) -> 
@@ -1176,7 +1176,7 @@ and
         match lambda with
         | Lprim(Poffsetint  v, [Lvar id']) when Ident.same id id' ->
           [ S.exp (E.assign (E.var id) 
-                     (E.int32_add (E.var id) (E.int v)))
+                     (E.unchecked_int32_add (E.var id) (E.small_int  v)))
           ]
         | _ ->
           begin 
@@ -1199,7 +1199,7 @@ and
           Js_output.make (block @ [ S.declare_unit x ])
         | Assign x, False  -> Js_output.make (block @ [S.assign_unit x ])
         | NeedValue, _ -> 
-          Js_output.make block ~value:(E.unit ())
+          Js_output.make block ~value:E.unit
       end
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (* 
@@ -1310,9 +1310,9 @@ and
             st should_return
             lam 
             (List.concat args_code)
-            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field obj' 0) label )
+            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field obj' 0l) label )
                (obj' :: args)) 
-        (* [E.int 1] is because we use array, 
+        (* [E.small_int 1] is because we use array, 
             when we change the runtime represenation, it needs to be adapted 
         *)
 
@@ -1326,7 +1326,9 @@ and
             end in
           (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
           Js_output.handle_block_return st should_return lam (List.concat args_code)
-            (E.call (E.call get [obj'; label; E.int cache]) (obj'::args)) (* avoid duplicated compuattion *)
+            (E.call (E.call get [obj'; label; E.small_int cache]) (obj'::args)) (* avoid duplicated compuattion *)
+
+
         | Public (Some name) -> 
           let cont =
             Js_output.handle_block_return st should_return lam (List.concat args_code) in           
@@ -1352,12 +1354,12 @@ and
                   let i = Ext_ident.create "i" in
                   let v = Ext_ident.create "v" in 
                   E.fun_ [i; v ]
-                    S.[return (E.seq (Js_array.set_array obj' (E.var i) (E.var v)) (E.unit ())) ]
+                    S.[return (E.seq (Js_array.set_array obj' (E.var i) (E.var v)) E.unit) ]
                 | [ i ]
                   -> 
                   let v = Ext_ident.create "v" in 
                   E.fun_ [v]
-                    S.[return (E.seq (Js_array.set_array obj' i (E.var v))  (E.unit ()))]
+                    S.[return (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
                 | [x; y] -> 
                   Js_array.set_array obj' x y 
                 |  x :: y:: rest  ->
@@ -1431,7 +1433,8 @@ and
                 incr method_cache_id ;
               end in
               (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
-              cont (E.public_method_call name obj' label cache args )
+
+              cont (E.public_method_call name obj' label (Int32.of_int cache) args )
                 (* avoid duplicated compuattion *)
           end
       end

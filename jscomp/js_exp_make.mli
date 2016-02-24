@@ -71,7 +71,7 @@ val external_var_dot : ?comment:string -> Ident.t -> string -> string -> t
 val ml_var : ?comment:string -> Ident.t -> t
 
 val runtime_call : ?comment:string -> string -> string -> t list -> t
-val public_method_call : string -> t -> t -> int -> t list -> t
+val public_method_call : string -> t -> t -> Int32.t -> t list -> t
 val runtime_ref : string -> string -> t
 
 val str : ?pure:bool -> ?comment:string -> string -> t 
@@ -81,11 +81,15 @@ val fun_ : ?comment:string ->
 
 val econd : ?comment:string -> t -> t -> t -> t
 
-val int : ?comment:string -> ?c:char ->  int -> t 
-
+val int : ?comment:string -> ?c:char ->  Int32.t -> t 
+val small_int : int -> t
 val float : ?comment:string -> string -> t
 
+(* TODO: we can do hash consing for small integers *)
+val zero_int_literal : t
 val zero_float_lit : t 
+val obj_int_tag_literal : t
+
 (** [is_out e range] is equivalent to [e > range or e <0]
 
 *)
@@ -115,14 +119,15 @@ val string_append : binary_op
    we can not tag [js] object, since it can be frozen 
 *)
 
-val tag_ml_obj : unary_op
+
 
 val var_dot : ?comment:string -> Ident.t -> string -> t
 val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t 
 val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t
 val js_global_dot : ?comment:string -> string -> string -> t
 
-val index : ?comment:string -> t -> int -> t
+val index : ?comment:string -> t -> Int32.t -> t
+
 
 val assign :  binary_op
 
@@ -138,9 +143,12 @@ val typeof : unary_op
 val to_int32 : unary_op
 val to_uint32 : unary_op
 
+val unchecked_int32_add : binary_op
 val int32_add : binary_op
+val unchecked_int32_minus : binary_op
 val int32_minus : binary_op
 val int32_mul : binary_op
+val unchecked_int32_mul : binary_op
 val int32_div : binary_op
 val int32_lsl : binary_op
 val int32_lsr : binary_op
@@ -161,7 +169,7 @@ val int_comp : Lambda.comparison -> binary_op
 val string_comp : Js_op.binop -> binary_op
 val float_comp :  Lambda.comparison -> binary_op
 
-val bin : ?comment:string -> J.binop -> t -> t -> t
+
 
 val not : t -> t
 
@@ -198,9 +206,9 @@ val false_ : t
 
 val bool : bool -> t
 
-val unknown_lambda : ?comment:string -> Lambda.lambda -> t
 
-val unit :  unit -> t
+
+val unit :   t
 (** [unit] in ocaml will be compiled into [0]  in js *)
 
 val js_var : ?comment:string -> string -> t
@@ -216,9 +224,9 @@ val inc : unary_op
 
 val dec : unary_op
 
-val prefix_inc : ?comment:string -> J.vident -> t
+val unchecked_prefix_inc : ?comment:string -> J.vident -> t
 
-val prefix_dec : ?comment:string -> J.vident -> t
+
 
 
 

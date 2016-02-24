@@ -26,7 +26,7 @@ val make_block :
   Js_op.mutable_flag -> Lambda.tag_info ->
   J.expression -> J.expression list -> J.expression
 
-val field : J.expression -> int -> J.expression
+val field : J.expression -> J.jsint -> J.expression
 
-val set_field : J.expression -> int -> J.expression -> J.expression
+val set_field : J.expression -> J.jsint -> J.expression -> J.expression
 

@@ -2,6 +2,7 @@
   "devDependencies": {
     "babel": "^6.3.13",
     "babel-cli": "^6.3.17",
+    "benchmark": "^2.1.0",
     "karma": "^0.13.9",
     "karma-jasmine-html-reporter": "^0.1.8",
     "lodash": "^3.10.1",

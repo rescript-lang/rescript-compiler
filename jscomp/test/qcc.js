@@ -434,7 +434,7 @@ function get32(l) {
 }
 
 function patch(rel, loc, n) {
-  if (n >= 4294967296) {
+  if (n >= 0) {
     throw [
           Caml_builtin_exceptions.Assert_failure,
           [
@@ -1897,7 +1897,7 @@ function elfgen(outf) {
   var main = Caml_curry.app1(addsym, "main");
   var gmain = globs[main];
   out(1217084452);
-  out(311610844168);
+  out(-1921768440);
   out(18616);
   le(64, gmain[0]);
   globs[main] = /* record */[

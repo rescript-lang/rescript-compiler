@@ -32,7 +32,7 @@ let make_block mutable_flag (tag_info : Lambda.tag_info) tag args  =
   | _ , _ -> E.make_block tag tag_info args mutable_flag
   (* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
   (*     E.arr Immutable *)
-  (*       (E.int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
+  (*       (E.small_int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
   (*        :: args) *)
   (* | _, _  ->  *)
   (*     E.arr mutable_flag *)

@@ -56,7 +56,7 @@ and required_modules = Js_op.required_modules
     currently we always use quote
  *)
 and property_name =  Js_op.property_name
-
+and jsint = Js_op.jsint
 and ident = Ident.t 
 
 and vident = 

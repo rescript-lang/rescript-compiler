@@ -82,7 +82,7 @@ module B = struct
 
   let const_char (i : char) = 
     E.int  ~comment:("\"" ^ Ext_string.escaped (String.make 1 i) ^ "\"") 
-      ~c:i (Char.code i)
+      ~c:i (Int32.of_int @@ Char.code i)
 
   let caml_char_of_int ?comment (v : J.expression)  =  v
 

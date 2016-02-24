@@ -28,7 +28,7 @@ module E = Js_exp_make
 let decorate_side_effect ({st; should_return;_} : Lam_compile_defs.cxt) e : E.t = 
   match st, should_return with 
   | _, True _ 
-  | (Assign _ | Declare _ | NeedValue), _  -> E.seq e (E.unit ())
+  | (Assign _ | Declare _ | NeedValue), _  -> E.seq e E.unit
   | EffectCall, False -> e 
   (* NeedValue should return a meaningful expression*)
 
@@ -40,16 +40,36 @@ let translate
   | Pmakeblock(tag, tag_info, mutable_flag ) ->  (* RUNTIME *)
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
-      tag_info (E.int tag) args 
+      tag_info (E.small_int tag) args 
   | Pfield i -> 
     begin match args with 
-      | [ e ]  -> Js_of_lam_block.field e i (* Invariant depends on runtime *)
+      | [ e ]  -> Js_of_lam_block.field e (Int32.of_int i) (* Invariant depends on runtime *)
       | _ -> assert false
     end
-  | (Pnegint | Pnegbint _ | Pnegfloat) ->
+  | Pnegbint (Pnativeint | Pint32 ) 
+    ->
     begin match args with
-      | [ e ] -> E.int32_minus (E.int 0)  e 
-      | _ -> assert false
+    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
+    end
+  | Pnegint
+    -> 
+    begin match args with
+    | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
+    end
+
+  | Pnegfloat 
+    -> 
+    begin match args with 
+    | [ e ] -> E.float_minus (E.zero_float_lit) e 
+    | _ -> assert false
+    end
+  | Pnegbint Pint64
+    -> (* TODO: fixme *)
+    begin match args with
+    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
     end
   | Pnot ->
     begin match args with
@@ -58,23 +78,38 @@ let translate
     end
   | Poffsetint n ->
     begin match args with
-      | [e] ->  E.int32_add  e (E.int n) 
+      | [e] ->  E.unchecked_int32_add  e (E.small_int  n)
       | _ -> assert false
     end
   | Poffsetref n ->
     begin match args with
       | [e] -> 
-        let v = (Js_of_lam_block.field e 0) in
-        E.assign  v (E.int32_add v (E.int n))
+        let v = (Js_of_lam_block.field e 0l) in
+        E.assign  v (E.unchecked_int32_add v (E.small_int  n))
       | _ -> assert false
     end
-  | Paddint | Paddbint _
+  | Paddint 
+    -> 
+      begin match args with 
+      | [e1; e2] 
+        -> E.unchecked_int32_add e1 e2
+      | _ -> assert false 
+      end
+  | Paddbint (Pnativeint | Pint32)
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_add  e1  e2
       | _ -> assert false
     end
+  | Paddbint (Pint64)
+    ->  (* TODO: fix me *)
+      begin match args with
+      | [e1;e2] ->
+        E.int32_add  e1  e2
+      | _ -> assert false
+    end
+
  | Paddfloat
      -> 
     begin match args with
@@ -82,12 +117,27 @@ let translate
         E.float_add  e1  e2
       | _ -> assert false
     end
-  | Psubint | Psubbint _ 
+  | Psubint 
+    -> 
+    begin match args with 
+    | [e1; e2] ->     
+      E.unchecked_int32_minus e1 e2 
+    | _ -> assert false
+    end
+  | Psubbint (Pnativeint | Pint32) 
     -> 
     begin match args with
       | [e1;e2] ->
           E.int32_minus   e1  e2
-      | _ -> assert false end
+      | _ -> assert false 
+    end
+  | Psubbint Pint64
+    -> 
+    begin match args with  (* TODO: fix me *)
+    | [e1; e2] 
+      ->  E.int32_minus e1  e2
+    | _ -> assert false
+    end
   | Psubfloat
     ->
       begin match args with
@@ -196,7 +246,7 @@ let translate
   | Pmark_ocaml_object -> 
     begin 
       match args with 
-      | [e] ->  E.tag_ml_obj e 
+      | [e] ->   e 
       | _ -> assert false
     end
   | Pchar_of_int -> 
@@ -329,14 +379,15 @@ let translate
   | Psetfield (i, _) -> 
       begin match args with 
       | [e0;e1] ->  (** RUNTIME *)
-          decorate_side_effect cxt (Js_of_lam_block.set_field e0 i e1)
+          decorate_side_effect cxt (Js_of_lam_block.set_field e0 (Int32.of_int i) e1)
             (*TODO: get rid of [E.unit ()]*)
       | _ -> assert false
       end
   | Psetfloatfield i -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
       begin 
         match args with 
-        | [e;e0] -> decorate_side_effect cxt (Js_of_lam_float_record.set_double_field e i e0 ) 
+        | [e;e0] -> decorate_side_effect cxt 
+                      (Js_of_lam_float_record.set_double_field e (Int32.of_int i) e0 ) 
         | _ -> assert false
       end
 
@@ -344,7 +395,7 @@ let translate
   | Pfloatfield i -> (** RUNTIME *)
       begin 
         match args with 
-        | [e] -> Js_of_lam_float_record.get_double_feild e i 
+        | [e] -> Js_of_lam_float_record.get_double_feild e (Int32.of_int i) 
         | _ -> assert false 
       end
   | Parrayrefu _kind
@@ -392,7 +443,7 @@ let translate
         if Sys.big_endian then  E.true_
         else E.false_
       | Word_size -> 
-        E.int Sys.word_size
+        E.small_int  Sys.word_size
       | Ostype_unix -> 
         if Sys.unix then E.true_ else E.false_
       | Ostype_win32 -> 
@@ -417,11 +468,58 @@ let translate
     | [e] -> E.array_copy e
     | _ -> assert false       
     end
+  | Pbigarrayref (unsafe, dimension, kind, layout)
+    -> 
+    (* can be refined to 
+       [caml_bigarray_float32_c_get_1]
+       note that kind can be [generic]
+       and layout can be [unknown],
+       dimension is always available
+    *)
+    begin match dimension, kind, layout, unsafe with 
+      | 1,  ( Pbigarray_float32 | Pbigarray_float64
+            | Pbigarray_sint8 | Pbigarray_uint8
+            | Pbigarray_sint16 | Pbigarray_uint16
+            | Pbigarray_int32 | Pbigarray_int64
+            | Pbigarray_caml_int | Pbigarray_native_int
+            | Pbigarray_complex32 | Pbigarray_complex64), Pbigarray_c_layout, _
+        -> 
+        begin match args with
+        | [x;indx] -> Js_of_lam_array.ref_array x indx
+        | _ -> assert false
+        end
+    | _, _, _ ,_ -> 
+      E.runtime_call Js_config.bigarray 
+        ("caml_ba_get_" ^ string_of_int dimension ) args 
+    end
+  | Pbigarrayset (unsafe, dimension, kind, layout)
+    -> 
+    begin match dimension, kind, layout, unsafe with 
+      | 1,  ( Pbigarray_float32 | Pbigarray_float64
+            | Pbigarray_sint8 | Pbigarray_uint8
+            | Pbigarray_sint16 | Pbigarray_uint16
+            | Pbigarray_int32 | Pbigarray_int64
+            | Pbigarray_caml_int | Pbigarray_native_int
+            | Pbigarray_complex32 | Pbigarray_complex64), Pbigarray_c_layout, _
+        -> 
+        begin match args with 
+        | [x; index; value] -> 
+          Js_of_lam_array.set_array x index value          
+        | _ -> assert false
+        end
+      
+      | _ , _, _,_ 
+        -> 
+        E.runtime_call Js_config.bigarray 
+          ("caml_ba_set_" ^ string_of_int dimension ) args 
+    end
+
+  | Pbigarraydim i
+    -> 
+    E.runtime_call Js_config.bigarray
+      ("caml_ba_dim_" ^ string_of_int i) args       
   | Plazyforce
   | Pbittest 
-  | Pbigarrayref (_, _, _, _)
-  | Pbigarrayset (_, _, _, _)
-  | Pbigarraydim _
   | Pstring_load_16 _
   | Pstring_load_32 _
   | Pstring_load_64 _

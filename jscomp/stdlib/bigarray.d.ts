@@ -1,0 +1,27 @@
+export var float32: any ;
+export var float64: any ;
+export var complex32: any ;
+export var complex64: any ;
+export var int8_signed: any ;
+export var int8_unsigned: any ;
+export var int16_signed: any ;
+export var int16_unsigned: any ;
+export var $$int: any ;
+export var int32: any ;
+export var int64: any ;
+export var nativeint: any ;
+export var $$char: any ;
+export var c_layout: any ;
+export var fortran_layout: any ;
+export var Genarray: any ;
+export var Array1: any ;
+export var Array2: any ;
+export var Array3: any ;
+export var array1_of_genarray: (a : any) => any ;
+export var array2_of_genarray: (a : any) => any ;
+export var array3_of_genarray: (a : any) => any ;
+export var reshape: any ;
+export var reshape_1: (a : any, dim1 : any) => any ;
+export var reshape_2: (a : any, dim1 : any, dim2 : any) => any ;
+export var reshape_3: (a : any, dim1 : any, dim2 : any, dim3 : any) => any ;
+

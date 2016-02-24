@@ -356,6 +356,7 @@ class virtual map =
     method length_object : length_object -> length_object = o#unknown
     method label : label -> label = o#string
     method kind : kind -> kind = o#unknown
+    method jsint : jsint -> jsint = o#unknown
     method int_op : int_op -> int_op = o#unknown
     method ident_info : ident_info -> ident_info = o#unknown
     method ident : ident -> ident = o#unknown

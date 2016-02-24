@@ -28,12 +28,12 @@ let match_exception_def (args : J.expression list) =
   | [{ expression_desc  = 
                Caml_block (
                  [ exception_str; 
-                   {expression_desc = J.Number (Int { i = 0; _}); _}
+                   {expression_desc = J.Number (Int { i = 0l; _}); _}
                  ],
                  mutable_flag, 
                  {expression_desc = J.Number (Int {i = object_tag; _}); _}, _ );
               _} ] -> 
-    if object_tag = Obj.object_tag then
+    if object_tag = 248l (* Obj.object_tag *) then
       Some ( exception_str, mutable_flag)    
     else
       None
@@ -47,7 +47,7 @@ let make_exception id  exception_str mutable_flag : J.expression =
          id],  
         mutable_flag,
         (* TODO: combined with `_001` optimization *)
-        E.int (Obj.object_tag),
+        E.obj_int_tag_literal (* (Obj.object_tag) *),
         NA                    
       );
     comment = None

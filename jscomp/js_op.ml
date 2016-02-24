@@ -145,8 +145,13 @@ type property_name =
 type 'a access = 
   | Getter
   | Setter
+type jsint = Int32.t
+
 type int_or_char = 
-    { i :  int;
+    { i : jsint; 
+      (* we can not use [int] on 32 bit platform, if we dont use 
+          [Int32.t], we need a configuration step          
+      *)
       c : char option
     }
 
