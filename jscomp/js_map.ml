@@ -189,6 +189,10 @@ class virtual map =
        if it's know at compile time, we can turn it into
        f(args[0], args[1], ... )
      *)
+                 (* {[ Bind (a,b) ]}
+     is literally
+     {[ a.bind(b) ]}
+  *)
                  (* Analysze over J expression is hard since, 
         some primitive  call is translated 
         into a plain call, it's better to keep them
@@ -404,6 +408,9 @@ class virtual map =
       | FlatCall (_x, _x_i1) ->
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in FlatCall (_x, _x_i1)
+      | Bind (_x, _x_i1) ->
+          let _x = o#expression _x in
+          let _x_i1 = o#expression _x_i1 in Bind (_x, _x_i1)
       | Call (_x, _x_i1, _x_i2) ->
           let _x = o#expression _x in
           let _x_i1 = o#list (fun o -> o#expression) _x_i1 in

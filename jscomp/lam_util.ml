@@ -252,16 +252,16 @@ let element_of_lambda (lam : Lambda.lambda) : Lam_stats.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block (xs : Lambda.lambda list) : Lam_stats.kind = 
+let kind_of_lambda_block kind (xs : Lambda.lambda list) : Lam_stats.kind = 
   xs 
   |> List.map element_of_lambda 
-  |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls))
+  |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
 let get lam v i tbl : Lambda.lambda =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lprim (Pfield i, [Lprim(Pgetglobal g, [])])
-  | ImmutableBlock arr -> 
+  | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
       | SimpleForm l -> l

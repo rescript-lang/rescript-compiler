@@ -4,7 +4,7 @@
 
 function v(display_name, _) {
   return {
-          "display_name": display_name ? undefined : display_name[1],
+          "display_name": display_name ? display_name[0] : undefined,
           "test": 3,
           "config": 3,
           "hi": "ghos"
@@ -18,7 +18,7 @@ var v2 = {
 };
 
 var v3 = {
-  "display_name": /* Some */["display"] ? undefined : /* Some */["display"][1],
+  "display_name": "display",
   "test": 3,
   "config": 3,
   "hi": "ghos"

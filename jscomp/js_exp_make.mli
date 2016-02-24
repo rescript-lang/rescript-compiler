@@ -118,7 +118,8 @@ val string_append : binary_op
 val tag_ml_obj : unary_op
 
 val var_dot : ?comment:string -> Ident.t -> string -> t
-
+val bind_var_call : ?comment:string -> Ident.t -> string -> t list -> t 
+val bind_call : ?comment:string -> J.expression -> string -> J.expression list -> t
 val js_global_dot : ?comment:string -> string -> string -> t
 
 val index : ?comment:string -> t -> int -> t
@@ -244,3 +245,4 @@ val dummy_obj : ?comment:string ->  unit -> t
 (** convert a block to expresion by using IIFE *)    
 val of_block : ?comment:string -> J.statement list -> J.expression -> t
 
+val bind : binary_op

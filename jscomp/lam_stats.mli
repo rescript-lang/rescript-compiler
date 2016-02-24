@@ -64,8 +64,14 @@ type element =
   | NA 
   | SimpleForm of Lambda.lambda 
 
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Normal 
+
 type kind = 
-  | ImmutableBlock of element array
+  | ImmutableBlock of element array * boxed_nullable
   | MutableBlock of element array
   | Constant of Lambda.structured_constant
   | Module of Ident.t

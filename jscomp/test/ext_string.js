@@ -1,11 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes       = require("../stdlib/bytes");
-var Ext_bytes   = require("./ext_bytes");
-var $$String    = require("../stdlib/string");
-var Caml_curry  = require("../runtime/caml_curry");
-var Caml_string = require("../runtime/caml_string");
+var Bytes                   = require("../stdlib/bytes");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Ext_bytes               = require("./ext_bytes");
+var $$String                = require("../stdlib/string");
+var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
 
 function split_by($staropt$star, is_delim, str) {
   var keep_empty = $staropt$star ? $staropt$star[0] : /* false */0;
@@ -52,9 +53,14 @@ function split_by($staropt$star, is_delim, str) {
 }
 
 function split(keep_empty, str, on) {
-  return split_by(keep_empty, function (x) {
-              return +(x === on);
-            }, str);
+  if (str === "") {
+    return /* [] */0;
+  }
+  else {
+    return split_by(keep_empty, function (x) {
+                return +(x === on);
+              }, str);
+  }
 }
 
 function starts_with(s, beg) {
@@ -180,6 +186,100 @@ function equal(x, y) {
   return +(x === y);
 }
 
+function _is_sub(sub, i, s, j, len) {
+  if (j + len <= s.length) {
+    var _k = 0;
+    while(true) {
+      var k = _k;
+      if (k === len) {
+        return /* true */1;
+      }
+      else if (sub[i + k] === s[j + k]) {
+        _k = k + 1;
+        continue ;
+        
+      }
+      else {
+        return /* false */0;
+      }
+    };
+  }
+  else {
+    return /* false */0;
+  }
+}
+
+function find($staropt$star, sub, s) {
+  var start = $staropt$star ? $staropt$star[0] : 0;
+  var n = sub.length;
+  var i = start;
+  var Exit = {
+    0: "Exit",
+    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    length: 2,
+    tag: 248
+  };
+  try {
+    while(i + n <= s.length) {
+      if (_is_sub(sub, 0, s, i, n)) {
+        throw Exit;
+      }
+      ++ i;
+    };
+    return -1;
+  }
+  catch (exn){
+    if (exn === Exit) {
+      return i;
+    }
+    else {
+      throw exn;
+    }
+  }
+}
+
+function rfind(sub, s) {
+  var n = sub.length;
+  var i = s.length - n;
+  var Exit = {
+    0: "Exit",
+    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    length: 2,
+    tag: 248
+  };
+  try {
+    while(i >= 0) {
+      if (_is_sub(sub, 0, s, i, n)) {
+        throw Exit;
+      }
+      -- i;
+    };
+    return -1;
+  }
+  catch (exn){
+    if (exn === Exit) {
+      return i;
+    }
+    else {
+      throw exn;
+    }
+  }
+}
+
+function tail_from(s, x) {
+  var len = s.length;
+  if (x > len) {
+    var s$1 = "Ext_string.tail_from " + (s + (" : " + x));
+    throw [
+          Caml_builtin_exceptions.Invalid_argument,
+          s$1
+        ];
+  }
+  else {
+    return $$String.sub(s, x, len - x);
+  }
+}
+
 exports.split_by    = split_by;
 exports.split       = split;
 exports.starts_with = starts_with;
@@ -189,4 +289,8 @@ exports.for_all     = for_all;
 exports.is_empty    = is_empty;
 exports.repeat      = repeat;
 exports.equal       = equal;
+exports._is_sub     = _is_sub;
+exports.find        = find;
+exports.rfind       = rfind;
+exports.tail_from   = tail_from;
 /* No side effect */

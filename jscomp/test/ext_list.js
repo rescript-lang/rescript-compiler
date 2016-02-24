@@ -343,6 +343,25 @@ function take(n, l) {
   }
 }
 
+function try_take(n, l) {
+  var arr = $$Array.of_list(l);
+  var arr_length = arr.length;
+  if (arr_length <= n) {
+    return /* tuple */[
+            l,
+            arr_length,
+            /* [] */0
+          ];
+  }
+  else {
+    return /* tuple */[
+            $$Array.to_list($$Array.sub(arr, 0, n)),
+            n,
+            $$Array.to_list($$Array.sub(arr, n, arr_length - n))
+          ];
+  }
+}
+
 function exclude_tail(x) {
   var _acc = /* [] */0;
   var _x = x;
@@ -537,6 +556,7 @@ exports.map_last       = map_last;
 exports.flat_map2_last = flat_map2_last;
 exports.init           = init;
 exports.take           = take;
+exports.try_take       = try_take;
 exports.exclude_tail   = exclude_tail;
 exports.group          = group;
 exports.aux            = aux;

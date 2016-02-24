@@ -10,7 +10,7 @@ function f(u) {
     return Caml_curry.js2(5740587, 1, u, 32);
   }
   else {
-    return Caml_curry.app1(u.say, 32);
+    return Caml_curry.app1(u.say.bind(u), 32);
   }
 }
 

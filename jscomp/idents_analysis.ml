@@ -38,7 +38,20 @@ let calculate_used_idents
     Ident_set.(
     delta := 
       diff (fold (fun  id acc  ->
-        union acc (Hashtbl.find ident_free_vars id ))  !delta empty)
+
+          if Ext_ident.is_js_or_global id  then
+            acc (* will not pull in dependencies  any more *)             
+          else
+            union acc (
+              begin match Hashtbl.find ident_free_vars id with 
+                | exception Not_found -> 
+                  Ext_log.err __LOC__ "%s/%d" id.name id.stamp; 
+                  assert false 
+                | e -> e 
+              end
+            )
+
+        )  !delta empty)
         !current_ident_sets;
      not (is_empty !delta)) do
     current_ident_sets := Ident_set.(union !current_ident_sets !delta)

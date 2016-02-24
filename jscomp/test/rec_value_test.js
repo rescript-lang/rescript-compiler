@@ -302,35 +302,23 @@ var suites_001 = /* :: */[
     "mutual",
     function () {
       var $js;
-      var exit = 0;
       if (a) {
-        if (b) {
-          if (c) {
-            if (a) {
-              var match = a[1];
-              if (match) {
-                $js = match[0];
-              }
-              else {
-                exit = 1;
-              }
-            }
-            else {
-              exit = 1;
-            }
-          }
-          else {
-            exit = 1;
-          }
+        var match = a[1];
+        if (match) {
+          $js = match[0];
         }
         else {
-          exit = 1;
+          throw [
+                Caml_builtin_exceptions.Assert_failure,
+                [
+                  "rec_value_test.ml",
+                  97,
+                  2
+                ]
+              ];
         }
       }
       else {
-        exit = 1;
-      }
-      if (exit === 1) {
         throw [
               Caml_builtin_exceptions.Assert_failure,
               [

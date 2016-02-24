@@ -60,8 +60,13 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
     | Lprim (Pmakeblock (_, _, Immutable ) , ls)
       -> 
       Hashtbl.replace meta.ident_tbl ident 
-        (Lam_util.kind_of_lambda_block ls);
+        (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
+    | Lprim (Pccall {prim_name = "js_from_nullable"; _}, ([ Lvar _] as ls))
+      ->
+      Hashtbl.replace meta.ident_tbl ident 
+        (Lam_util.kind_of_lambda_block Null ls )
+      
     | Lprim (Pgetglobal v,[]) 
       -> 
       begin 

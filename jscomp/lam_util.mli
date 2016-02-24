@@ -24,7 +24,7 @@ val string_of_lambda : Lambda.lambda -> string
 
 val string_of_primitive : Lambda.primitive -> string
 
-val kind_of_lambda_block : Lambda.lambda list -> Lam_stats.kind
+val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lambda.lambda list -> Lam_stats.kind
 
 val get : Lambda.lambda -> Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
 

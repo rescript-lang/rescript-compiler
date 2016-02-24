@@ -41,3 +41,9 @@ val is_empty : string -> bool
 val repeat : int -> string -> string 
 
 val equal : string -> string -> bool
+
+val find : ?start:int -> sub:string -> string -> int
+
+val rfind : sub:string -> string -> int
+
+val tail_from : string -> int -> string

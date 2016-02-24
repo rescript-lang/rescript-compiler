@@ -13,32 +13,32 @@ and  event =
 
 class type title = 
   object
-    method _set_title : string -> unit 
-    method _get_title : string
+    method title__set : string -> unit 
+    method title__ : string
   end
 
 class type text = 
     object
-      method _set_text : string -> unit 
-      method _get_text : string 
+      method text__set : string -> unit 
+      method text__ : string 
     end
 class type measure =
     object
-      method _set_minHeight : int -> unit 
-      method _get_minHeight : int
-      method _set_minWidth : int -> unit 
-      method _get_minWidth : int 
-      method _set_maxHeight : int -> unit 
-      method _get_maxHeight : int
-      method _set_maxWidth : int -> unit 
-      method _get_maxWidth : int 
+      method minHeight__set : int -> unit 
+      method minHeight__ : int
+      method minWidth__set : int -> unit 
+      method minWidth__ : int 
+      method maxHeight__set : int -> unit 
+      method maxHeight__ : int
+      method maxWidth__set : int -> unit 
+      method maxWidth__ : int 
 
     end
 
 class type layout = 
     object 
-      method _set_orientation : string -> unit 
-      method _get_orientation : string
+      method orientation__set : string -> unit 
+      method orientation__ : string
     end
 
 class type applicationContext = 
@@ -48,10 +48,10 @@ class type applicationContext =
   end
 class type contentable = 
   object
-    method _set_content : #widget -> unit 
-    method _get_content : #widget
-    method _set_contentWidth : int -> unit 
-    method _get_contentWidth : int -> unit 
+    method content__set : #widget -> unit 
+    method content__ : #widget
+    method contentWidth__set : int -> unit 
+    method contentWidth__ : int -> unit 
   end
 
 class type hostedWindow =
@@ -62,7 +62,7 @@ class type hostedWindow =
     method show : unit -> unit 
     method hide : unit -> unit
     method focus : unit -> unit 
-    method _set_appContext : applicationContext -> unit 
+    method appContext__set : applicationContext -> unit 
   end
 
 class type hostedContent =
@@ -77,7 +77,9 @@ class type stackPanel =
     inherit measure
     inherit layout 
     inherit widget
+
     method addChild : #widget -> unit 
+    method addChild__1 : #widget -> unit 
   end
 
 (* class type columns =  *)
@@ -104,9 +106,9 @@ class type grid  =
   object
     inherit widget
     inherit measure
-    method _set_columns : <width : int; .. >  array -> unit 
-    method _set_titleRows : <label : <text : string; .. > ; ..>  array -> unit 
-    method _set_dataSource : <label : <text : string; .. > ; ..> array array -> unit  
+    method columns__set : <width : int; .. >  array -> unit 
+    method titleRows__set : <label : <text : string; .. > ; ..>  array -> unit 
+    method dataSource__set : <label : <text : string; .. > ; ..> array array -> unit  
   end
 
 external set_interval : (unit -> unit) -> float -> unit  = "" 
@@ -183,46 +185,46 @@ let ui_layout (compile  : string -> (string -> float) -> float) lookup  appConte
   let button = new_button () in
   let grid = new_grid () in
   begin 
-    hw1#_set_appContext appContext;
-    hw1#_set_title "Test Application From OCaml";
-    hw1#_set_content hc;
+    hw1#appContext__set appContext;
+    hw1#title__set "Test Application From OCaml";
+    hw1#content__set hc;
 
 
-    hc#_set_contentWidth 700;
-    hc#_set_content stackPanel;
+    hc#contentWidth__set 700;
+    hc#content__set stackPanel;
 
-    stackPanel#_set_orientation "vertical";
-    stackPanel#_set_minHeight 10000; (* FIXME -> 1e4 *)
-    stackPanel#_set_minWidth 4000;
+    stackPanel#orientation__set "vertical";
+    stackPanel#minHeight__set 10000; (* FIXME -> 1e4 *)
+    stackPanel#minWidth__set 4000;
 
-    stackPanel#addChild grid;
+    stackPanel#addChild__1 grid;
     stackPanel#addChild inputCode;
     stackPanel#addChild button;
 
     let mk_titleRow = fun text -> (mk_label ~label:(mk_text ~text )) in
     let u = mk_width 200 in
-    grid#_set_minHeight 300;
-    grid#_set_titleRows 
+    grid#minHeight__set 300;
+    grid#titleRows__set 
         [| mk_titleRow "Ticker";
            mk_titleRow "Bid";
            mk_titleRow "Ask";
            mk_titleRow "Result" |] ;
-    grid#_set_columns [| u;u;u;u |];
+    grid#columns__set [| u;u;u;u |];
 
-    inputCode#_set_text " bid - ask";
-    inputCode#_set_minHeight 100;
+    inputCode#text__set " bid - ask";
+    inputCode#minHeight__set 100;
 
-    button#_set_text "update formula";
-    button#_set_minHeight 20;
+    button#text__set "update formula";
+    button#minHeight__set 20;
     button # on "click" (fun _ -> 
       try 
-        let hot_function = compile inputCode#_get_text in
+        let hot_function = compile inputCode#text__ in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
       with  e -> ());
     let fmt v = to_fixed v 2 in
     set_interval (fun _ -> 
 
-      grid#_set_dataSource 
+      grid#dataSource__set 
         ( array_map data (function {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in

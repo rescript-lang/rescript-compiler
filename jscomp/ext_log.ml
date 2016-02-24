@@ -25,7 +25,7 @@
 type 'a logging =  ('a, Format.formatter, unit, unit, unit, unit) format6 -> 'a
 
 let err str f  =
-  Format.fprintf Format.err_formatter ("%s " ^^ f) str  
+  Format.fprintf Format.err_formatter ("%s " ^^ f ^^ "@.") str  
 
 let ierr b str f  =
   if b then 

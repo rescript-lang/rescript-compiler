@@ -31,6 +31,7 @@ val same_length : 'a list -> 'b list -> bool
 val init : int -> (int -> 'a) -> 'a list
 
 val take : int -> 'a list -> 'a list * 'a list
+val try_take : int -> 'a list -> 'a list * int * 'a list 
 
 val exclude_tail : 'a list -> 'a list
 

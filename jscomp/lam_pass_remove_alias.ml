@@ -50,6 +50,21 @@ let simplify_alias
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       Lam_util.get lam v  i meta.ident_tbl 
+    | Lifthenelse(Lvar id as l1, l2, l3) 
+      -> 
+      begin match Hashtbl.find meta.ident_tbl id with 
+      | ImmutableBlock ( _, Normal)
+      | MutableBlock _  
+        -> simpl l2 
+      | ImmutableBlock ( [| SimpleForm l |]  , Null) 
+        -> Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.null]) ,simpl l3,  simpl l2)
+      | _ -> Lifthenelse (l1, simpl l2, simpl l3)
+
+      | exception Not_found -> Lifthenelse (l1, simpl l2, simpl l3)
+      end
+    | Lifthenelse (l1, l2, l3) -> 
+        Lifthenelse(simpl  l1, simpl  l2, simpl  l3)
+
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
       Llet(str, v, simpl l1, simpl l2 )
@@ -222,7 +237,7 @@ let simplify_alias
     | Lstaticraise (i,ls) -> Lstaticraise(i, List.map (simpl ) ls)
     | Lstaticcatch (l1, (i,x), l2) -> Lstaticcatch(simpl  l1, (i,x), simpl  l2)
     | Ltrywith (l1, v, l2) -> Ltrywith(simpl  l1,v, simpl  l2)
-    | Lifthenelse (l1, l2, l3) -> Lifthenelse(simpl  l1, simpl  l2, simpl  l3)
+
     | Lsequence (Lprim (Pgetglobal (id),[]), l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) meta.env 
       -> simpl l2

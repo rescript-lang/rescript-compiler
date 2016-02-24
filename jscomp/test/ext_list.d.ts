@@ -11,6 +11,7 @@ export var map_last: (f : any, l1 : any) => any ;
 export var flat_map2_last: (f : any, lx : any, ly : any) => any ;
 export var init: (n : any, f : any) => any ;
 export var take: (n : any, l : any) => any ;
+export var try_take: (n : any, l : any) => any ;
 export var exclude_tail: (x : any) => any ;
 export var group: (cmp : any, lst : any) => any ;
 export var aux: (cmp : any, x : any, xss : any) => any ;

@@ -87,6 +87,9 @@ let rec no_side_effect (x : J.expression)  =
           the block is mutable does not mean this operation is non-pure
        *)
       List.for_all no_side_effect  xs 
+  | Bind(fn, obj) -> no_side_effect fn && no_side_effect obj
+  | Object kvs -> 
+    List.for_all (fun (_property_name, y) -> no_side_effect y ) kvs 
   | Array_append (a,b) 
   | String_append (a,b)
   | Seq (a,b) -> no_side_effect a && no_side_effect b 
@@ -117,7 +120,7 @@ let rec no_side_effect (x : J.expression)  =
   | New _ 
   | Caml_uninitialized_obj _
   | String_access _
-  | Object _
+
   | Caml_block_set_tag _ 
   | Caml_block_set_length _ (* actually true? *)
     -> false 

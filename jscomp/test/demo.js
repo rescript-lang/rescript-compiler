@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var BUI        = require("@blp/ui");
-var UI         = require("@ui");
 var Runtime    = require("@runtime");
+var UI         = require("@ui");
 var Caml_curry = require("../runtime/caml_curry");
+var BUI        = require("@blp/ui");
 
 var data = /* array */[
   /* record */[
@@ -42,9 +42,9 @@ function ui_layout(compile, lookup, appContext) {
   stackPanel.orientation = "vertical";
   stackPanel.minHeight = 10000;
   stackPanel.minWidth = 4000;
-  Caml_curry.app1(stackPanel.addChild, grid);
-  Caml_curry.app1(stackPanel.addChild, inputCode);
-  Caml_curry.app1(stackPanel.addChild, button);
+  stackPanel.addChild(grid);
+  Caml_curry.app1(stackPanel.addChild.bind(stackPanel), inputCode);
+  Caml_curry.app1(stackPanel.addChild.bind(stackPanel), button);
   var u = {
     "width": 200
   };
@@ -81,7 +81,7 @@ function ui_layout(compile, lookup, appContext) {
   inputCode.minHeight = 100;
   button.text = "update formula";
   button.minHeight = 20;
-  Caml_curry.app2(button.on, "click", function () {
+  Caml_curry.app2(button.on.bind(button), "click", function () {
         try {
           var hot_function = Caml_curry.app1(compile, inputCode.text);
           computeFunction[0] = function (env) {
@@ -136,4 +136,4 @@ function ui_layout(compile, lookup, appContext) {
 
 exports.data      = data;
 exports.ui_layout = ui_layout;
-/* @blp/ui Not a pure module */
+/* @runtime Not a pure module */

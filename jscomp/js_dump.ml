@@ -90,6 +90,7 @@ module L = struct
 
   let curry = "curry" (* curry arbitrary args *)
   let tag = "tag"
+  let bind = "bind"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -419,7 +420,11 @@ and
     in
     if l > 15 then P.paren_group f 1 action   
     else action ()
-
+  | Bind (a,b) -> 
+    begin
+      expression_desc cxt l f  
+        (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b], {arity = Full}))
+    end    
   (* | Tag_ml_obj e ->  *)
   (*   P.group f 1 (fun _ ->  *)
   (*       P.string f "Object.defineProperty"; *)
@@ -1056,6 +1061,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Caml_block  _ 
       | FlatCall _ 
       | Typeof _
+      | Bind _ 
       | Number _
       | Not _ 
       | New _ 

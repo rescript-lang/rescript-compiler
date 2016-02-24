@@ -67,5 +67,12 @@ open Mt
   "rev_split_by_char", (fun _ -> 
       Eq ([""; "bbbb"; "bbbb"], rev_split_by_char 'a' "bbbbabbbba"));
 
-  "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") )
+  "xsplit", (fun _ -> Eq(["a";"b";"c"], xsplit ~delim:'.' "a.b.c") );
+  "split_empty", (fun _ -> Eq([], Ext_string.split "" '_') );
+  "rfind", (fun _ -> Eq( 7, Ext_string.rfind "__index__js" ~sub:"__"));
+  "rfind_2", (fun _ -> Eq( 0, Ext_string.rfind "__index_js" ~sub:"__"));
+  "rfind_3", (fun _ -> Eq( -1, Ext_string.rfind "_index_js" ~sub:"__"));
+  "find", (fun _ -> Eq( 0, Ext_string.find "__index__js" ~sub:"__"));
+  "find_2", (fun _ -> Eq( 6, Ext_string.find "_index__js" ~sub:"__"));
+  "find_3", (fun _ -> Eq( -1, Ext_string.find "_index_js" ~sub:"__"));
 ]

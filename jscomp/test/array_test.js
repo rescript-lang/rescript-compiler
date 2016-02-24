@@ -256,9 +256,6 @@ var array_suites = /* :: */[
   array_suites_001
 ];
 
-Mt.from_pair_suites("array_test.ml", [
-        is_sorted,
-        array_suites
-      ][1]);
+Mt.from_pair_suites("array_test.ml", array_suites);
 
 /*  Not a pure module */
