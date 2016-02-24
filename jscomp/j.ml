@@ -204,6 +204,8 @@ and expression_desc =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
+  | Raw_js_code of string 
+       (* literally raw JS code *)
   | Array of expression list * mutable_flag
   | Caml_block of expression list * mutable_flag * expression * tag_info 
 

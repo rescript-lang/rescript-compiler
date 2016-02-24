@@ -207,6 +207,7 @@ class virtual fold =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
+                 (* literally raw JS code *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -396,6 +397,7 @@ class virtual fold =
           let o = o#list (fun o -> o#ident) _x in
           let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
       | Str (_x, _x_i1) -> let o = o#bool _x in let o = o#string _x_i1 in o
+      | Raw_js_code _x -> let o = o#string _x in o
       | Array (_x, _x_i1) ->
           let o = o#list (fun o -> o#expression) _x in
           let o = o#mutable_flag _x_i1 in o

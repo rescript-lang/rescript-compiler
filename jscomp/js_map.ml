@@ -220,6 +220,7 @@ class virtual map =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
+                 (* literally raw JS code *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -437,6 +438,7 @@ class virtual map =
           let _x_i2 = o#unknown _x_i2 in Fun (_x, _x_i1, _x_i2)
       | Str (_x, _x_i1) ->
           let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+      | Raw_js_code _x -> let _x = o#string _x in Raw_js_code _x
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)

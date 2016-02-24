@@ -120,7 +120,7 @@ let rec no_side_effect (x : J.expression)  =
   | New _ 
   | Caml_uninitialized_obj _
   | String_access _
-
+  | Raw_js_code _ 
   | Caml_block_set_tag _ 
   | Caml_block_set_length _ (* actually true? *)
     -> false 

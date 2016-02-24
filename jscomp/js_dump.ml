@@ -91,6 +91,7 @@ module L = struct
   let curry = "curry" (* curry arbitrary args *)
   let tag = "tag"
   let bind = "bind"
+  let math = "Math"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -152,46 +153,70 @@ let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) : Ext_pp_scope.t  =
   P.string f str; 
   cxt   
 
+(** Avoid to allocate single char string too many times*)
+let array_str1 =
+  Array.init 256 (fun i -> String.make 1 (Char.chr i)) 
+
+(** For conveting 
+ 
+*)
+let array_conv =
+  [|"0"; "1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "a"; "b"; "c"; "d";
+    "e"; "f"|]
+
+
+
+(* https://mathiasbynens.be/notes/javascript-escapes *)
 let pp_string f ?(quote='"') ?(utf=false) s =
-  let array_str1 =
-    Array.init 256 (fun i -> String.make 1 (Char.chr i)) in
-  let array_conv =
-    Array.init 16 (fun i -> String.make 1 (("0123456789abcdef").[i])) in
+  let pp_raw_string f ?(utf=false) s = 
+    let l = String.length s in
+    for i = 0 to l - 1 do
+      let c = String.unsafe_get s i in
+      match c with
+      | '\b' -> P.string f "\\b"
+      | '\012' -> P.string f "\\f"
+      | '\n' -> P.string f "\\n"
+      | '\r' -> P.string f "\\r"
+      | '\t' -> P.string f "\\t"
+      (* This escape sequence is not supported by IE < 9
+               | '\011' -> "\\v"
+         IE < 9 treats '\v' as 'v' instead of a vertical tab ('\x0B'). 
+         If cross-browser compatibility is a concern, use \x0B instead of \v.
+
+         Another thing to note is that the \v and \0 escapes are not allowed in JSON strings.
+      *)
+      | '\000' when i = l - 1 || (let next = String.unsafe_get s (i + 1) in (next < '0' || next > '9'))
+        -> P.string f "\\0"
+
+      | '\\' when not utf -> P.string f "\\\\"
+
+
+      | '\000' .. '\031'  | '\127'->
+        let c = Char.code c in
+        P.string f "\\x";
+        P.string f (Array.unsafe_get array_conv (c lsr 4));
+        P.string f (Array.unsafe_get array_conv (c land 0xf))
+      | '\128' .. '\255' when not utf ->
+        let c = Char.code c in
+        P.string f "\\x";
+        P.string f (Array.unsafe_get array_conv (c lsr 4));
+        P.string f (Array.unsafe_get array_conv (c land 0xf))
+      (* | '\'' -> P.string f "\\'" *)
+      (* | '\"' -> P.string f "\\\"" *)
+      | _ ->
+        begin 
+          (if c = quote  then
+             P.string f "\\");           
+          P.string f (Array.unsafe_get array_str1 (Char.code c))
+        end
+    done
+  in
   let quote_s = String.make 1 quote in
   P.string f quote_s;
-  let l = String.length s in
-  for i = 0 to l - 1 do
-    let c = s.[i] in
-    match c with
-    | '\000' when i = l - 1 || s.[i + 1] < '0' || s.[i + 1] > '9' -> P.string f "\\0"
-    | '\b' -> P.string f "\\b"
-    | '\t' -> P.string f "\\t"
-    | '\n' -> P.string f "\\n"
-          (* This escape sequence is not supported by IE < 9
-             | '\011' -> "\\v"
-           *)
-    | '\012' -> P.string f "\\f"
-    | '\\' when not utf -> P.string f "\\\\"
-    | '\r' -> P.string f "\\r"
-    | '\000' .. '\031'  | '\127'->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
-    | '\128' .. '\255' when not utf ->
-        let c = Char.code c in
-        P.string f "\\x";
-        P.string f (Array.unsafe_get array_conv (c lsr 4));
-        P.string f (Array.unsafe_get array_conv (c land 0xf))
-    | _ ->
-        if c = quote
-        then
-          (P.string f "\\"; P.string f (Array.unsafe_get array_str1 (Char.code c)))
-        else
-          P.string f (Array.unsafe_get array_str1 (Char.code c))
-  done;
+  pp_raw_string f ~utf s ;
   P.string f quote_s
 ;;
+
 
 (* TODO: check utf's correct semantics *)
 let pp_quote_string f s = 
@@ -523,19 +548,20 @@ and
 
   | Math (name, el) -> 
     P.group f 1 (fun _ ->
-        P.string f "Math";
+        P.string f L.math;
         P.string f L.dot;
         P.string f name;
         P.paren_group f 1 (fun _ -> arguments cxt f el)
       )
 
   | Str (_, s) ->
-    let quote = best_string_quote s in 
     (*TODO --
        when utf8-> it will not escape '\\' which is definitely not we want
      *)
+    let quote = best_string_quote s in 
     pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-
+  | Raw_js_code s -> 
+    P.string f s ; cxt 
   | Number v ->
     let s = 
       match v with 
@@ -1032,6 +1058,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
       | Caml_uninitialized_obj _ 
+      | Raw_js_code _ 
       | Fun _ | Object _ -> true
       | Caml_block_set_tag _ 
       | Length _ 

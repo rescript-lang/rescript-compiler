@@ -182,3 +182,4 @@ lam_methname_test
 ext_log
 lam_current_unit
 test_zero_nullable
+string_literal_print_test

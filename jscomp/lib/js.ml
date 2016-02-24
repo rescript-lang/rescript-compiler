@@ -27,15 +27,15 @@ external log : 'a -> unit = "js_dump"
 
 external anything_to_string : 'a -> string = "js_anything_to_string"
 
-type 'a opt
+type + 'a opt
 
 external from_opt : 'a opt -> 'a option = "js_from_nullable"
 external to_opt : 'a -> 'a opt  = "%identity"
 
 
-(* external unsafe_js_expr : string -> 'a = "js_pure_expr" *)
+external unsafe_js_expr : string -> 'a = "js_pure_expr"
 
 
-(* let null : 'a opt = unsafe_js_expr "null" *)
+let nil : 'a opt = unsafe_js_expr "null"
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
