@@ -2,5 +2,7 @@
 'use strict';
 
 
+var nil = null;
 
-/* No side effect */
+exports.nil = nil;
+/* nil Not a pure module */

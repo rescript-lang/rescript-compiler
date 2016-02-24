@@ -246,3 +246,5 @@ val dummy_obj : ?comment:string ->  unit -> t
 val of_block : ?comment:string -> J.statement list -> J.expression -> t
 
 val bind : binary_op
+
+val raw_js_code : ?comment:string -> string -> t

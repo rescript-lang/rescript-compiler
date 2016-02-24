@@ -733,6 +733,17 @@ let query (prim : Lam_compile_env.primitive_description)
         | [e] -> E.obj_length e 
         | _ -> assert false 
       end
+    | "js_pure_expr"
+      -> 
+      begin match args with 
+      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code s
+      | _ -> 
+        Ext_log.err __LOC__ 
+          "JS.unsafe_js_expr is applied to an non literal string in %s"
+          (Lam_current_unit.get_file ())
+        ;
+        assert false
+      end
     | "js_obj_set_length"
       ->
       begin match args with 

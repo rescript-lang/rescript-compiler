@@ -1,1 +1,2 @@
+export var nil: any ;
 
