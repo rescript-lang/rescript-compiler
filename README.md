@@ -1,10 +1,10 @@
-# [BuckleScript](http://bloomberg.github.io/ocamlscript/)
+# [BuckleScript](http://bloomberg.github.io/bucklescript/)
 
 ## Introduction
 BuckleScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). 
 
 You can try
-[BuckleScript in the brower](http://bloomberg.github.io/ocamlscript/js-demo/),
+[BuckleScript in the brower](http://bloomberg.github.io/bucklescript/js-demo/),
 edit the code on the left panel and see the generated JS on the right
 panel instantly.
 
