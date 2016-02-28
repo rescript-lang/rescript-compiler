@@ -125,7 +125,7 @@ class virtual fold =
      *)
                  (* shallow copy, like [x.slice] *)
                  (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *)
+                 (* | Tag_ml_obj of expression *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -208,6 +208,7 @@ class virtual fold =
        which is better to leave it alone
      *)
                  (* literally raw JS code *)
+                 (* The third argument is [tag] , forth is [tag_info] *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -357,6 +358,7 @@ class virtual fold =
       | String_append (_x, _x_i1) ->
           let o = o#expression _x in let o = o#expression _x_i1 in o
       | Int_of_boolean _x -> let o = o#expression _x in o
+      | Bool _x -> let o = o#bool _x in o
       | Typeof _x -> let o = o#expression _x in o
       | Not _x -> let o = o#expression _x in o
       | String_of_small_int_array _x -> let o = o#expression _x in o

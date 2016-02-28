@@ -6,4 +6,8 @@ export var f6: (x : any, y : any) => any ;
 export var f7: (x : any) => any ;
 export var f8: (x : any) => any ;
 export var u: any ;
+export var f9: (x : any) => any ;
+export var f10: (x : any) => any ;
+export var f11: any ;
+export var Undef: any ;
 

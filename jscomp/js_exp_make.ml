@@ -228,8 +228,8 @@ let js_global ?comment  (v : string) =
 let dot ?comment (e0 : t)  (e1 : string) : t = 
   { expression_desc = Dot (e0,  e1, true); comment} 
 
-let undefined  = js_global "undefined"
-
+let undefined  = var Ext_ident.undefined
+let nil = var Ext_ident.nil
 
 (** coupled with the runtime *)
 let is_caml_block ?comment (e : t) : t = 
@@ -378,6 +378,18 @@ let bool v = if  v then true_ else false_
 
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
+  | Var (Id ({name = "undefined"|"null"; } as id)), 
+    (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ )
+    when Ext_ident.is_js id && no_side_effect e1 -> 
+    false_ (* TODO: rename it as [caml_false] *)
+  | 
+    (Char_of_int _ | Char_to_int _ 
+    | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
+    | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
+    when Ext_ident.is_js id && no_side_effect e0 -> 
+    false_
   | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
@@ -482,8 +494,10 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
 
   | Number ((Int { i = 0; _}) ), _, _ 
     -> f  (* TODO: constant folding: could be refined *)
-  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b &&  no_side_effect f 
+  | (Number _ | Array _ | Caml_block _), _, _ when no_side_effect b 
     -> t  (* a block can not be false in OCAML, CF - relies on flow inference*)
+  | Bool true, _, _ -> t 
+  | Bool false,  _, _ -> f
   | (Bin (Bor, v , {expression_desc = Number (Int {i = 0 ; _})})), _, _
     -> econd v t f 
   | Bin (NotEqEq, e1, 
@@ -1006,3 +1020,11 @@ let of_block ?comment block e : t =
                             comment}]) , Js_fun_env.empty 0)
     } []
 
+let is_nil ?comment x = triple_equal ?comment x nil 
+
+let js_bool ?comment x : t = 
+  { comment; 
+    expression_desc = Bool x
+  }
+
+let is_undef ?comment x = triple_equal ?comment x undefined

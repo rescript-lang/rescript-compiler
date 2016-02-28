@@ -56,8 +56,18 @@ let simplify_alias
       | ImmutableBlock ( _, Normal)
       | MutableBlock _  
         -> simpl l2 
-      | ImmutableBlock ( [| SimpleForm l |]  , Null) 
-        -> Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.null]) ,simpl l3,  simpl l2)
+      | ImmutableBlock ( [| SimpleForm l |]  , x) 
+        -> 
+        begin match x with 
+        | Null 
+          -> 
+          Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil]) ,simpl l3,  simpl l2)
+        | Undefined 
+          -> 
+          Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.undefined]) ,simpl l3,  simpl l2)
+        | Normal -> 
+          Lifthenelse (l1, simpl l2, simpl l3)
+        end
       | _ -> Lifthenelse (l1, simpl l2, simpl l3)
 
       | exception Not_found -> Lifthenelse (l1, simpl l2, simpl l3)

@@ -44,6 +44,24 @@ external from_opt : 'a opt -> 'a option = "js_from_nullable"
 
 external to_opt : 'a  -> 'a opt = "%identity"
 
-val nil : 'a opt
+external nil : 'a opt = "js_null" [@@js.global]
+
+
+type + 'a def
+external from_def : 'a def -> 'a option = "js_from_def"
+external to_def : 'a -> 'a def = "%identity"
+external is_undef : 'a def -> bool =  "js_is_undef"
+external undef : 'a def = "js_undefined" [@@js.global]
+
 
 external unsafe_js_expr : string -> 'a = "js_pure_expr"
+
+external is_nil : 'a opt -> bool = "js_is_nil"
+
+
+
+type boolean 
+
+external true_ : boolean = "js_true" [@@js.global]
+external false_ : boolean = "js_false" [@@js.global]
+external to_bool : boolean -> bool = "js_boolean_to_bool" 

@@ -39,19 +39,19 @@ args, we should not do
 {{ Curry.app0(obj.name) }} 
 *)
 type t = 
-  | Js_index
+  | Js_read_index
   (* index__js
      {[ x[i] ]}
   *)
-  | Js_set_index 
+  | Js_write_index 
   (* set_index__js 
      {[ x[i]= 3 ]}     
   *)
-  | Js_set
+  | Js_write
   (* __set
      {[ x.h = 3 ]}
   *)
-
+  | Js_read
 
   | Js of int option
   | Ml of int option
@@ -60,17 +60,17 @@ type t =
 let process ( x : string) : t * string =
 
   match x with
-  | "index__unsafe_js"
+  | "index__unsafe_r"
   (* TODO: [unsafe] should be allowed to overloaded in general  *)
-  | "index__js_unsafe"
-  | "index__unsafe" 
+  | "index__r_unsafe"
+  | "index__r" 
   | "index__" 
-    -> (Js_index, "index")
-  | "index__set_unsafe" 
-  | "index__set" 
-  | "index__set_js_unsafe" 
-  | "index__set_js" 
-    -> (Js_set_index, "index")
+    -> (Js_read_index, "index")
+  | "index__w_unsafe" 
+  | "index__w" 
+  | "index__w_js_unsafe" 
+  | "index__w_js" 
+    -> (Js_write_index, "index")
   | _ -> 
     let sub = "__" in
     let v = Ext_string.rfind ~sub x  in
@@ -81,8 +81,8 @@ let process ( x : string) : t * string =
       let indicator = Ext_string.tail_from x (v + len_sub) in 
       let normal_name  = String.sub x 0 v in 
       match indicator with 
-      | "set" -> Js_set, normal_name
-
+      | "r" -> Js_read, normal_name
+      | "w" -> Js_write, normal_name
       | _ -> 
         let props = Ext_string.split indicator '_' in 
         let kind = ref None in 
@@ -104,6 +104,10 @@ let process ( x : string) : t * string =
             -> update_ref kind  `Ml
           | "gen" 
             -> update_ref kind `Unknown
+          | "unsafe"
+            -> 
+            (* allow unsafe to be overloaded, but don't do anything yet *)
+            ()
           | _ -> 
             match int_of_string x with 
             | exception _ -> fail __LOC__

@@ -12,20 +12,20 @@ var List                    = require("../stdlib/list");
 
 function process(x) {
   switch (x) {
-    case "index__set" : 
-    case "index__set_js" : 
-    case "index__set_js_unsafe" : 
-    case "index__set_unsafe" : 
+    case "index__" : 
+    case "index__r" : 
+    case "index__r_unsafe" : 
+    case "index__unsafe_r" : 
         return /* tuple */[
-                /* Js_set_index */1,
+                /* Js_read_index */0,
                 "index"
               ];
-    case "index__" : 
-    case "index__js_unsafe" : 
-    case "index__unsafe" : 
-    case "index__unsafe_js" : 
+    case "index__w" : 
+    case "index__w_js" : 
+    case "index__w_js_unsafe" : 
+    case "index__w_unsafe" : 
         return /* tuple */[
-                /* Js_index */0,
+                /* Js_write_index */1,
                 "index"
               ];
     default:
@@ -45,105 +45,112 @@ function process(x) {
         var len_sub = sub.length;
         var indicator = Ext_string.tail_from(x, v + len_sub);
         var normal_name = $$String.sub(x, 0, v);
-        if (indicator === "set") {
-          return /* tuple */[
-                  /* Js_set */2,
-                  normal_name
-                ];
-        }
-        else {
-          var props = Ext_string.split(/* None */0, indicator, /* "_" */95);
-          var kind = [/* None */0];
-          var arity = [/* None */0];
-          var fail = function (l) {
-            var error = "invalid indicator" + (indicator + ("in method name " + (x + (":" + Lam_current_unit.get_file(/* () */0)))));
-            Caml_curry.app1(Ext_log.err(l, /* Format */{
-                      0: /* String */{
-                        0: /* No_padding */0,
-                        1: /* End_of_format */0,
+        switch (indicator) {
+          case "r" : 
+              return /* tuple */[
+                      /* Js_read */3,
+                      normal_name
+                    ];
+          case "w" : 
+              return /* tuple */[
+                      /* Js_write */2,
+                      normal_name
+                    ];
+          default:
+            var props = Ext_string.split(/* None */0, indicator, /* "_" */95);
+            var kind = [/* None */0];
+            var arity = [/* None */0];
+            var fail = function (l) {
+              var error = "invalid indicator" + (indicator + ("in method name " + (x + (":" + Lam_current_unit.get_file(/* () */0)))));
+              Caml_curry.app1(Ext_log.err(l, /* Format */{
+                        0: /* String */{
+                          0: /* No_padding */0,
+                          1: /* End_of_format */0,
+                          length: 2,
+                          tag: 2
+                        },
+                        1: "%s",
                         length: 2,
-                        tag: 2
-                      },
-                      1: "%s",
-                      length: 2,
-                      tag: 0
-                    }), error);
-            throw [
-                  Caml_builtin_exceptions.Failure,
-                  error
-                ];
-          };
-          var update_ref = function (r, k) {
-            var match = r[0];
-            if (match) {
-              if (match[0] !== k) {
-                return fail('File "lam_methname.ml", line 98, characters 42-49');
+                        tag: 0
+                      }), error);
+              throw [
+                    Caml_builtin_exceptions.Failure,
+                    error
+                  ];
+            };
+            var update_ref = function (r, k) {
+              var match = r[0];
+              if (match) {
+                if (match[0] !== k) {
+                  return fail('File "lam_methname.ml", line 98, characters 42-49');
+                }
+                else {
+                  return 0;
+                }
               }
               else {
-                return 0;
+                r[0] = /* Some */[k];
+                return /* () */0;
               }
+            };
+            List.iter(function (x) {
+                  switch (x) {
+                    case "gen" : 
+                        return update_ref(kind, /* Unknown */785140586);
+                    case "js" : 
+                        return update_ref(kind, /* Js */16617);
+                    case "ml" : 
+                        return update_ref(kind, /* Ml */17279);
+                    case "unsafe" : 
+                        return /* () */0;
+                    default:
+                      var exit = 0;
+                      var v;
+                      try {
+                        v = Caml_format.caml_int_of_string(x);
+                        exit = 1;
+                      }
+                      catch (exn){
+                        return fail('File "lam_methname.ml", line 113, characters 34-41');
+                      }
+                      if (exit === 1) {
+                        return update_ref(arity, v);
+                      }
+                      
+                  }
+                }, props);
+            var arity$1 = arity[0];
+            var match = kind[0];
+            var $js;
+            if (match) {
+              var match$1 = match[0];
+              $js = match$1 !== 17279 ? (
+                  match$1 >= 785140586 ? /* Unknown */{
+                      0: arity$1,
+                      length: 1,
+                      tag: 2
+                    } : /* Js */{
+                      0: arity$1,
+                      length: 1,
+                      tag: 0
+                    }
+                ) : /* Ml */{
+                  0: arity$1,
+                  length: 1,
+                  tag: 1
+                };
             }
             else {
-              r[0] = /* Some */[k];
-              return /* () */0;
-            }
-          };
-          List.iter(function (x) {
-                switch (x) {
-                  case "gen" : 
-                      return update_ref(kind, /* Unknown */785140586);
-                  case "js" : 
-                      return update_ref(kind, /* Js */16617);
-                  case "ml" : 
-                      return update_ref(kind, /* Ml */17279);
-                  default:
-                    var exit = 0;
-                    var v;
-                    try {
-                      v = Caml_format.caml_int_of_string(x);
-                      exit = 1;
-                    }
-                    catch (exn){
-                      return fail('File "lam_methname.ml", line 109, characters 34-41');
-                    }
-                    if (exit === 1) {
-                      return update_ref(arity, v);
-                    }
-                    
-                }
-              }, props);
-          var arity$1 = arity[0];
-          var match = kind[0];
-          var $js;
-          if (match) {
-            var match$1 = match[0];
-            $js = match$1 !== 17279 ? (
-                match$1 >= 785140586 ? /* Unknown */{
-                    0: arity$1,
-                    length: 1,
-                    tag: 2
-                  } : /* Js */{
-                    0: arity$1,
-                    length: 1,
-                    tag: 0
-                  }
-              ) : /* Ml */{
+              $js = /* Js */{
                 0: arity$1,
                 length: 1,
-                tag: 1
+                tag: 0
               };
-          }
-          else {
-            $js = /* Js */{
-              0: arity$1,
-              length: 1,
-              tag: 0
-            };
-          }
-          return /* tuple */[
-                  $js,
-                  normal_name
-                ];
+            }
+            return /* tuple */[
+                    $js,
+                    normal_name
+                  ];
         }
       }
   }

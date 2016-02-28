@@ -220,7 +220,7 @@ val prefix_inc : ?comment:string -> J.vident -> t
 
 val prefix_dec : ?comment:string -> J.vident -> t
 
-val null : ?comment:string -> unit -> t
+
 
 val tag : ?comment:string -> J.expression -> t
 val set_tag : ?comment:string -> J.expression -> J.expression -> t
@@ -248,3 +248,9 @@ val of_block : ?comment:string -> J.statement list -> J.expression -> t
 val bind : binary_op
 
 val raw_js_code : ?comment:string -> string -> t
+
+val nil : t 
+val is_nil : unary_op
+
+val js_bool :  ?comment:string -> bool -> t 
+val is_undef : unary_op

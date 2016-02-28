@@ -1,9 +1,13 @@
+
 {
-  "exclude": [
-    "node_modules",
-    "jscomp/runtime/caml_marshal.ts",
-    "jscomp/runtime/caml_hash.ts",
-    "jscomp/runtime/caml_md5.ts",
-    "jscomp/runtime/caml_polyfill.ts"
-  ]
+    "exclude": [
+        "node_modules",
+        "jscomp/runtime/caml_marshal.ts",
+        "jscomp/runtime/caml_hash.ts",
+        "jscomp/runtime/caml_md5.ts",
+        "jscomp/runtime/caml_polyfill.ts"
+    ],
+    "compilerOptions": {
+        "sourceMap" : false
+    }
 }

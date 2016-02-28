@@ -44,6 +44,7 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
             | "caml_obj_dup"
             | "caml_obj_block"
             | "js_from_nullable"
+            | "js_from_def"
             ), _  -> true 
           | "caml_ml_open_descriptor_in", [Lconst (Const_base (Const_int 0))] -> true 
           | "caml_ml_open_descriptor_out", 

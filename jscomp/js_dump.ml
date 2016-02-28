@@ -87,7 +87,8 @@ module L = struct
   let define = "define"
   let break = "break"
   let strict_directive = "'use strict';"
-
+  let true_ = "true"
+  let false_ = "false"
   let curry = "curry" (* curry arbitrary args *)
   let tag = "tag"
   let bind = "bind"
@@ -405,6 +406,8 @@ and
   match x with
   | Var v ->
     vident cxt f v 
+  | Bool b -> 
+    (if  b then P.string f L.true_ else P.string f L.false_ ) ; cxt 
   | Seq (e1, e2) ->
     let action () = 
       let cxt = expression 0 cxt f e1 in
@@ -1091,6 +1094,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Bind _ 
       | Number _
       | Not _ 
+      | Bool _
       | New _ 
       | Int_of_boolean _ -> false
       (* e = function(x){...}(x);  is good
@@ -1142,7 +1146,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
           match e.expression_desc with
           | Number (Int {i = 1}) ->
               P.string f L.while_;
-              P.string f "(true)"; 
+              P.string f "(";
+              P.string f L.true_;
+              P.string f ")"; 
               P.space f ;
               cxt 
           | _ -> 

@@ -183,3 +183,7 @@ ext_log
 lam_current_unit
 test_zero_nullable
 string_literal_print_test
+js_bool_test
+class_type_ffi_test
+unsafe_ppx_test
+js_date_test
