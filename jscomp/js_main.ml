@@ -14,8 +14,9 @@ open Config
 open Clflags
 open Compenv
 
+
 let process_interface_file ppf name =
-  Compile.interface ppf name (output_prefix name)
+  Js_implementation.interface ppf name (output_prefix name)
 
 let process_implementation_file ppf name =
   let opref = output_prefix name in

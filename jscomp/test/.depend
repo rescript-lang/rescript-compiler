@@ -54,6 +54,8 @@ buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
     ../stdlib/buffer.cmx
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmx : mt.cmx
+class_type_ffi_test.cmo : ../lib/js.cmi
+class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmx : mt.cmx ../stdlib/bytes.cmx
 complex_test.cmo : mt.cmi ../stdlib/complex.cmi
@@ -130,6 +132,10 @@ inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
+js_bool_test.cmo : mt.cmi ../lib/js.cmi
+js_bool_test.cmx : mt.cmx ../lib/js.cmx
+js_date_test.cmo : mt.cmi ../lib/js_date.cmo
+js_date_test.cmx : mt.cmx ../lib/js_date.cmx
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmx : mt.cmx
 lam_current_unit.cmo :
@@ -414,8 +420,12 @@ ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
 typeof_test.cmo : mt.cmi ../lib/js.cmi
 typeof_test.cmx : mt.cmx ../lib/js.cmx
+unafe_ppx_test.cmo :
+unafe_ppx_test.cmx :
 unitest_string.cmo :
 unitest_string.cmx :
+unsafe_ppx_test.cmo : mt.cmi
+unsafe_ppx_test.cmx : mt.cmx
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -460,6 +470,8 @@ buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
+class_type_ffi_test.cmo : ../lib/js.cmi
+class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
 complex_test.cmo : mt.cmi ../stdlib/complex.cmi
@@ -536,6 +548,10 @@ inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
+js_bool_test.cmo : mt.cmi ../lib/js.cmi
+js_bool_test.cmj : mt.cmj ../lib/js.cmj
+js_date_test.cmo : mt.cmi ../lib/js_date.cmo
+js_date_test.cmj : mt.cmj ../lib/js_date.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 lam_current_unit.cmo :
@@ -820,5 +836,9 @@ ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 typeof_test.cmo : mt.cmi ../lib/js.cmi
 typeof_test.cmj : mt.cmj ../lib/js.cmj
+unafe_ppx_test.cmo :
+unafe_ppx_test.cmj :
 unitest_string.cmo :
 unitest_string.cmj :
+unsafe_ppx_test.cmo : mt.cmi
+unsafe_ppx_test.cmj : mt.cmj

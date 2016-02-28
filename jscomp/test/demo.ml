@@ -13,32 +13,32 @@ and  event =
 
 class type title = 
   object
-    method title__set : string -> unit 
+    method title__w : string -> unit 
     method title__ : string
   end
 
 class type text = 
     object
-      method text__set : string -> unit 
+      method text__w : string -> unit 
       method text__ : string 
     end
 class type measure =
     object
-      method minHeight__set : int -> unit 
-      method minHeight__ : int
-      method minWidth__set : int -> unit 
-      method minWidth__ : int 
-      method maxHeight__set : int -> unit 
-      method maxHeight__ : int
-      method maxWidth__set : int -> unit 
-      method maxWidth__ : int 
+      method minHeight__w : int -> unit 
+      method minHeight__r : int
+      method minWidth__w : int -> unit 
+      method minWidth__r : int 
+      method maxHeight__w : int -> unit 
+      method maxHeight__r : int
+      method maxWidth__w : int -> unit 
+      method maxWidth__r : int 
 
     end
 
 class type layout = 
     object 
-      method orientation__set : string -> unit 
-      method orientation__ : string
+      method orientation__w : string -> unit 
+      method orientation__r : string
     end
 
 class type applicationContext = 
@@ -48,10 +48,10 @@ class type applicationContext =
   end
 class type contentable = 
   object
-    method content__set : #widget -> unit 
-    method content__ : #widget
-    method contentWidth__set : int -> unit 
-    method contentWidth__ : int -> unit 
+    method content__w : #widget -> unit 
+    method content__r : #widget
+    method contentWidth__w : int -> unit 
+    method contentWidth__r : int -> unit 
   end
 
 class type hostedWindow =
@@ -62,7 +62,7 @@ class type hostedWindow =
     method show : unit -> unit 
     method hide : unit -> unit
     method focus : unit -> unit 
-    method appContext__set : applicationContext -> unit 
+    method appContext__w : applicationContext -> unit 
   end
 
 class type hostedContent =
@@ -106,9 +106,9 @@ class type grid  =
   object
     inherit widget
     inherit measure
-    method columns__set : <width : int; .. >  array -> unit 
-    method titleRows__set : <label : <text : string; .. > ; ..>  array -> unit 
-    method dataSource__set : <label : <text : string; .. > ; ..> array array -> unit  
+    method columns__w : <width : int; .. >  array -> unit 
+    method titleRows__w : <label : <text : string; .. > ; ..>  array -> unit 
+    method dataSource__w : <label : <text : string; .. > ; ..> array array -> unit  
   end
 
 external set_interval : (unit -> unit) -> float -> unit  = "" 
@@ -185,17 +185,17 @@ let ui_layout (compile  : string -> (string -> float) -> float) lookup  appConte
   let button = new_button () in
   let grid = new_grid () in
   begin 
-    hw1#appContext__set appContext;
-    hw1#title__set "Test Application From OCaml";
-    hw1#content__set hc;
+    hw1#appContext__w appContext;
+    hw1#title__w "Test Application From OCaml";
+    hw1#content__w hc;
 
 
-    hc#contentWidth__set 700;
-    hc#content__set stackPanel;
+    hc#contentWidth__w 700;
+    hc#content__w stackPanel;
 
-    stackPanel#orientation__set "vertical";
-    stackPanel#minHeight__set 10000; (* FIXME -> 1e4 *)
-    stackPanel#minWidth__set 4000;
+    stackPanel#orientation__w "vertical";
+    stackPanel#minHeight__w 10000; (* FIXME -> 1e4 *)
+    stackPanel#minWidth__w 4000;
 
     stackPanel#addChild__1 grid;
     stackPanel#addChild inputCode;
@@ -203,19 +203,19 @@ let ui_layout (compile  : string -> (string -> float) -> float) lookup  appConte
 
     let mk_titleRow = fun text -> (mk_label ~label:(mk_text ~text )) in
     let u = mk_width 200 in
-    grid#minHeight__set 300;
-    grid#titleRows__set 
+    grid#minHeight__w 300;
+    grid#titleRows__w 
         [| mk_titleRow "Ticker";
            mk_titleRow "Bid";
            mk_titleRow "Ask";
            mk_titleRow "Result" |] ;
-    grid#columns__set [| u;u;u;u |];
+    grid#columns__w [| u;u;u;u |];
 
-    inputCode#text__set " bid - ask";
-    inputCode#minHeight__set 100;
+    inputCode#text__w " bid - ask";
+    inputCode#minHeight__w 100;
 
-    button#text__set "update formula";
-    button#minHeight__set 20;
+    button#text__w "update formula";
+    button#minHeight__w 20;
     button # on "click" (fun _ -> 
       try 
         let hot_function = compile inputCode#text__ in
@@ -224,7 +224,7 @@ let ui_layout (compile  : string -> (string -> float) -> float) lookup  appConte
     let fmt v = to_fixed v 2 in
     set_interval (fun _ -> 
 
-      grid#dataSource__set 
+      grid#dataSource__w 
         ( array_map data (function {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in

@@ -239,4 +239,4 @@ let reset () =
   end
 
 let undefined = create_js "undefined"
-let null = create_js "null"
+let nil = create_js "null"

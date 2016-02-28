@@ -103,6 +103,7 @@ and expression_desc =
   | String_append of expression * expression 
 
   | Int_of_boolean of expression 
+  | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -208,7 +209,7 @@ and expression_desc =
        (* literally raw JS code *)
   | Array of expression list * mutable_flag
   | Caml_block of expression list * mutable_flag * expression * tag_info 
-
+  (* The third argument is [tag] , forth is [tag_info] *)
   | Caml_uninitialized_obj of expression * expression
   (* [tag] and [size] tailed  for [Obj.new_block] *)
 

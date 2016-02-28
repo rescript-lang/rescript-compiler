@@ -66,6 +66,10 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
+    | Lprim (Pccall {prim_name = "js_from_def"; _}, ([ Lvar _] as ls))
+      ->
+      Hashtbl.replace meta.ident_tbl ident 
+        (Lam_util.kind_of_lambda_block Undefined ls )
       
     | Lprim (Pgetglobal v,[]) 
       -> 

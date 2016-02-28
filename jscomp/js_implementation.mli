@@ -26,6 +26,8 @@
     given [filename] and [outputprefix], 
     it will be useful if we don't care about bytecode output(generating js only).
  *)
+val interface : Format.formatter -> string -> string -> unit
+
 
 val implementation : Format.formatter -> string -> string -> unit
 (** [implementation ppf sourcefile outprefix] compiles to JS directly *) 

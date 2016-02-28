@@ -661,6 +661,22 @@ let query (prim : Lam_compile_env.primitive_description)
         | [e] -> E.string_of_small_int_array e 
         | _ -> assert false
       end
+    | "js_boolean_to_bool" -> 
+      begin match args with 
+      | [e] -> E.to_ocaml_boolean e 
+      | _ -> assert false
+      end
+    | "js_true" 
+      -> 
+      E.js_bool true
+    | "js_false" 
+      -> 
+      E.js_bool false
+    | "js_null" 
+      -> E.nil 
+    | "js_undefined"
+      -> E.undefined
+ 
     | "js_is_instance_array" 
       ->
       begin match args with 
@@ -743,6 +759,48 @@ let query (prim : Lam_compile_env.primitive_description)
           (Lam_current_unit.get_file ())
         ;
         assert false
+      end
+    | "js_is_nil" -> 
+      begin match args with
+      | [ e ] -> E.is_nil e 
+      | _ -> assert false 
+      end
+    | "js_is_undef" -> 
+      begin match args with 
+      | [e] -> E.is_undef e 
+      | _ -> assert false
+      end
+    | "js_from_def" 
+      -> 
+      begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+        | Var _ -> 
+          E.econd (E.is_undef e) Js_of_lam_option.none (Js_of_lam_option.some e)
+        | _ -> 
+          let id = Ext_ident.create "v" in
+          let tmp = E.var id in
+          E.(seq (assign tmp e ) 
+               (econd (is_undef tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+        end
+
+      | _ -> assert false 
+      end
+    | "js_from_nullable" 
+      -> 
+      begin match args with 
+      | [e] -> 
+        begin match e.expression_desc with 
+        | Var _ -> 
+          E.econd (E.is_nil e) Js_of_lam_option.none (Js_of_lam_option.some e)
+        | _ -> 
+          let id = Ext_ident.create "v" in
+          let tmp = E.var id in
+          E.(seq (assign tmp e ) 
+               (econd (is_nil tmp) Js_of_lam_option.none (Js_of_lam_option.some tmp)) )
+        end
+
+      | _ -> assert false 
       end
     | "js_obj_set_length"
       ->

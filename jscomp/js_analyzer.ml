@@ -73,6 +73,7 @@ let free_variables_of_expression used_idents defined_idents st =
 
 let rec no_side_effect (x : J.expression)  = 
   match x.expression_desc with 
+  | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
   | Str (b,_) -> b

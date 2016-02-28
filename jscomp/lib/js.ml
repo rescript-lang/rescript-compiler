@@ -27,15 +27,34 @@ external log : 'a -> unit = "js_dump"
 
 external anything_to_string : 'a -> string = "js_anything_to_string"
 
+external unsafe_js_expr : string -> 'a = "js_pure_expr"
+
 type + 'a opt
 
 external from_opt : 'a opt -> 'a option = "js_from_nullable"
 external to_opt : 'a -> 'a opt  = "%identity"
 
 
-external unsafe_js_expr : string -> 'a = "js_pure_expr"
 
 
-let nil : 'a opt = unsafe_js_expr "null"
+external is_nil : 'a opt -> bool = "js_is_nil"
+
+external nil : 'a opt = "js_null" [@@js.global]
+
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
+
+type + 'a def
+external from_def : 'a def -> 'a option = "js_from_def"
+external to_def : 'a -> 'a def = "%identity"
+external is_undef : 'a def -> bool =  "js_is_undef"
+external undef : 'a def = "js_undefined" [@@js.global]
+
+type boolean 
+
+(* let true_ : boolean = unsafe_js_expr "true" *)
+external true_ : boolean = "js_true" [@@js.global]
+
+external false_ : boolean = "js_false" [@@js.global]
+
+external to_bool : boolean -> bool = "js_boolean_to_bool" 

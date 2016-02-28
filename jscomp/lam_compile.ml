@@ -1332,7 +1332,7 @@ and
             Js_output.handle_block_return st should_return lam (List.concat args_code) in           
           begin
             match Lam_methname.process name, obj with
-            | (Js_index, _name), _  ->
+            | (Js_read_index, _name), _  ->
               let aux args =
                 match args with
                 | [] ->
@@ -1345,7 +1345,7 @@ and
                   E.call (Js_array.ref_array obj' x ) rest in
               cont @@ aux args
 
-            | (Js_set_index, _name), _  ->
+            | (Js_write_index, _name), _  ->
               let aux args =
                 match args with
                 | [] ->
@@ -1363,7 +1363,7 @@ and
                 |  x :: y:: rest  ->
                   E.call (Js_array.set_array obj' x y ) rest in
               cont @@ aux args
-            | (Js_set, name), _ -> 
+            | (Js_write, name), _ -> 
               let  aux args =
                 match args with
                 | [] ->
@@ -1378,6 +1378,8 @@ and
                   
               in
               cont @@ aux args
+            | (Js_read, name), _ -> 
+              cont @@ E.dot obj' name              
             | (Js (Some arity), name), _  -> 
               cont @@
               let args, n, rest = 

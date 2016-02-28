@@ -47,9 +47,9 @@ var suites_001 = /* :: */[
       "js_set",
       function () {
         return /* Eq */{
-                0: Lam_methname.process("xx__set"),
+                0: Lam_methname.process("xx__w"),
                 1: /* tuple */[
-                  /* Js_set */2,
+                  /* Js_write */2,
                   "xx"
                 ],
                 length: 2,
@@ -100,9 +100,9 @@ var suites_001 = /* :: */[
             "js2",
             function () {
               return /* Eq */{
-                      0: Lam_methname.process("xx__set"),
+                      0: Lam_methname.process("xx__w"),
                       1: /* tuple */[
-                        /* Js_set */2,
+                        /* Js_write */2,
                         "xx"
                       ],
                       length: 2,
@@ -155,7 +155,7 @@ var suites_001 = /* :: */[
                     return /* Eq */{
                             0: Lam_methname.process("index__"),
                             1: /* tuple */[
-                              /* Js_index */0,
+                              /* Js_read_index */0,
                               "index"
                             ],
                             length: 2,
@@ -168,9 +168,9 @@ var suites_001 = /* :: */[
                     "set_index",
                     function () {
                       return /* Eq */{
-                              0: Lam_methname.process("index__set"),
+                              0: Lam_methname.process("index__w"),
                               1: /* tuple */[
-                                /* Js_set_index */1,
+                                /* Js_write_index */1,
                                 "index"
                               ],
                               length: 2,

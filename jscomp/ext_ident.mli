@@ -26,6 +26,7 @@ val is_js : Ident.t -> bool
 
 val is_js_object : Ident.t -> bool
 
+(** create identifiers for predefined [js] global variables *)
 val create_js : string -> Ident.t
 
 val create : string -> Ident.t
@@ -45,4 +46,4 @@ val is_unused_ident : Ident.t -> bool
 val convert : string -> string
 val undefined : Ident.t 
 val is_js_or_global : Ident.t -> bool
-val null : Ident.t
+val nil : Ident.t

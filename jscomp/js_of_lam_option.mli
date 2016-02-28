@@ -20,3 +20,7 @@
 
 
 val get : J.expression -> J.expression
+
+val none : J.expression 
+
+val some : J.expression -> J.expression

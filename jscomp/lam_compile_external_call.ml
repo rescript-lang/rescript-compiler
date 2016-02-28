@@ -225,7 +225,11 @@ let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr
         | Array ([x;y],_mutable_flag)  ->
           [ y] (*Invrariant: optional encoding*)
         | Number _ -> (*Invariant: None encoding*)
-          [E.null ()]
+          [ E.nil ] 
+        (* when no argumet is supplied, [undefined] 
+           if we detect that all rest arguments are [null], 
+           we can remove them
+        *)
         | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
                    is not a variable
                 *)

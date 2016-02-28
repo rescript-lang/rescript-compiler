@@ -1,0 +1,10 @@
+S .
+B _build
+S lib
+B lib 
+S stdlib
+B stdlib
+S test
+B test
+B +compiler-libs
+FLG -w -40

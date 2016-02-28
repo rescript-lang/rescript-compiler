@@ -138,7 +138,7 @@ class virtual map =
      *)
                  (* shallow copy, like [x.slice] *)
                  (* For [caml_array_append]*)
-                 (* | Tag_ml_obj of expression *)
+                 (* | Tag_ml_obj of expression *) (* js true/false*)
                  (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     
   *)
@@ -221,6 +221,7 @@ class virtual map =
        which is better to leave it alone
      *)
                  (* literally raw JS code *)
+                 (* The third argument is [tag] , forth is [tag_info] *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
      we can not use 
@@ -384,6 +385,7 @@ class virtual map =
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
       | Int_of_boolean _x -> let _x = o#expression _x in Int_of_boolean _x
+      | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
       | Not _x -> let _x = o#expression _x in Not _x
       | String_of_small_int_array _x ->

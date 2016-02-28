@@ -1,0 +1,88 @@
+// Generated CODE, PLEASE EDIT WITH CARE
+'use strict';
+
+var Caml_obj = require("../runtime/caml_obj");
+var Mt       = require("./mt");
+
+function f(x) {
+  if (x) {
+    return /* true */1;
+  }
+  else {
+    return /* false */0;
+  }
+}
+
+function f2(x) {
+  if (x) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+function f4(x) {
+  if (x) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+var f3 = /* true */1;
+
+var suites_000 = /* tuple */[
+  "caml_bool_eq_caml_bool",
+  function () {
+    return /* Eq */{
+            0: 1,
+            1: f(true),
+            length: 2,
+            tag: 0
+          };
+  }
+];
+
+var suites_001 = /* :: */[
+  /* tuple */[
+    "js_bool_eq_js_bool",
+    function () {
+      return /* Eq */{
+              0: true,
+              1: true,
+              length: 2,
+              tag: 0
+            };
+    }
+  ],
+  /* :: */[
+    /* tuple */[
+      "js_bool_neq_acml_bool",
+      function () {
+        return /* Eq */{
+                0: /* false */0,
+                1: Caml_obj.caml_equal(f(true), true),
+                length: 2,
+                tag: 0
+              };
+      }
+    ],
+    /* [] */0
+  ]
+];
+
+var suites = /* :: */[
+  suites_000,
+  suites_001
+];
+
+Mt.from_pair_suites("js_bool_test.ml", suites);
+
+exports.f      = f;
+exports.f2     = f2;
+exports.f4     = f4;
+exports.f3     = f3;
+exports.suites = suites;
+/* f3 Not a pure module */

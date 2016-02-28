@@ -19,19 +19,19 @@
 (* Author: Hongbo Zhang  *)
 
 type t = 
-  | Js_index
+  | Js_read_index
   (* index__js
      {[ x[i] ]}
   *)
-  | Js_set_index 
+  | Js_write_index 
   (* set_index__js 
      {[ x[i]= 3 ]}     
   *)
-  | Js_set
+  | Js_write
   (* __set
      {[ x.h ]}
   *)
-
+  | Js_read
 
   | Js of int option
   | Ml of int option
