@@ -66,18 +66,6 @@ var max_int = 2147483647;
 
 var min_int = max_int + 1;
 
-var infinity = Infinity;
-
-var neg_infinity = -Infinity;
-
-var nan = NaN;
-
-var max_float = Number.MAX_VALUE;
-
-var min_float = Number.MIN_VALUE;
-
-var epsilon_float = Number.EPSILON;
-
 function $caret(a, b) {
   return a + b;
 }
@@ -535,6 +523,18 @@ function exit(retcode) {
   do_at_exit(/* () */0);
   return Caml_primitive.caml_sys_exit(retcode);
 }
+
+var infinity = Infinity;
+
+var neg_infinity = -Infinity;
+
+var nan = NaN;
+
+var max_float = Number.MAX_VALUE;
+
+var min_float = Number.MIN_VALUE;
+
+var epsilon_float = Number.EPSILON;
 
 function flush(prim) {
   return Caml_io.caml_ml_flush(prim);

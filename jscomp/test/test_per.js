@@ -4,7 +4,6 @@
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                 = require("../runtime/caml_obj");
 var Caml_io                  = require("../runtime/caml_io");
-var Caml_float               = require("../runtime/caml_float");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("../stdlib/camlinternalFormatBasics");
@@ -66,18 +65,6 @@ function lnot(x) {
 var max_int = 2147483647;
 
 var min_int = max_int + 1;
-
-var infinity = Caml_float.caml_int64_float_of_bits(9218868437227405312);
-
-var neg_infinity = Caml_float.caml_int64_float_of_bits(-4503599627370496);
-
-var nan = Caml_float.caml_int64_float_of_bits(9218868437227405313);
-
-var max_float = Caml_float.caml_int64_float_of_bits(9218868437227405311);
-
-var min_float = Caml_float.caml_int64_float_of_bits(4503599627370496);
-
-var epsilon_float = Caml_float.caml_int64_float_of_bits(4372995238176751616);
 
 function $caret(s1, s2) {
   var l1 = s1.length;
@@ -550,6 +537,18 @@ function exit(retcode) {
   Caml_curry.app1(exit_function[0], /* () */0);
   return Caml_primitive.caml_sys_exit(retcode);
 }
+
+var infinity = Infinity;
+
+var neg_infinity = -Infinity;
+
+var nan = NaN;
+
+var max_float = 1.79769313486231571e+308;
+
+var min_float = 2.22507385850720138e-308;
+
+var epsilon_float = 2.22044604925031308e-16;
 
 exports.failwith            = failwith;
 exports.invalid_arg         = invalid_arg;

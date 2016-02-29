@@ -416,11 +416,11 @@ let to_ocaml_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
-let true_  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
+let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
-let false_  = int ~comment:"false" 0l
+let caml_false  = int ~comment:"false" 0l
 
-let bool v = if  v then true_ else false_
+let bool v = if  v then caml_true else caml_false
 
 let rec triple_equal ?comment (e0 : t) (e1 : t ) : t = 
   match e0.expression_desc, e1.expression_desc with
@@ -429,13 +429,13 @@ let rec triple_equal ?comment (e0 : t) (e1 : t ) : t =
     | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
     | Fun _ | Array _ | Caml_block _ )
     when Ext_ident.is_js id && no_side_effect e1 -> 
-    false_ (* TODO: rename it as [caml_false] *)
+    caml_false (* TODO: rename it as [caml_false] *)
   | 
     (Char_of_int _ | Char_to_int _ 
     | Bool _ | Number _ | Typeof _ | Int_of_boolean _ 
     | Fun _ | Array _ | Caml_block _ ),  Var (Id ({name = "undefined"|"null"; } as id))
     when Ext_ident.is_js id && no_side_effect e0 -> 
-    false_
+    caml_false
   | Str (_,x), Str (_,y) ->  (* CF*)
     bool (Ext_string.equal x y)
   | Char_to_int a , Char_to_int b -> 
@@ -549,7 +549,7 @@ let rec not ({expression_desc; comment} as e : t) : t =
   | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
 
   | Number (Int {i; _}) -> 
-    if i != 0l then false_ else true_
+    if i != 0l then caml_false else caml_true
   | Int_of_boolean  e -> not e
   | Not e -> e 
   | x -> {expression_desc = Not e ; comment = None}
@@ -671,7 +671,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
     *)
     float_equal ?comment a e1
   | Number (Float {f = f0; _}), Number (Float {f = f1 ; }) when f0 = f1 -> 
-    true_
+    caml_true
 
   | Char_to_int a , Char_to_int b ->
     float_equal ?comment a b

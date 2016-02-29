@@ -4,15 +4,24 @@
 var Caml_primitive = require("../runtime/caml_primitive");
 
 function succ(n) {
-  return n + 1 | 0;
+  return n + /* int64 */[
+          1,
+          0
+        ] | 0;
 }
 
 function pred(n) {
-  return n - 1 | 0;
+  return n - /* int64 */[
+          1,
+          0
+        ] | 0;
 }
 
 function abs(n) {
-  if (n >= 0) {
+  if (n >= /* int64 */[
+      0,
+      0
+    ]) {
     return n;
   }
   else {
@@ -21,7 +30,10 @@ function abs(n) {
 }
 
 function lognot(n) {
-  return n ^ -1;
+  return n ^ /* int64 */[
+          -1,
+          -1
+        ];
 }
 
 function to_string(n) {
@@ -32,15 +44,30 @@ function compare(x, y) {
   return Caml_primitive.caml_int64_compare(x, y);
 }
 
-var zero = 0;
+var zero = /* int64 */[
+  0,
+  0
+];
 
-var one = 1;
+var one = /* int64 */[
+  1,
+  0
+];
 
-var minus_one = -1;
+var minus_one = /* int64 */[
+  -1,
+  -1
+];
 
-var max_int = 9223372036854775807;
+var max_int = /* int64 */[
+  -1,
+  2147483647
+];
 
-var min_int = -9223372036854775808;
+var min_int = /* int64 */[
+  0,
+  -2147483648
+];
 
 exports.zero      = zero;
 exports.one       = one;

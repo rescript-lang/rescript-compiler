@@ -96,6 +96,7 @@ js_shake
 js_inline_and_eliminate
 js_pass_flatten
 js_number
+js_long
 js_exp_make
 js_stmt_make
 js_cmj_datasets

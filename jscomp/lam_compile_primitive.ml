@@ -440,16 +440,16 @@ let translate
     begin
       match ct with 
       | Big_endian -> 
-        if Sys.big_endian then  E.true_
-        else E.false_
+        if Sys.big_endian then  E.caml_true
+        else E.caml_false
       | Word_size -> 
         E.small_int  Sys.word_size
       | Ostype_unix -> 
-        if Sys.unix then E.true_ else E.false_
+        if Sys.unix then E.caml_true else E.caml_false
       | Ostype_win32 -> 
-        if Sys.win32 then E.true_ else E.false_
+        if Sys.win32 then E.caml_true else E.caml_false
       | Ostype_cygwin -> 
-        if Sys.cygwin then E.true_ else E.false_
+        if Sys.cygwin then E.caml_true else E.caml_false
     end
   | Pcvtbint (_boxed_integer_source, _boxed_integer_dest) ->
     begin 

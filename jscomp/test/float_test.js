@@ -1,10 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_float = require("../runtime/caml_float");
-var Mt         = require("./mt");
-
-var epsilon_float = Caml_float.caml_int64_float_of_bits(4372995238176751616);
+var Mt = require("./mt");
 
 Mt.from_pair_suites("float_test.ml", /* :: */[
       /* tuple */[
@@ -20,6 +17,8 @@ Mt.from_pair_suites("float_test.ml", /* :: */[
       ],
       /* [] */0
     ]);
+
+var epsilon_float = 2.22044604925031308e-16;
 
 exports.epsilon_float = epsilon_float;
 /*  Not a pure module */

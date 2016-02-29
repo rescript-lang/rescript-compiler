@@ -214,9 +214,9 @@ let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr
         match arg.expression_desc with 
         | Number (Int {i = 0l; _} 
         (* | Float {f = "0."} This should not happen *)
-       ) ->  [E.false_]
-        | Number _ -> [E.true_]
-        | _ -> [E.econd arg E.true_ E.false_]
+       ) ->  [E.caml_false]
+        | Number _ -> [E.caml_true]
+        | _ -> [E.econd arg E.caml_true E.caml_false]
       end
 
     | _, `Optional label -> 
@@ -265,9 +265,9 @@ let translate
                 | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool -> 
                   begin 
                     match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) ->  Some (Js_op.Key label ,E.false_)
-                    | Number _ -> Some (Js_op.Key label,E.true_)
-                    | _ -> Some (Js_op.Key label, (E.econd arg E.true_ E.false_))
+                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) ->  Some (Js_op.Key label ,E.caml_false)
+                    | Number _ -> Some (Js_op.Key label,E.caml_true)
+                    | _ -> Some (Js_op.Key label, (E.econd arg E.caml_true E.caml_false))
                   end
 
                 | _, `Label label -> 

@@ -267,7 +267,13 @@ let deep_flatten
        and as early as possible *) 
 
     | Lprim(Pidentity, [l]) -> l 
+    | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
+            [ Lconst (Const_base (Const_int64 i))]) 
+      ->  
+      Lconst (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+
     | Lprim(prim, ll) -> Lprim(prim, List.map aux  ll)
+
     | Lfunction(kind, params, l) -> Lfunction (kind, params , aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
