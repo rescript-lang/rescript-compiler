@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "02/22-09:11"]
+[@@@ocaml.doc "02/29-09:56"]
 include
   struct
     module Js_op =
@@ -194,6 +194,7 @@ include
         val same_length : 'a list -> 'b list -> bool
         val init : int -> (int -> 'a) -> 'a list
         val take : int -> 'a list -> ('a list* 'a list)
+        val try_take : int -> 'a list -> ('a list* int* 'a list)
         val exclude_tail : 'a list -> 'a list
         val filter_map2 :
           ('a -> 'b -> 'c option) -> 'a list -> 'b list -> 'c list
@@ -293,6 +294,14 @@ include
           then invalid_arg "Ext_list.take"
           else
             ((Array.to_list (Array.sub arr 0 n)),
+              (Array.to_list (Array.sub arr n (arr_length - n))))
+        let try_take n l =
+          let arr = Array.of_list l in
+          let arr_length = Array.length arr in
+          if arr_length <= n
+          then (l, arr_length, [])
+          else
+            ((Array.to_list (Array.sub arr 0 n)), n,
               (Array.to_list (Array.sub arr n (arr_length - n))))
         let exclude_tail (x : 'a list) =
           (let rec aux acc x =
@@ -478,6 +487,7 @@ include
           | Array_append of expression* expression
           | String_append of expression* expression
           | Int_of_boolean of expression
+          | Bool of bool
           | Typeof of expression
           | Not of expression
           | String_of_small_int_array of expression
@@ -488,6 +498,7 @@ include
           | Cond of expression* expression* expression
           | Bin of binop* expression* expression
           | FlatCall of expression* expression
+          | Bind of expression* expression
           | Call of expression* expression list* Js_call_info.t
           | String_access of expression* expression
           | Access of expression* expression
@@ -496,6 +507,7 @@ include
           | Var of vident
           | Fun of ident list* block* Js_fun_env.t
           | Str of bool* string
+          | Raw_js_code of string
           | Array of expression list* mutable_flag
           | Caml_block of expression list* mutable_flag* expression*
           tag_info
@@ -635,8 +647,12 @@ include
         type element =
           | NA
           | SimpleForm of Lambda.lambda
+        type boxed_nullable =
+          | Undefined
+          | Null
+          | Normal
         type kind =
-          | ImmutableBlock of element array
+          | ImmutableBlock of element array* boxed_nullable
           | MutableBlock of element array
           | Constant of Lambda.structured_constant
           | Module of
@@ -687,8 +703,12 @@ include
         type element =
           | NA
           | SimpleForm of Lambda.lambda
+        type boxed_nullable =
+          | Undefined
+          | Null
+          | Normal
         type kind =
-          | ImmutableBlock of element array
+          | ImmutableBlock of element array* boxed_nullable
           | MutableBlock of element array
           | Constant of Lambda.structured_constant
           | Module of
@@ -699,7 +719,9 @@ include
           |
           Parameter[@ocaml.doc
                      " For this case, it can help us determine whether it should be inlined or not "]
-          | NA
+          |
+          NA[@ocaml.doc
+              " \n       {[ let v/2 =  js_from_nullable u]} \n\n       {[ let v/2 = js_from_nullable exp]}\n       can be translated into \n       {[\n         let v/1 = exp in \n         let v/2 =a js_from_nullable exp \n       ]}\n       so that [Pfield v/2 0] will be replaced by [v/1], \n       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]\n    "]
         type ident_tbl = (Ident.t,kind) Hashtbl.t
         type state =
           | Live[@ocaml.doc " Globals are always live "]
@@ -806,7 +828,8 @@ include
                             |"caml_is_js"|"caml_int64_float_of_bits"
                             |"caml_sys_get_config"|"caml_sys_get_argv"
                             |"caml_create_string"|"caml_make_vect"
-                            |"caml_obj_dup"|"caml_obj_block"),_) -> true
+                            |"caml_obj_dup"|"caml_obj_block"
+                            |"js_from_nullable"|"js_from_def"),_) -> true
                         | ("caml_ml_open_descriptor_in",(Lconst (Const_base
                            (Const_int 0)))::[]) -> true
                         | ("caml_ml_open_descriptor_out",(Lconst (Const_base
@@ -1203,6 +1226,7 @@ include
               | String_append (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
               | Int_of_boolean _x -> let o = o#expression _x in o
+              | Bool _x -> let o = o#bool _x in o
               | Typeof _x -> let o = o#expression _x in o
               | Not _x -> let o = o#expression _x in o
               | String_of_small_int_array _x -> let o = o#expression _x in o
@@ -1222,6 +1246,8 @@ include
                   let o = o#expression _x_i1 in
                   let o = o#expression _x_i2 in o
               | FlatCall (_x,_x_i1) ->
+                  let o = o#expression _x in let o = o#expression _x_i1 in o
+              | Bind (_x,_x_i1) ->
                   let o = o#expression _x in let o = o#expression _x_i1 in o
               | Call (_x,_x_i1,_x_i2) ->
                   let o = o#expression _x in
@@ -1246,6 +1272,7 @@ include
                   let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
               | Str (_x,_x_i1) ->
                   let o = o#bool _x in let o = o#string _x_i1 in o
+              | Raw_js_code _x -> let o = o#string _x in o
               | Array (_x,_x_i1) ->
                   let o = o#list (fun o  -> o#expression) _x in
                   let o = o#mutable_flag _x_i1 in o
@@ -1485,6 +1512,9 @@ include
         val is_empty : string -> bool
         val repeat : int -> string -> string
         val equal : string -> string -> bool
+        val find : ?start:int -> sub:string -> string -> int
+        val rfind : sub:string -> string -> int
+        val tail_from : string -> int -> string
       end =
       struct
         let split_by ?(keep_empty= false)  is_delim str =
@@ -1504,7 +1534,9 @@ include
               else loop acc last_pos (pos - 1) in
           loop [] len (len - 1)
         let split ?keep_empty  str on =
-          split_by ?keep_empty (fun x  -> (x : char) = on) str
+          if str = ""
+          then []
+          else split_by ?keep_empty (fun x  -> (x : char) = on) str
         let starts_with s beg =
           let beg_len = String.length beg in
           let s_len = String.length s in
@@ -1555,13 +1587,50 @@ include
           for i = 0 to pred n do String.blit s 0 res (i * len) len done;
           Bytes.to_string res
         let equal (x : string) y = x = y
+        let _is_sub ~sub  i s j ~len  =
+          let rec check k =
+            if k = len
+            then true
+            else
+              ((String.unsafe_get sub (i + k)) =
+                 (String.unsafe_get s (j + k)))
+                && (check (k + 1)) in
+          ((j + len) <= (String.length s)) && (check 0)
+        let find ?(start= 0)  ~sub  s =
+          let n = String.length sub in
+          let i = ref start in
+          let module M = struct exception Exit end in
+            try
+              while ((!i) + n) <= (String.length s) do
+                (if _is_sub ~sub 0 s (!i) ~len:n then raise M.Exit; incr i)
+                done;
+              (-1)
+            with | M.Exit  -> !i
+        let rfind ~sub  s =
+          let n = String.length sub in
+          let i = ref ((String.length s) - n) in
+          let module M = struct exception Exit end in
+            try
+              while (!i) >= 0 do
+                (if _is_sub ~sub 0 s (!i) ~len:n then raise M.Exit; decr i)
+                done;
+              (-1)
+            with | M.Exit  -> !i
+        let tail_from s x =
+          let len = String.length s in
+          if x > len
+          then
+            invalid_arg
+              ("Ext_string.tail_from " ^ (s ^ (" : " ^ (string_of_int x))))
+          else String.sub s x (len - x)
       end 
     module Ext_ident :
       sig
         [@@@ocaml.text " A wrapper around [Ident] module in compiler-libs"]
         val is_js : Ident.t -> bool
         val is_js_object : Ident.t -> bool
-        val create_js : string -> Ident.t
+        val create_js : string -> Ident.t[@@ocaml.doc
+                                           " create identifiers for predefined [js] global variables "]
         val create : string -> Ident.t
         val create_js_module : string -> Ident.t
         val make_js_object : Ident.t -> unit
@@ -1570,12 +1639,16 @@ include
         val make_unused : unit -> Ident.t
         val is_unused_ident : Ident.t -> bool
         val convert : string -> string
+        val undefined : Ident.t
+        val is_js_or_global : Ident.t -> bool
+        val nil : Ident.t
       end =
       struct
         let js_flag = 8
         let js_module_flag = 16
         let js_object_flag = 32
         let is_js (i : Ident.t) = (i.flags land js_flag) <> 0
+        let is_js_or_global (i : Ident.t) = (i.flags land (8 lor 1)) <> 0
         let is_js_module (i : Ident.t) = (i.flags land js_module_flag) <> 0
         let is_js_object (i : Ident.t) = (i.flags land js_object_flag) <> 0
         let make_js_object (i : Ident.t) =
@@ -1748,6 +1821,8 @@ include
         let make_unused () = create "_"
         let is_unused_ident i = (Ident.name i) = "_"
         let reset () = Hashtbl.clear js_module_table
+        let undefined = create_js "undefined"
+        let nil = create_js "null"
       end 
     module Js_fold_basic :
       sig
@@ -1861,7 +1936,8 @@ include
       sig
         val string_of_lambda : Lambda.lambda -> string
         val string_of_primitive : Lambda.primitive -> string
-        val kind_of_lambda_block : Lambda.lambda list -> Lam_stats.kind
+        val kind_of_lambda_block :
+          Lam_stats.boxed_nullable -> Lambda.lambda list -> Lam_stats.kind
         val get :
           Lambda.lambda ->
             Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
@@ -2025,14 +2101,14 @@ include
            | Lvar _|Lconst _|Lprim (Pfield _,(Lprim (Pgetglobal _,[]))::[])
                -> SimpleForm lam
            | _ -> NA : Lam_stats.element)
-        let kind_of_lambda_block (xs : Lambda.lambda list) =
+        let kind_of_lambda_block kind (xs : Lambda.lambda list) =
           ((xs |> (List.map element_of_lambda)) |>
-             (fun ls  -> Lam_stats.ImmutableBlock (Array.of_list ls)) : 
+             (fun ls  -> Lam_stats.ImmutableBlock ((Array.of_list ls), kind)) : 
           Lam_stats.kind)
         let get lam v i tbl =
           (match (Hashtbl.find tbl v : Lam_stats.kind) with
            | Module g -> Lprim ((Pfield i), [Lprim ((Pgetglobal g), [])])
-           | ImmutableBlock arr ->
+           | ImmutableBlock (arr,_) ->
                (match arr.(i) with | NA  -> lam | SimpleForm l -> l)
            | Constant (Const_block (_,_,ls)) -> Lconst (List.nth ls i)
            | _ -> lam
@@ -2135,6 +2211,27 @@ include
           (let rec flatten (acc : t list) (lam : Lambda.lambda) =
              (match lam with
               | Levent (e,_) -> flatten acc e
+              | Llet
+                  (str,id,(Lprim
+                             (Pccall
+                              {
+                                prim_name =
+                                  ("js_from_nullable"|"js_from_def");_},(Lvar
+                              _)::[])
+                             as arg),body)
+                  -> flatten ((Single (str, id, (aux arg))) :: acc) body
+              | Llet
+                  (str,id,Lprim
+                   (Pccall
+                    ({ prim_name = ("js_from_nullable"|"js_from_def");_} as p),arg::[]),body)
+                  ->
+                  let id' = Ident.rename id in
+                  flatten acc
+                    (Llet
+                       (str, id', arg,
+                         (Llet
+                            (Alias, id, (Lprim ((Pccall p), [Lvar id'])),
+                              body))))
               | Llet (str,id,arg,body) ->
                   let (res,l) = flatten acc arg in
                   flatten ((Single (str, id, res)) :: l) body
@@ -2244,6 +2341,51 @@ include
               | Lifused (v,l) -> Lifused (v, (aux l)) : Lambda.lambda) in
            aux lam : Lambda.lambda)
       end 
+    module Ext_log :
+      sig
+        [@@@ocaml.text
+          " A Poor man's logging utility\n    \n    Example:\n    {[ \n    err __LOC__ \"xx\"\n    ]}\n "]
+        type 'a logging =
+          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
+        val err : string -> 'a logging
+        val ierr : bool -> string -> 'a logging
+        val warn : string -> 'a logging
+        val iwarn : bool -> string -> 'a logging
+        val dwarn : string -> 'a logging
+        val info : string -> 'a logging
+        val iinfo : bool -> string -> 'a logging
+      end =
+      struct
+        type 'a logging =
+          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
+        let err str f =
+          Format.fprintf Format.err_formatter ("%s " ^^ (f ^^ "@.")) str
+        let ierr b str f =
+          if b
+          then Format.fprintf Format.err_formatter ("%s " ^^ f) str
+          else Format.ifprintf Format.err_formatter ("%s " ^^ f) str
+        let warn str f =
+          Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+            str
+        let iwarn b str f =
+          if b
+          then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str
+          else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str
+        let dwarn str f =
+          if Lam_current_unit.is_same_file ()
+          then
+            Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+              str
+          else
+            Format.ifprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
+              str
+        let info str f =
+          Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+        let iinfo b str f =
+          if b
+          then Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+          else Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
+      end 
     module Idents_analysis :
       sig
         [@@@ocaml.text
@@ -2267,8 +2409,17 @@ include
                     (fold
                        (fun id  ->
                           fun acc  ->
-                            union acc (Hashtbl.find ident_free_vars id))
-                       (!delta) empty) (!current_ident_sets));
+                            if Ext_ident.is_js_or_global id
+                            then acc
+                            else
+                              union acc
+                                (match Hashtbl.find ident_free_vars id with
+                                 | exception Not_found  ->
+                                     (Ext_log.err __LOC__ "%s/%d" id.name
+                                        id.stamp;
+                                      assert false)
+                                 | e -> e)) (!delta) empty)
+                    (!current_ident_sets));
                not (is_empty (!delta)))
             do
             current_ident_sets :=
@@ -2329,50 +2480,6 @@ include
                                  else None)) in
                        (match b with | [] -> None | _ -> Some (Recursive b)))) : 
           Lam_group.t list)
-      end 
-    module Ext_log :
-      sig
-        [@@@ocaml.text
-          " A Poor man's logging utility\n    \n    Example:\n    {[ \n    err __LOC__ \"xx\"\n    ]}\n "]
-        type 'a logging =
-          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
-        val err : string -> 'a logging
-        val ierr : bool -> string -> 'a logging
-        val warn : string -> 'a logging
-        val iwarn : bool -> string -> 'a logging
-        val dwarn : string -> 'a logging
-        val info : string -> 'a logging
-        val iinfo : bool -> string -> 'a logging
-      end =
-      struct
-        type 'a logging =
-          ('a,Format.formatter,unit,unit,unit,unit) format6 -> 'a
-        let err str f = Format.fprintf Format.err_formatter ("%s " ^^ f) str
-        let ierr b str f =
-          if b
-          then Format.fprintf Format.err_formatter ("%s " ^^ f) str
-          else Format.ifprintf Format.err_formatter ("%s " ^^ f) str
-        let warn str f =
-          Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
-            str
-        let iwarn b str f =
-          if b
-          then Format.fprintf Format.err_formatter ("WARN: %s " ^^ f) str
-          else Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str
-        let dwarn str f =
-          if Lam_current_unit.is_same_file ()
-          then
-            Format.fprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
-              str
-          else
-            Format.ifprintf Format.err_formatter ("WARN: %s " ^^ (f ^^ "@."))
-              str
-        let info str f =
-          Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
-        let iinfo b str f =
-          if b
-          then Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
-          else Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str
       end 
     module Type_util :
       sig
@@ -2655,6 +2762,7 @@ include
           ((free_variables used_idents defined_idents)#expression st)#get_depenencies
         let rec no_side_effect (x : J.expression) =
           match x.expression_desc with
+          | Bool _ -> true
           | Var _ -> true
           | Access (a,b) -> (no_side_effect a) && (no_side_effect b)
           | Str (b,_) -> b
@@ -2662,6 +2770,9 @@ include
           | Number _ -> true
           | Array (xs,_mutable_flag)|Caml_block (xs,_mutable_flag,_,_) ->
               List.for_all no_side_effect xs
+          | Bind (fn,obj) -> (no_side_effect fn) && (no_side_effect obj)
+          | Object kvs ->
+              List.for_all (fun (_property_name,y)  -> no_side_effect y) kvs
           | Array_append (a,b)|String_append (a,b)|Seq (a,b) ->
               (no_side_effect a) && (no_side_effect b)
           | Length (e,_)|Char_of_int e|Char_to_int e|Caml_block_tag e|Typeof
@@ -2671,7 +2782,7 @@ include
           | Math _|Array_of_size _|Array_copy _|Int_of_boolean _|Not _
             |String_of_small_int_array _|Json_stringify _|Anything_to_string
             _|Dump _|Cond _|FlatCall _|Call _|Dot _|New _
-            |Caml_uninitialized_obj _|String_access _|Object _
+            |Caml_uninitialized_obj _|String_access _|Raw_js_code _
             |Caml_block_set_tag _|Caml_block_set_length _ -> false
         let no_side_effect_expression (x : J.expression) = no_side_effect x
         let no_side_effect init =
@@ -2802,6 +2913,10 @@ include
                                        "\n   When in ES6 mode, we can use Symbol to guarantee its uniquess,\n   we can not tag [js] object, since it can be frozen \n"]
         val tag_ml_obj : unary_op
         val var_dot : ?comment:string -> Ident.t -> string -> t
+        val bind_var_call :
+          ?comment:string -> Ident.t -> string -> t list -> t
+        val bind_call :
+          ?comment:string -> J.expression -> string -> J.expression list -> t
         val js_global_dot : ?comment:string -> string -> string -> t
         val index : ?comment:string -> t -> int -> t
         val assign : binary_op
@@ -2869,7 +2984,6 @@ include
         val dec : unary_op
         val prefix_inc : ?comment:string -> J.vident -> t
         val prefix_dec : ?comment:string -> J.vident -> t
-        val null : ?comment:string -> unit -> t
         val tag : ?comment:string -> J.expression -> t
         val set_tag : ?comment:string -> J.expression -> J.expression -> t
         [@@@ocaml.text
@@ -2887,6 +3001,12 @@ include
         val of_block :
           ?comment:string -> J.statement list -> J.expression -> t[@@ocaml.doc
                                                                     " convert a block to expresion by using IIFE "]
+        val bind : binary_op
+        val raw_js_code : ?comment:string -> string -> t
+        val nil : t
+        val is_nil : unary_op
+        val js_bool : ?comment:string -> bool -> t
+        val is_undef : unary_op
       end =
       struct
         let no_side_effect = Js_analyzer.no_side_effect_expression
@@ -2939,6 +3059,8 @@ include
           t)
         let str ?(pure= true)  ?comment  s =
           ({ expression_desc = (Str (pure, s)); comment } : t)
+        let raw_js_code ?comment  s =
+          ({ expression_desc = (Raw_js_code s); comment } : t)
         let anything_to_string ?comment  (e : t) =
           (match e.expression_desc with
            | Str _ -> e
@@ -2984,6 +3106,8 @@ include
         let index ?comment  (e0 : t) (e1 : int) =
           (match e0.expression_desc with
            | Array (l,_mutable_flag) when no_side_effect e0 -> List.nth l e1
+           | Caml_block (l,_mutable_flag,_,_) when no_side_effect e0 ->
+               List.nth l e1
            | _ -> { expression_desc = (Access (e0, (int e1))); comment } : 
           t)
         let call ?comment  ?info  e0 args =
@@ -3004,7 +3128,8 @@ include
         let dot ?comment  (e0 : t) (e1 : string) =
           ({ expression_desc = (Dot (e0, e1, true)); comment } : t)[@@ocaml.doc
                                                                     " used in normal property\n    like [e.length], no dependency introduced\n"]
-        let undefined = js_global "undefined"
+        let undefined = var Ext_ident.undefined
+        let nil = var Ext_ident.nil
         let is_caml_block ?comment  (e : t) =
           ({
              expression_desc = (Bin (NotEqEq, (dot e "length"), undefined));
@@ -3012,7 +3137,8 @@ include
            } : t)[@@ocaml.doc " coupled with the runtime "]
         let array_length ?comment  (e : t) =
           (match e.expression_desc with
-           | Array (l,_) -> int ?comment (List.length l)
+           | Array (l,_)|Caml_block (l,_,_,_) when no_side_effect e ->
+               int ?comment (List.length l)
            | _ -> { expression_desc = (Length (e, Array)); comment } : 
           t)
         let string_length ?comment  (e : t) =
@@ -3076,6 +3202,25 @@ include
         let var_dot ?comment  (x : Ident.t) (e1 : string) =
           ({ expression_desc = (Dot ((var x), e1, true)); comment } : 
           t)
+        let bind_call ?comment  obj (e1 : string) args =
+          (call
+             {
+               expression_desc =
+                 (Bind
+                    ({ expression_desc = (Dot (obj, e1, true)); comment },
+                      obj));
+               comment = None
+             } args : t)
+        let bind_var_call ?comment  (x : Ident.t) (e1 : string) args =
+          (let obj = var x in
+           call
+             {
+               expression_desc =
+                 (Bind
+                    ({ expression_desc = (Dot (obj, e1, true)); comment },
+                      obj));
+               comment = None
+             } args : t)
         let float ?comment  f =
           ({ expression_desc = (Number (Float { f })); comment } : t)
         let zero_float_lit: t =
@@ -3093,6 +3238,18 @@ include
         let bool v = if v then true_ else false_
         let rec triple_equal ?comment  (e0 : t) (e1 : t) =
           (match ((e0.expression_desc), (e1.expression_desc)) with
+           | (Var (Id
+              ({ name = ("undefined"|"null") } as id)),(Char_of_int _
+                                                        |Char_to_int _|Bool _
+                                                        |Number _|Typeof _
+                                                        |Int_of_boolean _|Fun
+                                                        _|Array _|Caml_block
+                                                        _))
+               when (Ext_ident.is_js id) && (no_side_effect e1) -> false_
+           | ((Char_of_int _|Char_to_int _|Bool _|Number _|Typeof _
+               |Int_of_boolean _|Fun _|Array _|Caml_block _),Var
+              (Id ({ name = ("undefined"|"null") } as id))) when
+               (Ext_ident.is_js id) && (no_side_effect e0) -> false_
            | (Str (_,x),Str (_,y)) -> bool (Ext_string.equal x y)
            | (Char_to_int a,Char_to_int b) -> triple_equal ?comment a b
            | (Char_to_int a,Number (Int { i; c = Some v }))
@@ -3163,7 +3320,9 @@ include
                    (f.expression_desc))
            with
            | (Number (Int { i = 0;_}),_,_) -> f
-           | ((Number _|Array _),_,_) -> t
+           | ((Number _|Array _|Caml_block _),_,_) when no_side_effect b -> t
+           | (Bool (true ),_,_) -> t
+           | (Bool (false ),_,_) -> f
            | (Bin (Bor ,v,{ expression_desc = Number (Int { i = 0;_}) }),_,_)
                -> econd v t f
            | (Bin
@@ -3330,6 +3489,8 @@ include
                     (int 0)));
              comment = None
            } : t)
+        let bind ?comment  fn obj =
+          ({ expression_desc = (Bind (fn, obj)); comment } : t)
         let public_method_call meth_name obj label cache args =
           let len = List.length args in
           econd (int_equal (tag obj) (int 248))
@@ -3341,14 +3502,15 @@ include
              else
                runtime_call Js_config.curry "js"
                  [label; int cache; obj; arr NA (obj :: args)])
-            (if len <= 8
-             then
-               let len_str = string_of_int len in
-               runtime_call Js_config.curry ("app" ^ len_str)
-                 ((dot obj meth_name) :: args)
+            (let fn = bind (dot obj meth_name) obj in
+             if len = 0
+             then dot obj meth_name
              else
-               runtime_call Js_config.curry "app"
-                 [dot obj meth_name; arr NA args])
+               if len <= 8
+               then
+                 (let len_str = string_of_int len in
+                  runtime_call Js_config.curry ("app" ^ len_str) (fn :: args))
+               else runtime_call Js_config.curry "app" [fn; arr NA args])
         let set_tag ?comment  e tag =
           (seq { expression_desc = (Caml_block_set_tag (e, tag)); comment }
              (unit ()) : t)
@@ -3502,6 +3664,10 @@ include
                             comment
                           }]), (Js_fun_env.empty 0)))
              } [] : t)
+        let is_nil ?comment  x = triple_equal ?comment x nil
+        let js_bool ?comment  x =
+          ({ comment; expression_desc = (Bool x) } : t)
+        let is_undef ?comment  x = triple_equal ?comment x undefined
       end 
     module Js_stmt_make :
       sig
@@ -4218,8 +4384,12 @@ include
             let define = "define"
             let break = "break"
             let strict_directive = "'use strict';"
+            let true_ = "true"
+            let false_ = "false"
             let curry = "curry"
             let tag = "tag"
+            let bind = "bind"
+            let math = "Math"
           end
         let return_indent = (String.length L.return) / Ext_pp.indent_length
         let throw_indent = (String.length L.throw) / Ext_pp.indent_length
@@ -4247,27 +4417,29 @@ include
         let ident (cxt : Ext_pp_scope.t) f (id : Ident.t) =
           (let (str,cxt) = str_of_ident cxt id in P.string f str; cxt : 
           Ext_pp_scope.t)
+        let array_str1 =
+          Array.init 256 (fun i  -> String.make 1 (Char.chr i))[@@ocaml.doc
+                                                                 " Avoid to allocate single char string too many times"]
+        let array_conv =
+          [|"0";"1";"2";"3";"4";"5";"6";"7";"8";"9";"a";"b";"c";"d";"e";"f"|]
+          [@@ocaml.doc " For conveting \n \n"]
         let pp_string f ?(quote= '"')  ?(utf= false)  s =
-          let array_str1 =
-            Array.init 256 (fun i  -> String.make 1 (Char.chr i)) in
-          let array_conv =
-            Array.init 16 (fun i  -> String.make 1 ("0123456789abcdef".[i])) in
-          let quote_s = String.make 1 quote in
-          P.string f quote_s;
-          (let l = String.length s in
-           for i = 0 to l - 1 do
-             (let c = s.[i] in
+          let pp_raw_string f ?(utf= false)  s =
+            let l = String.length s in
+            for i = 0 to l - 1 do
+              let c = String.unsafe_get s i in
               match c with
+              | '\b' -> P.string f "\\b"
+              | '\012' -> P.string f "\\f"
+              | '\n' -> P.string f "\\n"
+              | '\r' -> P.string f "\\r"
+              | '\t' -> P.string f "\\t"
               | '\000' when
                   (i = (l - 1)) ||
-                    (((s.[i + 1]) < '0') || ((s.[i + 1]) > '9'))
+                    (let next = String.unsafe_get s (i + 1) in
+                     (next < '0') || (next > '9'))
                   -> P.string f "\\0"
-              | '\b' -> P.string f "\\b"
-              | '\t' -> P.string f "\\t"
-              | '\n' -> P.string f "\\n"
-              | '\012' -> P.string f "\\f"
               | '\\' when not utf -> P.string f "\\\\"
-              | '\r' -> P.string f "\\r"
               | '\000'..'\031'|'\127' ->
                   let c = Char.code c in
                   (P.string f "\\x";
@@ -4279,13 +4451,11 @@ include
                    P.string f (Array.unsafe_get array_conv (c lsr 4));
                    P.string f (Array.unsafe_get array_conv (c land 15)))
               | _ ->
-                  if c = quote
-                  then
-                    (P.string f "\\";
-                     P.string f (Array.unsafe_get array_str1 (Char.code c)))
-                  else P.string f (Array.unsafe_get array_str1 (Char.code c)))
-           done;
-           P.string f quote_s)
+                  (if c = quote then P.string f "\\";
+                   P.string f (Array.unsafe_get array_str1 (Char.code c)))
+            done in
+          let quote_s = String.make 1 quote in
+          P.string f quote_s; pp_raw_string f ~utf s; P.string f quote_s
         let pp_quote_string f s =
           pp_string f ~utf:false ~quote:(best_string_quote s) s
         let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list)
@@ -4408,6 +4578,8 @@ include
         and expression_desc cxt (l : int) f x =
           (match x with
            | Var v -> vident cxt f v
+           | Bool b ->
+               (if b then P.string f L.true_ else P.string f L.false_; cxt)
            | Seq (e1,e2) ->
                let action () =
                  let cxt = expression 0 cxt f e1 in
@@ -4437,6 +4609,13 @@ include
                                  (fun _  ->
                                     arguments cxt f [e; E.arr Mutable el]))))) in
                if l > 15 then P.paren_group f 1 action else action ()
+           | Bind (a,b) ->
+               expression_desc cxt l f
+                 (Call
+                    ({
+                       expression_desc = (Dot (a, L.bind, true));
+                       comment = None
+                     }, [b], { arity = Full }))
            | FlatCall (e,el) ->
                P.group f 1
                  (fun _  ->
@@ -4517,12 +4696,13 @@ include
            | Math (name,el) ->
                P.group f 1
                  (fun _  ->
-                    P.string f "Math";
+                    P.string f L.math;
                     P.string f L.dot;
                     P.string f name;
                     P.paren_group f 1 (fun _  -> arguments cxt f el))
            | Str (_,s) ->
                let quote = best_string_quote s in (pp_string f ~quote s; cxt)
+           | Raw_js_code s -> (P.string f s; cxt)
            | Number v ->
                let s =
                  match v with
@@ -4878,15 +5058,16 @@ include
                let rec need_paren (e : J.expression) =
                  match e.expression_desc with
                  | Call ({ expression_desc = Fun _ },_,_) -> true
-                 | Caml_uninitialized_obj _|Fun _|Object _ -> true
+                 | Caml_uninitialized_obj _|Raw_js_code _|Fun _|Object _ ->
+                     true
                  | Caml_block_set_tag _|Length _|Caml_block_set_length _
                    |Anything_to_string _|String_of_small_int_array _|Call _
                    |Array_append _|Array_copy _|Caml_block_tag _|Seq _|Dot _
                    |Cond _|Bin _|String_access _|Access _|Array_of_size _
                    |String_append _|Char_of_int _|Char_to_int _|Dump _
                    |Json_stringify _|Math _|Var _|Str _|Array _|Caml_block _
-                   |FlatCall _|Typeof _|Number _|Not _|New _|Int_of_boolean _
-                     -> false in
+                   |FlatCall _|Typeof _|Bind _|Number _|Not _|Bool _|New _
+                   |Int_of_boolean _ -> false in
                let cxt =
                  (if need_paren e then P.paren_group f 1 else P.group f 0)
                    (fun _  -> expression 0 cxt f e) in
@@ -4923,7 +5104,9 @@ include
                    match e.expression_desc with
                    | Number (Int { i = 1 }) ->
                        (P.string f L.while_;
-                        P.string f "(true)";
+                        P.string f "(";
+                        P.string f L.true_;
+                        P.string f ")";
                         P.space f;
                         cxt)
                    | _ ->
@@ -5573,7 +5756,7 @@ include
             ("map.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000%b\000\000\011%\000\000#~\000\000#?\160\208@$Make\160\176A\160\160A\160\176\001\004\014#Ord@@@@\144\179@\160\176\001\005\128&funarg@@\196B\176\001\005\222&height@\179@\160\176\001\005\223%param@@\188\144\004\004\166\150D\160\004\004@\145\144\144@\196B\176\001\005\229&create@\179@\160\176\001\005\230!l@\160\176\001\005\231!x@\160\176\001\005\232!d@\160\176\001\005\233!r@@\196@\176\001\005\234\"hl@\178\144\004#\160\144\004\018@\160\176\192&map.ml\000@\001\t8\001\tG\192\004\002\000@\001\t8\001\tO@A\196@\176\001\005\235\"hr@\178\004\012\160\144\004\020@\160\176\192\004\011\000@\001\t8\001\tY\192\004\012\000@\001\t8\001\ta@A\166\181@\144$Node@\160\004\021\160\144\004%\160\144\004$\160\004\015\160\188\166\157E\160\144\004%\160\144\004\027@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\236)singleton@\179@\160\176\001\005\237!x@\160\176\001\005\238!d@@\166\181@\144\004(@\160\145\161@\144%Empty\160\144\004\015\160\144\004\014\160\145\161@\144\004\t\160\145\144\144A@\196B\176\001\005\239#bal@\179@\160\176\001\005\240!l@\160\176\001\005\241!x@\160\176\001\005\242!d@\160\176\001\005\243!r@@\196B\176\001\005\244\"hl@\188\144\004\016\166\150D\160\004\004@\145\144\144@\196B\176\001\005\250\"hr@\188\144\004\018\166\150D\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\006\001\"lr@\166\150C\160\004&@\196A\176\001\006\002\"ld@\166\150B\160\004,@\196A\176\001\006\003\"lv@\166\150A\160\0042@\196A\176\001\006\004\"ll@\166\150@\160\0048@\188\166\004}\160\178\004\158\160\144\004\011@\160\176\192\004\157\000L\001\n\244\001\011\003\192\004\158\000L\001\n\244\001\011\012@A\160\178\004\166\160\144\004%@\160\176\192\004\165\000L\001\n\244\001\011\016\192\004\166\000L\001\n\244\001\011\025@A@\178\144\004\193\160\004\016\160\144\004\"\160\144\004*\160\178\004\b\160\004\015\160\144\004b\160\144\004a\160\004N@\160\176\192\004\184\000M\001\011\031\001\011=\192\004\185\000M\001\011\031\001\011N@A@\160\176\192\004\188\000M\001\011\031\001\011-\004\004@A\188\004\028\178\004\023\160\178\004\025\160\004(\160\004\024\160\004\023\160\166\150@\160\004&@@\160\176\192\004\202\000R\001\011\223\001\011\248\192\004\203\000R\001\011\223\001\012\r@A\160\166\150A\160\004.@\160\166\150B\160\0042@\160\178\004.\160\166\150C\160\0048@\160\004)\160\004(\160\004u@\160\176\192\004\223\000R\001\011\223\001\012\022\192\004\224\000R\001\011\223\001\012(@A@\160\176\192\004\227\000R\001\011\223\001\011\241\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Map.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Map.bal@@@\188\166\004\142\160\004\137\160\166L\160\004\144\160\145\144\144B@@\188\004\160\196A\176\001\006\011\"rr@\166\150C\160\004\166@\196A\176\001\006\012\"rd@\166\150B\160\004\172@\196A\176\001\006\r\"rv@\166\150A\160\004\178@\196A\176\001\006\014\"rl@\166\150@\160\004\184@\188\166\005\001\b\160\178\005\001)\160\144\004\029@\160\176\192\005\001(\000X\001\012\197\001\012\212\192\005\001)\000X\001\012\197\001\012\221@A\160\178\005\0011\160\144\004\019@\160\176\192\005\0010\000X\001\012\197\001\012\225\192\005\0011\000X\001\012\197\001\012\234@A@\178\004\139\160\178\004\141\160\004\217\160\004\133\160\004\132\160\004\012@\160\176\192\005\001;\000Y\001\012\240\001\r\005\192\005\001<\000Y\001\012\240\001\r\022@A\160\144\004*\160\144\0042\160\004\029@\160\176\192\005\001D\000Y\001\012\240\001\012\254\192\005\001E\000Y\001\012\240\001\r\031@A\188\004\026\178\004\160\160\178\004\162\160\004\238\160\004\154\160\004\153\160\166\150@\160\004$@@\160\176\192\005\001S\000^\001\r\177\001\r\202\192\005\001T\000^\001\r\177\001\r\220@A\160\166\150A\160\004,@\160\166\150B\160\0040@\160\178\004\183\160\166\150C\160\0046@\160\004&\160\004%\160\004A@\160\176\192\005\001h\000^\001\r\177\001\r\229\192\005\001i\000^\001\r\177\001\r\250@A@\160\176\192\005\001l\000^\001\r\177\001\r\195\004\004@A\166\004\137\160\166\004\136\160\166\004\135@\160\145\144\162'Map.bal@@@\166\004\147\160\166\004\146\160\166\004\145@\160\145\144\162'Map.bal@@@\166\181@\144\005\001t@\160\005\001(\160\004\212\160\004\211\160\005\001 \160\188\166\005\001q\160\005\001\025\160\005\001\022@\166L\160\005\001\028\160\145\144\144A@\166L\160\005\001\030\160\145\144\144A@@\196B\176\001\006\021(is_empty@\179@\160\176\001\006\022\005\001\193@@\188\144\004\003\145\161@\144%false\145\161A\144$true\165\160\160\176\001\006\023#add@\179@\160\176\001\006\024!x@\160\176\001\006\025$data@\160\176\001\006\026\005\001\217@@\188\144\004\003\196A\176\001\006\028!r@\166\150C\160\004\007@\196A\176\001\006\029!d@\166\150B\160\004\r@\196A\176\001\006\030!v@\166\150A\160\004\019@\196A\176\001\006\031!l@\166\150@\160\004\025@\196@\176\001\006 !c@\178\166\150@\160\144\005\002\003@\160\144\004+\160\144\004\023@\160\176\192\005\001\223\000k\001\015%\001\0157\192\005\001\224\000k\001\015%\001\015F@@\188\166\157@\160\144\004\020\160\145\144\144@@\166\181@\144\005\001\221@\160\144\004#\160\004\022\160\144\004?\160\144\004:\160\166\150D\160\004@@@\188\166\157B\160\004\023\160\145\144\144@@\178\144\005\001\184\160\178\144\004Y\160\004,\160\004\022\160\004\026@\160\176\192\005\002\n\000o\001\015\162\001\015\178\192\005\002\011\000o\001\015\162\001\015\192@A\160\0041\160\144\004O\160\004\029@\160\176\192\005\002\018\000o\001\015\162\001\015\174\192\005\002\019\000o\001\015\162\001\015\198@A\178\004\020\160\004(\160\004;\160\004\n\160\178\004\022\160\004A\160\004+\160\004*@\160\176\192\005\002\031\000q\001\015\214\001\015\236\192\005\002 \000q\001\015\214\001\015\250@A@\160\176\192\005\002#\000q\001\015\214\001\015\226\004\004@A\166\181@\144\005\002\023@\160\145\161@\144\005\001\239\160\004R\160\004<\160\145\161@\144\005\001\245\160\145\144\144A@@\165\160\160\176\001\006!$find@\179@\160\176\001\006\"!x@\160\176\001\006#\005\002b@@\188\144\004\003\196@\176\001\006)!c@\178\166\150@\160\004q@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002Q\000w\001\016d\001\016v\192\005\002R\000w\001\016d\001\016\133@@\188\166\004r\160\144\004\020\160\145\144\144@@\166\150B\160\004\029@\178\144\004(\160\004\023\160\188\166\004j\160\004\015\160\145\144\144@@\166\150@\160\004+@\166\150C\160\004.@@\160\176\192\005\002q\000y\001\016\163\001\016\178\192\005\002r\000y\001\016\163\001\016\209@A\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\006*#mem@\179@\160\176\001\006+!x@\160\176\001\006,\005\002\167@@\188\144\004\003\196@\176\001\0062!c@\178\166\150@\160\004\182@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002\150\000\127\001\0170\001\017B\192\005\002\151\000\127\001\0170\001\017Q@@\166I\160\166\004\184\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\004\174\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150C\160\004-@@\160\176\192\005\002\181\001\000\128\001\017U\001\017h\192\005\002\182\001\000\128\001\017U\001\017\134@A@\145\161@\144\005\001\022@\165\160\160\176\001\0063+min_binding@\179@\160\176\001\0064\005\002\228@@\188\144\004\003\196A\176\001\0065!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\209\001\000\133\001\017\246\001\018\021\192\005\002\210\001\000\133\001\017\246\001\018\"@A\166\181@@@\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\166\156@\160\166\147\004j@@@\165\160\160\176\001\006>+max_binding@\179@\160\176\001\006?\005\003\012@@\188\144\004\003\196A\176\001\006@!r@\166\150C\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\249\001\000\138\001\018\146\001\018\177\192\005\002\250\001\000\138\001\018\146\001\018\190@A\166\004(\160\166\150A\160\004\021@\160\166\150B\160\004\025@@\166\156@\160\166\147\004\145@@@\165\160\160\176\001\006I2remove_min_binding@\179@\160\176\001\006J\005\0033@@\188\144\004\003\196A\176\001\006K!l@\166\150@\160\004\007@\188\144\004\007\178\005\001\027\160\178\144\004\019\160\004\006@\160\176\192\005\003\"\001\000\143\001\019A\001\019d\192\005\003#\001\000\143\001\019A\001\019z@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\166\150C\160\004\030@@\160\176\192\005\0032\001\000\143\001\019A\001\019`\192\005\0033\001\000\143\001\019A\001\019\128@A\166\004\007\160\004$@\166\005\002R\160\166\005\002Q\160\166\005\002P@\160\145\144\1622Map.remove_min_elt@@@@\196B\176\001\006T%merge@\179@\160\176\001\006U\"t1@\160\176\001\006V\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006Y%match@\178\004\133\160\144\004\012@\160\176\192\005\003V\001\000\150\001\019\244\001\020\011\192\005\003W\001\000\150\001\019\244\001\020\025@A\178\005\001X\160\144\004\022\160\166\150@\160\144\004\017@\160\166\150A\160\004\005@\160\178\004H\160\004\020@\160\176\192\005\003i\001\000\151\001\020\029\001\0202\192\005\003j\001\000\151\001\020\029\001\020I@A@\160\176\192\005\003m\001\000\151\001\020\029\001\020'\004\004@A\144\004*\144\004(\165\160\160\176\001\006\\&remove@\179@\160\176\001\006]!x@\160\176\001\006^\005\003\157@@\188\144\004\003\196A\176\001\006`!r@\166\150C\160\004\007@\196A\176\001\006a!d@\166\150B\160\004\r@\196A\176\001\006b!v@\166\150A\160\004\019@\196A\176\001\006c!l@\166\150@\160\004\025@\196@\176\001\006d!c@\178\166\150@\160\005\001\196@\160\144\004'\160\144\004\022@\160\176\192\005\003\162\001\000\157\001\020\171\001\020\189\192\005\003\163\001\000\157\001\020\171\001\020\204@@\188\166\005\001\195\160\144\004\018\160\145\144\144@@\178\144\004m\160\144\004 \160\144\0044@\160\176\192\005\003\180\001\000\159\001\020\232\001\020\244\192\005\003\181\001\000\159\001\020\232\001\020\253@A\188\166\005\001\190\160\004\018\160\145\144\144@@\178\005\001\189\160\178\144\004N\160\004%\160\004\020@\160\176\192\005\003\197\001\000\161\001\021\027\001\021+\192\005\003\198\001\000\161\001\021\027\001\0217@A\160\004)\160\144\004F\160\004\026@\160\176\192\005\003\205\001\000\161\001\021\027\001\021'\192\005\003\206\001\000\161\001\021\027\001\021=@A\178\005\001\207\160\004\"\160\0043\160\004\n\160\178\004\021\160\0049\160\004&@\160\176\192\005\003\217\001\000\163\001\021M\001\021c\192\005\003\218\001\000\163\001\021M\001\021o@A@\160\176\192\005\003\221\001\000\163\001\021M\001\021Y\004\004@A\145\161@\144\005\003\165@\165\160\160\176\001\006e$iter@\179@\160\176\001\006f!f@\160\176\001\006g\005\004\014@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\003\249\001\000\168\001\021\194\001\021\204\192\005\003\250\001\000\168\001\021\194\001\021\212@A\173\178\004\011\160\166\150A\160\004\020@\160\166\150B\160\004\024@@\160\176\192\005\004\007\001\000\168\001\021\194\001\021\214\192\005\004\b\001\000\168\001\021\194\001\021\219@@\178\004\026\160\004\025\160\166\150C\160\004\"@@\160\176\192\005\004\017\001\000\168\001\021\194\001\021\221\192\005\004\018\001\000\168\001\021\194\001\021\229@A\145\161@\144\"()@\165\160\160\176\001\006m#map@\179@\160\176\001\006n!f@\160\176\001\006o\005\004D@@\188\144\004\003\196@\176\001\006u\"l'@\178\144\004\015\160\144\004\r\160\166\150@\160\004\012@@\160\176\192\005\0041\001\000\174\001\022D\001\022W\192\005\0042\001\000\174\001\022D\001\022^@A\196@\176\001\006v\"d'@\178\004\r\160\166\150B\160\004\024@@\160\176\192\005\004=\001\000\175\001\022b\001\022u\192\005\004>\001\000\175\001\022b\001\022x@@\196@\176\001\006w\"r'@\178\004\027\160\004\026\160\166\150C\160\004%@@\160\176\192\005\004J\001\000\176\001\022|\001\022\143\192\005\004K\001\000\176\001\022|\001\022\150@A\166\181@\144\005\004?@\160\144\004,\160\166\150A\160\0042@\160\144\004#\160\144\004\025\160\166\150D\160\004:@@\145\161@\144\005\004$@\165\160\160\176\001\006x$mapi@\179@\160\176\001\006y!f@\160\176\001\006z\005\004\141@@\188\144\004\003\196A\176\001\006~!v@\166\150A\160\004\007@\196@\176\001\006\128\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\004\128\001\000\183\001\023\026\001\023-\192\005\004\129\001\000\183\001\023\026\001\0235@A\196@\176\001\006\129\"d'@\178\004\r\160\144\004\026\160\166\150B\160\004 @@\160\176\192\005\004\142\001\000\184\001\0239\001\023L\192\005\004\143\001\000\184\001\0239\001\023Q@@\196@\176\001\006\130\"r'@\178\004\029\160\004\028\160\166\150C\160\004-@@\160\176\192\005\004\155\001\000\185\001\023U\001\023h\192\005\004\156\001\000\185\001\023U\001\023p@A\166\181@\144\005\004\144@\160\144\004.\160\004\028\160\144\004\"\160\144\004\022\160\166\150D\160\004?@@\145\161@\144\005\004r@\165\160\160\176\001\006\131$fold@\179@\160\176\001\006\132!f@\160\176\001\006\133!m@\160\176\001\006\134$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150C\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\166\150B\160\004\019@\160\178\004\019\160\004\018\160\166\150@\160\004\026@\160\144\004\031@\160\176\192\005\004\220\001\000\192\001\023\250\001\024\020\192\005\004\221\001\000\192\001\023\250\001\024#@A@\160\176\192\005\004\224\001\000\192\001\023\250\001\024\r\192\005\004\225\001\000\192\001\023\250\001\024$@@@\160\176\192\005\004\228\001\000\192\001\023\250\001\024\004\004\004@A\004\012@\165\160\160\176\001\006\140'for_all@\179@\160\176\001\006\141!p@\160\176\001\006\142\005\005\018@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\005\000\001\000\196\001\024]\001\024|\192\005\005\001\001\000\196\001\024]\001\024\129@@\160\166H\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005\014\001\000\196\001\024]\001\024\133\192\005\005\015\001\000\196\001\024]\001\024\144@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005\025\001\000\196\001\024]\001\024\148\192\005\005\026\001\000\196\001\024]\001\024\159@A@@\145\161A\144\005\003v@\165\160\160\176\001\006\148&exists@\179@\160\176\001\006\149!p@\160\176\001\006\150\005\005K@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\0059\001\000\200\001\024\216\001\024\247\192\005\005:\001\000\200\001\024\216\001\024\252@@\160\166I\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005G\001\000\200\001\024\216\001\025\000\192\005\005H\001\000\200\001\024\216\001\025\n@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005R\001\000\200\001\024\216\001\025\014\192\005\005S\001\000\200\001\024\216\001\025\024@A@@\145\161@\144\005\003\179@\165\160\160\176\001\006\156/add_min_binding@\179@\160\176\001\006\157!k@\160\176\001\006\158!v@\160\176\001\006\159\005\005\135@@\188\144\004\003\178\005\003g\160\178\144\004\017\160\144\004\015\160\144\004\014\160\166\150@\160\004\r@@\160\176\192\005\005u\001\000\213\001\026\199\001\026\211\192\005\005v\001\000\213\001\026\199\001\026\234@A\160\166\150A\160\004\021@\160\166\150B\160\004\025@\160\166\150C\160\004\029@@\160\176\192\005\005\133\001\000\213\001\026\199\001\026\207\192\005\005\134\001\000\213\001\026\199\001\026\240@A\178\144\005\005]\160\004\030\160\004\029@\160\176\192\005\005\141\001\000\211\001\026\136\001\026\153\192\005\005\142\001\000\211\001\026\136\001\026\166@A@\165\160\160\176\001\006\165/add_max_binding@\179@\160\176\001\006\166!k@\160\176\001\006\167!v@\160\176\001\006\168\005\005\191@@\188\144\004\003\178\005\003\159\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\166\150B\160\004\014@\160\178\144\004\029\160\144\004\027\160\144\004\026\160\166\150C\160\004\025@@\160\176\192\005\005\185\001\000\218\001\027\\\001\027n\192\005\005\186\001\000\218\001\027\\\001\027\133@A@\160\176\192\005\005\189\001\000\218\001\027\\\001\027d\004\004@A\178\0047\160\004\016\160\004\015@\160\176\192\005\005\195\001\000\216\001\027\029\001\027.\192\005\005\196\001\000\216\001\027\029\001\027;@A@\165\160\160\176\001\006\174$join@\179@\160\176\001\006\175!l@\160\176\001\006\176!v@\160\176\001\006\177!d@\160\176\001\006\178!r@@\188\144\004\r\188\144\004\006\196A\176\001\006\181\"rh@\166\150D\160\144\004\r@\196A\176\001\006\186\"lh@\166\150D\160\144\004\029@\188\166\005\005z\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\005\003\245\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\178\144\004=\160\166\150C\160\004!@\160\144\004<\160\144\004;\160\144\004:@\160\176\192\005\006\017\001\000\228\001\028\188\001\028\231\192\005\006\018\001\000\228\001\028\188\001\028\246@A@\160\176\192\005\006\021\001\000\228\001\028\188\001\028\218\004\004@A\188\166\005\005\167\160\004)\160\166L\160\0040\160\145\144\144B@@\178\005\004 \160\178\004\031\160\144\004Y\160\004\028\160\004\027\160\166\150@\160\004J@@\160\176\192\005\006-\001\000\229\001\028\252\001\029\030\192\005\006.\001\000\229\001\028\252\001\029-@A\160\166\150A\160\004R@\160\166\150B\160\004V@\160\166\150C\160\004Z@@\160\176\192\005\006=\001\000\229\001\028\252\001\029\026\192\005\006>\001\000\229\001\028\252\001\0296@A\178\005\005\152\160\004\029\160\0048\160\0047\160\0046@\160\176\192\005\006F\001\000\230\001\029<\001\029F\192\005\006G\001\000\230\001\029<\001\029T@A\178\004\155\160\004@\160\004?\160\004(@\160\176\192\005\006N\001\000\226\001\028P\001\028f\192\005\006O\001\000\226\001\028P\001\028{@A\178\004\231\160\004H\160\004G\160\004F@\160\176\192\005\006V\001\000\225\001\028$\001\028:\192\005\006W\001\000\225\001\028$\001\028O@A@\196B\176\001\006\191&concat@\179@\160\176\001\006\192\"t1@\160\176\001\006\193\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006\196\005\003\024@\178\005\003\156\160\144\004\011@\160\176\192\005\006m\001\000\241\001\030_\001\030v\192\005\006n\001\000\241\001\030_\001\030\132@A\178\004l\160\144\004\021\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\003_\160\004\020@\160\176\192\005\006\128\001\000\242\001\030\136\001\030\158\192\005\006\129\001\000\242\001\030\136\001\030\181@A@\160\176\192\005\006\132\001\000\242\001\030\136\001\030\146\004\004@A\144\004)\144\004'\196B\176\001\006\199.concat_or_join@\179@\160\176\001\006\200\"t1@\160\176\001\006\201!v@\160\176\001\006\202!d@\160\176\001\006\203\"t2@@\188\144\004\007\178\004\150\160\144\004\016\160\144\004\015\160\166\150@\160\004\n@\160\144\004\015@\160\176\192\005\006\166\001\000\246\001\030\237\001\030\255\192\005\006\167\001\000\246\001\030\237\001\031\r@A\178\144\004Q\160\004\016\160\004\t@\160\176\192\005\006\174\001\000\247\001\031\014\001\031\030\192\005\006\175\001\000\247\001\031\014\001\031*@A\165\160\160\176\001\006\205%split@\179@\160\176\001\006\206!x@\160\176\001\006\207\005\006\221@@\188\144\004\003\196A\176\001\006\209!r@\166\150C\160\004\007@\196A\176\001\006\210!d@\166\150B\160\004\r@\196A\176\001\006\211!v@\166\150A\160\004\019@\196A\176\001\006\212!l@\166\150@\160\004\025@\196@\176\001\006\213!c@\178\166\150@\160\005\005\004@\160\144\004'\160\144\004\022@\160\176\192\005\006\226\001\000\253\001\031\154\001\031\172\192\005\006\227\001\000\253\001\031\154\001\031\187@@\188\166\005\005\003\160\144\004\018\160\145\144\144@@\166\005\004\025\160\144\004\031\160\166\181@\144$Some@\160\144\0042@\160\144\004:@\188\166\005\005\000\160\004\020\160\145\144\144@@\196@\176\001\006\214\005\003\177@\178\144\004P\160\004'\160\004\023@\160\176\192\005\007\007\001\001\000\001 \003\001 $\192\005\007\b\001\001\000\001 \003\001 -@A\166\005\0046\160\166\150@\160\144\004\015@\160\166\150A\160\004\005@\160\178\005\001\017\160\166\150B\160\004\011@\160\004;\160\004&\160\004%@\160\176\192\005\007\030\001\001\000\001 \003\001 <\192\005\007\031\001\001\000\001 \003\001 I@A@\196@\176\001\006\218\005\003\210@\178\004!\160\004G\160\004.@\160\176\192\005\007'\001\001\002\001 Z\001 {\192\005\007(\001\001\002\001 Z\001 \132@A\166\005\004V\160\178\005\001(\160\004?\160\004O\160\004:\160\166\150@\160\144\004\019@@\160\176\192\005\0076\001\001\002\001 Z\001 \137\192\005\0077\001\001\002\001 Z\001 \150@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\007\t\160\161@\144$None\160\161@\144\005\007\016@@\165\160\160\176\001\006\222%merge@\179@\160\176\001\006\223!f@\160\176\001\006\224\"s1@\160\176\001\006\225\"s2@@\186\188\144\004\b\196A\176\001\006\231\"v1@\166\150A\160\144\004\015@\188\166\005\007M\160\166\150D\160\004\007@\160\178\005\007r\160\144\004\022@\160\176\192\005\007q\001\001\007\001 \249\001!+\192\005\007r\001\001\007\001 \249\001!4@A@\196@\176\001\006\233\005\004%@\178\004t\160\144\004\025\160\004\011@\160\176\192\005\007{\001\001\b\001!8\001!U\192\005\007|\001\001\b\001!8\001!`@A\178\144\004\247\160\178\144\0043\160\144\0041\160\166\150@\160\004$@\160\166\150@\160\144\004\025@@\160\176\192\005\007\143\001\001\t\001!d\001!}\192\005\007\144\001\001\t\001!d\001!\140@A\160\004\027\160\178\004\017\160\004\030\160\166\181@\144\004\166@\160\166\150B\160\0049@@\160\166\150A\160\004\021@@\160\176\192\005\007\163\001\001\t\001!d\001!\144\192\005\007\164\001\001\t\001!d\001!\163@@\160\178\004&\160\004%\160\166\150C\160\004H@\160\166\150B\160\004$@@\160\176\192\005\007\178\001\001\t\001!d\001!\164\192\005\007\179\001\001\t\001!d\001!\179@A@\160\176\192\005\007\182\001\001\t\001!d\001!n\004\004@A\169T@\188\144\004a\169T@\145\161@\144\005\007\130\160T@\188\144\004h\196A\176\001\006\240\"v2@\166\150A\160\144\004o@\196@\176\001\006\242\005\004z@\178\004\201\160\144\004\011\160\144\004y@\160\176\192\005\007\209\001\001\011\001!\222\001!\251\192\005\007\210\001\001\011\001!\222\001\"\006@A\178\004V\160\178\004U\160\004T\160\166\150@\160\144\004\019@\160\166\150@\160\004\025@@\160\176\192\005\007\226\001\001\012\001\"\n\001\"#\192\005\007\227\001\001\012\001\"\n\001\"2@A\160\004\025\160\178\004d\160\004\028\160\166\150A\160\004\017@\160\166\181@\144\004\253@\160\166\150B\160\004-@@@\160\176\192\005\007\246\001\001\012\001\"\n\001\"6\192\005\007\247\001\001\012\001\"\n\001\"I@@\160\178\004y\160\004x\160\166\150B\160\004$@\160\166\150C\160\004<@@\160\176\192\005\b\005\001\001\012\001\"\n\001\"J\192\005\b\006\001\001\012\001\"\n\001\"Y@A@\160\176\192\005\b\t\001\001\012\001\"\n\001\"\020\004\004@A\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\b\025@\160\144\144\001\001\014\160\144\144J@@@@\165\160\160\176\001\006\246&filter@\179@\160\176\001\006\247!p@\160\176\001\006\248\005\bM@@\188\144\004\003\196A\176\001\006\251!d@\166\150B\160\004\007@\196A\176\001\006\252!v@\166\150A\160\004\r@\196@\176\001\006\254\"l'@\178\144\004\027\160\144\004\025\160\166\150@\160\004\024@@\160\176\192\005\bF\001\001\020\001#\018\001#%\192\005\bG\001\001\020\001#\018\001#/@A\196@\176\001\006\255#pvd@\178\004\r\160\144\004\026\160\144\004\"@\160\176\192\005\bR\001\001\021\001#3\001#G\192\005\bS\001\001\021\001#3\001#L@@\196@\176\001\007\000\"r'@\178\004\027\160\004\026\160\166\150C\160\0041@@\160\176\192\005\b_\001\001\022\001#P\001#c\192\005\b`\001\001\022\001#P\001#m@A\188\144\004\026\178\005\002`\160\144\004,\160\004\026\160\004\025\160\144\004\021@\160\176\192\005\bl\001\001\023\001#q\001#\135\192\005\bm\001\001\023\001#q\001#\149@A\178\005\001\198\160\004\011\160\004\b@\160\176\192\005\bs\001\001\023\001#q\001#\155\192\005\bt\001\001\023\001#q\001#\167@A\145\161@\144\005\b<@\165\160\160\176\001\007\001)partition@\179@\160\176\001\007\002!p@\160\176\001\007\003\005\b\165@@\188\144\004\003\196A\176\001\007\006!d@\166\150B\160\004\007@\196A\176\001\007\007!v@\166\150A\160\004\r@\196@\176\001\007\t\005\005C@\178\144\004\026\160\144\004\024\160\166\150@\160\004\023@@\160\176\192\005\b\157\001\001\029\001$H\001$a\192\005\b\158\001\001\029\001$H\001$n@A\196A\176\001\007\n\"lf@\166\150A\160\144\004\020@\196A\176\001\007\011\"lt@\166\150@\160\004\007@\196@\176\001\007\012#pvd@\178\004\026\160\144\004&\160\144\004.@\160\176\192\005\b\182\001\001\030\001$r\001$\134\192\005\b\183\001\001\030\001$r\001$\139@@\196@\176\001\007\r\005\005j@\178\004'\160\004&\160\166\150C\160\004<@@\160\176\192\005\b\194\001\001\031\001$\143\001$\168\192\005\b\195\001\001\031\001$\143\001$\181@A\196A\176\001\007\014\"rf@\166\150A\160\144\004\018@\196A\176\001\007\015\"rt@\166\150@\160\004\007@\188\144\004&\166\005\006\000\160\178\005\002\210\160\144\0041\160\004(\160\004'\160\144\004\016@\160\176\192\005\b\222\001\001!\001$\202\001$\218\192\005\b\223\001\001!\001$\202\001$\232@A\160\178\005\0029\160\144\004D\160\144\004!@\160\176\192\005\b\232\001\001!\001$\202\001$\234\192\005\b\233\001\001!\001$\202\001$\246@A@\166\005\006\023\160\178\005\002D\160\004\023\160\004\020@\160\176\192\005\b\241\001\001\"\001$\248\001%\b\192\005\b\242\001\001\"\001$\248\001%\020@A\160\178\005\002\241\160\004\019\160\004F\160\004E\160\004\020@\160\176\192\005\b\251\001\001\"\001$\248\001%\022\192\005\b\252\001\001\"\001$\248\001%$@A@\145\178@@\160\161@\144\005\b\198\160\161@\144\005\b\201@@\165\160\160\176\001\007\016)cons_enum@\179@\160\176\001\007\017!m@\160\176\001\007\018!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\166\150C\160\004\024@\160\144\004\029@@\160\176\192\005\t.\001\001)\001%\179\001%\210\192\005\t/\001\001)\001%\179\001%\240@A\004\005@\196B\176\001\007\024'compare@\179@\160\176\001\007\025#cmp@\160\176\001\007\026\"m1@\160\176\001\007\027\"m2@@\165\160\160\176\001\007\028+compare_aux@\179@\160\176\001\007\029\"e1@\160\176\001\007\030\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\007)!c@\178\166\150@\160\005\007|@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\t`\001\0012\001&\212\001&\232\192\005\ta\001\0012\001&\212\001&\249@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\196@\176\001\007*!c@\178\144\004;\160\166\150A\160\004\028@\160\166\150A\160\004\027@@\160\176\192\005\tz\001\0014\001'\031\001'3\192\005\t{\001\0014\001'\031\001'<@@\188\166\004\026\160\144\004\020\160\145\144\144@@\004\005\178\144\004F\160\178\004t\160\166\150B\160\0044@\160\166\150C\160\0048@@\160\176\192\005\t\146\001\0016\001'b\001'z\192\005\t\147\001\0016\001'b\001'\139@A\160\178\004\130\160\166\150B\160\004=@\160\166\150C\160\004A@@\160\176\192\005\t\160\001\0016\001'b\001'\140\192\005\t\161\001\0016\001'b\001'\157@A@\160\176\192\005\t\164\001\0016\001'b\001'n\004\004@A\145\144\144A\188\144\004c\145\144\144\000\255\145\144\144@@\178\004,\160\178\004\159\160\144\004}\160\145\161@\144#End@\160\176\192\005\t\188\001\0017\001'\158\001'\179\192\005\t\189\001\0017\001'\158\001'\197@A\160\178\004\172\160\144\004\135\160\145\161@\144\004\r@\160\176\192\005\t\200\001\0017\001'\158\001'\198\192\005\t\201\001\0017\001'\158\001'\216@A@\160\176\192\005\t\204\001\0017\001'\158\001'\167\004\004@A\196B\176\001\007+%equal@\179@\160\176\001\007,#cmp@\160\176\001\007-\"m1@\160\176\001\007.\"m2@@\165\160\160\176\001\007/)equal_aux@\179@\160\176\001\0070\"e1@\160\176\001\0071\"e2@@\188\144\004\007\188\144\004\006\166H\160\166\005\b\n\160\178\166\150@\160\005\b\026@\160\166\150@\160\144\004\022@\160\166\150@\160\144\004\024@@\160\176\192\005\t\254\001\001@\001(\194\001(\206\192\005\t\255\001\001@\001(\194\001(\223@@\160\145\144\144@@\160\166H\160\178\144\0047\160\166\150A\160\004\023@\160\166\150A\160\004\022@@\160\176\192\005\n\019\001\001@\001(\194\001(\231\192\005\n\020\001\001@\001(\194\001(\240@@\160\178\144\004;\160\178\005\001\006\160\166\150B\160\004(@\160\166\150C\160\004,@@\160\176\192\005\n$\001\001A\001(\244\001)\n\192\005\n%\001\001A\001(\244\001)\027@A\160\178\005\001\020\160\166\150B\160\0041@\160\166\150C\160\0045@@\160\176\192\005\n2\001\001A\001(\244\001)\028\192\005\n3\001\001A\001(\244\001)-@A@\160\176\192\005\n6\001\001A\001(\244\001)\000\004\004@A@@\145\161@\144\005\b\150\188\144\004X\145\161@\144\005\b\155\145\161A\144\005\b\154@\178\004,\160\178\005\0011\160\144\004r\160\145\161@\144\004\146@\160\176\192\005\nM\001\001B\001).\001)A\192\005\nN\001\001B\001).\001)S@A\160\178\005\001=\160\144\004{\160\145\161@\144\004\158@\160\176\192\005\nY\001\001B\001).\001)T\192\005\nZ\001\001B\001).\001)f@A@\160\176\192\005\n]\001\001B\001).\001)7\004\004@A\165\160\160\176\001\007<(cardinal@\179@\160\176\001\007=\005\n\136@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\nt\001\001F\001)\155\001)\186\192\005\nu\001\001F\001)\155\001)\196@A\160\145\144\144A@\160\178\004\015\160\166\150C\160\004\025@@\160\176\192\005\n\130\001\001F\001)\155\001)\203\192\005\n\131\001\001F\001)\155\001)\213@A@\145\144\144@@\165\160\160\176\001\007C,bindings_aux@\179@\160\176\001\007D$accu@\160\176\001\007E\005\n\180@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\005\007\201\160\166\150A\160\004\014@\160\166\150B\160\004\018@@\160\178\004\018\160\144\004\027\160\166\150C\160\004\026@@\160\176\192\005\n\175\001\001J\001*\022\001*M\192\005\n\176\001\001J\001*\022\001*`@A@\160\166\150@\160\004\"@@\160\176\192\005\n\183\001\001J\001*\022\001*5\192\005\n\184\001\001J\001*\022\001*c@A\004\017@\196B\176\001\007K(bindings@\179@\160\176\001\007L!s@@\178\004,\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\n\202\001\001M\001*z\001*\128\192\005\n\203\001\001M\001*z\001*\145@A\166\181@C@\160\145\161@\144\005\n\150\160\144\005\t:\160\005\b2\160\005\b\210\160\005\005O\160\005\007\024\160\005\003X\160\144\005\001\170\160\144\005\001\015\160\005\006\238\160\005\006\031\160\005\005\218\160\005\005\162\160\005\002\165\160\005\002O\160\004w\160\144\004,\160\005\b\026\160\005\007\243\160\144\005\b-\160\005\003\233\160\005\b\141\160\005\006\197\160\005\006w@@A@")));
+                    "\132\149\166\190\000\000%W\000\000\011\026\000\000#h\000\000#)\160\208@$Make\160\176A\160\160A\160\176\001\004\014#Ord@@@@\144\179@\160\176\001\005\128&funarg@@\196B\176\001\005\222&height@\179@\160\176\001\005\223%param@@\188\144\004\004\166\150D\160\004\004@\145\144\144@\196B\176\001\005\229&create@\179@\160\176\001\005\230!l@\160\176\001\005\231!x@\160\176\001\005\232!d@\160\176\001\005\233!r@@\196@\176\001\005\234\"hl@\178\144\004#\160\144\004\018@\160\176\192&map.ml\000@\001\t8\001\tG\192\004\002\000@\001\t8\001\tO@A\196@\176\001\005\235\"hr@\178\004\012\160\144\004\020@\160\176\192\004\011\000@\001\t8\001\tY\192\004\012\000@\001\t8\001\ta@A\166\181@\144$Node@\160\004\021\160\144\004%\160\144\004$\160\004\015\160\188\166\157E\160\144\004%\160\144\004\027@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\236)singleton@\179@\160\176\001\005\237!x@\160\176\001\005\238!d@@\166\181@\144\004(@\160\145\161@\144%Empty\160\144\004\015\160\144\004\014\160\145\161@\144\004\t\160\145\144\144A@\196B\176\001\005\239#bal@\179@\160\176\001\005\240!l@\160\176\001\005\241!x@\160\176\001\005\242!d@\160\176\001\005\243!r@@\196B\176\001\005\244\"hl@\188\144\004\016\166\150D\160\004\004@\145\144\144@\196B\176\001\005\250\"hr@\188\144\004\018\166\150D\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\006\001\"lr@\166\150C\160\004&@\196A\176\001\006\002\"ld@\166\150B\160\004,@\196A\176\001\006\003\"lv@\166\150A\160\0042@\196A\176\001\006\004\"ll@\166\150@\160\0048@\188\166\004}\160\178\004\158\160\144\004\011@\160\176\192\004\157\000L\001\n\244\001\011\003\192\004\158\000L\001\n\244\001\011\012@A\160\178\004\166\160\144\004%@\160\176\192\004\165\000L\001\n\244\001\011\016\192\004\166\000L\001\n\244\001\011\025@A@\178\144\004\193\160\004\016\160\144\004\"\160\144\004*\160\178\004\b\160\004\015\160\144\004b\160\144\004a\160\004N@\160\176\192\004\184\000M\001\011\031\001\011=\192\004\185\000M\001\011\031\001\011N@A@\160\176\192\004\188\000M\001\011\031\001\011-\004\004@A\188\004\028\178\004\023\160\178\004\025\160\004(\160\004\024\160\004\023\160\166\150@\160\004&@@\160\176\192\004\202\000R\001\011\223\001\011\248\192\004\203\000R\001\011\223\001\012\r@A\160\166\150A\160\004.@\160\166\150B\160\0042@\160\178\004.\160\166\150C\160\0048@\160\004)\160\004(\160\004u@\160\176\192\004\223\000R\001\011\223\001\012\022\192\004\224\000R\001\011\223\001\012(@A@\160\176\192\004\227\000R\001\011\223\001\011\241\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Map.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Map.bal@@@\188\166\004\142\160\004\137\160\166L\160\004\144\160\145\144\144B@@\188\004\160\196A\176\001\006\011\"rr@\166\150C\160\004\166@\196A\176\001\006\012\"rd@\166\150B\160\004\172@\196A\176\001\006\r\"rv@\166\150A\160\004\178@\196A\176\001\006\014\"rl@\166\150@\160\004\184@\188\166\005\001\b\160\178\005\001)\160\144\004\029@\160\176\192\005\001(\000X\001\012\197\001\012\212\192\005\001)\000X\001\012\197\001\012\221@A\160\178\005\0011\160\144\004\019@\160\176\192\005\0010\000X\001\012\197\001\012\225\192\005\0011\000X\001\012\197\001\012\234@A@\178\004\139\160\178\004\141\160\004\217\160\004\133\160\004\132\160\004\012@\160\176\192\005\001;\000Y\001\012\240\001\r\005\192\005\001<\000Y\001\012\240\001\r\022@A\160\144\004*\160\144\0042\160\004\029@\160\176\192\005\001D\000Y\001\012\240\001\012\254\192\005\001E\000Y\001\012\240\001\r\031@A\188\004\026\178\004\160\160\178\004\162\160\004\238\160\004\154\160\004\153\160\166\150@\160\004$@@\160\176\192\005\001S\000^\001\r\177\001\r\202\192\005\001T\000^\001\r\177\001\r\220@A\160\166\150A\160\004,@\160\166\150B\160\0040@\160\178\004\183\160\166\150C\160\0046@\160\004&\160\004%\160\004A@\160\176\192\005\001h\000^\001\r\177\001\r\229\192\005\001i\000^\001\r\177\001\r\250@A@\160\176\192\005\001l\000^\001\r\177\001\r\195\004\004@A\166\004\137\160\166\004\136\160\166\004\135@\160\145\144\162'Map.bal@@@\166\004\147\160\166\004\146\160\166\004\145@\160\145\144\162'Map.bal@@@\166\181@\144\005\001t@\160\005\001(\160\004\212\160\004\211\160\005\001 \160\188\166\005\001q\160\005\001\025\160\005\001\022@\166L\160\005\001\028\160\145\144\144A@\166L\160\005\001\030\160\145\144\144A@@\196B\176\001\006\021(is_empty@\179@\160\176\001\006\022\005\001\193@@\188\144\004\003\145\161@\144%false\145\161A\144$true\165\160\160\176\001\006\023#add@\179@\160\176\001\006\024!x@\160\176\001\006\025$data@\160\176\001\006\026\005\001\217@@\188\144\004\003\196A\176\001\006\028!r@\166\150C\160\004\007@\196A\176\001\006\029!d@\166\150B\160\004\r@\196A\176\001\006\030!v@\166\150A\160\004\019@\196A\176\001\006\031!l@\166\150@\160\004\025@\196@\176\001\006 !c@\178\166\150@\160\144\005\002\003@\160\144\004+\160\144\004\023@\160\176\192\005\001\223\000k\001\015%\001\0157\192\005\001\224\000k\001\015%\001\015F@@\188\166\157@\160\144\004\020\160\145\144\144@@\166\181@\144\005\001\221@\160\144\004#\160\004\022\160\144\004?\160\144\004:\160\166\150D\160\004@@@\188\166\157B\160\004\023\160\145\144\144@@\178\144\005\001\184\160\178\144\004Y\160\004,\160\004\022\160\004\026@\160\176\192\005\002\n\000o\001\015\162\001\015\178\192\005\002\011\000o\001\015\162\001\015\192@A\160\0041\160\144\004O\160\004\029@\160\176\192\005\002\018\000o\001\015\162\001\015\174\192\005\002\019\000o\001\015\162\001\015\198@A\178\004\020\160\004(\160\004;\160\004\n\160\178\004\022\160\004A\160\004+\160\004*@\160\176\192\005\002\031\000q\001\015\214\001\015\236\192\005\002 \000q\001\015\214\001\015\250@A@\160\176\192\005\002#\000q\001\015\214\001\015\226\004\004@A\166\181@\144\005\002\023@\160\145\161@\144\005\001\239\160\004R\160\004<\160\145\161@\144\005\001\245\160\145\144\144A@@\165\160\160\176\001\006!$find@\179@\160\176\001\006\"!x@\160\176\001\006#\005\002b@@\188\144\004\003\196@\176\001\006)!c@\178\166\150@\160\004q@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002Q\000w\001\016d\001\016v\192\005\002R\000w\001\016d\001\016\133@@\188\166\004r\160\144\004\020\160\145\144\144@@\166\150B\160\004\029@\178\144\004(\160\004\023\160\188\166\004j\160\004\015\160\145\144\144@@\166\150@\160\004+@\166\150C\160\004.@@\160\176\192\005\002q\000y\001\016\163\001\016\178\192\005\002r\000y\001\016\163\001\016\209@A\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\006*#mem@\179@\160\176\001\006+!x@\160\176\001\006,\005\002\167@@\188\144\004\003\196@\176\001\0062!c@\178\166\150@\160\004\182@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\002\150\000\127\001\0170\001\017B\192\005\002\151\000\127\001\0170\001\017Q@@\166I\160\166\004\184\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\004\174\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150C\160\004-@@\160\176\192\005\002\181\001\000\128\001\017U\001\017h\192\005\002\182\001\000\128\001\017U\001\017\134@A@\145\161@\144\005\001\022@\165\160\160\176\001\0063+min_binding@\179@\160\176\001\0064\005\002\228@@\188\144\004\003\196A\176\001\0065!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\209\001\000\133\001\017\246\001\018\021\192\005\002\210\001\000\133\001\017\246\001\018\"@A\166\181@@@\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\166\156@\160\166\147\004j@@@\165\160\160\176\001\006>+max_binding@\179@\160\176\001\006?\005\003\012@@\188\144\004\003\196A\176\001\006@!r@\166\150C\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\249\001\000\138\001\018\146\001\018\177\192\005\002\250\001\000\138\001\018\146\001\018\190@A\166\004(\160\166\150A\160\004\021@\160\166\150B\160\004\025@@\166\156@\160\166\147\004\145@@@\165\160\160\176\001\006I2remove_min_binding@\179@\160\176\001\006J\005\0033@@\188\144\004\003\196A\176\001\006K!l@\166\150@\160\004\007@\188\144\004\007\178\005\001\027\160\178\144\004\019\160\004\006@\160\176\192\005\003\"\001\000\143\001\019A\001\019d\192\005\003#\001\000\143\001\019A\001\019z@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@\160\166\150C\160\004\030@@\160\176\192\005\0032\001\000\143\001\019A\001\019`\192\005\0033\001\000\143\001\019A\001\019\128@A\166\004\007\160\004$@\166\005\002R\160\166\005\002Q\160\166\005\002P@\160\145\144\1622Map.remove_min_elt@@@@\196B\176\001\006T%merge@\179@\160\176\001\006U\"t1@\160\176\001\006V\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006Y%match@\178\004\133\160\144\004\012@\160\176\192\005\003V\001\000\150\001\019\244\001\020\011\192\005\003W\001\000\150\001\019\244\001\020\025@A\178\005\001X\160\144\004\022\160\166\150@\160\144\004\017@\160\166\150A\160\004\005@\160\178\004H\160\004\020@\160\176\192\005\003i\001\000\151\001\020\029\001\0202\192\005\003j\001\000\151\001\020\029\001\020I@A@\160\176\192\005\003m\001\000\151\001\020\029\001\020'\004\004@A\144\004*\144\004(\165\160\160\176\001\006\\&remove@\179@\160\176\001\006]!x@\160\176\001\006^\005\003\157@@\188\144\004\003\196A\176\001\006`!r@\166\150C\160\004\007@\196A\176\001\006a!d@\166\150B\160\004\r@\196A\176\001\006b!v@\166\150A\160\004\019@\196A\176\001\006c!l@\166\150@\160\004\025@\196@\176\001\006d!c@\178\166\150@\160\005\001\196@\160\144\004'\160\144\004\022@\160\176\192\005\003\162\001\000\157\001\020\171\001\020\189\192\005\003\163\001\000\157\001\020\171\001\020\204@@\188\166\005\001\195\160\144\004\018\160\145\144\144@@\178\144\004m\160\144\004 \160\144\0044@\160\176\192\005\003\180\001\000\159\001\020\232\001\020\244\192\005\003\181\001\000\159\001\020\232\001\020\253@A\188\166\005\001\190\160\004\018\160\145\144\144@@\178\005\001\189\160\178\144\004N\160\004%\160\004\020@\160\176\192\005\003\197\001\000\161\001\021\027\001\021+\192\005\003\198\001\000\161\001\021\027\001\0217@A\160\004)\160\144\004F\160\004\026@\160\176\192\005\003\205\001\000\161\001\021\027\001\021'\192\005\003\206\001\000\161\001\021\027\001\021=@A\178\005\001\207\160\004\"\160\0043\160\004\n\160\178\004\021\160\0049\160\004&@\160\176\192\005\003\217\001\000\163\001\021M\001\021c\192\005\003\218\001\000\163\001\021M\001\021o@A@\160\176\192\005\003\221\001\000\163\001\021M\001\021Y\004\004@A\145\161@\144\005\003\165@\165\160\160\176\001\006e$iter@\179@\160\176\001\006f!f@\160\176\001\006g\005\004\014@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\003\249\001\000\168\001\021\194\001\021\204\192\005\003\250\001\000\168\001\021\194\001\021\212@A\173\178\004\011\160\166\150A\160\004\020@\160\166\150B\160\004\024@@\160\176\192\005\004\007\001\000\168\001\021\194\001\021\214\192\005\004\b\001\000\168\001\021\194\001\021\219@@\178\004\026\160\004\025\160\166\150C\160\004\"@@\160\176\192\005\004\017\001\000\168\001\021\194\001\021\221\192\005\004\018\001\000\168\001\021\194\001\021\229@A\145\161@\144\"()@\165\160\160\176\001\006m#map@\179@\160\176\001\006n!f@\160\176\001\006o\005\004D@@\188\144\004\003\196@\176\001\006u\"l'@\178\144\004\015\160\144\004\r\160\166\150@\160\004\012@@\160\176\192\005\0041\001\000\174\001\022D\001\022W\192\005\0042\001\000\174\001\022D\001\022^@A\196@\176\001\006v\"d'@\178\004\r\160\166\150B\160\004\024@@\160\176\192\005\004=\001\000\175\001\022b\001\022u\192\005\004>\001\000\175\001\022b\001\022x@@\196@\176\001\006w\"r'@\178\004\027\160\004\026\160\166\150C\160\004%@@\160\176\192\005\004J\001\000\176\001\022|\001\022\143\192\005\004K\001\000\176\001\022|\001\022\150@A\166\181@\144\005\004?@\160\144\004,\160\166\150A\160\0042@\160\144\004#\160\144\004\025\160\166\150D\160\004:@@\145\161@\144\005\004$@\165\160\160\176\001\006x$mapi@\179@\160\176\001\006y!f@\160\176\001\006z\005\004\141@@\188\144\004\003\196A\176\001\006~!v@\166\150A\160\004\007@\196@\176\001\006\128\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\004\128\001\000\183\001\023\026\001\023-\192\005\004\129\001\000\183\001\023\026\001\0235@A\196@\176\001\006\129\"d'@\178\004\r\160\144\004\026\160\166\150B\160\004 @@\160\176\192\005\004\142\001\000\184\001\0239\001\023L\192\005\004\143\001\000\184\001\0239\001\023Q@@\196@\176\001\006\130\"r'@\178\004\029\160\004\028\160\166\150C\160\004-@@\160\176\192\005\004\155\001\000\185\001\023U\001\023h\192\005\004\156\001\000\185\001\023U\001\023p@A\166\181@\144\005\004\144@\160\144\004.\160\004\028\160\144\004\"\160\144\004\022\160\166\150D\160\004?@@\145\161@\144\005\004r@\165\160\160\176\001\006\131$fold@\179@\160\176\001\006\132!f@\160\176\001\006\133!m@\160\176\001\006\134$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150C\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\166\150B\160\004\019@\160\178\004\019\160\004\018\160\166\150@\160\004\026@\160\144\004\031@\160\176\192\005\004\220\001\000\192\001\023\250\001\024\020\192\005\004\221\001\000\192\001\023\250\001\024#@A@\160\176\192\005\004\224\001\000\192\001\023\250\001\024\r\192\005\004\225\001\000\192\001\023\250\001\024$@@@\160\176\192\005\004\228\001\000\192\001\023\250\001\024\004\004\004@A\004\012@\165\160\160\176\001\006\140'for_all@\179@\160\176\001\006\141!p@\160\176\001\006\142\005\005\018@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\005\000\001\000\196\001\024]\001\024|\192\005\005\001\001\000\196\001\024]\001\024\129@@\160\166H\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005\014\001\000\196\001\024]\001\024\133\192\005\005\015\001\000\196\001\024]\001\024\144@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005\025\001\000\196\001\024]\001\024\148\192\005\005\026\001\000\196\001\024]\001\024\159@A@@\145\161A\144\005\003v@\165\160\160\176\001\006\148&exists@\179@\160\176\001\006\149!p@\160\176\001\006\150\005\005K@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\160\176\192\005\0059\001\000\200\001\024\216\001\024\247\192\005\005:\001\000\200\001\024\216\001\024\252@@\160\166I\160\178\144\004\031\160\004\019\160\166\150@\160\004\027@@\160\176\192\005\005G\001\000\200\001\024\216\001\025\000\192\005\005H\001\000\200\001\024\216\001\025\n@A\160\178\004\012\160\004\030\160\166\150C\160\004&@@\160\176\192\005\005R\001\000\200\001\024\216\001\025\014\192\005\005S\001\000\200\001\024\216\001\025\024@A@@\145\161@\144\005\003\179@\165\160\160\176\001\006\156/add_min_binding@\179@\160\176\001\006\157!k@\160\176\001\006\158!v@\160\176\001\006\159\005\005\135@@\188\144\004\003\178\005\003g\160\178\144\004\017\160\144\004\015\160\144\004\014\160\166\150@\160\004\r@@\160\176\192\005\005u\001\000\213\001\026\199\001\026\211\192\005\005v\001\000\213\001\026\199\001\026\234@A\160\166\150A\160\004\021@\160\166\150B\160\004\025@\160\166\150C\160\004\029@@\160\176\192\005\005\133\001\000\213\001\026\199\001\026\207\192\005\005\134\001\000\213\001\026\199\001\026\240@A\178\144\005\005]\160\004\030\160\004\029@\160\176\192\005\005\141\001\000\211\001\026\136\001\026\153\192\005\005\142\001\000\211\001\026\136\001\026\166@A@\165\160\160\176\001\006\165/add_max_binding@\179@\160\176\001\006\166!k@\160\176\001\006\167!v@\160\176\001\006\168\005\005\191@@\188\144\004\003\178\005\003\159\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\166\150B\160\004\014@\160\178\144\004\029\160\144\004\027\160\144\004\026\160\166\150C\160\004\025@@\160\176\192\005\005\185\001\000\218\001\027\\\001\027n\192\005\005\186\001\000\218\001\027\\\001\027\133@A@\160\176\192\005\005\189\001\000\218\001\027\\\001\027d\004\004@A\178\0047\160\004\016\160\004\015@\160\176\192\005\005\195\001\000\216\001\027\029\001\027.\192\005\005\196\001\000\216\001\027\029\001\027;@A@\165\160\160\176\001\006\174$join@\179@\160\176\001\006\175!l@\160\176\001\006\176!v@\160\176\001\006\177!d@\160\176\001\006\178!r@@\188\144\004\r\188\144\004\006\196A\176\001\006\181\"rh@\166\150D\160\004\007@\196A\176\001\006\186\"lh@\166\150D\160\004\015@\188\166\005\005x\160\144\004\t\160\166L\160\144\004\019\160\145\144\144B@@\178\005\003\243\160\166\150@\160\004 @\160\166\150A\160\004$@\160\166\150B\160\004(@\160\178\144\004;\160\166\150C\160\004/@\160\144\004:\160\144\0049\160\144\0048@\160\176\192\005\006\015\001\000\228\001\028\188\001\028\231\192\005\006\016\001\000\228\001\028\188\001\028\246@A@\160\176\192\005\006\019\001\000\228\001\028\188\001\028\218\004\004@A\188\166\005\005\165\160\004)\160\166L\160\0040\160\145\144\144B@@\178\005\004\030\160\178\004\031\160\144\004W\160\004\028\160\004\027\160\166\150@\160\004O@@\160\176\192\005\006+\001\000\229\001\028\252\001\029\030\192\005\006,\001\000\229\001\028\252\001\029-@A\160\166\150A\160\004W@\160\166\150B\160\004[@\160\166\150C\160\004_@@\160\176\192\005\006;\001\000\229\001\028\252\001\029\026\192\005\006<\001\000\229\001\028\252\001\0296@A\178\005\005\150\160\004\029\160\0048\160\0047\160\0046@\160\176\192\005\006D\001\000\230\001\029<\001\029F\192\005\006E\001\000\230\001\029<\001\029T@A\178\004\153\160\004@\160\004?\160\004(@\160\176\192\005\006L\001\000\226\001\028P\001\028f\192\005\006M\001\000\226\001\028P\001\028{@A\178\004\229\160\004H\160\004G\160\004F@\160\176\192\005\006T\001\000\225\001\028$\001\028:\192\005\006U\001\000\225\001\028$\001\028O@A@\196B\176\001\006\191&concat@\179@\160\176\001\006\192\"t1@\160\176\001\006\193\"t2@@\188\144\004\007\188\144\004\006\196@\176\001\006\196\005\003\022@\178\005\003\154\160\144\004\011@\160\176\192\005\006k\001\000\241\001\030_\001\030v\192\005\006l\001\000\241\001\030_\001\030\132@A\178\004l\160\144\004\021\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\003]\160\004\020@\160\176\192\005\006~\001\000\242\001\030\136\001\030\158\192\005\006\127\001\000\242\001\030\136\001\030\181@A@\160\176\192\005\006\130\001\000\242\001\030\136\001\030\146\004\004@A\144\004)\144\004'\196B\176\001\006\199.concat_or_join@\179@\160\176\001\006\200\"t1@\160\176\001\006\201!v@\160\176\001\006\202!d@\160\176\001\006\203\"t2@@\188\144\004\007\178\004\150\160\144\004\016\160\144\004\015\160\166\150@\160\004\n@\160\144\004\015@\160\176\192\005\006\164\001\000\246\001\030\237\001\030\255\192\005\006\165\001\000\246\001\030\237\001\031\r@A\178\144\004Q\160\004\016\160\004\t@\160\176\192\005\006\172\001\000\247\001\031\014\001\031\030\192\005\006\173\001\000\247\001\031\014\001\031*@A\165\160\160\176\001\006\205%split@\179@\160\176\001\006\206!x@\160\176\001\006\207\005\006\219@@\188\144\004\003\196A\176\001\006\209!r@\166\150C\160\004\007@\196A\176\001\006\210!d@\166\150B\160\004\r@\196A\176\001\006\211!v@\166\150A\160\004\019@\196A\176\001\006\212!l@\166\150@\160\004\025@\196@\176\001\006\213!c@\178\166\150@\160\005\005\002@\160\144\004'\160\144\004\022@\160\176\192\005\006\224\001\000\253\001\031\154\001\031\172\192\005\006\225\001\000\253\001\031\154\001\031\187@@\188\166\005\005\001\160\144\004\018\160\145\144\144@@\166\005\004\023\160\144\004\031\160\166\181@\144$Some@\160\144\0042@\160\144\004:@\188\166\005\004\254\160\004\020\160\145\144\144@@\196@\176\001\006\214\005\003\175@\178\144\004P\160\004'\160\004\023@\160\176\192\005\007\005\001\001\000\001 \003\001 $\192\005\007\006\001\001\000\001 \003\001 -@A\166\005\0044\160\166\150@\160\144\004\015@\160\166\150A\160\004\005@\160\178\005\001\017\160\166\150B\160\004\011@\160\004;\160\004&\160\004%@\160\176\192\005\007\028\001\001\000\001 \003\001 <\192\005\007\029\001\001\000\001 \003\001 I@A@\196@\176\001\006\218\005\003\208@\178\004!\160\004G\160\004.@\160\176\192\005\007%\001\001\002\001 Z\001 {\192\005\007&\001\001\002\001 Z\001 \132@A\166\005\004T\160\178\005\001(\160\004?\160\004O\160\004:\160\166\150@\160\144\004\019@@\160\176\192\005\0074\001\001\002\001 Z\001 \137\192\005\0075\001\001\002\001 Z\001 \150@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\007\007\160\161@\144$None\160\161@\144\005\007\014@@\165\160\160\176\001\006\222%merge@\179@\160\176\001\006\223!f@\160\176\001\006\224\"s1@\160\176\001\006\225\"s2@@\186\188\144\004\b\196A\176\001\006\231\"v1@\166\150A\160\004\007@\188\166\005\007J\160\166\150D\160\004\r@\160\178\005\007o\160\144\004\021@\160\176\192\005\007n\001\001\007\001 \249\001!+\192\005\007o\001\001\007\001 \249\001!4@A@\196@\176\001\006\233\005\004\"@\178\004s\160\144\004\024\160\004\011@\160\176\192\005\007x\001\001\b\001!8\001!U\192\005\007y\001\001\b\001!8\001!`@A\178\144\004\246\160\178\144\0042\160\144\0040\160\166\150@\160\004*@\160\166\150@\160\144\004\025@@\160\176\192\005\007\140\001\001\t\001!d\001!}\192\005\007\141\001\001\t\001!d\001!\140@A\160\004\027\160\178\004\017\160\004\030\160\166\181@\144\004\165@\160\166\150B\160\004?@@\160\166\150A\160\004\021@@\160\176\192\005\007\160\001\001\t\001!d\001!\144\192\005\007\161\001\001\t\001!d\001!\163@@\160\178\004&\160\004%\160\166\150C\160\004N@\160\166\150B\160\004$@@\160\176\192\005\007\175\001\001\t\001!d\001!\164\192\005\007\176\001\001\t\001!d\001!\179@A@\160\176\192\005\007\179\001\001\t\001!d\001!n\004\004@A\169T@\188\144\004`\169T@\145\161@\144\005\007\127\160T@\188\004\007\196A\176\001\006\240\"v2@\166\150A\160\004\r@\196@\176\001\006\242\005\004u@\178\004\198\160\144\004\n\160\144\004v@\160\176\192\005\007\204\001\001\011\001!\222\001!\251\192\005\007\205\001\001\011\001!\222\001\"\006@A\178\004T\160\178\004S\160\004R\160\166\150@\160\144\004\019@\160\166\150@\160\004%@@\160\176\192\005\007\221\001\001\012\001\"\n\001\"#\192\005\007\222\001\001\012\001\"\n\001\"2@A\160\004\025\160\178\004b\160\004\028\160\166\150A\160\004\017@\160\166\181@\144\004\250@\160\166\150B\160\0049@@@\160\176\192\005\007\241\001\001\012\001\"\n\001\"6\192\005\007\242\001\001\012\001\"\n\001\"I@@\160\178\004w\160\004v\160\166\150B\160\004$@\160\166\150C\160\004H@@\160\176\192\005\b\000\001\001\012\001\"\n\001\"J\192\005\b\001\001\001\012\001\"\n\001\"Y@A@\160\176\192\005\b\004\001\001\012\001\"\n\001\"\020\004\004@A\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\b\020@\160\144\144\001\001\014\160\144\144J@@@@\165\160\160\176\001\006\246&filter@\179@\160\176\001\006\247!p@\160\176\001\006\248\005\bH@@\188\144\004\003\196A\176\001\006\251!d@\166\150B\160\004\007@\196A\176\001\006\252!v@\166\150A\160\004\r@\196@\176\001\006\254\"l'@\178\144\004\027\160\144\004\025\160\166\150@\160\004\024@@\160\176\192\005\bA\001\001\020\001#\018\001#%\192\005\bB\001\001\020\001#\018\001#/@A\196@\176\001\006\255#pvd@\178\004\r\160\144\004\026\160\144\004\"@\160\176\192\005\bM\001\001\021\001#3\001#G\192\005\bN\001\001\021\001#3\001#L@@\196@\176\001\007\000\"r'@\178\004\027\160\004\026\160\166\150C\160\0041@@\160\176\192\005\bZ\001\001\022\001#P\001#c\192\005\b[\001\001\022\001#P\001#m@A\188\144\004\026\178\005\002]\160\144\004,\160\004\026\160\004\025\160\144\004\021@\160\176\192\005\bg\001\001\023\001#q\001#\135\192\005\bh\001\001\023\001#q\001#\149@A\178\005\001\195\160\004\011\160\004\b@\160\176\192\005\bn\001\001\023\001#q\001#\155\192\005\bo\001\001\023\001#q\001#\167@A\145\161@\144\005\b7@\165\160\160\176\001\007\001)partition@\179@\160\176\001\007\002!p@\160\176\001\007\003\005\b\160@@\188\144\004\003\196A\176\001\007\006!d@\166\150B\160\004\007@\196A\176\001\007\007!v@\166\150A\160\004\r@\196@\176\001\007\t\005\005>@\178\144\004\026\160\144\004\024\160\166\150@\160\004\023@@\160\176\192\005\b\152\001\001\029\001$H\001$a\192\005\b\153\001\001\029\001$H\001$n@A\196A\176\001\007\n\"lf@\166\150A\160\144\004\020@\196A\176\001\007\011\"lt@\166\150@\160\004\007@\196@\176\001\007\012#pvd@\178\004\026\160\144\004&\160\144\004.@\160\176\192\005\b\177\001\001\030\001$r\001$\134\192\005\b\178\001\001\030\001$r\001$\139@@\196@\176\001\007\r\005\005e@\178\004'\160\004&\160\166\150C\160\004<@@\160\176\192\005\b\189\001\001\031\001$\143\001$\168\192\005\b\190\001\001\031\001$\143\001$\181@A\196A\176\001\007\014\"rf@\166\150A\160\144\004\018@\196A\176\001\007\015\"rt@\166\150@\160\004\007@\188\144\004&\166\005\005\251\160\178\005\002\207\160\144\0041\160\004(\160\004'\160\144\004\016@\160\176\192\005\b\217\001\001!\001$\202\001$\218\192\005\b\218\001\001!\001$\202\001$\232@A\160\178\005\0026\160\144\004D\160\144\004!@\160\176\192\005\b\227\001\001!\001$\202\001$\234\192\005\b\228\001\001!\001$\202\001$\246@A@\166\005\006\018\160\178\005\002A\160\004\023\160\004\020@\160\176\192\005\b\236\001\001\"\001$\248\001%\b\192\005\b\237\001\001\"\001$\248\001%\020@A\160\178\005\002\238\160\004\019\160\004F\160\004E\160\004\020@\160\176\192\005\b\246\001\001\"\001$\248\001%\022\192\005\b\247\001\001\"\001$\248\001%$@A@\145\178@@\160\161@\144\005\b\193\160\161@\144\005\b\196@@\165\160\160\176\001\007\016)cons_enum@\179@\160\176\001\007\017!m@\160\176\001\007\018!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\166\150C\160\004\024@\160\144\004\029@@\160\176\192\005\t)\001\001)\001%\179\001%\210\192\005\t*\001\001)\001%\179\001%\240@A\004\005@\196B\176\001\007\024'compare@\179@\160\176\001\007\025#cmp@\160\176\001\007\026\"m1@\160\176\001\007\027\"m2@@\165\160\160\176\001\007\028+compare_aux@\179@\160\176\001\007\029\"e1@\160\176\001\007\030\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\007)!c@\178\166\150@\160\005\007w@\160\166\150@\160\004\014@\160\166\150@\160\004\016@@\160\176\192\005\tY\001\0012\001&\212\001&\232\192\005\tZ\001\0012\001&\212\001&\249@@\188\166\157A\160\144\004\023\160\145\144\144@@\004\005\196@\176\001\007*!c@\178\144\0049\160\166\150A\160\004(@\160\166\150A\160\004*@@\160\176\192\005\ts\001\0014\001'\031\001'3\192\005\tt\001\0014\001'\031\001'<@@\188\166\004\026\160\144\004\020\160\145\144\144@@\004\005\178\144\004D\160\178\004r\160\166\150B\160\004@@\160\166\150C\160\004D@@\160\176\192\005\t\139\001\0016\001'b\001'z\192\005\t\140\001\0016\001'b\001'\139@A\160\178\004\128\160\166\150B\160\004L@\160\166\150C\160\004P@@\160\176\192\005\t\153\001\0016\001'b\001'\140\192\005\t\154\001\0016\001'b\001'\157@A@\160\176\192\005\t\157\001\0016\001'b\001'n\004\004@A\145\144\144A\188\004[\145\144\144\000\255\145\144\144@@\178\004+\160\178\004\156\160\144\004z\160\145\161@\144#End@\160\176\192\005\t\180\001\0017\001'\158\001'\179\192\005\t\181\001\0017\001'\158\001'\197@A\160\178\004\169\160\144\004\132\160\145\161@\144\004\r@\160\176\192\005\t\192\001\0017\001'\158\001'\198\192\005\t\193\001\0017\001'\158\001'\216@A@\160\176\192\005\t\196\001\0017\001'\158\001'\167\004\004@A\196B\176\001\007+%equal@\179@\160\176\001\007,#cmp@\160\176\001\007-\"m1@\160\176\001\007.\"m2@@\165\160\160\176\001\007/)equal_aux@\179@\160\176\001\0070\"e1@\160\176\001\0071\"e2@@\188\144\004\007\188\144\004\006\166H\160\166\005\b\002\160\178\166\150@\160\005\b\018@\160\166\150@\160\004\015@\160\166\150@\160\004\017@@\160\176\192\005\t\244\001\001@\001(\194\001(\206\192\005\t\245\001\001@\001(\194\001(\223@@\160\145\144\144@@\160\166H\160\178\144\0045\160\166\150A\160\004$@\160\166\150A\160\004&@@\160\176\192\005\n\t\001\001@\001(\194\001(\231\192\005\n\n\001\001@\001(\194\001(\240@@\160\178\144\0049\160\178\005\001\001\160\166\150B\160\0045@\160\166\150C\160\0049@@\160\176\192\005\n\026\001\001A\001(\244\001)\n\192\005\n\027\001\001A\001(\244\001)\027@A\160\178\005\001\015\160\166\150B\160\004A@\160\166\150C\160\004E@@\160\176\192\005\n(\001\001A\001(\244\001)\028\192\005\n)\001\001A\001(\244\001)-@A@\160\176\192\005\n,\001\001A\001(\244\001)\000\004\004@A@@\145\161@\144\005\b\140\188\004P\145\161@\144\005\b\144\145\161A\144\005\b\143@\178\004+\160\178\005\001+\160\144\004o\160\145\161@\144\004\143@\160\176\192\005\nB\001\001B\001).\001)A\192\005\nC\001\001B\001).\001)S@A\160\178\005\0017\160\144\004x\160\145\161@\144\004\155@\160\176\192\005\nN\001\001B\001).\001)T\192\005\nO\001\001B\001).\001)f@A@\160\176\192\005\nR\001\001B\001).\001)7\004\004@A\165\160\160\176\001\007<(cardinal@\179@\160\176\001\007=\005\n}@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\ni\001\001F\001)\155\001)\186\192\005\nj\001\001F\001)\155\001)\196@A\160\145\144\144A@\160\178\004\015\160\166\150C\160\004\025@@\160\176\192\005\nw\001\001F\001)\155\001)\203\192\005\nx\001\001F\001)\155\001)\213@A@\145\144\144@@\165\160\160\176\001\007C,bindings_aux@\179@\160\176\001\007D$accu@\160\176\001\007E\005\n\169@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\005\007\190\160\166\150A\160\004\014@\160\166\150B\160\004\018@@\160\178\004\018\160\144\004\027\160\166\150C\160\004\026@@\160\176\192\005\n\164\001\001J\001*\022\001*M\192\005\n\165\001\001J\001*\022\001*`@A@\160\166\150@\160\004\"@@\160\176\192\005\n\172\001\001J\001*\022\001*5\192\005\n\173\001\001J\001*\022\001*c@A\004\017@\196B\176\001\007K(bindings@\179@\160\176\001\007L!s@@\178\004,\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\n\191\001\001M\001*z\001*\128\192\005\n\192\001\001M\001*z\001*\145@A\166\181@C@\160\145\161@\144\005\n\139\160\144\005\t/\160\005\b'\160\005\b\199\160\005\005D\160\005\007\r\160\005\003P\160\144\005\001\164\160\144\005\001\012\160\005\006\227\160\005\006\020\160\005\005\207\160\005\005\151\160\005\002\159\160\005\002I\160\004w\160\144\004,\160\005\b\015\160\005\007\232\160\144\005\b\"\160\005\003\224\160\005\b\130\160\005\006\186\160\005\006l@@A@")));
             ("marshal.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5625,7 +5808,7 @@ include
             ("set.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000*b\000\000\012\137\000\000'\255\000\000'\190\160\208@$Make\160\176A\160\160A\160\176\001\004\016#Ord@@@@\144\179@\160\176\001\005[&funarg@@\196B\176\001\005\217&height@\179@\160\176\001\005\218%param@@\188\144\004\004\166\150C\160\004\004@\145\144\144@\196B\176\001\005\223&create@\179@\160\176\001\005\224!l@\160\176\001\005\225!v@\160\176\001\005\226!r@@\196B\176\001\005\227\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\232\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\166\181@\144$Node@\160\004\023\160\144\004\"\160\004\015\160\188\166\157E\160\144\004#\160\144\004\026@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\237#bal@\179@\160\176\001\005\238!l@\160\176\001\005\239!v@\160\176\001\005\240!r@@\196B\176\001\005\241\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\246\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\005\252\"lr@\166\150B\160\004&@\196A\176\001\005\253\"lv@\166\150A\160\004,@\196A\176\001\005\254\"ll@\166\150@\160\0042@\188\166\004V\160\178\144\004\149\160\144\004\012@\160\176\192&set.ml\000X\001\012o\001\012~\192\004\002\000X\001\012o\001\012\135@A\160\178\004\n\160\144\004!@\160\176\192\004\t\000X\001\012o\001\012\139\192\004\n\000X\001\012o\001\012\148@A@\178\144\004\151\160\004\017\160\144\004$\160\178\004\006\160\004\r\160\144\004Y\160\004F@\160\176\192\004\024\000Y\001\012\154\001\012\181\192\004\025\000Y\001\012\154\001\012\196@A@\160\176\192\004\028\000Y\001\012\154\001\012\168\004\004@A\188\004\024\178\004\019\160\178\004\021\160\004%\160\004\020\160\166\150@\160\004!@@\160\176\192\004)\000^\001\rP\001\ri\192\004*\000^\001\rP\001\r{@A\160\166\150A\160\004)@\160\178\004%\160\166\150B\160\004/@\160\004\"\160\004g@\160\176\192\0049\000^\001\rP\001\r\128\192\004:\000^\001\rP\001\r\144@A@\160\176\192\004=\000^\001\rP\001\rb\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Set.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Set.bal@@@\188\166\004\128\160\004{\160\166L\160\004\130\160\145\144\144B@@\188\004\146\196A\176\001\006\004\"rr@\166\150B\160\004\152@\196A\176\001\006\005\"rv@\166\150A\160\004\158@\196A\176\001\006\006\"rl@\166\150@\160\004\164@\188\166\004\211\160\178\004}\160\144\004\023@\160\176\192\004|\000d\001\014)\001\0148\192\004}\000d\001\014)\001\014A@A\160\178\004\133\160\144\004\019@\160\176\192\004\132\000d\001\014)\001\014E\192\004\133\000d\001\014)\001\014N@A@\178\004{\160\178\004}\160\004\197\160\004w\160\004\011@\160\176\192\004\142\000e\001\014T\001\014i\192\004\143\000e\001\014T\001\014x@A\160\144\004)\160\004\026@\160\176\192\004\149\000e\001\014T\001\014b\192\004\150\000e\001\014T\001\014~@A\188\004\023\178\004\141\160\178\004\143\160\004\215\160\004\137\160\166\150@\160\004 @@\160\176\192\004\163\000j\001\015\011\001\015$\192\004\164\000j\001\015\011\001\0154@A\160\166\150A\160\004(@\160\178\004\159\160\166\150B\160\004.@\160\004\031\160\0048@\160\176\192\004\179\000j\001\015\011\001\0159\192\004\180\000j\001\015\011\001\015K@A@\160\176\192\004\183\000j\001\015\011\001\015\029\004\004@A\166\004z\160\166\004y\160\166\004x@\160\145\144\162'Set.bal@@@\166\004\132\160\166\004\131\160\166\004\130@\160\145\144\162'Set.bal@@@\166\181@\144\005\0014@\160\005\001\011\160\004\189\160\005\001\002\160\188\166\005\0012\160\004\251\160\004\248@\166L\160\004\254\160\145\144\144A@\166L\160\005\001\000\160\145\144\144A@@\165\160\160\176\001\006\011#add@\179@\160\176\001\006\012!x@\160\176\001\006\r!t@@\188\144\004\004\196A\176\001\006\015!r@\166\150B\160\004\007@\196A\176\001\006\016!v@\166\150A\160\004\r@\196A\176\001\006\017!l@\166\150@\160\004\019@\196@\176\001\006\018!c@\178\166\150@\160\144\005\001\167@\160\144\004#\160\144\004\023@\160\176\192\005\001\017\000t\001\0165\001\016G\192\005\001\018\000t\001\0165\001\016V@@\188\166\157@\160\144\004\020\160\145\144\144@@\004,\188\166\157B\160\004\t\160\145\144\144@@\178\144\005\001q\160\178\144\004C\160\004\030\160\144\004.@\160\176\192\005\001.\000v\001\016y\001\016\149\192\005\001/\000v\001\016y\001\016\158@A\160\004#\160\144\004A@\160\176\192\005\0015\000v\001\016y\001\016\145\192\005\0016\000v\001\016y\001\016\162@A\178\004\019\160\004\014\160\004,\160\178\004\020\160\0041\160\004\012@\160\176\192\005\001@\000v\001\016y\001\016\176\192\005\001A\000v\001\016y\001\016\185@A@\160\176\192\005\001D\000v\001\016y\001\016\168\004\004@A\166\181@\144\005\001\173@\160\145\161@\144%Empty\160\004B\160\145\161@\144\004\006\160\145\144\144A@@\196B\176\001\006\019)singleton@\179@\160\176\001\006\020!x@@\166\181@\144\005\001\197@\160\145\161@\144\004\024\160\144\004\011\160\145\161@\144\004\030\160\145\144\144A@\165\160\160\176\001\006\021/add_min_element@\179@\160\176\001\006\022!v@\160\176\001\006\023\005\002\r@@\188\144\004\003\178\004W\160\178\144\004\014\160\144\004\012\160\166\150@\160\004\011@@\160\176\192\005\001\135\001\000\132\001\018\152\001\018\164\192\005\001\136\001\000\132\001\018\152\001\018\185@A\160\166\150A\160\004\019@\160\166\150B\160\004\023@@\160\176\192\005\001\147\001\000\132\001\018\152\001\018\160\192\005\001\148\001\000\132\001\018\152\001\018\189@A\178\144\004@\160\004\024@\160\176\192\005\001\154\001\000\130\001\018^\001\018o\192\005\001\155\001\000\130\001\018^\001\018z@A@\165\160\160\176\001\006\028/add_max_element@\179@\160\176\001\006\029!v@\160\176\001\006\030\005\002;@@\188\144\004\003\178\004\133\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\178\144\004\022\160\144\004\020\160\166\150B\160\004\019@@\160\176\192\005\001\189\001\000\137\001\019\"\001\0192\192\005\001\190\001\000\137\001\019\"\001\019G@A@\160\176\192\005\001\193\001\000\137\001\019\"\001\019*\004\004@A\178\004-\160\004\014@\160\176\192\005\001\198\001\000\135\001\018\232\001\018\249\192\005\001\199\001\000\135\001\018\232\001\019\004@A@\165\160\160\176\001\006#$join@\179@\160\176\001\006$!l@\160\176\001\006%!v@\160\176\001\006&!r@@\188\144\004\n\188\144\004\006\196A\176\001\006)\"rh@\166\150C\160\144\004\r@\196A\176\001\006-\"lh@\166\150C\160\144\004\026@\188\166\005\002\018\160\144\004\n\160\166L\160\144\004\021\160\145\144\144B@@\178\004\209\160\166\150@\160\004\018@\160\166\150A\160\004\022@\160\178\144\0046\160\166\150B\160\004\029@\160\144\0045\160\144\0044@\160\176\192\005\002\011\001\000\147\001\020p\001\020\152\192\005\002\012\001\000\147\001\020p\001\020\165@A@\160\176\192\005\002\015\001\000\147\001\020p\001\020\142\004\004@A\188\166\005\0029\160\004#\160\166L\160\004*\160\145\144\144B@@\178\004\246\160\178\004\029\160\144\004P\160\004\026\160\166\150@\160\004C@@\160\176\192\005\002&\001\000\148\001\020\171\001\020\205\192\005\002'\001\000\148\001\020\171\001\020\218@A\160\166\150A\160\004K@\160\166\150B\160\004O@@\160\176\192\005\0022\001\000\148\001\020\171\001\020\201\192\005\0023\001\000\148\001\020\171\001\020\224@A\178\005\002)\160\004\024\160\0041\160\0040@\160\176\192\005\002:\001\000\149\001\020\230\001\020\240\192\005\002;\001\000\149\001\020\230\001\020\252@A\178\004\137\160\0048\160\004!@\160\176\192\005\002A\001\000\145\001\020\014\001\020$\192\005\002B\001\000\145\001\020\014\001\0207@A\178\004\198\160\004?\160\004>@\160\176\192\005\002H\001\000\144\001\019\228\001\019\250\192\005\002I\001\000\144\001\019\228\001\020\r@A@\165\160\160\176\001\0061'min_elt@\179@\160\176\001\0062\005\002\230@@\188\144\004\003\196A\176\001\0063!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002a\001\000\156\001\021\146\001\021\174\192\005\002b\001\000\156\001\021\146\001\021\183@A\166\150A\160\004\019@\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\0069'max_elt@\179@\160\176\001\006:\005\003\t@@\188\144\004\003\196A\176\001\006;!r@\166\150B\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\132\001\000\161\001\022\027\001\0227\192\005\002\133\001\000\161\001\022\027\001\022@@A\166\150A\160\004\019@\166\156@\160\166\147\004#@@@\165\160\160\176\001\006B.remove_min_elt@\179@\160\176\001\006C\005\003*@@\188\144\004\003\196A\176\001\006D!l@\166\150@\160\004\007@\188\144\004\007\178\005\001|\160\178\144\004\019\160\004\006@\160\176\192\005\002\167\001\000\168\001\022\244\001\023\020\192\005\002\168\001\000\168\001\022\244\001\023&@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\160\176\192\005\002\179\001\000\168\001\022\244\001\023\016\192\005\002\180\001\000\168\001\022\244\001\023*@A\166\004\007\160\004 @\166\005\002y\160\166\005\002x\160\166\005\002w@\160\145\144\1622Set.remove_min_elt@@@@\196B\176\001\006K%merge@\179@\160\176\001\006L\"t1@\160\176\001\006M\"t2@@\188\144\004\007\188\144\004\006\178\005\001\171\160\144\004\012\160\178\004w\160\144\004\r@\160\176\192\005\002\216\001\000\178\001\024\030\001\0247\192\005\002\217\001\000\178\001\024\030\001\024C@A\160\178\0049\160\004\b@\160\176\192\005\002\223\001\000\178\001\024\030\001\024D\192\005\002\224\001\000\178\001\024\030\001\024W@A@\160\176\192\005\002\227\001\000\178\001\024\030\001\0240\004\004@A\144\004\031\144\004\029\196B\176\001\006P&concat@\179@\160\176\001\006Q\"t1@\160\176\001\006R\"t2@@\188\144\004\007\188\144\004\006\178\004\245\160\144\004\012\160\178\004\156\160\144\004\r@\160\176\192\005\002\253\001\000\188\001\025P\001\025j\192\005\002\254\001\000\188\001\025P\001\025v@A\160\178\004^\160\004\b@\160\176\192\005\003\004\001\000\188\001\025P\001\025w\192\005\003\005\001\000\188\001\025P\001\025\138@A@\160\176\192\005\003\b\001\000\188\001\025P\001\025b\004\004@A\144\004\031\144\004\029\165\160\160\176\001\006U%split@\179@\160\176\001\006V!x@\160\176\001\006W\005\003\170@@\188\144\004\003\196A\176\001\006Y!r@\166\150B\160\004\007@\196A\176\001\006Z!v@\166\150A\160\004\r@\196A\176\001\006[!l@\166\150@\160\004\019@\196@\176\001\006\\!c@\178\166\150@\160\005\002'@\160\144\004!\160\144\004\022@\160\176\192\005\0037\001\000\200\001\027!\001\0273\192\005\0038\001\000\200\001\027!\001\027B@@\188\166\005\002&\160\144\004\018\160\145\144\144@@\166\181@@@\160\144\004 \160\145\161A\144$true\160\144\0043@\188\166\005\0020\160\004\019\160\145\144\144@@\196@\176\001\006]%match@\178\144\004J\160\004'\160\004\022@\160\176\192\005\003\\\001\000\203\001\027\136\001\027\169\192\005\003]\001\000\203\001\027\136\001\027\178@A\166\004\029\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\001j\160\166\150B\160\004\011@\160\004;\160\004%@\160\176\192\005\003r\001\000\203\001\027\136\001\027\193\192\005\003s\001\000\203\001\027\136\001\027\204@A@\196@\176\001\006a\004!@\178\004 \160\004F\160\004.@\160\176\192\005\003{\001\000\205\001\027\221\001\027\254\192\005\003|\001\000\205\001\027\221\001\028\007@A\166\004<\160\178\005\001\128\160\004=\160\004N\160\166\150@\160\144\004\018@@\160\176\192\005\003\137\001\000\205\001\027\221\001\028\012\192\005\003\138\001\000\205\001\027\221\001\028\023@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\002L\160\161@\144%false\160\161@\144\005\002S@@\196A\176\001\006e%empty@\145\161@\144\005\002Y\196B\176\001\006f(is_empty@\179@\160\176\001\006g\005\004?@@\188\144\004\003\145\161@\144\004\021\145\161A\144\004j\165\160\160\176\001\006h#mem@\179@\160\176\001\006i!x@\160\176\001\006j\005\004R@@\188\144\004\003\196@\176\001\006o!c@\178\166\150@\160\005\002\189@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\003\207\001\000\216\001\028\243\001\029\005\192\005\003\208\001\000\216\001\028\243\001\029\020@@\166I\160\166\005\002\191\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\005\002\195\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150B\160\004-@@\160\176\192\005\003\238\001\000\217\001\029\024\001\029+\192\005\003\239\001\000\217\001\029\024\001\029I@A@\145\161@\144\004X@\165\160\160\176\001\006p&remove@\179@\160\176\001\006q!x@\160\176\001\006r\005\004\146@@\188\144\004\003\196A\176\001\006t!r@\166\150B\160\004\007@\196A\176\001\006u!v@\166\150A\160\004\r@\196A\176\001\006v!l@\166\150@\160\004\019@\196@\176\001\006w!c@\178\166\150@\160\005\003\015@\160\144\004!\160\144\004\022@\160\176\192\005\004\031\001\000\222\001\029\158\001\029\176\192\005\004 \001\000\222\001\029\158\001\029\191@@\188\166\005\003\014\160\144\004\018\160\145\144\144@@\178\144\005\001i\160\144\004 \160\144\004.@\160\176\192\005\0041\001\000\223\001\029\195\001\029\219\192\005\0042\001\000\223\001\029\195\001\029\228@A\188\166\005\003\023\160\004\018\160\145\144\144@@\178\005\003\022\160\178\144\004H\160\004%\160\004\020@\160\176\192\005\004B\001\000\224\001\029\234\001\030\006\192\005\004C\001\000\224\001\029\234\001\030\018@A\160\004)\160\004\024@\160\176\192\005\004H\001\000\224\001\029\234\001\030\002\192\005\004I\001\000\224\001\029\234\001\030\022@A\178\005\003&\160\004 \160\0041\160\178\004\018\160\0046\160\004#@\160\176\192\005\004S\001\000\224\001\029\234\001\030$\192\005\004T\001\000\224\001\029\234\001\0300@A@\160\176\192\005\004W\001\000\224\001\029\234\001\030\028\004\004@A\145\161@\144\005\003\015@\165\160\160\176\001\006x%union@\179@\160\176\001\006y\"s1@\160\176\001\006z\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006}\"h2@\166\150C\160\144\004\r@\196A\176\001\006\127\"v2@\166\150A\160\004\007@\196A\176\001\006\129\"h1@\166\150C\160\144\004\029@\196A\176\001\006\131\"v1@\166\150A\160\004\007@\188\166\005\004\228\160\144\004\016\160\144\004\031@\188\166\005\003x\160\004\004\160\145\144\144A@\178\005\003k\160\144\004\"\160\144\0045@\160\176\192\005\004\153\001\000\232\001\030\237\001\031\b\192\005\004\154\001\000\232\001\030\237\001\031\017@A\196@\176\001\006\133\005\001H@\178\005\001G\160\144\004 \160\144\004=@\160\176\192\005\004\164\001\000\233\001\031\029\001\031=\192\005\004\165\001\000\233\001\031\029\001\031H@A\178\005\002\167\160\178\144\004L\160\166\150@\160\0040@\160\166\150@\160\144\004\023@@\160\176\192\005\004\181\001\000\234\001\031L\001\031_\192\005\004\182\001\000\234\001\031L\001\031l@A\160\004\025\160\178\004\017\160\166\150B\160\004@@\160\166\150B\160\004\016@@\160\176\192\005\004\196\001\000\234\001\031L\001\031p\192\005\004\197\001\000\234\001\031L\001\031}@A@\160\176\192\005\004\200\001\000\234\001\031L\001\031Z\004\004@A\188\166\005\003\182\160\004D\160\145\144\144A@\178\005\003\169\160\0043\160\0042@\160\176\192\005\004\213\001\000\237\001\031\157\001\031\184\192\005\004\214\001\000\237\001\031\157\001\031\193@A\196@\176\001\006\137\005\001\132@\178\005\001\131\160\004G\160\004F@\160\176\192\005\004\222\001\000\238\001\031\205\001\031\237\192\005\004\223\001\000\238\001\031\205\001\031\248@A\178\005\002\225\160\178\004:\160\166\150@\160\144\004\016@\160\166\150@\160\004{@@\160\176\192\005\004\238\001\000\239\001\031\252\001 \015\192\005\004\239\001\000\239\001\031\252\001 \028@A\160\004]\160\178\004J\160\166\150B\160\004\016@\160\166\150B\160\004\138@@\160\176\192\005\004\253\001\000\239\001\031\252\001  \192\005\004\254\001\000\239\001\031\252\001 -@A@\160\176\192\005\005\001\001\000\239\001\031\252\001 \n\004\004@A\144\004\161\144\004\159@\165\160\160\176\001\006\141%inter@\179@\160\176\001\006\142\"s1@\160\176\001\006\143\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\150\"r1@\166\150B\160\144\004\016@\196A\176\001\006\151\"v1@\166\150A\160\004\007@\196A\176\001\006\152\"l1@\166\150@\160\004\r@\196@\176\001\006\153\005\001\212@\178\005\001\211\160\144\004\016\160\144\004 @\160\176\192\005\0050\001\000\247\001 \210\001 \226\192\005\0051\001\000\247\001 \210\001 \237@A\196A\176\001\006\155\"l2@\166\150@\160\144\004\017@\188\166\157A\160\166\150A\160\004\b@\160\145\144\144@@\178\005\003E\160\178\144\004A\160\144\004(\160\144\004\025@\160\176\192\005\005N\001\000\251\001!a\001!t\192\005\005O\001\000\251\001!a\001!\129@A\160\004&\160\178\004\012\160\144\004@\160\166\150B\160\004!@@\160\176\192\005\005[\001\000\251\001!a\001!\133\192\005\005\\\001\000\251\001!a\001!\146@A@\160\176\192\005\005_\001\000\251\001!a\001!o\004\004@A\178\144\005\002{\160\178\004\029\160\004\028\160\144\0044@\160\176\192\005\005i\001\000\249\001!\018\001!'\192\005\005j\001\000\249\001!\018\001!4@A\160\178\004&\160\004\026\160\166\004\025\160\0049@@\160\176\192\005\005s\001\000\249\001!\018\001!5\192\005\005t\001\000\249\001!\018\001!B@A@\160\176\192\005\005w\001\000\249\001!\018\001! \004\004@A\145\161@\144\005\004/\145\161@\144\005\0042@\165\160\160\176\001\006\159$diff@\179@\160\176\001\006\160\"s1@\160\176\001\006\161\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\167\"r1@\166\150B\160\144\004\016@\196A\176\001\006\168\"v1@\166\150A\160\004\007@\196A\176\001\006\169\"l1@\166\150@\160\004\r@\196@\176\001\006\170\005\002N@\178\005\002M\160\144\004\016\160\144\004 @\160\176\192\005\005\170\001\001\002\001\"#\001\"3\192\005\005\171\001\001\002\001\"#\001\">@A\196A\176\001\006\172\"l2@\166\150@\160\144\004\017@\188\166\004z\160\166\150A\160\004\007@\160\145\144\144@@\178\004]\160\178\144\004@\160\144\004'\160\144\004\024@\160\176\192\005\005\199\001\001\006\001\"\177\001\"\198\192\005\005\200\001\001\006\001\"\177\001\"\210@A\160\178\004\011\160\144\004>\160\166\150B\160\004\031@@\160\176\192\005\005\211\001\001\006\001\"\177\001\"\211\192\005\005\212\001\001\006\001\"\177\001\"\223@A@\160\176\192\005\005\215\001\001\006\001\"\177\001\"\191\004\004@A\178\005\003\217\160\178\004\027\160\004\026\160\144\0041@\160\176\192\005\005\224\001\001\004\001\"c\001\"v\192\005\005\225\001\001\004\001\"c\001\"\130@A\160\004>\160\178\004%\160\004\026\160\166\004\025\160\0047@@\160\176\192\005\005\235\001\001\004\001\"c\001\"\134\192\005\005\236\001\001\004\001\"c\001\"\146@A@\160\176\192\005\005\239\001\001\004\001\"c\001\"q\004\004@A\144\004l\145\161@\144\005\004\168@\165\160\160\176\001\006\176)cons_enum@\179@\160\176\001\006\177!s@\160\176\001\006\178!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\144\004\025@@\160\176\192\005\006\025\001\001\r\001#_\001#{\192\005\006\026\001\001\r\001#_\001#\150@A\004\005@\165\160\160\176\001\006\183+compare_aux@\179@\160\176\001\006\184\"e1@\160\176\001\006\185\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\006\194!c@\178\166\150@\160\005\005(@\160\166\150@\160\144\004\021@\160\166\150@\160\144\004\023@@\160\176\192\005\006>\001\001\021\001$J\001$\\\192\005\006?\001\001\021\001$J\001$m@@\188\166\157A\160\144\004\025\160\145\144\144@@\004\005\178\144\004-\160\178\004J\160\166\150A\160\004\027@\160\166\150B\160\004\031@@\160\176\192\005\006W\001\001\024\001$\150\001$\177\192\005\006X\001\001\024\001$\150\001$\194@A\160\178\004X\160\166\150A\160\004$@\160\166\150B\160\004(@@\160\176\192\005\006e\001\001\024\001$\150\001$\195\192\005\006f\001\001\024\001$\150\001$\212@A@\160\176\192\005\006i\001\001\024\001$\150\001$\165\004\004@A\145\144\144A\188\144\004J\145\144\144\000\255\145\144\144@@\196B\176\001\006\195'compare@\179@\160\176\001\006\196\"s1@\160\176\001\006\197\"s2@@\178\0046\160\178\004\127\160\144\004\n\160\145\161@\144#End@\160\176\192\005\006\139\001\001\027\001$\238\001%\000\192\005\006\140\001\001\027\001$\238\001%\018@A\160\178\004\140\160\144\004\020\160\145\161@\144\004\r@\160\176\192\005\006\151\001\001\027\001$\238\001%\019\192\005\006\152\001\001\027\001$\238\001%%@A@\160\176\192\005\006\155\001\001\027\001$\238\001$\244\004\004@A\196B\176\001\006\198%equal@\179@\160\176\001\006\199\"s1@\160\176\001\006\200\"s2@@\166\005\005\146\160\178\144\0044\160\144\004\011\160\144\004\n@\160\176\192\005\006\176\001\001\030\001%=\001%C\192\005\006\177\001\001\030\001%=\001%P@A\160\145\144\144@@\165\160\160\176\001\006\201&subset@\179@\160\176\001\006\202\"s1@\160\176\001\006\203\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\208\"r2@\166\150B\160\144\004\r@\196A\176\001\006\210\"l2@\166\150@\160\004\007@\196A\176\001\006\212\"r1@\166\150B\160\144\004\029@\196A\176\001\006\213\"v1@\166\150A\160\004\007@\196A\176\001\006\214\"l1@\166\150@\160\004\r@\196@\176\001\006\215!c@\178\166\150@\160\005\005\227@\160\144\004\020\160\166\150A\160\004'@@\160\176\192\005\006\245\001\001'\001&\016\001&\"\192\005\006\246\001\001'\001&\016\001&3@@\188\166\005\005\228\160\144\004\020\160\145\144\144@@\166H\160\178\144\004J\160\144\004$\160\144\0049@\160\176\192\005\007\t\001\001)\001&O\001&[\192\005\007\n\001\001)\001&O\001&g@A\160\178\004\011\160\144\004;\160\144\004J@\160\176\192\005\007\019\001\001)\001&O\001&k\192\005\007\020\001\001)\001&O\001&w@A@\188\166\005\005\249\160\004\030\160\145\144\144@@\166H\160\178\004\029\160\166\181@\144\005\007\136@\160\004 \160\0047\160\145\161@\144\005\005\221\160\145\144\144@@\160\004(@\160\176\192\005\0070\001\001+\001&\149\001&\161\192\005\0071\001\001+\001&\149\001&\196@A\160\178\0042\160\004'\160\144\004w@\160\176\192\005\0079\001\001+\001&\149\001&\200\192\005\007:\001\001+\001&\149\001&\212@A@\166H\160\178\004<\160\166\181@\144\005\007\167@\160\145\161@\144\005\005\250\160\004Y\160\004:\160\145\144\144@@\160\004=@\160\176\192\005\007O\001\001-\001&\228\001&\240\192\005\007P\001\001-\001&\228\001'\019@A\160\178\004Q\160\004P\160\144\004\150@\160\176\192\005\007X\001\001-\001&\228\001'\023\192\005\007Y\001\001-\001&\228\001'#@A@\145\161@\144\005\003\194\145\161A\144\005\004\023@\165\160\160\176\001\006\216$iter@\179@\160\176\001\006\217!f@\160\176\001\006\218\005\007\255@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\007x\001\0011\001'W\001's\192\005\007y\001\0011\001'W\001'{@A\173\178\004\011\160\166\150A\160\004\020@@\160\176\192\005\007\130\001\0011\001'W\001'}\192\005\007\131\001\0011\001'W\001'\128@@\178\004\022\160\004\021\160\166\150B\160\004\030@@\160\176\192\005\007\140\001\0011\001'W\001'\130\192\005\007\141\001\0011\001'W\001'\138@A\145\161@\144\"()@\165\160\160\176\001\006\223$fold@\179@\160\176\001\006\224!f@\160\176\001\006\225!s@\160\176\001\006\226$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150B\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\178\004\015\160\004\014\160\166\150@\160\004\022@\160\144\004\027@\160\176\192\005\007\188\001\0016\001'\209\001'\251\192\005\007\189\001\0016\001'\209\001(\n@A@\160\176\192\005\007\192\001\0016\001'\209\001'\246\192\005\007\193\001\0016\001'\209\001(\011@@@\160\176\192\005\007\196\001\0016\001'\209\001'\237\004\004@A\004\012@\165\160\160\176\001\006\231'for_all@\179@\160\176\001\006\232!p@\160\176\001\006\233\005\bd@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\007\220\001\001:\001(D\001(`\192\005\007\221\001\001:\001(D\001(c@@\160\166H\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\007\234\001\001:\001(D\001(g\192\005\007\235\001\001:\001(D\001(r@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\007\245\001\001:\001(D\001(v\192\005\007\246\001\001:\001(D\001(\129@A@@\145\161A\144\005\004\177@\165\160\160\176\001\006\238&exists@\179@\160\176\001\006\239!p@\160\176\001\006\240\005\b\153@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\b\017\001\001>\001(\186\001(\214\192\005\b\018\001\001>\001(\186\001(\217@@\160\166I\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\b\031\001\001>\001(\186\001(\221\192\005\b \001\001>\001(\186\001(\231@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\b*\001\001>\001(\186\001(\235\192\005\b+\001\001>\001(\186\001(\245@A@@\145\161@\144\005\004\148@\165\160\160\176\001\006\245&filter@\179@\160\176\001\006\246!p@\160\176\001\006\247\005\b\206@@\188\144\004\003\196A\176\001\006\250!v@\166\150A\160\004\007@\196@\176\001\006\252\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\bO\001\001D\001)\135\001)\154\192\005\bP\001\001D\001)\135\001)\164@A\196@\176\001\006\253\"pv@\178\004\r\160\144\004\026@\160\176\192\005\bY\001\001E\001)\168\001)\187\192\005\bZ\001\001E\001)\168\001)\190@@\196@\176\001\006\254\"r'@\178\004\025\160\004\024\160\166\150B\160\004)@@\160\176\192\005\bf\001\001F\001)\194\001)\213\192\005\bg\001\001F\001)\194\001)\223@A\188\144\004\024\178\005\006k\160\144\004*\160\004\024\160\144\004\020@\160\176\192\005\br\001\001G\001)\227\001)\248\192\005\bs\001\001G\001)\227\001*\004@A\178\005\003\020\160\004\n\160\004\b@\160\176\192\005\by\001\001G\001)\227\001*\n\192\005\bz\001\001G\001)\227\001*\022@A\145\161@\144\005\0072@\165\160\160\176\001\006\255)partition@\179@\160\176\001\007\000!p@\160\176\001\007\001\005\t\029@@\188\144\004\003\196A\176\001\007\004!v@\166\150A\160\004\007@\196@\176\001\007\006\005\005>@\178\144\004\020\160\144\004\018\160\166\150@\160\004\017@@\160\176\192\005\b\157\001\001M\001*\180\001*\205\192\005\b\158\001\001M\001*\180\001*\218@A\196A\176\001\007\007\"lf@\166\150A\160\144\004\020@\196A\176\001\007\b\"lt@\166\150@\160\004\007@\196@\176\001\007\t\"pv@\178\004\026\160\144\004&@\160\176\192\005\b\180\001\001N\001*\222\001*\241\192\005\b\181\001\001N\001*\222\001*\244@@\196@\176\001\007\n\005\005c@\178\004%\160\004$\160\166\150B\160\0044@@\160\176\192\005\b\192\001\001O\001*\248\001+\017\192\005\b\193\001\001O\001*\248\001+\030@A\196A\176\001\007\011\"rf@\166\150A\160\144\004\018@\196A\176\001\007\012\"rt@\166\150@\160\004\007@\188\144\004$\166\005\005\144\160\178\005\006\212\160\144\004/\160\004&\160\144\004\015@\160\176\192\005\b\219\001\001Q\001+2\001+B\192\005\b\220\001\001Q\001+2\001+N@A\160\178\005\003~\160\144\004A\160\144\004 @\160\176\192\005\b\229\001\001Q\001+2\001+P\192\005\b\230\001\001Q\001+2\001+\\@A@\166\005\005\166\160\178\005\003\137\160\004\022\160\004\020@\160\176\192\005\b\238\001\001R\001+^\001+n\192\005\b\239\001\001R\001+^\001+z@A\160\178\005\006\242\160\004\019\160\004C\160\004\019@\160\176\192\005\b\247\001\001R\001+^\001+|\192\005\b\248\001\001R\001+^\001+\136@A@\145\178@@\160\161@\144\005\007\178\160\161@\144\005\007\181@@\165\160\160\176\001\007\r(cardinal@\179@\160\176\001\007\014\005\t\157@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\t\023\001\001V\001+\190\001+\218\192\005\t\024\001\001V\001+\190\001+\228@A\160\145\144\144A@\160\178\004\015\160\166\150B\160\004\025@@\160\176\192\005\t%\001\001V\001+\190\001+\235\192\005\t&\001\001V\001+\190\001+\245@A@\145\144\144@@\165\160\160\176\001\007\019,elements_aux@\179@\160\176\001\007\020$accu@\160\176\001\007\021\005\t\201@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\150A\160\004\012@\160\178\004\012\160\144\004\021\160\166\150B\160\004\020@@\160\176\192\005\tL\001\001Z\001,6\001,e\192\005\tM\001\001Z\001,6\001,x@A@\160\166\150@\160\004\028@@\160\176\192\005\tT\001\001Z\001,6\001,R\192\005\tU\001\001Z\001,6\001,{@A\004\017@\196B\176\001\007\026(elements@\179@\160\176\001\007\027!s@@\178\004&\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\tg\001\001]\001,\146\001,\152\192\005\th\001\001]\001,\146\001,\169@A\165\160\160\176\001\007\029$find@\179@\160\176\001\007\030!x@\160\176\001\007\031\005\n\b@@\188\144\004\003\196A\176\001\007\"!v@\166\150A\160\004\007@\196@\176\001\007$!c@\178\166\150@\160\005\by@\160\144\004\021\160\144\004\016@\160\176\192\005\t\137\001\001d\001- \001-2\192\005\t\138\001\001d\001- \001-A@@\188\166\005\bx\160\144\004\018\160\145\144\144@@\004\r\178\144\004)\160\004\018\160\188\166\005\b{\160\004\012\160\145\144\144@@\166\150@\160\004,@\166\150B\160\004/@@\160\176\192\005\t\166\001\001f\001-_\001-n\192\005\t\167\001\001f\001-_\001-\141@A\166\156@\160\166\147\005\007B@@@\196B\176\001\007%.of_sorted_list@\179@\160\176\001\007&!l@@\165\160\160\176\001\007'#sub@\179@\160\176\001\007(!n@\160\176\001\007)!l@@\186\188\166j\160\145\144\144C\160\144\004\014@\169F@\167\144\004\017\208D\160\160@\166\005\006\142\160\145\161@\144\005\b\136\160\144\004\024@\160\160A\188\144\004\028\166\005\006\153\160\166\181@\144\005\nD@\160\145\161@\144\005\b\151\160\166\150@\160\144\004*@\160\145\161@\144\005\b\160\160\145\144\144A@\160\166\150A\160\004\r@@\169F@\160\160B\188\144\004;\196A\176\001\007/\005\006\166@\166\150A\160\004\023@\188\144\004\006\166\005\006\191\160\166\181@\144\005\nj@\160\166\181@\144\005\nn@\160\145\161@\144\005\b\193\160\166\150@\160\004*@\160\145\161@\144\005\b\201\160\145\144\144A@\160\166\150@\160\004\030@\160\145\161@\144\005\b\213\160\145\144\144B@\160\166\150A\160\004*@@\169F@\169F@\160\160C\188\144\004q\196A\176\001\0073\005\006\220@\166\150A\160\004M@\188\144\004\006\196A\176\001\0074\005\006\227@\166\150A\160\004\006@\188\144\004\006\166\005\006\252\160\166\181@\144\005\n\167@\160\166\181@\144\005\n\171@\160\145\161@\144\005\b\254\160\166\150@\160\004g@\160\145\161@\144\005\t\006\160\145\144\144A@\160\166\150@\160\004%@\160\166\181@\144\005\n\195@\160\145\161@\144\005\t\022\160\166\150@\160\004*@\160\145\161@\144\005\t\030\160\145\144\144A@\160\145\144\144B@\160\166\150A\160\004:@@\169F@\169F@\169F@@@@@\160F@\196B\176\001\007;\"nl@\166O\160\144\004\197\160\145\144\144B@\196@\176\001\007<\005\0071@\178\144\004\209\160\144\004\015\160\144\004\206@\160\176\192\005\n\142\001\001r\001/\030\001/6\192\005\n\143\001\001r\001/\030\001/>@A\196A\176\001\007=!l@\166\150A\160\144\004\018@\188\144\004\b\196@\176\001\007A\005\007F@\178\004\021\160\166M\160\166M\160\144\004\231\160\004\026@\160\145\144\144A@\160\166\150A\160\004\019@@\160\176\192\005\n\173\001\001v\001/\144\001/\171\192\005\n\174\001\001v\001/\144\001/\189@A\166\005\007n\160\178\005\n\166\160\166\150@\160\004 @\160\166\150@\160\004\"@\160\166\150@\160\144\004%@@\160\176\192\005\n\193\001\001w\001/\193\001/\205\192\005\n\194\001\001w\001/\193\001/\226@A\160\166\150A\160\004\t@@\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\n\214@\160\144\144\001\001t\160\144\144R@@@@\166\150@\160\178\004Z\160\178\166\150@\160\166\147\176@$ListA@@\160\144\005\001:@\160\176\192\005\n\238\001\001y\001/\239\001/\254\192\005\n\239\001\001y\001/\239\0010\r@A\160\004\006@\160\176\192\005\n\243\001\001y\001/\239\001/\249\192\005\n\244\001\001y\001/\239\0010\016@A@\196B\176\001\007D'of_list@\179@\160\176\001\007E!l@@\188\144\004\004\196A\176\001\007F\005\007\171@\166\150A\160\004\006@\196A\176\001\007G\"x0@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007H\005\007\184@\166\150A\160\004\006@\196A\176\001\007I\"x1@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007J\005\007\197@\166\150A\160\004\006@\196A\176\001\007K\"x2@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007L\005\007\210@\166\150A\160\004\006@\196A\176\001\007M\"x3@\166\150@\160\004\012@\188\144\004\012\188\166\150A\160\004\005@\178\144\005\001\138\160\178\166\150j\160\166\147\176@$ListA@@\160\166\150@\160\005\n;@\160\004I@\160\176\192\005\011H\001\001\131\0011`\0011|\192\005\011I\001\001\131\0011`\0011\154@A@\160\176\192\005\011L\001\001\131\0011`\0011m\004\004@A\178\005\n&\160\166\150@\160\004!@\160\178\005\n,\160\144\004+\160\178\005\n0\160\144\004<\160\178\005\n4\160\144\004M\160\178\005\t\202\160\144\004^@\160\176\192\005\011d\001\001\130\0011\015\0011N\192\005\011e\001\001\130\0011\015\0011\\@A@\160\176\192\005\011h\001\001\130\0011\015\0011F\192\005\011i\001\001\130\0011\015\0011]@A@\160\176\192\005\011l\001\001\130\0011\015\0011>\192\005\011m\001\001\130\0011\015\0011^@A@\160\176\192\005\011p\001\001\130\0011\015\00116\192\005\011q\001\001\130\0011\015\0011_@A@\160\176\192\005\011t\001\001\130\0011\015\0011/\004\004@A\178\005\nN\160\144\004M\160\178\005\nR\160\144\004^\160\178\005\nV\160\144\004o\160\178\005\t\236\160\144\004\128@\160\176\192\005\011\134\001\001\129\0010\203\0010\254\192\005\011\135\001\001\129\0010\203\0011\012@A@\160\176\192\005\011\138\001\001\129\0010\203\0010\246\192\005\011\139\001\001\129\0010\203\0011\r@A@\160\176\192\005\011\142\001\001\129\0010\203\0010\238\192\005\011\143\001\001\129\0010\203\0011\014@A@\160\176\192\005\011\146\001\001\129\0010\203\0010\231\004\004@A\178\005\nl\160\144\004x\160\178\005\np\160\144\004\137\160\178\005\n\006\160\144\004\154@\160\176\192\005\011\160\001\001\128\0010\148\0010\187\192\005\011\161\001\001\128\0010\148\0010\201@A@\160\176\192\005\011\164\001\001\128\0010\148\0010\179\192\005\011\165\001\001\128\0010\148\0010\202@A@\160\176\192\005\011\168\001\001\128\0010\148\0010\172\004\004@A\178\005\n\130\160\144\004\155\160\178\005\n\024\160\144\004\172@\160\176\192\005\011\178\001\001\127\0010j\0010\133\192\005\011\179\001\001\127\0010j\0010\147@A@\160\176\192\005\011\182\001\001\127\0010j\0010~\004\004@A\178\005\n\"\160\144\004\182@\160\176\192\005\011\188\001\001~\0010M\0010]\192\005\011\189\001\001~\0010M\0010i@A\144\005\b\031\166\181@C@\160\004\004\160\144\005\b\030\160\005\007\233\160\005\n\158\160\005\n1\160\005\007\139\160\005\007 \160\005\006\131\160\005\006\011\160\005\005#\160\144\005\0051\160\005\004\205\160\005\004a\160\005\004-\160\005\003\240\160\005\003\188\160\005\003\142\160\005\003A\160\005\002\198\160\144\005\002\129\160\005\t|\160\005\tZ\160\144\005\t\143\160\005\b\134\160\005\002J\160\144\004\234@@A@")));
+                    "\132\149\166\190\000\000*T\000\000\012{\000\000'\227\000\000'\162\160\208@$Make\160\176A\160\160A\160\176\001\004\016#Ord@@@@\144\179@\160\176\001\005[&funarg@@\196B\176\001\005\217&height@\179@\160\176\001\005\218%param@@\188\144\004\004\166\150C\160\004\004@\145\144\144@\196B\176\001\005\223&create@\179@\160\176\001\005\224!l@\160\176\001\005\225!v@\160\176\001\005\226!r@@\196B\176\001\005\227\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\232\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\166\181@\144$Node@\160\004\023\160\144\004\"\160\004\015\160\188\166\157E\160\144\004#\160\144\004\026@\166L\160\004\005\160\145\144\144A@\166L\160\004\t\160\145\144\144A@@\196B\176\001\005\237#bal@\179@\160\176\001\005\238!l@\160\176\001\005\239!v@\160\176\001\005\240!r@@\196B\176\001\005\241\"hl@\188\144\004\r\166\150C\160\004\004@\145\144\144@\196B\176\001\005\246\"hr@\188\144\004\018\166\150C\160\004\004@\145\144\144@\188\166\157C\160\144\004\026\160\166L\160\144\004\019\160\145\144\144B@@\188\004 \196A\176\001\005\252\"lr@\166\150B\160\004&@\196A\176\001\005\253\"lv@\166\150A\160\004,@\196A\176\001\005\254\"ll@\166\150@\160\0042@\188\166\004V\160\178\144\004\149\160\144\004\012@\160\176\192&set.ml\000X\001\012o\001\012~\192\004\002\000X\001\012o\001\012\135@A\160\178\004\n\160\144\004!@\160\176\192\004\t\000X\001\012o\001\012\139\192\004\n\000X\001\012o\001\012\148@A@\178\144\004\151\160\004\017\160\144\004$\160\178\004\006\160\004\r\160\144\004Y\160\004F@\160\176\192\004\024\000Y\001\012\154\001\012\181\192\004\025\000Y\001\012\154\001\012\196@A@\160\176\192\004\028\000Y\001\012\154\001\012\168\004\004@A\188\004\024\178\004\019\160\178\004\021\160\004%\160\004\020\160\166\150@\160\004!@@\160\176\192\004)\000^\001\rP\001\ri\192\004*\000^\001\rP\001\r{@A\160\166\150A\160\004)@\160\178\004%\160\166\150B\160\004/@\160\004\"\160\004g@\160\176\192\0049\000^\001\rP\001\r\128\192\004:\000^\001\rP\001\r\144@A@\160\176\192\004=\000^\001\rP\001\rb\004\004@A\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\162'Set.bal@@@\166\004\015\160\166\004\014\160\166\004\r@\160\145\144\162'Set.bal@@@\188\166\004\128\160\004{\160\166L\160\004\130\160\145\144\144B@@\188\004\146\196A\176\001\006\004\"rr@\166\150B\160\004\152@\196A\176\001\006\005\"rv@\166\150A\160\004\158@\196A\176\001\006\006\"rl@\166\150@\160\004\164@\188\166\004\211\160\178\004}\160\144\004\023@\160\176\192\004|\000d\001\014)\001\0148\192\004}\000d\001\014)\001\014A@A\160\178\004\133\160\144\004\019@\160\176\192\004\132\000d\001\014)\001\014E\192\004\133\000d\001\014)\001\014N@A@\178\004{\160\178\004}\160\004\197\160\004w\160\004\011@\160\176\192\004\142\000e\001\014T\001\014i\192\004\143\000e\001\014T\001\014x@A\160\144\004)\160\004\026@\160\176\192\004\149\000e\001\014T\001\014b\192\004\150\000e\001\014T\001\014~@A\188\004\023\178\004\141\160\178\004\143\160\004\215\160\004\137\160\166\150@\160\004 @@\160\176\192\004\163\000j\001\015\011\001\015$\192\004\164\000j\001\015\011\001\0154@A\160\166\150A\160\004(@\160\178\004\159\160\166\150B\160\004.@\160\004\031\160\0048@\160\176\192\004\179\000j\001\015\011\001\0159\192\004\180\000j\001\015\011\001\015K@A@\160\176\192\004\183\000j\001\015\011\001\015\029\004\004@A\166\004z\160\166\004y\160\166\004x@\160\145\144\162'Set.bal@@@\166\004\132\160\166\004\131\160\166\004\130@\160\145\144\162'Set.bal@@@\166\181@\144\005\0014@\160\005\001\011\160\004\189\160\005\001\002\160\188\166\005\0012\160\004\251\160\004\248@\166L\160\004\254\160\145\144\144A@\166L\160\005\001\000\160\145\144\144A@@\165\160\160\176\001\006\011#add@\179@\160\176\001\006\012!x@\160\176\001\006\r!t@@\188\144\004\004\196A\176\001\006\015!r@\166\150B\160\004\007@\196A\176\001\006\016!v@\166\150A\160\004\r@\196A\176\001\006\017!l@\166\150@\160\004\019@\196@\176\001\006\018!c@\178\166\150@\160\144\005\001\167@\160\144\004#\160\144\004\023@\160\176\192\005\001\017\000t\001\0165\001\016G\192\005\001\018\000t\001\0165\001\016V@@\188\166\157@\160\144\004\020\160\145\144\144@@\004,\188\166\157B\160\004\t\160\145\144\144@@\178\144\005\001q\160\178\144\004C\160\004\030\160\144\004.@\160\176\192\005\001.\000v\001\016y\001\016\149\192\005\001/\000v\001\016y\001\016\158@A\160\004#\160\144\004A@\160\176\192\005\0015\000v\001\016y\001\016\145\192\005\0016\000v\001\016y\001\016\162@A\178\004\019\160\004\014\160\004,\160\178\004\020\160\0041\160\004\012@\160\176\192\005\001@\000v\001\016y\001\016\176\192\005\001A\000v\001\016y\001\016\185@A@\160\176\192\005\001D\000v\001\016y\001\016\168\004\004@A\166\181@\144\005\001\173@\160\145\161@\144%Empty\160\004B\160\145\161@\144\004\006\160\145\144\144A@@\196B\176\001\006\019)singleton@\179@\160\176\001\006\020!x@@\166\181@\144\005\001\197@\160\145\161@\144\004\024\160\144\004\011\160\145\161@\144\004\030\160\145\144\144A@\165\160\160\176\001\006\021/add_min_element@\179@\160\176\001\006\022!v@\160\176\001\006\023\005\002\r@@\188\144\004\003\178\004W\160\178\144\004\014\160\144\004\012\160\166\150@\160\004\011@@\160\176\192\005\001\135\001\000\132\001\018\152\001\018\164\192\005\001\136\001\000\132\001\018\152\001\018\185@A\160\166\150A\160\004\019@\160\166\150B\160\004\023@@\160\176\192\005\001\147\001\000\132\001\018\152\001\018\160\192\005\001\148\001\000\132\001\018\152\001\018\189@A\178\144\004@\160\004\024@\160\176\192\005\001\154\001\000\130\001\018^\001\018o\192\005\001\155\001\000\130\001\018^\001\018z@A@\165\160\160\176\001\006\028/add_max_element@\179@\160\176\001\006\029!v@\160\176\001\006\030\005\002;@@\188\144\004\003\178\004\133\160\166\150@\160\004\006@\160\166\150A\160\004\n@\160\178\144\004\022\160\144\004\020\160\166\150B\160\004\019@@\160\176\192\005\001\189\001\000\137\001\019\"\001\0192\192\005\001\190\001\000\137\001\019\"\001\019G@A@\160\176\192\005\001\193\001\000\137\001\019\"\001\019*\004\004@A\178\004-\160\004\014@\160\176\192\005\001\198\001\000\135\001\018\232\001\018\249\192\005\001\199\001\000\135\001\018\232\001\019\004@A@\165\160\160\176\001\006#$join@\179@\160\176\001\006$!l@\160\176\001\006%!v@\160\176\001\006&!r@@\188\144\004\n\188\144\004\006\196A\176\001\006)\"rh@\166\150C\160\004\007@\196A\176\001\006-\"lh@\166\150C\160\004\015@\188\166\005\002\016\160\144\004\t\160\166L\160\144\004\019\160\145\144\144B@@\178\004\207\160\166\150@\160\004 @\160\166\150A\160\004$@\160\178\144\0044\160\166\150B\160\004+@\160\144\0043\160\144\0042@\160\176\192\005\002\t\001\000\147\001\020p\001\020\152\192\005\002\n\001\000\147\001\020p\001\020\165@A@\160\176\192\005\002\r\001\000\147\001\020p\001\020\142\004\004@A\188\166\005\0027\160\004#\160\166L\160\004*\160\145\144\144B@@\178\004\244\160\178\004\029\160\144\004N\160\004\026\160\166\150@\160\004H@@\160\176\192\005\002$\001\000\148\001\020\171\001\020\205\192\005\002%\001\000\148\001\020\171\001\020\218@A\160\166\150A\160\004P@\160\166\150B\160\004T@@\160\176\192\005\0020\001\000\148\001\020\171\001\020\201\192\005\0021\001\000\148\001\020\171\001\020\224@A\178\005\002'\160\004\024\160\0041\160\0040@\160\176\192\005\0028\001\000\149\001\020\230\001\020\240\192\005\0029\001\000\149\001\020\230\001\020\252@A\178\004\135\160\0048\160\004!@\160\176\192\005\002?\001\000\145\001\020\014\001\020$\192\005\002@\001\000\145\001\020\014\001\0207@A\178\004\196\160\004?\160\004>@\160\176\192\005\002F\001\000\144\001\019\228\001\019\250\192\005\002G\001\000\144\001\019\228\001\020\r@A@\165\160\160\176\001\0061'min_elt@\179@\160\176\001\0062\005\002\228@@\188\144\004\003\196A\176\001\0063!l@\166\150@\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002_\001\000\156\001\021\146\001\021\174\192\005\002`\001\000\156\001\021\146\001\021\183@A\166\150A\160\004\019@\166\156@\160\166\147\176T)Not_foundC@@@\165\160\160\176\001\0069'max_elt@\179@\160\176\001\006:\005\003\007@@\188\144\004\003\196A\176\001\006;!r@\166\150B\160\004\007@\188\144\004\007\178\144\004\017\160\004\004@\160\176\192\005\002\130\001\000\161\001\022\027\001\0227\192\005\002\131\001\000\161\001\022\027\001\022@@A\166\150A\160\004\019@\166\156@\160\166\147\004#@@@\165\160\160\176\001\006B.remove_min_elt@\179@\160\176\001\006C\005\003(@@\188\144\004\003\196A\176\001\006D!l@\166\150@\160\004\007@\188\144\004\007\178\005\001z\160\178\144\004\019\160\004\006@\160\176\192\005\002\165\001\000\168\001\022\244\001\023\020\192\005\002\166\001\000\168\001\022\244\001\023&@A\160\166\150A\160\004\022@\160\166\150B\160\004\026@@\160\176\192\005\002\177\001\000\168\001\022\244\001\023\016\192\005\002\178\001\000\168\001\022\244\001\023*@A\166\004\007\160\004 @\166\005\002w\160\166\005\002v\160\166\005\002u@\160\145\144\1622Set.remove_min_elt@@@@\196B\176\001\006K%merge@\179@\160\176\001\006L\"t1@\160\176\001\006M\"t2@@\188\144\004\007\188\144\004\006\178\005\001\169\160\144\004\012\160\178\004w\160\144\004\r@\160\176\192\005\002\214\001\000\178\001\024\030\001\0247\192\005\002\215\001\000\178\001\024\030\001\024C@A\160\178\0049\160\004\b@\160\176\192\005\002\221\001\000\178\001\024\030\001\024D\192\005\002\222\001\000\178\001\024\030\001\024W@A@\160\176\192\005\002\225\001\000\178\001\024\030\001\0240\004\004@A\144\004\031\144\004\029\196B\176\001\006P&concat@\179@\160\176\001\006Q\"t1@\160\176\001\006R\"t2@@\188\144\004\007\188\144\004\006\178\004\245\160\144\004\012\160\178\004\156\160\144\004\r@\160\176\192\005\002\251\001\000\188\001\025P\001\025j\192\005\002\252\001\000\188\001\025P\001\025v@A\160\178\004^\160\004\b@\160\176\192\005\003\002\001\000\188\001\025P\001\025w\192\005\003\003\001\000\188\001\025P\001\025\138@A@\160\176\192\005\003\006\001\000\188\001\025P\001\025b\004\004@A\144\004\031\144\004\029\165\160\160\176\001\006U%split@\179@\160\176\001\006V!x@\160\176\001\006W\005\003\168@@\188\144\004\003\196A\176\001\006Y!r@\166\150B\160\004\007@\196A\176\001\006Z!v@\166\150A\160\004\r@\196A\176\001\006[!l@\166\150@\160\004\019@\196@\176\001\006\\!c@\178\166\150@\160\005\002%@\160\144\004!\160\144\004\022@\160\176\192\005\0035\001\000\200\001\027!\001\0273\192\005\0036\001\000\200\001\027!\001\027B@@\188\166\005\002$\160\144\004\018\160\145\144\144@@\166\181@@@\160\144\004 \160\145\161A\144$true\160\144\0043@\188\166\005\002.\160\004\019\160\145\144\144@@\196@\176\001\006]%match@\178\144\004J\160\004'\160\004\022@\160\176\192\005\003Z\001\000\203\001\027\136\001\027\169\192\005\003[\001\000\203\001\027\136\001\027\178@A\166\004\029\160\166\150@\160\144\004\016@\160\166\150A\160\004\005@\160\178\005\001j\160\166\150B\160\004\011@\160\004;\160\004%@\160\176\192\005\003p\001\000\203\001\027\136\001\027\193\192\005\003q\001\000\203\001\027\136\001\027\204@A@\196@\176\001\006a\004!@\178\004 \160\004F\160\004.@\160\176\192\005\003y\001\000\205\001\027\221\001\027\254\192\005\003z\001\000\205\001\027\221\001\028\007@A\166\004<\160\178\005\001\128\160\004=\160\004N\160\166\150@\160\144\004\018@@\160\176\192\005\003\135\001\000\205\001\027\221\001\028\012\192\005\003\136\001\000\205\001\027\221\001\028\023@A\160\166\150A\160\004\t@\160\166\150B\160\004\r@@\145\178@@\160\161@\144\005\002J\160\161@\144%false\160\161@\144\005\002Q@@\196A\176\001\006e%empty@\145\161@\144\005\002W\196B\176\001\006f(is_empty@\179@\160\176\001\006g\005\004=@@\188\144\004\003\145\161@\144\004\021\145\161A\144\004j\165\160\160\176\001\006h#mem@\179@\160\176\001\006i!x@\160\176\001\006j\005\004P@@\188\144\004\003\196@\176\001\006o!c@\178\166\150@\160\005\002\187@\160\144\004\015\160\166\150A\160\004\014@@\160\176\192\005\003\205\001\000\216\001\028\243\001\029\005\192\005\003\206\001\000\216\001\028\243\001\029\020@@\166I\160\166\005\002\189\160\144\004\021\160\145\144\144@@\160\178\144\004'\160\004\022\160\188\166\005\002\193\160\004\r\160\145\144\144@@\166\150@\160\004*@\166\150B\160\004-@@\160\176\192\005\003\236\001\000\217\001\029\024\001\029+\192\005\003\237\001\000\217\001\029\024\001\029I@A@\145\161@\144\004X@\165\160\160\176\001\006p&remove@\179@\160\176\001\006q!x@\160\176\001\006r\005\004\144@@\188\144\004\003\196A\176\001\006t!r@\166\150B\160\004\007@\196A\176\001\006u!v@\166\150A\160\004\r@\196A\176\001\006v!l@\166\150@\160\004\019@\196@\176\001\006w!c@\178\166\150@\160\005\003\r@\160\144\004!\160\144\004\022@\160\176\192\005\004\029\001\000\222\001\029\158\001\029\176\192\005\004\030\001\000\222\001\029\158\001\029\191@@\188\166\005\003\012\160\144\004\018\160\145\144\144@@\178\144\005\001i\160\144\004 \160\144\004.@\160\176\192\005\004/\001\000\223\001\029\195\001\029\219\192\005\0040\001\000\223\001\029\195\001\029\228@A\188\166\005\003\021\160\004\018\160\145\144\144@@\178\005\003\020\160\178\144\004H\160\004%\160\004\020@\160\176\192\005\004@\001\000\224\001\029\234\001\030\006\192\005\004A\001\000\224\001\029\234\001\030\018@A\160\004)\160\004\024@\160\176\192\005\004F\001\000\224\001\029\234\001\030\002\192\005\004G\001\000\224\001\029\234\001\030\022@A\178\005\003$\160\004 \160\0041\160\178\004\018\160\0046\160\004#@\160\176\192\005\004Q\001\000\224\001\029\234\001\030$\192\005\004R\001\000\224\001\029\234\001\0300@A@\160\176\192\005\004U\001\000\224\001\029\234\001\030\028\004\004@A\145\161@\144\005\003\r@\165\160\160\176\001\006x%union@\179@\160\176\001\006y\"s1@\160\176\001\006z\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006}\"h2@\166\150C\160\004\007@\196A\176\001\006\127\"v2@\166\150A\160\004\r@\196A\176\001\006\129\"h1@\166\150C\160\004\021@\196A\176\001\006\131\"v1@\166\150A\160\004\027@\188\166\005\004\224\160\144\004\015\160\144\004\029@\188\166\005\003t\160\004\004\160\145\144\144A@\178\005\003g\160\144\004!\160\144\0043@\160\176\192\005\004\149\001\000\232\001\030\237\001\031\b\192\005\004\150\001\000\232\001\030\237\001\031\017@A\196@\176\001\006\133\005\001F@\178\005\001E\160\144\004 \160\144\004;@\160\176\192\005\004\160\001\000\233\001\031\029\001\031=\192\005\004\161\001\000\233\001\031\029\001\031H@A\178\005\002\165\160\178\144\004J\160\166\150@\160\004D@\160\166\150@\160\144\004\023@@\160\176\192\005\004\177\001\000\234\001\031L\001\031_\192\005\004\178\001\000\234\001\031L\001\031l@A\160\004\025\160\178\004\017\160\166\150B\160\004T@\160\166\150B\160\004\016@@\160\176\192\005\004\192\001\000\234\001\031L\001\031p\192\005\004\193\001\000\234\001\031L\001\031}@A@\160\176\192\005\004\196\001\000\234\001\031L\001\031Z\004\004@A\188\166\005\003\178\160\004D\160\145\144\144A@\178\005\003\165\160\0043\160\0042@\160\176\192\005\004\209\001\000\237\001\031\157\001\031\184\192\005\004\210\001\000\237\001\031\157\001\031\193@A\196@\176\001\006\137\005\001\130@\178\005\001\129\160\004G\160\004F@\160\176\192\005\004\218\001\000\238\001\031\205\001\031\237\192\005\004\219\001\000\238\001\031\205\001\031\248@A\178\005\002\223\160\178\004:\160\166\150@\160\144\004\016@\160\166\150@\160\004\128@@\160\176\192\005\004\234\001\000\239\001\031\252\001 \015\192\005\004\235\001\000\239\001\031\252\001 \028@A\160\004]\160\178\004J\160\166\150B\160\004\016@\160\166\150B\160\004\143@@\160\176\192\005\004\249\001\000\239\001\031\252\001  \192\005\004\250\001\000\239\001\031\252\001 -@A@\160\176\192\005\004\253\001\000\239\001\031\252\001 \n\004\004@A\144\004\159\144\004\157@\165\160\160\176\001\006\141%inter@\179@\160\176\001\006\142\"s1@\160\176\001\006\143\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\150\"r1@\166\150B\160\004\t@\196A\176\001\006\151\"v1@\166\150A\160\004\015@\196A\176\001\006\152\"l1@\166\150@\160\004\021@\196@\176\001\006\153\005\001\209@\178\005\001\208\160\144\004\016\160\144\004\031@\160\176\192\005\005+\001\000\247\001 \210\001 \226\192\005\005,\001\000\247\001 \210\001 \237@A\196A\176\001\006\155\"l2@\166\150@\160\144\004\017@\188\166\157A\160\166\150A\160\004\b@\160\145\144\144@@\178\005\003B\160\178\144\004@\160\144\004(\160\144\004\025@\160\176\192\005\005I\001\000\251\001!a\001!t\192\005\005J\001\000\251\001!a\001!\129@A\160\004&\160\178\004\012\160\144\004?\160\166\150B\160\004!@@\160\176\192\005\005V\001\000\251\001!a\001!\133\192\005\005W\001\000\251\001!a\001!\146@A@\160\176\192\005\005Z\001\000\251\001!a\001!o\004\004@A\178\144\005\002x\160\178\004\029\160\004\028\160\144\0044@\160\176\192\005\005d\001\000\249\001!\018\001!'\192\005\005e\001\000\249\001!\018\001!4@A\160\178\004&\160\004\026\160\166\004\025\160\0049@@\160\176\192\005\005n\001\000\249\001!\018\001!5\192\005\005o\001\000\249\001!\018\001!B@A@\160\176\192\005\005r\001\000\249\001!\018\001! \004\004@A\145\161@\144\005\004*\145\161@\144\005\004-@\165\160\160\176\001\006\159$diff@\179@\160\176\001\006\160\"s1@\160\176\001\006\161\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\167\"r1@\166\150B\160\004\t@\196A\176\001\006\168\"v1@\166\150A\160\004\015@\196A\176\001\006\169\"l1@\166\150@\160\004\021@\196@\176\001\006\170\005\002J@\178\005\002I\160\144\004\016\160\144\004\031@\160\176\192\005\005\164\001\001\002\001\"#\001\"3\192\005\005\165\001\001\002\001\"#\001\">@A\196A\176\001\006\172\"l2@\166\150@\160\144\004\017@\188\166\004y\160\166\150A\160\004\007@\160\145\144\144@@\178\004\\\160\178\144\004?\160\144\004'\160\144\004\024@\160\176\192\005\005\193\001\001\006\001\"\177\001\"\198\192\005\005\194\001\001\006\001\"\177\001\"\210@A\160\178\004\011\160\144\004=\160\166\150B\160\004\031@@\160\176\192\005\005\205\001\001\006\001\"\177\001\"\211\192\005\005\206\001\001\006\001\"\177\001\"\223@A@\160\176\192\005\005\209\001\001\006\001\"\177\001\"\191\004\004@A\178\005\003\213\160\178\004\027\160\004\026\160\144\0041@\160\176\192\005\005\218\001\001\004\001\"c\001\"v\192\005\005\219\001\001\004\001\"c\001\"\130@A\160\004>\160\178\004%\160\004\026\160\166\004\025\160\0047@@\160\176\192\005\005\229\001\001\004\001\"c\001\"\134\192\005\005\230\001\001\004\001\"c\001\"\146@A@\160\176\192\005\005\233\001\001\004\001\"c\001\"q\004\004@A\144\004k\145\161@\144\005\004\162@\165\160\160\176\001\006\176)cons_enum@\179@\160\176\001\006\177!s@\160\176\001\006\178!e@@\188\144\004\007\178\144\004\r\160\166\150@\160\004\007@\160\166\181@\144$More@\160\166\150A\160\004\016@\160\166\150B\160\004\020@\160\144\004\025@@\160\176\192\005\006\019\001\001\r\001#_\001#{\192\005\006\020\001\001\r\001#_\001#\150@A\004\005@\165\160\160\176\001\006\183+compare_aux@\179@\160\176\001\006\184\"e1@\160\176\001\006\185\"e2@@\188\144\004\007\188\144\004\006\196@\176\001\006\194!c@\178\166\150@\160\005\005\"@\160\166\150@\160\004\014@\160\166\150@\160\004\016@@\160\176\192\005\0066\001\001\021\001$J\001$\\\192\005\0067\001\001\021\001$J\001$m@@\188\166\157A\160\144\004\023\160\145\144\144@@\004\005\178\144\004+\160\178\004H\160\166\150A\160\004'@\160\166\150B\160\004+@@\160\176\192\005\006O\001\001\024\001$\150\001$\177\192\005\006P\001\001\024\001$\150\001$\194@A\160\178\004V\160\166\150A\160\0043@\160\166\150B\160\0047@@\160\176\192\005\006]\001\001\024\001$\150\001$\195\192\005\006^\001\001\024\001$\150\001$\212@A@\160\176\192\005\006a\001\001\024\001$\150\001$\165\004\004@A\145\144\144A\188\004B\145\144\144\000\255\145\144\144@@\196B\176\001\006\195'compare@\179@\160\176\001\006\196\"s1@\160\176\001\006\197\"s2@@\178\0045\160\178\004|\160\144\004\n\160\145\161@\144#End@\160\176\192\005\006\130\001\001\027\001$\238\001%\000\192\005\006\131\001\001\027\001$\238\001%\018@A\160\178\004\137\160\144\004\020\160\145\161@\144\004\r@\160\176\192\005\006\142\001\001\027\001$\238\001%\019\192\005\006\143\001\001\027\001$\238\001%%@A@\160\176\192\005\006\146\001\001\027\001$\238\001$\244\004\004@A\196B\176\001\006\198%equal@\179@\160\176\001\006\199\"s1@\160\176\001\006\200\"s2@@\166\005\005\137\160\178\144\0044\160\144\004\011\160\144\004\n@\160\176\192\005\006\167\001\001\030\001%=\001%C\192\005\006\168\001\001\030\001%=\001%P@A\160\145\144\144@@\165\160\160\176\001\006\201&subset@\179@\160\176\001\006\202\"s1@\160\176\001\006\203\"s2@@\188\144\004\007\188\144\004\006\196A\176\001\006\208\"r2@\166\150B\160\004\007@\196A\176\001\006\210\"l2@\166\150@\160\004\r@\196A\176\001\006\212\"r1@\166\150B\160\004\021@\196A\176\001\006\213\"v1@\166\150A\160\004\027@\196A\176\001\006\214\"l1@\166\150@\160\004!@\196@\176\001\006\215!c@\178\166\150@\160\005\005\216@\160\144\004\020\160\166\150A\160\004,@@\160\176\192\005\006\234\001\001'\001&\016\001&\"\192\005\006\235\001\001'\001&\016\001&3@@\188\166\005\005\217\160\144\004\020\160\145\144\144@@\166H\160\178\144\004H\160\144\004$\160\144\0048@\160\176\192\005\006\254\001\001)\001&O\001&[\192\005\006\255\001\001)\001&O\001&g@A\160\178\004\011\160\144\004:\160\144\004H@\160\176\192\005\007\b\001\001)\001&O\001&k\192\005\007\t\001\001)\001&O\001&w@A@\188\166\005\005\238\160\004\030\160\145\144\144@@\166H\160\178\004\029\160\166\181@\144\005\007}@\160\004 \160\0047\160\145\161@\144\005\005\210\160\145\144\144@@\160\004(@\160\176\192\005\007%\001\001+\001&\149\001&\161\192\005\007&\001\001+\001&\149\001&\196@A\160\178\0042\160\004'\160\144\004u@\160\176\192\005\007.\001\001+\001&\149\001&\200\192\005\007/\001\001+\001&\149\001&\212@A@\166H\160\178\004<\160\166\181@\144\005\007\156@\160\145\161@\144\005\005\239\160\004Y\160\004:\160\145\144\144@@\160\004=@\160\176\192\005\007D\001\001-\001&\228\001&\240\192\005\007E\001\001-\001&\228\001'\019@A\160\178\004Q\160\004P\160\144\004\148@\160\176\192\005\007M\001\001-\001&\228\001'\023\192\005\007N\001\001-\001&\228\001'#@A@\145\161@\144\005\003\185\145\161A\144\005\004\014@\165\160\160\176\001\006\216$iter@\179@\160\176\001\006\217!f@\160\176\001\006\218\005\007\244@@\188\144\004\003\173\178\144\004\r\160\144\004\011\160\166\150@\160\004\n@@\160\176\192\005\007m\001\0011\001'W\001's\192\005\007n\001\0011\001'W\001'{@A\173\178\004\011\160\166\150A\160\004\020@@\160\176\192\005\007w\001\0011\001'W\001'}\192\005\007x\001\0011\001'W\001'\128@@\178\004\022\160\004\021\160\166\150B\160\004\030@@\160\176\192\005\007\129\001\0011\001'W\001'\130\192\005\007\130\001\0011\001'W\001'\138@A\145\161@\144\"()@\165\160\160\176\001\006\223$fold@\179@\160\176\001\006\224!f@\160\176\001\006\225!s@\160\176\001\006\226$accu@@\188\144\004\007\178\144\004\016\160\144\004\014\160\166\150B\160\004\t@\160\178\004\007\160\166\150A\160\004\015@\160\178\004\015\160\004\014\160\166\150@\160\004\022@\160\144\004\027@\160\176\192\005\007\177\001\0016\001'\209\001'\251\192\005\007\178\001\0016\001'\209\001(\n@A@\160\176\192\005\007\181\001\0016\001'\209\001'\246\192\005\007\182\001\0016\001'\209\001(\011@@@\160\176\192\005\007\185\001\0016\001'\209\001'\237\004\004@A\004\012@\165\160\160\176\001\006\231'for_all@\179@\160\176\001\006\232!p@\160\176\001\006\233\005\bY@@\188\144\004\003\166H\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\007\209\001\001:\001(D\001(`\192\005\007\210\001\001:\001(D\001(c@@\160\166H\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\007\223\001\001:\001(D\001(g\192\005\007\224\001\001:\001(D\001(r@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\007\234\001\001:\001(D\001(v\192\005\007\235\001\001:\001(D\001(\129@A@@\145\161A\144\005\004\168@\165\160\160\176\001\006\238&exists@\179@\160\176\001\006\239!p@\160\176\001\006\240\005\b\142@@\188\144\004\003\166I\160\178\144\004\n\160\166\150A\160\004\t@@\160\176\192\005\b\006\001\001>\001(\186\001(\214\192\005\b\007\001\001>\001(\186\001(\217@@\160\166I\160\178\144\004\027\160\004\015\160\166\150@\160\004\023@@\160\176\192\005\b\020\001\001>\001(\186\001(\221\192\005\b\021\001\001>\001(\186\001(\231@A\160\178\004\012\160\004\026\160\166\150B\160\004\"@@\160\176\192\005\b\031\001\001>\001(\186\001(\235\192\005\b \001\001>\001(\186\001(\245@A@@\145\161@\144\005\004\139@\165\160\160\176\001\006\245&filter@\179@\160\176\001\006\246!p@\160\176\001\006\247\005\b\195@@\188\144\004\003\196A\176\001\006\250!v@\166\150A\160\004\007@\196@\176\001\006\252\"l'@\178\144\004\021\160\144\004\019\160\166\150@\160\004\018@@\160\176\192\005\bD\001\001D\001)\135\001)\154\192\005\bE\001\001D\001)\135\001)\164@A\196@\176\001\006\253\"pv@\178\004\r\160\144\004\026@\160\176\192\005\bN\001\001E\001)\168\001)\187\192\005\bO\001\001E\001)\168\001)\190@@\196@\176\001\006\254\"r'@\178\004\025\160\004\024\160\166\150B\160\004)@@\160\176\192\005\b[\001\001F\001)\194\001)\213\192\005\b\\\001\001F\001)\194\001)\223@A\188\144\004\024\178\005\006b\160\144\004*\160\004\024\160\144\004\020@\160\176\192\005\bg\001\001G\001)\227\001)\248\192\005\bh\001\001G\001)\227\001*\004@A\178\005\003\014\160\004\n\160\004\b@\160\176\192\005\bn\001\001G\001)\227\001*\n\192\005\bo\001\001G\001)\227\001*\022@A\145\161@\144\005\007'@\165\160\160\176\001\006\255)partition@\179@\160\176\001\007\000!p@\160\176\001\007\001\005\t\018@@\188\144\004\003\196A\176\001\007\004!v@\166\150A\160\004\007@\196@\176\001\007\006\005\0055@\178\144\004\020\160\144\004\018\160\166\150@\160\004\017@@\160\176\192\005\b\146\001\001M\001*\180\001*\205\192\005\b\147\001\001M\001*\180\001*\218@A\196A\176\001\007\007\"lf@\166\150A\160\144\004\020@\196A\176\001\007\b\"lt@\166\150@\160\004\007@\196@\176\001\007\t\"pv@\178\004\026\160\144\004&@\160\176\192\005\b\169\001\001N\001*\222\001*\241\192\005\b\170\001\001N\001*\222\001*\244@@\196@\176\001\007\n\005\005Z@\178\004%\160\004$\160\166\150B\160\0044@@\160\176\192\005\b\181\001\001O\001*\248\001+\017\192\005\b\182\001\001O\001*\248\001+\030@A\196A\176\001\007\011\"rf@\166\150A\160\144\004\018@\196A\176\001\007\012\"rt@\166\150@\160\004\007@\188\144\004$\166\005\005\135\160\178\005\006\203\160\144\004/\160\004&\160\144\004\015@\160\176\192\005\b\208\001\001Q\001+2\001+B\192\005\b\209\001\001Q\001+2\001+N@A\160\178\005\003x\160\144\004A\160\144\004 @\160\176\192\005\b\218\001\001Q\001+2\001+P\192\005\b\219\001\001Q\001+2\001+\\@A@\166\005\005\157\160\178\005\003\131\160\004\022\160\004\020@\160\176\192\005\b\227\001\001R\001+^\001+n\192\005\b\228\001\001R\001+^\001+z@A\160\178\005\006\233\160\004\019\160\004C\160\004\019@\160\176\192\005\b\236\001\001R\001+^\001+|\192\005\b\237\001\001R\001+^\001+\136@A@\145\178@@\160\161@\144\005\007\167\160\161@\144\005\007\170@@\165\160\160\176\001\007\r(cardinal@\179@\160\176\001\007\014\005\t\146@@\188\144\004\003\166L\160\166L\160\178\144\004\r\160\166\150@\160\004\011@@\160\176\192\005\t\012\001\001V\001+\190\001+\218\192\005\t\r\001\001V\001+\190\001+\228@A\160\145\144\144A@\160\178\004\015\160\166\150B\160\004\025@@\160\176\192\005\t\026\001\001V\001+\190\001+\235\192\005\t\027\001\001V\001+\190\001+\245@A@\145\144\144@@\165\160\160\176\001\007\019,elements_aux@\179@\160\176\001\007\020$accu@\160\176\001\007\021\005\t\190@@\188\144\004\003\178\144\004\012\160\166\181@\144\"::@\160\166\150A\160\004\012@\160\178\004\012\160\144\004\021\160\166\150B\160\004\020@@\160\176\192\005\tA\001\001Z\001,6\001,e\192\005\tB\001\001Z\001,6\001,x@A@\160\166\150@\160\004\028@@\160\176\192\005\tI\001\001Z\001,6\001,R\192\005\tJ\001\001Z\001,6\001,{@A\004\017@\196B\176\001\007\026(elements@\179@\160\176\001\007\027!s@@\178\004&\160\145\161@\144\"[]\160\144\004\n@\160\176\192\005\t\\\001\001]\001,\146\001,\152\192\005\t]\001\001]\001,\146\001,\169@A\165\160\160\176\001\007\029$find@\179@\160\176\001\007\030!x@\160\176\001\007\031\005\t\253@@\188\144\004\003\196A\176\001\007\"!v@\166\150A\160\004\007@\196@\176\001\007$!c@\178\166\150@\160\005\bn@\160\144\004\021\160\144\004\016@\160\176\192\005\t~\001\001d\001- \001-2\192\005\t\127\001\001d\001- \001-A@@\188\166\005\bm\160\144\004\018\160\145\144\144@@\004\r\178\144\004)\160\004\018\160\188\166\005\bp\160\004\012\160\145\144\144@@\166\150@\160\004,@\166\150B\160\004/@@\160\176\192\005\t\155\001\001f\001-_\001-n\192\005\t\156\001\001f\001-_\001-\141@A\166\156@\160\166\147\005\0079@@@\196B\176\001\007%.of_sorted_list@\179@\160\176\001\007&!l@@\165\160\160\176\001\007'#sub@\179@\160\176\001\007(!n@\160\176\001\007)!l@@\186\188\166j\160\145\144\144C\160\144\004\014@\169F@\167\144\004\017\208D\160\160@\166\005\006\133\160\145\161@\144\005\b}\160\144\004\024@\160\160A\188\144\004\028\166\005\006\144\160\166\181@\144\005\n9@\160\145\161@\144\005\b\140\160\166\150@\160\004\014@\160\145\161@\144\005\b\148\160\145\144\144A@\160\166\150A\160\004\026@@\169F@\160\160B\188\004\030\196A\176\001\007/\005\006\155@\166\150A\160\004#@\188\144\004\006\166\005\006\180\160\166\181@\144\005\n]@\160\166\181@\144\005\na@\160\145\161@\144\005\b\180\160\166\150@\160\0046@\160\145\161@\144\005\b\188\160\145\144\144A@\160\166\150@\160\004\030@\160\145\161@\144\005\b\200\160\145\144\144B@\160\166\150A\160\004*@@\169F@\169F@\160\160C\188\004S\196A\176\001\0073\005\006\208@\166\150A\160\004X@\188\144\004\006\196A\176\001\0074\005\006\215@\166\150A\160\004\006@\188\144\004\006\166\005\006\240\160\166\181@\144\005\n\153@\160\166\181@\144\005\n\157@\160\145\161@\144\005\b\240\160\166\150@\160\004r@\160\145\161@\144\005\b\248\160\145\144\144A@\160\166\150@\160\004%@\160\166\181@\144\005\n\181@\160\145\161@\144\005\t\b\160\166\150@\160\004*@\160\145\161@\144\005\t\016\160\145\144\144A@\160\145\144\144B@\160\166\150A\160\004:@@\169F@\169F@\169F@@@@@\160F@\196B\176\001\007;\"nl@\166O\160\144\004\194\160\145\144\144B@\196@\176\001\007<\005\007%@\178\144\004\206\160\144\004\015\160\144\004\203@\160\176\192\005\n\128\001\001r\001/\030\001/6\192\005\n\129\001\001r\001/\030\001/>@A\196A\176\001\007=!l@\166\150A\160\144\004\018@\188\144\004\b\196@\176\001\007A\005\007:@\178\004\021\160\166M\160\166M\160\144\004\228\160\004\026@\160\145\144\144A@\160\166\150A\160\004\019@@\160\176\192\005\n\159\001\001v\001/\144\001/\171\192\005\n\160\001\001v\001/\144\001/\189@A\166\005\007b\160\178\005\n\152\160\166\150@\160\004 @\160\166\150@\160\004\"@\160\166\150@\160\144\004%@@\160\176\192\005\n\179\001\001w\001/\193\001/\205\192\005\n\180\001\001w\001/\193\001/\226@A\160\166\150A\160\004\t@@\166\156@\160\166\181@C@\160\166\147\176Z.Assert_failureC@\160\145\178@C\160\144\162\005\n\200@\160\144\144\001\001t\160\144\144R@@@@\166\150@\160\178\004Z\160\178\166\150@\160\166\147\176@$ListA@@\160\144\005\0017@\160\176\192\005\n\224\001\001y\001/\239\001/\254\192\005\n\225\001\001y\001/\239\0010\r@A\160\004\006@\160\176\192\005\n\229\001\001y\001/\239\001/\249\192\005\n\230\001\001y\001/\239\0010\016@A@\196B\176\001\007D'of_list@\179@\160\176\001\007E!l@@\188\144\004\004\196A\176\001\007F\005\007\159@\166\150A\160\004\006@\196A\176\001\007G\"x0@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007H\005\007\172@\166\150A\160\004\006@\196A\176\001\007I\"x1@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007J\005\007\185@\166\150A\160\004\006@\196A\176\001\007K\"x2@\166\150@\160\004\012@\188\144\004\012\196A\176\001\007L\005\007\198@\166\150A\160\004\006@\196A\176\001\007M\"x3@\166\150@\160\004\012@\188\144\004\012\188\166\150A\160\004\005@\178\144\005\001\135\160\178\166\150j\160\166\147\176@$ListA@@\160\166\150@\160\005\n-@\160\004I@\160\176\192\005\011:\001\001\131\0011`\0011|\192\005\011;\001\001\131\0011`\0011\154@A@\160\176\192\005\011>\001\001\131\0011`\0011m\004\004@A\178\005\n\024\160\166\150@\160\004!@\160\178\005\n\030\160\144\004+\160\178\005\n\"\160\144\004<\160\178\005\n&\160\144\004M\160\178\005\t\188\160\144\004^@\160\176\192\005\011V\001\001\130\0011\015\0011N\192\005\011W\001\001\130\0011\015\0011\\@A@\160\176\192\005\011Z\001\001\130\0011\015\0011F\192\005\011[\001\001\130\0011\015\0011]@A@\160\176\192\005\011^\001\001\130\0011\015\0011>\192\005\011_\001\001\130\0011\015\0011^@A@\160\176\192\005\011b\001\001\130\0011\015\00116\192\005\011c\001\001\130\0011\015\0011_@A@\160\176\192\005\011f\001\001\130\0011\015\0011/\004\004@A\178\005\n@\160\144\004M\160\178\005\nD\160\144\004^\160\178\005\nH\160\144\004o\160\178\005\t\222\160\144\004\128@\160\176\192\005\011x\001\001\129\0010\203\0010\254\192\005\011y\001\001\129\0010\203\0011\012@A@\160\176\192\005\011|\001\001\129\0010\203\0010\246\192\005\011}\001\001\129\0010\203\0011\r@A@\160\176\192\005\011\128\001\001\129\0010\203\0010\238\192\005\011\129\001\001\129\0010\203\0011\014@A@\160\176\192\005\011\132\001\001\129\0010\203\0010\231\004\004@A\178\005\n^\160\144\004x\160\178\005\nb\160\144\004\137\160\178\005\t\248\160\144\004\154@\160\176\192\005\011\146\001\001\128\0010\148\0010\187\192\005\011\147\001\001\128\0010\148\0010\201@A@\160\176\192\005\011\150\001\001\128\0010\148\0010\179\192\005\011\151\001\001\128\0010\148\0010\202@A@\160\176\192\005\011\154\001\001\128\0010\148\0010\172\004\004@A\178\005\nt\160\144\004\155\160\178\005\n\n\160\144\004\172@\160\176\192\005\011\164\001\001\127\0010j\0010\133\192\005\011\165\001\001\127\0010j\0010\147@A@\160\176\192\005\011\168\001\001\127\0010j\0010~\004\004@A\178\005\n\020\160\144\004\182@\160\176\192\005\011\174\001\001~\0010M\0010]\192\005\011\175\001\001~\0010M\0010i@A\144\005\b\019\166\181@C@\160\004\004\160\144\005\b\018\160\005\007\221\160\005\n\144\160\005\n#\160\005\007\127\160\005\007\022\160\005\006z\160\005\006\003\160\005\005\030\160\144\005\005,\160\005\004\202\160\005\004^\160\005\004*\160\005\003\237\160\005\003\185\160\005\003\139\160\005\003>\160\005\002\195\160\144\005\002~\160\005\tp\160\005\tN\160\144\005\t\131\160\005\bz\160\005\002G\160\144\004\234@@A@")));
             ("sort.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5872,6 +6055,100 @@ include
              (fun id  -> if mem id then Hash_set.add hard_dependencies id)
              extras;
            Hash_set.elements hard_dependencies : module_id list)
+      end 
+    module Js_of_lam_option :
+      sig
+        val get : J.expression -> J.expression
+        val none : J.expression
+        val some : J.expression -> J.expression
+      end =
+      struct
+        module E = Js_exp_make
+        let get arg = (E.index arg 0 : J.expression)
+        let none: J.expression =
+          {
+            expression_desc = (Number (Int { i = 0; c = None }));
+            comment = (Some "None")
+          }
+        let some x =
+          ({
+             expression_desc =
+               (Caml_block ([x], Immutable, (E.int 0), (Constructor "Some")));
+             comment = None
+           } : J.expression)
+      end 
+    module Lam_methname :
+      sig
+        type t =
+          | Js_read_index
+          | Js_write_index
+          | Js_write
+          | Js_read
+          | Js of int option
+          | Ml of int option
+          | Unknown of int option
+        val process : string -> (t* string)
+      end =
+      struct
+        type t =
+          | Js_read_index
+          | Js_write_index
+          | Js_write
+          | Js_read
+          | Js of int option
+          | Ml of int option
+          | Unknown of int option[@@ocaml.doc
+                                   "\n\nNote that js object support gettter, setter\n\n{[ \n  var obj = {\n    get latest () {\n    if (log.length == 0) return undefined;\n    return log[log.length - 1]\n    }\n  } \n]}\n\nIf it's getter then the [.length] property does not make sense, \nwe should avoid using it which means when branch to js, if there is no \nargs, we should not do \n{{ Curry.app0(obj.name) }} \n"]
+        let process (x : string) =
+          (match x with
+           | "index__unsafe_r"|"index__r_unsafe"|"index__r"|"index__" ->
+               (Js_read_index, "index")
+           | "index__w_unsafe"|"index__w"|"index__w_js_unsafe"|"index__w_js"
+               -> (Js_write_index, "index")
+           | _ ->
+               let sub = "__" in
+               let v = Ext_string.rfind ~sub x in
+               if v < 0
+               then ((Unknown None), x)
+               else
+                 (let len_sub = String.length sub in
+                  let indicator = Ext_string.tail_from x (v + len_sub) in
+                  let normal_name = String.sub x 0 v in
+                  match indicator with
+                  | "r" -> (Js_read, normal_name)
+                  | "w" -> (Js_write, normal_name)
+                  | _ ->
+                      let props = Ext_string.split indicator '_' in
+                      let kind = ref None in
+                      let arity = ref None in
+                      let fail l =
+                        let error =
+                          "invalid indicator" ^
+                            (indicator ^
+                               ("in method name " ^
+                                  (x ^ (":" ^ (Lam_current_unit.get_file ()))))) in
+                        Ext_log.err l "%s" error; failwith error in
+                      let update_ref r k =
+                        match !r with
+                        | None  -> r := (Some k)
+                        | Some x -> if x != k then fail __LOC__ in
+                      (List.iter
+                         (fun x  ->
+                            match x with
+                            | "js" -> update_ref kind `Js
+                            | "ml" -> update_ref kind `Ml
+                            | "gen" -> update_ref kind `Unknown
+                            | "unsafe" -> ()
+                            | _ ->
+                                (match int_of_string x with
+                                 | exception _ -> fail __LOC__
+                                 | v -> update_ref arity v)) props;
+                       (let arity = !arity in
+                        ((match !kind with
+                          | Some `Js|None  -> Js arity
+                          | Some `Ml -> Ml arity
+                          | Some `Unknown -> Unknown arity), normal_name)))) : 
+          (t* string))
       end 
     module Js_of_lam_module :
       sig
@@ -6399,6 +6676,14 @@ include
                (match args with
                 | e::[] -> E.string_of_small_int_array e
                 | _ -> assert false)
+           | "js_boolean_to_bool" ->
+               (match args with
+                | e::[] -> E.to_ocaml_boolean e
+                | _ -> assert false)
+           | "js_true" -> E.js_bool true
+           | "js_false" -> E.js_bool false
+           | "js_null" -> E.nil
+           | "js_undefined" -> E.undefined
            | "js_is_instance_array" ->
                (match args with
                 | e::[] -> E.is_instance_array e
@@ -6425,6 +6710,48 @@ include
                 | _ -> assert false)
            | "js_obj_length" ->
                (match args with | e::[] -> E.obj_length e | _ -> assert false)
+           | "js_pure_expr" ->
+               (match args with
+                | { expression_desc = Str (_,s) }::[] -> E.raw_js_code s
+                | _ ->
+                    (Ext_log.err __LOC__
+                       "JS.unsafe_js_expr is applied to an non literal string in %s"
+                       (Lam_current_unit.get_file ());
+                     assert false))
+           | "js_is_nil" ->
+               (match args with | e::[] -> E.is_nil e | _ -> assert false)
+           | "js_is_undef" ->
+               (match args with | e::[] -> E.is_undef e | _ -> assert false)
+           | "js_from_def" ->
+               (match args with
+                | e::[] ->
+                    (match e.expression_desc with
+                     | Var _ ->
+                         E.econd (E.is_undef e) Js_of_lam_option.none
+                           (Js_of_lam_option.some e)
+                     | _ ->
+                         let id = Ext_ident.create "v" in
+                         let tmp = E.var id in
+                         let open E in
+                           seq (assign tmp e)
+                             (econd (is_undef tmp) Js_of_lam_option.none
+                                (Js_of_lam_option.some tmp)))
+                | _ -> assert false)
+           | "js_from_nullable" ->
+               (match args with
+                | e::[] ->
+                    (match e.expression_desc with
+                     | Var _ ->
+                         E.econd (E.is_nil e) Js_of_lam_option.none
+                           (Js_of_lam_option.some e)
+                     | _ ->
+                         let id = Ext_ident.create "v" in
+                         let tmp = E.var id in
+                         let open E in
+                           seq (assign tmp e)
+                             (econd (is_nil tmp) Js_of_lam_option.none
+                                (Js_of_lam_option.some tmp)))
+                | _ -> assert false)
            | "js_obj_set_length" ->
                (match args with
                 | a::b::[] -> E.set_length a b
@@ -6606,8 +6933,9 @@ include
               | (_,`Optional label) ->
                   (match arg.expression_desc with
                    | Array (x::y::[],_mutable_flag) -> [y]
-                   | Number _ -> [E.null ()]
-                   | _ -> [E.econd arg E.undefined (E.index arg 1)])
+                   | Number _ -> [E.nil]
+                   | _ ->
+                       [E.econd arg (Js_of_lam_option.get arg) E.undefined])
               | _ -> [arg]) : E.t list)
         let translate (cxt : Lam_compile_defs.cxt)
           (({ prim_attributes; prim_ty } as prim) :
@@ -6647,9 +6975,9 @@ include
                                  | _ ->
                                      Some
                                        ((Key label),
-                                         (E.econd arg E.undefined
-                                            (E.index arg 1))))) arg_types
-                       args in
+                                         (E.econd arg
+                                            (Js_of_lam_option.get arg)
+                                            E.undefined)))) arg_types args in
                    E.obj kvs
                | None  -> assert false)
           | Js_call
@@ -7211,7 +7539,7 @@ include
                        Lam_compile_global.query_lambda ident meta.env
                    | Lprim (Pmakeblock (_,_,Immutable ),ls) ->
                        (Hashtbl.replace meta.ident_tbl param
-                          (Lam_util.kind_of_lambda_block ls);
+                          (Lam_util.kind_of_lambda_block Normal ls);
                         arg)
                    | _ -> arg in
                  Lam_util.refine_let param arg l) rest_bindings new_body
@@ -7262,7 +7590,7 @@ include
                        Lam_compile_global.query_lambda ident meta.env
                    | Lprim (Pmakeblock (_,_,Immutable ),ls) ->
                        (Hashtbl.replace meta.ident_tbl param
-                          (Lam_util.kind_of_lambda_block ls);
+                          (Lam_util.kind_of_lambda_block Normal ls);
                         arg)
                    | _ -> arg in
                  Lam_util.refine_let param arg l) rest_bindings new_body
@@ -7271,6 +7599,17 @@ include
             (fun l  ->
                fun param  -> fun arg  -> Lam_util.refine_let param arg l)
             body params args
+      end 
+    module Js_array :
+      sig
+        val set_array :
+          J.expression -> J.expression -> J.expression -> J.expression
+        val ref_array : J.expression -> J.expression -> J.expression
+      end =
+      struct
+        module E = Js_exp_make
+        let set_array e e0 e1 = E.assign (E.access e e0) e1
+        let ref_array e e0 = E.access e e0
       end 
     module Lam_compile :
       sig
@@ -8188,6 +8527,8 @@ include
                             | Lprim (Pgetglobal i,[]) ->
                                 ([],
                                   (Lam_compile_global.get_exp (i, env, true)))
+                            | Lprim (Pccall { prim_name;_},[]) ->
+                                ([], (E.var (Ext_ident.create_js prim_name)))
                             | _ ->
                                 (match compile_lambda
                                          {
@@ -8217,49 +8558,105 @@ include
                         (E.call (E.call get [obj'; label; E.int cache]) (obj'
                            :: args))
                   | Public (Some name) ->
-                      let set_prefix = "_set_" in
-                      let get_prefix = "_get_" in
-                      let set_prefix_len = String.length "_set_" in
-                      let get_prefix_len = String.length "_get_" in
-                      let is_getter s =
-                        if Ext_string.starts_with s get_prefix
-                        then
-                          Some
-                            (String.sub s get_prefix_len
-                               ((String.length s) - get_prefix_len))
-                        else None in
-                      let is_setter s =
-                        if Ext_string.starts_with s set_prefix
-                        then
-                          Some
-                            (String.sub s set_prefix_len
-                               ((String.length s) - set_prefix_len))
-                        else None in
-                      let js_call obj =
-                        match args with
-                        | [] ->
-                            (E.var_dot obj) @@
-                              ((match is_getter name with
-                                | Some v -> v
-                                | None  -> name))
-                        | y::ys ->
-                            (match is_setter name with
-                             | Some v -> E.assign (E.var_dot obj v) y
-                             | None  -> E.call (E.var_dot obj name) args) in
-                      (match obj with
-                       | Lprim (Pccall { prim_name;_},[]) ->
-                           (Js_output.handle_block_return st should_return
-                              lam (List.concat args_code))
-                             @@ (js_call (Ext_ident.create_js prim_name))
-                       | Lvar id when Ext_ident.is_js_object id ->
-                           (Js_output.handle_block_return st should_return
-                              lam (List.concat args_code))
-                             @@ (js_call id)
-                       | _ ->
+                      let cont =
+                        Js_output.handle_block_return st should_return lam
+                          (List.concat args_code) in
+                      (match ((Lam_methname.process name), obj) with
+                       | ((Js_read_index ,_name),_) ->
+                           let aux args =
+                             match args with
+                             | [] ->
+                                 let i = Ext_ident.create "i" in
+                                 E.fun_ [i]
+                                   (let open S in
+                                      [return
+                                         (Js_array.ref_array obj' (E.var i))])
+                             | x::[] -> Js_array.ref_array obj' x
+                             | x::rest ->
+                                 E.call (Js_array.ref_array obj' x) rest in
+                           cont @@ (aux args)
+                       | ((Js_write_index ,_name),_) ->
+                           let aux args =
+                             match args with
+                             | [] ->
+                                 let i = Ext_ident.create "i" in
+                                 let v = Ext_ident.create "v" in
+                                 E.fun_ [i; v]
+                                   (let open S in
+                                      [return
+                                         (E.seq
+                                            (Js_array.set_array obj'
+                                               (E.var i) (E.var v))
+                                            (E.unit ()))])
+                             | i::[] ->
+                                 let v = Ext_ident.create "v" in
+                                 E.fun_ [v]
+                                   (let open S in
+                                      [return
+                                         (E.seq
+                                            (Js_array.set_array obj' i
+                                               (E.var v)) (E.unit ()))])
+                             | x::y::[] -> Js_array.set_array obj' x y
+                             | x::y::rest ->
+                                 E.call (Js_array.set_array obj' x y) rest in
+                           cont @@ (aux args)
+                       | ((Js_write ,name),_) ->
+                           let aux args =
+                             match args with
+                             | [] ->
+                                 let v = Ext_ident.create "v" in
+                                 E.fun_ [v]
+                                   (let open S in
+                                      [return
+                                         (E.assign (E.dot obj' name)
+                                            (E.var v))])
+                             | v::[] -> E.assign (E.dot obj' name) v
+                             | _::_ -> assert false in
+                           cont @@ (aux args)
+                       | ((Js_read ,name),_) -> cont @@ (E.dot obj' name)
+                       | ((Js (Some arity),name),_) ->
+                           cont @@
+                             (let (args,n,rest) =
+                                Ext_list.try_take arity args in
+                              if n = arity
+                              then
+                                (match rest with
+                                 | [] ->
+                                     E.call ~info:{ arity = Full }
+                                       (E.dot obj' name) args
+                                 | _ ->
+                                     E.call
+                                       (E.call ~info:{ arity = Full }
+                                          (E.dot obj' name) args) rest)
+                              else
+                                (let rest =
+                                   Ext_list.init (arity - n)
+                                     (fun i  -> Ext_ident.create "prim") in
+                                 E.fun_ rest
+                                   (let open S in
+                                      [return
+                                         (E.call ~info:{ arity = Full }
+                                            (E.dot obj' name)
+                                            (args @ (List.map E.var rest)))])))
+                       | ((Js (None ),p_name),_) ->
+                           cont
+                             (match args with
+                              | [] -> E.dot obj' p_name
+                              | _ -> E.bind_call obj' p_name args)
+                       | (_,Lprim (Pccall { prim_name = _;_},[])) ->
+                           cont
+                             (match args with
+                              | [] -> E.dot obj' name
+                              | _ -> E.bind_call obj' name args)
+                       | (_,Lvar id) when Ext_ident.is_js_object id ->
+                           cont
+                             (match args with
+                              | [] -> E.dot obj' name
+                              | _ -> E.bind_call obj' name args)
+                       | (((Ml _|Unknown _),_),_) ->
                            let cache = !method_cache_id in
                            let () = incr method_cache_id in
-                           Js_output.handle_block_return st should_return lam
-                             (List.concat args_code)
+                           cont
                              (E.public_method_call name obj' label cache args))))
                [@warning "-8"])
            | Levent (lam,_lam_event) -> compile_lambda cxt lam
@@ -8558,6 +8955,28 @@ include
                   else v
               | Lprim (Pfield i,(Lvar v)::[]) ->
                   Lam_util.get lam v i meta.ident_tbl
+              | Lifthenelse ((Lvar id as l1),l2,l3) ->
+                  (match Hashtbl.find meta.ident_tbl id with
+                   | ImmutableBlock (_,Normal )|MutableBlock _ -> simpl l2
+                   | ImmutableBlock ([|SimpleForm l|],x) ->
+                       (match x with
+                        | Null  ->
+                            Lifthenelse
+                              ((Lprim
+                                  ((Pintcomp Ceq), [l; Lvar Ext_ident.nil])),
+                                (simpl l3), (simpl l2))
+                        | Undefined  ->
+                            Lifthenelse
+                              ((Lprim
+                                  ((Pintcomp Ceq),
+                                    [l; Lvar Ext_ident.undefined])),
+                                (simpl l3), (simpl l2))
+                        | Normal  -> Lifthenelse (l1, (simpl l2), (simpl l3)))
+                   | _ -> Lifthenelse (l1, (simpl l2), (simpl l3))
+                   | exception Not_found  ->
+                       Lifthenelse (l1, (simpl l2), (simpl l3)))
+              | Lifthenelse (l1,l2,l3) ->
+                  Lifthenelse ((simpl l1), (simpl l2), (simpl l3))
               | Lconst _ -> lam
               | Llet (str,v,l1,l2) -> Llet (str, v, (simpl l1), (simpl l2))
               | Lletrec (bindings,body) ->
@@ -8683,8 +9102,6 @@ include
               | Lstaticcatch (l1,(i,x),l2) ->
                   Lstaticcatch ((simpl l1), (i, x), (simpl l2))
               | Ltrywith (l1,v,l2) -> Ltrywith ((simpl l1), v, (simpl l2))
-              | Lifthenelse (l1,l2,l3) ->
-                  Lifthenelse ((simpl l1), (simpl l2), (simpl l3))
               | Lsequence (Lprim (Pgetglobal id,[]),l2) when
                   Lam_compile_env.is_pure (Lam_module_ident.of_ml id)
                     meta.env
@@ -9185,8 +9602,19 @@ include
             | Lconst v -> Hashtbl.replace meta.ident_tbl ident (Constant v)
             | Lprim (Pmakeblock (_,_,Immutable ),ls) ->
                 (Hashtbl.replace meta.ident_tbl ident
-                   (Lam_util.kind_of_lambda_block ls);
+                   (Lam_util.kind_of_lambda_block Normal ls);
                  List.iter collect ls)
+            | Lprim
+                (Pccall
+                 { prim_name = "js_from_nullable";_},((Lvar _)::[] as ls))
+                ->
+                Hashtbl.replace meta.ident_tbl ident
+                  (Lam_util.kind_of_lambda_block Null ls)
+            | Lprim
+                (Pccall { prim_name = "js_from_def";_},((Lvar _)::[] as ls))
+                ->
+                Hashtbl.replace meta.ident_tbl ident
+                  (Lam_util.kind_of_lambda_block Undefined ls)
             | Lprim (Pgetglobal v,[]) ->
                 (Lam_util.alias meta ident v (Module v) kind;
                  (match kind with
@@ -9813,6 +10241,7 @@ include
                   let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
               | Int_of_boolean _x ->
                   let _x = o#expression _x in Int_of_boolean _x
+              | Bool _x -> let _x = o#bool _x in Bool _x
               | Typeof _x -> let _x = o#expression _x in Typeof _x
               | Not _x -> let _x = o#expression _x in Not _x
               | String_of_small_int_array _x ->
@@ -9839,6 +10268,9 @@ include
               | FlatCall (_x,_x_i1) ->
                   let _x = o#expression _x in
                   let _x_i1 = o#expression _x_i1 in FlatCall (_x, _x_i1)
+              | Bind (_x,_x_i1) ->
+                  let _x = o#expression _x in
+                  let _x_i1 = o#expression _x_i1 in Bind (_x, _x_i1)
               | Call (_x,_x_i1,_x_i2) ->
                   let _x = o#expression _x in
                   let _x_i1 = o#list (fun o  -> o#expression) _x_i1 in
@@ -9867,6 +10299,7 @@ include
               | Str (_x,_x_i1) ->
                   let _x = o#bool _x in
                   let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
+              | Raw_js_code _x -> let _x = o#string _x in Raw_js_code _x
               | Array (_x,_x_i1) ->
                   let _x = o#list (fun o  -> o#expression) _x in
                   let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
@@ -10771,20 +11204,110 @@ include
           ("caml_string", true)][@@ocaml.text
                                   " Pre-defined runtime function name "]
       end 
+    module Ppx_entry =
+      struct
+        [@@@ocaml.text
+          "\n1. extension point \n   {[ \n     [%unsafe{| blabla |}]\n   ]}\n   will be desugared into \n   {[ \n     let module Js = \n     struct unsafe_js : string -> 'a end \n     in Js.unsafe_js {| blabla |}\n   ]}\n   The major benefit is to better error reporting (with locations).\n   Otherwise\n\n   {[\n\n     let f u = Js.unsafe_js u \n     let _ = f (1 + 2)\n   ]}\n   And if it is inlined some where   \n"]
+        let tmp_module_name = "J"[@@ocaml.text
+                                   "\n1. extension point \n   {[ \n     [%unsafe{| blabla |}]\n   ]}\n   will be desugared into \n   {[ \n     let module Js = \n     struct unsafe_js : string -> 'a end \n     in Js.unsafe_js {| blabla |}\n   ]}\n   The major benefit is to better error reporting (with locations).\n   Otherwise\n\n   {[\n\n     let f u = Js.unsafe_js u \n     let _ = f (1 + 2)\n   ]}\n   And if it is inlined some where   \n"]
+        let tmp_fn = "unsafe_expr"
+        let predef_string_type = Ast_helper.Typ.var "string"
+        let predef_any_type = Ast_helper.Typ.any ()
+        let prim = "js_pure_expr"
+        let rec unsafe_mapper: Ast_mapper.mapper =
+          {
+            Ast_mapper.default_mapper with
+            expr =
+              (fun mapper  ->
+                 fun e  ->
+                   match e.pexp_desc with
+                   | Pexp_extension ({ txt = "bb.unsafe"; loc },payload) ->
+                       (match payload with
+                        | Parsetree.PStr
+                            ({
+                               pstr_desc = Parsetree.Pstr_eval
+                                 (({
+                                     pexp_desc = Pexp_constant (Const_string
+                                       (cont,opt_label));
+                                     pexp_loc; pexp_attributes } as e),_);
+                               pstr_loc }::[])
+                            ->
+                            Ast_helper.Exp.letmodule
+                              { txt = tmp_module_name; loc }
+                              (Ast_helper.Mod.structure
+                                 [Ast_helper.Str.primitive
+                                    (Ast_helper.Val.mk { loc; txt = tmp_fn }
+                                       ~prim:[prim]
+                                       (Ast_helper.Typ.arrow ""
+                                          predef_string_type predef_any_type))])
+                              (Ast_helper.Exp.apply
+                                 (Ast_helper.Exp.ident
+                                    {
+                                      txt =
+                                        (Ldot
+                                           ((Lident tmp_module_name), tmp_fn));
+                                      loc
+                                    }) [("", e)])
+                        | Parsetree.PTyp _|Parsetree.PPat (_,_)
+                          |Parsetree.PStr _ ->
+                            Location.raise_errorf ~loc
+                              "bb.unsafe can only be applied to a string")
+                   | _ -> Ast_mapper.default_mapper.expr mapper e)
+          }
+        let rewrite_signature:
+          (Parsetree.signature -> Parsetree.signature) ref =
+          ref (fun x  -> x)
+        let rewrite_implementation:
+          (Parsetree.structure -> Parsetree.structure) ref =
+          ref (fun x  -> unsafe_mapper.structure unsafe_mapper x)
+      end
     module Js_implementation :
       sig
         [@@@ocaml.text " High level compilation module "]
-        [@@@ocaml.text
-          " This module defines a function to compile the program directly into [js]\n    given [filename] and [outputprefix], \n    it will be useful if we don't care about bytecode output(generating js only).\n "]
+        val interface : Format.formatter -> string -> string -> unit[@@ocaml.doc
+                                                                    " This module defines a function to compile the program directly into [js]\n    given [filename] and [outputprefix], \n    it will be useful if we don't care about bytecode output(generating js only).\n "]
         val implementation : Format.formatter -> string -> string -> unit
         [@@ocaml.doc
           " [implementation ppf sourcefile outprefix] compiles to JS directly "]
       end =
       struct
+        open Format
+        open Typedtree
+        open Compenv
         let fprintf = Format.fprintf
-        let tool_name = "ocamlscript"
+        let tool_name = "bucklescript"
         let print_if ppf flag printer arg =
           if !flag then fprintf ppf "%a@." printer arg; arg
+        let interface ppf sourcefile outputprefix =
+          Compmisc.init_path false;
+          (let modulename = module_of_filename ppf sourcefile outputprefix in
+           Env.set_unit_name modulename;
+           (let initial_env = Compmisc.initial_env () in
+            let ast = Pparse.parse_interface ~tool_name ppf sourcefile in
+            let ast = (!Ppx_entry.rewrite_signature) ast in
+            if !Clflags.dump_parsetree
+            then fprintf ppf "%a@." Printast.interface ast;
+            if !Clflags.dump_source
+            then fprintf ppf "%a@." Pprintast.signature ast;
+            (let tsg = Typemod.type_interface initial_env ast in
+             if !Clflags.dump_typedtree
+             then fprintf ppf "%a@." Printtyped.interface tsg;
+             (let sg = tsg.sig_type in
+              if !Clflags.print_types
+              then
+                Printtyp.wrap_printing_env initial_env
+                  (fun ()  ->
+                     fprintf std_formatter "%a@." Printtyp.signature
+                       (Typemod.simplify_signature sg));
+              ignore (Includemod.signatures initial_env sg sg);
+              Typecore.force_delayed_checks ();
+              Warnings.check_fatal ();
+              if not (!Clflags.print_types)
+              then
+                (let sg =
+                   Env.save_signature sg modulename (outputprefix ^ ".cmi") in
+                 Typemod.save_signature modulename tsg outputprefix
+                   sourcefile initial_env sg)))))
         let implementation ppf sourcefile outputprefix =
           Compmisc.init_path false;
           (let modulename =
@@ -10793,9 +11316,11 @@ include
            (let env = Compmisc.initial_env () in
             try
               let (typedtree,coercion,finalenv,current_signature) =
-                ((((Pparse.parse_implementation ~tool_name ppf sourcefile) |>
-                     (print_if ppf Clflags.dump_parsetree
-                        Printast.implementation))
+                (((((Pparse.parse_implementation ~tool_name ppf sourcefile)
+                      |>
+                      (print_if ppf Clflags.dump_parsetree
+                         Printast.implementation))
+                     |> (!Ppx_entry.rewrite_implementation))
                     |> (print_if ppf Clflags.dump_source Pprintast.structure))
                    |>
                    (Typemod.type_implementation_more sourcefile outputprefix
@@ -10841,7 +11366,7 @@ include
         open Clflags
         open Compenv
         let process_interface_file ppf name =
-          Compile.interface ppf name (output_prefix name)
+          Js_implementation.interface ppf name (output_prefix name)
         let process_implementation_file ppf name =
           let opref = output_prefix name in
           Js_implementation.implementation ppf name opref;
