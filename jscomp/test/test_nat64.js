@@ -2,7 +2,10 @@
 'use strict';
 
 
-var v = 0;
+var v = /* int64 */[
+  0,
+  0
+];
 
 exports.v = v;
 /* No side effect */

@@ -200,9 +200,9 @@ val seq : binary_op
 
 val obj : ?comment:string -> J.property_map -> t 
 
-val true_ : t 
+val caml_true : t 
 
-val false_ : t
+val caml_false : t
 
 val bool : bool -> t
 

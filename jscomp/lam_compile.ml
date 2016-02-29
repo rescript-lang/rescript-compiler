@@ -272,7 +272,7 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
                 params)
             [
               S.while_ (* ~label:continue_label *)
-                E.true_   
+                E.caml_true   
                 (
                   Ident_map.fold
                     (fun old new_param  acc ->
