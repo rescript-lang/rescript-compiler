@@ -22,6 +22,6 @@
     check the invariant in {!Js_of_lam_array.make_array}
 *)
 
-val set_double_field : J.expression -> int -> J.expression -> J.expression
+val set_double_field : J.expression -> J.jsint -> J.expression -> J.expression
 
-val get_double_feild : J.expression -> int -> J.expression
+val get_double_feild : J.expression -> J.jsint -> J.expression

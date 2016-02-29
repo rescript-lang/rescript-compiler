@@ -112,7 +112,7 @@ function int32(s, bound) {
       var b2 = ((bits(s$1) & 1) << 30);
       var r = b1 | b2;
       var v = r % n;
-      if (r - v > Int32.max_int - n + 1) {
+      if ((r - v | 0) > ((Int32.max_int - n | 0) + 1 | 0)) {
         continue ;
         
       }
@@ -139,7 +139,7 @@ function int64(s, bound) {
       var b3 = ((bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if (r - v > Int64.max_int - n + 1) {
+      if ((r - v | 0) > ((Int64.max_int - n | 0) + 1 | 0)) {
         continue ;
         
       }

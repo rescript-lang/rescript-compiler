@@ -32,9 +32,14 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
 type _ eq = 
   | Eq :  'a *'a  -> _ eq
   | Neq : 'a * 'a -> _ eq
+  | Approx : float * float -> _ eq  
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type 'a pair_suites = (string * (unit -> 'a eq)) list
+
+let close_enough x y = 
+  abs_float (x -. y) < (* epsilon_float *) 0.0000001
+
 let from_pair_suites name (suites : 'a pair_suites) = 
   describe name (fun _ -> 
     List.iter (fun (name, code) -> 
@@ -42,6 +47,9 @@ let from_pair_suites name (suites : 'a pair_suites) =
               match code () with 
               | Eq(a,b) -> assert_equal a b 
               | Neq(a,b) -> assert_notequal a b 
+              | Approx(a,b) 
+                -> 
+                assert (close_enough a b)
             )
               ) suites
                 ) 

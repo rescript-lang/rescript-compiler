@@ -304,7 +304,14 @@ let rec eq_lambda (l1 : Lambda.lambda) (l2 : Lambda.lambda) =
   |  _,  _ -> false 
 and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) = 
   match p, p1 with 
-  | Pccall {prim_name = n0},  Pccall {prim_name = n1} -> n0 = n1 
+  | Pccall {prim_name = n0 ; 
+            prim_attributes = [];
+           },  
+    Pccall {prim_name = n1; 
+            prim_attributes = [] ;
+
+           } -> 
+    n0 = n1 (* No attributes, should be class api, comparison by name is good *)
   | _ , _ -> 
     (* FIXME: relies on structure equality *) 
     try p = p1 with _ -> false

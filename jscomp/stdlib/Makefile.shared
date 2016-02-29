@@ -43,7 +43,9 @@ OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \
   genlex.cmo weak.cmo \
   filename.cmo complex.cmo \
   arrayLabels.cmo listLabels.cmo bytesLabels.cmo \
-  stringLabels.cmo moreLabels.cmo stdLabels.cmo
+  stringLabels.cmo moreLabels.cmo stdLabels.cmo \
+  unix.cmo unixLabels.cmo \
+  bigarray.cmo
 
 all: $(OBJS:.cmo=.cmj) std_exit.cmj $(COMPILER)
 # all: stdlib.cma std_exit.cmo 

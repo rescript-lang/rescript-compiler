@@ -28,7 +28,7 @@ import {caml_raise_zero_divide, caml_failwith} from './caml_exceptions'
 
 var caml_int64_offset = Math.pow(2, -24);
 
-//Provides: caml_int64_ucompare const
+
 function caml_int64_ucompare(x,y) {
     if (x[3] > y[3]) return 1;
     if (x[3] < y[3]) return -1;
@@ -39,8 +39,7 @@ function caml_int64_ucompare(x,y) {
     return 0;
 }
 
-//Provides: caml_int64_ult const
-//Requires: caml_int64_ucompare
+
 function caml_int64_ult(x,y) { return caml_int64_ucompare(x,y) < 0; }
 
 //Provides: caml_int64_compare const

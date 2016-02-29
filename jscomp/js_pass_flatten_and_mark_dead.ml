@@ -234,7 +234,7 @@ let subst_map name = object (self)
           (* user program can be wrong, we should not 
              turn a runtime crash into compile time crash : )
           *)          
-          begin match List.nth ls i with 
+          begin match List.nth ls (Int32.to_int i) with 
             | {expression_desc = J.Var _ | Number _ | Str _ } as x 
               -> x 
             | exception _ ->

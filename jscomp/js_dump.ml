@@ -572,7 +572,7 @@ and
         Js_number.caml_float_literal_to_js_string v 
        (* attach string here for float constant folding?*)
       | Int { i = v; _} 
-        -> string_of_int v (* check , js convention with ocaml lexical convention *)in
+        -> Int32.to_string v (* check , js convention with ocaml lexical convention *)in
     let need_paren =
       if s.[0] = '-'
       then l > 13  (* Negative numbers may need to be parenthesized. *)
@@ -640,18 +640,18 @@ and
     when Js_op_util.same_vident i j -> 
     (* TODO: parenthesize when necessary *)
     begin match delta, op with 
-      | {expression_desc = Number (Int { i =  1; _})}, Plus
+      | {expression_desc = Number (Int { i =  1l; _})}, Plus
         (* TODO: float 1. instead, 
              since in JS, ++ is a float operation           
         *)        
-      | {expression_desc = Number (Int { i =  -1; _})}, Minus
+      | {expression_desc = Number (Int { i =  -1l; _})}, Minus
         ->
         P.string f L.plusplus;
         P.space f ; 
         vident cxt f i
 
-      | {expression_desc = Number (Int { i =  -1; _})}, Plus
-      | {expression_desc = Number (Int { i =  1; _})}, Minus
+      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
+      | {expression_desc = Number (Int { i =  1l; _})}, Minus
         -> 
         P.string f L.minusminus; 
         P.space f ; 
@@ -702,20 +702,20 @@ and
     let aux cxt f vid i = 
       let cxt = vident cxt f vid in
       P.string f "[";
-      P.string f (string_of_int i);
+      P.string f (Int32.to_string  i);
       P.string f"]"; 
       cxt in
     (** TODO: parenthesize when necessary *)
 
     begin match delta, op with 
-      | {expression_desc = Number (Int { i =  1; _})}, Plus
-      | {expression_desc = Number (Int { i =  -1; _})}, Minus
+      | {expression_desc = Number (Int { i =  1l; _})}, Plus
+      | {expression_desc = Number (Int { i =  -1l; _})}, Minus
         ->
         P.string f L.plusplus;
         P.space f ; 
         aux cxt f i k0
-      | {expression_desc = Number (Int { i =  -1; _})}, Plus
-      | {expression_desc = Number (Int { i =  1; _})}, Minus
+      | {expression_desc = Number (Int { i =  -1l; _})}, Plus
+      | {expression_desc = Number (Int { i =  1l; _})}, Minus
         -> 
         P.string f L.minusminus; 
         P.space f ; 
@@ -734,7 +734,7 @@ and
     *)    
     expression_desc cxt l f (Bin (Plus, {expression_desc = Str (true,""); comment = None}, e))    
 
-  | Bin (Minus, {expression_desc = Number (Int {i=0;_} | Float {f = "0."})}, e) 
+  | Bin (Minus, {expression_desc = Number (Int {i=0l;_} | Float {f = "0."})}, e) 
       (* TODO:
          Handle multiple cases like
          {[ 0. - x ]}
@@ -799,7 +799,7 @@ and
        with regard tag  *)
     begin match tag.expression_desc, tag_info with 
 
-    | Number (Int { i = 0 ; _})  , 
+    | Number (Int { i = 0l ; _})  , 
       (Tuple | Array | Variant _ | Record | NA 
       |  Constructor ("Some" | "::")) 
       (* Hack to optimize option which is really pervasive in ocaml, 
@@ -819,7 +819,7 @@ and
                 (i+1, (Js_op.Int_key i, v) :: acc)                
               ) (0, []) el in
             List.rev_append rev_list 
-              [(Js_op.Length, E.int length) ;  (Js_op.Tag, tag)]
+              [(Js_op.Length, E.small_int length) ;  (Js_op.Tag, tag)]
           )
         )
     end
@@ -1144,7 +1144,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
         | None -> ());
         let cxt = 
           match e.expression_desc with
-          | Number (Int {i = 1}) ->
+          | Number (Int {i = 1l}) ->
               P.string f L.while_;
               P.string f "(";
               P.string f L.true_;

@@ -1,6 +1,7 @@
 arg.cmi :
 array.cmi :
 arrayLabels.cmi :
+bigarray.cmi : unix.cmi complex.cmi
 buffer.cmi :
 bytes.cmi :
 bytesLabels.cmi :
@@ -46,6 +47,8 @@ stream.cmi :
 string.cmi :
 stringLabels.cmi :
 sys.cmi :
+unix.cmi :
+unixLabels.cmi : unix.cmi
 weak.cmi : hashtbl.cmi
 arg.cmo : sys.cmi string.cmi printf.cmi list.cmi buffer.cmi array.cmi \
     arg.cmi
@@ -55,6 +58,8 @@ array.cmo : array.cmi
 array.cmx : array.cmi
 arrayLabels.cmo : array.cmi arrayLabels.cmi
 arrayLabels.cmx : array.cmx arrayLabels.cmi
+bigarray.cmo : unix.cmi complex.cmi array.cmi bigarray.cmi
+bigarray.cmx : unix.cmx complex.cmx array.cmx bigarray.cmi
 buffer.cmo : sys.cmi string.cmi bytes.cmi buffer.cmi
 buffer.cmx : sys.cmx string.cmx bytes.cmx buffer.cmi
 bytes.cmo : pervasives.cmi list.cmi char.cmi bytes.cmi
@@ -171,6 +176,12 @@ stringLabels.cmo : string.cmi stringLabels.cmi
 stringLabels.cmx : string.cmx stringLabels.cmi
 sys.cmo : sys.cmi
 sys.cmx : sys.cmi
+unix.cmo : sys.cmi string.cmi printf.cmi printexc.cmi list.cmi hashtbl.cmi \
+    callback.cmi bytes.cmi array.cmi unix.cmi
+unix.cmx : sys.cmx string.cmx printf.cmx printexc.cmx list.cmx hashtbl.cmx \
+    callback.cmx bytes.cmx array.cmx unix.cmi
+unixLabels.cmo : unix.cmi unixLabels.cmi
+unixLabels.cmx : unix.cmx unixLabels.cmi
 weak.cmo : sys.cmi obj.cmi hashtbl.cmi array.cmi weak.cmi
 weak.cmx : sys.cmx obj.cmx hashtbl.cmx array.cmx weak.cmi
 arg.cmo : sys.cmi string.cmi printf.cmi list.cmi buffer.cmi array.cmi \
@@ -181,6 +192,8 @@ array.cmo : array.cmi
 array.cmj : array.cmi
 arrayLabels.cmo : array.cmi arrayLabels.cmi
 arrayLabels.cmj : array.cmj arrayLabels.cmi
+bigarray.cmo : unix.cmi complex.cmi array.cmi bigarray.cmi
+bigarray.cmj : unix.cmj complex.cmj array.cmj bigarray.cmi
 buffer.cmo : sys.cmi string.cmi bytes.cmi buffer.cmi
 buffer.cmj : sys.cmj string.cmj bytes.cmj buffer.cmi
 bytes.cmo : pervasives.cmi list.cmi char.cmi bytes.cmi
@@ -297,5 +310,11 @@ stringLabels.cmo : string.cmi stringLabels.cmi
 stringLabels.cmj : string.cmj stringLabels.cmi
 sys.cmo : sys.cmi
 sys.cmj : sys.cmi
+unix.cmo : sys.cmi string.cmi printf.cmi printexc.cmi list.cmi hashtbl.cmi \
+    callback.cmi bytes.cmi array.cmi unix.cmi
+unix.cmj : sys.cmj string.cmj printf.cmj printexc.cmj list.cmj hashtbl.cmj \
+    callback.cmj bytes.cmj array.cmj unix.cmi
+unixLabels.cmo : unix.cmi unixLabels.cmi
+unixLabels.cmj : unix.cmj unixLabels.cmi
 weak.cmo : sys.cmi obj.cmi hashtbl.cmi array.cmi weak.cmi
 weak.cmj : sys.cmj obj.cmj hashtbl.cmj array.cmj weak.cmi

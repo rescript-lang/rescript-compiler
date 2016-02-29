@@ -26,11 +26,11 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
   match x with 
   | Const_base c -> 
     begin match c with 
-      | Const_int i -> E.int i
+      | Const_int i -> E.int (Int32.of_int i)
       | Const_char i ->
         Js_of_lam_string.const_char i
-      | Const_int32 i -> 
-          E.float (Int32.to_string i)
+      | Const_int32 i -> E.int i 
+          (* E.float (Int32.to_string i) *)
       | Const_int64 i -> 
           (*
             TODO:
@@ -54,11 +54,12 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
     end
 
   | Const_pointer (c,pointer_info) -> 
-    E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info) c 
+    E.int ?comment:(Lam_compile_util.comment_of_pointer_info pointer_info)
+      (Int32.of_int c )
 
   | Const_block(tag, tag_info, xs ) -> 
     Js_of_lam_block.make_block NA tag_info 
-      (E.int tag) (List.map translate xs)
+      (E.small_int  tag) (List.map translate xs)
 
   | Const_float_array ars -> 
     (* according to the compiler 

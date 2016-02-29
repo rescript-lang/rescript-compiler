@@ -21,13 +21,13 @@
 module E = Js_exp_make 
  
 let get arg : J.expression = 
-  E.index  arg 0 
+  E.index  arg 0l
 
 let none : J.expression = 
-  {expression_desc = Number (Int {i = 0; c  = None}); comment = Some "None" }
+  {expression_desc = Number (Int {i = 0l; c  = None}); comment = Some "None" }
 
 let some x : J.expression = 
-  {expression_desc = Caml_block ( [x], Immutable, E.int 0 , Constructor "Some" );
+  {expression_desc = Caml_block ( [x], Immutable, E.zero_int_literal , Constructor "Some" );
    comment = None}
 
 
