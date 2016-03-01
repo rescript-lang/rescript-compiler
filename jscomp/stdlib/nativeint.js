@@ -6,11 +6,11 @@ var Caml_format = require("../runtime/caml_format");
 var Sys         = require("./sys");
 
 function succ(n) {
-  return n + 1 | 0;
+  return n + 1;
 }
 
 function pred(n) {
-  return n - 1 | 0;
+  return n - 1;
 }
 
 function abs(n) {
@@ -18,7 +18,7 @@ function abs(n) {
     return n;
   }
   else {
-    return -n | 0;
+    return -n;
   }
 }
 

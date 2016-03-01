@@ -58,3 +58,4 @@ val internalMod : string
 
 val bigarray : string
 val unix : string
+val int64 : string

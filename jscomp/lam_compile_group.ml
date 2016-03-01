@@ -114,12 +114,20 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "4_294_967_295.") 
                            
   | Single(_, ({name="max_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
-    (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;) can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float "9007199254740991.") 
+    (* See [js_knowledge] Max int section, (2. ** 53. -. 1.;;)
+       can not be expressed by OCaml int 
+       FIXME: we need handle {!Nativeint} and {!Sys} differently
+    *)
+    Js_output.of_stmt @@ S.alias_variable id 
+      ~exp:(E.float "9007199254740991.") 
 
   | Single(_, ({name="min_int";_} as id) ,_ ),  ("sys.ml" | "nativeint.ml") ->
-    (* See [js_knowledge] Max int section, -. (2. ** 53. -. 1.);; can not be expressed by OCaml int *)
-    Js_output.of_stmt @@ S.alias_variable id ~exp:(E.float ("-9007199254740991.")) 
+    (* See [js_knowledge] Max int section, -. (2. ** 53. -. 1.);;
+       can not be expressed by OCaml int 
+       FIXME: we need handle {!Nativeint} and {!Sys} differently
+    *)
+    Js_output.of_stmt @@ S.alias_variable id
+      ~exp:(E.float ("-9007199254740991.")) 
 
   | Single (kind, id, lam), _ -> 
     (* let lam = Optimizer.simplify_lets [] lam in  *)

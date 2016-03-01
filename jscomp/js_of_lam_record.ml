@@ -30,4 +30,10 @@ let make  mutable_flag (args : (string * J.expression) list) =
 
 let field e i = E.index e i 
 
+(**
+   used in [Pduprecord]
+   this is due to we encode record as an array, it is going to change
+   if we have another encoding       
+*)    
+let copy  = E.array_copy
 

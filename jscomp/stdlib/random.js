@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_int64              = require("../runtime/caml_int64");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
@@ -124,10 +125,10 @@ function int32(s, bound) {
 }
 
 function int64(s, bound) {
-  if (bound <= /* int64 */[
-      0,
-      0
-    ]) {
+  if (Caml_int64.le(bound, /* int64 */[
+          0,
+          0
+        ])) {
     throw [
           Caml_builtin_exceptions.Invalid_argument,
           "Random.int64"
@@ -137,15 +138,15 @@ function int64(s, bound) {
     var s$1 = s;
     var n = bound;
     while(true) {
-      var b1 = bits(s$1);
-      var b2 = (bits(s$1) << 30);
-      var b3 = ((bits(s$1) & 7) << 60);
+      var b1 = Caml_int64.of_int32(bits(s$1));
+      var b2 = (Caml_int64.of_int32(bits(s$1)) << 30);
+      var b3 = (Caml_int64.of_int32(bits(s$1) & 7) << 60);
       var r = b1 | b2 | b3;
       var v = r % n;
-      if ((r - v | 0) > ((Int64.max_int - n | 0) + /* int64 */[
-            1,
-            0
-          ] | 0)) {
+      if (Caml_int64.gt(Caml_int64.sub(r, v), Caml_int64.add(Caml_int64.sub(Int64.max_int, n), /* int64 */[
+                  1,
+                  0
+                ]))) {
         continue ;
         
       }
@@ -159,7 +160,7 @@ function int64(s, bound) {
 var nativeint = Nativeint.size === 32 ? function (s, bound) {
     return int32(s, bound);
   } : function (s, bound) {
-    return int64(s, bound);
+    return int64(s, Caml_int64.of_int32(bound))[0];
   };
 
 function rawfloat(s) {
