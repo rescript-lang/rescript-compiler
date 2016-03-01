@@ -54,28 +54,14 @@ let add
   let b16 = shift_right_logical other_low_  16 in
   let b00 = logand other_low_  0xFFFFn in
 
-  let c48 = ref 0n in 
-  let c32 = ref 0n in 
-  let c16 = ref 0n in 
-  let c00 = ref 0n in
   begin 
-    c00 := add a00  b00;
-    c16 := shift_right_logical !c00  16;
-    c00 := logand !c00  0xFFFFn;
-
-    c16 := add (add !c16 a16)  b16;
-    c32 := shift_right_logical  !c16  16;
-    c16 := logand !c16  0xFFFFn;
-
-    c32 := add (add !c32 a32)  b32;
-    c48 := shift_right_logical !c32 16;
-    c32 := logand !c32  0xFFFFn;
-
-    c48 := add (add !c48 a48)  b48;
-    c48 := logand !c48 0xFFFFn;
-
-    {lo = logor (shift_left !c16  16)  !c00; 
-     hi =  logor (shift_left !c48  16)  !c32
+    let c00 = add a00  b00 in
+    let c16 = add (add (shift_right_logical c00  16) a16)  b16 in
+    let c32 = add (add (shift_right_logical  c16  16) a32)  b32 in
+    let c48 = add (add (shift_right_logical c32 16) a48)  b48 in
+    {lo = 
+       logor (shift_left (logand c16  0xFFFFn)  16)  (logand c00  0xFFFFn); 
+     hi =  logor (shift_left (logand c48 0xFFFFn)  16)  (logand c32  0xFFFFn)
     }
   end 
 let neg ({lo; hi} as x) =
