@@ -179,7 +179,7 @@ lam_methname_test
 ext_log
 lam_current_unit
 test_zero_nullable
-
+int64_test
 string_literal_print_test
 js_bool_test
 class_type_ffi_test

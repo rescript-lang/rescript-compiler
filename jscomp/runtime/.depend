@@ -9,6 +9,8 @@ caml_curry.cmo : caml_oo.cmi
 caml_curry.cmx : caml_oo.cmx
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmx : caml_exceptions.cmi
+caml_int64.cmo :
+caml_int64.cmx :
 caml_obj.cmo : caml_obj.cmi
 caml_obj.cmx : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi
@@ -21,6 +23,8 @@ caml_curry.cmo : caml_oo.cmi
 caml_curry.cmj : caml_oo.cmj
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmj : caml_exceptions.cmi
+caml_int64.cmo :
+caml_int64.cmj :
 caml_obj.cmo : caml_obj.cmi
 caml_obj.cmj : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi

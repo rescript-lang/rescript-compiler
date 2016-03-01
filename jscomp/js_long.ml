@@ -25,7 +25,46 @@ let make_const ~lo ~hi =
      ~comment:"int64" (E.zero_int_literal) 
      Record [E.int lo ; E.int hi] Immutable
 
+
 let of_const (v : Int64.t) = 
   make_const
     ~lo:(Int64.to_int32 v )
     ~hi:(Int64.to_int32 (Int64.shift_right v 32))
+
+let to_int32 args = 
+  begin match args with
+  | [v] ->  E.index v 0l
+  | _ -> assert false
+  end
+let of_int32 (args : J.expression list) = 
+  match args with 
+  | [{expression_desc = Number (Int {i}) ; _}] 
+    -> 
+    if i < 0l then make_const ~lo:i ~hi:(-1l)
+    else make_const ~lo:i ~hi:0l
+  | _ -> E.runtime_call Js_config.int64 "of_int32" args
+
+let comp (cmp : Lambda.comparison) args = 
+  E.runtime_call  Js_config.int64
+    (match cmp with 
+     | Ceq -> "eq"
+     | Cneq -> "neq"
+     | Clt -> "lt"
+     | Cgt -> "gt"
+     | Cle -> "le"
+     | Cge -> "ge") args 
+
+let neg args = 
+  E.runtime_call Js_config.int64 "neg" args
+
+let add args = 
+  E.runtime_call Js_config.int64 "add" args
+
+let sub args = 
+  E.runtime_call Js_config.int64 "sub" args
+
+let mul args =  
+  E.runtime_call Js_config.int64 "mul" args
+
+let div args =
+  E.runtime_call Js_config.int64 "div" args

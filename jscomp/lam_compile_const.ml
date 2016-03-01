@@ -49,7 +49,8 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
           (* E.float (Int64.to_string i) *)
         Js_long.of_const i
         (* https://github.com/google/closure-library/blob/master/closure%2Fgoog%2Fmath%2Flong.js *)
-      | Const_nativeint i -> E.float (Nativeint.to_string i)
+      | Const_nativeint i -> 
+        E.float (Nativeint.to_string i)
       | Const_float f -> E.float f (* TODO: preserve float *)
       | Const_string (i,_) (*TODO: here inline js*) -> 
         E.str i

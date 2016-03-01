@@ -1,31 +1,32 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_int64     = require("../runtime/caml_int64");
 var Caml_primitive = require("../runtime/caml_primitive");
 
 function succ(n) {
-  return n + /* int64 */[
-          1,
-          0
-        ] | 0;
+  return Caml_int64.add(n, /* int64 */[
+              1,
+              0
+            ]);
 }
 
 function pred(n) {
-  return n - /* int64 */[
-          1,
-          0
-        ] | 0;
+  return Caml_int64.sub(n, /* int64 */[
+              1,
+              0
+            ]);
 }
 
 function abs(n) {
-  if (n >= /* int64 */[
-      0,
-      0
-    ]) {
+  if (Caml_int64.ge(n, /* int64 */[
+          0,
+          0
+        ])) {
     return n;
   }
   else {
-    return -n | 0;
+    return Caml_int64.neg(n);
   }
 }
 

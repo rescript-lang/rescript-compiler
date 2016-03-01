@@ -19,21 +19,6 @@ function not(param) {
         ];
 }
 
-function of_int32(lo) {
-  if (lo < 0) {
-    return /* record */[
-            lo,
-            -1
-          ];
-  }
-  else {
-    return /* record */[
-            lo,
-            0
-          ];
-  }
-}
-
 function add(param, param$1) {
   var other_high_ = param$1[1];
   var other_low_ = param$1[0];
@@ -77,10 +62,9 @@ function neg(x) {
   }
 }
 
-exports.min_int  = min_int;
-exports.one      = one;
-exports.not      = not;
-exports.of_int32 = of_int32;
-exports.add      = add;
-exports.neg      = neg;
+exports.min_int = min_int;
+exports.one     = one;
+exports.not     = not;
+exports.add     = add;
+exports.neg     = neg;
 /* No side effect */

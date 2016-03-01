@@ -172,22 +172,34 @@ let query (prim : Lam_compile_env.primitive_description)
     end
 
   | "caml_int32_add"
-  | "caml_nativeint_add" 
     -> 
     begin match args with 
     | [e0;e1] -> E.int32_add e0 e1 
     | _ -> assert false 
     end
+
+  | "caml_nativeint_add" 
+    -> 
+    begin match args with 
+    | [e0;e1] -> E.unchecked_int32_add e0 e1 
+    | _ -> assert false 
+    end
   | "caml_int32_div"
-  | "caml_nativeint_div" -> 
+  | "caml_nativeint_div" 
+    -> (* nativeint behaves exactly the same as js numbers except division *)
     begin match args with 
     | [e0;e1] -> E.int32_div e0 e1
     | _ -> assert false 
     end
   | "caml_int32_mul"
-  | "caml_nativeint_mul"  -> 
+    -> 
     begin match args with 
     | [e0;e1] -> E.int32_mul e0 e1 
+    | _ -> assert false 
+    end
+  | "caml_nativeint_mul"  -> 
+    begin match args with 
+    | [e0;e1] -> E.unchecked_int32_mul e0 e1 
     | _ -> assert false 
     end
   | "caml_int32_of_int"
@@ -199,7 +211,7 @@ let query (prim : Lam_compile_env.primitive_description)
     end
   | "caml_int32_of_float"
   | "caml_int_of_float"
-  |"caml_nativeint_of_float" -> 
+  | "caml_nativeint_of_float" -> 
     begin match args with 
     | [e] -> E.to_int32 e 
     | _ -> assert false 
@@ -210,13 +222,18 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_nativeint_to_float"
   | "caml_nativeint_to_int32" -> 
     begin match args with 
-    | [e] -> e 
+    | [e] -> e (* TODO: do more checking when [to_int32]*)
     | _ -> assert false 
     end
-  | "caml_int32_sub"
-  | "caml_nativeint_sub" ->
+  | "caml_int32_sub" -> 
     begin match args with 
     | [e0;e1] -> E.int32_minus e0 e1 
+    | _ -> assert false 
+    end
+
+  | "caml_nativeint_sub" ->
+    begin match args with 
+    | [e0;e1] -> E.unchecked_int32_minus e0 e1 
     | _ -> assert false 
     end
   | "caml_int32_xor" 

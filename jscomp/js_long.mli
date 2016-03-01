@@ -21,3 +21,13 @@
 val make_const : lo:Int32.t -> hi:Int32.t -> J.expression
 
 val of_const : Int64.t -> J.expression
+
+val to_int32 : J.expression list -> J.expression
+
+val of_int32 : J.expression list -> J.expression
+val comp : Lambda.comparison -> J.expression list -> J.expression
+val neg : J.expression list -> J.expression
+val add : J.expression list -> J.expression
+val sub : J.expression list -> J.expression
+val mul : J.expression list -> J.expression
+val div : J.expression list -> J.expression

@@ -140,6 +140,8 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
+int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
+int64_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
@@ -570,6 +572,8 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
+int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi
+int64_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \

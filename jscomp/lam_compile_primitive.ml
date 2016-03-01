@@ -46,12 +46,24 @@ let translate
       | [ e ]  -> Js_of_lam_block.field e (Int32.of_int i) (* Invariant depends on runtime *)
       | _ -> assert false
     end
-  | Pnegbint (Pnativeint | Pint32 ) 
+
+(** Negate boxed int *)
+  | Pnegbint Pint32
     ->
     begin match args with
     | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
     | _ -> assert false
     end
+  | Pnegbint Pnativeint
+    -> 
+    begin match args with
+    | [ e ] -> E.unchecked_int32_minus (E.zero_int_literal)  e 
+    | _ -> assert false
+    end
+  | Pnegbint Pint64
+    -> 
+    Js_long.neg args 
+
   | Pnegint
     -> 
     begin match args with
@@ -65,12 +77,236 @@ let translate
     | [ e ] -> E.float_minus (E.zero_float_lit) e 
     | _ -> assert false
     end
-  | Pnegbint Pint64
-    -> (* TODO: fixme *)
+(** Negate boxed int end*)
+(* Int addition and subtraction *)
+  | Paddint 
+    -> 
+      begin match args with 
+      | [e1; e2] 
+        -> E.unchecked_int32_add e1 e2
+      | _ -> assert false 
+      end
+  | Paddbint  Pint32
+    ->
     begin match args with
-    | [ e ] -> E.int32_minus (E.zero_int_literal)  e 
+      | [e1;e2] ->
+        E.int32_add  e1  e2
+      | _ -> assert false
+    end
+  | Paddbint Pnativeint 
+    -> 
+    begin match args with
+      | [e1;e2] ->
+        E.unchecked_int32_add  e1  e2
+      | _ -> assert false
+    end
+
+  | Paddbint Pint64
+    ->  
+    Js_long.add args 
+
+
+  | Paddfloat
+     -> 
+     begin match args with
+       | [e1;e2] ->
+         E.float_add  e1  e2
+       | _ -> assert false
+     end
+  | Psubint 
+    -> 
+    begin match args with 
+    | [e1; e2] ->     
+      E.unchecked_int32_minus e1 e2 
     | _ -> assert false
     end
+  | Psubbint Pint32
+    -> 
+    begin match args with
+      | [e1;e2] ->
+          E.int32_minus   e1  e2
+      | _ -> assert false 
+    end
+  | Psubbint Pnativeint
+    -> 
+    begin match args with
+      | [e1;e2] ->
+          E.unchecked_int32_minus   e1  e2
+      | _ -> assert false 
+    end
+  | Psubbint Pint64
+    -> 
+    Js_long.sub args 
+  | Psubfloat
+    ->
+    begin match args with
+      | [e1;e2] ->
+        E.float_minus   e1  e2
+      | _ -> assert false 
+    end
+  | Pmulint 
+  | Pmulbint Lambda.Pnativeint
+  | Pmulbint Lambda.Pint32
+    ->
+    begin match args with
+      | [e1; e2]  ->
+        E.int32_mul  e1  e2
+      | _ -> assert false 
+    end
+  | Pmulbint Pint64 
+    -> 
+    Js_long.mul args 
+  | Pmulfloat 
+    -> 
+      begin match args with
+      | [e1; e2]  ->
+          E.float_mul  e1  e2
+      | _ -> assert false 
+      end
+  | Pdivfloat -> 
+    begin match args with  
+      | [e1;e2] -> E.float_div  e1  e2
+      | _ -> assert false 
+    end
+  | Pdivint 
+  | Pdivbint Lambda.Pnativeint
+  | Pdivbint Lambda.Pint32
+    -> 
+    begin match args with 
+      | [e1;e2] ->
+        E.int32_div e1 e2
+      | _ -> assert false
+    end
+
+  | Pdivbint Lambda.Pint64 
+    -> Js_long.div args 
+  | Pmodint 
+  | Pmodbint Lambda.Pnativeint
+  | Pmodbint Lambda.Pint32
+  | Pmodbint Lambda.Pint64 
+    ->
+    begin match args with
+      | [e1; e2] ->
+        E.int32_mod   e1  e2
+      | _ -> assert false 
+    end
+  | Plslint 
+  | Plslbint Lambda.Pnativeint
+  | Plslbint Lambda.Pint32
+  | Plslbint Lambda.Pint64 
+    ->
+    begin match args with
+      | [e1;e2] ->
+        E.int32_lsl e1  e2
+      | _ -> assert false 
+    end
+  | Plsrint 
+  | Plsrbint Lambda.Pnativeint
+  | Plsrbint Lambda.Pint32
+  | Plsrbint Lambda.Pint64 ->
+    begin match args with
+      | [e1; e2] ->
+        E.int32_lsr   e1  e2
+      | _ -> assert false
+    end
+  | Pasrint 
+  | Pasrbint Lambda.Pnativeint
+  | Pasrbint Lambda.Pint32
+  | Pasrbint Lambda.Pint64 
+    ->
+    begin match args with
+      | [e1;e2] ->
+        E.int32_asr  e1  e2
+      | _ -> assert false
+    end
+
+  | Pandint 
+  | Pandbint Lambda.Pnativeint
+  | Pandbint Lambda.Pint32
+  | Pandbint Lambda.Pint64
+    ->
+    begin match args with
+      | [e1;e2] ->
+        E.int32_band  e1  e2
+      | _ -> assert false
+    end
+  | Porint 
+  | Porbint Lambda.Pnativeint
+  | Porbint Lambda.Pint32
+  | Porbint Lambda.Pint64 
+    ->
+    begin match args with
+      | [e1;e2] ->
+        E.int32_bor  e1  e2
+      | _ -> assert false
+    end
+  | Pxorint 
+  | Pxorbint Lambda.Pnativeint
+  | Pxorbint Lambda.Pint32
+  | Pxorbint Lambda.Pint64 ->
+    begin match args with
+      | [e1;e2] ->
+        E.int32_bxor  e1  e2
+      | _ -> assert false
+    end
+  | Pbintcomp (Pnativeint ,cmp)
+  | Pfloatcomp cmp
+  | Pintcomp cmp
+  | Pbintcomp (Pint32 ,cmp)
+    ->
+    begin 
+      (* Global Builtin Exception is an int, like 
+         [Not_found] or [Invalid_argument] ?
+      *)
+      match args with 
+      | [e1;e2] -> E.int_comp cmp e1 e2
+      | _ -> assert false 
+    end
+        (* List --> stamp = 0 
+           Assert_false --> stamp = 26 
+         *)
+  | Pbintcomp (Pint64 ,cmp)
+    -> Js_long.comp cmp args
+
+  | Pcvtbint ((Pint32 | Pnativeint ), Pint64) 
+    -> Js_long.of_int32 args
+  | Pcvtbint (Pint64, Pint64)
+  | Pcvtbint ((Pnativeint|Pint32), (Pnativeint|Pint32))
+    ->   
+    begin match args with 
+      | [e0] -> e0 
+      | _ -> assert false
+    end
+  | Pcvtbint (Pint64, (Pnativeint|Pint32)) 
+    ->  
+    Js_long.to_int32 args 
+  | Pintoffloat -> 
+    begin
+      match args with 
+      | [e] -> e 
+      | _ -> assert false 
+    end
+  | Pbintofint Pint64
+    -> Js_long.of_int32 args 
+  | Pbintofint (Pnativeint 
+               | Pint32 )
+  | Pintofbint Pnativeint
+  | Pintofbint Pint32
+  | Pfloatofint 
+    -> 
+    begin match args with 
+      | [e] -> e 
+      | _ -> assert false 
+    end
+  | Pintofbint Pint64
+    -> Js_long.to_int32 args
+  | Pabsfloat -> 
+    begin match args with 
+      | [e] ->
+        E.math "abs" [e]
+        (* GCC treat built-ins like Math in a dirfferent way*)
+      | _ -> assert false
+      end
   | Pnot ->
     begin match args with
       | [e] ->  E.not  e 
@@ -86,129 +322,6 @@ let translate
       | [e] -> 
         let v = (Js_of_lam_block.field e 0l) in
         E.assign  v (E.unchecked_int32_add v (E.small_int  n))
-      | _ -> assert false
-    end
-  | Paddint 
-    -> 
-      begin match args with 
-      | [e1; e2] 
-        -> E.unchecked_int32_add e1 e2
-      | _ -> assert false 
-      end
-  | Paddbint (Pnativeint | Pint32)
-    ->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_add  e1  e2
-      | _ -> assert false
-    end
-  | Paddbint (Pint64)
-    ->  (* TODO: fix me *)
-      begin match args with
-      | [e1;e2] ->
-        E.int32_add  e1  e2
-      | _ -> assert false
-    end
-
- | Paddfloat
-     -> 
-    begin match args with
-      | [e1;e2] ->
-        E.float_add  e1  e2
-      | _ -> assert false
-    end
-  | Psubint 
-    -> 
-    begin match args with 
-    | [e1; e2] ->     
-      E.unchecked_int32_minus e1 e2 
-    | _ -> assert false
-    end
-  | Psubbint (Pnativeint | Pint32) 
-    -> 
-    begin match args with
-      | [e1;e2] ->
-          E.int32_minus   e1  e2
-      | _ -> assert false 
-    end
-  | Psubbint Pint64
-    -> 
-    begin match args with  (* TODO: fix me *)
-    | [e1; e2] 
-      ->  E.int32_minus e1  e2
-    | _ -> assert false
-    end
-  | Psubfloat
-    ->
-      begin match args with
-      | [e1;e2] ->
-          E.float_minus   e1  e2
-      | _ -> assert false 
-      end
-  | Pmulint | Pmulbint _ 
-    ->
-    begin match args with
-      | [e1; e2]  ->
-        E.int32_mul  e1  e2
-      | _ -> assert false 
-    end
-  | Pmulfloat 
-    -> 
-      begin match args with
-      | [e1; e2]  ->
-          E.float_mul  e1  e2
-      | _ -> assert false 
-      end
-  | Pdivfloat -> 
-    begin match args with  (* TODO: see ocamljs -- assertion*)
-      | [e1;e2] -> E.float_div  e1  e2
-      | _ -> assert false end
-  | (  Pdivint | Pdivbint _)->
-    begin match args with  (* TODO: see ocamljs -- assertion*)
-      | [e1;e2] ->
-        E.int32_div e1 e2  (** 32 bits  *)
-      | _ -> assert false end
-  | Pmodint | Pmodbint _ ->
-    begin match args with
-      | [e1; e2] ->
-        E.int32_mod   e1  e2
-      | _ -> assert false 
-    end
-  | Plslint | Plslbint _ ->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_lsl e1  e2
-      | _ -> assert false 
-    end
-  | (Plsrint | Plsrbint _) ->
-    begin match args with
-      | [e1; e2] ->
-        E.int32_lsr   e1  e2
-      | _ -> assert false
-    end
-  | (Pasrint | Pasrbint _) ->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_asr  e1  e2
-      | _ -> assert false
-    end
-
-  | Pandint | Pandbint _->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_band  e1  e2
-      | _ -> assert false
-    end
-  | Porint | Porbint _ ->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_bor  e1  e2
-      | _ -> assert false
-    end
-  | Pxorint | Pxorbint _ ->
-    begin match args with
-      | [e1;e2] ->
-        E.int32_bxor  e1  e2
       | _ -> assert false
     end
 
@@ -328,20 +441,6 @@ let translate
         | [e] -> e
         | _ -> assert false 
       end
-  | Pbintcomp (_, cmp)
-  | Pfloatcomp cmp 
-  | Pintcomp cmp ->
-    begin 
-      (* Global Builtin Exception is an int, like 
-         [Not_found] or [Invalid_argument] ?
-      *)
-      match args with 
-      | [e1;e2] -> E.int_comp cmp e1 e2
-      | _ -> assert false 
-    end
-        (* List --> stamp = 0 
-           Assert_false --> stamp = 26 
-         *)
   | Pgetglobal i   -> 
     (* TODO -- check args, case by case -- 
         1. include Array --> let include  = Array 
@@ -364,14 +463,12 @@ let translate
       | _ -> assert false 
     end
   | Ploc kind ->   assert false (* already compiled away here*)
-  | Pintoffloat -> 
-    begin
-      match args with 
-      | [e] -> e 
-      | _ -> assert false 
-    end
+
 (* Runtime encoding relevant *)
-  | Parraylength _  -> 
+  | Parraylength Pgenarray
+  | Parraylength Paddrarray
+  | Parraylength Pintarray
+  | Parraylength Pfloatarray  -> 
       begin match args with 
       | [e] -> E.array_length e 
       | _ -> assert false
@@ -412,20 +509,6 @@ let translate
       | [e;e0;e1] -> decorate_side_effect cxt @@ Js_of_lam_array.set_array  e e0 e1
       | _ -> assert false
       end
-  | Pbintofint _
-  | Pintofbint _
-  | Pfloatofint -> 
-      begin match args with 
-      | [e] -> e 
-      | _ -> assert false 
-      end
-  | Pabsfloat -> 
-    begin match args with 
-      | [e] ->
-        E.math "abs" [e]
-        (* GCC treat built-ins like Math in a dirfferent way*)
-      | _ -> assert false
-      end
   | Pccall ({prim_attributes ; prim_ty } as prim) -> 
       Lam_compile_external_call.translate cxt prim args 
      (* Test if the argument is a block or an immediate integer *)
@@ -451,21 +534,15 @@ let translate
       | Ostype_cygwin -> 
         if Sys.cygwin then E.caml_true else E.caml_false
     end
-  | Pcvtbint (_boxed_integer_source, _boxed_integer_dest) ->
-    begin 
-      match args with 
-      | [e0] -> e0 (* TODO: int64 is not supported yet *)
-      | _ -> assert false
-    end
   | Psetglobal _  -> 
     assert false (* already handled *)
     (* assert false *)
-  | Pduprecord ( (Record_regular | Record_float),  _) -> 
-    (* this is due to we encode record as an array, it is going to change
-       if we have another encoding       
-    *)    
+  | Pduprecord ((Record_regular 
+                | Record_float ),0)
+  | Pduprecord ((Record_regular 
+                | Record_float ),_) -> 
     begin match args with 
-    | [e] -> E.array_copy e
+    | [e] -> Js_of_lam_record.copy e
     | _ -> assert false       
     end
   | Pbigarrayref (unsafe, dimension, kind, layout)
@@ -518,13 +595,13 @@ let translate
     -> 
     E.runtime_call Js_config.bigarray
       ("caml_ba_dim_" ^ string_of_int i) args       
-  | Plazyforce
+  | Plazyforce 
   | Pbittest 
   | Pstring_load_16 _
   | Pstring_load_32 _
   | Pstring_load_64 _
   | Pstring_set_16 _
-  | Pstring_set_32 _ 
+  | Pstring_set_32 _
   | Pstring_set_64 _
   | Pbigstring_load_16 _
   | Pbigstring_load_32 _
@@ -532,9 +609,13 @@ let translate
   | Pbigstring_set_16 _
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
-  | Pbswap16
-  | Pbbswap _
-  | Pint_as_pointer  -> 
+  | Pint_as_pointer 
+  | Pbswap16 
+  | Pbbswap Lambda.Pnativeint
+  | Pbbswap Lambda.Pint32
+  | Pbbswap Lambda.Pint64 (* TODO *)
+
+    -> 
       let comment = "Missing primitve" in       
       let s = Lam_util.string_of_primitive prim in
       let warn = Printf.sprintf  "%s: %s\n" comment s in
