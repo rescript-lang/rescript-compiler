@@ -12,6 +12,11 @@ var one = /* record */[
   0
 ];
 
+var zero = /* record */[
+  0,
+  0
+];
+
 function not(param) {
   return /* record */[
           param[0] ^ -1,
@@ -153,8 +158,146 @@ function asr_(x, numBits) {
   }
 }
 
-exports.min_int  = min_int;
+function is_zero(param) {
+  if (param[0] !== 0 || param[1] !== 0) {
+    return /* false */0;
+  }
+  else {
+    return /* true */1;
+  }
+}
+
+var min_int$1 = /* record */[
+  0,
+  2147483648
+];
+
+function mul(_this, _other) {
+  while(true) {
+    var other = _other;
+    var $$this = _this;
+    var exit = 0;
+    var lo;
+    var lo$1 = $$this[0];
+    var exit$1 = 0;
+    if (lo$1 !== 0) {
+      exit$1 = 2;
+    }
+    else if ($$this[1] !== 0) {
+      exit$1 = 2;
+    }
+    else {
+      return zero;
+    }
+    switch (exit$1) {
+      case 2 : 
+          if (other[0] !== 0) {
+            exit$1 = 3;
+          }
+          else if (other[1] !== 0) {
+            exit$1 = 3;
+          }
+          else {
+            return zero;
+          }
+          break;
+      case 3 : 
+          if (lo$1 !== 0) {
+            exit$1 = 4;
+          }
+          else if ($$this[1] !== 2147483648) {
+            exit$1 = 4;
+          }
+          else {
+            lo = other[0];
+            exit = 1;
+          }
+          break;
+      case 4 : 
+          var this_hi = $$this[1];
+          var exit$2 = 0;
+          if (other[0] !== 0) {
+            exit$2 = 5;
+          }
+          else if (other[1] !== 2147483648) {
+            exit$2 = 5;
+          }
+          else {
+            lo = lo$1;
+            exit = 1;
+          }
+          if (exit$2 === 5) {
+            var other_hi = other[1];
+            if (this_hi < 0) {
+              if (other_hi < 0) {
+                _other = neg(other);
+                _this = neg($$this);
+                continue ;
+                
+              }
+              else {
+                return neg(mul(neg($$this), other));
+              }
+            }
+            else if (other_hi < 0) {
+              return neg(mul($$this, neg(other)));
+            }
+            else {
+              var a48 = (this_hi >>> 16);
+              var a32 = this_hi & 65535;
+              var a16 = (lo$1 >>> 16);
+              var a00 = lo$1 & 65535;
+              var b48 = (other_hi >>> 16);
+              var b32 = other_hi & 65535;
+              var b16 = (other_hi >>> 16);
+              var b00 = other_hi & 65535;
+              var c48 = 0;
+              var c32 = 0;
+              var c16 = 0;
+              var c00 = 0;
+              c00 = a00 * b00;
+              c16 = (c00 >>> 16);
+              c00 = c00 & 65535;
+              c16 += (a16 * b00);
+              c32 = (c16 >>> 16);
+              c16 = c16 & 65535;
+              c16 += (a00 * b16);
+              c32 += (c16 >>> 16);
+              c16 = c16 & 65535;
+              c32 += (a32 * b00);
+              c48 = (c32 >>> 16);
+              c32 = c32 & 65535;
+              c32 += (a16 * b16);
+              c48 += (c32 >>> 16);
+              c32 = c32 & 65535;
+              c32 += (a00 * b32);
+              c48 += (c32 >>> 16);
+              c32 = c32 & 65535;
+              c48 += (a48 * b00 + (a32 * b16 + (a16 * b32 + a00 * b48)));
+              c48 = c48 & 65535;
+              return /* record */[
+                      c00 | (c16 << 16),
+                      c32 | (c48 << 16)
+                    ];
+            }
+          }
+          break;
+      
+    }
+    if (exit === 1) {
+      if ((lo & 1) === 0) {
+        return zero;
+      }
+      else {
+        return min_int$1;
+      }
+    }
+    
+  };
+}
+
 exports.one      = one;
+exports.zero     = zero;
 exports.not      = not;
 exports.of_int32 = of_int32;
 exports.add      = add;
@@ -163,4 +306,7 @@ exports.sub      = sub;
 exports.lsl_     = lsl_;
 exports.lsr_     = lsr_;
 exports.asr_     = asr_;
+exports.is_zero  = is_zero;
+exports.min_int  = min_int$1;
+exports.mul      = mul;
 /* No side effect */

@@ -59,7 +59,9 @@ let suites = Mt.[
                           -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L;
                           -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L;
                           -1L; -1L; -1L; -1L|]
-                       ))
+                       ));
+    (* "mul simple", (fun _ -> Eq (6L, mul 3L 2L )) *)
 ]
+
 
 ;; Mt.from_pair_suites __FILE__ suites
