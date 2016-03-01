@@ -30,6 +30,7 @@ type t = { lo : nativeint ; hi : nativeint}
 let min_int = { lo = 0n; hi =  0x80000000n }
 
 let one = {lo = 1n; hi = 0n}
+let zero = {lo = 0n; hi = 0n}
 
 let not {lo; hi }  = {lo = lognot lo; hi = lognot hi } 
 
@@ -134,7 +135,93 @@ let asr_ ({lo; hi } as x) numBits =
       lo = Nativeint.shift_right hi (numBits - 32)
     }
   
-  
+let is_zero = function
+  | {lo = 0n ; hi = 0n} -> true
+  | _ -> false
+
+let min_int = {lo = 0n; hi = 0x80000000n}
+
+let rec mul this 
+    other = 
+  match this, other with 
+  | {lo = 0n ; hi = 0n}, _ 
+  | _, {lo = 0n; hi = 0n}
+    -> zero
+  | {lo = 0n; hi = 0x80000000n}, {lo }
+  | {lo}, {lo = 0n; hi = 0x80000000n}
+    ->
+    if Nativeint.logand lo 0x1n = 0n then
+      zero
+    else min_int 
+  | {lo = this_lo; hi = this_hi}, 
+    {lo = other_lo; hi = other_hi }
+    -> 
+    if this_hi < 0n  then 
+      if other_hi < 0n then
+        mul (neg this) (neg other)
+      else
+        neg (mul (neg this) other)
+    else if other_hi < 0n then 
+      neg (mul this (neg other) )
+    else 
+      (* TODO: when both are small, use float multiplication *)
+      let a48 = Nativeint.shift_right_logical this_hi 16 in       
+      let a32 = Nativeint.logand this_hi 0xffffn in
+      let a16 = Nativeint.shift_right_logical this_lo 16 in 
+      let a00 = Nativeint.logand this_lo 0xffffn in
+
+      let b48 = Nativeint.shift_right_logical other_hi 16 in
+      let b32 = Nativeint.logand other_hi 0xffffn in
+      let b16 = Nativeint.shift_right_logical other_hi 16 in
+      let b00 = Nativeint.logand other_hi 0xffffn in
+
+      let c48 = ref 0n in
+      let c32 = ref 0n in
+      let c16 = ref 0n in 
+      let c00 = ref 0n in
+      begin
+        c00 := Nativeint.mul a00 b00  ;
+        c16 := Nativeint.shift_right_logical !c00 16;
+        c00 := Nativeint.logand !c00 0xffffn;
+
+        c16 := Nativeint.add !c16 (Nativeint.mul a16 b00 );
+        c32 := Nativeint.shift_right_logical !c16 16;
+        c16 := Nativeint.logand !c16 0xffffn;
+
+        c16 := Nativeint.add !c16 (Nativeint.mul a00 b16);
+        c32 := Nativeint.add !c32 (Nativeint.shift_right_logical !c16 16);
+        c16 := Nativeint.logand !c16 0xffffn;
+        
+        c32 := Nativeint.add !c32 (Nativeint.mul a32 b00);
+        c48 := Nativeint.shift_right_logical !c32 16;
+        c32 := Nativeint.logand !c32 0xffffn;
+
+        c32 := Nativeint.add !c32 (Nativeint.mul a16 b16);
+        c48 := Nativeint.add !c48 (Nativeint.shift_right_logical !c32 16);
+        c32 := Nativeint.logand !c32 0xffffn;
+
+        c32 := Nativeint.add !c32 (Nativeint.mul a00 b32);
+        c48 := Nativeint.add !c48 ( Nativeint.shift_right_logical !c32 16);
+        c32 := Nativeint.logand !c32 0xffffn;
+
+        c48 := 
+          (* TODO: investigate why [@@] not optimized at best *)
+          Nativeint.add !c48 (
+          Nativeint.add (Nativeint.mul a48 b00) (
+          Nativeint.add (Nativeint.mul a32 b16) (
+          Nativeint.add (Nativeint.mul a16 b32) (
+          (Nativeint.mul a00 b48)))));
+        c48 := Nativeint.logand !c48 0xffffn;
+        {lo = 
+           Nativeint.logor 
+             !c00
+             (Nativeint.shift_left !c16 16);
+         hi = Nativeint.logor
+             !c32
+             (Nativeint.shift_left !c48 16)
+        }
+      end
+
 (* Dispatched by the compiler, idea: should we do maximum sharing 
 *)
 (* let xor {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  *)
