@@ -31,3 +31,11 @@ val add : J.expression list -> J.expression
 val sub : J.expression list -> J.expression
 val mul : J.expression list -> J.expression
 val div : J.expression list -> J.expression
+val xor : J.expression list -> J.expression
+val mod_ : J.expression list -> J.expression 
+val lsl_ : J.expression list -> J.expression
+val lsr_ : J.expression list -> J.expression
+val asr_ : J.expression list -> J.expression
+val and_ : J.expression list -> J.expression
+val or_ : J.expression list -> J.expression
+

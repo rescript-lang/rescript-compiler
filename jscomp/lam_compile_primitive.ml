@@ -183,72 +183,81 @@ let translate
   | Pmodint 
   | Pmodbint Lambda.Pnativeint
   | Pmodbint Lambda.Pint32
-  | Pmodbint Lambda.Pint64 
     ->
     begin match args with
       | [e1; e2] ->
         E.int32_mod   e1  e2
       | _ -> assert false 
     end
+  | Pmodbint Lambda.Pint64 
+    -> Js_long.mod_ args  
   | Plslint 
   | Plslbint Lambda.Pnativeint
   | Plslbint Lambda.Pint32
-  | Plslbint Lambda.Pint64 
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_lsl e1  e2
       | _ -> assert false 
     end
+  | Plslbint Lambda.Pint64 
+    -> Js_long.lsl_ args
   | Plsrint 
   | Plsrbint Lambda.Pnativeint
   | Plsrbint Lambda.Pint32
-  | Plsrbint Lambda.Pint64 ->
+    ->
     begin match args with
       | [e1; e2] ->
         E.int32_lsr   e1  e2
       | _ -> assert false
     end
+  | Plsrbint Lambda.Pint64
+    -> Js_long.lsr_ args
   | Pasrint 
   | Pasrbint Lambda.Pnativeint
   | Pasrbint Lambda.Pint32
-  | Pasrbint Lambda.Pint64 
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_asr  e1  e2
       | _ -> assert false
     end
-
+  | Pasrbint Lambda.Pint64 
+    -> Js_long.asr_ args      
   | Pandint 
   | Pandbint Lambda.Pnativeint
   | Pandbint Lambda.Pint32
-  | Pandbint Lambda.Pint64
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_band  e1  e2
       | _ -> assert false
     end
+  | Pandbint Lambda.Pint64
+    -> Js_long.and_ args
   | Porint 
   | Porbint Lambda.Pnativeint
   | Porbint Lambda.Pint32
-  | Porbint Lambda.Pint64 
     ->
     begin match args with
       | [e1;e2] ->
         E.int32_bor  e1  e2
       | _ -> assert false
     end
+  | Porbint Lambda.Pint64 
+    -> Js_long.or_ args
   | Pxorint 
   | Pxorbint Lambda.Pnativeint
-  | Pxorbint Lambda.Pint32
-  | Pxorbint Lambda.Pint64 ->
+  | Pxorbint Lambda.Pint32 
+    -> 
     begin match args with
       | [e1;e2] ->
         E.int32_bxor  e1  e2
       | _ -> assert false
     end
+  | Pxorbint Lambda.Pint64 
+    ->
+    Js_long.xor args    
   | Pbintcomp (Pnativeint ,cmp)
   | Pfloatcomp cmp
   | Pintcomp cmp

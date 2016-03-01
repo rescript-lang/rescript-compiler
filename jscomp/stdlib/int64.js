@@ -31,9 +31,9 @@ function abs(n) {
 }
 
 function lognot(n) {
-  return n ^ /* int64 */[
-          -1,
-          -1
+  return /* int64 */[
+          n[0] ^ -1,
+          n[1] ^ -1
         ];
 }
 
