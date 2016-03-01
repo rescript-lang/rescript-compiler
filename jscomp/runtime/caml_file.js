@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//  Copyright (c) 2015 Bloomberg LP. All rights reserved. 
+//  Copyright (c) 2015-2016 Bloomberg LP. All rights reserved. 
 // Hongbo Zhang (hzhang295@bloomberg.net)              
 "use strict";
 var caml_exceptions_1 = require('./caml_exceptions');
@@ -74,7 +74,7 @@ var MlFile = (function () {
         this.mtime = now;
     };
     return MlFile;
-})();
+}());
 //Provides: caml_root_dir
 //Requires: MlDir
 //var caml_root_dir = new MlDir();
