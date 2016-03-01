@@ -1020,10 +1020,14 @@ let int32_asr ?comment e1 e2 : J.expression =
     expression_desc = Bin (Asr, e1,e2)
   }
 
-let int32_bxor ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Bxor, e1,e2)
-  }
+let int32_bxor ?comment (e1 : t) (e2 : t) : J.expression = 
+  match e1.expression_desc, e2.expression_desc with 
+  | Number (Int {i = i1}), Number (Int {i = i2})
+    -> int ?comment (Int32.logxor i1 i2)
+  | _ -> 
+    { comment ; 
+      expression_desc = Bin (Bxor, e1,e2)
+    }
 
 let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
   match e1.expression_desc with 

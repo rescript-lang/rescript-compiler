@@ -25,6 +25,13 @@ let make_const ~lo ~hi =
      ~comment:"int64" (E.zero_int_literal) 
      Record [E.int lo ; E.int hi] Immutable
 
+let make ~lo ~hi = 
+   E.make_block 
+     ~comment:"int64" (E.zero_int_literal) 
+     Record [ lo ;  hi]
+     Immutable
+let get_lo x = E.index x 0l
+let get_hi x = E.index x 1l
 
 let of_const (v : Int64.t) = 
   make_const
@@ -68,3 +75,30 @@ let mul args =
 
 let div args =
   E.runtime_call Js_config.int64 "div" args
+
+let bit_op  op args = 
+  match args  with 
+  | [l;r] -> 
+    make ~lo:(op (get_lo l) (get_lo r))
+      ~hi:(op (get_hi l) (get_hi r))
+  | _ -> assert false
+
+let xor  = bit_op E.int32_bxor 
+let or_ = bit_op E.int32_bor
+let and_ = bit_op E.int32_band
+
+
+let lsl_ args = 
+  E.runtime_call Js_config.int64 "lsl_" args
+
+let lsr_ args = 
+  E.runtime_call Js_config.int64 "lsr_" args
+
+let asr_ args = 
+  E.runtime_call Js_config.int64 "asr_" args
+
+(*FIXME: todo *)
+let mod_ args = 
+  E.runtime_call Js_config.int64 "mod_" args
+
+

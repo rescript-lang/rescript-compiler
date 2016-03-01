@@ -139,10 +139,15 @@ function int64(s, bound) {
     var n = bound;
     while(true) {
       var b1 = Caml_int64.of_int32(bits(s$1));
-      var b2 = (Caml_int64.of_int32(bits(s$1)) << 30);
-      var b3 = (Caml_int64.of_int32(bits(s$1) & 7) << 60);
-      var r = b1 | b2 | b3;
-      var v = r % n;
+      var b2 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1)), 30);
+      var b3 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1) & 7), 60);
+      var r_000 = b1[0] | b2[0] | b3[0];
+      var r_001 = b1[1] | b2[1] | b3[1];
+      var r = /* int64 */[
+        r_000,
+        r_001
+      ];
+      var v = Caml_int64.mod_(r, n);
       if (Caml_int64.gt(Caml_int64.sub(r, v), Caml_int64.add(Caml_int64.sub(Int64.max_int, n), /* int64 */[
                   1,
                   0
