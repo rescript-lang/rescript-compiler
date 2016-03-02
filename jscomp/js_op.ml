@@ -227,6 +227,10 @@ type length_object =
   | Bytes
   | Function
   | Caml_block
+
+type code_info = 
+  | Exp 
+  | Stmt
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)
 (*   | Const_int of int *)

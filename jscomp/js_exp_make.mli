@@ -255,7 +255,7 @@ val of_block : ?comment:string -> J.statement list -> J.expression -> t
 
 val bind : binary_op
 
-val raw_js_code : ?comment:string -> string -> t
+val raw_js_code : ?comment:string -> J.code_info ->  string -> t
 
 val nil : t 
 val is_nil : unary_op

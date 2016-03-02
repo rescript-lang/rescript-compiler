@@ -51,38 +51,69 @@ let predef_string_type =
 let predef_any_type = 
   Ast_helper.Typ.any ()
 let prim = "js_pure_expr"
-
+let prim_stmt = "js_pure_stmt"
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
-      match e.pexp_desc with 
-      | Pexp_extension ({txt = "bb.unsafe"; loc} , payload)
-        -> 
-        begin 
-          match payload with
-          | Parsetree.PStr 
-              ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                    pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
-                    pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
-            -> 
-            Ast_helper.Exp.letmodule 
-              {txt = tmp_module_name; loc }
-              (Ast_helper.Mod.structure [ 
-                  Ast_helper.Str.primitive 
-                    (Ast_helper.Val.mk {loc ; txt = tmp_fn} 
-                       ~prim:[prim]
-                       (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
-              )    
-              (Ast_helper.Exp.apply 
-                 (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
+        match e.pexp_desc with 
+        | Pexp_extension ({txt = "bb.unsafe"; loc} , payload)
+          -> 
+          begin 
+            match payload with
+            | Parsetree.PStr 
+                ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
+                      pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
+                      pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
+              -> 
+              Ast_helper.Exp.letmodule 
+                {txt = tmp_module_name; loc }
+                (Ast_helper.Mod.structure [ 
+                    Ast_helper.Str.primitive 
+                      (Ast_helper.Val.mk {loc ; txt = tmp_fn} 
+                         ~prim:[prim]
+                         (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
+                )    
+                (Ast_helper.Exp.apply 
+                   (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
+                   [("",e)])
+            | Parsetree.PTyp _ 
+            | Parsetree.PPat (_,_) 
+            | Parsetree.PStr _ 
+              -> 
+              Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
+          end
+        | _ ->  Ast_mapper.default_mapper.expr  mapper e
+      );
+    structure_item = (fun mapper (str : Parsetree.structure_item) -> 
+        begin match str.pstr_desc with 
+        | Pstr_extension ( ({txt = "bb.unsafe"; loc}, payload), _attrs) 
+          -> 
+            begin match payload with 
+              | Parsetree.PStr 
+                  ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
+                        pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
+                        pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
+                -> 
+                Ast_helper.Str.eval @@ Ast_helper.Exp.letmodule 
+                  {txt = tmp_module_name; loc }
+                  (Ast_helper.Mod.structure [ 
+                      Ast_helper.Str.primitive 
+                        (Ast_helper.Val.mk {loc ; txt = tmp_fn} 
+                           ~prim:[prim_stmt]
+                           (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
+                  )    
+                  (Ast_helper.Exp.apply 
+                     (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
                      [("",e)])
-          | Parsetree.PTyp _ 
-          | Parsetree.PPat (_,_) 
-          | Parsetree.PStr _ 
-            -> 
-            Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
+              | Parsetree.PTyp _ 
+              | Parsetree.PPat (_,_) 
+              | Parsetree.PStr _ 
+                -> 
+                Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
+
+            end
+        | _ -> Ast_mapper.default_mapper.structure_item mapper str 
         end
-       | _ ->  Ast_mapper.default_mapper.expr  mapper e
       )
   }
 let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 

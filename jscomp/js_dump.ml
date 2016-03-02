@@ -563,8 +563,16 @@ and
      *)
     let quote = best_string_quote s in 
     pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
-  | Raw_js_code s -> 
-    P.string f s ; cxt 
+  | Raw_js_code (s,info) -> 
+    begin match info with 
+    | Exp -> 
+      P.string f s ; cxt 
+    | Stmt -> 
+      P.newline f  ;
+      P.string f s ;
+      P.newline f ;
+      cxt 
+    end
   | Number v ->
     let s = 
       match v with 
@@ -1061,8 +1069,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
       | Caml_uninitialized_obj _ 
-      | Raw_js_code _ 
+      | Raw_js_code (_, Exp) 
       | Fun _ | Object _ -> true
+      | Raw_js_code (_,Stmt)
       | Caml_block_set_tag _ 
       | Length _ 
       | Caml_block_set_length _ 

@@ -945,7 +945,18 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_pure_expr"
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code s
+      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Exp s
+      | _ -> 
+        Ext_log.err __LOC__ 
+          "JS.unsafe_js_expr is applied to an non literal string in %s"
+          (Lam_current_unit.get_file ())
+        ;
+        assert false
+      end
+    | "js_pure_stmt"
+      -> 
+      begin match args with 
+      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Stmt s
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"

@@ -77,7 +77,9 @@ let ml_var ?comment (id : Ident.t) : t  =
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
 
 let str ?(pure=true) ?comment s : t =  {expression_desc = Str (pure,s); comment}
-let raw_js_code ?comment s : t = {expression_desc = Raw_js_code s ; comment }
+
+let raw_js_code ?comment info s : t =
+  {expression_desc = Raw_js_code (s,info) ; comment }
 
 let anything_to_string ?comment (e : t) : t =  
   match e.expression_desc with 

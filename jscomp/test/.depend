@@ -438,8 +438,6 @@ ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
 typeof_test.cmo : mt.cmi ../lib/js.cmi
 typeof_test.cmx : mt.cmx ../lib/js.cmx
-unafe_ppx_test.cmo :
-unafe_ppx_test.cmx :
 unitest_string.cmo :
 unitest_string.cmx :
 unsafe_ppx_test.cmo : mt.cmi
@@ -872,8 +870,6 @@ ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 typeof_test.cmo : mt.cmi ../lib/js.cmi
 typeof_test.cmj : mt.cmj ../lib/js.cmj
-unafe_ppx_test.cmo :
-unafe_ppx_test.cmj :
 unitest_string.cmo :
 unitest_string.cmj :
 unsafe_ppx_test.cmo : mt.cmi
