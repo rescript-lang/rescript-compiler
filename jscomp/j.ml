@@ -51,6 +51,7 @@ and tag_info = Js_op.tag_info
  
 and required_modules = Js_op.required_modules
 
+and code_info = Js_op.code_info 
 (** object literal, if key is ident, in this case, it might be renamed by 
     Google Closure  optimizer,
     currently we always use quote
@@ -205,8 +206,9 @@ and expression_desc =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
-  | Raw_js_code of string 
-       (* literally raw JS code *)
+  | Raw_js_code of string * code_info
+  (* literally raw JS code 
+  *)
   | Array of expression list * mutable_flag
   | Caml_block of expression list * mutable_flag * expression * tag_info 
   (* The third argument is [tag] , forth is [tag_info] *)

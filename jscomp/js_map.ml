@@ -220,7 +220,8 @@ class virtual map =
        examples like "use asm;" and our compiler may generate "error;..." 
        which is better to leave it alone
      *)
-                 (* literally raw JS code *)
+                 (* literally raw JS code 
+  *)
                  (* The third argument is [tag] , forth is [tag_info] *)
                  (* [tag] and [size] tailed  for [Obj.new_block] *)
                  (* For setter, it still return the value of expression, 
@@ -441,7 +442,9 @@ class virtual map =
           let _x_i2 = o#unknown _x_i2 in Fun (_x, _x_i1, _x_i2)
       | Str (_x, _x_i1) ->
           let _x = o#bool _x in let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
-      | Raw_js_code _x -> let _x = o#string _x in Raw_js_code _x
+      | Raw_js_code (_x, _x_i1) ->
+          let _x = o#string _x in
+          let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
       | Array (_x, _x_i1) ->
           let _x = o#list (fun o -> o#expression) _x in
           let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
@@ -477,6 +480,7 @@ class virtual map =
         let _x_i1 = o#required_modules _x_i1 in
         let _x_i2 = o#option (fun o -> o#string) _x_i2
         in { program = _x; modules = _x_i1; side_effect = _x_i2; }
+    method code_info : code_info -> code_info = o#unknown
     method case_clause :
       (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 

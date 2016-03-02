@@ -8,6 +8,15 @@ var x = "\x01\x02\x03";
 
 var max = Math.max;
 
+
+function $$test(x,y){
+  return x + y;
+}
+
+;
+
+var v = $$test(1, 2);
+
 Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
       /* tuple */[
         "unsafe_max",
@@ -20,9 +29,23 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
                 };
         }
       ],
-      /* [] */0
+      /* :: */[
+        /* tuple */[
+          "unsafe_test",
+          function () {
+            return /* Eq */{
+                    0: 3,
+                    1: v,
+                    length: 2,
+                    tag: 0
+                  };
+          }
+        ],
+        /* [] */0
+      ]
     ]);
 
 exports.x   = x;
 exports.max = max;
+exports.v   = v;
 /* x Not a pure module */
