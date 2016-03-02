@@ -9,6 +9,7 @@ var x = "\x01\x02\x03";
 var max = Math.max;
 
 
+
 function $$test(x,y){
   return x + y;
 }

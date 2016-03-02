@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "02/29-09:56"]
+[@@@ocaml.doc "03/02-09:52"]
 include
   struct
     module Js_op =
@@ -64,8 +64,9 @@ include
         type 'a access =
           | Getter
           | Setter
+        type jsint = Int32.t
         type int_or_char = {
-          i: int;
+          i: jsint;
           c: char option;}
         type float_lit = {
           f: string;}
@@ -105,9 +106,12 @@ include
           | String
           | Bytes
           | Function
+          | Caml_block
+        type code_info =
+          | Exp
           |
-          Caml_block[@ocaml.doc
-                      " TODO: define constant - for better constant folding  "]
+          Stmt[@ocaml.doc
+                " TODO: define constant - for better constant folding  "]
       end
     module Ext_format :
       sig
@@ -466,8 +470,11 @@ include
         and exports = Js_op.exports
         and tag_info = Js_op.tag_info
         and required_modules = Js_op.required_modules
+        and code_info = Js_op.code_info[@@ocaml.doc
+                                         " object literal, if key is ident, in this case, it might be renamed by \n    Google Closure  optimizer,\n    currently we always use quote\n "]
         and property_name = Js_op.property_name[@@ocaml.doc
                                                  " object literal, if key is ident, in this case, it might be renamed by \n    Google Closure  optimizer,\n    currently we always use quote\n "]
+        and jsint = Js_op.jsint
         and ident = Ident.t
         and vident =
           | Id of ident
@@ -507,7 +514,7 @@ include
           | Var of vident
           | Fun of ident list* block* Js_fun_env.t
           | Str of bool* string
-          | Raw_js_code of string
+          | Raw_js_code of string* code_info
           | Array of expression list* mutable_flag
           | Caml_block of expression list* mutable_flag* expression*
           tag_info
@@ -966,7 +973,8 @@ include
           | (_,_) -> false
         and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) =
           match (p, p1) with
-          | (Pccall { prim_name = n0 },Pccall { prim_name = n1 }) -> n0 = n1
+          | (Pccall { prim_name = n0; prim_attributes = [] },Pccall
+             { prim_name = n1; prim_attributes = [] }) -> n0 = n1
           | (_,_) -> (try p = p1 with | _ -> false)
         type stats = {
           mutable top: bool;
@@ -1200,6 +1208,7 @@ include
             method length_object : length_object -> 'self_type= o#unknown
             method label : label -> 'self_type= o#string
             method kind : kind -> 'self_type= o#unknown
+            method jsint : jsint -> 'self_type= o#unknown
             method int_op : int_op -> 'self_type= o#unknown
             method ident_info : ident_info -> 'self_type= o#unknown
             method ident : ident -> 'self_type= o#unknown
@@ -1272,7 +1281,8 @@ include
                   let o = o#block _x_i1 in let o = o#unknown _x_i2 in o
               | Str (_x,_x_i1) ->
                   let o = o#bool _x in let o = o#string _x_i1 in o
-              | Raw_js_code _x -> let o = o#string _x in o
+              | Raw_js_code (_x,_x_i1) ->
+                  let o = o#string _x in let o = o#code_info _x_i1 in o
               | Array (_x,_x_i1) ->
                   let o = o#list (fun o  -> o#expression) _x in
                   let o = o#mutable_flag _x_i1 in o
@@ -1300,6 +1310,7 @@ include
                 let o = o#program _x in
                 let o = o#required_modules _x_i1 in
                 let o = o#option (fun o  -> o#string) _x_i2 in o
+            method code_info : code_info -> 'self_type= o#unknown
             method case_clause :
               'a .
                 ('self_type -> 'a -> 'self_type) ->
@@ -1342,6 +1353,9 @@ include
         val float : string
         val curry : string
         val internalMod : string
+        val bigarray : string
+        val unix : string
+        val int64 : string
       end =
       struct
         type env =
@@ -1434,6 +1448,9 @@ include
         let oo = "Caml_oo"
         let curry = "Caml_curry"
         let internalMod = "Caml_internalMod"
+        let bigarray = "Caml_bigarray"
+        let unix = "Caml_unix"
+        let int64 = "Caml_int64"
       end 
     module Ext_bytes :
       sig
@@ -2148,6 +2165,56 @@ include
         let not_function (lam : Lambda.lambda) =
           match lam with | Lfunction _ -> false | _ -> true
       end 
+    module Js_number :
+      sig
+        type t = float
+        val to_string : t -> string
+        val caml_float_literal_to_js_string : string -> string
+      end =
+      struct
+        type t = float
+        let to_string v =
+          if v = infinity
+          then "Infinity"
+          else
+            if v = neg_infinity
+            then "-Infinity"
+            else
+              if v <> v
+              then "NaN"
+              else
+                (let vint = int_of_float v in
+                 if (float_of_int vint) = v
+                 then string_of_int vint
+                 else
+                   (let s1 = Printf.sprintf "%.12g" v in
+                    if v = (float_of_string s1)
+                    then s1
+                    else
+                      (let s2 = Printf.sprintf "%.15g" v in
+                       if v = (float_of_string s2)
+                       then s2
+                       else Printf.sprintf "%.18g" v)))
+        let caml_float_literal_to_js_string v =
+          let len = String.length v in
+          if
+            (len >= 2) &&
+              (((v.[0]) = '0') && (((v.[1]) = 'x') || ((v.[1]) = 'X')))
+          then assert false
+          else
+            (let rec aux buf i =
+               if i >= len
+               then buf
+               else
+                 (let x = v.[i] in
+                  if x = '_'
+                  then aux buf (i + 1)
+                  else
+                    if (x = '.') && (i = (len - 1))
+                    then buf
+                    else (Buffer.add_char buf x; aux buf (i + 1))) in
+             Buffer.contents (aux (Buffer.create len) 0))
+      end 
     module Lam_group :
       sig
         type t =
@@ -2301,6 +2368,14 @@ include
               | Lapply (l1,ll,info) ->
                   Lapply ((aux l1), (List.map aux ll), info)
               | Lprim (Pidentity ,l::[]) -> l
+              | Lprim
+                  (Pccall { prim_name = "caml_int64_float_of_bits";_},(Lconst
+                   (Const_base (Const_int64 i)))::[])
+                  ->
+                  Lconst
+                    (Const_base
+                       (Const_float
+                          (Js_number.to_string (Int64.float_of_bits i))))
               | Lprim (prim,ll) -> Lprim (prim, (List.map aux ll))
               | Lfunction (kind,params,l) ->
                   Lfunction (kind, params, (aux l))
@@ -2571,6 +2646,23 @@ include
         include Map.Make(String)
         let of_list (xs : ('a* 'b) list) =
           List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty xs
+      end 
+    module Literals :
+      sig
+        val js_array_ctor : string
+        val js_type_number : string
+        val js_type_string : string
+        val js_type_object : string
+        val js_undefined : string
+        val js_prop_length : string
+      end =
+      struct
+        let js_array_ctor = "Array"
+        let js_type_number = "number"
+        let js_type_string = "string"
+        let js_type_object = "object"
+        let js_undefined = "undefined"
+        let js_prop_length = "length"
       end 
     module Lam_compile_util :
       sig
@@ -2886,17 +2978,19 @@ include
           ?comment:string -> Ident.t -> string -> string -> t
         val ml_var : ?comment:string -> Ident.t -> t
         val runtime_call : ?comment:string -> string -> string -> t list -> t
-        val public_method_call : string -> t -> t -> int -> t list -> t
+        val public_method_call : string -> t -> t -> Int32.t -> t list -> t
         val runtime_ref : string -> string -> t
         val str : ?pure:bool -> ?comment:string -> string -> t
         val fun_ :
           ?comment:string ->
             ?immutable_mask:bool array -> J.ident list -> J.block -> t
         val econd : ?comment:string -> t -> t -> t -> t
-        val int : ?comment:string -> ?c:char -> int -> t
+        val int : ?comment:string -> ?c:char -> Int32.t -> t
+        val small_int : int -> t
         val float : ?comment:string -> string -> t
-        val zero_float_lit : t[@@ocaml.doc
-                                " [is_out e range] is equivalent to [e > range or e <0]\n\n"]
+        val zero_int_literal : t
+        val zero_float_lit : t
+        val obj_int_tag_literal : t
         val is_out : binary_op[@@ocaml.doc
                                 " [is_out e range] is equivalent to [e > range or e <0]\n\n"]
         val dot : ?comment:string -> t -> string -> t
@@ -2911,14 +3005,13 @@ include
         val array_copy : unary_op
         val string_append : binary_op[@@ocaml.doc
                                        "\n   When in ES6 mode, we can use Symbol to guarantee its uniquess,\n   we can not tag [js] object, since it can be frozen \n"]
-        val tag_ml_obj : unary_op
         val var_dot : ?comment:string -> Ident.t -> string -> t
         val bind_var_call :
           ?comment:string -> Ident.t -> string -> t list -> t
         val bind_call :
           ?comment:string -> J.expression -> string -> J.expression list -> t
         val js_global_dot : ?comment:string -> string -> string -> t
-        val index : ?comment:string -> t -> int -> t
+        val index : ?comment:string -> t -> Int32.t -> t
         val assign : binary_op
         val triple_equal : binary_op
         val float_equal : binary_op
@@ -2928,9 +3021,12 @@ include
         val typeof : unary_op
         val to_int32 : unary_op
         val to_uint32 : unary_op
+        val unchecked_int32_add : binary_op
         val int32_add : binary_op
+        val unchecked_int32_minus : binary_op
         val int32_minus : binary_op
         val int32_mul : binary_op
+        val unchecked_int32_mul : binary_op
         val int32_div : binary_op
         val int32_lsl : binary_op
         val int32_lsr : binary_op
@@ -2948,7 +3044,6 @@ include
         val int_comp : Lambda.comparison -> binary_op
         val string_comp : Js_op.binop -> binary_op
         val float_comp : Lambda.comparison -> binary_op
-        val bin : ?comment:string -> J.binop -> t -> t -> t
         val not : t -> t
         val call :
           ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
@@ -2968,12 +3063,11 @@ include
         val uninitialized_array : unary_op
         val seq : binary_op
         val obj : ?comment:string -> J.property_map -> t
-        val true_ : t
-        val false_ : t
+        val caml_true : t
+        val caml_false : t
         val bool : bool -> t
-        val unknown_lambda : ?comment:string -> Lambda.lambda -> t
-        val unit : unit -> t[@@ocaml.doc
-                              " [unit] in ocaml will be compiled into [0]  in js "]
+        val unit : t[@@ocaml.doc
+                      " [unit] in ocaml will be compiled into [0]  in js "]
         val js_var : ?comment:string -> string -> t
         val js_global : ?comment:string -> string -> t
         val undefined : t
@@ -2982,8 +3076,7 @@ include
                                                              " [math \"abs\"] --> Math[\"abs\"] "]
         val inc : unary_op
         val dec : unary_op
-        val prefix_inc : ?comment:string -> J.vident -> t
-        val prefix_dec : ?comment:string -> J.vident -> t
+        val unchecked_prefix_inc : ?comment:string -> J.vident -> t
         val tag : ?comment:string -> J.expression -> t
         val set_tag : ?comment:string -> J.expression -> J.expression -> t
         [@@@ocaml.text
@@ -3002,7 +3095,7 @@ include
           ?comment:string -> J.statement list -> J.expression -> t[@@ocaml.doc
                                                                     " convert a block to expresion by using IIFE "]
         val bind : binary_op
-        val raw_js_code : ?comment:string -> string -> t
+        val raw_js_code : ?comment:string -> J.code_info -> string -> t
         val nil : t
         val is_nil : unary_op
         val js_bool : ?comment:string -> bool -> t
@@ -3059,13 +3152,47 @@ include
           t)
         let str ?(pure= true)  ?comment  s =
           ({ expression_desc = (Str (pure, s)); comment } : t)
-        let raw_js_code ?comment  s =
-          ({ expression_desc = (Raw_js_code s); comment } : t)
+        let raw_js_code ?comment  info s =
+          ({ expression_desc = (Raw_js_code (s, info)); comment } : t)
         let anything_to_string ?comment  (e : t) =
           (match e.expression_desc with
            | Str _ -> e
            | _ -> { expression_desc = (Anything_to_string e); comment } : 
           t)
+        let arr ?comment  mt es =
+          ({ expression_desc = (Array (es, mt)); comment } : t)
+        let make_block ?comment  tag tag_info es mutable_flag =
+          ({
+             expression_desc = (Caml_block (es, mutable_flag, tag, tag_info));
+             comment =
+               (match comment with
+                | None  -> Lam_compile_util.comment_of_tag_info tag_info
+                | _ -> comment)
+           } : t)
+        let uninitialized_object ?comment  tag size =
+          ({ expression_desc = (Caml_uninitialized_obj (tag, size)); comment
+           } : t)
+        let uninitialized_array ?comment  (e : t) =
+          (match e.expression_desc with
+           | Number (Int { i = 0l;_}) -> arr ?comment NA []
+           | _ -> { comment; expression_desc = (Array_of_size e) } : 
+          t)
+        module L = Literals
+        let typeof ?comment  (e : t) =
+          (match e.expression_desc with
+           | Number _|Length _ -> str ?comment L.js_type_number
+           | Str _ -> str ?comment L.js_type_string
+           | Array _ -> str ?comment L.js_type_object
+           | _ -> { expression_desc = (Typeof e); comment } : t)
+        let new_ ?comment  e0 args =
+          ({ expression_desc = (New (e0, (Some args))); comment } : t)
+        let unit: t =
+          {
+            expression_desc = (Number (Int { i = 0l; c = None }));
+            comment = (Some "()")
+          }
+        let math ?comment  v args =
+          ({ comment; expression_desc = (Math (v, args)) } : t)
         let int_to_string ?comment  (e : t) =
           (anything_to_string ?comment e : t)
         let fun_ ?comment  ?immutable_mask  params block =
@@ -3078,7 +3205,9 @@ include
         let dummy_obj ?comment  () =
           ({ comment; expression_desc = (Object []) } : t)
         let is_instance_array ?comment  e =
-          ({ comment; expression_desc = (Bin (InstanceOf, e, (str "Array")))
+          ({
+             comment;
+             expression_desc = (Bin (InstanceOf, e, (str L.js_array_ctor)))
            } : t)
         let rec seq ?comment  (e0 : t) (e1 : t) =
           (match ((e0.expression_desc), (e1.expression_desc)) with
@@ -3088,26 +3217,98 @@ include
            | (_,Seq (a,({ expression_desc = Number _ } as v))) ->
                seq ?comment (seq e0 a) v
            | _ -> { expression_desc = (Seq (e0, e1)); comment } : t)
+        let zero_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 0l; c = None }));
+            comment = None
+          }
+        let one_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 1l; c = None }));
+            comment = None
+          }
+        let two_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 2l; c = None }));
+            comment = None
+          }
+        let three_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 3l; c = None }));
+            comment = None
+          }
+        let four_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 4l; c = None }));
+            comment = None
+          }
+        let five_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 5l; c = None }));
+            comment = None
+          }
+        let six_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 6l; c = None }));
+            comment = None
+          }
+        let seven_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 7l; c = None }));
+            comment = None
+          }
+        let eight_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 8l; c = None }));
+            comment = None
+          }
+        let nine_int_literal: t =
+          {
+            expression_desc = (Number (Int { i = 9l; c = None }));
+            comment = None
+          }
+        let obj_int_tag_literal: t =
+          {
+            expression_desc = (Number (Int { i = 248l; c = None }));
+            comment = None
+          }
         let int ?comment  ?c  i =
           ({ expression_desc = (Number (Int { i; c })); comment } : t)
+        let small_int i =
+          (match i with
+           | 0 -> zero_int_literal
+           | 1 -> one_int_literal
+           | 2 -> two_int_literal
+           | 3 -> three_int_literal
+           | 4 -> four_int_literal
+           | 5 -> five_int_literal
+           | 6 -> six_int_literal
+           | 7 -> seven_int_literal
+           | 8 -> eight_int_literal
+           | 9 -> nine_int_literal
+           | 248 -> obj_int_tag_literal
+           | i -> int (Int32.of_int i) : t)
         let access ?comment  (e0 : t) (e1 : t) =
           (match ((e0.expression_desc), (e1.expression_desc)) with
            | (Array (l,_mutable_flag),Number (Int { i;_})) when
-               no_side_effect e0 -> List.nth l i
+               no_side_effect e0 -> List.nth l (Int32.to_int i)
            | _ -> { expression_desc = (Access (e0, e1)); comment } : 
           t)
         let string_access ?comment  (e0 : t) (e1 : t) =
           (match ((e0.expression_desc), (e1.expression_desc)) with
-           | (Str (_,s),Number (Int { i;_})) when
-               (i >= 0) && (i < (String.length s)) ->
-               str (String.make 1 (s.[i]))
+           | (Str (_,s),Number (Int { i;_})) ->
+               let i = Int32.to_int i in
+               if (i >= 0) && (i < (String.length s))
+               then str (String.make 1 (s.[i]))
+               else { expression_desc = (String_access (e0, e1)); comment }
            | _ -> { expression_desc = (String_access (e0, e1)); comment } : 
           t)
-        let index ?comment  (e0 : t) (e1 : int) =
+        let index ?comment  (e0 : t) e1 =
           (match e0.expression_desc with
-           | Array (l,_mutable_flag) when no_side_effect e0 -> List.nth l e1
+           | Array (l,_mutable_flag) when no_side_effect e0 ->
+               List.nth l (Int32.to_int e1)
            | Caml_block (l,_mutable_flag,_,_) when no_side_effect e0 ->
-               List.nth l e1
+               List.nth l (Int32.to_int e1)
            | _ -> { expression_desc = (Access (e0, (int e1))); comment } : 
           t)
         let call ?comment  ?info  e0 args =
@@ -3132,29 +3333,31 @@ include
         let nil = var Ext_ident.nil
         let is_caml_block ?comment  (e : t) =
           ({
-             expression_desc = (Bin (NotEqEq, (dot e "length"), undefined));
+             expression_desc =
+               (Bin (NotEqEq, (dot e L.js_prop_length), undefined));
              comment
            } : t)[@@ocaml.doc " coupled with the runtime "]
         let array_length ?comment  (e : t) =
           (match e.expression_desc with
            | Array (l,_)|Caml_block (l,_,_,_) when no_side_effect e ->
-               int ?comment (List.length l)
+               int ?comment (Int32.of_int (List.length l))
            | _ -> { expression_desc = (Length (e, Array)); comment } : 
           t)
         let string_length ?comment  (e : t) =
           (match e.expression_desc with
-           | Str (_,v) -> int ?comment (String.length v)
+           | Str (_,v) -> int ?comment (Int32.of_int (String.length v))
            | _ -> { expression_desc = (Length (e, String)); comment } : 
           t)
         let bytes_length ?comment  (e : t) =
           (match e.expression_desc with
-           | Array (l,_) -> int ?comment (List.length l)
-           | Str (_,v) -> int ?comment (String.length v)
+           | Array (l,_) -> int ?comment (Int32.of_int (List.length l))
+           | Str (_,v) -> int ?comment (Int32.of_int @@ (String.length v))
            | _ -> { expression_desc = (Length (e, Bytes)); comment } : 
           t)
         let function_length ?comment  (e : t) =
           (match e.expression_desc with
-           | Fun (params,_,_) -> int ?comment (List.length params)
+           | Fun (params,_,_) ->
+               int ?comment (Int32.of_int @@ (List.length params))
            | _ -> { expression_desc = (Length (e, Function)); comment } : 
           t)
         let js_global_dot ?comment  (x : string) (e1 : string) =
@@ -3162,14 +3365,16 @@ include
           t)[@@ocaml.doc " no dependency introduced "]
         let char_of_int ?comment  (v : t) =
           (match v.expression_desc with
-           | Number (Int { i;_}) -> str (String.make 1 (Char.chr i))
+           | Number (Int { i;_}) ->
+               str (String.make 1 (Char.chr (Int32.to_int i)))
            | Char_to_int v -> v
            | _ -> { comment; expression_desc = (Char_of_int v) } : t)
         let char_to_int ?comment  (v : t) =
           (match v.expression_desc with
            | Str (_,x) ->
                (assert ((String.length x) = 1);
-                int ~comment:(Printf.sprintf "%S" x) (Char.code (x.[0])))
+                int ~comment:(Printf.sprintf "%S" x)
+                  (Int32.of_int @@ (Char.code (x.[0]))))
            | Char_of_int v -> v
            | _ -> { comment; expression_desc = (Char_to_int v) } : t)
         let array_append ?comment  e el =
@@ -3194,11 +3399,8 @@ include
            | (Anything_to_string b,_) -> string_append ?comment b el
            | (_,_) -> { comment; expression_desc = (String_append (e, el)) } : 
           t)
-        let float_mod ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
         let obj ?comment  properties =
           ({ expression_desc = (Object properties); comment } : t)
-        let tag_ml_obj ?comment  e = (e : t)
         let var_dot ?comment  (x : Ident.t) (e1 : string) =
           ({ expression_desc = (Dot ((var x), e1, true)); comment } : 
           t)
@@ -3221,10 +3423,6 @@ include
                       obj));
                comment = None
              } args : t)
-        let float ?comment  f =
-          ({ expression_desc = (Number (Float { f })); comment } : t)
-        let zero_float_lit: t =
-          { expression_desc = (Number (Float { f = "0." })); comment = None }
         let assign ?comment  e0 e1 =
           ({ expression_desc = (Bin (Eq, e0, e1)); comment } : t)
         let to_ocaml_boolean ?comment  (e : t) =
@@ -3233,9 +3431,9 @@ include
            | _ -> { comment; expression_desc = (Int_of_boolean e) } : 
           t)[@@ocaml.doc
               " Convert a javascript boolean to ocaml boolean\n    It's necessary for return value\n     this should be optmized away for [if] ,[cond] to produce \n    more readable code\n"]
-        let true_ = int ~comment:"true" 1
-        let false_ = int ~comment:"false" 0
-        let bool v = if v then true_ else false_
+        let caml_true = int ~comment:"true" 1l
+        let caml_false = int ~comment:"false" 0l
+        let bool v = if v then caml_true else caml_false
         let rec triple_equal ?comment  (e0 : t) (e1 : t) =
           (match ((e0.expression_desc), (e1.expression_desc)) with
            | (Var (Id
@@ -3245,11 +3443,11 @@ include
                                                         |Int_of_boolean _|Fun
                                                         _|Array _|Caml_block
                                                         _))
-               when (Ext_ident.is_js id) && (no_side_effect e1) -> false_
+               when (Ext_ident.is_js id) && (no_side_effect e1) -> caml_false
            | ((Char_of_int _|Char_to_int _|Bool _|Number _|Typeof _
                |Int_of_boolean _|Fun _|Array _|Caml_block _),Var
               (Id ({ name = ("undefined"|"null") } as id))) when
-               (Ext_ident.is_js id) && (no_side_effect e0) -> false_
+               (Ext_ident.is_js id) && (no_side_effect e0) -> caml_false
            | (Str (_,x),Str (_,y)) -> bool (Ext_string.equal x y)
            | (Char_to_int a,Char_to_int b) -> triple_equal ?comment a b
            | (Char_to_int a,Number (Int { i; c = Some v }))
@@ -3262,6 +3460,14 @@ include
                to_ocaml_boolean
                  { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
           t)
+        [@@@ocaml.text " Arith operators "]
+        let float ?comment  f =
+          ({ expression_desc = (Number (Float { f })); comment } : t)
+          [@@ocaml.text " Arith operators "]
+        let zero_float_lit: t =
+          { expression_desc = (Number (Float { f = "0." })); comment = None }
+        let float_mod ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
         let bin ?comment  (op : J.binop) e0 e1 =
           (match op with
            | EqEqEq  -> triple_equal ?comment e0 e1
@@ -3288,7 +3494,9 @@ include
              i,(Bin (And ,{ expression_desc = Var j;_},_)|Bin
                 (And ,_,{ expression_desc = Var j;_})))
               when Js_op_util.same_vident i j -> to_ocaml_boolean e2
-          | (_,_) -> to_ocaml_boolean @@ (bin ?comment And e1 e2)
+          | (_,_) ->
+              to_ocaml_boolean
+                { expression_desc = (Bin (And, e1, e2)); comment }
         let rec or_ ?comment  (e1 : t) (e2 : t) =
           match ((e1.expression_desc), (e2.expression_desc)) with
           | (Int_of_boolean e1,Int_of_boolean e2) -> or_ ?comment e1 e2
@@ -3300,7 +3508,9 @@ include
              i,(Bin (Or ,{ expression_desc = Var j;_},_)|Bin
                 (Or ,_,{ expression_desc = Var j;_})))
               when Js_op_util.same_vident i j -> to_ocaml_boolean e2
-          | (_,_) -> to_ocaml_boolean @@ (bin ?comment Or e1 e2)
+          | (_,_) ->
+              to_ocaml_boolean
+                { expression_desc = (Bin (Or, e1, e2)); comment }
         let rec not (({ expression_desc; comment } as e) : t) =
           (match expression_desc with
            | Bin (EqEqEq ,e0,e1) ->
@@ -3311,7 +3521,7 @@ include
            | Bin (Ge ,a,b) -> { e with expression_desc = (Bin (Lt, a, b)) }
            | Bin (Le ,a,b) -> { e with expression_desc = (Bin (Gt, a, b)) }
            | Bin (Gt ,a,b) -> { e with expression_desc = (Bin (Le, a, b)) }
-           | Number (Int { i;_}) -> if i != 0 then false_ else true_
+           | Number (Int { i;_}) -> if i != 0l then caml_false else caml_true
            | Int_of_boolean e -> not e
            | Not e -> e
            | x -> { expression_desc = (Not e); comment = None } : t)
@@ -3319,12 +3529,13 @@ include
           (match ((b.expression_desc), (t.expression_desc),
                    (f.expression_desc))
            with
-           | (Number (Int { i = 0;_}),_,_) -> f
+           | (Number (Int { i = 0l;_}),_,_) -> f
            | ((Number _|Array _|Caml_block _),_,_) when no_side_effect b -> t
            | (Bool (true ),_,_) -> t
            | (Bool (false ),_,_) -> f
-           | (Bin (Bor ,v,{ expression_desc = Number (Int { i = 0;_}) }),_,_)
-               -> econd v t f
+           | (Bin
+              (Bor ,v,{ expression_desc = Number (Int { i = 0l;_}) }),_,_) ->
+               econd v t f
            | (Bin
               (NotEqEq
                ,e1,{
@@ -3332,15 +3543,16 @@ include
                        ({ name = "undefined";_} as id))
                      }),_,_)
                when Ext_ident.is_js id -> econd e1 t f
-           | ((Bin (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},x)
+           | ((Bin
+               (EqEqEq ,{ expression_desc = Number (Int { i = 0l;_});_},x)
                |Bin
-               (EqEqEq ,x,{ expression_desc = Number (Int { i = 0;_});_})),_,_)
+               (EqEqEq ,x,{ expression_desc = Number (Int { i = 0l;_});_})),_,_)
                -> econd ?comment x f t
            | (Bin
               (Ge
                ,{ expression_desc = Length _;_},{
                                                   expression_desc = Number
-                                                    (Int { i = 0;_})
+                                                    (Int { i = 0l;_})
                                                   }),_,_)
                -> f
            | (Bin
@@ -3348,7 +3560,7 @@ include
                ,({ expression_desc = Length _;_} as pred),{
                                                             expression_desc =
                                                               Number (Int
-                                                              { i = 0 })
+                                                              { i = 0l })
                                                             }),_,_)
                -> econd ?comment pred t f
            | (_,Cond (p1,branch_code0,branch_code1),_) when
@@ -3376,40 +3588,40 @@ include
                bool (i0 = i1)
            | ((Bin
                (Bor
-                ,{ expression_desc = Number (Int { i = 0;_}) },({
-                                                                  expression_desc
+                ,{ expression_desc = Number (Int { i = 0l;_}) },({
+                                                                   expression_desc
                                                                     =
                                                                     Caml_block_tag
                                                                     _;_}
-                                                                  as a))|Bin
+                                                                   as a))|Bin
                (Bor
                 ,({ expression_desc = Caml_block_tag _;_} as a),{
                                                                   expression_desc
                                                                     = Number
                                                                     (Int
                                                                     {
-                                                                    i = 0;_})
+                                                                    i = 0l;_})
                                                                   })),Number
-              (Int { i = 0;_})) -> not a
+              (Int { i = 0l;_})) -> not a
            | ((Bin
                (Bor
-                ,{ expression_desc = Number (Int { i = 0;_}) },({
-                                                                  expression_desc
+                ,{ expression_desc = Number (Int { i = 0l;_}) },({
+                                                                   expression_desc
                                                                     =
                                                                     Caml_block_tag
                                                                     _;_}
-                                                                  as a))|Bin
+                                                                   as a))|Bin
                (Bor
                 ,({ expression_desc = Caml_block_tag _;_} as a),{
                                                                   expression_desc
                                                                     = Number
                                                                     (Int
                                                                     {
-                                                                    i = 0;_})
+                                                                    i = 0l;_})
                                                                   })),Number
               _) -> float_equal ?comment a e1
            | (Number (Float { f = f0;_}),Number (Float { f = f1 })) when
-               f0 = f1 -> true_
+               f0 = f1 -> caml_true
            | (Char_to_int a,Char_to_int b) -> float_equal ?comment a b
            | (Char_to_int a,Number (Int { i; c = Some v }))
              |(Number (Int { i; c = Some v }),Char_to_int a) ->
@@ -3427,48 +3639,18 @@ include
                to_ocaml_boolean
                  { expression_desc = (Bin (EqEqEq, e0, e1)); comment } : 
           t)
-        let arr ?comment  mt es =
-          ({ expression_desc = (Array (es, mt)); comment } : t)
-        let make_block ?comment  tag tag_info es mutable_flag =
-          ({
-             expression_desc = (Caml_block (es, mutable_flag, tag, tag_info));
-             comment =
-               (match comment with
-                | None  -> Lam_compile_util.comment_of_tag_info tag_info
-                | _ -> comment)
-           } : t)
-        let uninitialized_object ?comment  tag size =
-          ({ expression_desc = (Caml_uninitialized_obj (tag, size)); comment
-           } : t)
-        let uninitialized_array ?comment  (e : t) =
-          (match e.expression_desc with
-           | Number (Int { i = 0;_}) -> arr ?comment NA []
-           | _ -> { comment; expression_desc = (Array_of_size e) } : 
-          t)
-        let typeof ?comment  (e : t) =
-          (match e.expression_desc with
-           | Number _|Length _ -> str ?comment "number"
-           | Str _ -> str ?comment "string"
-           | Array _ -> str ?comment "object"
-           | _ -> { expression_desc = (Typeof e); comment } : t)
         let is_type_number ?comment  (e : t) =
           (string_equal ?comment (typeof e) (str "number") : t)
-        let new_ ?comment  e0 args =
-          ({ expression_desc = (New (e0, (Some args))); comment } : t)
-        let unknown_lambda ?(comment= "unknown")  (lam : Lambda.lambda) =
-          (str ~pure:false ~comment (Lam_util.string_of_lambda lam) : 
-          t)[@@ocaml.doc " cannot use [boolean] in js   "]
-        let unit () = int ~comment:"()" 0
-        let math ?comment  v args =
-          ({ comment; expression_desc = (Math (v, args)) } : t)
         let inc ?comment  (e : t) =
           match e with
           | { expression_desc = Number (Int ({ i;_} as v));_} ->
               {
                 e with
-                expression_desc = (Number (Int { v with i = (i + 1) }))
+                expression_desc =
+                  (Number (Int { v with i = (Int32.add i 1l) }))
               }
-          | _ -> bin ?comment Plus e (int 1)
+          | _ ->
+              { comment; expression_desc = (Bin (Plus, e, one_int_literal)) }
         let string_of_small_int_array ?comment  xs =
           ({ expression_desc = (String_of_small_int_array xs); comment } : 
           t)
@@ -3477,23 +3659,26 @@ include
           | { expression_desc = Number (Int ({ i;_} as v));_} ->
               {
                 e with
-                expression_desc = (Number (Int { v with i = (i - 1) }))
+                expression_desc =
+                  (Number (Int { v with i = (Int32.sub i 1l) }))
               }
-          | _ -> bin ?comment Minus e (int 1)
+          | _ ->
+              { comment; expression_desc = (Bin (Minus, e, one_int_literal))
+              }
         let null ?comment  () = js_global ?comment "null"
         let tag ?comment  e =
           ({
              expression_desc =
                (Bin
                   (Bor, { expression_desc = (Caml_block_tag e); comment },
-                    (int 0)));
+                    zero_int_literal));
              comment = None
            } : t)
         let bind ?comment  fn obj =
           ({ expression_desc = (Bind (fn, obj)); comment } : t)
         let public_method_call meth_name obj label cache args =
           let len = List.length args in
-          econd (int_equal (tag obj) (int 248))
+          econd (int_equal (tag obj) obj_int_tag_literal)
             (if len <= 7
              then
                runtime_call Js_config.curry
@@ -3513,27 +3698,30 @@ include
                else runtime_call Js_config.curry "app" [fn; arr NA args])
         let set_tag ?comment  e tag =
           (seq { expression_desc = (Caml_block_set_tag (e, tag)); comment }
-             (unit ()) : t)
+             unit : t)
         let set_length ?comment  e tag =
           (seq
              { expression_desc = (Caml_block_set_length (e, tag)); comment }
-             (unit ()) : t)
+             unit : t)
         let obj_length ?comment  e =
           ({ expression_desc = (Length (e, Caml_block)); comment } : 
           t)
         let rec to_int32 ?comment  (e : J.expression) =
           (let expression_desc = e.expression_desc in
            match expression_desc with
-           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 });_}) ->
+           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0l });_}) ->
                to_int32 ?comment a
            | _ ->
                {
                  comment;
                  expression_desc =
-                   (Bin (Bor, { comment = None; expression_desc }, (int 0)))
+                   (Bin
+                      (Bor, { comment = None; expression_desc },
+                        zero_int_literal))
                } : J.expression)
         let rec to_uint32 ?comment  (e : J.expression) =
-          ({ comment; expression_desc = (Bin (Lsr, e, (int 0))) } : J.expression)
+          ({ comment; expression_desc = (Bin (Lsr, e, zero_int_literal)) } : 
+          J.expression)
         let string_comp cmp ?comment  e0 e1 =
           to_ocaml_boolean @@ (bin ?comment cmp e0 e1)
         let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t)
@@ -3543,7 +3731,7 @@ include
              ({
                 expression_desc = Var (Qualified
                   (_,Runtime ,Some ("caml_int_compare"|"caml_int32_compare")));_},l::r::[],_),Number
-             (Int { i = 0 })) -> int_comp cmp l r
+             (Int { i = 0l })) -> int_comp cmp l r
           | (Ceq ,_,_) -> int_equal e0 e1
           | _ ->
               to_ocaml_boolean @@
@@ -3553,24 +3741,26 @@ include
             (bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1)
         let is_out ?comment  (e : t) (range : t) =
           (match ((range.expression_desc), (e.expression_desc)) with
-           | (Number (Int { i = 1 }),Var _) ->
-               not (or_ (triple_equal e (int 0)) (triple_equal e (int 1)))
+           | (Number (Int { i = 1l }),Var _) ->
+               not
+                 (or_ (triple_equal e zero_int_literal)
+                    (triple_equal e one_int_literal))
            | (Number (Int
-              { i = 1 }),(Bin
-                          (Plus
-                           ,{ expression_desc = Number (Int { i;_}) },
-                           { expression_desc = Var _;_})|Bin
-                          (Plus
-                           ,{ expression_desc = Var _;_},{
-                                                           expression_desc =
-                                                             Number (Int
-                                                             { i;_})
-                                                           })))
+              { i = 1l }),(Bin
+                           (Plus
+                            ,{ expression_desc = Number (Int { i;_}) },
+                            { expression_desc = Var _;_})|Bin
+                           (Plus
+                            ,{ expression_desc = Var _;_},{
+                                                            expression_desc =
+                                                              Number (Int
+                                                              { i;_})
+                                                            })))
                ->
                not
-                 (or_ (triple_equal e (int (- i)))
-                    (triple_equal e (int (1 - i))))
-           | (Number (Int { i = 1 }),Bin
+                 (or_ (triple_equal e (int (Int32.neg i)))
+                    (triple_equal e (int (Int32.sub Int32.one i))))
+           | (Number (Int { i = 1l }),Bin
               (Minus
                ,({ expression_desc = Var _;_} as x),{
                                                       expression_desc =
@@ -3578,49 +3768,66 @@ include
                                                       }))
                ->
                not
-                 (or_ (triple_equal x (int (i + 1))) (triple_equal x (int i)))
+                 (or_ (triple_equal x (int (Int32.add i 1l)))
+                    (triple_equal x (int i)))
            | (Number (Int { i = k }),Bin
               (Minus
                ,({ expression_desc = Var _;_} as x),{
                                                       expression_desc =
                                                         Number (Int { i;_})
                                                       }))
-               -> or_ (int_comp Cgt x (int (i + k))) (int_comp Clt x (int i))
+               ->
+               or_ (int_comp Cgt x (int (Int32.add i k)))
+                 (int_comp Clt x (int i))
            | (Number (Int { i = k }),Var _) ->
-               or_ (int_comp Cgt e (int k)) (int_comp Clt e (int 0))
+               or_ (int_comp Cgt e (int k)) (int_comp Clt e zero_int_literal)
            | (_,_) -> int_comp ?comment Cgt (to_uint32 e) range : t)
         let rec float_add ?comment  (e1 : t) (e2 : t) =
           match ((e1.expression_desc), (e2.expression_desc)) with
           | (Number (Int { i;_}),Number (Int { i = j;_})) ->
-              int ?comment (i + j)
-          | (_,Number (Int { i = j; c })) when j < 0 ->
+              int ?comment (Int32.add i j)
+          | (_,Number (Int { i = j; c })) when j < 0l ->
               float_minus ?comment e1
-                { e2 with expression_desc = (Number (Int { i = (- j); c })) }
+                {
+                  e2 with
+                  expression_desc = (Number (Int { i = (Int32.neg j); c }))
+                }
           | (Bin
              (Plus ,a1,{ expression_desc = Number (Int { i = k;_}) }),Number
-             (Int { i = j;_})) -> bin ?comment Plus a1 (int (k + j))
-          | _ -> bin ?comment Plus e1 e2
+             (Int { i = j;_})) ->
+              {
+                comment;
+                expression_desc = (Bin (Plus, a1, (int (Int32.add k j))))
+              }
+          | _ -> { comment; expression_desc = (Bin (Plus, e1, e2)) }
         and float_minus ?comment  (e1 : t) (e2 : t) =
           (match ((e1.expression_desc), (e2.expression_desc)) with
            | (Number (Int { i;_}),Number (Int { i = j;_})) ->
-               int ?comment (i - j)
-           | _ -> bin ?comment Minus e1 e2 : t)
-        let int32_add ?comment  e1 e2 = float_add ?comment e1 e2
+               int ?comment (Int32.sub i j)
+           | _ -> { comment; expression_desc = (Bin (Minus, e1, e2)) } : 
+          t)
+        let unchecked_int32_add ?comment  e1 e2 = float_add ?comment e1 e2
+        let int32_add ?comment  e1 e2 =
+          to_int32 @@ (float_add ?comment e1 e2)
         let int32_minus ?comment  e1 e2 =
+          (to_int32 @@ (float_minus ?comment e1 e2) : J.expression)
+        let unchecked_int32_minus ?comment  e1 e2 =
           (float_minus ?comment e1 e2 : J.expression)
-        let prefix_inc ?comment  (i : J.vident) =
+        let unchecked_prefix_inc ?comment  (i : J.vident) =
           let v: t = { expression_desc = (Var i); comment = None } in
-          assign ?comment v (int32_add v (int 1))
-        let prefix_dec ?comment  i =
-          let v: t = { expression_desc = (Var i); comment = None } in
-          assign ?comment v (int32_minus v (int 1))
-        let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
+          assign ?comment v (unchecked_int32_add v one_int_literal)
         let float_div ?comment  e1 e2 = bin ?comment Div e1 e2
         let float_notequal ?comment  e1 e2 = bin ?comment NotEqEq e1 e2
+        let unchecked_int32_div ?comment  e1 e2 =
+          (to_int32 (float_div ?comment e1 e2) : J.expression)[@@ocaml.doc
+                                                                " Division by zero is undefined behavior"]
         let int32_div ?comment  e1 e2 =
           (to_int32 (float_div ?comment e1 e2) : J.expression)
         let int32_mul ?comment  e1 e2 =
           ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
+        let unchecked_int32_mul ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
+        let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
         let int32_mod ?comment  e1 e2 =
           ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
         let int32_lsl ?comment  e1 e2 =
@@ -3628,11 +3835,9 @@ include
         let int32_lsr ?comment  (e1 : J.expression) (e2 : J.expression) =
           (match ((e1.expression_desc), (e2.expression_desc)) with
            | (Number (Int { i = i1 }),Number (Int { i = i2 })) ->
-               int @@
-                 (Int32.to_int
-                    (Int32.shift_right_logical (Int32.of_int i1) i2))
+               int @@ (Int32.shift_right_logical i1 (Int32.to_int i2))
            | (_,Number (Int { i = i2 })) ->
-               if i2 = 0
+               if i2 = 0l
                then e1
                else { comment; expression_desc = (Bin (Lsr, e1, e2)) }
            | (_,_) ->
@@ -3640,12 +3845,16 @@ include
           J.expression)
         let int32_asr ?comment  e1 e2 =
           ({ comment; expression_desc = (Bin (Asr, e1, e2)) } : J.expression)
-        let int32_bxor ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Bxor, e1, e2)) } : J.expression)
+        let int32_bxor ?comment  (e1 : t) (e2 : t) =
+          (match ((e1.expression_desc), (e2.expression_desc)) with
+           | (Number (Int { i = i1 }),Number (Int { i = i2 })) ->
+               int ?comment (Int32.logxor i1 i2)
+           | _ -> { comment; expression_desc = (Bin (Bxor, e1, e2)) } : 
+          J.expression)
         let rec int32_band ?comment  (e1 : J.expression) (e2 : J.expression)
           =
           (match e1.expression_desc with
-           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0 }) }) ->
+           | Bin (Bor ,a,{ expression_desc = Number (Int { i = 0l }) }) ->
                int32_band a e2
            | _ -> { comment; expression_desc = (Bin (Band, e1, e2)) } : 
           J.expression)
@@ -3730,7 +3939,7 @@ include
         let return ?comment  e =
           ({ statement_desc = (Return { return_value = e }); comment } : 
           t)
-        let return_unit ?comment  () = (return ?comment (E.unit ()) : t)
+        let return_unit ?comment  () = (return ?comment E.unit : t)
         let break ?comment  () = ({ comment; statement_desc = Break } : t)
         let mk ?comment  statement_desc = ({ statement_desc; comment } : t)
         let empty ?comment  () =
@@ -3777,8 +3986,9 @@ include
           (match e.expression_desc with
            | Number (Int { i;_}) ->
                let continuation =
-                 match List.find (fun (x : int J.case_clause)  -> x.case = i)
-                         clauses
+                 match List.find
+                         (fun (x : _ J.case_clause)  ->
+                            x.case = (Int32.to_int i)) clauses
                  with
                  | case -> fst case.body
                  | exception Not_found  ->
@@ -3895,25 +4105,25 @@ include
                  let open Js_analyzer in
                    (eq_statement x y) && (no_side_effect_expression e)
                  -> aux ?comment e ys xs (y :: acc)
-             | (Number (Int { i = 0;_}),_,_) ->
+             | (Number (Int { i = 0l;_}),_,_) ->
                  (match else_ with | [] -> acc | _ -> (block else_) :: acc)
              | (Number _,_,_)
                |(Bin
                  (Ge
                   ,{ expression_desc = Length _;_},{
                                                      expression_desc = Number
-                                                       (Int { i = 0;_})
+                                                       (Int { i = 0l;_})
                                                      }),_,_)
                  -> (block then_) :: acc
              | (Bin
-                (Bor ,a,{ expression_desc = Number (Int { i = 0;_}) }),_,_)
+                (Bor ,a,{ expression_desc = Number (Int { i = 0l;_}) }),_,_)
                |(Bin
-                 (Bor ,{ expression_desc = Number (Int { i = 0;_}) },a),_,_)
+                 (Bor ,{ expression_desc = Number (Int { i = 0l;_}) },a),_,_)
                  -> aux ?comment a then_ else_ acc
              | ((Bin
-                 (EqEqEq ,{ expression_desc = Number (Int { i = 0;_});_},e)
+                 (EqEqEq ,{ expression_desc = Number (Int { i = 0l;_});_},e)
                  |Bin
-                 (EqEqEq ,e,{ expression_desc = Number (Int { i = 0;_});_})),_,else_)
+                 (EqEqEq ,e,{ expression_desc = Number (Int { i = 0l;_});_})),_,else_)
                  -> aux ?comment e else_ then_ acc
              | (Bin
                 (NotEqEq
@@ -3927,7 +4137,7 @@ include
                   ,({ expression_desc = Length _;_} as e),{
                                                             expression_desc =
                                                               Number (Int
-                                                              { i = 0;_})
+                                                              { i = 0l;_})
                                                             })|Int_of_boolean
                  e),_,_) -> aux ?comment e then_ else_ acc
              | _ ->
@@ -3959,20 +4169,18 @@ include
              comment
            } : t)
         let assign ?comment  id e =
-          ({ statement_desc = (J.Exp (E.bin Eq (E.var id) e)); comment } : 
+          ({ statement_desc = (J.Exp (E.assign (E.var id) e)); comment } : 
           t)
         let assign_unit ?comment  id =
-          ({
-             statement_desc = (J.Exp (E.bin Eq (E.var id) (E.unit ())));
-             comment
-           } : t)
+          ({ statement_desc = (J.Exp (E.assign (E.var id) E.unit)); comment } : 
+          t)
         let declare_unit ?comment  id =
           ({
              statement_desc =
                (J.Variable
                   {
                     ident = id;
-                    value = (Some (E.unit ()));
+                    value = (Some E.unit);
                     property = Variable;
                     ident_info = { used_stats = NA }
                   });
@@ -4095,56 +4303,6 @@ include
                      order_id, ((order_id, lam) :: handlers)))
               (m, (HandlerMap.cardinal m), []) code_table in
           (map, (List.rev handlers))
-      end 
-    module Js_number :
-      sig
-        type t = float
-        val to_string : t -> string
-        val caml_float_literal_to_js_string : string -> string
-      end =
-      struct
-        type t = float
-        let to_string v =
-          if v = infinity
-          then "Infinity"
-          else
-            if v = neg_infinity
-            then "-Infinity"
-            else
-              if v <> v
-              then "NaN"
-              else
-                (let vint = int_of_float v in
-                 if (float_of_int vint) = v
-                 then string_of_int vint
-                 else
-                   (let s1 = Printf.sprintf "%.12g" v in
-                    if v = (float_of_string s1)
-                    then s1
-                    else
-                      (let s2 = Printf.sprintf "%.15g" v in
-                       if v = (float_of_string s2)
-                       then s2
-                       else Printf.sprintf "%.18g" v)))
-        let caml_float_literal_to_js_string v =
-          let len = String.length v in
-          if
-            (len >= 2) &&
-              (((v.[0]) = '0') && (((v.[1]) = 'x') || ((v.[1]) = 'X')))
-          then assert false
-          else
-            (let rec aux buf i =
-               if i >= len
-               then buf
-               else
-                 (let x = v.[i] in
-                  if x = '_'
-                  then aux buf (i + 1)
-                  else
-                    if (x = '.') && (i = (len - 1))
-                    then buf
-                    else (Buffer.add_char buf x; aux buf (i + 1))) in
-             Buffer.contents (aux (Buffer.create len) 0))
       end 
     module Int_map : sig include (Map.S with type  key =  int) end =
       struct
@@ -4702,13 +4860,16 @@ include
                     P.paren_group f 1 (fun _  -> arguments cxt f el))
            | Str (_,s) ->
                let quote = best_string_quote s in (pp_string f ~quote s; cxt)
-           | Raw_js_code s -> (P.string f s; cxt)
+           | Raw_js_code (s,info) ->
+               (match info with
+                | Exp  -> (P.string f s; cxt)
+                | Stmt  -> (P.newline f; P.string f s; P.newline f; cxt))
            | Number v ->
                let s =
                  match v with
                  | Float { f = v } ->
                      Js_number.caml_float_literal_to_js_string v
-                 | Int { i = v;_} -> string_of_int v in
+                 | Int { i = v;_} -> Int32.to_string v in
                let need_paren =
                  if (s.[0]) = '-'
                  then l > 13
@@ -4758,11 +4919,11 @@ include
                                                })
                when Js_op_util.same_vident i j ->
                (match (delta, op) with
-                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
-                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
+                | ({ expression_desc = Number (Int { i = 1l;_}) },Plus )
+                  |({ expression_desc = Number (Int { i = (-1l);_}) },Minus )
                     -> (P.string f L.plusplus; P.space f; vident cxt f i)
-                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
-                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
+                | ({ expression_desc = Number (Int { i = (-1l);_}) },Plus )
+                  |({ expression_desc = Number (Int { i = 1l;_}) },Minus ) ->
                     (P.string f L.minusminus; P.space f; vident cxt f i)
                 | (_,_) ->
                     let cxt = vident cxt f i in
@@ -4809,15 +4970,15 @@ include
                let aux cxt f vid i =
                  let cxt = vident cxt f vid in
                  P.string f "[";
-                 P.string f (string_of_int i);
+                 P.string f (Int32.to_string i);
                  P.string f "]";
                  cxt in
                (match (delta, op) with
-                | ({ expression_desc = Number (Int { i = 1;_}) },Plus )
-                  |({ expression_desc = Number (Int { i = (-1);_}) },Minus )
+                | ({ expression_desc = Number (Int { i = 1l;_}) },Plus )
+                  |({ expression_desc = Number (Int { i = (-1l);_}) },Minus )
                     -> (P.string f L.plusplus; P.space f; aux cxt f i k0)
-                | ({ expression_desc = Number (Int { i = (-1);_}) },Plus )
-                  |({ expression_desc = Number (Int { i = 1;_}) },Minus ) ->
+                | ({ expression_desc = Number (Int { i = (-1l);_}) },Plus )
+                  |({ expression_desc = Number (Int { i = 1l;_}) },Minus ) ->
                     (P.string f L.minusminus; P.space f; aux cxt f i k0)
                 | (_,_) ->
                     let cxt = aux cxt f i k0 in
@@ -4835,7 +4996,7 @@ include
                (Minus
                 ,{
                    expression_desc = Number
-                     (Int { i = 0;_}|Float { f = "0." })
+                     (Int { i = 0l;_}|Float { f = "0." })
                    },e)
                ->
                let action () = P.string f "-"; expression 13 cxt f e in
@@ -4878,8 +5039,8 @@ include
            | Caml_block (el,mutable_flag,tag,tag_info) ->
                (match ((tag.expression_desc), tag_info) with
                 | (Number (Int
-                   { i = 0;_}),(Tuple |Array |Variant _|Record |NA 
-                                |Constructor ("Some"|"::")))
+                   { i = 0l;_}),(Tuple |Array |Variant _|Record |NA 
+                                 |Constructor ("Some"|"::")))
                     -> expression_desc cxt l f (Array (el, mutable_flag))
                 | (_,_) ->
                     expression_desc cxt l f
@@ -4891,7 +5052,7 @@ include
                                    ((i + 1), (((Js_op.Int_key i), v) :: acc)))
                               (0, []) el in
                           List.rev_append rev_list
-                            [(Js_op.Length, (E.int length));
+                            [(Js_op.Length, (E.small_int length));
                             (Js_op.Tag, tag)])))
            | Caml_block_tag e ->
                P.group f 1
@@ -5058,16 +5219,17 @@ include
                let rec need_paren (e : J.expression) =
                  match e.expression_desc with
                  | Call ({ expression_desc = Fun _ },_,_) -> true
-                 | Caml_uninitialized_obj _|Raw_js_code _|Fun _|Object _ ->
-                     true
-                 | Caml_block_set_tag _|Length _|Caml_block_set_length _
-                   |Anything_to_string _|String_of_small_int_array _|Call _
-                   |Array_append _|Array_copy _|Caml_block_tag _|Seq _|Dot _
-                   |Cond _|Bin _|String_access _|Access _|Array_of_size _
-                   |String_append _|Char_of_int _|Char_to_int _|Dump _
-                   |Json_stringify _|Math _|Var _|Str _|Array _|Caml_block _
-                   |FlatCall _|Typeof _|Bind _|Number _|Not _|Bool _|New _
-                   |Int_of_boolean _ -> false in
+                 | Caml_uninitialized_obj _|Raw_js_code (_,Exp )|Fun _|Object
+                   _ -> true
+                 | Raw_js_code (_,Stmt )|Caml_block_set_tag _|Length _
+                   |Caml_block_set_length _|Anything_to_string _
+                   |String_of_small_int_array _|Call _|Array_append _
+                   |Array_copy _|Caml_block_tag _|Seq _|Dot _|Cond _|Bin _
+                   |String_access _|Access _|Array_of_size _|String_append _
+                   |Char_of_int _|Char_to_int _|Dump _|Json_stringify _|Math
+                   _|Var _|Str _|Array _|Caml_block _|FlatCall _|Typeof _
+                   |Bind _|Number _|Not _|Bool _|New _|Int_of_boolean _ ->
+                     false in
                let cxt =
                  (if need_paren e then P.paren_group f 1 else P.group f 0)
                    (fun _  -> expression 0 cxt f e) in
@@ -5102,7 +5264,7 @@ include
                  | None  -> ());
                 (let cxt =
                    match e.expression_desc with
-                   | Number (Int { i = 1 }) ->
+                   | Number (Int { i = 1l }) ->
                        (P.string f L.while_;
                         P.string f "(";
                         P.string f L.true_;
@@ -5661,6 +5823,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "\132\149\166\190\000\000\002\229\000\000\000\232\000\000\003\r\000\000\002\247\160\208\208\208@&append\160\176@\160\160B\160\176\001\004\012\"a1@\160\176\001\004\r\"a2@@@@@\208@$blit\160\176@\160\160E\160\176\001\004\026\"a1@\160\176\001\004\027$ofs1@\160\176\001\004\028\"a2@\160\176\001\004\029$ofs2@\160\176\001\004\030#len@@@@@@AB&concat\160@@\208\208@$copy\160\176@\160\160A\160\176\001\004\t!a@@@@@@A-create_matrix\160\176@\160\160C\160\176\001\004\002\"sx@\160\176\001\004\003\"sy@\160\176\001\004\004$init@@@@@\208\208@)fast_sort\160\176@\160\160B\160\176\001\004w#cmp@\160\176\001\004x!a@@@@@@A$fill\160\176A\160\160D\160\176\001\004\020!a@\160\176\001\004\021#ofs@\160\176\001\004\022#len@\160\176\001\004\023!v@@@@@\208@)fold_left\160\176@\160\160C\160\176\001\004F!f@\160\176\001\004G!x@\160\176\001\004H!a@@@@@\208@*fold_right\160\176@\160\160C\160\176\001\004L!f@\160\176\001\004M!a@\160\176\001\004N!x@@@@@@ABCDE$init\160\176@\160\160B\160\176\001\003\253!l@\160\176\001\003\254!f@@@@@\208\208@$iter\160\176A\160\160B\160\176\001\004 !f@\160\176\001\004!!a@@@@@\208@%iteri\160\176A\160\160B\160\176\001\004*!f@\160\176\001\004+!a@@@@@@AB+make_matrix\160\004n@\208\208\208@#map\160\176@\160\160B\160\176\001\004$!f@\160\176\001\004%!a@@@@@\208@$mapi\160\176@\160\160B\160\176\001\004.!f@\160\176\001\004/!a@@@@@@AB'of_list\160\176@\160\160A\160\176\001\004?!l@@@@@\208@$sort\160\176A\160\160B\160\176\001\004S#cmp@\160\176\001\004T!a@@@@@\208@+stable_sort\160\004\143@@ABC#sub\160\176@\160\160C\160\176\001\004\016!a@\160\176\001\004\017#ofs@\160\176\001\004\018#len@@@@@\208@'to_list\160\176@\160\160A\160\176\001\0044!a@@@@@@ADEF@")));
+            ("bigarray.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\004(\000\000\001$\000\000\003\190\000\000\003\130\160\208\208\208\208\208\208@&Array1\160@@@A&Array2\160@@\208@&Array3\160@@@AB(Genarray\160@@\208@2array1_of_genarray\160\176@\160\160A\160\176\001\004\214!a@@@@@\208@2array2_of_genarray\160\176@\160\160A\160\176\001\004\216!a@@@@@\208@2array3_of_genarray\160\176@\160\160A\160\176\001\004\218!a@@@@@@ABCD(c_layout\160@\144\145\161@\144(C_layout\208\208@$char\160@\144\145\161L\144$Char@A)complex32\160@\144\145\161J\144)Complex32\208@)complex64\160@\144\145\161K\144)Complex64@ABE'float32\160@\144\145\161@\144'Float32\208@'float64\160@\144\145\161A\144'Float64\208\208@.fortran_layout\160@\144\145\161A\144.Fortran_layout@A#int\160@\144\145\161H\144#Int@BCF,int16_signed\160@\144\145\161D\144,Int16_signed\208\208@.int16_unsigned\160@\144\145\161E\144.Int16_unsigned\208@%int32\160@\144\145\161F\144%Int32\208@%int64\160@\144\145\161G\144%Int64@ABC+int8_signed\160@\144\145\161B\144+Int8_signed\208\208@-int8_unsigned\160@\144\145\161C\144-Int8_unsigned@A)nativeint\160@\144\145\161I\144)Nativeint\208\208@'reshape\160@\144\179@\160\176\001\004\239$prim@\160\176\001\004\238\004\003@@\166\155\240/caml_ba_reshapeBA @@\144\176\193 \176\179\177\144\176\001\004J\004\171@!t\000\255\160\176\150\176\144\144!a\002\005\245\225\000\001\024\243\001\004\219\001\024\211\160\176\150\176\144\144!b\002\005\245\225\000\001\024\245\001\004\219\001\024\212\160\176\150\176\144\144!c\002\005\245\225\000\001\024\247\001\004\219\001\024\213@\144@\002\005\245\225\000\001\024\217\176\193\004\031\176\179\144\176H%array@\160\176\179\144\176A#int@@\144@\002\005\245\225\000\001\024\223@\144@\002\005\245\225\000\001\024\227\176\179\177\004+!t\000\255\160\004)\160\004#\160\004\029@\144@\002\005\245\225\000\001\024\234@\002\005\245\225\000\001\024\240@\002\005\245\225\000\001\024\241\160\144\004B\160\144\004A@@A)reshape_1\160\176@\160\160B\160\176\001\004\221!a@\160\176\001\004\222$dim1@@@@\144\179@\004\b\166\155\004M\160\144\004\011\160\166\b\000\000\004\017B\160\144\004\r@@\208@)reshape_2\160\176@\160\160C\160\176\001\004\224!a@\160\176\001\004\225$dim1@\160\176\001\004\226$dim2@@@@@\208@)reshape_3\160\176@\160\160D\160\176\001\004\228!a@\160\176\001\004\229$dim1@\160\176\001\004\230$dim2@\160\176\001\004\231$dim3@@@@@@ABCDEG\144 ")));
             ("buffer.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5784,7 +5950,7 @@ include
             ("pervasives.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "\132\149\166\190\000\000\019\241\000\000\004\208\000\000\017\015\000\000\016W\160\208\208\208\208\208\208@!@\160\176@\160\160B\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A$Exit\160\176@@@@\208\208@)LargeFile\160@@@A!^\160\176A\160\160B\160\176\001\004_\"s1@\160\176\001\004`\"s2@@@@@\208@\"^^\160\176A\160\160B\160\176\001\005]%param@\160\176\001\005^%param@@@@@@ABC#abs\160\176@\160\160A\160\176\001\004\026!x@@@@@\208\208\208@'at_exit\160\176A\160\160A\160\176\001\0056!f@@@@@@A.bool_of_string\160\176A\160\160A\160\176\001\005q\004\027@@@@@@B+char_of_int\160\176@\160\160A\160\176\001\004g!n@@@@@\208\208@(close_in\160@\144\179@\160\176\001\005P$prim@@\166\155\2405caml_ml_close_channelAA @@\144\176\193 \176\179\144\176\001\004\136*in_channel@@\144@\002\005\245\225\000\001\012\161\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\012\164@\002\005\245\225\000\001\012\167\160\144\004\025@\208@.close_in_noerr\160\176@\160\160A\160\176\001\005\000\"ic@@@@@@AB)close_out\160\176@\160\160A\160\176\001\004\198\"oc@@@@\144\179@\004\005\173\166\155\240-caml_ml_flushAA\004+@@\144\176\193\004*\176\179\144\176\001\004\137+out_channel@@\144@\002\005\245\225\000\001\006\185\176\179\004)@\144@\002\005\245\225\000\001\006\188@\002\005\245\225\000\001\006\191\160\144\004\023@\166\155\2405caml_ml_close_channelAA\004=@@\144\176\193\004<\176\179\004\018@\144@\002\005\245\225\000\001\b\192\176\179\0048@\144@\002\005\245\225\000\001\b\195@\002\005\245\225\000\001\b\198\160\144\004&@\208@/close_out_noerr\160\176@\160\160A\160\176\001\004\200\"oc@@@@@\208@*do_at_exit\160\176@\160\160A\160\176\001\005[\004\137@@@@@@ABCDE-epsilon_float\160\004\166@\208\208\208\208@$exit\160\176@\160\160A\160\176\001\005:'retcode@@@@@@A(failwith\160\176A\160\160A\160\176\001\003\238!s@@@A\144\179@\004\005\166\156@\160\166\181@C@\160\166\147\176S'FailureC@\160\144\004\016@@@B%flush\160@\144\179@\160\176\001\005;\004\136@@\166\155\004\\\160\144\004\005@\208@)flush_all\160\176@\160\160A\160\176\001\005k\004\191@@@@@\208@1in_channel_length\160@\144\179@\160\176\001\005O\004\155@@\166\155\2404caml_ml_channel_sizeAA\004\154@@\144\176\193\004\153\176\179\004\152@\144@\002\005\245\225\000\001\012\154\176\179\144\176A#int@@\144@\002\005\245\225\000\001\012\157@\002\005\245\225\000\001\012\160\160\144\004\019@@ABC(infinity\160\004\245@\208\208@%input\160\176@\160\160D\160\176\001\004\213\"ic@\160\176\001\004\214!s@\160\176\001\004\215#ofs@\160\176\001\004\216#len@@@@@\208\208@0input_binary_int\160@\144\179@\160\176\001\005J\004\202@@\166\155\2401caml_ml_input_intAA\004\201@@\144\176\193\004\200\176\179\004\199@\144@\002\005\245\225\000\001\012z\176\179\004/@\144@\002\005\245\225\000\001\012}@\002\005\245\225\000\001\012\128\160\144\004\016@@A*input_byte\160@\144\179@\160\176\001\005I\004\223@@\166\155\2402caml_ml_input_charAA\004\222@@\144\176\193\004\221\176\179\004\220@\144@\002\005\245\225\000\001\012s\176\179\004D@\144@\002\005\245\225\000\001\012v@\002\005\245\225\000\001\012y\160\144\004\016@@BC*input_char\160@\144\179@\160\176\001\005H\004\244@@\166\155\2402caml_ml_input_charAA\004\243@@\144\176\193\004\242\176\179\004\241@\144@\002\005\245\225\000\001\tq\176\179\144\176B$char@@\144@\002\005\245\225\000\001\tt@\002\005\245\225\000\001\tw\160\144\004\019@\208@*input_line\160\176A\160\160A\160\176\001\004\234$chan@@@@@\208@+input_value\160@\144\179@\160\176\001\005K\005\001\022@@\166\155\2400caml_input_valueAA\005\001\021@@\144\176\193\005\001\020\176\179\005\001\019@\144@\002\005\245\225\000\001\012\129\176\150\176\144\144!a\002\005\245\225\000\001\012\135\001\004\250\001\012\132@\002\005\245\225\000\001\012\133\160\144\004\019@@ABDEF+invalid_arg\160\176A\160\160A\160\176\001\003\240!s@@@A\144\179@\004\005\166\156@\160\166\004\188\160\166\147\176R0Invalid_argumentC@\160\144\004\015@@\208\208\208@$lnot\160\176A\160\160A\160\176\001\004\031!x@@@@\144\179@\004\005\166S\160\144\004\007\160\145\144\144\000\255@@A#max\160\176@\160\160B\160\176\001\004\007!x@\160\176\001\004\b!y@@@@@\208\208@)max_float\160\005\001\166@@A'max_int\160\176A@@@@BC#min\160\176@\160\160B\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208\208@)min_float\160\005\001\184@@A'min_int\160\004\018@\208@#nan\160\005\001\189@@ABDG,neg_infinity\160\005\001\191@\208\208\208\208\208\208@'open_in\160\176@\160\160A\160\176\001\004\207$name@@@@@\208@+open_in_bin\160\176@\160\160A\160\176\001\004\209$name@@@@@\208@+open_in_gen\160\176@\160\160C\160\176\001\004\203$mode@\160\176\001\004\204$perm@\160\176\001\004\205$name@@@@@@ABC(open_out\160\176@\160\160A\160\176\001\004\159$name@@@@@\208@,open_out_bin\160\176@\160\160A\160\176\001\004\161$name@@@@@@AD,open_out_gen\160\176@\160\160C\160\176\001\004\155$mode@\160\176\001\004\156$perm@\160\176\001\004\157$name@@@@@\208\208\208@2out_channel_length\160@\144\179@\160\176\001\005E\005\001\199@@\166\155\2404caml_ml_channel_sizeAA\005\001\198@@\144\176\193\005\001\197\176\179\005\001\155@\144@\002\005\245\225\000\001\b\185\176\179\005\001,@\144@\002\005\245\225\000\001\b\188@\002\005\245\225\000\001\b\191\160\144\004\016@@A&output\160\176@\160\160D\160\176\001\004\178\"oc@\160\176\001\004\179!s@\160\176\001\004\180#ofs@\160\176\001\004\181#len@@@@@\208@1output_binary_int\160@\144\179@\160\176\001\005A\005\001\238@\160\176\001\005@\005\001\240@@\166\155\2402caml_ml_output_intBA\005\001\239@@\144\176\193\005\001\238\176\179\005\001\196@\144@\002\005\245\225\000\001\bj\176\193\005\001\243\176\179\005\001W@\144@\002\005\245\225\000\001\bm\176\179\005\001\239@\144@\002\005\245\225\000\001\bp@\002\005\245\225\000\001\bs@\002\005\245\225\000\001\bt\160\144\004\023\160\144\004\023@@AB+output_byte\160@\144\179@\160\176\001\005?\005\002\012@\160\176\001\005>\005\002\014@@\166\155\2403caml_ml_output_charBA\005\002\r@@\144\176\193\005\002\012\176\179\005\001\226@\144@\002\005\245\225\000\001\b_\176\193\005\002\017\176\179\005\001u@\144@\002\005\245\225\000\001\bb\176\179\005\002\r@\144@\002\005\245\225\000\001\be@\002\005\245\225\000\001\bh@\002\005\245\225\000\001\bi\160\144\004\023\160\144\004\023@\208@,output_bytes\160\176@\160\160B\160\176\001\004\172\"oc@\160\176\001\004\173!s@@@@@@ACE+output_char\160@\144\179@\160\176\001\005=\005\0026@\160\176\001\005<\005\0028@@\166\155\2403caml_ml_output_charBA\005\0027@@\144\176\193\005\0026\176\179\005\002\012@\144@\002\005\245\225\000\001\007,\176\193\005\002;\176\179\005\001F@\144@\002\005\245\225\000\001\007/\176\179\005\0027@\144@\002\005\245\225\000\001\0072@\002\005\245\225\000\001\0075@\002\005\245\225\000\001\0076\160\144\004\023\160\144\004\023@\208\208@-output_string\160\176@\160\160B\160\176\001\004\175\"oc@\160\176\001\004\176!s@@@@@@A0output_substring\160\176@\160\160D\160\176\001\004\183\"oc@\160\176\001\004\184!s@\160\176\001\004\185#ofs@\160\176\001\004\186#len@@@@@\208\208@,output_value\160\176@\160\160B\160\176\001\004\191$chan@\160\176\001\004\192!v@@@@\144\179@\004\b\166\155\2401caml_output_valueCA\005\002z@@\144\176\193\005\002y\176\179\005\002O@\144@\002\005\245\225\000\001\bu\176\193\005\002~\176\150\176\144\144!a\002\005\245\225\000\001\b\136\001\004\189\001\bx\176\193\005\002\134\176\179\144\176I$list@\160\176\179\005\002\133@\144@\002\005\245\225\000\001\by@\144@\002\005\245\225\000\001\b}\176\179\005\002\137@\144@\002\005\245\225\000\001\b\129@\002\005\245\225\000\001\b\132@\002\005\245\225\000\001\b\133@\002\005\245\225\000\001\b\134\160\144\004*\160\144\004)\160\145\161@\144\"[]@\208@&pos_in\160@\144\179@\160\176\001\005N\005\002\172@@\166\155\240.caml_ml_pos_inAA\005\002\171@@\144\176\193\005\002\170\176\179\005\002\169@\144@\002\005\245\225\000\001\012\147\176\179\005\002\017@\144@\002\005\245\225\000\001\012\150@\002\005\245\225\000\001\012\153\160\144\004\016@@AB'pos_out\160@\144\179@\160\176\001\005D\005\002\193@@\166\155\240/caml_ml_pos_outAA\005\002\192@@\144\176\193\005\002\191\176\179\005\002\149@\144@\002\005\245\225\000\001\b\178\176\179\005\002&@\144@\002\005\245\225\000\001\b\181@\002\005\245\225\000\001\b\184\160\144\004\016@\208@+prerr_bytes\160\176@\160\160A\160\176\001\005\020!s@@@@@@ACDF*prerr_char\160\176@\160\160A\160\176\001\005\016!c@@@@@\208\208\208@-prerr_endline\160\176@\160\160A\160\176\001\005\026!s@@@@@@A+prerr_float\160\176@\160\160A\160\176\001\005\024!f@@@@@@B)prerr_int\160\176@\160\160A\160\176\001\005\022!i@@@@@\208\208\208@-prerr_newline\160\176@\160\160A\160\176\001\005c\005\0031@@@@@@A,prerr_string\160\176@\160\160A\160\176\001\005\018!s@@@@@\208@+print_bytes\160\176@\160\160A\160\176\001\005\007!s@@@@@@AB*print_char\160\176@\160\160A\160\176\001\005\003!c@@@@@\208\208@-print_endline\160\176@\160\160A\160\176\001\005\r!s@@@@@@A+print_float\160\176@\160\160A\160\176\001\005\011!f@@@@@@BCDG)print_int\160\176@\160\160A\160\176\001\005\t!i@@@@@\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\005d\005\003o@@@@@@A,print_string\160\176@\160\160A\160\176\001\005\005!s@@@@@\208\208@*read_float\160\176@\160\160A\160\176\001\005`\005\003\128@@@@@@A(read_int\160\176@\160\160A\160\176\001\005a\005\003\135@@@@@@BC)read_line\160\176A\160\160A\160\176\001\005b\005\003\142@@@@@\208\208@,really_input\160\176@\160\160D\160\176\001\004\224\"ic@\160\176\001\004\225!s@\160\176\001\004\226#ofs@\160\176\001\004\227#len@@@@@\208@3really_input_string\160\176A\160\160B\160\176\001\004\229\"ic@\160\176\001\004\230#len@@@@@\208@'seek_in\160@\144\179@\160\176\001\005M\005\003\137@\160\176\001\005L\005\003\139@@\166\155\240/caml_ml_seek_inBA\005\003\138@@\144\176\193\005\003\137\176\179\005\003\136@\144@\002\005\245\225\000\001\012\136\176\193\005\003\142\176\179\005\002\242@\144@\002\005\245\225\000\001\012\139\176\179\005\003\138@\144@\002\005\245\225\000\001\012\142@\002\005\245\225\000\001\012\145@\002\005\245\225\000\001\012\146\160\144\004\023\160\144\004\023@@ABC(seek_out\160@\144\179@\160\176\001\005C\005\003\167@\160\176\001\005B\005\003\169@@\166\155\2400caml_ml_seek_outBA\005\003\168@@\144\176\193\005\003\167\176\179\005\003}@\144@\002\005\245\225\000\001\b\167\176\193\005\003\172\176\179\005\003\016@\144@\002\005\245\225\000\001\b\170\176\179\005\003\168@\144@\002\005\245\225\000\001\b\173@\002\005\245\225\000\001\b\176@\002\005\245\225\000\001\b\177\160\144\004\023\160\144\004\023@\208\208\208@2set_binary_mode_in\160@\144\179@\160\176\001\005R\005\003\200@\160\176\001\005Q\005\003\202@@\166\155\2407caml_ml_set_binary_modeBA\005\003\201@@\144\176\193\005\003\200\176\179\005\003\199@\144@\002\005\245\225\000\001\012\187\176\193\005\003\205\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\012\190\176\179\005\003\204@\144@\002\005\245\225\000\001\012\193@\002\005\245\225\000\001\012\196@\002\005\245\225\000\001\012\197\160\144\004\026\160\144\004\026@@A3set_binary_mode_out\160@\144\179@\160\176\001\005G\005\003\233@\160\176\001\005F\005\003\235@@\166\155\2407caml_ml_set_binary_modeBA\005\003\234@@\144\176\193\005\003\233\176\179\005\003\191@\144@\002\005\245\225\000\001\b\253\176\193\005\003\238\176\179\004!@\144@\002\005\245\225\000\001\t\000\176\179\005\003\234@\144@\002\005\245\225\000\001\t\003@\002\005\245\225\000\001\t\006@\002\005\245\225\000\001\t\007\160\144\004\023\160\144\004\023@@B&stderr\160\005\004I@@CDE%stdin\160\005\004K@\208\208@&stdout\160\005\004O@@A.string_of_bool\160\176A\160\160A\160\176\001\004u!b@@@@\144\179@\004\005\188\144\004\006\145\144\162$true@\145\144\162%false@\208\208@/string_of_float\160\176@\160\160A\160\176\001\004\129!f@@@@@\208@0string_of_format\160\176@\160\160A\160\176\001\005_\005\004Z@@@@\144\179@\004\004\166\150A\160\144\004\007@@AB-string_of_int\160\176@\160\160A\160\176\001\004x!n@@@@\144\179@\004\005\166\155\240/caml_format_intBA\005\004>@@\144\176\193\005\004=\176\179\144\176C&string@@\144@\002\005\245\225\000\001\004\250\176\193\005\004E\176\179\005\003\169@\144@\002\005\245\225\000\001\004\253\176\179\004\011@\144@\002\005\245\225\000\001\005\000@\002\005\245\225\000\001\005\003@\002\005\245\225\000\001\005\004\160\145\144\162\"%d@\160\144\004 @\208\208@3unsafe_really_input\160\176@\160\160D\160\176\001\004\218\"ic@\160\176\001\004\219!s@\160\176\001\004\220#ofs@\160\176\001\004\221#len@@@@@@A1valid_float_lexem\160\176@\160\160A\160\176\001\004|!s@@@@@@BCDFHI@")));
+                    "\132\149\166\190\000\000\019\231\000\000\004\208\000\000\017\015\000\000\016W\160\208\208\208\208\208\208@!@\160\176@\160\160B\160\176\001\004\132\"l1@\160\176\001\004\133\"l2@@@@@@A$Exit\160\176@@@@\208\208@)LargeFile\160@@@A!^\160\176A\160\160B\160\176\001\004_\"s1@\160\176\001\004`\"s2@@@@@\208@\"^^\160\176A\160\160B\160\176\001\005]%param@\160\176\001\005^%param@@@@@@ABC#abs\160\176@\160\160A\160\176\001\004\026!x@@@@@\208\208\208@'at_exit\160\176A\160\160A\160\176\001\0056!f@@@@@@A.bool_of_string\160\176A\160\160A\160\176\001\005q\004\027@@@@@@B+char_of_int\160\176@\160\160A\160\176\001\004g!n@@@@@\208\208@(close_in\160@\144\179@\160\176\001\005P$prim@@\166\155\2405caml_ml_close_channelAA @@\144\176\193 \176\179\144\176\001\004\136*in_channel@@\144@\002\005\245\225\000\001\012\161\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\012\164@\002\005\245\225\000\001\012\167\160\144\004\025@\208@.close_in_noerr\160\176@\160\160A\160\176\001\005\000\"ic@@@@@@AB)close_out\160\176@\160\160A\160\176\001\004\198\"oc@@@@\144\179@\004\005\173\166\155\240-caml_ml_flushAA\004+@@\144\176\193\004*\176\179\144\176\001\004\137+out_channel@@\144@\002\005\245\225\000\001\006\185\176\179\004)@\144@\002\005\245\225\000\001\006\188@\002\005\245\225\000\001\006\191\160\144\004\023@\166\155\2405caml_ml_close_channelAA\004=@@\144\176\193\004<\176\179\004\018@\144@\002\005\245\225\000\001\b\192\176\179\0048@\144@\002\005\245\225\000\001\b\195@\002\005\245\225\000\001\b\198\160\144\004&@\208@/close_out_noerr\160\176@\160\160A\160\176\001\004\200\"oc@@@@@\208@*do_at_exit\160\176@\160\160A\160\176\001\005[\004\137@@@@@@ABCDE-epsilon_float\160@@\208\208\208\208@$exit\160\176@\160\160A\160\176\001\005:'retcode@@@@@@A(failwith\160\176A\160\160A\160\176\001\003\238!s@@@A\144\179@\004\005\166\156@\160\166\181@C@\160\166\147\176S'FailureC@\160\144\004\016@@@B%flush\160@\144\179@\160\176\001\005;\004\136@@\166\155\004\\\160\144\004\005@\208@)flush_all\160\176@\160\160A\160\176\001\005k\004\191@@@@@\208@1in_channel_length\160@\144\179@\160\176\001\005O\004\155@@\166\155\2404caml_ml_channel_sizeAA\004\154@@\144\176\193\004\153\176\179\004\152@\144@\002\005\245\225\000\001\012\154\176\179\144\176A#int@@\144@\002\005\245\225\000\001\012\157@\002\005\245\225\000\001\012\160\160\144\004\019@@ABC(infinity\160@@\208\208@%input\160\176@\160\160D\160\176\001\004\213\"ic@\160\176\001\004\214!s@\160\176\001\004\215#ofs@\160\176\001\004\216#len@@@@@\208\208@0input_binary_int\160@\144\179@\160\176\001\005J\004\202@@\166\155\2401caml_ml_input_intAA\004\201@@\144\176\193\004\200\176\179\004\199@\144@\002\005\245\225\000\001\012z\176\179\004/@\144@\002\005\245\225\000\001\012}@\002\005\245\225\000\001\012\128\160\144\004\016@@A*input_byte\160@\144\179@\160\176\001\005I\004\223@@\166\155\2402caml_ml_input_charAA\004\222@@\144\176\193\004\221\176\179\004\220@\144@\002\005\245\225\000\001\012s\176\179\004D@\144@\002\005\245\225\000\001\012v@\002\005\245\225\000\001\012y\160\144\004\016@@BC*input_char\160@\144\179@\160\176\001\005H\004\244@@\166\155\2402caml_ml_input_charAA\004\243@@\144\176\193\004\242\176\179\004\241@\144@\002\005\245\225\000\001\tq\176\179\144\176B$char@@\144@\002\005\245\225\000\001\tt@\002\005\245\225\000\001\tw\160\144\004\019@\208@*input_line\160\176A\160\160A\160\176\001\004\234$chan@@@@@\208@+input_value\160@\144\179@\160\176\001\005K\005\001\022@@\166\155\2400caml_input_valueAA\005\001\021@@\144\176\193\005\001\020\176\179\005\001\019@\144@\002\005\245\225\000\001\012\129\176\150\176\144\144!a\002\005\245\225\000\001\012\135\001\004\250\001\012\132@\002\005\245\225\000\001\012\133\160\144\004\019@@ABDEF+invalid_arg\160\176A\160\160A\160\176\001\003\240!s@@@A\144\179@\004\005\166\156@\160\166\004\188\160\166\147\176R0Invalid_argumentC@\160\144\004\015@@\208\208\208@$lnot\160\176A\160\160A\160\176\001\004\031!x@@@@\144\179@\004\005\166S\160\144\004\007\160\145\144\144\000\255@@A#max\160\176@\160\160B\160\176\001\004\007!x@\160\176\001\004\b!y@@@@@\208\208@)max_float\160@@@A'max_int\160\176A@@@@BC#min\160\176@\160\160B\160\176\001\004\004!x@\160\176\001\004\005!y@@@@@\208\208@)min_float\160@@@A'min_int\160\004\018@\208@#nan\160@@@ABDG,neg_infinity\160@@\208\208\208\208\208\208@'open_in\160\176@\160\160A\160\176\001\004\207$name@@@@@\208@+open_in_bin\160\176@\160\160A\160\176\001\004\209$name@@@@@\208@+open_in_gen\160\176@\160\160C\160\176\001\004\203$mode@\160\176\001\004\204$perm@\160\176\001\004\205$name@@@@@@ABC(open_out\160\176@\160\160A\160\176\001\004\159$name@@@@@\208@,open_out_bin\160\176@\160\160A\160\176\001\004\161$name@@@@@@AD,open_out_gen\160\176@\160\160C\160\176\001\004\155$mode@\160\176\001\004\156$perm@\160\176\001\004\157$name@@@@@\208\208\208@2out_channel_length\160@\144\179@\160\176\001\005E\005\001\199@@\166\155\2404caml_ml_channel_sizeAA\005\001\198@@\144\176\193\005\001\197\176\179\005\001\155@\144@\002\005\245\225\000\001\b\185\176\179\005\001,@\144@\002\005\245\225\000\001\b\188@\002\005\245\225\000\001\b\191\160\144\004\016@@A&output\160\176@\160\160D\160\176\001\004\178\"oc@\160\176\001\004\179!s@\160\176\001\004\180#ofs@\160\176\001\004\181#len@@@@@\208@1output_binary_int\160@\144\179@\160\176\001\005A\005\001\238@\160\176\001\005@\005\001\240@@\166\155\2402caml_ml_output_intBA\005\001\239@@\144\176\193\005\001\238\176\179\005\001\196@\144@\002\005\245\225\000\001\bj\176\193\005\001\243\176\179\005\001W@\144@\002\005\245\225\000\001\bm\176\179\005\001\239@\144@\002\005\245\225\000\001\bp@\002\005\245\225\000\001\bs@\002\005\245\225\000\001\bt\160\144\004\023\160\144\004\023@@AB+output_byte\160@\144\179@\160\176\001\005?\005\002\012@\160\176\001\005>\005\002\014@@\166\155\2403caml_ml_output_charBA\005\002\r@@\144\176\193\005\002\012\176\179\005\001\226@\144@\002\005\245\225\000\001\b_\176\193\005\002\017\176\179\005\001u@\144@\002\005\245\225\000\001\bb\176\179\005\002\r@\144@\002\005\245\225\000\001\be@\002\005\245\225\000\001\bh@\002\005\245\225\000\001\bi\160\144\004\023\160\144\004\023@\208@,output_bytes\160\176@\160\160B\160\176\001\004\172\"oc@\160\176\001\004\173!s@@@@@@ACE+output_char\160@\144\179@\160\176\001\005=\005\0026@\160\176\001\005<\005\0028@@\166\155\2403caml_ml_output_charBA\005\0027@@\144\176\193\005\0026\176\179\005\002\012@\144@\002\005\245\225\000\001\007,\176\193\005\002;\176\179\005\001F@\144@\002\005\245\225\000\001\007/\176\179\005\0027@\144@\002\005\245\225\000\001\0072@\002\005\245\225\000\001\0075@\002\005\245\225\000\001\0076\160\144\004\023\160\144\004\023@\208\208@-output_string\160\176@\160\160B\160\176\001\004\175\"oc@\160\176\001\004\176!s@@@@@@A0output_substring\160\176@\160\160D\160\176\001\004\183\"oc@\160\176\001\004\184!s@\160\176\001\004\185#ofs@\160\176\001\004\186#len@@@@@\208\208@,output_value\160\176@\160\160B\160\176\001\004\191$chan@\160\176\001\004\192!v@@@@\144\179@\004\b\166\155\2401caml_output_valueCA\005\002z@@\144\176\193\005\002y\176\179\005\002O@\144@\002\005\245\225\000\001\bu\176\193\005\002~\176\150\176\144\144!a\002\005\245\225\000\001\b\136\001\004\189\001\bx\176\193\005\002\134\176\179\144\176I$list@\160\176\179\005\002\133@\144@\002\005\245\225\000\001\by@\144@\002\005\245\225\000\001\b}\176\179\005\002\137@\144@\002\005\245\225\000\001\b\129@\002\005\245\225\000\001\b\132@\002\005\245\225\000\001\b\133@\002\005\245\225\000\001\b\134\160\144\004*\160\144\004)\160\145\161@\144\"[]@\208@&pos_in\160@\144\179@\160\176\001\005N\005\002\172@@\166\155\240.caml_ml_pos_inAA\005\002\171@@\144\176\193\005\002\170\176\179\005\002\169@\144@\002\005\245\225\000\001\012\147\176\179\005\002\017@\144@\002\005\245\225\000\001\012\150@\002\005\245\225\000\001\012\153\160\144\004\016@@AB'pos_out\160@\144\179@\160\176\001\005D\005\002\193@@\166\155\240/caml_ml_pos_outAA\005\002\192@@\144\176\193\005\002\191\176\179\005\002\149@\144@\002\005\245\225\000\001\b\178\176\179\005\002&@\144@\002\005\245\225\000\001\b\181@\002\005\245\225\000\001\b\184\160\144\004\016@\208@+prerr_bytes\160\176@\160\160A\160\176\001\005\020!s@@@@@@ACDF*prerr_char\160\176@\160\160A\160\176\001\005\016!c@@@@@\208\208\208@-prerr_endline\160\176@\160\160A\160\176\001\005\026!s@@@@@@A+prerr_float\160\176@\160\160A\160\176\001\005\024!f@@@@@@B)prerr_int\160\176@\160\160A\160\176\001\005\022!i@@@@@\208\208\208@-prerr_newline\160\176@\160\160A\160\176\001\005c\005\0031@@@@@@A,prerr_string\160\176@\160\160A\160\176\001\005\018!s@@@@@\208@+print_bytes\160\176@\160\160A\160\176\001\005\007!s@@@@@@AB*print_char\160\176@\160\160A\160\176\001\005\003!c@@@@@\208\208@-print_endline\160\176@\160\160A\160\176\001\005\r!s@@@@@@A+print_float\160\176@\160\160A\160\176\001\005\011!f@@@@@@BCDG)print_int\160\176@\160\160A\160\176\001\005\t!i@@@@@\208\208\208\208@-print_newline\160\176@\160\160A\160\176\001\005d\005\003o@@@@@@A,print_string\160\176@\160\160A\160\176\001\005\005!s@@@@@\208\208@*read_float\160\176@\160\160A\160\176\001\005`\005\003\128@@@@@@A(read_int\160\176@\160\160A\160\176\001\005a\005\003\135@@@@@@BC)read_line\160\176A\160\160A\160\176\001\005b\005\003\142@@@@@\208\208@,really_input\160\176@\160\160D\160\176\001\004\224\"ic@\160\176\001\004\225!s@\160\176\001\004\226#ofs@\160\176\001\004\227#len@@@@@\208@3really_input_string\160\176A\160\160B\160\176\001\004\229\"ic@\160\176\001\004\230#len@@@@@\208@'seek_in\160@\144\179@\160\176\001\005M\005\003\137@\160\176\001\005L\005\003\139@@\166\155\240/caml_ml_seek_inBA\005\003\138@@\144\176\193\005\003\137\176\179\005\003\136@\144@\002\005\245\225\000\001\012\136\176\193\005\003\142\176\179\005\002\242@\144@\002\005\245\225\000\001\012\139\176\179\005\003\138@\144@\002\005\245\225\000\001\012\142@\002\005\245\225\000\001\012\145@\002\005\245\225\000\001\012\146\160\144\004\023\160\144\004\023@@ABC(seek_out\160@\144\179@\160\176\001\005C\005\003\167@\160\176\001\005B\005\003\169@@\166\155\2400caml_ml_seek_outBA\005\003\168@@\144\176\193\005\003\167\176\179\005\003}@\144@\002\005\245\225\000\001\b\167\176\193\005\003\172\176\179\005\003\016@\144@\002\005\245\225\000\001\b\170\176\179\005\003\168@\144@\002\005\245\225\000\001\b\173@\002\005\245\225\000\001\b\176@\002\005\245\225\000\001\b\177\160\144\004\023\160\144\004\023@\208\208\208@2set_binary_mode_in\160@\144\179@\160\176\001\005R\005\003\200@\160\176\001\005Q\005\003\202@@\166\155\2407caml_ml_set_binary_modeBA\005\003\201@@\144\176\193\005\003\200\176\179\005\003\199@\144@\002\005\245\225\000\001\012\187\176\193\005\003\205\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\012\190\176\179\005\003\204@\144@\002\005\245\225\000\001\012\193@\002\005\245\225\000\001\012\196@\002\005\245\225\000\001\012\197\160\144\004\026\160\144\004\026@@A3set_binary_mode_out\160@\144\179@\160\176\001\005G\005\003\233@\160\176\001\005F\005\003\235@@\166\155\2407caml_ml_set_binary_modeBA\005\003\234@@\144\176\193\005\003\233\176\179\005\003\191@\144@\002\005\245\225\000\001\b\253\176\193\005\003\238\176\179\004!@\144@\002\005\245\225\000\001\t\000\176\179\005\003\234@\144@\002\005\245\225\000\001\t\003@\002\005\245\225\000\001\t\006@\002\005\245\225\000\001\t\007\160\144\004\023\160\144\004\023@@B&stderr\160\005\004I@@CDE%stdin\160\005\004K@\208\208@&stdout\160\005\004O@@A.string_of_bool\160\176A\160\160A\160\176\001\004u!b@@@@\144\179@\004\005\188\144\004\006\145\144\162$true@\145\144\162%false@\208\208@/string_of_float\160\176@\160\160A\160\176\001\004\129!f@@@@@\208@0string_of_format\160\176@\160\160A\160\176\001\005_\005\004Z@@@@\144\179@\004\004\166\150A\160\144\004\007@@AB-string_of_int\160\176@\160\160A\160\176\001\004x!n@@@@\144\179@\004\005\166\155\240/caml_format_intBA\005\004>@@\144\176\193\005\004=\176\179\144\176C&string@@\144@\002\005\245\225\000\001\004\250\176\193\005\004E\176\179\005\003\169@\144@\002\005\245\225\000\001\004\253\176\179\004\011@\144@\002\005\245\225\000\001\005\000@\002\005\245\225\000\001\005\003@\002\005\245\225\000\001\005\004\160\145\144\162\"%d@\160\144\004 @\208\208@3unsafe_really_input\160\176@\160\160D\160\176\001\004\218\"ic@\160\176\001\004\219!s@\160\176\001\004\220#ofs@\160\176\001\004\221#len@@@@@@A1valid_float_lexem\160\176@\160\160A\160\176\001\004|!s@@@@@@BCDFHI@")));
             ("printexc.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5841,6 +6007,14 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "\132\149\166\190\000\000\003\002\000\000\000\163\000\000\002|\000\000\002L\160\208\208\208\208\208@%Break\160\176@@@@@A$argv\160@@\208\208@*big_endian\160\176A@@@\208@+catch_break\160\176A\160\160A\160\176\001\004-\"on@@@@@@AB&cygwin\160\004\012@@CD/executable_name\160@@\208\208@+interactive\160\004\018@@A%is_js\160\004\027@\208\208@0max_array_length\160\004\024@@A1max_string_length\160\004\026@\208@-ocaml_version\160@@@ABCE'os_type\160@@\208\208\208@*set_signal\160\176A\160\160B\160\176\001\004\020'sig_num@\160\176\001\004\021'sig_beh@@@@\144\179@\004\b\166F\160\166\155\240;caml_install_signal_handlerBA @@\144\176\193 \176\179\144\176A#int@@\144@\002\005\245\225\000\001\006\215\176\193\004\t\176\179\144\176\001\004\014/signal_behavior@@\144@\002\005\245\225\000\001\006\218\176\179\004\006@\144@\002\005\245\225\000\001\006\221@\002\005\245\225\000\001\006\224@\002\005\245\225\000\001\006\225\160\144\004%\160\144\004$@@@A'sigabrt\160@@@B'sigalrm\160@@\208\208@'sigchld\160@@\208@'sigcont\160@@@AB&sigfpe\160@@\208@&sighup\160@@@ACDF&sigill\160@@\208\208\208\208@&sigint\160@@@A'sigkill\160@@\208@'sigpipe\160@@\208@'sigprof\160@@@ABC'sigquit\160@@\208@'sigsegv\160@@\208@'sigstop\160@@@ABD'sigterm\160@@\208\208\208@'sigtstp\160@@\208@'sigttin\160@@\208@'sigttou\160@@@ABC'sigusr1\160@@\208@'sigusr2\160@@\208@)sigvtalrm\160@@@ABD$unix\160\004\142@\208@%win32\160\004\145@\208@)word_size\160\004\148@@ABEFG@")));
+            ("unix.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000B#\000\000\014\144\000\0003\183\000\0001\223\160\208\208\208\208\208\208\208@)LargeFile\160@@@A*Unix_error\160\176@@@@\208@&accept\160@\144\179@\160\176\001\007\143$prim@@\166\155\240+unix_acceptAA @@\144\176\193 \176\179\144\176\001\004W*file_descr@@\144@\002\005\245\225\000\001\024\198\176\146\160\176\179\004\t@\144@\002\005\245\225\000\001\024\201\160\176\179\144\176\001\005F(sockaddr@@\144@\002\005\245\225\000\001\024\204@\002\005\245\225\000\001\024\207@\002\005\245\225\000\001\024\208\160\144\004 @@AB&access\160@\144\179@\160\176\001\007E\004%@\160\176\001\007D\004'@@\166\155\240+unix_accessBA\004&@@\144\176\193\004%\176\179\144\176C&string@@\144@\002\005\245\225\000\001\020\186\176\193\004-\176\179\144\176I$list@\160\176\179\144\176\001\004\1961access_permission@@\144@\002\005\245\225\000\001\020\189@\144@\002\005\245\225\000\001\020\193\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\020\197@\002\005\245\225\000\001\020\200@\002\005\245\225\000\001\020\201\160\144\004'\160\144\004'@\208\208@%alarm\160@\144\179@\160\176\001\007o\004U@@\166\155\240*unix_alarmAA\004T@@\144\176\193\004S\176\179\144\176A#int@@\144@\002\005\245\225\000\001\022\198\176\179\004\006@\144@\002\005\245\225\000\001\022\201@\002\005\245\225\000\001\022\204\160\144\004\019@\208@$bind\160@\144\179@\160\176\001\007\145\004n@\160\176\001\007\144\004p@@\166\155\240)unix_bindBA\004o@@\144\176\193\004n\176\179\004m@\144@\002\005\245\225\000\001\024\209\176\193\004s\176\179\004e@\144@\002\005\245\225\000\001\024\212\176\179\004<@\144@\002\005\245\225\000\001\024\215@\002\005\245\225\000\001\024\218@\002\005\245\225\000\001\024\219\160\144\004\023\160\144\004\023@@AB%chdir\160@\144\179@\160\176\001\007P\004\140@@\166\155\240*unix_chdirAA\004\139@@\144\176\193\004\138\176\179\004e@\144@\002\005\245\225\000\001\021%\176\179\004S@\144@\002\005\245\225\000\001\021(@\002\005\245\225\000\001\021+\160\144\004\016@@CD%chmod\160@\144\179@\160\176\001\007:\004\161@\160\176\001\0079\004\163@@\166\155\240*unix_chmodBA\004\162@@\144\176\193\004\161\176\179\004|@\144@\002\005\245\225\000\001\020\127\176\193\004\166\176\179\144\176\001\004j)file_perm@@\144@\002\005\245\225\000\001\020\130\176\179\004r@\144@\002\005\245\225\000\001\020\133@\002\005\245\225\000\001\020\136@\002\005\245\225\000\001\020\137\160\144\004\026\160\144\004\026@\208\208@%chown\160@\144\179@\160\176\001\007?\004\196@\160\176\001\007>\004\198@\160\176\001\007=\004\200@@\166\155\240*unix_chownCA\004\199@@\144\176\193\004\198\176\179\004\161@\144@\002\005\245\225\000\001\020\149\176\193\004\203\176\179\004x@\144@\002\005\245\225\000\001\020\152\176\193\004\208\176\179\004}@\144@\002\005\245\225\000\001\020\155\176\179\004\153@\144@\002\005\245\225\000\001\020\158@\002\005\245\225\000\001\020\161@\002\005\245\225\000\001\020\162@\002\005\245\225\000\001\020\163\160\144\004\030\160\144\004\030\160\144\004\030@\208@&chroot\160@\144\179@\160\176\001\007R\004\236@@\166\155\240+unix_chrootAA\004\235@@\144\176\193\004\234\176\179\004\197@\144@\002\005\245\225\000\001\0213\176\179\004\179@\144@\002\005\245\225\000\001\0216@\002\005\245\225\000\001\0219\160\144\004\016@@AB3clear_close_on_exec\160@\144\179@\160\176\001\007L\005\001\001@@\166\155\2408unix_clear_close_on_execAA\005\001\000@@\144\176\193\004\255\176\179\004\254@\144@\002\005\245\225\000\001\020\241\176\179\004\200@\144@\002\005\245\225\000\001\020\244@\002\005\245\225\000\001\020\247\160\144\004\016@\208@.clear_nonblock\160@\144\179@\160\176\001\007J\005\001\023@@\166\155\2403unix_clear_nonblockAA\005\001\022@@\144\176\193\005\001\021\176\179\005\001\020@\144@\002\005\245\225\000\001\020\227\176\179\004\222@\144@\002\005\245\225\000\001\020\230@\002\005\245\225\000\001\020\233\160\144\004\016@@ACE%close\160@\144\179@\160\176\001\007\026\005\001,@@\166\155\240*unix_closeAA\005\001+@@\144\176\193\005\001*\176\179\005\001)@\144@\002\005\245\225\000\001\015\249\176\179\004\243@\144@\002\005\245\225\000\001\015\252@\002\005\245\225\000\001\015\255\160\144\004\016@\208\208\208\208@-close_process\160\176@\160\160A\160\176\001\007\186%param@@@@@\208@2close_process_full\160\176@\160\160A\160\176\001\007\182\004\t@@@@@@AB0close_process_in\160\176@\160\160A\160\176\001\006\226&inchan@@@@@\208\208@1close_process_out\160\176@\160\160A\160\176\001\006\229'outchan@@@@@@A(closedir\160@\144\179@\160\176\001\007V\005\001g@@\166\155\240-unix_closedirAA\005\001f@@\144\176\193\005\001e\176\179\144\176\001\004\220*dir_handle@@\144@\002\005\245\225\000\001\021O\176\179\005\0011@\144@\002\005\245\225\000\001\021R@\002\005\245\225\000\001\021U\160\144\004\019@\208@'connect\160@\144\179@\160\176\001\007\147\005\001\128@\160\176\001\007\146\005\001\130@@\166\155\240,unix_connectBA\005\001\129@@\144\176\193\005\001\128\176\179\005\001\127@\144@\002\005\245\225\000\001\024\220\176\193\005\001\133\176\179\005\001w@\144@\002\005\245\225\000\001\024\223\176\179\005\001N@\144@\002\005\245\225\000\001\024\226@\002\005\245\225\000\001\024\229@\002\005\245\225\000\001\024\230\160\144\004\023\160\144\004\023@@ABC.create_process\160\176@\160\160E\160\176\001\006m#cmd@\160\176\001\006n$args@\160\176\001\006o)new_stdin@\160\176\001\006p*new_stdout@\160\176\001\006q*new_stderr@@@@@\208\208@2create_process_env\160\176@\160\160F\160\176\001\006t#cmd@\160\176\001\006u$args@\160\176\001\006v#env@\160\176\001\006w)new_stdin@\160\176\001\006x*new_stdout@\160\176\001\006y*new_stderr@@@@@@A3descr_of_in_channel\160@\144\179@\160\176\001\007\029\005\001\203@@\166\155\2407caml_channel_descriptorAA\005\001\202@@\144\176\193\005\001\201\176\179\177\144\176@*PervasivesA*in_channel\000\255@\144@\002\005\245\225\000\001\018\242\176\179\005\001\208@\144@\002\005\245\225\000\001\018\245@\002\005\245\225\000\001\018\248\160\144\004\021@@BD4descr_of_out_channel\160@\144\179@\160\176\001\007\030\005\001\229@@\166\155\2407caml_channel_descriptorAA\005\001\228@@\144\176\193\005\001\227\176\179\177\004\026+out_channel\000\255@\144@\002\005\245\225\000\001\018\249\176\179\005\001\231@\144@\002\005\245\225\000\001\018\252@\002\005\245\225\000\001\018\255\160\144\004\018@\208\208\208@2domain_of_sockaddr\160\176A\160\160A\160\176\001\007\254\004\186@@@@@@A#dup\160@\144\179@\160\176\001\007F\005\002\006@@\166\155\240(unix_dupAA\005\002\005@@\144\176\193\005\002\004\176\179\005\002\003@\144@\002\005\245\225\000\001\020\202\176\179\005\002\006@\144@\002\005\245\225\000\001\020\205@\002\005\245\225\000\001\020\208\160\144\004\016@\208@$dup2\160@\144\179@\160\176\001\007H\005\002\028@\160\176\001\007G\005\002\030@@\166\155\240)unix_dup2BA\005\002\029@@\144\176\193\005\002\028\176\179\005\002\027@\144@\002\005\245\225\000\001\020\209\176\193\005\002!\176\179\005\002 @\144@\002\005\245\225\000\001\020\212\176\179\005\001\234@\144@\002\005\245\225\000\001\020\215@\002\005\245\225\000\001\020\218@\002\005\245\225\000\001\020\219\160\144\004\023\160\144\004\023@@AB+environment\160@\144\179@\160\176\001\007\002\005\002:@@\166\155\2400unix_environmentAA\005\0029@@\144\176\193\005\0028\176\179\005\001\254@\144@\002\005\245\225\000\001\014\252\176\179\144\176H%array@\160\176\179\005\002\028@\144@\002\005\245\225\000\001\014\255@\144@\002\005\245\225\000\001\015\003@\002\005\245\225\000\001\015\007\160\144\004\023@\208@-error_message\160@\144\179@\160\176\001\007\001\005\002W@@\166\155\2402unix_error_messageAA\005\002V@@\144\176\193\005\002U\176\179\144\176\001\003\240%error@@\144@\002\005\245\225\000\001\003\026\176\179\005\0026@\144@\002\005\245\225\000\001\003\029@\002\005\245\225\000\001\003 \160\144\004\019@\208\208@0establish_server\160\176A\160\160B\160\176\001\006\249*server_fun@\160\176\001\006\250(sockaddr@@@@@@A%execv\160@\144\179@\160\176\001\007\007\005\002|@\160\176\001\007\006\005\002~@@\166\155\240*unix_execvBA\005\002}@@\144\176\193\005\002|\176\179\005\002W@\144@\002\005\245\225\000\001\0155\176\193\005\002\129\176\179\004F\160\176\179\005\002_@\144@\002\005\245\225\000\001\0158@\144@\002\005\245\225\000\001\015<\176\150\176\144\144!a\002\005\245\225\000\001\015D\001\004M\001\015@@\002\005\245\225\000\001\015A@\002\005\245\225\000\001\015B\160\144\004\030\160\144\004\030@@BCDEF&execve\160@\144\179@\160\176\001\007\n\005\002\161@\160\176\001\007\t\005\002\163@\160\176\001\007\b\005\002\165@@\166\155\240+unix_execveCA\005\002\164@@\144\176\193\005\002\163\176\179\005\002~@\144@\002\005\245\225\000\001\015E\176\193\005\002\168\176\179\004m\160\176\179\005\002\134@\144@\002\005\245\225\000\001\015H@\144@\002\005\245\225\000\001\015L\176\193\005\002\177\176\179\004v\160\176\179\005\002\143@\144@\002\005\245\225\000\001\015P@\144@\002\005\245\225\000\001\015T\176\150\176\144\144!a\002\005\245\225\000\001\015]\001\004N\001\015X@\002\005\245\225\000\001\015Y@\002\005\245\225\000\001\015Z@\002\005\245\225\000\001\015[\160\144\004)\160\144\004)\160\144\004)@\208\208\208@&execvp\160@\144\179@\160\176\001\007\012\005\002\214@\160\176\001\007\011\005\002\216@@\166\155\240+unix_execvpBA\005\002\215@@\144\176\193\005\002\214\176\179\005\002\177@\144@\002\005\245\225\000\001\015^\176\193\005\002\219\176\179\004\160\160\176\179\005\002\185@\144@\002\005\245\225\000\001\015a@\144@\002\005\245\225\000\001\015e\176\150\176\144\144!a\002\005\245\225\000\001\015m\001\004O\001\015i@\002\005\245\225\000\001\015j@\002\005\245\225\000\001\015k\160\144\004\030\160\144\004\030@@A'execvpe\160@\144\179@\160\176\001\007\015\005\002\251@\160\176\001\007\014\005\002\253@\160\176\001\007\r\005\002\255@@\166\155\240,unix_execvpeCA\005\002\254@@\144\176\193\005\002\253\176\179\005\002\216@\144@\002\005\245\225\000\001\015n\176\193\005\003\002\176\179\004\199\160\176\179\005\002\224@\144@\002\005\245\225\000\001\015q@\144@\002\005\245\225\000\001\015u\176\193\005\003\011\176\179\004\208\160\176\179\005\002\233@\144@\002\005\245\225\000\001\015y@\144@\002\005\245\225\000\001\015}\176\150\176\144\144!a\002\005\245\225\000\001\015\134\001\004P\001\015\129@\002\005\245\225\000\001\015\130@\002\005\245\225\000\001\015\131@\002\005\245\225\000\001\015\132\160\144\004)\160\144\004)\160\144\004)@\208@&fchmod\160@\144\179@\160\176\001\007<\005\003.@\160\176\001\007;\005\0030@@\166\155\240+unix_fchmodBA\005\003/@@\144\176\193\005\003.\176\179\005\003-@\144@\002\005\245\225\000\001\020\138\176\193\005\0033\176\179\005\002\141@\144@\002\005\245\225\000\001\020\141\176\179\005\002\252@\144@\002\005\245\225\000\001\020\144@\002\005\245\225\000\001\020\147@\002\005\245\225\000\001\020\148\160\144\004\023\160\144\004\023@\208@&fchown\160@\144\179@\160\176\001\007B\005\003M@\160\176\001\007A\005\003O@\160\176\001\007@\005\003Q@@\166\155\240+unix_fchownCA\005\003P@@\144\176\193\005\003O\176\179\005\003N@\144@\002\005\245\225\000\001\020\164\176\193\005\003T\176\179\005\003\001@\144@\002\005\245\225\000\001\020\167\176\193\005\003Y\176\179\005\003\006@\144@\002\005\245\225\000\001\020\170\176\179\005\003\"@\144@\002\005\245\225\000\001\020\173@\002\005\245\225\000\001\020\176@\002\005\245\225\000\001\020\177@\002\005\245\225\000\001\020\178\160\144\004\030\160\144\004\030\160\144\004\030@@ABC$fork\160@\144\179@\160\176\001\007\016\005\003t@@\166\155\240)unix_forkAA\005\003s@@\144\176\193\005\003r\176\179\005\0038@\144@\002\005\245\225\000\001\015\135\176\179\005\003\"@\144@\002\005\245\225\000\001\015\138@\002\005\245\225\000\001\015\141\160\144\004\016@\208\208@%fstat\160@\144\179@\160\176\001\007(\005\003\139@@\166\155\240*unix_fstatAA\005\003\138@@\144\176\193\005\003\137\176\179\005\003\136@\144@\002\005\245\225\000\001\019\168\176\179\144\176\001\004\156%stats@@\144@\002\005\245\225\000\001\019\171@\002\005\245\225\000\001\019\174\160\144\004\019@@A)ftruncate\160@\144\179@\160\176\001\007%\005\003\163@\160\176\001\007$\005\003\165@@\166\155\240.unix_ftruncateBA\005\003\164@@\144\176\193\005\003\163\176\179\005\003\162@\144@\002\005\245\225\000\001\019\029\176\193\005\003\168\176\179\005\003U@\144@\002\005\245\225\000\001\019 \176\179\005\003q@\144@\002\005\245\225\000\001\019#@\002\005\245\225\000\001\019&@\002\005\245\225\000\001\019'\160\144\004\023\160\144\004\023@\208\208@+getaddrinfo\160\176@\160\160C\160\176\001\006\006$node@\160\176\001\006\007'service@\160\176\001\006\b$opts@@@@@@A&getcwd\160@\144\179@\160\176\001\007Q\005\003\209@@\166\155\240+unix_getcwdAA\005\003\208@@\144\176\193\005\003\207\176\179\005\003\149@\144@\002\005\245\225\000\001\021,\176\179\005\003\173@\144@\002\005\245\225\000\001\021/@\002\005\245\225\000\001\0212\160\144\004\016@\208@'getegid\160@\144\179@\160\176\001\007|\005\003\231@@\166\155\240,unix_getegidAA\005\003\230@@\144\176\193\005\003\229\176\179\005\003\171@\144@\002\005\245\225\000\001\0230\176\179\005\003\149@\144@\002\005\245\225\000\001\0233@\002\005\245\225\000\001\0236\160\144\004\016@@ABCDG&getenv\160@\144\179@\160\176\001\007\003\005\003\252@@\166\155\240/caml_sys_getenvAA\005\003\251@@\144\176\193\005\003\250\176\179\005\003\213@\144@\002\005\245\225\000\001\015\b\176\179\005\003\216@\144@\002\005\245\225\000\001\015\011@\002\005\245\225\000\001\015\014\160\144\004\016@\208\208\208\208\208\208\208@'geteuid\160@\144\179@\160\176\001\007y\005\004\024@@\166\155\240,unix_geteuidAA\005\004\023@@\144\176\193\005\004\022\176\179\005\003\220@\144@\002\005\245\225\000\001\023\027\176\179\005\003\198@\144@\002\005\245\225\000\001\023\030@\002\005\245\225\000\001\023!\160\144\004\016@@A&getgid\160@\144\179@\160\176\001\007{\005\004-@@\166\155\240+unix_getgidAA\005\004,@@\144\176\193\005\004+\176\179\005\003\241@\144@\002\005\245\225\000\001\023)\176\179\005\003\219@\144@\002\005\245\225\000\001\023,@\002\005\245\225\000\001\023/\160\144\004\016@\208\208@(getgrgid\160@\144\179@\160\176\001\007\134\005\004D@@\166\155\240-unix_getgrgidAA\005\004C@@\144\176\193\005\004B\176\179\005\003\239@\144@\002\005\245\225\000\001\023\241\176\179\144\176\001\005*+group_entry@@\144@\002\005\245\225\000\001\023\244@\002\005\245\225\000\001\023\247\160\144\004\019@@A(getgrnam\160@\144\179@\160\176\001\007\132\005\004\\@@\166\155\240-unix_getgrnamAA\005\004[@@\144\176\193\005\004Z\176\179\005\0045@\144@\002\005\245\225\000\001\023\227\176\179\004\024@\144@\002\005\245\225\000\001\023\230@\002\005\245\225\000\001\023\233\160\144\004\016@@BC)getgroups\160@\144\179@\160\176\001\007~\005\004q@@\166\155\240.unix_getgroupsAA\005\004p@@\144\176\193\005\004o\176\179\005\0045@\144@\002\005\245\225\000\001\023>\176\179\005\0027\160\176\179\005\004\"@\144@\002\005\245\225\000\001\023A@\144@\002\005\245\225\000\001\023E@\002\005\245\225\000\001\023I\160\144\004\020@\208\208\208\208@-gethostbyaddr\160@\144\179@\160\176\001\007\156\005\004\142@@\166\155\2402unix_gethostbyaddrAA\005\004\141@@\144\176\193\005\004\140\176\179\144\176\001\0054)inet_addr@@\144@\002\005\245\225\000\001\031}\176\179\144\176\001\005\205*host_entry@@\144@\002\005\245\225\000\001\031\128@\002\005\245\225\000\001\031\131\160\144\004\022@@A-gethostbyname\160@\144\179@\160\176\001\007\155\005\004\169@@\166\155\2402unix_gethostbynameAA\005\004\168@@\144\176\193\005\004\167\176\179\005\004\130@\144@\002\005\245\225\000\001\031v\176\179\004\024@\144@\002\005\245\225\000\001\031y@\002\005\245\225\000\001\031|\160\144\004\016@@B+gethostname\160@\144\179@\160\176\001\007\154\005\004\190@@\166\155\2400unix_gethostnameAA\005\004\189@@\144\176\193\005\004\188\176\179\005\004\130@\144@\002\005\245\225\000\001\031o\176\179\005\004\154@\144@\002\005\245\225\000\001\031r@\002\005\245\225\000\001\031u\160\144\004\016@@C)getitimer\160@\144\179@\160\176\001\007u\005\004\211@@\166\155\240.unix_getitimerAA\005\004\210@@\144\176\193\005\004\209\176\179\144\176\001\005\016.interval_timer@@\144@\002\005\245\225\000\001\023\002\176\179\144\176\001\005\0205interval_timer_status@@\144@\002\005\245\225\000\001\023\005@\002\005\245\225\000\001\023\b\160\144\004\022@\208@(getlogin\160@\144\179@\160\176\001\007\130\005\004\239@@\166\155\240-unix_getloginAA\005\004\238@@\144\176\193\005\004\237\176\179\005\004\179@\144@\002\005\245\225\000\001\023\213\176\179\005\004\203@\144@\002\005\245\225\000\001\023\216@\002\005\245\225\000\001\023\219\160\144\004\016@\208\208@+getnameinfo\160\176@\160\160B\160\176\001\006\029$addr@\160\176\001\006\030$opts@@@@@@A+getpeername\160@\144\179@\160\176\001\007\153\005\005\017@@\166\155\2400unix_getpeernameAA\005\005\016@@\144\176\193\005\005\015\176\179\005\005\014@\144@\002\005\245\225\000\001\025\004\176\179\005\005\004@\144@\002\005\245\225\000\001\025\007@\002\005\245\225\000\001\025\n\160\144\004\016@@BCDE&getpid\160@\144\179@\160\176\001\007\020\005\005&@@\166\155\240+unix_getpidAA\005\005%@@\144\176\193\005\005$\176\179\005\004\234@\144@\002\005\245\225\000\001\015\173\176\179\005\004\212@\144@\002\005\245\225\000\001\015\176@\002\005\245\225\000\001\015\179\160\144\004\016@\208\208\208@'getppid\160@\144\179@\160\176\001\007\021\005\005>@@\166\155\240,unix_getppidAA\005\005=@@\144\176\193\005\005<\176\179\005\005\002@\144@\002\005\245\225\000\001\015\180\176\179\005\004\236@\144@\002\005\245\225\000\001\015\183@\002\005\245\225\000\001\015\186\160\144\004\016@\208@.getprotobyname\160@\144\179@\160\176\001\007\157\005\005T@@\166\155\2403unix_getprotobynameAA\005\005S@@\144\176\193\005\005R\176\179\005\005-@\144@\002\005\245\225\000\001\031\132\176\179\144\176\001\005\210.protocol_entry@@\144@\002\005\245\225\000\001\031\135@\002\005\245\225\000\001\031\138\160\144\004\019@\208@0getprotobynumber\160@\144\179@\160\176\001\007\158\005\005m@@\166\155\2405unix_getprotobynumberAA\005\005l@@\144\176\193\005\005k\176\179\005\005\024@\144@\002\005\245\225\000\001\031\139\176\179\004\025@\144@\002\005\245\225\000\001\031\142@\002\005\245\225\000\001\031\145\160\144\004\016@@ABC(getpwnam\160@\144\179@\160\176\001\007\131\005\005\130@@\166\155\240-unix_getpwnamAA\005\005\129@@\144\176\193\005\005\128\176\179\005\005[@\144@\002\005\245\225\000\001\023\220\176\179\144\176\001\005\",passwd_entry@@\144@\002\005\245\225\000\001\023\223@\002\005\245\225\000\001\023\226\160\144\004\019@\208@(getpwuid\160@\144\179@\160\176\001\007\133\005\005\155@@\166\155\240-unix_getpwuidAA\005\005\154@@\144\176\193\005\005\153\176\179\005\005F@\144@\002\005\245\225\000\001\023\234\176\179\004\025@\144@\002\005\245\225\000\001\023\237@\002\005\245\225\000\001\023\240\160\144\004\016@\208@-getservbyname\160@\144\179@\160\176\001\007\160\005\005\177@\160\176\001\007\159\005\005\179@@\166\155\2402unix_getservbynameBA\005\005\178@@\144\176\193\005\005\177\176\179\005\005\140@\144@\002\005\245\225\000\001\031\146\176\193\005\005\182\176\179\005\005\145@\144@\002\005\245\225\000\001\031\149\176\179\144\176\001\005\214-service_entry@@\144@\002\005\245\225\000\001\031\152@\002\005\245\225\000\001\031\155@\002\005\245\225\000\001\031\156\160\144\004\026\160\144\004\026@\208@-getservbyport\160@\144\179@\160\176\001\007\162\005\005\211@\160\176\001\007\161\005\005\213@@\166\155\2402unix_getservbyportBA\005\005\212@@\144\176\193\005\005\211\176\179\005\005\128@\144@\002\005\245\225\000\001\031\157\176\193\005\005\216\176\179\005\005\179@\144@\002\005\245\225\000\001\031\160\176\179\004\"@\144@\002\005\245\225\000\001\031\163@\002\005\245\225\000\001\031\166@\002\005\245\225\000\001\031\167\160\144\004\023\160\144\004\023@@ABCD+getsockname\160@\144\179@\160\176\001\007\152\005\005\241@@\166\155\2400unix_getsocknameAA\005\005\240@@\144\176\193\005\005\239\176\179\005\005\238@\144@\002\005\245\225\000\001\024\253\176\179\005\005\228@\144@\002\005\245\225\000\001\025\000@\002\005\245\225\000\001\025\003\160\144\004\016@\208\208@*getsockopt\160\176@\160\160B\160\176\001\005\176\"fd@\160\176\001\005\177#opt@@@@@\208@0getsockopt_error\160\176@\160\160A\160\176\001\005\204\"fd@@@@@@AB0getsockopt_float\160\176@\160\160B\160\176\001\005\197\"fd@\160\176\001\005\198#opt@@@@@\208@.getsockopt_int\160\176@\160\160B\160\176\001\005\183\"fd@\160\176\001\005\184#opt@@@@@\208@1getsockopt_optint\160\176@\160\160B\160\176\001\005\190\"fd@\160\176\001\005\191#opt@@@@@@ABCEF,gettimeofday\160@\144\179@\160\176\001\007k\005\006?@@\166\155\2401unix_gettimeofdayAA\005\006>@@\144\176\193\005\006=\176\179\005\006\003@\144@\002\005\245\225\000\001\022\166\176\179\144\176D%float@@\144@\002\005\245\225\000\001\022\169@\002\005\245\225\000\001\022\172\160\144\004\019@\208\208\208@&getuid\160@\144\179@\160\176\001\007x\005\006Z@@\166\155\240+unix_getuidAA\005\006Y@@\144\176\193\005\006X\176\179\005\006\030@\144@\002\005\245\225\000\001\023\020\176\179\005\006\b@\144@\002\005\245\225\000\001\023\023@\002\005\245\225\000\001\023\026\160\144\004\016@@A&gmtime\160@\144\179@\160\176\001\007l\005\006o@@\166\155\240+unix_gmtimeAA\005\006n@@\144\176\193\005\006m\176\179\004-@\144@\002\005\245\225\000\001\022\173\176\179\144\176\001\004\253\"tm@@\144@\002\005\245\225\000\001\022\176@\002\005\245\225\000\001\022\179\160\144\004\019@@B1handle_unix_error\160\176@\160\160B\160\176\001\004>!f@\160\176\001\004?#arg@@@@@\208\208\208@3in_channel_of_descr\160@\144\179@\160\176\001\007\027\005\006\149@@\166\155\240:caml_ml_open_descriptor_inAA\005\006\148@@\144\176\193\005\006\147\176\179\005\006\146@\144@\002\005\245\225\000\001\018\228\176\179\005\004\205@\144@\002\005\245\225\000\001\018\231@\002\005\245\225\000\001\018\234\160\144\004\016@@A.inet6_addr_any\160\176@@@@\208\208@3inet6_addr_loopback\160\176@@@@@A-inet_addr_any\160\005\006\182@\208@2inet_addr_loopback\160\005\006\185@@ABC3inet_addr_of_string\160@\144\179@\160\176\001\007\135\005\006\183@@\166\155\2408unix_inet_addr_of_stringAA\005\006\182@@\144\176\193\005\006\181\176\179\005\006\144@\144@\002\005\245\225\000\001\024\028\176\179\005\002,@\144@\002\005\245\225\000\001\024\031@\002\005\245\225\000\001\024\"\160\144\004\016@\208@*initgroups\160@\144\179@\160\176\001\007\129\005\006\205@\160\176\001\007\128\005\006\207@@\166\155\240/unix_initgroupsBA\005\006\206@@\144\176\193\005\006\205\176\179\005\006\168@\144@\002\005\245\225\000\001\023V\176\193\005\006\210\176\179\005\006\127@\144@\002\005\245\225\000\001\023Y\176\179\005\006\155@\144@\002\005\245\225\000\001\023\\@\002\005\245\225\000\001\023_@\002\005\245\225\000\001\023`\160\144\004\023\160\144\004\023@@ADEG&isatty\160@\144\179@\160\176\001\007)\005\006\235@@\166\155\240+unix_isattyAA\005\006\234@@\144\176\193\005\006\233\176\179\005\006\232@\144@\002\005\245\225\000\001\019\175\176\179\144\176E$bool@@\144@\002\005\245\225\000\001\019\178@\002\005\245\225\000\001\019\181\160\144\004\019@\208\208\208\208@$kill\160@\144\179@\160\176\001\007e\005\007\007@\160\176\001\007d\005\007\t@@\166\155\240)unix_killBA\005\007\b@@\144\176\193\005\007\007\176\179\005\006\180@\144@\002\005\245\225\000\001\021\200\176\193\005\007\012\176\179\005\006\185@\144@\002\005\245\225\000\001\021\203\176\179\005\006\213@\144@\002\005\245\225\000\001\021\206@\002\005\245\225\000\001\021\209@\002\005\245\225\000\001\021\210\160\144\004\023\160\144\004\023@@A$link\160@\144\179@\160\176\001\0078\005\007%@\160\176\001\0077\005\007'@@\166\155\240)unix_linkBA\005\007&@@\144\176\193\005\007%\176\179\005\007\000@\144@\002\005\245\225\000\001\019\200\176\193\005\007*\176\179\005\007\005@\144@\002\005\245\225\000\001\019\203\176\179\005\006\243@\144@\002\005\245\225\000\001\019\206@\002\005\245\225\000\001\019\209@\002\005\245\225\000\001\019\210\160\144\004\023\160\144\004\023@\208\208\208@&listen\160@\144\179@\160\176\001\007\149\005\007F@\160\176\001\007\148\005\007H@@\166\155\240+unix_listenBA\005\007G@@\144\176\193\005\007F\176\179\005\007E@\144@\002\005\245\225\000\001\024\231\176\193\005\007K\176\179\005\006\248@\144@\002\005\245\225\000\001\024\234\176\179\005\007\020@\144@\002\005\245\225\000\001\024\237@\002\005\245\225\000\001\024\240@\002\005\245\225\000\001\024\241\160\144\004\023\160\144\004\023@@A)localtime\160@\144\179@\160\176\001\007m\005\007d@@\166\155\240.unix_localtimeAA\005\007c@@\144\176\193\005\007b\176\179\005\001\"@\144@\002\005\245\225\000\001\022\180\176\179\004\245@\144@\002\005\245\225\000\001\022\183@\002\005\245\225\000\001\022\186\160\144\004\016@@B%lockf\160@\144\179@\160\176\001\007c\005\007y@\160\176\001\007b\005\007{@\160\176\001\007a\005\007}@@\166\155\240*unix_lockfCA\005\007|@@\144\176\193\005\007{\176\179\005\007z@\144@\002\005\245\225\000\001\021\185\176\193\005\007\128\176\179\144\176\001\004\230,lock_command@@\144@\002\005\245\225\000\001\021\188\176\193\005\007\136\176\179\005\0075@\144@\002\005\245\225\000\001\021\191\176\179\005\007Q@\144@\002\005\245\225\000\001\021\194@\002\005\245\225\000\001\021\197@\002\005\245\225\000\001\021\198@\002\005\245\225\000\001\021\199\160\144\004!\160\144\004!\160\144\004!@@CD%lseek\160@\144\179@\160\176\001\007!\005\007\163@\160\176\001\007 \005\007\165@\160\176\001\007\031\005\007\167@@\166\155\240*unix_lseekCA\005\007\166@@\144\176\193\005\007\165\176\179\005\007\164@\144@\002\005\245\225\000\001\019\003\176\193\005\007\170\176\179\005\007W@\144@\002\005\245\225\000\001\019\006\176\193\005\007\175\176\179\144\176\001\004\141,seek_command@@\144@\002\005\245\225\000\001\019\t\176\179\005\007b@\144@\002\005\245\225\000\001\019\012@\002\005\245\225\000\001\019\015@\002\005\245\225\000\001\019\016@\002\005\245\225\000\001\019\017\160\144\004!\160\144\004!\160\144\004!@\208\208@%lstat\160@\144\179@\160\176\001\007'\005\007\207@@\166\155\240*unix_lstatAA\005\007\206@@\144\176\193\005\007\205\176\179\005\007\168@\144@\002\005\245\225\000\001\019\161\176\179\005\004D@\144@\002\005\245\225\000\001\019\164@\002\005\245\225\000\001\019\167\160\144\004\016@@A%mkdir\160@\144\179@\160\176\001\007N\005\007\228@\160\176\001\007M\005\007\230@@\166\155\240*unix_mkdirBA\005\007\229@@\144\176\193\005\007\228\176\179\005\007\191@\144@\002\005\245\225\000\001\021\019\176\193\005\007\233\176\179\005\007C@\144@\002\005\245\225\000\001\021\022\176\179\005\007\178@\144@\002\005\245\225\000\001\021\025@\002\005\245\225\000\001\021\028@\002\005\245\225\000\001\021\029\160\144\004\023\160\144\004\023@\208@&mkfifo\160@\144\179@\160\176\001\007Y\005\b\003@\160\176\001\007X\005\b\005@@\166\155\240+unix_mkfifoBA\005\b\004@@\144\176\193\005\b\003\176\179\005\007\222@\144@\002\005\245\225\000\001\021s\176\193\005\b\b\176\179\005\007b@\144@\002\005\245\225\000\001\021v\176\179\005\007\209@\144@\002\005\245\225\000\001\021y@\002\005\245\225\000\001\021|@\002\005\245\225\000\001\021}\160\144\004\023\160\144\004\023@\208@&mktime\160@\144\179@\160\176\001\007n\005\b\"@@\166\155\240+unix_mktimeAA\005\b!@@\144\176\193\005\b \176\179\005\001\176@\144@\002\005\245\225\000\001\022\187\176\146\160\176\179\005\001\230@\144@\002\005\245\225\000\001\022\190\160\176\179\005\001\186@\144@\002\005\245\225\000\001\022\193@\002\005\245\225\000\001\022\196@\002\005\245\225\000\001\022\197\160\144\004\023@@ABCE$nice\160@\144\179@\160\176\001\007\022\005\b>@@\166\155\240)unix_niceAA\005\b=@@\144\176\193\005\b<\176\179\005\007\233@\144@\002\005\245\225\000\001\015\187\176\179\005\007\236@\144@\002\005\245\225\000\001\015\190@\002\005\245\225\000\001\015\193\160\144\004\016@\208\208\208\208@/open_connection\160\176A\160\160A\160\176\001\006\241(sockaddr@@@@@@A,open_process\160\176A\160\160A\160\176\001\006\188#cmd@@@@@\208@1open_process_full\160\176A\160\160B\160\176\001\006\208#cmd@\160\176\001\006\209#env@@@@@@AB/open_process_in\160\176@\160\160A\160\176\001\006\176#cmd@@@@@\208\208@0open_process_out\160\176@\160\160A\160\176\001\006\182#cmd@@@@@@A'opendir\160@\144\179@\160\176\001\007S\005\b\133@@\166\155\240,unix_opendirAA\005\b\132@@\144\176\193\005\b\131\176\179\005\b^@\144@\002\005\245\225\000\001\021:\176\179\005\007!@\144@\002\005\245\225\000\001\021=@\002\005\245\225\000\001\021@\160\144\004\016@@BC(openfile\160@\144\179@\160\176\001\007\025\005\b\154@\160\176\001\007\024\005\b\156@\160\176\001\007\023\005\b\158@@\166\155\240)unix_openCA\005\b\157@@\144\176\193\005\b\156\176\179\005\bw@\144@\002\005\245\225\000\001\015\229\176\193\005\b\161\176\179\005\bt\160\176\179\144\176\001\004[)open_flag@@\144@\002\005\245\225\000\001\015\232@\144@\002\005\245\225\000\001\015\236\176\193\005\b\173\176\179\005\b\007@\144@\002\005\245\225\000\001\015\240\176\179\005\b\175@\144@\002\005\245\225\000\001\015\243@\002\005\245\225\000\001\015\246@\002\005\245\225\000\001\015\247@\002\005\245\225\000\001\015\248\160\144\004%\160\144\004%\160\144\004%@\208@4out_channel_of_descr\160@\144\179@\160\176\001\007\028\005\b\201@@\166\155\240;caml_ml_open_descriptor_outAA\005\b\200@@\144\176\193\005\b\199\176\179\005\b\198@\144@\002\005\245\225\000\001\018\235\176\179\005\006\231@\144@\002\005\245\225\000\001\018\238@\002\005\245\225\000\001\018\241\160\144\004\016@\208\208@%pause\160\176@\160\160A\160\176\001\b\007\005\007\155@@@@\144\179@\004\004\166\155\240/unix_sigsuspendAA\005\b\226@@\144\176\193\005\b\225\176\179\005\b\180\160\176\179\005\b\145@\144@\002\005\245\225\000\001\021\247@\144@\002\005\245\225\000\001\021\251\176\179\005\b\174@\144@\002\005\245\225\000\001\021\255@\002\005\245\225\000\001\022\002\160\166\155\2400unix_sigprocmaskBA\005\b\244@@\144\176\193\005\b\243\176\179\144\176\001\004\2393sigprocmask_command@@\144@\002\005\245\225\000\001\021\214\176\193\005\b\251\176\179\005\b\206\160\176\179\005\b\171@\144@\002\005\245\225\000\001\021\217@\144@\002\005\245\225\000\001\021\221\176\179\005\b\213\160\176\179\005\b\178@\144@\002\005\245\225\000\001\021\225@\144@\002\005\245\225\000\001\021\229@\002\005\245\225\000\001\021\233@\002\005\245\225\000\001\021\234\160\145\161A\144)SIG_BLOCK\160\145\161@\144\"[]@@@A$pipe\160@\144\179@\160\176\001\007W\005\t\"@@\166\155\240)unix_pipeAA\005\t!@@\144\176\193\005\t \176\179\005\b\230@\144@\002\005\245\225\000\001\021V\176\146\160\176\179\005\t%@\144@\002\005\245\225\000\001\021Y\160\176\179\005\t)@\144@\002\005\245\225\000\001\021\\@\002\005\245\225\000\001\021_@\002\005\245\225\000\001\021`\160\144\004\023@@BCDFH&putenv\160@\144\179@\160\176\001\007\005\005\t>@\160\176\001\007\004\005\t@@@\166\155\240+unix_putenvBA\005\t?@@\144\176\193\005\t>\176\179\005\t\025@\144@\002\005\245\225\000\001\015\015\176\193\005\tC\176\179\005\t\030@\144@\002\005\245\225\000\001\015\018\176\179\005\t\012@\144@\002\005\245\225\000\001\015\021@\002\005\245\225\000\001\015\024@\002\005\245\225\000\001\015\025\160\144\004\023\160\144\004\023@\208\208\208\208\208@$read\160\176@\160\160D\160\176\001\004q\"fd@\160\176\001\004r#buf@\160\176\001\004s#ofs@\160\176\001\004t#len@@@@@@A'readdir\160@\144\179@\160\176\001\007T\005\tr@@\166\155\240,unix_readdirAA\005\tq@@\144\176\193\005\tp\176\179\005\b\011@\144@\002\005\245\225\000\001\021A\176\179\005\tN@\144@\002\005\245\225\000\001\021D@\002\005\245\225\000\001\021G\160\144\004\016@\208@(readlink\160@\144\179@\160\176\001\007\\\005\t\136@@\166\155\240-unix_readlinkAA\005\t\135@@\144\176\193\005\t\134\176\179\005\ta@\144@\002\005\245\225\000\001\021l\176\179\005\td@\144@\002\005\245\225\000\001\021o@\002\005\245\225\000\001\021r\160\144\004\016@\208@$recv\160\176@\160\160E\160\176\001\005a\"fd@\160\176\001\005b#buf@\160\176\001\005c#ofs@\160\176\001\005d#len@\160\176\001\005e%flags@@@@@\208@(recvfrom\160\176@\160\160E\160\176\001\005g\"fd@\160\176\001\005h#buf@\160\176\001\005i#ofs@\160\176\001\005j#len@\160\176\001\005k%flags@@@@@@ABCD&rename\160@\144\179@\160\176\001\0076\005\t\199@\160\176\001\0075\005\t\201@@\166\155\240+unix_renameBA\005\t\200@@\144\176\193\005\t\199\176\179\005\t\162@\144@\002\005\245\225\000\001\019\189\176\193\005\t\204\176\179\005\t\167@\144@\002\005\245\225\000\001\019\192\176\179\005\t\149@\144@\002\005\245\225\000\001\019\195@\002\005\245\225\000\001\019\198@\002\005\245\225\000\001\019\199\160\144\004\023\160\144\004\023@\208\208\208@)rewinddir\160@\144\179@\160\176\001\007U\005\t\232@@\166\155\240.unix_rewinddirAA\005\t\231@@\144\176\193\005\t\230\176\179\005\b\129@\144@\002\005\245\225\000\001\021H\176\179\005\t\175@\144@\002\005\245\225\000\001\021K@\002\005\245\225\000\001\021N\160\144\004\016@@A%rmdir\160@\144\179@\160\176\001\007O\005\t\253@@\166\155\240*unix_rmdirAA\005\t\252@@\144\176\193\005\t\251\176\179\005\t\214@\144@\002\005\245\225\000\001\021\030\176\179\005\t\196@\144@\002\005\245\225\000\001\021!@\002\005\245\225\000\001\021$\160\144\004\016@\208@&select\160@@@AB$send\160\176@\160\160E\160\176\001\005m\"fd@\160\176\001\005n#buf@\160\176\001\005o#ofs@\160\176\001\005p#len@\160\176\001\005q%flags@@@@@\208@.send_substring\160\176@\160\160E\160\176\001\005z\"fd@\160\176\001\005{#buf@\160\176\001\005|#ofs@\160\176\001\005}#len@\160\176\001\005~%flags@@@@@\208@&sendto\160\176@\160\160F\160\176\001\005s\"fd@\160\176\001\005t#buf@\160\176\001\005u#ofs@\160\176\001\005v#len@\160\176\001\005w%flags@\160\176\001\005x$addr@@@@@\208@0sendto_substring\160\176@\160\160F\160\176\001\005\128\"fd@\160\176\001\005\129#buf@\160\176\001\005\130#ofs@\160\176\001\005\131#len@\160\176\001\005\132%flags@\160\176\001\005\133$addr@@@@@@ABCDE1set_close_on_exec\160@\144\179@\160\176\001\007K\005\nn@@\166\155\2406unix_set_close_on_execAA\005\nm@@\144\176\193\005\nl\176\179\005\nk@\144@\002\005\245\225\000\001\020\234\176\179\005\n5@\144@\002\005\245\225\000\001\020\237@\002\005\245\225\000\001\020\240\160\144\004\016@\208\208\208\208\208@,set_nonblock\160@\144\179@\160\176\001\007I\005\n\136@@\166\155\2401unix_set_nonblockAA\005\n\135@@\144\176\193\005\n\134\176\179\005\n\133@\144@\002\005\245\225\000\001\020\220\176\179\005\nO@\144@\002\005\245\225\000\001\020\223@\002\005\245\225\000\001\020\226\160\144\004\016@@A&setgid\160@\144\179@\160\176\001\007}\005\n\157@@\166\155\240+unix_setgidAA\005\n\156@@\144\176\193\005\n\155\176\179\005\nH@\144@\002\005\245\225\000\001\0237\176\179\005\nd@\144@\002\005\245\225\000\001\023:@\002\005\245\225\000\001\023=\160\144\004\016@\208@)setgroups\160@\144\179@\160\176\001\007\127\005\n\179@@\166\155\240.unix_setgroupsAA\005\n\178@@\144\176\193\005\n\177\176\179\005\bv\160\176\179\005\na@\144@\002\005\245\225\000\001\023J@\144@\002\005\245\225\000\001\023N\176\179\005\n~@\144@\002\005\245\225\000\001\023R@\002\005\245\225\000\001\023U\160\144\004\020@@AB)setitimer\160@\144\179@\160\176\001\007w\005\n\204@\160\176\001\007v\005\n\206@@\166\155\240.unix_setitimerBA\005\n\205@@\144\176\193\005\n\204\176\179\005\005\251@\144@\002\005\245\225\000\001\023\t\176\193\005\n\209\176\179\005\005\250@\144@\002\005\245\225\000\001\023\012\176\179\005\005\253@\144@\002\005\245\225\000\001\023\015@\002\005\245\225\000\001\023\018@\002\005\245\225\000\001\023\019\160\144\004\023\160\144\004\023@\208\208@&setsid\160@\144\179@\160\176\001\007\174\005\n\236@@\166\155\240+unix_setsidAA\005\n\235@@\144\176\193\005\n\234\176\179\005\n\176@\144@\002\005\245\225\000\001&&\176\179\005\n\154@\144@\002\005\245\225\000\001&)@\002\005\245\225\000\001&,\160\144\004\016@@A*setsockopt\160\176@\160\160C\160\176\001\005\179\"fd@\160\176\001\005\180#opt@\160\176\001\005\181!v@@@@@\208\208@0setsockopt_float\160\176@\160\160C\160\176\001\005\200\"fd@\160\176\001\005\201#opt@\160\176\001\005\202!v@@@@@@A.setsockopt_int\160\176@\160\160C\160\176\001\005\186\"fd@\160\176\001\005\187#opt@\160\176\001\005\188!v@@@@@\208@1setsockopt_optint\160\176@\160\160C\160\176\001\005\193\"fd@\160\176\001\005\194#opt@\160\176\001\005\195!v@@@@@@ABCD&setuid\160@\144\179@\160\176\001\007z\005\011<@@\166\155\240+unix_setuidAA\005\011;@@\144\176\193\005\011:\176\179\005\n\231@\144@\002\005\245\225\000\001\023\"\176\179\005\011\003@\144@\002\005\245\225\000\001\023%@\002\005\245\225\000\001\023(\160\144\004\016@\208\208@(shutdown\160@\144\179@\160\176\001\007\151\005\011S@\160\176\001\007\150\005\011U@@\166\155\240-unix_shutdownBA\005\011T@@\144\176\193\005\011S\176\179\005\011R@\144@\002\005\245\225\000\001\024\242\176\193\005\011X\176\179\144\176\001\005K0shutdown_command@@\144@\002\005\245\225\000\001\024\245\176\179\005\011$@\144@\002\005\245\225\000\001\024\248@\002\005\245\225\000\001\024\251@\002\005\245\225\000\001\024\252\160\144\004\026\160\144\004\026@\208@3shutdown_connection\160\176@\160\160A\160\176\001\006\245&inchan@@@@\144\179@\004\005\166\155\004$\160\166\155\005\t\177\160\144\004\011@\160\145\161A\144-SHUTDOWN_SEND@@AB*sigpending\160@\144\179@\160\176\001\007h\005\011\139@@\166\155\240/unix_sigpendingAA\005\011\138@@\144\176\193\005\011\137\176\179\005\011O@\144@\002\005\245\225\000\001\021\235\176\179\005\011_\160\176\179\005\011<@\144@\002\005\245\225\000\001\021\238@\144@\002\005\245\225\000\001\021\242@\002\005\245\225\000\001\021\246\160\144\004\020@\208@+sigprocmask\160@\144\179@\160\176\001\007g\005\011\165@\160\176\001\007f\005\011\167@@\166\155\005\002\178\160\144\004\007\160\144\004\007@\208@*sigsuspend\160@\144\179@\160\176\001\007i\005\011\180@@\166\155\005\002\209\160\144\004\005@@ABCE,single_write\160\176@\160\160D\160\176\001\004{\"fd@\160\176\001\004|#buf@\160\176\001\004}#ofs@\160\176\001\004~#len@@@@@\208\208\208@6single_write_substring\160\176@\160\160D\160\176\001\004\133\"fd@\160\176\001\004\134#buf@\160\176\001\004\135#ofs@\160\176\001\004\136#len@@@@@@A%sleep\160@\144\179@\160\176\001\007p\005\011\227@@\166\155\240*unix_sleepAA\005\011\226@@\144\176\193\005\011\225\176\179\005\011\142@\144@\002\005\245\225\000\001\022\205\176\179\005\011\170@\144@\002\005\245\225\000\001\022\208@\002\005\245\225\000\001\022\211\160\144\004\016@\208@&socket\160@\144\179@\160\176\001\007\139\005\011\249@\160\176\001\007\138\005\011\251@\160\176\001\007\137\005\011\253@@\166\155\240+unix_socketCA\005\011\252@@\144\176\193\005\011\251\176\179\144\176\001\005=-socket_domain@@\144@\002\005\245\225\000\001\024\164\176\193\005\012\003\176\179\144\176\001\005A+socket_type@@\144@\002\005\245\225\000\001\024\167\176\193\005\012\011\176\179\005\011\184@\144@\002\005\245\225\000\001\024\170\176\179\005\012\r@\144@\002\005\245\225\000\001\024\173@\002\005\245\225\000\001\024\176@\002\005\245\225\000\001\024\177@\002\005\245\225\000\001\024\178\160\144\004$\160\144\004$\160\144\004$@\208@*socketpair\160@\144\179@\160\176\001\007\142\005\012'@\160\176\001\007\141\005\012)@\160\176\001\007\140\005\012+@@\166\155\240/unix_socketpairCA\005\012*@@\144\176\193\005\012)\176\179\004.@\144@\002\005\245\225\000\001\024\179\176\193\005\012.\176\179\004+@\144@\002\005\245\225\000\001\024\182\176\193\005\0123\176\179\005\011\224@\144@\002\005\245\225\000\001\024\185\176\146\160\176\179\005\0128@\144@\002\005\245\225\000\001\024\188\160\176\179\005\012<@\144@\002\005\245\225\000\001\024\191@\002\005\245\225\000\001\024\194@\002\005\245\225\000\001\024\195@\002\005\245\225\000\001\024\196@\002\005\245\225\000\001\024\197\160\144\004%\160\144\004%\160\144\004%@@ABC$stat\160@\144\179@\160\176\001\007&\005\012U@@\166\155\240)unix_statAA\005\012T@@\144\176\193\005\012S\176\179\005\012.@\144@\002\005\245\225\000\001\019\154\176\179\005\b\202@\144@\002\005\245\225\000\001\019\157@\002\005\245\225\000\001\019\160\160\144\004\016@\208@&stderr\160@@@ADFG%stdin\160@@\208\208\208@&stdout\160@@\208\208@3string_of_inet_addr\160@\144\179@\160\176\001\007\136\005\012v@@\166\155\2408unix_string_of_inet_addrAA\005\012u@@\144\176\193\005\012t\176\179\005\007\232@\144@\002\005\245\225\000\001\024#\176\179\005\012R@\144@\002\005\245\225\000\001\024&@\002\005\245\225\000\001\024)\160\144\004\016@@A'symlink\160@\144\179@\160\176\001\007[\005\012\139@\160\176\001\007Z\005\012\141@@\166\155\240,unix_symlinkBA\005\012\140@@\144\176\193\005\012\139\176\179\005\012f@\144@\002\005\245\225\000\001\021a\176\193\005\012\144\176\179\005\012k@\144@\002\005\245\225\000\001\021d\176\179\005\012Y@\144@\002\005\245\225\000\001\021g@\002\005\245\225\000\001\021j@\002\005\245\225\000\001\021k\160\144\004\023\160\144\004\023@@BC&system\160\176@\160\160A\160\176\001\006]#cmd@@@@@\208\208@'tcdrain\160@\144\179@\160\176\001\007\169\005\012\179@@\166\155\240,unix_tcdrainAA\005\012\178@@\144\176\193\005\012\177\176\179\005\012\176@\144@\002\005\245\225\000\001&\003\176\179\005\012z@\144@\002\005\245\225\000\001&\006@\002\005\245\225\000\001&\t\160\144\004\016@\208\208@&tcflow\160@\144\179@\160\176\001\007\173\005\012\202@\160\176\001\007\172\005\012\204@@\166\155\240+unix_tcflowBA\005\012\203@@\144\176\193\005\012\202\176\179\005\012\201@\144@\002\005\245\225\000\001&\027\176\193\005\012\207\176\179\144\176\001\006S+flow_action@@\144@\002\005\245\225\000\001&\030\176\179\005\012\155@\144@\002\005\245\225\000\001&!@\002\005\245\225\000\001&$@\002\005\245\225\000\001&%\160\144\004\026\160\144\004\026@@A'tcflush\160@\144\179@\160\176\001\007\171\005\012\235@\160\176\001\007\170\005\012\237@@\166\155\240,unix_tcflushBA\005\012\236@@\144\176\193\005\012\235\176\179\005\012\234@\144@\002\005\245\225\000\001&\r\176\193\005\012\240\176\179\144\176\001\006N+flush_queue@@\144@\002\005\245\225\000\001&\016\176\179\005\012\188@\144@\002\005\245\225\000\001&\019@\002\005\245\225\000\001&\022@\002\005\245\225\000\001&\023\160\144\004\026\160\144\004\026@@BC)tcgetattr\160@\144\179@\160\176\001\007\163\005\r\012@@\166\155\240.unix_tcgetattrAA\005\r\011@@\144\176\193\005\r\n\176\179\005\r\t@\144@\002\005\245\225\000\001%\223\176\179\144\176\001\006\031+terminal_io@@\144@\002\005\245\225\000\001%\226@\002\005\245\225\000\001%\229\160\144\004\019@\208\208\208@+tcsendbreak\160@\144\179@\160\176\001\007\168\005\r'@\160\176\001\007\167\005\r)@@\166\155\2400unix_tcsendbreakBA\005\r(@@\144\176\193\005\r'\176\179\005\r&@\144@\002\005\245\225\000\001%\248\176\193\005\r,\176\179\005\012\217@\144@\002\005\245\225\000\001%\251\176\179\005\012\245@\144@\002\005\245\225\000\001%\254@\002\005\245\225\000\001&\001@\002\005\245\225\000\001&\002\160\144\004\023\160\144\004\023@@A)tcsetattr\160@\144\179@\160\176\001\007\166\005\rE@\160\176\001\007\165\005\rG@\160\176\001\007\164\005\rI@@\166\155\240.unix_tcsetattrCA\005\rH@@\144\176\193\005\rG\176\179\005\rF@\144@\002\005\245\225\000\001%\233\176\193\005\rL\176\179\144\176\001\006G,setattr_when@@\144@\002\005\245\225\000\001%\236\176\193\005\rT\176\179\004G@\144@\002\005\245\225\000\001%\239\176\179\005\r\029@\144@\002\005\245\225\000\001%\242@\002\005\245\225\000\001%\245@\002\005\245\225\000\001%\246@\002\005\245\225\000\001%\247\160\144\004!\160\144\004!\160\144\004!@@B$time\160@\144\179@\160\176\001\007j\005\ro@@\166\155\240)unix_timeAA\005\rn@@\144\176\193\005\rm\176\179\005\r3@\144@\002\005\245\225\000\001\022\159\176\179\005\0070@\144@\002\005\245\225\000\001\022\162@\002\005\245\225\000\001\022\165\160\144\004\016@\208@%times\160@\144\179@\160\176\001\007q\005\r\133@@\166\155\240*unix_timesAA\005\r\132@@\144\176\193\005\r\131\176\179\005\rI@\144@\002\005\245\225\000\001\022\212\176\179\144\176\001\004\248-process_times@@\144@\002\005\245\225\000\001\022\215@\002\005\245\225\000\001\022\218\160\144\004\019@@ACDE(truncate\160@\144\179@\160\176\001\007#\005\r\157@\160\176\001\007\"\005\r\159@@\166\155\240-unix_truncateBA\005\r\158@@\144\176\193\005\r\157\176\179\005\rx@\144@\002\005\245\225\000\001\019\018\176\193\005\r\162\176\179\005\rO@\144@\002\005\245\225\000\001\019\021\176\179\005\rk@\144@\002\005\245\225\000\001\019\024@\002\005\245\225\000\001\019\027@\002\005\245\225\000\001\019\028\160\144\004\023\160\144\004\023@\208\208\208@%umask\160@\144\179@\160\176\001\007C\005\r\190@@\166\155\240*unix_umaskAA\005\r\189@@\144\176\193\005\r\188\176\179\005\ri@\144@\002\005\245\225\000\001\020\179\176\179\005\rl@\144@\002\005\245\225\000\001\020\182@\002\005\245\225\000\001\020\185\160\144\004\016@@A&unlink\160@\144\179@\160\176\001\0074\005\r\211@@\166\155\240+unix_unlinkAA\005\r\210@@\144\176\193\005\r\209\176\179\005\r\172@\144@\002\005\245\225\000\001\019\182\176\179\005\r\154@\144@\002\005\245\225\000\001\019\185@\002\005\245\225\000\001\019\188\160\144\004\016@\208@&utimes\160@\144\179@\160\176\001\007t\005\r\233@\160\176\001\007s\005\r\235@\160\176\001\007r\005\r\237@@\166\155\240+unix_utimesCA\005\r\236@@\144\176\193\005\r\235\176\179\005\r\198@\144@\002\005\245\225\000\001\022\219\176\193\005\r\240\176\179\005\007\176@\144@\002\005\245\225\000\001\022\222\176\193\005\r\245\176\179\005\007\181@\144@\002\005\245\225\000\001\022\225\176\179\005\r\190@\144@\002\005\245\225\000\001\022\228@\002\005\245\225\000\001\022\231@\002\005\245\225\000\001\022\232@\002\005\245\225\000\001\022\233\160\144\004\030\160\144\004\030\160\144\004\030@@AB$wait\160@\144\179@\160\176\001\007\017\005\014\016@@\166\155\240)unix_waitAA\005\014\015@@\144\176\193\005\014\014\176\179\005\r\212@\144@\002\005\245\225\000\001\015\142\176\146\160\176\179\005\r\193@\144@\002\005\245\225\000\001\015\145\160\176\179\144\176\001\004F.process_status@@\144@\002\005\245\225\000\001\015\148@\002\005\245\225\000\001\015\151@\002\005\245\225\000\001\015\152\160\144\004\026@\208@'waitpid\160@\144\179@\160\176\001\007\019\005\0140@\160\176\001\007\018\005\0142@@\166\155\240,unix_waitpidBA\005\0141@@\144\176\193\005\0140\176\179\005\014\003\160\176\179\144\176\001\004J)wait_flag@@\144@\002\005\245\225\000\001\015\153@\144@\002\005\245\225\000\001\015\157\176\193\005\014<\176\179\005\r\233@\144@\002\005\245\225\000\001\015\161\176\146\160\176\179\005\r\239@\144@\002\005\245\225\000\001\015\164\160\176\179\004.@\144@\002\005\245\225\000\001\015\167@\002\005\245\225\000\001\015\170@\002\005\245\225\000\001\015\171@\002\005\245\225\000\001\015\172\160\144\004%\160\144\004%@\208@%write\160\176@\160\160D\160\176\001\004v\"fd@\160\176\001\004w#buf@\160\176\001\004x#ofs@\160\176\001\004y#len@@@@@\208@/write_substring\160\176@\160\160D\160\176\001\004\128\"fd@\160\176\001\004\129#buf@\160\176\001\004\130#ofs@\160\176\001\004\131#len@@@@@@ABCDFHIJ\144 ")));
+            ("unixLabels.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\015\218\000\000\003\150\000\000\r\148\000\000\012\165\160\208\208\208\208\208\208\208@)LargeFile\160@@@A*Unix_error\160\176@@@@\208@&accept\160@@@AB&access\160@@\208\208@%alarm\160@@\208@$bind\160@@@AB%chdir\160@@@CD%chmod\160@@\208\208@%chown\160@@\208@&chroot\160@@@AB3clear_close_on_exec\160@@\208@.clear_nonblock\160@@@ACE%close\160@@\208\208\208\208@-close_process\160\176@\160\160A\160\176\001\007\186%param@@@@@\208@2close_process_full\160\176@\160\160A\160\176\001\007\182\004\t@@@@@@AB0close_process_in\160\176@\160\160A\160\176\001\006\226&inchan@@@@@\208\208@1close_process_out\160\176@\160\160A\160\176\001\006\229'outchan@@@@@@A(closedir\160@@\208@'connect\160@@@ABC.create_process\160\176@\160\160E\160\176\001\006m#cmd@\160\176\001\006n$args@\160\176\001\006o)new_stdin@\160\176\001\006p*new_stdout@\160\176\001\006q*new_stderr@@@@@\208\208@2create_process_env\160\176@\160\160F\160\176\001\006t#cmd@\160\176\001\006u$args@\160\176\001\006v#env@\160\176\001\006w)new_stdin@\160\176\001\006x*new_stdout@\160\176\001\006y*new_stderr@@@@@@A3descr_of_in_channel\160@@@BD4descr_of_out_channel\160@@\208\208\208@2domain_of_sockaddr\160\176A\160\160A\160\176\001\007\254\004[@@@@@@A#dup\160@@\208@$dup2\160@@@AB+environment\160@@\208@-error_message\160@@\208\208@0establish_server\160\176A\160\160B\160\176\001\006\249*server_fun@\160\176\001\006\250(sockaddr@@@@@@A%execv\160@@@BCDEF&execve\160@@\208\208\208@&execvp\160@@@A'execvpe\160@@\208@&fchmod\160@@\208@&fchown\160@@@ABC$fork\160@@\208\208@%fstat\160@@@A)ftruncate\160@@\208\208@+getaddrinfo\160\176@\160\160C\160\176\001\006\006$node@\160\176\001\006\007'service@\160\176\001\006\b$opts@@@@@@A&getcwd\160@@\208@'getegid\160@@@ABCDG&getenv\160@@\208\208\208\208\208\208\208@'geteuid\160@@@A&getgid\160@@\208\208@(getgrgid\160@@@A(getgrnam\160@@@BC)getgroups\160@@\208\208\208\208@-gethostbyaddr\160@@@A-gethostbyname\160@@@B+gethostname\160@@@C)getitimer\160@@\208@(getlogin\160@@\208\208@+getnameinfo\160\176@\160\160B\160\176\001\006\029$addr@\160\176\001\006\030$opts@@@@@@A+getpeername\160@@@BCDE&getpid\160@@\208\208\208@'getppid\160@@\208@.getprotobyname\160@@\208@0getprotobynumber\160@@@ABC(getpwnam\160@@\208@(getpwuid\160@@\208@-getservbyname\160@@\208@-getservbyport\160@@@ABCD+getsockname\160@@\208\208@*getsockopt\160\176@\160\160B\160\176\001\005\176\"fd@\160\176\001\005\177#opt@@@@@\208@0getsockopt_error\160\176@\160\160A\160\176\001\005\204\"fd@@@@@@AB0getsockopt_float\160\176@\160\160B\160\176\001\005\197\"fd@\160\176\001\005\198#opt@@@@@\208@.getsockopt_int\160\176@\160\160B\160\176\001\005\183\"fd@\160\176\001\005\184#opt@@@@@\208@1getsockopt_optint\160\176@\160\160B\160\176\001\005\190\"fd@\160\176\001\005\191#opt@@@@@@ABCEF,gettimeofday\160@@\208\208\208@&getuid\160@@@A&gmtime\160@@@B1handle_unix_error\160\176@\160\160B\160\176\001\004>!f@\160\176\001\004?#arg@@@@@\208\208\208@3in_channel_of_descr\160@@@A.inet6_addr_any\160\176@@@@\208\208@3inet6_addr_loopback\160\176@@@@@A-inet_addr_any\160\005\001s@\208@2inet_addr_loopback\160\005\001v@@ABC3inet_addr_of_string\160@@\208@*initgroups\160@@@ADEG&isatty\160@@\208\208\208\208@$kill\160@@@A$link\160@@\208\208\208@&listen\160@@@A)localtime\160@@@B%lockf\160@@@CD%lseek\160@@\208\208@%lstat\160@@@A%mkdir\160@@\208@&mkfifo\160@@\208@&mktime\160@@@ABCE$nice\160@@\208\208\208\208@/open_connection\160\176A\160\160A\160\176\001\006\241(sockaddr@@@@@@A,open_process\160\176A\160\160A\160\176\001\006\188#cmd@@@@@\208@1open_process_full\160\176A\160\160B\160\176\001\006\208#cmd@\160\176\001\006\209#env@@@@@@AB/open_process_in\160\176@\160\160A\160\176\001\006\176#cmd@@@@@\208\208@0open_process_out\160\176@\160\160A\160\176\001\006\182#cmd@@@@@@A'opendir\160@@@BC(openfile\160@@\208@4out_channel_of_descr\160@@\208\208@%pause\160\176@\160\160A\160\176\001\b\007\005\001\182@@@@@@A$pipe\160@@@BCDFH&putenv\160@@\208\208\208\208\208@$read\160\176@\160\160D\160\176\001\004q\"fd@\160\176\001\004r#buf@\160\176\001\004s#ofs@\160\176\001\004t#len@@@@@@A'readdir\160@@\208@(readlink\160@@\208@$recv\160\176@\160\160E\160\176\001\005a\"fd@\160\176\001\005b#buf@\160\176\001\005c#ofs@\160\176\001\005d#len@\160\176\001\005e%flags@@@@@\208@(recvfrom\160\176@\160\160E\160\176\001\005g\"fd@\160\176\001\005h#buf@\160\176\001\005i#ofs@\160\176\001\005j#len@\160\176\001\005k%flags@@@@@@ABCD&rename\160@@\208\208\208@)rewinddir\160@@@A%rmdir\160@@\208@&select\160@@@AB$send\160\176@\160\160E\160\176\001\005m\"fd@\160\176\001\005n#buf@\160\176\001\005o#ofs@\160\176\001\005p#len@\160\176\001\005q%flags@@@@@\208@.send_substring\160\176@\160\160E\160\176\001\005z\"fd@\160\176\001\005{#buf@\160\176\001\005|#ofs@\160\176\001\005}#len@\160\176\001\005~%flags@@@@@\208@&sendto\160\176@\160\160F\160\176\001\005s\"fd@\160\176\001\005t#buf@\160\176\001\005u#ofs@\160\176\001\005v#len@\160\176\001\005w%flags@\160\176\001\005x$addr@@@@@\208@0sendto_substring\160\176@\160\160F\160\176\001\005\128\"fd@\160\176\001\005\129#buf@\160\176\001\005\130#ofs@\160\176\001\005\131#len@\160\176\001\005\132%flags@\160\176\001\005\133$addr@@@@@@ABCDE1set_close_on_exec\160@@\208\208\208\208\208@,set_nonblock\160@@@A&setgid\160@@\208@)setgroups\160@@@AB)setitimer\160@@\208\208@&setsid\160@@@A*setsockopt\160\176@\160\160C\160\176\001\005\179\"fd@\160\176\001\005\180#opt@\160\176\001\005\181!v@@@@@\208\208@0setsockopt_float\160\176@\160\160C\160\176\001\005\200\"fd@\160\176\001\005\201#opt@\160\176\001\005\202!v@@@@@@A.setsockopt_int\160\176@\160\160C\160\176\001\005\186\"fd@\160\176\001\005\187#opt@\160\176\001\005\188!v@@@@@\208@1setsockopt_optint\160\176@\160\160C\160\176\001\005\193\"fd@\160\176\001\005\194#opt@\160\176\001\005\195!v@@@@@@ABCD&setuid\160@@\208\208@(shutdown\160@@\208@3shutdown_connection\160\176@\160\160A\160\176\001\006\245&inchan@@@@@@AB*sigpending\160@@\208@+sigprocmask\160@@\208@*sigsuspend\160@@@ABCE,single_write\160\176@\160\160D\160\176\001\004{\"fd@\160\176\001\004|#buf@\160\176\001\004}#ofs@\160\176\001\004~#len@@@@@\208\208\208@6single_write_substring\160\176@\160\160D\160\176\001\004\133\"fd@\160\176\001\004\134#buf@\160\176\001\004\135#ofs@\160\176\001\004\136#len@@@@@@A%sleep\160@@\208@&socket\160@@\208@*socketpair\160@@@ABC$stat\160@@\208@&stderr\160@@@ADFG%stdin\160@@\208\208\208@&stdout\160@@\208\208@3string_of_inet_addr\160@@@A'symlink\160@@@BC&system\160\176@\160\160A\160\176\001\006]#cmd@@@@@\208\208@'tcdrain\160@@\208\208@&tcflow\160@@@A'tcflush\160@@@BC)tcgetattr\160@@\208\208\208@+tcsendbreak\160@@@A)tcsetattr\160@@@B$time\160@@\208@%times\160@@@ACDE(truncate\160@@\208\208\208@%umask\160@@@A&unlink\160@@\208@&utimes\160@@@AB$wait\160@@\208@'waitpid\160@@\208@%write\160\176@\160\160D\160\176\001\004v\"fd@\160\176\001\004w#buf@\160\176\001\004x#ofs@\160\176\001\004y#len@@@@@\208@/write_substring\160\176@\160\160D\160\176\001\004\128\"fd@\160\176\001\004\129#buf@\160\176\001\004\130#ofs@\160\176\001\004\131#len@@@@@@ABCDFHIJ\144$Unix")));
             ("weak.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -5857,6 +6031,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "\132\149\166\190\000\000\0021\000\000\000\147\000\000\001\244\000\000\001\212\160\208\208\208@6caml_array_bound_error\160\176A\160\160A\160\176\001\003\253%param@@@A\144\179@\004\005\166\156@\160\166\181@C@\160\166\147\176R0Invalid_argumentC@\160\145\144\1623index out of bounds@@@@A-caml_failwith\160\176A\160\160A\160\176\001\003\243!s@@@A\144\179@\004\005\166\156@\160\166\004\025\160\166\147\176S'FailureC@\160\144\004\015@@\208@5caml_invalid_argument\160\176A\160\160A\160\176\001\003\245!s@@@A\144\179@\004\005\166\156@\160\166\004/\160\166\147\004.@\160\144\004\r@@\208@4caml_raise_not_found\160\176A\160\160A\160\176\001\003\251\004C@@@A\144\179@\004\004\166\156@\160\166\147\176T)Not_foundC@@@ABC4caml_raise_sys_error\160\176A\160\160A\160\176\001\003\241#msg@@@A\144\179@\004\005\166\156@\160\166\004S\160\166\147\176U)Sys_errorC@\160\144\004\015@@\208@6caml_raise_zero_divide\160\176A\160\160A\160\176\001\003\252\004i@@@A\144\179@\004\004\166\156@\160\166\147\176W0Division_by_zeroC@@\208@1caml_undef_module\160\176A\160\160A\160\176\001\003\250#loc@@@A\144\179@\004\005\166\156@\160\166\004z\160\166\147\176[:Undefined_recursive_moduleC@\160\144\004\015@@@ABD@")));
+            ("caml_int64.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "\132\149\166\190\000\000\001~\000\000\000t\000\000\001\145\000\000\001\131\160\208\208\208@#add\160\176A\160\160B\160\176\001\004a%param@\160\176\001\004b%param@@@@@\208@$asr_\160\176@\160\160B\160\176\001\004!!x@\160\176\001\004\"'numBits@@@@@\208@'is_zero\160\176A\160\160A\160\176\001\004V\004\021@@@@@@ABC$lsl_\160\176@\160\160B\160\176\001\004\022!x@\160\176\001\004\023'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\160\176\001\004\027!x@\160\176\001\004\028'numBits@@@@@@A'min_int\160@@\208\208@#mul\160\176@\160\160B\160\176\001\004&$this@\160\176\001\004'%other@@@@@@A#neg\160\176@\160\160A\160\176\001\004\015!x@@@@@@BCD#not\160\176A\160\160A\160\176\001\004f\004K@@@@@\208\208@(of_int32\160\176A\160\160A\160\176\001\003\250\"lo@@@@@@A#one\160@@\208\208@#sub\160\176A\160\160B\160\176\001\004\017!x@\160\176\001\004\018!y@@@@@@A$zero\160@@@BCE@")));
             ("caml_obj.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6064,16 +6242,17 @@ include
       end =
       struct
         module E = Js_exp_make
-        let get arg = (E.index arg 0 : J.expression)
+        let get arg = (E.index arg 0l : J.expression)
         let none: J.expression =
           {
-            expression_desc = (Number (Int { i = 0; c = None }));
+            expression_desc = (Number (Int { i = 0l; c = None }));
             comment = (Some "None")
           }
         let some x =
           ({
              expression_desc =
-               (Caml_block ([x], Immutable, (E.int 0), (Constructor "Some")));
+               (Caml_block
+                  ([x], Immutable, E.zero_int_literal, (Constructor "Some")));
              comment = None
            } : J.expression)
       end 
@@ -6158,7 +6337,7 @@ include
       struct
         module E = Js_exp_make
         let make ?comment  (args : J.expression list) =
-          E.make_block ?comment (E.int 0) NA args Immutable
+          E.make_block ?comment E.zero_int_literal NA args Immutable
         let is_empty_shape (shape : J.expression) =
           match shape with
           | {
@@ -6267,21 +6446,25 @@ include
       struct
         module E = Js_exp_make
         let make (args : J.expression list) =
-          E.make_block ~comment:"tuple" (E.int 0) Tuple args Immutable
+          E.make_block ~comment:"tuple" E.zero_int_literal Tuple args
+            Immutable
       end 
     module Js_of_lam_record :
       sig
         [@@@ocaml.text " Utilities for compiling lambda record into JS IR "]
         val make :
           J.mutable_flag -> (string* J.expression) list -> J.expression
-        val field : J.expression -> int -> J.expression
+        val field : J.expression -> J.jsint -> J.expression
+        val copy : Js_exp_make.unary_op
       end =
       struct
         module E = Js_exp_make
         let make mutable_flag (args : (string* J.expression) list) =
-          E.make_block ~comment:"record" (E.int 0) Record (List.map snd args)
-            mutable_flag
+          E.make_block ~comment:"record" E.zero_int_literal Record
+            (List.map snd args) mutable_flag
         let field e i = E.index e i
+        let copy = E.array_copy[@@ocaml.doc
+                                 "\n   used in [Pduprecord]\n   this is due to we encode record as an array, it is going to change\n   if we have another encoding       \n"]
       end 
     module Js_of_lam_exception :
       sig
@@ -6298,10 +6481,11 @@ include
           | {
               expression_desc = Caml_block
                 (exception_str::{
-                                  expression_desc = J.Number (Int { i = 0;_});_}::[],mutable_flag,
+                                  expression_desc = J.Number (Int
+                                    { i = 0l;_});_}::[],mutable_flag,
                  { expression_desc = J.Number (Int { i = object_tag;_});_},_);_}::[]
               ->
-              if object_tag = Obj.object_tag
+              if object_tag = 248l
               then Some (exception_str, mutable_flag)
               else None
           | _ -> None
@@ -6309,7 +6493,7 @@ include
           ({
              expression_desc =
                (Caml_block
-                  ([exception_str; id], mutable_flag, (E.int Obj.object_tag),
+                  ([exception_str; id], mutable_flag, E.obj_int_tag_literal,
                     NA));
              comment = None
            } : J.expression)
@@ -6358,19 +6542,19 @@ include
                     [("minor_words", zero_float_lit);
                     ("promoted_words", zero_float_lit);
                     ("major_words", zero_float_lit);
-                    ("minor_collections", (int 0));
-                    ("major_collections", (int 0));
-                    ("heap_words", (int 0));
-                    ("heap_chunks", (int 0));
-                    ("live_words", (int 0));
-                    ("live_blocks", (int 0));
-                    ("free_words", (int 0));
-                    ("free_blocks", (int 0));
-                    ("largest_free", (int 0));
-                    ("fragments", (int 0));
-                    ("compactions", (int 0));
-                    ("top_heap_words", (int 0));
-                    ("stack_size", (int 0))])
+                    ("minor_collections", zero_int_literal);
+                    ("major_collections", zero_int_literal);
+                    ("heap_words", zero_int_literal);
+                    ("heap_chunks", zero_int_literal);
+                    ("live_words", zero_int_literal);
+                    ("live_blocks", zero_int_literal);
+                    ("free_words", zero_int_literal);
+                    ("free_blocks", zero_int_literal);
+                    ("largest_free", zero_int_literal);
+                    ("fragments", zero_int_literal);
+                    ("compactions", zero_int_literal);
+                    ("top_heap_words", zero_int_literal);
+                    ("stack_size", zero_int_literal)])
            | "caml_abs_float" -> E.math "abs" args
            | "caml_acos_float" -> E.math "acos" args
            | "caml_add_float" ->
@@ -6432,17 +6616,25 @@ include
                (match args with
                 | e0::e1::e2::[] -> Js_of_lam_array.set_array e0 e1 e2
                 | _ -> assert false)
-           | "caml_int32_add"|"caml_nativeint_add" ->
+           | "caml_int32_add" ->
                (match args with
                 | e0::e1::[] -> E.int32_add e0 e1
+                | _ -> assert false)
+           | "caml_nativeint_add" ->
+               (match args with
+                | e0::e1::[] -> E.unchecked_int32_add e0 e1
                 | _ -> assert false)
            | "caml_int32_div"|"caml_nativeint_div" ->
                (match args with
                 | e0::e1::[] -> E.int32_div e0 e1
                 | _ -> assert false)
-           | "caml_int32_mul"|"caml_nativeint_mul" ->
+           | "caml_int32_mul" ->
                (match args with
                 | e0::e1::[] -> E.int32_mul e0 e1
+                | _ -> assert false)
+           | "caml_nativeint_mul" ->
+               (match args with
+                | e0::e1::[] -> E.unchecked_int32_mul e0 e1
                 | _ -> assert false)
            | "caml_int32_of_int"|"caml_nativeint_of_int"
              |"caml_nativeint_of_int32" ->
@@ -6454,9 +6646,13 @@ include
              |"caml_nativeint_to_int"|"caml_nativeint_to_float"
              |"caml_nativeint_to_int32" ->
                (match args with | e::[] -> e | _ -> assert false)
-           | "caml_int32_sub"|"caml_nativeint_sub" ->
+           | "caml_int32_sub" ->
                (match args with
                 | e0::e1::[] -> E.int32_minus e0 e1
+                | _ -> assert false)
+           | "caml_nativeint_sub" ->
+               (match args with
+                | e0::e1::[] -> E.unchecked_int32_minus e0 e1
                 | _ -> assert false)
            | "caml_int32_xor"|"caml_nativeint_xor" ->
                (match args with
@@ -6480,7 +6676,7 @@ include
                 | _ -> assert false)
            | "caml_neg_float" ->
                (match args with
-                | e::[] -> E.int32_minus (E.int 0) e
+                | e::[] -> E.int32_minus E.zero_int_literal e
                 | _ -> assert false)
            | "caml_neq_float" ->
                (match args with
@@ -6526,21 +6722,21 @@ include
            | "caml_create_string" ->
                (match args with
                 | ({ expression_desc = Number (Int { i;_});_} as v)::[] when
-                    i >= 0 -> E.uninitialized_array v
+                    i >= 0l -> E.uninitialized_array v
                 | _ -> E.runtime_call Js_config.string prim.prim_name args)
            | "caml_string_get"|"caml_string_compare"|"string_of_bytes"
              |"bytes_of_string"|"caml_is_printable"
              |"caml_string_of_char_array"|"caml_fill_string"
              |"caml_blit_string"|"caml_blit_bytes" ->
                E.runtime_call Js_config.string prim.prim_name args
-           | "caml_register_named_value" -> E.unit ()
+           | "caml_register_named_value" -> E.unit
            | "caml_gc_compaction"|"caml_gc_full_major"|"caml_gc_major"
              |"caml_gc_major_slice"|"caml_gc_minor"|"caml_gc_set"
              |"caml_final_register"|"caml_final_release"
              |"caml_backtrace_status"|"caml_get_exception_backtrace"
              |"caml_get_exception_raw_backtrace"|"caml_record_backtrace"
              |"caml_convert_raw_backtrace"|"caml_get_current_callstack" ->
-               E.unit ()
+               E.unit
            | "caml_gc_counters" ->
                Js_of_lam_tuple.make
                  (let open E in
@@ -6548,33 +6744,33 @@ include
            | "caml_gc_get" ->
                Js_of_lam_record.make NA
                  (let open E in
-                    [("minor_heap_size", (int 0));
-                    ("major_heap_increment", (int 0));
-                    ("space_overhead", (int 0));
-                    ("verbose", (int 0));
-                    ("max_overhead", (int 0));
-                    ("stack_limit", (int 0));
-                    ("allocation_policy", (int 0))])
+                    [("minor_heap_size", zero_int_literal);
+                    ("major_heap_increment", zero_int_literal);
+                    ("space_overhead", zero_int_literal);
+                    ("verbose", zero_int_literal);
+                    ("max_overhead", zero_int_literal);
+                    ("stack_limit", zero_int_literal);
+                    ("allocation_policy", zero_int_literal)])
            | "caml_set_oo_id" ->
                (match Js_of_lam_exception.match_exception_def args with
                 | Some (exception_str,mutable_flag) ->
                     Js_of_lam_exception.make_exception
-                      (E.prefix_inc
+                      (E.unchecked_prefix_inc
                          (E.runtime_var_vid Js_config.builtin_exceptions
                             "caml_oo_last_id")) exception_str mutable_flag
                 | _ ->
                     E.runtime_call Js_config.builtin_exceptions
                       prim.prim_name args)
            | "caml_sys_const_big_endian" -> E.bool Sys.big_endian
-           | "caml_sys_const_word_size" -> E.int Sys.word_size
-           | "caml_sys_const_ostype_cygwin" -> E.false_
-           | "caml_sys_const_ostype_win32" -> E.false_
-           | "caml_sys_const_ostype_unix" -> E.true_
-           | "caml_is_js" -> E.true_
+           | "caml_sys_const_word_size" -> E.small_int Sys.word_size
+           | "caml_sys_const_ostype_cygwin" -> E.caml_false
+           | "caml_sys_const_ostype_win32" -> E.caml_false
+           | "caml_sys_const_ostype_unix" -> E.caml_true
+           | "caml_is_js" -> E.caml_true
            | "caml_sys_get_config" ->
                Js_of_lam_tuple.make
                  [E.str Sys.os_type;
-                 E.int Sys.word_size;
+                 E.small_int Sys.word_size;
                  E.bool Sys.big_endian]
            | "caml_sys_get_argv" ->
                Js_of_lam_tuple.make
@@ -6601,8 +6797,9 @@ include
            | "caml_obj_block" ->
                (match args with
                 | tag::{ expression_desc = Number (Int { i;_});_}::[] ->
-                    E.make_block tag NA (Ext_list.init i (fun _  -> E.int 0))
-                      NA
+                    E.make_block tag NA
+                      (Ext_list.init (Int32.to_int i)
+                         (fun _  -> E.zero_int_literal)) NA
                 | tag::size::[] -> E.uninitialized_object tag size
                 | _ -> assert false)
            | "caml_format_float"|"caml_nativeint_format"|"caml_int32_format"
@@ -6630,6 +6827,50 @@ include
                 | _ -> assert false)
            | "caml_obj_tag" ->
                (match args with | e::[] -> E.tag e | _ -> assert false)
+           | "unix_tcdrain"|"unix_tcflush"|"unix_setsid"|"unix_tcflow"
+             |"unix_tcgetattr"|"unix_tcsetattr"|"unix_tcsendbreak"
+             |"unix_getprotobynumber"|"unix_getprotobyname"
+             |"unix_getservbyport"|"unix_getservbyname"|"unix_getservbyaddr"
+             |"unix_gethostbyname"|"unix_gethostname"|"unix_getpeername"
+             |"unix_accept"|"unix_bind"|"unix_connect"|"unix_listen"
+             |"unix_shutdown"|"unix_getsockname"|"unix_gethostbyaddr"
+             |"unix_getgrnam"|"unix_getpwuid"|"unix_getgrgid"
+             |"unix_inet_addr_of_string"|"unix_string_of_inet_addr"
+             |"unix_socket"|"unix_socketpair"|"unix_error_message"
+             |"unix_read"|"unix_write"|"unix_single_write"
+             |"unix_set_close_on_exec"|"unix_sigprocmask"|"unix_sigsuspend"
+             |"unix_recv"|"unix_recvfrom"|"unix_send"|"unix_sendto"
+             |"unix_getsockopt"|"unix_setsockopt"|"unix_getaddrinfo"
+             |"unix_getnameinfo"|"unix_waitpid"|"unix_wait"|"unix_fork"
+             |"unix_execv"|"unix_dup"|"unix_close"|"unix_dup2"|"unix_execvp"
+             |"unix_execvpe"|"unix_pipe"|"unix_execve"
+             |"caml_channel_descriptor"|"unix_putenv"|"unix_environment"
+             |"unix_lseek"|"unix_getppid"|"unix_getpid"|"unix_nice"
+             |"unix_open"|"unix_truncate"|"unix_ftruncate"|"unix_stat"
+             |"unix_lstat"|"unix_fstat"|"unix_isatty"|"unix_lseek_64"
+             |"unix_truncate_64"|"unix_ftruncate_64"|"unix_stat_64"
+             |"unix_lstat_64"|"unix_fstat_64"|"unix_unlink"|"unix_rename"
+             |"unix_link"|"unix_chmod"|"unix_fchmod"|"unix_chown"
+             |"unix_fchown"|"unix_umask"|"unix_access"|"unix_set_nonblock"
+             |"unix_clear_nonblock"|"unix_clear_close_on_exec"|"unix_mkdir"
+             |"unix_rmdir"|"unix_chdir"|"unix_getcwd"|"unix_chroot"
+             |"unix_opendir"|"unix_readdir"|"unix_rewinddir"|"unix_closedir"
+             |"unix_mkfifo"|"unix_symlink"|"unix_readlink"|"unix_select"
+             |"unix_lockf"|"unix_kill"|"unix_sigpending"|"unix_time"
+             |"unix_gettimeofday"|"unix_gmtime"|"unix_localtime"
+             |"unix_mktime"|"unix_alarm"|"unix_sleep"|"unix_times"
+             |"unix_utimes"|"unix_getitimer"|"unix_setitimer"|"unix_getuid"
+             |"unix_geteuid"|"unix_setuid"|"unix_getgid"|"unix_getegid"
+             |"unix_setgid"|"unix_getgroups"|"unix_setgroups"
+             |"unix_initgroups"|"unix_getlogin"|"unix_getpwnam" ->
+               E.runtime_call Js_config.unix prim.prim_name args
+           | "caml_ba_init" ->
+               (match args with | e::[] -> E.seq e E.unit | _ -> assert false)
+           | "caml_ba_create"|"caml_ba_get_generic"|"caml_ba_set_generic"
+             |"caml_ba_num_dims"|"caml_ba_dim"|"caml_ba_kind"
+             |"caml_ba_layout"|"caml_ba_sub"|"caml_ba_slice"|"caml_ba_blit"
+             |"caml_ba_fill"|"caml_ba_reshape"|"caml_ba_map_file_bytecode" ->
+               E.runtime_call Js_config.bigarray prim.prim_name args
            | "caml_convert_raw_backtrace_slot"|"caml_bswap16"
              |"caml_int32_bswap"|"caml_nativeint_bswap"|"caml_int64_bswap" ->
                E.runtime_call Js_config.prim prim.prim_name args
@@ -6690,7 +6931,7 @@ include
                 | _ -> assert false)
            | "js_typeof" ->
                (match args with | e::[] -> E.typeof e | _ -> assert false)
-           | "js_dump" -> E.seq (E.dump Log args) (E.unit ())
+           | "js_dump" -> E.seq (E.dump Log args) E.unit
            | "caml_anything_to_string"|"js_anything_to_string" ->
                (match args with
                 | e::[] -> E.anything_to_string e
@@ -6712,7 +6953,15 @@ include
                (match args with | e::[] -> E.obj_length e | _ -> assert false)
            | "js_pure_expr" ->
                (match args with
-                | { expression_desc = Str (_,s) }::[] -> E.raw_js_code s
+                | { expression_desc = Str (_,s) }::[] -> E.raw_js_code Exp s
+                | _ ->
+                    (Ext_log.err __LOC__
+                       "JS.unsafe_js_expr is applied to an non literal string in %s"
+                       (Lam_current_unit.get_file ());
+                     assert false))
+           | "js_pure_stmt" ->
+               (match args with
+                | { expression_desc = Str (_,s) }::[] -> E.raw_js_code Stmt s
                 | _ ->
                     (Ext_log.err __LOC__
                        "JS.unsafe_js_expr is applied to an non literal string in %s"
@@ -6927,9 +7176,9 @@ include
               | ({ desc = Tconstr (p,_,_) },_) when
                   Path.same p Predef.path_bool ->
                   (match arg.expression_desc with
-                   | Number (Int { i = 0;_}) -> [E.false_]
-                   | Number _ -> [E.true_]
-                   | _ -> [E.econd arg E.true_ E.false_])
+                   | Number (Int { i = 0l;_}) -> [E.caml_false]
+                   | Number _ -> [E.caml_true]
+                   | _ -> [E.econd arg E.caml_true E.caml_false])
               | (_,`Optional label) ->
                   (match arg.expression_desc with
                    | Array (x::y::[],_mutable_flag) -> [y]
@@ -6957,14 +7206,15 @@ include
                             | (Tconstr (p,_,_),`Label label) when
                                 Path.same p Predef.path_bool ->
                                 (match arg.expression_desc with
-                                 | Number (Int { i = 0;_}) ->
-                                     Some ((Js_op.Key label), E.false_)
+                                 | Number (Int { i = 0l;_}) ->
+                                     Some ((Js_op.Key label), E.caml_false)
                                  | Number _ ->
-                                     Some ((Js_op.Key label), E.true_)
+                                     Some ((Js_op.Key label), E.caml_true)
                                  | _ ->
                                      Some
                                        ((Js_op.Key label),
-                                         (E.econd arg E.true_ E.false_)))
+                                         (E.econd arg E.caml_true
+                                            E.caml_false)))
                             | (_,`Label label) ->
                                 Some ((Js_op.Key label), arg)
                             | (_,`Optional label) ->
@@ -7072,7 +7322,7 @@ include
               E.int
                 ~comment:("\"" ^
                             ((Ext_string.escaped (String.make 1 i)) ^ "\""))
-                ~c:i (Char.code i)
+                ~c:i (Int32.of_int @@ (Char.code i))
             let caml_char_of_int ?comment  (v : J.expression) = v
             let caml_char_to_int ?comment  v = v
             let ref_string e e1 = E.char_to_int (E.string_access e e1)
@@ -7093,8 +7343,8 @@ include
         [@@@ocaml.text
           " Compile a special representation in OCaml when all fields are of type [float] \n    check the invariant in {!Js_of_lam_array.make_array}\n"]
         val set_double_field :
-          J.expression -> int -> J.expression -> J.expression
-        val get_double_feild : J.expression -> int -> J.expression
+          J.expression -> J.jsint -> J.expression -> J.expression
+        val get_double_feild : J.expression -> J.jsint -> J.expression
       end =
       struct
         module E = Js_exp_make
@@ -7109,8 +7359,9 @@ include
           Js_op.mutable_flag ->
             Lambda.tag_info ->
               J.expression -> J.expression list -> J.expression
-        val field : J.expression -> int -> J.expression
-        val set_field : J.expression -> int -> J.expression -> J.expression
+        val field : J.expression -> J.jsint -> J.expression
+        val set_field :
+          J.expression -> J.jsint -> J.expression -> J.expression
       end =
       struct
         module E = Js_exp_make
@@ -7121,6 +7372,76 @@ include
           | (_,_) -> E.make_block tag tag_info args mutable_flag
         let field e i = E.index e i
         let set_field e i e0 = E.assign (E.index e i) e0
+      end 
+    module Js_long :
+      sig
+        val make_const : lo:Int32.t -> hi:Int32.t -> J.expression
+        val of_const : Int64.t -> J.expression
+        val to_int32 : J.expression list -> J.expression
+        val of_int32 : J.expression list -> J.expression
+        val comp : Lambda.comparison -> J.expression list -> J.expression
+        val neg : J.expression list -> J.expression
+        val add : J.expression list -> J.expression
+        val sub : J.expression list -> J.expression
+        val mul : J.expression list -> J.expression
+        val div : J.expression list -> J.expression
+        val xor : J.expression list -> J.expression
+        val mod_ : J.expression list -> J.expression
+        val lsl_ : J.expression list -> J.expression
+        val lsr_ : J.expression list -> J.expression
+        val asr_ : J.expression list -> J.expression
+        val and_ : J.expression list -> J.expression
+        val or_ : J.expression list -> J.expression
+      end =
+      struct
+        module E = Js_exp_make
+        let make_const ~lo  ~hi  =
+          E.make_block ~comment:"int64" E.zero_int_literal Record
+            [E.int lo; E.int hi] Immutable
+        let make ~lo  ~hi  =
+          E.make_block ~comment:"int64" E.zero_int_literal Record [lo; hi]
+            Immutable
+        let get_lo x = E.index x 0l
+        let get_hi x = E.index x 1l
+        let of_const (v : Int64.t) =
+          make_const ~lo:(Int64.to_int32 v)
+            ~hi:(Int64.to_int32 (Int64.shift_right v 32))
+        let to_int32 args =
+          match args with | v::[] -> E.index v 0l | _ -> assert false
+        let of_int32 (args : J.expression list) =
+          match args with
+          | { expression_desc = Number (Int { i });_}::[] ->
+              if i < 0l
+              then make_const ~lo:i ~hi:(-1l)
+              else make_const ~lo:i ~hi:0l
+          | _ -> E.runtime_call Js_config.int64 "of_int32" args
+        let comp (cmp : Lambda.comparison) args =
+          E.runtime_call Js_config.int64
+            (match cmp with
+             | Ceq  -> "eq"
+             | Cneq  -> "neq"
+             | Clt  -> "lt"
+             | Cgt  -> "gt"
+             | Cle  -> "le"
+             | Cge  -> "ge") args
+        let neg args = E.runtime_call Js_config.int64 "neg" args
+        let add args = E.runtime_call Js_config.int64 "add" args
+        let sub args = E.runtime_call Js_config.int64 "sub" args
+        let mul args = E.runtime_call Js_config.int64 "mul" args
+        let div args = E.runtime_call Js_config.int64 "div" args
+        let bit_op op args =
+          match args with
+          | l::r::[] ->
+              make ~lo:(op (get_lo l) (get_lo r))
+                ~hi:(op (get_hi l) (get_hi r))
+          | _ -> assert false
+        let xor = bit_op E.int32_bxor
+        let or_ = bit_op E.int32_bor
+        let and_ = bit_op E.int32_band
+        let lsl_ args = E.runtime_call Js_config.int64 "lsl_" args
+        let lsr_ args = E.runtime_call Js_config.int64 "lsr_" args
+        let asr_ args = E.runtime_call Js_config.int64 "asr_" args
+        let mod_ args = E.runtime_call Js_config.int64 "mod_" args
       end 
     module Lam_compile_primitive :
       sig
@@ -7134,8 +7455,7 @@ include
         let decorate_side_effect
           ({ st; should_return;_} : Lam_compile_defs.cxt) e =
           (match (st, should_return) with
-           | (_,True _)|((Assign _|Declare _|NeedValue ),_) ->
-               E.seq e (E.unit ())
+           | (_,True _)|((Assign _|Declare _|NeedValue ),_) -> E.seq e E.unit
            | (EffectCall ,False ) -> e : E.t)
         let translate (({ meta = { env;_};_} as cxt) : Lam_compile_defs.cxt)
           (prim : Lambda.primitive) (args : J.expression list) =
@@ -7143,47 +7463,68 @@ include
            | Pmakeblock (tag,tag_info,mutable_flag) ->
                Js_of_lam_block.make_block
                  (Js_op_util.of_lam_mutable_flag mutable_flag) tag_info
-                 (E.int tag) args
+                 (E.small_int tag) args
            | Pfield i ->
                (match args with
-                | e::[] -> Js_of_lam_block.field e i
+                | e::[] -> Js_of_lam_block.field e (Int32.of_int i)
                 | _ -> assert false)
-           | Pnegint |Pnegbint _|Pnegfloat  ->
+           | Pnegbint (Pint32 ) ->
                (match args with
-                | e::[] -> E.int32_minus (E.int 0) e
+                | e::[] -> E.int32_minus E.zero_int_literal e
                 | _ -> assert false)
-           | Pnot  ->
-               (match args with | e::[] -> E.not e | _ -> assert false)
-           | Poffsetint n ->
+           | Pnegbint (Pnativeint ) ->
                (match args with
-                | e::[] -> E.int32_add e (E.int n)
+                | e::[] -> E.unchecked_int32_minus E.zero_int_literal e
                 | _ -> assert false)
-           | Poffsetref n ->
+           | Pnegbint (Pint64 ) -> Js_long.neg args
+           | Pnegint  ->
                (match args with
-                | e::[] ->
-                    let v = Js_of_lam_block.field e 0 in
-                    E.assign v (E.int32_add v (E.int n))
+                | e::[] -> E.unchecked_int32_minus E.zero_int_literal e
                 | _ -> assert false)
-           | Paddint |Paddbint _ ->
+           | Pnegfloat  ->
+               (match args with
+                | e::[] -> E.float_minus E.zero_float_lit e
+                | _ -> assert false)
+           | Paddint  ->
+               (match args with
+                | e1::e2::[] -> E.unchecked_int32_add e1 e2
+                | _ -> assert false)
+           | Paddbint (Pint32 ) ->
                (match args with
                 | e1::e2::[] -> E.int32_add e1 e2
                 | _ -> assert false)
+           | Paddbint (Pnativeint ) ->
+               (match args with
+                | e1::e2::[] -> E.unchecked_int32_add e1 e2
+                | _ -> assert false)
+           | Paddbint (Pint64 ) -> Js_long.add args
            | Paddfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_add e1 e2
                 | _ -> assert false)
-           | Psubint |Psubbint _ ->
+           | Psubint  ->
+               (match args with
+                | e1::e2::[] -> E.unchecked_int32_minus e1 e2
+                | _ -> assert false)
+           | Psubbint (Pint32 ) ->
                (match args with
                 | e1::e2::[] -> E.int32_minus e1 e2
                 | _ -> assert false)
+           | Psubbint (Pnativeint ) ->
+               (match args with
+                | e1::e2::[] -> E.unchecked_int32_minus e1 e2
+                | _ -> assert false)
+           | Psubbint (Pint64 ) -> Js_long.sub args
            | Psubfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_minus e1 e2
                 | _ -> assert false)
-           | Pmulint |Pmulbint _ ->
+           | Pmulint |Pmulbint (Lambda.Pnativeint )|Pmulbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_mul e1 e2
                 | _ -> assert false)
+           | Pmulbint (Pint64 ) -> Js_long.mul args
            | Pmulfloat  ->
                (match args with
                 | e1::e2::[] -> E.float_mul e1 e2
@@ -7192,37 +7533,88 @@ include
                (match args with
                 | e1::e2::[] -> E.float_div e1 e2
                 | _ -> assert false)
-           | Pdivint |Pdivbint _ ->
+           | Pdivint |Pdivbint (Lambda.Pnativeint )|Pdivbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_div e1 e2
                 | _ -> assert false)
-           | Pmodint |Pmodbint _ ->
+           | Pdivbint (Lambda.Pint64 ) -> Js_long.div args
+           | Pmodint |Pmodbint (Lambda.Pnativeint )|Pmodbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_mod e1 e2
                 | _ -> assert false)
-           | Plslint |Plslbint _ ->
+           | Pmodbint (Lambda.Pint64 ) -> Js_long.mod_ args
+           | Plslint |Plslbint (Lambda.Pnativeint )|Plslbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_lsl e1 e2
                 | _ -> assert false)
-           | Plsrint |Plsrbint _ ->
+           | Plslbint (Lambda.Pint64 ) -> Js_long.lsl_ args
+           | Plsrint |Plsrbint (Lambda.Pnativeint )|Plsrbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_lsr e1 e2
                 | _ -> assert false)
-           | Pasrint |Pasrbint _ ->
+           | Plsrbint (Lambda.Pint64 ) -> Js_long.lsr_ args
+           | Pasrint |Pasrbint (Lambda.Pnativeint )|Pasrbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_asr e1 e2
                 | _ -> assert false)
-           | Pandint |Pandbint _ ->
+           | Pasrbint (Lambda.Pint64 ) -> Js_long.asr_ args
+           | Pandint |Pandbint (Lambda.Pnativeint )|Pandbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_band e1 e2
                 | _ -> assert false)
-           | Porint |Porbint _ ->
+           | Pandbint (Lambda.Pint64 ) -> Js_long.and_ args
+           | Porint |Porbint (Lambda.Pnativeint )|Porbint (Lambda.Pint32 ) ->
                (match args with
                 | e1::e2::[] -> E.int32_bor e1 e2
                 | _ -> assert false)
-           | Pxorint |Pxorbint _ ->
+           | Porbint (Lambda.Pint64 ) -> Js_long.or_ args
+           | Pxorint |Pxorbint (Lambda.Pnativeint )|Pxorbint (Lambda.Pint32 )
+               ->
                (match args with
                 | e1::e2::[] -> E.int32_bxor e1 e2
+                | _ -> assert false)
+           | Pxorbint (Lambda.Pint64 ) -> Js_long.xor args
+           | Pbintcomp (Pnativeint ,cmp)|Pfloatcomp cmp|Pintcomp cmp
+             |Pbintcomp (Pint32 ,cmp) ->
+               (match args with
+                | e1::e2::[] -> E.int_comp cmp e1 e2
+                | _ -> assert false)
+           | Pbintcomp (Pint64 ,cmp) -> Js_long.comp cmp args
+           | Pcvtbint ((Pint32 |Pnativeint ),Pint64 ) ->
+               Js_long.of_int32 args
+           | Pcvtbint (Pint64 ,Pint64 )|Pcvtbint
+             ((Pnativeint |Pint32 ),(Pnativeint |Pint32 )) ->
+               (match args with | e0::[] -> e0 | _ -> assert false)
+           | Pcvtbint (Pint64 ,(Pnativeint |Pint32 )) ->
+               Js_long.to_int32 args
+           | Pintoffloat  ->
+               (match args with | e::[] -> e | _ -> assert false)
+           | Pbintofint (Pint64 ) -> Js_long.of_int32 args
+           | Pbintofint (Pnativeint |Pint32 )|Pintofbint (Pnativeint )
+             |Pintofbint (Pint32 )|Pfloatofint  ->
+               (match args with | e::[] -> e | _ -> assert false)
+           | Pintofbint (Pint64 ) -> Js_long.to_int32 args
+           | Pabsfloat  ->
+               (match args with
+                | e::[] -> E.math "abs" [e]
+                | _ -> assert false)
+           | Pnot  ->
+               (match args with | e::[] -> E.not e | _ -> assert false)
+           | Poffsetint n ->
+               (match args with
+                | e::[] -> E.unchecked_int32_add e (E.small_int n)
+                | _ -> assert false)
+           | Poffsetref n ->
+               (match args with
+                | e::[] ->
+                    let v = Js_of_lam_block.field e 0l in
+                    E.assign v (E.unchecked_int32_add v (E.small_int n))
                 | _ -> assert false)
            | Psequand  ->
                (match args with
@@ -7238,7 +7630,7 @@ include
                 | _ -> assert false)
            | Pidentity  -> (match args with | e::[] -> e | _ -> assert false)
            | Pmark_ocaml_object  ->
-               (match args with | e::[] -> E.tag_ml_obj e | _ -> assert false)
+               (match args with | e::[] -> e | _ -> assert false)
            | Pchar_of_int  ->
                (match args with
                 | e::[] -> Js_of_lam_string.caml_char_of_int e
@@ -7283,10 +7675,6 @@ include
                 | e::e1::[] -> Js_of_lam_string.ref_string e e1
                 | _ -> assert false)
            | Pignore  -> (match args with | e::[] -> e | _ -> assert false)
-           | Pbintcomp (_,cmp)|Pfloatcomp cmp|Pintcomp cmp ->
-               (match args with
-                | e1::e2::[] -> E.int_comp cmp e1 e2
-                | _ -> assert false)
            | Pgetglobal i -> Lam_compile_global.get_exp (i, env, false)
            | Praise _raise_kind -> assert false
            | Prevapply _ ->
@@ -7298,9 +7686,8 @@ include
                 | f::arg::[] -> E.call f [arg]
                 | _ -> assert false)
            | Ploc kind -> assert false
-           | Pintoffloat  ->
-               (match args with | e::[] -> e | _ -> assert false)
-           | Parraylength _ ->
+           | Parraylength (Pgenarray )|Parraylength (Paddrarray )
+             |Parraylength (Pintarray )|Parraylength (Pfloatarray ) ->
                (match args with
                 | e::[] -> E.array_length e
                 | _ -> assert false)
@@ -7308,17 +7695,20 @@ include
                (match args with
                 | e0::e1::[] ->
                     decorate_side_effect cxt
-                      (Js_of_lam_block.set_field e0 i e1)
+                      (Js_of_lam_block.set_field e0 (Int32.of_int i) e1)
                 | _ -> assert false)
            | Psetfloatfield i ->
                (match args with
                 | e::e0::[] ->
                     decorate_side_effect cxt
-                      (Js_of_lam_float_record.set_double_field e i e0)
+                      (Js_of_lam_float_record.set_double_field e
+                         (Int32.of_int i) e0)
                 | _ -> assert false)
            | Pfloatfield i ->
                (match args with
-                | e::[] -> Js_of_lam_float_record.get_double_feild e i
+                | e::[] ->
+                    Js_of_lam_float_record.get_double_feild e
+                      (Int32.of_int i)
                 | _ -> assert false)
            | Parrayrefu _kind|Parrayrefs _kind ->
                (match args with
@@ -7331,12 +7721,6 @@ include
                     (decorate_side_effect cxt) @@
                       (Js_of_lam_array.set_array e e0 e1)
                 | _ -> assert false)
-           | Pbintofint _|Pintofbint _|Pfloatofint  ->
-               (match args with | e::[] -> e | _ -> assert false)
-           | Pabsfloat  ->
-               (match args with
-                | e::[] -> E.math "abs" [e]
-                | _ -> assert false)
            | Pccall ({ prim_attributes; prim_ty } as prim) ->
                Lam_compile_external_call.translate cxt prim args
            | Pisint  ->
@@ -7345,22 +7729,60 @@ include
                 | _ -> assert false)
            | Pctconst ct ->
                (match ct with
-                | Big_endian  -> if Sys.big_endian then E.true_ else E.false_
-                | Word_size  -> E.int Sys.word_size
-                | Ostype_unix  -> if Sys.unix then E.true_ else E.false_
-                | Ostype_win32  -> if Sys.win32 then E.true_ else E.false_
-                | Ostype_cygwin  -> if Sys.cygwin then E.true_ else E.false_)
-           | Pcvtbint (_boxed_integer_source,_boxed_integer_dest) ->
-               (match args with | e0::[] -> e0 | _ -> assert false)
+                | Big_endian  ->
+                    if Sys.big_endian then E.caml_true else E.caml_false
+                | Word_size  -> E.small_int Sys.word_size
+                | Ostype_unix  ->
+                    if Sys.unix then E.caml_true else E.caml_false
+                | Ostype_win32  ->
+                    if Sys.win32 then E.caml_true else E.caml_false
+                | Ostype_cygwin  ->
+                    if Sys.cygwin then E.caml_true else E.caml_false)
            | Psetglobal _ -> assert false
-           | Pduprecord ((Record_regular |Record_float ),_) ->
-               (match args with | e::[] -> E.array_copy e | _ -> assert false)
-           | Plazyforce |Pbittest |Pbigarrayref (_,_,_,_)|Pbigarrayset
-             (_,_,_,_)|Pbigarraydim _|Pstring_load_16 _|Pstring_load_32 _
+           | Pduprecord ((Record_regular |Record_float ),0)|Pduprecord
+             ((Record_regular |Record_float ),_) ->
+               (match args with
+                | e::[] -> Js_of_lam_record.copy e
+                | _ -> assert false)
+           | Pbigarrayref (unsafe,dimension,kind,layout) ->
+               (match (dimension, kind, layout, unsafe) with
+                | (1,(Pbigarray_float32 |Pbigarray_float64 |Pbigarray_sint8 
+                      |Pbigarray_uint8 |Pbigarray_sint16 |Pbigarray_uint16 
+                      |Pbigarray_int32 |Pbigarray_int64 |Pbigarray_caml_int 
+                      |Pbigarray_native_int |Pbigarray_complex32 
+                      |Pbigarray_complex64 ),Pbigarray_c_layout
+                   ,_) ->
+                    (match args with
+                     | x::indx::[] -> Js_of_lam_array.ref_array x indx
+                     | _ -> assert false)
+                | (_,_,_,_) ->
+                    E.runtime_call Js_config.bigarray
+                      ("caml_ba_get_" ^ (string_of_int dimension)) args)
+           | Pbigarrayset (unsafe,dimension,kind,layout) ->
+               (match (dimension, kind, layout, unsafe) with
+                | (1,(Pbigarray_float32 |Pbigarray_float64 |Pbigarray_sint8 
+                      |Pbigarray_uint8 |Pbigarray_sint16 |Pbigarray_uint16 
+                      |Pbigarray_int32 |Pbigarray_int64 |Pbigarray_caml_int 
+                      |Pbigarray_native_int |Pbigarray_complex32 
+                      |Pbigarray_complex64 ),Pbigarray_c_layout
+                   ,_) ->
+                    (match args with
+                     | x::index::value::[] ->
+                         Js_of_lam_array.set_array x index value
+                     | _ -> assert false)
+                | (_,_,_,_) ->
+                    E.runtime_call Js_config.bigarray
+                      ("caml_ba_set_" ^ (string_of_int dimension)) args)
+           | Pbigarraydim i ->
+               E.runtime_call Js_config.bigarray
+                 ("caml_ba_dim_" ^ (string_of_int i)) args
+           | Plazyforce |Pbittest |Pstring_load_16 _|Pstring_load_32 _
              |Pstring_load_64 _|Pstring_set_16 _|Pstring_set_32 _
              |Pstring_set_64 _|Pbigstring_load_16 _|Pbigstring_load_32 _
              |Pbigstring_load_64 _|Pbigstring_set_16 _|Pbigstring_set_32 _
-             |Pbigstring_set_64 _|Pbswap16 |Pbbswap _|Pint_as_pointer  ->
+             |Pbigstring_set_64 _|Pint_as_pointer |Pbswap16 |Pbbswap
+             (Lambda.Pnativeint )|Pbbswap (Lambda.Pint32 )|Pbbswap
+             (Lambda.Pint64 ) ->
                let comment = "Missing primitve" in
                let s = Lam_util.string_of_primitive prim in
                let warn = Printf.sprintf "%s: %s\n" comment s in
@@ -7378,19 +7800,19 @@ include
           (match x with
            | Const_base c ->
                (match c with
-                | Const_int i -> E.int i
+                | Const_int i -> E.int (Int32.of_int i)
                 | Const_char i -> Js_of_lam_string.const_char i
-                | Const_int32 i -> E.float (Int32.to_string i)
-                | Const_int64 i -> E.float (Int64.to_string i)
+                | Const_int32 i -> E.int i
+                | Const_int64 i -> Js_long.of_const i
                 | Const_nativeint i -> E.float (Nativeint.to_string i)
                 | Const_float f -> E.float f
                 | Const_string (i,_) -> E.str i)
            | Const_pointer (c,pointer_info) ->
                E.int
                  ?comment:(Lam_compile_util.comment_of_pointer_info
-                             pointer_info) c
+                             pointer_info) (Int32.of_int c)
            | Const_block (tag,tag_info,xs) ->
-               Js_of_lam_block.make_block NA tag_info (E.int tag)
+               Js_of_lam_block.make_block NA tag_info (E.small_int tag)
                  (List.map translate xs)
            | Const_float_array ars ->
                Js_of_lam_array.make_array Mutable Pfloatarray
@@ -7699,13 +8121,13 @@ include
                                    E.string_append e0 e1
                                | ({ name = "Pervasives";_},"print_endline",(
                                   _::[] as args)) ->
-                                   E.seq (E.dump Log args) (E.unit ())
+                                   E.seq (E.dump Log args) E.unit
                                | ({ name = "Pervasives";_},"prerr_endline",(
                                   _::[] as args)) ->
-                                   E.seq (E.dump Error args) (E.unit ())
+                                   E.seq (E.dump Error args) E.unit
                                | ({ name = "CamlinternalMod";_},"update_mod",shape::_module::_::[])
                                    when Js_of_lam_module.is_empty_shape shape
-                                   -> E.unit ()
+                                   -> E.unit
                                | ({ name = "CamlinternalMod";_},"init_mod",_::shape::[])
                                    when Js_of_lam_module.is_empty_shape shape
                                    -> E.dummy_obj ()
@@ -7774,7 +8196,7 @@ include
                           (fun x  ->
                              try Ident_map.find x ret.new_params
                              with | Not_found  -> x) params)
-                       [S.while_ E.true_
+                       [S.while_ E.caml_true
                           (Ident_map.fold
                              (fun old  ->
                                 fun new_param  ->
@@ -7920,7 +8342,7 @@ include
                                                           })))) in
                                     [switch ?default ?declaration v body]))
         and compile_cases cxt =
-          compile_general_cases E.int E.int_equal cxt
+          compile_general_cases (fun x  -> E.small_int x) E.int_equal cxt
             (fun ?default  ->
                fun ?declaration  ->
                  fun e  ->
@@ -8339,7 +8761,8 @@ include
                                         should_return = False
                                       } x) largs (args : Ident.t list)) in
                     args_code ++
-                      (Js_output.make [S.assign exit_id (E.int order_id)]
+                      (Js_output.make
+                         [S.assign exit_id (E.small_int order_id)]
                          ~value:E.undefined)
                 | exception Not_found  ->
                     Js_output.make [S.unknown_lambda ~comment:"error" lam])
@@ -8352,7 +8775,8 @@ include
                    code_table in
                let (jmp_table,handlers) =
                  Lam_compile_defs.add_jmps (exit_id, code_table) jmp_table in
-               let declares = (S.define ~kind:Variable exit_id (E.int 0)) ::
+               let declares =
+                 (S.define ~kind:Variable exit_id E.zero_int_literal) ::
                  (List.map (fun x  -> S.declare_variable ~kind:Variable x)
                     bindings) in
                (match st with
@@ -8410,8 +8834,7 @@ include
                          Js_output.make (block @ [S.return_unit ()])
                            ~finished:True
                      | (EffectCall ,_) -> Js_output.make block
-                     | (NeedValue ,_) ->
-                         Js_output.make block ~value:(E.unit ()))
+                     | (NeedValue ,_) -> Js_output.make block ~value:E.unit)
                 | _ -> assert false)
            | Lfor (id,start,finish,direction,body) ->
                let block =
@@ -8471,7 +8894,7 @@ include
                     Js_output.make (block @ [S.declare_unit x])
                 | (Assign x,False ) ->
                     Js_output.make (block @ [S.assign_unit x])
-                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
+                | (NeedValue ,_) -> Js_output.make block ~value:E.unit)
            | Lassign (id,lambda) ->
                let block =
                  match lambda with
@@ -8479,7 +8902,7 @@ include
                      ->
                      [S.exp
                         (E.assign (E.var id)
-                           (E.int32_add (E.var id) (E.int v)))]
+                           (E.unchecked_int32_add (E.var id) (E.small_int v)))]
                  | _ ->
                      (match compile_lambda
                               {
@@ -8501,7 +8924,7 @@ include
                     Js_output.make (block @ [S.declare_unit x])
                 | (Assign x,False ) ->
                     Js_output.make (block @ [S.assign_unit x])
-                | (NeedValue ,_) -> Js_output.make block ~value:(E.unit ()))
+                | (NeedValue ,_) -> Js_output.make block ~value:E.unit)
            | Ltrywith (lam,id,catch) ->
                let aux st =
                  [S.try_
@@ -8546,8 +8969,8 @@ include
                         (List.concat args_code)
                         (E.call
                            (Js_of_lam_array.ref_array
-                              (Js_of_lam_record.field obj' 0) label) (obj' ::
-                           args))
+                              (Js_of_lam_record.field obj' 0l) label) (obj'
+                           :: args))
                   | Cached |Public (None ) ->
                       let get =
                         E.runtime_ref Js_config.oo "caml_get_public_method" in
@@ -8555,8 +8978,8 @@ include
                       let () = incr method_cache_id in
                       Js_output.handle_block_return st should_return lam
                         (List.concat args_code)
-                        (E.call (E.call get [obj'; label; E.int cache]) (obj'
-                           :: args))
+                        (E.call (E.call get [obj'; label; E.small_int cache])
+                           (obj' :: args))
                   | Public (Some name) ->
                       let cont =
                         Js_output.handle_block_return st should_return lam
@@ -8586,8 +9009,7 @@ include
                                       [return
                                          (E.seq
                                             (Js_array.set_array obj'
-                                               (E.var i) (E.var v))
-                                            (E.unit ()))])
+                                               (E.var i) (E.var v)) E.unit)])
                              | i::[] ->
                                  let v = Ext_ident.create "v" in
                                  E.fun_ [v]
@@ -8595,7 +9017,7 @@ include
                                       [return
                                          (E.seq
                                             (Js_array.set_array obj' i
-                                               (E.var v)) (E.unit ()))])
+                                               (E.var v)) E.unit)])
                              | x::y::[] -> Js_array.set_array obj' x y
                              | x::y::rest ->
                                  E.call (Js_array.set_array obj' x y) rest in
@@ -8657,8 +9079,8 @@ include
                            let cache = !method_cache_id in
                            let () = incr method_cache_id in
                            cont
-                             (E.public_method_call name obj' label cache args))))
-               [@warning "-8"])
+                             (E.public_method_call name obj' label
+                                (Int32.of_int cache) args))))[@warning "-8"])
            | Levent (lam,_lam_event) -> compile_lambda cxt lam
            | Lifused (_,lam) -> compile_lambda cxt lam : Js_output.t)
       end 
@@ -10209,6 +10631,7 @@ include
             method length_object : length_object -> length_object= o#unknown
             method label : label -> label= o#string
             method kind : kind -> kind= o#unknown
+            method jsint : jsint -> jsint= o#unknown
             method int_op : int_op -> int_op= o#unknown
             method ident_info : ident_info -> ident_info= o#unknown
             method ident : ident -> ident= o#unknown
@@ -10299,7 +10722,9 @@ include
               | Str (_x,_x_i1) ->
                   let _x = o#bool _x in
                   let _x_i1 = o#string _x_i1 in Str (_x, _x_i1)
-              | Raw_js_code _x -> let _x = o#string _x in Raw_js_code _x
+              | Raw_js_code (_x,_x_i1) ->
+                  let _x = o#string _x in
+                  let _x_i1 = o#code_info _x_i1 in Raw_js_code (_x, _x_i1)
               | Array (_x,_x_i1) ->
                   let _x = o#list (fun o  -> o#expression) _x in
                   let _x_i1 = o#mutable_flag _x_i1 in Array (_x, _x_i1)
@@ -10339,6 +10764,7 @@ include
                 let _x_i1 = o#required_modules _x_i1 in
                 let _x_i2 = o#option (fun o  -> o#string) _x_i2 in
                 { program = _x; modules = _x_i1; side_effect = _x_i2 }
+            method code_info : code_info -> code_info= o#unknown
             method case_clause :
               'a 'a_out .
                 ('self_type -> 'a -> 'a_out) ->
@@ -10524,7 +10950,7 @@ include
                   ->
                   (match Hashtbl.find self#get_substitution id with
                    | { expression_desc = Caml_block (ls,Immutable ,_,_) } ->
-                       (match List.nth ls i with
+                       (match List.nth ls (Int32.to_int i) with
                         | { expression_desc = (J.Var _|Number _|Str _) } as x
                             -> x
                         | exception _ ->
@@ -11214,6 +11640,7 @@ include
         let predef_string_type = Ast_helper.Typ.var "string"
         let predef_any_type = Ast_helper.Typ.any ()
         let prim = "js_pure_expr"
+        let prim_stmt = "js_pure_stmt"
         let rec unsafe_mapper: Ast_mapper.mapper =
           {
             Ast_mapper.default_mapper with
@@ -11252,7 +11679,48 @@ include
                           |Parsetree.PStr _ ->
                             Location.raise_errorf ~loc
                               "bb.unsafe can only be applied to a string")
-                   | _ -> Ast_mapper.default_mapper.expr mapper e)
+                   | _ -> Ast_mapper.default_mapper.expr mapper e);
+            structure_item =
+              (fun mapper  ->
+                 fun (str : Parsetree.structure_item)  ->
+                   match str.pstr_desc with
+                   | Pstr_extension
+                       (({ txt = "bb.unsafe"; loc },payload),_attrs) ->
+                       (match payload with
+                        | Parsetree.PStr
+                            ({
+                               pstr_desc = Parsetree.Pstr_eval
+                                 (({
+                                     pexp_desc = Pexp_constant (Const_string
+                                       (cont,opt_label));
+                                     pexp_loc; pexp_attributes } as e),_);
+                               pstr_loc }::[])
+                            ->
+                            Ast_helper.Str.eval @@
+                              (Ast_helper.Exp.letmodule
+                                 { txt = tmp_module_name; loc }
+                                 (Ast_helper.Mod.structure
+                                    [Ast_helper.Str.primitive
+                                       (Ast_helper.Val.mk
+                                          { loc; txt = tmp_fn }
+                                          ~prim:[prim_stmt]
+                                          (Ast_helper.Typ.arrow ""
+                                             predef_string_type
+                                             predef_any_type))])
+                                 (Ast_helper.Exp.apply
+                                    (Ast_helper.Exp.ident
+                                       {
+                                         txt =
+                                           (Ldot
+                                              ((Lident tmp_module_name),
+                                                tmp_fn));
+                                         loc
+                                       }) [("", e)]))
+                        | Parsetree.PTyp _|Parsetree.PPat (_,_)
+                          |Parsetree.PStr _ ->
+                            Location.raise_errorf ~loc
+                              "bb.unsafe can only be applied to a string")
+                   | _ -> Ast_mapper.default_mapper.structure_item mapper str)
           }
         let rewrite_signature:
           (Parsetree.signature -> Parsetree.signature) ref =
