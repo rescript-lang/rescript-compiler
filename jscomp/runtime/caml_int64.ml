@@ -49,32 +49,21 @@ let of_int32 (lo : nativeint) =
     {lo ; hi = -1n }
   else {lo ; hi = 0n }
 
+let add
+    ({lo = this_low_; hi = this_high_} : t)
+    ({lo = other_low_; hi = other_high_} : t) =
+  let low = logand (add this_low_ other_low_) 0xFFFFFFFFn in
+  let overflow = if other_low_ < 1n
+    then sub Nativeint.min_int other_low_ < this_low_
+    else sub Nativeint.max_int other_low_ < this_low_
+  in
+  let high = if overflow then
+    logand (add 1n (add this_high_ other_high_)) 0xFFFFFFFFn
+  else
+    logand (add this_high_ other_high_) 0xFFFFFFFFn
+  in
+  { lo = low; hi = high }
 
-let add 
-    ({lo = this_low_; hi = this_high_} : t ) 
-    ({lo = other_low_; hi = other_high_} : t ) = 
-
-  let a48 =  this_high_ >>>  16 in
-  let a32 =  this_high_ &  0xFFFFn in
-  let a16 =  this_low_ >>>  16 in
-  let a00 =  this_low_ &  0xFFFFn in
-
-  let b48 =  other_high_ >>>   16 in
-  let b32 =  other_high_ &   0xFFFFn in
-  let b16 =  other_low_ >>>  16 in
-  let b00 =  other_low_ &  0xFFFFn in
-
-  begin 
-    let c00 = a00 +   b00 in
-    let c16 = (c00 >>>  16) +  a16 +   b16 in
-    let c32 = (c16 >>>  16) +  a32 +   b32 in
-    let c48 = (c32 >>> 16) +  a48 +   b48 in
-    {lo = 
-       logor (( c16 &  0xFFFFn) <<  16)  ( c00 &  0xFFFFn); 
-     hi =  
-       logor (( c48 & 0xFFFFn) <<  16)  ( c32 &  0xFFFFn)
-    }
-  end 
 let neg ({lo; hi} as x) =
   if x == min_int then 
     min_int 
