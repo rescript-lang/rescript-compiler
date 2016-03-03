@@ -1506,7 +1506,7 @@ let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) =
      | NodeJS -> 
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 
-            (node_program f program)
+           node_program f program
            (* amd_program f program *)
          | _ -> amd_program f program
        end ) ;

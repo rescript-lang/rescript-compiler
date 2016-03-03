@@ -1,88 +1,95 @@
-// Generated CODE, PLEASE EDIT WITH CARE
-'use strict';
+(* BuckleScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
 
-var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+(* Author: Hongbo Zhang  *)
 
-function caml_array_bound_error() {
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        "index out of bounds"
-      ];
-}
+ (* Bigarray. *)
+ (* Note this is  temporary and does not get tested,  *)
+ (* we will replace this part with ocaml itself instead *)
 
-function caml_invalid_argument(s) {
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
-        s
-      ];
-}
+ (* - all bigarray types including Int64 and Complex. *)
+ (* - fortran + c layouts *)
+ (* - sub/slice/reshape *)
+ (* - retain fast path for 1d array access *)
 
-function caml_ba_get_size(dims) {
-  var size = 1;
-  for(var i = 0 ,i_finish = dims.length - 1; i<= i_finish; ++i){
-    var v = dims[i];
-    if (v < 0) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "Bigarray.create: negative dimension"
-          ];
-    }
-    else {
-      size = size * v;
-    }
-  }
-  return size;
-}
-
-function index_offset_c(n_dims, dims, index) {
-  var offs = 0;
-  if (n_dims !== index.length) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Bigarray.get/set: bad number of dimensions"
-        ];
-  }
-  for(var i = 0 ,i_finish = n_dims - 1; i<= i_finish; ++i){
-    var index_j = index[i];
-    var dim_j = dims[i];
-    if (index_j < 0 || index_j >= dim_j) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "index out of bounds"
-          ];
-    }
-    else {
-      offs = offs * dim_j + index_j;
-    }
-  }
-  return offs;
-}
-
-function index_offset_fortran(n_dims, dims, index) {
-  var offs = 0;
-  if (n_dims !== index.length) {
-    throw [
-          Caml_builtin_exceptions.invalid_argument,
-          "Bigarray.get/set: bad number of dimensions"
-        ];
-  }
-  for(var i = n_dims - 1; i>= 0; --i){
-    var index_j = index[i];
-    var dim_j = dims[i];
-    if (index_j < 1 || index_j > dim_j) {
-      throw [
-            Caml_builtin_exceptions.invalid_argument,
-            "index out of bounds"
-          ];
-    }
-    else {
-      offs = offs * dim_j + (index_j - 1);
-    }
-  }
-  return offs;
-}
+ (* Note; int64+complex support if provided by allocating a second TypedArray *)
+ (* Note; accessor functions are selected when the bigarray is created.  It is assumed *)
+ (*       that this results in just a function pointer and will thus be fast. *)
 
 
+
+let caml_array_bound_error () = 
+  raise (Invalid_argument "index out of bounds")
+
+let caml_invalid_argument s = 
+  raise (Invalid_argument s)
+type num = nativeint
+open Nativeint
+
+let caml_ba_get_size (dims : num array) :  num = 
+  let size = ref 1n in 
+  for i = 0 to Array.length dims - 1  do 
+    let v = Array.unsafe_get dims i in
+    if v < 0n then
+      caml_invalid_argument "Bigarray.create: negative dimension"
+    else size := mul !size  v
+  done;
+  !size 
+
+
+
+let index_offset_c 
+    (n_dims : int)
+    (dims : num array) (index : num array) : num  = 
+  let offs = ref 0n in
+  begin 
+    (if n_dims != Array.length index then 
+      caml_invalid_argument "Bigarray.get/set: bad number of dimensions");
+    for i = 0 to n_dims - 1 do
+      let index_j = Array.unsafe_get index i  in
+      let dim_j = Array.unsafe_get dims i in 
+      if index_j < 0n || index_j >= dim_j then 
+        caml_array_bound_error ()
+      else 
+        offs := add (mul !offs dim_j)  index_j
+    done ;
+    !offs     
+  end
+
+let index_offset_fortran 
+    (n_dims : int)
+    (dims : num array) (index : num array) : num  = 
+  let offs = ref 0n in
+  begin 
+    (if n_dims != Array.length index then 
+      caml_invalid_argument "Bigarray.get/set: bad number of dimensions");
+    for i = n_dims -1  downto 0 do
+      let index_j = Array.unsafe_get index i  in
+      let dim_j = Array.unsafe_get dims i in 
+      if index_j < 1n || index_j >  dim_j then 
+        caml_array_bound_error ()
+      else 
+        offs := add (mul !offs dim_j)  (sub index_j 1n )
+    done ;
+    !offs     
+  end
+
+[%%bb.unsafe{|
 
 function $$bigarray_compare(b, total, layout, n_dims, kind, nth_dim, data, data2) {
     if (layout != b.layout)
@@ -598,20 +605,93 @@ function $$caml_ba_reshape(ba, vind) {
 }
 
 
+|}]
 
-;
+open Bigarray
 
-function caml_ba_map_file_bytecode() {
-  throw [
-        Caml_builtin_exceptions.failure,
-        "caml_ba_map_file_bytecode not implemented"
-      ];
-}
+external caml_ba_create : ('a, 'b) kind -> 'c layout -> int array -> 
+  ('a, 'b, 'c) Genarray.t
+= ""
+[@@js.call "$$caml_ba_create"] [@@js.local]
 
-exports.caml_array_bound_error    = caml_array_bound_error;
-exports.caml_invalid_argument     = caml_invalid_argument;
-exports.caml_ba_get_size          = caml_ba_get_size;
-exports.index_offset_c            = index_offset_c;
-exports.index_offset_fortran      = index_offset_fortran;
-exports.caml_ba_map_file_bytecode = caml_ba_map_file_bytecode;
-/*  Not a pure module */
+external caml_ba_get_generic: ('a, 'b, 'c) Genarray. t -> int array -> 'a
+     = ""
+[@@js.call "$$caml_ba_get_generic"] [@@js.local]
+
+external caml_ba_set_generic: ('a, 'b, 'c) Genarray.t -> int array -> 'a -> unit
+     = ""
+[@@js.call "$$caml_ba_set_generic"] [@@js.local]
+
+external caml_ba_num_dims: ('a, 'b, 'c) Genarray.t -> int = ""
+[@@js.call "$$caml_ba_num_dims"] [@@js.local]
+
+external caml_ba_dim: ('a, 'b, 'c) Genarray.t -> int -> int = ""
+[@@js.call "$$caml_ba_dim"] [@@js.local]
+
+external caml_ba_kind: ('a, 'b, 'c) Genarray.t -> ('a, 'b) kind = ""
+[@@js.call "$$caml_ba_kind"] [@@js.local]
+
+external caml_ba_layout: ('a, 'b, 'c) Genarray.t -> 'c layout = ""
+[@@js.call "$$caml_ba_layout"] [@@js.local]
+
+external caml_ba_sub: 
+  ('a, 'b, c_layout) Genarray.t -> int -> int -> ('a, 'b, c_layout) Genarray.t
+     = ""
+[@@js.call "$$caml_ba_sub"] [@@js.local] (* polymorphic*)
+
+external caml_ba_slice: 
+  ('a, 'b, c_layout) Genarray.t -> int array ->
+  ('a, 'b, c_layout) Genarray.t
+     = ""
+[@@js.call "$$caml_ba_slice"] [@@js.local]
+
+external caml_ba_blit: 
+  ('a, 'b, 'c) Genarray.t -> ('a, 'b, 'c) Genarray.t -> unit
+     = ""
+[@@js.call "$$caml_ba_blit"] [@@js.local]
+
+external caml_ba_fill: ('a, 'b, 'c) Genarray.t -> 'a -> unit = ""
+[@@js.call "$$caml_ba_fill"] [@@js.local]
+
+external caml_ba_reshape:
+   ('a, 'b, 'c) Genarray.t -> int array -> ('a, 'b, 'c) Genarray.t
+   = ""
+[@@js.call "$$caml_ba_reshape"] [@@js.local]
+
+
+external caml_ba_get_1 : ('a, 'b, 'c) Genarray.t -> int -> 'a = ""
+[@@js.call "$$caml_ba_get_1"] [@@js.local]
+
+external caml_ba_set_1: ('a, 'b, 'c) Genarray.t -> int -> 'a -> unit
+     = ""
+[@@js.call "$$caml_ba_set_1"] [@@js.local]
+
+external caml_ba_set_2: ('a, 'b, 'c) Genarray.t -> int -> int -> 'a -> unit = ""
+[@@js.call "$$caml_ba_set_2"] [@@js.local]
+
+external caml_ba_get_2 : ('a, 'b, 'c) Genarray.t -> int -> int -> 'a
+     = ""
+[@@js.call "$$caml_ba_get_2"] [@@js.local]
+
+external caml_ba_dim_1: ('a, 'b, 'c) Genarray.t -> int = ""
+[@@js.call "$$caml_ba_dim_1"] [@@js.local]
+
+external caml_ba_dim_2: ('a, 'b, 'c) Genarray.t -> int = ""
+[@@js.call "$$caml_ba_dim_2"] [@@js.local]
+
+external caml_ba_dim_3: ('a, 'b, 'c) Genarray.t -> int = ""
+[@@js.call "$$caml_ba_dim_3"] [@@js.local]
+
+external caml_ba_get_3 : ('a, 'b, 'c) Genarray.t -> int -> int -> int -> 'a
+     = ""
+[@@js.call "$$caml_ba_get_3"] [@@js.local]
+
+external caml_ba_set_3: ('a, 'b, 'c) Genarray.t -> int -> int -> int -> 'a -> unit
+     = "$$caml_ba_set_3"
+[@@js.call "$$caml_ba_set_3"] [@@js.local]
+
+let caml_ba_map_file_bytecode :  
+  Unix.file_descr -> ('a, 'b) Bigarray.kind -> 
+  'c Bigarray.layout -> bool ->
+  int array -> int64 -> ('a, 'b, 'c) Bigarray.Genarray.t = 
+  function _ -> failwith "caml_ba_map_file_bytecode not implemented"
