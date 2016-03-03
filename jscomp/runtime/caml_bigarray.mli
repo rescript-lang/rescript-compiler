@@ -26,47 +26,47 @@ type num = nativeint
 val caml_ba_get_size : num array -> num
 val index_offset_c : int -> num array -> num array -> num
 val index_offset_fortran : int -> num array -> num array -> num
-external caml_ba_create :
+val caml_ba_create :
   ('a, 'b) Bigarray.kind ->
-  'c Bigarray.layout -> int array -> ('a, 'b, 'c) Bigarray.Genarray.t = ""
-external caml_ba_get_generic :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> int array -> 'a = ""
-external caml_ba_set_generic :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> int array -> 'a -> unit = ""
-external caml_ba_num_dims : ('a, 'b, 'c) Bigarray.Genarray.t -> int = ""
-external caml_ba_dim : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int = ""
-external caml_ba_kind :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> ('a, 'b) Bigarray.kind = ""
-external caml_ba_layout :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> 'c Bigarray.layout = ""
-external caml_ba_sub :
+  'c Bigarray.layout -> int array -> ('a, 'b, 'c) Bigarray.Genarray.t
+val caml_ba_get_generic :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> int array -> 'a 
+val caml_ba_set_generic :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> int array -> 'a -> unit
+val caml_ba_num_dims : ('a, 'b, 'c) Bigarray.Genarray.t -> int
+val caml_ba_dim : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int
+val caml_ba_kind :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> ('a, 'b) Bigarray.kind
+val caml_ba_layout :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> 'c Bigarray.layout 
+val caml_ba_sub :
   ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t ->
-  int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t = ""
-external caml_ba_slice :
+  int -> int -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t
+val caml_ba_slice :
   ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t ->
-  int array -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t = ""
-external caml_ba_blit :
+  int array -> ('a, 'b, Bigarray.c_layout) Bigarray.Genarray.t 
+val caml_ba_blit :
   ('a, 'b, 'c) Bigarray.Genarray.t ->
-  ('a, 'b, 'c) Bigarray.Genarray.t -> unit = ""
-external caml_ba_fill : ('a, 'b, 'c) Bigarray.Genarray.t -> 'a -> unit = ""
-external caml_ba_reshape :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> unit 
+val caml_ba_fill : ('a, 'b, 'c) Bigarray.Genarray.t -> 'a -> unit 
+val caml_ba_reshape :
   ('a, 'b, 'c) Bigarray.Genarray.t ->
-  int array -> ('a, 'b, 'c) Bigarray.Genarray.t = ""
-external caml_ba_get_1 : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> 'a = ""
-external caml_ba_set_1 :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> 'a -> unit = ""
-external caml_ba_set_2 :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> 'a -> unit = ""
-external caml_ba_get_2 : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> 'a
-  = ""
-external caml_ba_dim_1 : ('a, 'b, 'c) Bigarray.Genarray.t -> int = ""
-external caml_ba_dim_2 : ('a, 'b, 'c) Bigarray.Genarray.t -> int = ""
-external caml_ba_dim_3 : ('a, 'b, 'c) Bigarray.Genarray.t -> int = ""
-external caml_ba_get_3 :
-  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> int -> 'a = ""
-external caml_ba_set_3 :
+  int array -> ('a, 'b, 'c) Bigarray.Genarray.t
+val caml_ba_get_1 : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> 'a 
+val caml_ba_set_1 :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> 'a -> unit
+val caml_ba_set_2 :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> 'a -> unit 
+val caml_ba_get_2 : ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> 'a
+
+val caml_ba_dim_1 : ('a, 'b, 'c) Bigarray.Genarray.t -> int
+val caml_ba_dim_2 : ('a, 'b, 'c) Bigarray.Genarray.t -> int
+val caml_ba_dim_3 : ('a, 'b, 'c) Bigarray.Genarray.t -> int
+val caml_ba_get_3 :
+  ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> int -> 'a
+val caml_ba_set_3 :
   ('a, 'b, 'c) Bigarray.Genarray.t -> int -> int -> int -> 'a -> unit
-  = "$$caml_ba_set_3"
+
 val caml_ba_map_file_bytecode :
   Unix.file_descr ->
   ('a, 'b) Bigarray.kind ->

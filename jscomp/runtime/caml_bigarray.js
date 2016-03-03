@@ -608,10 +608,115 @@ function caml_ba_map_file_bytecode() {
       ];
 }
 
+function caml_ba_create(prim, prim$1, prim$2) {
+  return $$caml_ba_create(prim, prim$1, prim$2);
+}
+
+function caml_ba_get_generic(prim, prim$1) {
+  return $$caml_ba_get_generic(prim, prim$1);
+}
+
+function caml_ba_set_generic(prim, prim$1, prim$2) {
+  return $$caml_ba_set_generic(prim, prim$1, prim$2);
+}
+
+function caml_ba_num_dims(prim) {
+  return $$caml_ba_num_dims(prim);
+}
+
+function caml_ba_dim(prim, prim$1) {
+  return $$caml_ba_dim(prim, prim$1);
+}
+
+function caml_ba_kind(prim) {
+  return $$caml_ba_kind(prim);
+}
+
+function caml_ba_layout(prim) {
+  return $$caml_ba_layout(prim);
+}
+
+function caml_ba_sub(prim, prim$1, prim$2) {
+  return $$caml_ba_sub(prim, prim$1, prim$2);
+}
+
+function caml_ba_slice(prim, prim$1) {
+  return $$caml_ba_slice(prim, prim$1);
+}
+
+function caml_ba_blit(prim, prim$1) {
+  return $$caml_ba_blit(prim, prim$1);
+}
+
+function caml_ba_fill(prim, prim$1) {
+  return $$caml_ba_fill(prim, prim$1);
+}
+
+function caml_ba_reshape(prim, prim$1) {
+  return $$caml_ba_reshape(prim, prim$1);
+}
+
+function caml_ba_get_1(prim, prim$1) {
+  return $$caml_ba_get_1(prim, prim$1);
+}
+
+function caml_ba_set_1(prim, prim$1, prim$2) {
+  return $$caml_ba_set_1(prim, prim$1, prim$2);
+}
+
+function caml_ba_set_2(prim, prim$1, prim$2, prim$3) {
+  return $$caml_ba_set_2(prim, prim$1, prim$2, prim$3);
+}
+
+function caml_ba_get_2(prim, prim$1, prim$2) {
+  return $$caml_ba_get_2(prim, prim$1, prim$2);
+}
+
+function caml_ba_dim_1(prim) {
+  return $$caml_ba_dim_1(prim);
+}
+
+function caml_ba_dim_2(prim) {
+  return $$caml_ba_dim_2(prim);
+}
+
+function caml_ba_dim_3(prim) {
+  return $$caml_ba_dim_3(prim);
+}
+
+function caml_ba_get_3(prim, prim$1, prim$2, prim$3) {
+  return $$caml_ba_get_3(prim, prim$1, prim$2, prim$3);
+}
+
+function caml_ba_set_3(prim, prim$1, prim$2, prim$3, prim$4) {
+  return $$caml_ba_set_3(prim, prim$1, prim$2, prim$3, prim$4);
+}
+
 exports.caml_array_bound_error    = caml_array_bound_error;
 exports.caml_invalid_argument     = caml_invalid_argument;
 exports.caml_ba_get_size          = caml_ba_get_size;
 exports.index_offset_c            = index_offset_c;
 exports.index_offset_fortran      = index_offset_fortran;
+exports.caml_ba_create            = caml_ba_create;
+exports.caml_ba_get_generic       = caml_ba_get_generic;
+exports.caml_ba_set_generic       = caml_ba_set_generic;
+exports.caml_ba_num_dims          = caml_ba_num_dims;
+exports.caml_ba_dim               = caml_ba_dim;
+exports.caml_ba_kind              = caml_ba_kind;
+exports.caml_ba_layout            = caml_ba_layout;
+exports.caml_ba_sub               = caml_ba_sub;
+exports.caml_ba_slice             = caml_ba_slice;
+exports.caml_ba_blit              = caml_ba_blit;
+exports.caml_ba_fill              = caml_ba_fill;
+exports.caml_ba_reshape           = caml_ba_reshape;
+exports.caml_ba_get_1             = caml_ba_get_1;
+exports.caml_ba_set_1             = caml_ba_set_1;
+exports.caml_ba_set_2             = caml_ba_set_2;
+exports.caml_ba_get_2             = caml_ba_get_2;
+exports.caml_ba_dim_1             = caml_ba_dim_1;
+exports.caml_ba_dim_2             = caml_ba_dim_2;
+exports.caml_ba_dim_3             = caml_ba_dim_3;
+exports.caml_ba_get_3             = caml_ba_get_3;
+exports.caml_ba_set_3             = caml_ba_set_3;
 exports.caml_ba_map_file_bytecode = caml_ba_map_file_bytecode;
 /*  Not a pure module */
