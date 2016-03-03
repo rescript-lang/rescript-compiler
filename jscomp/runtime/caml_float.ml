@@ -139,7 +139,8 @@ function $$caml_frexp_float (x) {
     return [x, exp];
 }
 |}]
-external caml_frexp_float  : float -> float * int = "caml_frexp_float"
+external caml_frexp_float  : float -> float * int = ""
+[@@js.call "$$caml_frexp_float"][@@js.local]
 
 let caml_float_compare (x : float) (y : float ) = 
   if x = y then 0 

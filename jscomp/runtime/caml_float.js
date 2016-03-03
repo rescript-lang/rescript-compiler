@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_float = require("./caml_float");
 
 
 function $$caml_int64_bits_of_float (x) {
@@ -209,7 +208,7 @@ function caml_ldexp_float(prim, prim$1) {
 }
 
 function caml_frexp_float(prim) {
-  return Caml_float.caml_frexp_float(prim);
+  return $$caml_frexp_float(prim);
 }
 
 function caml_hypot_float(prim, prim$1) {
