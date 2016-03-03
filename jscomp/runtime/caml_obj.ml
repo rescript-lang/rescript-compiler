@@ -44,7 +44,7 @@ let caml_obj_dup (x : Obj.t) =
   let len = js_obj_length x in
   let v = js_uninitialized_object (caml_obj_tag x ) len in
   for i = 0 to len - 1 do 
-    Obj.set_field v i (Obj.field v i)
+    Obj.set_field v i (Obj.field x i)
   done;
   v   
 

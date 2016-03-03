@@ -22,27 +22,15 @@ open Nativeint
 
 let caml_bswap16 (x : nativeint) = 
   logor (shift_left (logand x 0x00ffn) 8)
-    (shift_right (logand x 0xff00n) 8)
+    (shift_right_logical (logand x 0xff00n) 8)
 
 let caml_int32_bswap (x : nativeint) = 
   logor (shift_left (logand x  0x000000FFn) 24)
      (logor (shift_left (logand x  0x0000FF00n)  8)
-        (logor (shift_right (logand x  0x00FF0000n)  8) 
-      (shift_right (logand x  0xFF000000n)  24)))
+        (logor (shift_right_logical (logand x  0x00FF0000n)  8) 
+      (shift_right_logical (logand x  0xFF000000n)  24)))
 
 [%%bb.unsafe{|
-function $$caml_int64_bswap(x) {
-  return [
-    255,
-    (((x[3] & 0x0000ff00) >> 8) |
-    ((x[3] & 0x000000ff) << 8) |
-    ((x[2] & 0x00ff0000))),
-    (((x[2] & 0x0000ff00) >> 8) |
-    ((x[2] & 0x000000ff) << 8) |
-    ((x[1] & 0x00ff0000))),
-    (((x[1] & 0x0000ff00) >> 8) |
-    ((x[1] & 0x000000ff) << 8))]
-}
 
 /**
  * Maximum value of #goog.string.hashCode, exclusive. 2^32.
@@ -79,8 +67,6 @@ function $$caml_hash(count, limit, seed, o) {
 }
 |}]
 
-external caml_int64_bswap : Int64.t -> Int64.t = ""
-[@@js.call "$$caml_int64_bswap"] [@@js.local]
 
 external caml_hash : int -> int -> int -> 'a -> int = ""
 [@@js.call "$$caml_hash"] [@@js.local]

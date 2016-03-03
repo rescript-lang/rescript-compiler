@@ -11,4 +11,5 @@ export var asr_: (x : any, numBits : any) => any ;
 export var is_zero: (param : any) => any ;
 export var min_int: any ;
 export var mul: ($$this : any, other : any) => any ;
+export var swap: (param : any) => any ;
 

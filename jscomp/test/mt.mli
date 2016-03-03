@@ -1,7 +1,7 @@
-type _ eq = 
-  | Eq :  'a *'a  -> _ eq
-  | Neq : 'a * 'a -> _ eq
-  | Approx : float * float -> _ eq 
+type + _ eq = 
+  | Eq :  'a *'a  -> 'b eq
+  | Neq : 'a * 'a -> 'c eq
+  | Approx : float * float -> 'd eq 
 
 type 'a pair_suites = (string * (unit -> 'a eq)) list
 

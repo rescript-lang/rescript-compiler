@@ -102,3 +102,5 @@ let mod_ args =
   E.runtime_call Js_config.int64 "mod_" args
 
 
+let swap args = 
+  E.runtime_call Js_config.int64 "swap" args

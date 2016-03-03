@@ -10,7 +10,7 @@ function caml_obj_dup(x) {
     tag: x.tag | 0
   };
   for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-    v[i] = v[i];
+    v[i] = x[i];
   }
   return v;
 }

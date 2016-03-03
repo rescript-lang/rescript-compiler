@@ -38,4 +38,4 @@ val lsr_ : J.expression list -> J.expression
 val asr_ : J.expression list -> J.expression
 val and_ : J.expression list -> J.expression
 val or_ : J.expression list -> J.expression
-
+val swap : J.expression list -> J.expression  

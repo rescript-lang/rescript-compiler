@@ -208,6 +208,12 @@ let rec mul this
         }
       end
 
+
+external bswap32: nativeint -> nativeint = "%bswap_int32"
+
+let swap {lo ; hi } = 
+  {lo = bswap32 hi; hi = bswap32 lo }
+
 (* Dispatched by the compiler, idea: should we do maximum sharing 
 *)
 (* let xor {lo = this_lo; hi= this_hi} {lo = other_lo; hi = other_hi} =  *)

@@ -24,5 +24,5 @@ val caml_hash : int -> int -> int -> 'a -> int
 val caml_bswap16 : nativeint -> nativeint
 val caml_int32_bswap : nativeint -> nativeint
 val caml_nativeint_bswap : nativeint -> nativeint
-val caml_int64_bswap : Int64.t -> Int64.t
+
 val caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc. backtrace_slot
