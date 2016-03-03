@@ -91,14 +91,12 @@ let runtime_set = String_set.of_list [
     "caml_bigarray";
     "caml_format";		
     "caml_oo";		
-    "caml_c_ffi";
     "caml_int64";
     "caml_primitive";
     "caml_utils";
     "caml_builtin_exceptions";
     "caml_exceptions";
     "caml_curry";
-    "caml_file";
     "caml_lexer";
     "caml_parser";
     "caml_string"
