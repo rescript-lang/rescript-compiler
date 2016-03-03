@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_primitive = require("./caml_primitive");
 
 var min_int = /* record */[
   0,
@@ -285,6 +286,13 @@ function mul(_this, _other) {
   };
 }
 
+function swap(param) {
+  return /* record */[
+          Caml_primitive.caml_int32_bswap(param[1]),
+          Caml_primitive.caml_int32_bswap(param[0])
+        ];
+}
+
 exports.one      = one;
 exports.zero     = zero;
 exports.not      = not;
@@ -298,4 +306,5 @@ exports.asr_     = asr_;
 exports.is_zero  = is_zero;
 exports.min_int  = min_int$1;
 exports.mul      = mul;
+exports.swap     = swap;
 /* No side effect */

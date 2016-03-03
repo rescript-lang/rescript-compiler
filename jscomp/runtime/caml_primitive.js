@@ -12,18 +12,6 @@ function caml_int32_bswap(x) {
 }
 
 
-function $$caml_int64_bswap(x) {
-  return [
-    255,
-    (((x[3] & 0x0000ff00) >> 8) |
-    ((x[3] & 0x000000ff) << 8) |
-    ((x[2] & 0x00ff0000))),
-    (((x[2] & 0x0000ff00) >> 8) |
-    ((x[2] & 0x000000ff) << 8) |
-    ((x[1] & 0x00ff0000))),
-    (((x[1] & 0x0000ff00) >> 8) |
-    ((x[1] & 0x000000ff) << 8))]
-}
 
 /**
  * Maximum value of #goog.string.hashCode, exclusive. 2^32.
@@ -78,15 +66,10 @@ function caml_hash(prim, prim$1, prim$2, prim$3) {
 
 var caml_nativeint_bswap = caml_int32_bswap;
 
-function caml_int64_bswap(prim) {
-  return $$caml_int64_bswap(prim);
-}
-
 exports.caml_sys_getcwd                 = caml_sys_getcwd;
 exports.caml_hash                       = caml_hash;
 exports.caml_bswap16                    = caml_bswap16;
 exports.caml_int32_bswap                = caml_int32_bswap;
 exports.caml_nativeint_bswap            = caml_nativeint_bswap;
-exports.caml_int64_bswap                = caml_int64_bswap;
 exports.caml_convert_raw_backtrace_slot = caml_convert_raw_backtrace_slot;
 /*  Not a pure module */

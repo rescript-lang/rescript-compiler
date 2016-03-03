@@ -611,7 +611,8 @@ let translate
   | Pbbswap Lambda.Pint32
     -> 
     E.runtime_call Js_config.prim "caml_int32_bswap" args
-
+  | Pbbswap Lambda.Pint64
+    -> Js_long.swap args 
   | Plazyforce 
   | Pbittest 
   | Pstring_load_16 _
@@ -628,7 +629,7 @@ let translate
   | Pbigstring_set_64 _
   | Pint_as_pointer 
 
-  | Pbbswap Lambda.Pint64 (* TODO *)
+
 
     -> 
       let comment = "Missing primitve" in       
