@@ -20,48 +20,19 @@
 
 [%%bb.unsafe{|
 function $$caml_int64_bits_of_float (x) {
-    if (!isFinite(x)) {
-        if (isNaN(x)) return [255, 1, 0, 0xfff0];
-        return (x > 0)?[255,0,0,0x7ff0]:[255,0,0,0xfff0];
-    }
-    var sign = (x>=0)?0:0x8000;
-    if (sign) x = -x;
-    var exp = Math.floor(Math.LOG2E*Math.log(x)) + 1023;
-    if (exp <= 0) {
-        exp = 0;
-        x /= Math.pow(2,-1026);
-    } else {
-        x /= Math.pow(2,exp-1027);
-        if (x < 16) { x *= 2; exp -=1; }
-        if (exp == 0) { x /= 2; }
-    }
-    var k = Math.pow(2,24);
-    var r3 = x|0;
-    x = (x - r3) * k;
-    var r2 = x|0;
-    x = (x - r2) * k;
-    var r1 = x|0;
-    r3 = (r3 &0xf) | sign | exp << 4;
-    return [255, r1, r2, r3];
+  // TODO:
+  // can be allocated globally to avoid allocation each time
+  // Need check existense of the API we used here
+  var u = new Float64Array([x]); 
+  var int32 = new Int32Array(u.buffer);
+  // actually we can return it directly without a conversion
+  return [int32[0], int32[1]];     
 }
 
 function $$caml_int64_float_of_bits (x) {
-    var exp = (x[3] & 0x7fff) >> 4;
-    if (exp == 2047) {
-        if ((x[1]|x[2]|(x[3]&0xf)) == 0)
-            return (x[3] & 0x8000)?(-Infinity):Infinity;
-        else
-            return NaN;
-    }
-    var k = Math.pow(2,-24);
-    var res = (x[1]*k+x[2])*k+(x[3]&0xf);
-    if (exp > 0) {
-        res += 16;
-        res *= Math.pow(2,exp-1027);
-    } else
-        res *= Math.pow(2,-1026);
-    if (x[3] && 0x8000) res = - res;
-    return res;
+    var int32 = new Int32Array(x);
+    var float64 = new Float64Array(int32.buffer); 
+    return float64[0];
 }
 |}]
 

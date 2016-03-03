@@ -108,6 +108,8 @@ extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmx : mt.cmx
 fib.cmo :
 fib.cmx :
+float_of_bits_test.cmo : mt.cmi ../stdlib/int64.cmi
+float_of_bits_test.cmx : mt.cmx ../stdlib/int64.cmx
 float_test.cmo : mt.cmi ../stdlib/int64.cmi
 float_test.cmx : mt.cmx ../stdlib/int64.cmx
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
@@ -540,6 +542,8 @@ extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
 fib.cmo :
 fib.cmj :
+float_of_bits_test.cmo : mt.cmi ../stdlib/int64.cmi
+float_of_bits_test.cmj : mt.cmj ../stdlib/int64.cmj
 float_test.cmo : mt.cmi ../stdlib/int64.cmi
 float_test.cmj : mt.cmj ../stdlib/int64.cmj
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
