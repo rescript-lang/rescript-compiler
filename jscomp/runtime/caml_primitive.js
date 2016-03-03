@@ -4,11 +4,11 @@
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 function caml_bswap16(x) {
-  return ((x & 255) << 8) | ((x & 65280) >> 8);
+  return ((x & 255) << 8) | ((x & 65280) >>> 8);
 }
 
 function caml_int32_bswap(x) {
-  return ((x & 255) << 24) | ((x & 65280) << 8) | ((x & 16711680) >> 8) | ((x & 4278190080) >> 24);
+  return ((x & 255) << 24) | ((x & 65280) << 8) | ((x & 16711680) >>> 8) | ((x & 4278190080) >>> 24);
 }
 
 

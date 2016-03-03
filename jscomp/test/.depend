@@ -242,8 +242,10 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
     ../stdlib/bytes.cmi
 string_test.cmx : ../stdlib/string.cmx mt.cmx ext_string.cmx \
     ../stdlib/bytes.cmx
-swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi
-swap_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx
+swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
+    ../stdlib/int32.cmi ../stdlib/array.cmi
+swap_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
+    ../stdlib/int32.cmx ../stdlib/array.cmx
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmx : mt.cmx ../stdlib/array.cmx
 test.cmo :
@@ -678,8 +680,10 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
     ../stdlib/bytes.cmi
 string_test.cmj : ../stdlib/string.cmj mt.cmj ext_string.cmj \
     ../stdlib/bytes.cmj
-swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi
-swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj
+swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
+    ../stdlib/int32.cmi ../stdlib/array.cmi
+swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
+    ../stdlib/int32.cmj ../stdlib/array.cmj
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
 test.cmo :

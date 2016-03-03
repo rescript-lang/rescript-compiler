@@ -607,6 +607,10 @@ let translate
   | Pbswap16 
     -> 
     E.runtime_call Js_config.prim "caml_bswap16" args
+  | Pbbswap Lambda.Pnativeint
+  | Pbbswap Lambda.Pint32
+    -> 
+    E.runtime_call Js_config.prim "caml_int32_bswap" args
 
   | Plazyforce 
   | Pbittest 
@@ -624,8 +628,6 @@ let translate
   | Pbigstring_set_64 _
   | Pint_as_pointer 
 
-  | Pbbswap Lambda.Pnativeint
-  | Pbbswap Lambda.Pint32
   | Pbbswap Lambda.Pint64 (* TODO *)
 
     -> 
