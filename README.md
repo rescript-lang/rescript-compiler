@@ -127,13 +127,19 @@ these steps.
   make all
   ```
 
-5. Build the standard library with `osc`
+5. Build the ocaml standard library with `osc`
 
   ```sh
   cd ../stdlib
   make all 
   ```
+6. Build the bucklescript library (it contains JS bindings) with `osc`
 
+   ```sh
+   cd ../lib
+   make all
+   ```
+   
 ## Windows support
 
 We plan to provide a Windows installer in the near future.
