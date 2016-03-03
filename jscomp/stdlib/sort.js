@@ -134,7 +134,7 @@ function array(cmp, arr) {
         var j = hi - 1;
         if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Sort.array"
               ];
         }

@@ -18,12 +18,9 @@
 
 (* Author: Hongbo Zhang  *)
 
-val match_exception_def : J.expression list ->
-  (J.expression * J.mutable_flag) option
-
-
-
-val make_exception : 
-  J.expression -> J.expression -> J.mutable_flag -> J.expression
-
   
+val get_builtin_by_name : string -> J.expression
+
+
+
+val caml_set_oo_id : J.expression list -> J.expression

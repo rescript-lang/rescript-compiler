@@ -192,3 +192,4 @@ float_test
 bigarray_test
 
 
+float_of_bits_test

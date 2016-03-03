@@ -11,14 +11,14 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 var YYexit = {
   0: "Parsing.YYexit",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Parse_error = {
   0: "Parsing.Parse_error",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };

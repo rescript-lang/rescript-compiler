@@ -31,78 +31,80 @@ let get_env () = !default_env
 let set_env env = default_env := env 
 
 let stdlib_set = String_set.of_list [
-    "arg.js";
-    "gc.js";
-    "printexc.js";
-    "array.js";
-    "genlex.js";
-    "printf.js";
-    "arrayLabels.js";
-    "hashtbl.js";
-    "queue.js";
-    "buffer.js";			
-    "int32.js";
-    "random.js";
-    "bytes.js";			
-    "int64.js";
-    "scanf.js";
-    "bytesLabels.js";
-    "lazy.js";
-    "set.js";
-    "callback.js";
-    "lexing.js";
-    "sort.js";
-    "camlinternalFormat.js";
-    "list.js";
-    "stack.js";
-    "camlinternalFormatBasics.js";
-    "listLabels.js";
-    "stdLabels.js";
-    "camlinternalLazy.js";
-    "map.js";
-    "std_exit.js";
-    "camlinternalMod.js";
-    "marshal.js";
-    "stream.js";
-    "camlinternalOO.js";
-    "moreLabels.js";
-    "string.js";
-    "char.js";
-    "nativeint.js";
-    "stringLabels.js";
-    "complex.js";
-    "obj.js";
-    "sys.js";
-    "digest.js";
-    "oo.js";
-    "weak.js";
-    "filename.js";
-    "parsing.js";
-    "format.js";
-    "pervasives.js"
+    "arg";
+    "gc";
+    "printexc";
+    "array";
+    "genlex";
+    "printf";
+    "arrayLabels";
+    "hashtbl";
+    "queue";
+    "buffer";			
+    "int32";
+    "random";
+    "bytes";			
+    "int64";
+    "scanf";
+    "bytesLabels";
+    "lazy";
+    "set";
+    "callback";
+    "lexing";
+    "sort";
+    "camlinternalFormat";
+    "list";
+    "stack";
+    "camlinternalFormatBasics";
+    "listLabels";
+    "stdLabels";
+    "camlinternalLazy";
+    "map";
+
+    (* "std_exit"; *)
+    (* https://developer.mozilla.org/de/docs/Web/Events/beforeunload *)
+    "camlinternalMod";
+    "marshal";
+    "stream";
+    "camlinternalOO";
+    "moreLabels";
+    "string";
+    "char";
+    "nativeint";
+    "stringLabels";
+    "complex";
+    "obj";
+    "sys";
+    "digest";
+    "oo";
+    "weak";
+    "filename";
+    "parsing";
+    "format";
+    "pervasives"
 ]
 
 let runtime_set = String_set.of_list [
-    "caml_array.js";
-    "caml_float.js";
-    "caml_obj.js";
-    "caml_bigarray.js";
-    "caml_format.js";		
-    "caml_oo.js";		
-    "caml_c_ffi.js";
-    "caml_int64.js";
-    "caml_primitive.js";
-    "caml_utils.js";
-    "caml_builtin_exceptions.js";
-    "caml_exceptions.js";
-    "caml_curry.js";
-    "caml_file.js";
-    "caml_lexer.js";
-    "caml_parser.js";
-    "caml_string.js"
-    (* "caml_sys.js"; *)
-    (* "caml_unix.js"; *)
-    (* "caml_io.js"; *)
+    "caml_array";
+    "caml_float";
+    "caml_obj";
+    "caml_bigarray";
+    "caml_format";		
+    "caml_oo";		
+    "caml_c_ffi";
+    "caml_int64";
+    "caml_primitive";
+    "caml_utils";
+    "caml_builtin_exceptions";
+    "caml_exceptions";
+    "caml_curry";
+    "caml_file";
+    "caml_lexer";
+    "caml_parser";
+    "caml_string"
+    (* "caml_sys"; *)
+    (* "caml_unix"; *)
+    (* "caml_io"; *)
 ]
 
 

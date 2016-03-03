@@ -33,11 +33,15 @@ function f4(x) {
 
 var f3 = /* true */1;
 
+var u =  1;
+
+var v =  true;
+
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
   function () {
     return /* Eq */{
-            0: 1,
+            0: u,
             1: f(true),
             length: 2,
             tag: 0
@@ -50,7 +54,7 @@ var suites_001 = /* :: */[
     "js_bool_eq_js_bool",
     function () {
       return /* Eq */{
-              0: true,
+              0: v,
               1: true,
               length: 2,
               tag: 0
@@ -84,5 +88,7 @@ exports.f      = f;
 exports.f2     = f2;
 exports.f4     = f4;
 exports.f3     = f3;
+exports.u      = u;
+exports.v      = v;
 exports.suites = suites;
 /* f3 Not a pure module */

@@ -9,14 +9,14 @@ var List                    = require("./list");
 
 var Failure = {
   0: "Stream.Failure",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var $$Error = {
   0: "Stream.Error",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -43,7 +43,7 @@ function get_data(count, _d) {
             if (typeof match === "number") {
               if (match) {
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "stream.ml",
                         53,
@@ -59,7 +59,7 @@ function get_data(count, _d) {
             }
             else if (match.tag) {
               throw [
-                    Caml_builtin_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.assert_failure,
                     [
                       "stream.ml",
                       53,
@@ -162,7 +162,7 @@ function peek(s) {
             if (typeof d === "number") {
               if (d) {
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "stream.ml",
                         82,
@@ -176,7 +176,7 @@ function peek(s) {
             }
             else if (d.tag) {
               throw [
-                    Caml_builtin_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.assert_failure,
                     [
                       "stream.ml",
                       82,

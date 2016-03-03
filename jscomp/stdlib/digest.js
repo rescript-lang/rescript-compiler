@@ -19,7 +19,7 @@ function bytes(b) {
 function substring(str, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > str.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Digest.substring"
         ];
   }
@@ -78,7 +78,7 @@ function to_hex(d) {
 function from_hex(s) {
   if (s.length !== 32) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Digest.from_hex"
         ];
   }
@@ -87,7 +87,7 @@ function from_hex(s) {
       if (c >= 97) {
         if (c >= 103) {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Digest.from_hex"
               ];
         }
@@ -97,7 +97,7 @@ function from_hex(s) {
       }
       else if (c >= 71) {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Digest.from_hex"
             ];
       }
@@ -107,7 +107,7 @@ function from_hex(s) {
     }
     else if (c > 57 || c < 48) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Digest.from_hex"
           ];
     }

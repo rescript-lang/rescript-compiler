@@ -14,21 +14,21 @@ var List                    = require("./list");
 
 var Bad = {
   0: "Arg.Bad",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Help = {
   0: "Arg.Help",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Stop = {
   0: "Arg.Stop",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -48,7 +48,7 @@ function assoc3(x, _l) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -82,7 +82,7 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -106,7 +106,7 @@ function add_help(speclist) {
     add2 = /* [] */0;
   }
   catch (exn$1){
-    if (exn$1 === Caml_builtin_exceptions.Not_found) {
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       add2 = /* :: */[
         /* tuple */[
           "--help",
@@ -431,7 +431,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
         action = assoc3(s, speclist[0]);
       }
       catch (exn){
-        if (exn === Caml_builtin_exceptions.Not_found) {
+        if (exn === Caml_builtin_exceptions.not_found) {
           action = stop(/* Unknown */{
                 0: s,
                 length: 1,
@@ -455,7 +455,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[0], Pervasives.bool_of_string(arg));
                   }
                   catch (exn){
-                    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
+                    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
                       if (exn[1] === "bool_of_string") {
                         throw [
                               Stop,
@@ -534,7 +534,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[0], Caml_format.caml_int_of_string(arg$1));
                   }
                   catch (exn$1){
-                    if (exn$1[0] === Caml_builtin_exceptions.Failure) {
+                    if (exn$1[0] === Caml_builtin_exceptions.failure) {
                       if (exn$1[1] === "int_of_string") {
                         throw [
                               Stop,
@@ -575,7 +575,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     param[0][0] = Caml_format.caml_int_of_string(arg$2);
                   }
                   catch (exn$2){
-                    if (exn$2[0] === Caml_builtin_exceptions.Failure) {
+                    if (exn$2[0] === Caml_builtin_exceptions.failure) {
                       if (exn$2[1] === "int_of_string") {
                         throw [
                               Stop,
@@ -616,7 +616,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     Caml_curry.app1(param[0], Caml_format.caml_float_of_string(arg$3));
                   }
                   catch (exn$3){
-                    if (exn$3[0] === Caml_builtin_exceptions.Failure) {
+                    if (exn$3[0] === Caml_builtin_exceptions.failure) {
                       if (exn$3[1] === "float_of_string") {
                         throw [
                               Stop,
@@ -657,7 +657,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                     param[0][0] = Caml_format.caml_float_of_string(arg$4);
                   }
                   catch (exn$4){
-                    if (exn$4[0] === Caml_builtin_exceptions.Failure) {
+                    if (exn$4[0] === Caml_builtin_exceptions.failure) {
                       if (exn$4[1] === "float_of_string") {
                         throw [
                               Stop,
@@ -880,7 +880,7 @@ function second_word(s) {
     };
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       return len;
     }
     else {

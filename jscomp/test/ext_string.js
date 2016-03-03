@@ -215,7 +215,7 @@ function find($staropt$star, sub, s) {
   var i = start;
   var Exit = {
     0: "Exit",
-    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    1: Caml_builtin_exceptions.get_id(),
     length: 2,
     tag: 248
   };
@@ -243,7 +243,7 @@ function rfind(sub, s) {
   var i = s.length - n;
   var Exit = {
     0: "Exit",
-    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    1: Caml_builtin_exceptions.get_id(),
     length: 2,
     tag: 248
   };
@@ -271,7 +271,7 @@ function tail_from(s, x) {
   if (x > len) {
     var s$1 = "Ext_string.tail_from " + (s + (" : " + x));
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           s$1
         ];
   }

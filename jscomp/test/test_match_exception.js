@@ -9,7 +9,7 @@ function f(g, x) {
     return Caml_curry.app1(g, x);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       return 3;
     }
     else {

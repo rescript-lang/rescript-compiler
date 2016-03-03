@@ -2,7 +2,6 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_primitive          = require("../runtime/caml_primitive");
 
 var is_js = /* true */1;
 
@@ -25,30 +24,33 @@ var max_string_length = 4294967295;
 var interactive = [/* false */0];
 
 function set_signal(sig_num, sig_beh) {
-  return Caml_primitive.caml_install_signal_handler(sig_num, sig_beh);
+  ;
+  return sig_beh;
 }
 
 var sigint = -6;
 
 var Break = {
   0: "Sys.Break",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 function catch_break(on) {
   if (on) {
-    return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_handle */{
-                0: function () {
-                  throw Break;
-                },
-                length: 1,
-                tag: 0
-              });
+    ;
+    return /* Signal_handle */{
+            0: function () {
+              throw Break;
+            },
+            length: 1,
+            tag: 0
+          };
   }
   else {
-    return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_default */0);
+    ;
+    return /* Signal_default */0;
   }
 }
 

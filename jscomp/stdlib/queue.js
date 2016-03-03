@@ -7,7 +7,7 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 var Empty = {
   0: "Queue.Empty",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };

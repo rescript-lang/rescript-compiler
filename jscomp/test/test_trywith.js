@@ -4,7 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function u() {
-  throw Caml_builtin_exceptions.Not_found;
+  throw Caml_builtin_exceptions.not_found;
 }
 
 function f(x) {
@@ -17,7 +17,7 @@ function f(x) {
           return 1;
       case 1 : 
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "test_trywith.ml",
                   24,

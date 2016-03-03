@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 var Scan_failure = {
   0: "Test_static_catch_ident.Scan_failure",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -17,7 +17,7 @@ function scanf_bad_input(_, x) {
     s = x[1];
     exit = 1;
   }
-  else if (x[0] === Caml_builtin_exceptions.Failure) {
+  else if (x[0] === Caml_builtin_exceptions.failure) {
     s = x[1];
     exit = 1;
   }

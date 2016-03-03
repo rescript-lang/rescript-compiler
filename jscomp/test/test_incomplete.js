@@ -6,7 +6,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 function f(x) {
   if (x > 3 || x < 1) {
     throw [
-          Caml_builtin_exceptions.Match_failure,
+          Caml_builtin_exceptions.match_failure,
           [
             "test_incomplete.ml",
             3,

@@ -74,7 +74,7 @@ function of_array$1(kind, layout, data) {
     var row = data[i];
     if (row.length !== dim2) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Bigarray.Array2.of_array: non-rectangular data"
           ];
     }
@@ -140,7 +140,7 @@ function of_array$2(kind, layout, data) {
     var row = data[i];
     if (row.length !== dim2) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Bigarray.Array3.of_array: non-cubic data"
           ];
     }
@@ -148,7 +148,7 @@ function of_array$2(kind, layout, data) {
       var col = row[j];
       if (col.length !== dim3) {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Bigarray.Array3.of_array: non-cubic data"
             ];
       }
@@ -184,7 +184,7 @@ function array1_of_genarray(a) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Bigarray.array1_of_genarray"
         ];
   }
@@ -196,7 +196,7 @@ function array2_of_genarray(a) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Bigarray.array2_of_genarray"
         ];
   }
@@ -208,7 +208,7 @@ function array3_of_genarray(a) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Bigarray.array3_of_genarray"
         ];
   }

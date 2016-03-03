@@ -31,7 +31,7 @@ $$Array.iter(function (x) {
 
 if (v[0] !== 45) {
   throw [
-        Caml_builtin_exceptions.Assert_failure,
+        Caml_builtin_exceptions.assert_failure,
         [
           "test_closure.ml",
           53,

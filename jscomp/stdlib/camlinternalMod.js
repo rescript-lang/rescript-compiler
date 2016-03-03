@@ -8,7 +8,7 @@ var CamlinternalOO          = require("./camlinternalOO");
 function init_mod(loc, shape) {
   var undef_module = function () {
     throw [
-          Caml_builtin_exceptions.Undefined_recursive_module,
+          Caml_builtin_exceptions.undefined_recursive_module,
           loc
         ];
   };
@@ -71,7 +71,7 @@ function update_mod(shape, o, n) {
   };
   if (typeof shape === "number") {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "camlinternalMod.ml",
             122,
@@ -81,7 +81,7 @@ function update_mod(shape, o, n) {
   }
   else if (shape.tag) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "camlinternalMod.ml",
             122,

@@ -47,10 +47,7 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
   match key with 
    (id, env, expand) -> 
     if Ident.is_predef_exn id 
-    then 
-      begin 
-        E.runtime_ref Js_config.builtin_exceptions id.name
-      end
+    then Js_of_lam_exception.get_builtin_by_name id.name
     else 
       Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) env
         ~not_found:(fun id -> assert false)

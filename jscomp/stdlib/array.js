@@ -9,7 +9,7 @@ function init(l, f) {
   if (l) {
     if (l < 0) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Array.init"
           ];
     }
@@ -62,7 +62,7 @@ function append(a1, a2) {
 function sub(a, ofs, len) {
   if (len < 0 || ofs > a.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Array.sub"
         ];
   }
@@ -74,7 +74,7 @@ function sub(a, ofs, len) {
 function fill(a, ofs, len, v) {
   if (ofs < 0 || len < 0 || ofs > a.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Array.fill"
         ];
   }
@@ -89,7 +89,7 @@ function fill(a, ofs, len, v) {
 function blit(a1, ofs1, a2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Array.blit"
         ];
   }
@@ -220,7 +220,7 @@ function fold_right(f, a, x) {
 
 var Bottom = {
   0: "Array.Bottom",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -309,7 +309,7 @@ function sort(cmp, a) {
       var father = (i - 1) / 3 | 0;
       if (i === father) {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "array.ml",
                 168,

@@ -68,7 +68,7 @@ var three = [3];
 
 var v = [function () {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "rec_value_test.ml",
             23,
@@ -309,7 +309,7 @@ var suites_001 = /* :: */[
         }
         else {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "rec_value_test.ml",
                   97,
@@ -320,7 +320,7 @@ var suites_001 = /* :: */[
       }
       else {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "rec_value_test.ml",
                 97,

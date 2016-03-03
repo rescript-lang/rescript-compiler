@@ -74,7 +74,7 @@ function process(x) {
                         tag: 0
                       }), error);
               throw [
-                    Caml_builtin_exceptions.Failure,
+                    Caml_builtin_exceptions.failure,
                     error
                   ];
             };

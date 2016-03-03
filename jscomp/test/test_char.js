@@ -10,7 +10,7 @@ function f(x) {
 function chr(n) {
   if (n < 0 || n > 255) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Char.chr"
         ];
   }

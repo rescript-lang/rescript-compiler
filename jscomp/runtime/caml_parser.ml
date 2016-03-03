@@ -1,27 +1,24 @@
-// Js_of_ocaml runtime support
-// http://www.ocsigen.org/js_of_ocaml/
-// Copyright (C) 2014 Jérôme Vouillon, Hugo Heuzard, Andy Ray
-// Laboratoire PPS - CNRS Université Paris Diderot
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, with linking exception;
-// either version 2.1 of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+(* BuckleScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
 
-//  Copyright (c) 2015 Bloomberg LP. All rights reserved. 
-// Hongbo Zhang (hzhang295@bloomberg.net)              
+(* Author: Hongbo Zhang  *)
 
-"use strict";
-
+[%%bb.unsafe{|
 /**
  * caml_lex_array("abcd")
  * [25185, 25699]
@@ -29,45 +26,42 @@
  * @returns {any[]}
  * TODO: duplicated with module {!Caml_lex}
  */
-function caml_lex_array(s : string) {
+function caml_lex_array(s) {
     var l = s.length / 2;
     var a = new Array(l);
     for (var i = 0; i < l; i++)
         a[i] = (s.charCodeAt(2 * i) | (s.charCodeAt(2 * i + 1) << 8)) << 16 >> 16;
     return a;
 }
-
 /**
  * Note that TS enum is not friendly to Closure compiler
  * @enum{number}
  */
 var Automata = {
-    START : 0,
-    LOOP : 6,
-    TOKEN_READ : 1,
-    TEST_SHIFT : 7,
-    ERROR_DETECTED : 5,
-    SHIFT : 8,
-    SHIFT_RECOVER : 9,
-    STACK_GROWN_1 : 2,
-    REDUCE : 10,
-    STACK_GROWN_2 : 3,
-    SEMANTIC_ACTION_COMPUTED : 4
-}
+    START: 0,
+    LOOP: 6,
+    TOKEN_READ: 1,
+    TEST_SHIFT: 7,
+    ERROR_DETECTED: 5,
+    SHIFT: 8,
+    SHIFT_RECOVER: 9,
+    STACK_GROWN_1: 2,
+    REDUCE: 10,
+    STACK_GROWN_2: 3,
+    SEMANTIC_ACTION_COMPUTED: 4
+};
 /**
  * @enum{number}
  */
 var Result = {
-    READ_TOKEN : 0,
-    RAISE_PARSE_ERROR : 1,
-    GROW_STACKS_1 : 2,
-    GROW_STACKS_2 : 3,
-    COMPUTE_SEMANTIC_ACTION : 4,
-    CALL_ERROR_FUNCTION : 5
-}
-
-var PARSER_TRACE  = false;
-
+    READ_TOKEN: 0,
+    RAISE_PARSE_ERROR: 1,
+    GROW_STACKS_1: 2,
+    GROW_STACKS_2: 3,
+    COMPUTE_SEMANTIC_ACTION: 4,
+    CALL_ERROR_FUNCTION: 5
+};
+var PARSER_TRACE = false;
 /**
  * external parse_engine : parse_tables -> parser_env -> parser_input -> Obj.t -> parser_output
  * parsing.ml
@@ -123,13 +117,8 @@ var PARSER_TRACE  = false;
  * @param arg
  * @returns {number}
  */
-function caml_parse_engine(tables /* parser_table */, 
-                           env /* parser_env */, 
-                           cmd /* parser_input*/, 
-                           arg /* Obj.t*/)
-{
+function $$caml_parse_engine(tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
     var ERRCODE = 256;
-
     //var START = 0;
     //var TOKEN_READ = 1;
     //var STACKS_GROWN_1 = 2;
@@ -141,8 +130,6 @@ function caml_parse_engine(tables /* parser_table */,
     //var shift = 8;
     //var shift_recover = 9;
     //var reduce = 10;
-
-
     // Parsing.parser_env
     var env_s_stack = 0; // array
     var env_v_stack = 1; // array
@@ -160,7 +147,6 @@ function caml_parse_engine(tables /* parser_table */,
     var env_sp = 13;
     var env_state = 14;
     var env_errflag = 15;
-
     // Parsing.parse_tables
     // var _tbl_actions = 1;
     var tbl_transl_const = 1; // array
@@ -178,79 +164,80 @@ function caml_parse_engine(tables /* parser_table */,
     // var _tbl_error_function = 14;
     // var _tbl_names_const = 15;
     // var _tbl_names_block = 16;
-
     if (!tables.dgoto) {
-        tables.defred = caml_lex_array (tables[tbl_defred]);
-        tables.sindex = caml_lex_array (tables[tbl_sindex]);
-        tables.check  = caml_lex_array (tables[tbl_check]);
-        tables.rindex = caml_lex_array (tables[tbl_rindex]);
-        tables.table  = caml_lex_array (tables[tbl_table]);
-        tables.len    = caml_lex_array (tables[tbl_len]);
-        tables.lhs    = caml_lex_array (tables[tbl_lhs]);
-        tables.gindex = caml_lex_array (tables[tbl_gindex]);
-        tables.dgoto  = caml_lex_array (tables[tbl_dgoto]);
+        tables.defred = caml_lex_array(tables[tbl_defred]);
+        tables.sindex = caml_lex_array(tables[tbl_sindex]);
+        tables.check = caml_lex_array(tables[tbl_check]);
+        tables.rindex = caml_lex_array(tables[tbl_rindex]);
+        tables.table = caml_lex_array(tables[tbl_table]);
+        tables.len = caml_lex_array(tables[tbl_len]);
+        tables.lhs = caml_lex_array(tables[tbl_lhs]);
+        tables.gindex = caml_lex_array(tables[tbl_gindex]);
+        tables.dgoto = caml_lex_array(tables[tbl_dgoto]);
     }
-
     var res;
     var n, n1, n2, state1;
-
     // RESTORE
     var sp = env[env_sp];
     var state = env[env_state];
     var errflag = env[env_errflag];
-
-    exit:for (;;) {
+    exit: for (;;) {
         //console.error("State", Automata[cmd]);
-
-        switch(cmd) {
-            case Automata.START://START:
+        switch (cmd) {
+            case Automata.START:
                 state = 0;
                 errflag = 0;
             // Fall through
-
-            case Automata.LOOP://loop:
+            case Automata.LOOP:
                 n = tables.defred[state];
-                if (n != 0) { cmd = Automata.REDUCE; break; }
-                if (env[env_curr_char] >= 0) { cmd = Automata.TEST_SHIFT; break; }
+                if (n != 0) {
+                    cmd = Automata.REDUCE;
+                    break;
+                }
+                if (env[env_curr_char] >= 0) {
+                    cmd = Automata.TEST_SHIFT;
+                    break;
+                }
                 res = Result.READ_TOKEN;
                 break exit;
             /* The ML code calls the lexer and updates */
             /* symb_start and symb_end */
-            case Automata.TOKEN_READ://TOKEN_READ:
+            case Automata.TOKEN_READ:
                 if (typeof arg !== 'number') {
                     env[env_curr_char] = tables[tbl_transl_block][arg.tag | 0 /* + 1 */];
                     env[env_lval] = arg[0];
-                } else {
+                }
+                else {
                     env[env_curr_char] = tables[tbl_transl_const][arg /* + 1 */];
                     env[env_lval] = 0;
                 }
-                if(PARSER_TRACE){
-                    console.error("State %d, read token", state, arg)
+                if (PARSER_TRACE) {
+                    console.error("State %d, read token", state, arg);
                 }
             // Fall through
-
-            case Automata.TEST_SHIFT://testshift:
+            case Automata.TEST_SHIFT:
                 n1 = tables.sindex[state];
                 n2 = n1 + env[env_curr_char];
                 if (n1 != 0 && n2 >= 0 && n2 <= tables[tbl_tablesize] &&
                     tables.check[n2] == env[env_curr_char]) {
-                    cmd = Automata.SHIFT; break;
+                    cmd = Automata.SHIFT;
+                    break;
                 }
                 n1 = tables.rindex[state];
                 n2 = n1 + env[env_curr_char];
                 if (n1 != 0 && n2 >= 0 && n2 <= tables[tbl_tablesize] &&
                     tables.check[n2] == env[env_curr_char]) {
                     n = tables.table[n2];
-                    cmd = Automata.REDUCE; break;
+                    cmd = Automata.REDUCE;
+                    break;
                 }
                 if (errflag <= 0) {
-
                     res = Result.CALL_ERROR_FUNCTION;
                     break exit;
                 }
             // Fall through
             /* The ML code calls the error function */
-            case Automata.ERROR_DETECTED://ERROR_DETECTED:
+            case Automata.ERROR_DETECTED:
                 if (errflag < 3) {
                     errflag = 3;
                     for (;;) {
@@ -259,27 +246,34 @@ function caml_parse_engine(tables /* parser_table */,
                         n2 = n1 + ERRCODE;
                         if (n1 != 0 && n2 >= 0 && n2 <= tables[tbl_tablesize] &&
                             tables.check[n2] == ERRCODE) {
-                            cmd = Automata.SHIFT_RECOVER; break;
-                        } else {
-                            if (sp <= env[env_stackbase]) return Result.RAISE_PARSE_ERROR;
+                            cmd = Automata.SHIFT_RECOVER;
+                            break;
+                        }
+                        else {
+                            if (sp <= env[env_stackbase])
+                                return Result.RAISE_PARSE_ERROR;
                             /* The ML code raises Parse_error */
                             sp--;
                         }
                     }
-                } else {
-                    if (env[env_curr_char] == 0) return Result.RAISE_PARSE_ERROR;
+                }
+                else {
+                    if (env[env_curr_char] == 0)
+                        return Result.RAISE_PARSE_ERROR;
                     /* The ML code raises Parse_error */
                     env[env_curr_char] = -1;
-                    cmd = Automata.LOOP; break;
+                    cmd = Automata.LOOP;
+                    break;
                 }
             // Fall through
-            case Automata.SHIFT://shift:
+            case Automata.SHIFT:
                 env[env_curr_char] = -1;
-                if (errflag > 0) errflag--;
+                if (errflag > 0)
+                    errflag--;
             // Fall through
-            case Automata.SHIFT_RECOVER://shift_recover:
-                if(PARSER_TRACE) {
-                    console.error("State %d: shift to state %d", state, tables.table[n2])
+            case Automata.SHIFT_RECOVER:
+                if (PARSER_TRACE) {
+                    console.error("State %d: shift to state %d", state, tables.table[n2]);
                 }
                 state = tables.table[n2];
                 sp++;
@@ -296,10 +290,9 @@ function caml_parse_engine(tables /* parser_table */,
                 env[env_symb_end_stack][sp /* + 1 */] = env[env_symb_end];
                 cmd = Automata.LOOP;
                 break;
-
             case Automata.REDUCE:
-                if(PARSER_TRACE) {
-                    console.error("State %d : reduce by rule %d", state, n)
+                if (PARSER_TRACE) {
+                    console.error("State %d : reduce by rule %d", state, n);
                 }
                 var m = tables.len[n];
                 env[env_asp] = sp;
@@ -308,7 +301,6 @@ function caml_parse_engine(tables /* parser_table */,
                 sp = sp - m + 1;
                 m = tables.lhs[n];
                 state1 = env[env_s_stack][sp - 1]; //
-
                 n1 = tables.gindex[m];
                 n2 = n1 + state1;
                 if (n1 != 0 && n2 >= 0 && n2 <= tables[tbl_tablesize] &&
@@ -322,11 +314,11 @@ function caml_parse_engine(tables /* parser_table */,
                 }
             // Fall through
             /* The ML code resizes the stacks */
-            case Automata.STACK_GROWN_2://STACKS_GROWN_2:
+            case Automata.STACK_GROWN_2:
                 res = Result.COMPUTE_SEMANTIC_ACTION;
                 break exit;
             /* The ML code calls the semantic action */
-            case Automata.SEMANTIC_ACTION_COMPUTED://SEMANTIC_ACTION_COMPUTED:
+            case Automata.SEMANTIC_ACTION_COMPUTED:
                 env[env_s_stack][sp /* + 1 */] = state;
                 env[env_v_stack][sp /* + 1*/] = arg;
                 var asp = env[env_asp];
@@ -335,7 +327,8 @@ function caml_parse_engine(tables /* parser_table */,
                     /* This is an epsilon production. Take symb_start equal to symb_end. */
                     env[env_symb_start_stack][sp /* + 1*/] = env[env_symb_end_stack][asp /*+ 1*/];
                 }
-                cmd = Automata.LOOP; break;
+                cmd = Automata.LOOP;
+                break;
             /* Should not happen */
             default:
                 return Result.RAISE_PARSE_ERROR;
@@ -345,11 +338,8 @@ function caml_parse_engine(tables /* parser_table */,
     env[env_sp] = sp;
     env[env_state] = state;
     env[env_errflag] = errflag;
-
     return res;
 }
-
-
 
 /**
  * external set_trace: bool -> bool = "caml_set_parser_trace"
@@ -357,13 +347,20 @@ function caml_parse_engine(tables /* parser_table */,
  * @param {boolean}
  * @returns {boolean}
  */
-function caml_set_parser_trace(v : boolean) {
+function $$caml_set_parser_trace(v) {
     var old = PARSER_TRACE;
     PARSER_TRACE = v;
     return old;
 }
 
-export {
-  caml_parse_engine,
-  caml_set_parser_trace
-}
+|}]
+
+external caml_parse_engine :     
+  Parsing.parse_tables -> Parsing.parser_env -> 
+  (* Parsing.parser_input *) Obj.t -> Obj.t -> (* parser_output *) Obj.t = ""
+[@@js.call "$$caml_parse_engine"][@@js.local]
+
+
+external caml_set_parser_trace: bool -> bool
+    = ""
+[@@js.call "$$caml_set_parser_trace"] [@@js.local]

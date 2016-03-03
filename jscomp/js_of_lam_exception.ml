@@ -40,11 +40,12 @@ let match_exception_def (args : J.expression list) =
   | _ -> None
 
 (* Sync up with [caml_set_oo_id] *)
-let make_exception id  exception_str mutable_flag : J.expression = 
+let make_exception exception_str mutable_flag : J.expression = 
   { expression_desc = 
       Caml_block (
-        [exception_str ; 
-         id],  
+        [exception_str ;
+         E.runtime_call Js_config.builtin_exceptions "get_id" []
+         ],  
         mutable_flag,
         (* TODO: combined with `_001` optimization *)
         E.obj_int_tag_literal (* (Obj.object_tag) *),
@@ -52,3 +53,22 @@ let make_exception id  exception_str mutable_flag : J.expression =
       );
     comment = None
   }
+
+
+
+
+let get_builtin_by_name name = 
+  E.runtime_ref Js_config.builtin_exceptions (String.lowercase name)
+
+let caml_set_oo_id args = 
+    begin match match_exception_def args with 
+    | Some ( exception_str, mutable_flag)
+      -> 
+      make_exception exception_str mutable_flag      
+    | _ ->
+      (**
+         If we can guarantee this code path is never hit, we can do 
+         a better job for encoding of exception and extension?
+      *)
+      E.runtime_call Js_config.builtin_exceptions "caml_set_oo_id" args 
+    end

@@ -49,7 +49,7 @@ var yynames_block = "NUMERAL\0IDENT\0";
 var yyact = /* array */[
   function () {
     throw [
-          Caml_builtin_exceptions.Failure,
+          Caml_builtin_exceptions.failure,
           "parser"
         ];
   },

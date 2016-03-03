@@ -1,31 +1,16 @@
-// Js_of_ocaml runtime support
-// http://www.ocsigen.org/js_of_ocaml/
-// Copyright (C) 2014 Jérôme Vouillon, Hugo Heuzard, Andy Ray
-// Laboratoire PPS - CNRS Université Paris Diderot
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, with linking exception;
-// either version 2.1 of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//  Copyright (c) 2015 Bloomberg LP. All rights reserved. 
-// Hongbo Zhang (hzhang295@bloomberg.net)              
-"use strict";
-var caml_exceptions_1 = require('./caml_exceptions');
-/**
- * caml_lex_array("abcd")
- * [25185, 25699]
- * @param s
- * @returns {any[]}
- */
+// Generated CODE, PLEASE EDIT WITH CARE
+'use strict';
+
+var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+
+function fail() {
+  throw [
+        Caml_builtin_exceptions.failure,
+        "lexing: empty token"
+      ];
+}
+
+ 
 function caml_lex_array(s) {
     var l = s.length / 2;
     var a = new Array(l);
@@ -73,7 +58,7 @@ function caml_lex_array(s) {
  * @param lexbuf
  * @returns {any}
  */
-function caml_lex_engine(tbl, start_state, lexbuf) {
+function $$caml_lex_engine(tbl, start_state, lexbuf) {
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -142,7 +127,7 @@ function caml_lex_engine(tbl, start_state, lexbuf) {
         if (state < 0) {
             lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
             if (lexbuf[lex_last_action] == -1)
-                caml_exceptions_1.caml_failwith("lexing: empty token");
+                fail();
             else
                 return lexbuf[lex_last_action];
         }
@@ -155,7 +140,7 @@ function caml_lex_engine(tbl, start_state, lexbuf) {
         }
     }
 }
-exports.caml_lex_engine = caml_lex_engine;
+
 /***********************************************/
 /* New lexer engine, with memory of positions  */
 /***********************************************/
@@ -194,7 +179,7 @@ function caml_lex_run_tag(s, i, mem) {
  * @param lexbuf
  * @returns {any}
  */
-function caml_new_lex_engine(tbl, start_state, lexbuf) {
+function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
     // Lexing.lexbuf
     var lex_buffer = 1;
     var lex_buffer_len = 2;
@@ -284,7 +269,7 @@ function caml_new_lex_engine(tbl, start_state, lexbuf) {
         if (state < 0) {
             lexbuf[lex_curr_pos] = lexbuf[lex_last_pos];
             if (lexbuf[lex_last_action] == -1)
-                caml_exceptions_1.caml_failwith("lexing: empty token");
+                fail();
             else
                 return lexbuf[lex_last_action];
         }
@@ -305,4 +290,18 @@ function caml_new_lex_engine(tbl, start_state, lexbuf) {
         }
     }
 }
+
+;
+
+function caml_lex_engine(prim, prim$1, prim$2) {
+  return $$caml_lex_engine(prim, prim$1, prim$2);
+}
+
+function caml_new_lex_engine(prim, prim$1, prim$2) {
+  return $$caml_new_lex_engine(prim, prim$1, prim$2);
+}
+
+exports.fail                = fail;
+exports.caml_lex_engine     = caml_lex_engine;
 exports.caml_new_lex_engine = caml_new_lex_engine;
+/*  Not a pure module */

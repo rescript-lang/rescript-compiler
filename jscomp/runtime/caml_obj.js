@@ -19,7 +19,7 @@ function caml_obj_truncate(x, new_size) {
   var len = x.length;
   if (new_size <= 0 || new_size > len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Obj.truncate"
         ];
   }
@@ -103,7 +103,7 @@ function caml_compare(_a, _b) {
       }
       else if (tag_a === 251) {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "equal: abstract value"
             ];
       }
@@ -220,7 +220,7 @@ function caml_equal(_a, _b) {
       }
       else if (tag_a === 251) {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "equal: abstract value"
             ];
       }

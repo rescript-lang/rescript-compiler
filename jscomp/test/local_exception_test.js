@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 var A = {
   0: "Local_exception_test.A",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -18,14 +18,14 @@ var v = [
 
 var B = {
   0: "Local_exception_test.B",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var D = {
   0: "Local_exception_test.D",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -37,7 +37,7 @@ var d = [
 
 var A$1 = {
   0: "Local_exception_test.A",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };

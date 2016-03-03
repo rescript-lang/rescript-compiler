@@ -10,7 +10,7 @@ function add(prim, prim$1) {
 function caml_string_get(s, i) {
   if (i >= s.length || i < 0) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "index out of bounds"
         ];
   }
@@ -22,7 +22,7 @@ function caml_string_get(s, i) {
 function caml_create_string(len) {
   if (len < 0) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.create"
         ];
   }

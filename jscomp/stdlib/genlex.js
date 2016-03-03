@@ -53,7 +53,7 @@ function make_lexer(keywords) {
       return Hashtbl.find(kwd_table, id);
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         return /* Ident */{
                 0: id,
                 length: 1,
@@ -71,7 +71,7 @@ function make_lexer(keywords) {
       return Hashtbl.find(kwd_table, s);
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         throw [
               Stream.$$Error,
               "Illegal character " + s

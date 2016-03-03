@@ -5,43 +5,43 @@ var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 function caml_raise_sys_error(msg) {
   throw [
-        Caml_builtin_exceptions.Sys_error,
+        Caml_builtin_exceptions.sys_error,
         msg
       ];
 }
 
 function caml_failwith(s) {
   throw [
-        Caml_builtin_exceptions.Failure,
+        Caml_builtin_exceptions.failure,
         s
       ];
 }
 
 function caml_invalid_argument(s) {
   throw [
-        Caml_builtin_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.invalid_argument,
         s
       ];
 }
 
 function caml_array_bound_error() {
   throw [
-        Caml_builtin_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.invalid_argument,
         "index out of bounds"
       ];
 }
 
 function caml_raise_zero_divide() {
-  throw Caml_builtin_exceptions.Division_by_zero;
+  throw Caml_builtin_exceptions.division_by_zero;
 }
 
 function caml_raise_not_found() {
-  throw Caml_builtin_exceptions.Not_found;
+  throw Caml_builtin_exceptions.not_found;
 }
 
 function caml_undef_module(loc) {
   throw [
-        Caml_builtin_exceptions.Undefined_recursive_module,
+        Caml_builtin_exceptions.undefined_recursive_module,
         loc
       ];
 }

@@ -1,33 +1,77 @@
 caml_array.cmi :
+caml_builtin_exceptions.cmi :
 caml_exceptions.cmi :
+caml_float.cmi :
+caml_format.cmi :
+caml_lexer.cmi :
 caml_obj.cmi :
 caml_oo.cmi :
+caml_parser.cmi :
+caml_primitive.cmi :
 caml_string.cmi :
+caml_sys.cmi :
+caml_utils.cmi :
 caml_array.cmo : caml_array.cmi
 caml_array.cmx : caml_array.cmi
+caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
+caml_builtin_exceptions.cmx : caml_builtin_exceptions.cmi
 caml_curry.cmo : caml_oo.cmi
 caml_curry.cmx : caml_oo.cmx
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmx : caml_exceptions.cmi
+caml_float.cmo : caml_float.cmi
+caml_float.cmx : caml_float.cmi
+caml_format.cmo : caml_utils.cmi caml_format.cmi
+caml_format.cmx : caml_utils.cmx caml_format.cmi
 caml_int64.cmo :
 caml_int64.cmx :
+caml_io.cmo :
+caml_io.cmx :
+caml_lexer.cmo : caml_lexer.cmi
+caml_lexer.cmx : caml_lexer.cmi
 caml_obj.cmo : caml_obj.cmi
 caml_obj.cmx : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi
 caml_oo.cmx : caml_oo.cmi
+caml_parser.cmo : caml_parser.cmi
+caml_parser.cmx : caml_parser.cmi
+caml_primitive.cmo : caml_primitive.cmi
+caml_primitive.cmx : caml_primitive.cmi
 caml_string.cmo : caml_string.cmi
 caml_string.cmx : caml_string.cmi
+caml_sys.cmo : caml_sys.cmi
+caml_sys.cmx : caml_sys.cmi
+caml_utils.cmo : caml_utils.cmi
+caml_utils.cmx : caml_utils.cmi
 caml_array.cmo : caml_array.cmi
 caml_array.cmj : caml_array.cmi
+caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
+caml_builtin_exceptions.cmj : caml_builtin_exceptions.cmi
 caml_curry.cmo : caml_oo.cmi
 caml_curry.cmj : caml_oo.cmj
 caml_exceptions.cmo : caml_exceptions.cmi
 caml_exceptions.cmj : caml_exceptions.cmi
+caml_float.cmo : caml_float.cmi
+caml_float.cmj : caml_float.cmi
+caml_format.cmo : caml_utils.cmi caml_format.cmi
+caml_format.cmj : caml_utils.cmj caml_format.cmi
 caml_int64.cmo :
 caml_int64.cmj :
+caml_io.cmo :
+caml_io.cmj :
+caml_lexer.cmo : caml_lexer.cmi
+caml_lexer.cmj : caml_lexer.cmi
 caml_obj.cmo : caml_obj.cmi
 caml_obj.cmj : caml_obj.cmi
 caml_oo.cmo : caml_oo.cmi
 caml_oo.cmj : caml_oo.cmi
+caml_parser.cmo : caml_parser.cmi
+caml_parser.cmj : caml_parser.cmi
+caml_primitive.cmo : caml_primitive.cmi
+caml_primitive.cmj : caml_primitive.cmi
 caml_string.cmo : caml_string.cmi
 caml_string.cmj : caml_string.cmi
+caml_sys.cmo : caml_sys.cmi
+caml_sys.cmj : caml_sys.cmi
+caml_utils.cmo : caml_utils.cmi
+caml_utils.cmj : caml_utils.cmi

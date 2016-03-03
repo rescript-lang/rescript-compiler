@@ -226,23 +226,23 @@ function to_string(x) {
         
       }
     }
-    else if (x === Caml_builtin_exceptions.Out_of_memory) {
+    else if (x === Caml_builtin_exceptions.out_of_memory) {
       return "Out of memory";
     }
-    else if (x === Caml_builtin_exceptions.Stack_overflow) {
+    else if (x === Caml_builtin_exceptions.stack_overflow) {
       return "Stack overflow";
     }
-    else if (x[0] === Caml_builtin_exceptions.Match_failure) {
+    else if (x[0] === Caml_builtin_exceptions.match_failure) {
       var match$1 = x[1];
       var $$char = match$1[2];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5, "Pattern matching failed");
     }
-    else if (x[0] === Caml_builtin_exceptions.Assert_failure) {
+    else if (x[0] === Caml_builtin_exceptions.assert_failure) {
       var match$2 = x[1];
       var $$char$1 = match$2[2];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6, "Assertion failed");
     }
-    else if (x[0] === Caml_builtin_exceptions.Undefined_recursive_module) {
+    else if (x[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       var match$3 = x[1];
       var $$char$2 = match$3[2];
       return Caml_curry.app5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6, "Undefined recursive module");
@@ -326,7 +326,7 @@ function convert_raw_backtrace(rbckt) {
                 }, rbckt)];
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.Failure) {
+    if (exn[0] === Caml_builtin_exceptions.failure) {
       return /* None */0;
     }
     else {

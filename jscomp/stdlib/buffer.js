@@ -32,7 +32,7 @@ function to_bytes(b) {
 function sub(b, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > b[1] - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Buffer.sub"
         ];
   }
@@ -44,7 +44,7 @@ function sub(b, ofs, len) {
 function blit(src, srcoff, dst, dstoff, len) {
   if (len < 0 || srcoff < 0 || srcoff > src[1] - len || dstoff < 0 || dstoff > dst.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Buffer.blit"
         ];
   }
@@ -56,7 +56,7 @@ function blit(src, srcoff, dst, dstoff, len) {
 function nth(b, ofs) {
   if (ofs < 0 || ofs >= b[1]) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Buffer.nth"
         ];
   }
@@ -93,7 +93,7 @@ function resize(b, more) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Failure,
+            Caml_builtin_exceptions.failure,
             "Buffer.add: cannot grow buffer"
           ];
     }
@@ -118,7 +118,7 @@ function add_char(b, c) {
 function add_substring(b, s, offset, len) {
   if (offset < 0 || len < 0 || offset + len > s.length) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Buffer.add_substring/add_subbytes"
         ];
   }
@@ -157,7 +157,7 @@ function add_buffer(b, bs) {
 function add_channel(b, ic, len) {
   if (len < 0 || len > Sys.max_string_length) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Buffer.add_channel"
         ];
   }
@@ -177,7 +177,7 @@ function closing(param) {
   if (param !== 40) {
     if (param !== 123) {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "buffer.ml",
               115,
@@ -202,7 +202,7 @@ function advance_to_closing(opening, closing, k, s, start) {
     var i = _i;
     var k$1 = _k;
     if (i >= lim) {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
     else if (s.charCodeAt(i) === opening) {
       _i = i + 1;
@@ -282,7 +282,7 @@ function advance_to_non_alpha(s, start) {
 
 function find_ident(s, start, lim) {
   if (start >= lim) {
-    throw Caml_builtin_exceptions.Not_found;
+    throw Caml_builtin_exceptions.not_found;
   }
   else {
     var c = s.charCodeAt(start);

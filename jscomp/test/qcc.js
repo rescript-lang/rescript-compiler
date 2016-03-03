@@ -35,7 +35,7 @@ function bufferize(f) {
           function (x) {
             if (buf[0] !== /* None */0) {
               throw [
-                    Caml_builtin_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.assert_failure,
                     [
                       "qcc.ml",
                       17,
@@ -94,7 +94,7 @@ function match_000(s) {
 function match_001(n) {
   if (n >= syms[0]) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "qcc.ml",
             40,
@@ -218,7 +218,7 @@ function next() {
     match = /* Some */[skip(/* () */0)];
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.End_of_file) {
+    if (exn === Caml_builtin_exceptions.end_of_file) {
       match = /* None */0;
     }
     else {
@@ -261,7 +261,7 @@ function next() {
         var qt = Caml_curry.app1(getch, /* () */0);
         if (qt !== /* "'" */39) {
           throw [
-                Caml_builtin_exceptions.Failure,
+                Caml_builtin_exceptions.failure,
                 "syntax error"
               ];
         }
@@ -436,7 +436,7 @@ function get32(l) {
 function patch(rel, loc, n) {
   if (n >= 0) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "qcc.ml",
             157,
@@ -1088,7 +1088,7 @@ function unary(stk) {
               }
               else {
                 throw [
-                      Caml_builtin_exceptions.Failure,
+                      Caml_builtin_exceptions.failure,
                       "[cast] expected"
                     ];
               }
@@ -1142,7 +1142,7 @@ function unary(stk) {
                         tag: 0
                       }), o);
               throw [
-                    Caml_builtin_exceptions.Failure,
+                    Caml_builtin_exceptions.failure,
                     s
                   ];
             }
@@ -1166,7 +1166,7 @@ function unary(stk) {
           var l = List.assoc(i, stk);
           if (l <= -256) {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "qcc.ml",
                     295,
@@ -1400,7 +1400,7 @@ function decl(g, _n, _stk) {
                 var glo = globs[s];
                 if (glo[1] >= 0) {
                   throw [
-                        Caml_builtin_exceptions.Failure,
+                        Caml_builtin_exceptions.failure,
                         "symbol defined twice"
                       ];
                 }
@@ -1441,7 +1441,7 @@ function decl(g, _n, _stk) {
             }
             else {
               throw [
-                    Caml_builtin_exceptions.Failure,
+                    Caml_builtin_exceptions.failure,
                     "[var] expected in [decl]"
                   ];
             }
@@ -1486,7 +1486,7 @@ function decl(g, _n, _stk) {
       if (!g && n !== 0) {
         if (n * 8 >= 256) {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "qcc.ml",
                   436,
@@ -1618,7 +1618,7 @@ function stmt(brk, stk) {
     var n = align[0] - brk[1];
     if (n < 0) {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "qcc.ml",
               515,
@@ -1702,7 +1702,7 @@ function top(_param) {
         var g = globs[f];
         if (g[1] >= 0) {
           throw [
-                Caml_builtin_exceptions.Failure,
+                Caml_builtin_exceptions.failure,
                 "symbol defined twice"
               ];
         }
@@ -1723,7 +1723,7 @@ function top(_param) {
                   }
                   else {
                     throw [
-                          Caml_builtin_exceptions.Failure,
+                          Caml_builtin_exceptions.failure,
                           "[var] or ) expected"
                         ];
                   }
@@ -1731,7 +1731,7 @@ function top(_param) {
               case 1 : 
               case 2 : 
                   throw [
-                        Caml_builtin_exceptions.Failure,
+                        Caml_builtin_exceptions.failure,
                         "[var] or ) expected"
                       ];
               case 3 : 
@@ -1826,7 +1826,7 @@ function top(_param) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Failure,
+              Caml_builtin_exceptions.failure,
               "[decl] or [fun] expected"
             ];
       }
@@ -2060,7 +2060,7 @@ function elfgen(outf) {
   elfphdr(2, dyn + off, tend - dyn, 8);
   if (opos[0] !== textoff) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "qcc.ml",
             698,
