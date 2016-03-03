@@ -604,6 +604,10 @@ let translate
     -> 
     E.runtime_call Js_config.bigarray
       ("caml_ba_dim_" ^ string_of_int i) args       
+  | Pbswap16 
+    -> 
+    E.runtime_call Js_config.prim "caml_bswap16" args
+
   | Plazyforce 
   | Pbittest 
   | Pstring_load_16 _
@@ -619,7 +623,7 @@ let translate
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
   | Pint_as_pointer 
-  | Pbswap16 
+
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
   | Pbbswap Lambda.Pint64 (* TODO *)
