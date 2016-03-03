@@ -18,7 +18,7 @@ function caml_get_public_method(obj, tag, cacheid) {
         var i = _i;
         if (i < 3) {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "caml_oo.ml",
                   43,

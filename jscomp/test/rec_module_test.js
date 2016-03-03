@@ -170,14 +170,14 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Set.bal"
           ];
     }
@@ -195,14 +195,14 @@ function bal(l, v, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Set.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Set.bal"
           ];
     }
@@ -317,7 +317,7 @@ function min_elt(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -337,7 +337,7 @@ function max_elt(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -354,7 +354,7 @@ function remove_min_elt(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Set.remove_min_elt"
         ];
   }
@@ -861,7 +861,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -1003,7 +1003,7 @@ function of_list(l) {
                   }
                   else {
                     throw [
-                          Caml_builtin_exceptions.Assert_failure,
+                          Caml_builtin_exceptions.assert_failure,
                           [
                             "set.ml",
                             372,

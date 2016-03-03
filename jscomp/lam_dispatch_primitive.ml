@@ -395,7 +395,8 @@ let query (prim : Lam_compile_env.primitive_description)
          let _ = Callback.register "test function" f
        ]}
 
-       [caml_named_value] is a c primitive but not OCaml/runtimedef.ml, so we don't needs
+       [caml_named_value] is a c primitive but not belong to OCaml/runtimedef.ml,
+       so we don't needs
        handle it 
     *)
     E.unit
@@ -443,23 +444,7 @@ let query (prim : Lam_compile_env.primitive_description)
         benefit: 
         less code side when serialzation, and more knowledge in jsir
     *)
-
-    begin match Js_of_lam_exception.match_exception_def args 
-    with 
-    | Some ( exception_str, mutable_flag)
-
-      -> 
-      Js_of_lam_exception.make_exception    
-        (E.unchecked_prefix_inc
-           (E.runtime_var_vid
-              Js_config.builtin_exceptions
-              "caml_oo_last_id")) 
-        exception_str mutable_flag      
-
-    | _ ->  
-      E.runtime_call 
-        Js_config.builtin_exceptions prim.prim_name args 
-    end
+    Js_of_lam_exception.caml_set_oo_id args 
 
   | "caml_sys_const_big_endian" -> 
     (** return false *)
@@ -777,6 +762,12 @@ let query (prim : Lam_compile_env.primitive_description)
     E.runtime_call Js_config.oo prim.prim_name args      
   (** TODO: Primitives not implemented yet ...*)
   | "caml_install_signal_handler"
+    -> 
+    begin match args with
+    | [num; behavior] 
+      -> E.seq num behavior (*TODO:*)
+    | _ -> assert false
+    end
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"

@@ -80,7 +80,7 @@ function rev_split_by_char(c, s) {
       
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         return /* :: */[
                 $$String.sub(s, i, s.length - i),
                 l
@@ -109,7 +109,7 @@ function xsplit(delim, s) {
           exit = 1;
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.not_found) {
             return /* :: */[
                     $$String.sub(s, 0, i),
                     l

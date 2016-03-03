@@ -43,7 +43,7 @@ function of_string(s) {
 function sub(s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.sub / Bytes.sub"
         ];
   }
@@ -80,7 +80,7 @@ function extend(s, left, right) {
 function fill(s, ofs, len, c) {
   if (ofs < 0 || len < 0 || ofs > s.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.fill / Bytes.fill"
         ];
   }
@@ -92,7 +92,7 @@ function fill(s, ofs, len, c) {
 function blit(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Bytes.blit"
         ];
   }
@@ -104,7 +104,7 @@ function blit(s1, ofs1, s2, ofs2, len) {
 function blit_string(s1, ofs1, s2, ofs2, len) {
   if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.blit / Bytes.blit_string"
         ];
   }
@@ -366,7 +366,7 @@ function index_rec(s, lim, _i, c) {
   while(true) {
     var i = _i;
     if (i >= lim) {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
     else if (s[i] === c) {
       return i;
@@ -387,7 +387,7 @@ function index_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.index_from / Bytes.index_from"
         ];
   }
@@ -400,7 +400,7 @@ function rindex_rec(s, _i, c) {
   while(true) {
     var i = _i;
     if (i < 0) {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
     else if (s[i] === c) {
       return i;
@@ -420,7 +420,7 @@ function rindex(s, c) {
 function rindex_from(s, i, c) {
   if (i < -1 || i >= s.length) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.rindex_from / Bytes.rindex_from"
         ];
   }
@@ -433,7 +433,7 @@ function contains_from(s, i, c) {
   var l = s.length;
   if (i < 0 || i > l) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.contains_from / Bytes.contains_from"
         ];
   }
@@ -443,7 +443,7 @@ function contains_from(s, i, c) {
       return /* true */1;
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         return /* false */0;
       }
       else {
@@ -460,7 +460,7 @@ function contains(s, c) {
 function rcontains_from(s, i, c) {
   if (i < 0 || i >= s.length) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "String.rcontains_from / Bytes.rcontains_from"
         ];
   }
@@ -470,7 +470,7 @@ function rcontains_from(s, i, c) {
       return /* true */1;
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         return /* false */0;
       }
       else {

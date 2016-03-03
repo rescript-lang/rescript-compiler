@@ -48,14 +48,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -74,14 +74,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -285,14 +285,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -311,14 +311,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -391,7 +391,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }

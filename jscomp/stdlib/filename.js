@@ -145,7 +145,7 @@ try {
   temp_dir_name = Caml_sys.caml_sys_getenv("TMPDIR");
 }
 catch (exn){
-  if (exn === Caml_builtin_exceptions.Not_found) {
+  if (exn === Caml_builtin_exceptions.not_found) {
     temp_dir_name = "/tmp";
   }
   else {
@@ -185,7 +185,7 @@ try {
   temp_dir_name$1 = Caml_sys.caml_sys_getenv("TEMP");
 }
 catch (exn$1){
-  if (exn$1 === Caml_builtin_exceptions.Not_found) {
+  if (exn$1 === Caml_builtin_exceptions.not_found) {
     temp_dir_name$1 = ".";
   }
   else {
@@ -213,7 +213,7 @@ function chop_suffix(name, suff) {
   var n = name.length - suff.length;
   if (n < 0) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Filename.chop_suffix"
         ];
   }
@@ -228,7 +228,7 @@ function chop_extension(name) {
     var i = _i;
     if (i < 0 || Caml_curry.app2(is_dir_sep$1, name, i)) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Filename.chop_extension"
           ];
     }
@@ -317,7 +317,7 @@ function temp_file($staropt$star, prefix, suffix) {
       return name;
     }
     catch (e){
-      if (e[0] === Caml_builtin_exceptions.Sys_error) {
+      if (e[0] === Caml_builtin_exceptions.sys_error) {
         if (counter >= 1000) {
           throw e;
         }
@@ -360,7 +360,7 @@ function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
             ];
     }
     catch (e){
-      if (e[0] === Caml_builtin_exceptions.Sys_error) {
+      if (e[0] === Caml_builtin_exceptions.sys_error) {
         if (counter >= 1000) {
           throw e;
         }

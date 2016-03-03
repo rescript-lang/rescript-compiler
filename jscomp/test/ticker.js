@@ -26,7 +26,7 @@ function split(delim, s) {
           exit = 1;
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.not_found) {
             return /* :: */[
                     $$String.sub(s, 0, i),
                     l
@@ -191,14 +191,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -217,14 +217,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -306,7 +306,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -349,7 +349,7 @@ function min_binding(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -372,7 +372,7 @@ function max_binding(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -389,7 +389,7 @@ function remove_min_binding(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -685,7 +685,7 @@ function merge(f, s1, s2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "map.ml",
               270,
@@ -990,13 +990,13 @@ function compute_update_sequences(all_tickers) {
                     var rhs = param$1[1];
                     if (typeof lhs === "number") {
                       throw [
-                            Caml_builtin_exceptions.Failure,
+                            Caml_builtin_exceptions.failure,
                             "All nodes should be ranked"
                           ];
                     }
                     else if (typeof rhs === "number") {
                       throw [
-                            Caml_builtin_exceptions.Failure,
+                            Caml_builtin_exceptions.failure,
                             "All nodes should be ranked"
                           ];
                     }
@@ -1039,7 +1039,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
               }
               else {
                 throw [
-                      Caml_builtin_exceptions.Failure,
+                      Caml_builtin_exceptions.failure,
                       "Only single Market ticker should be udpated upon a new quote"
                     ];
               }
@@ -1075,7 +1075,7 @@ function process_input_line(ticker_map, all_tickers, line) {
             if (match$1) {
               if (match$1[1]) {
                 throw [
-                      Caml_builtin_exceptions.Failure,
+                      Caml_builtin_exceptions.failure,
                       "Invalid input line"
                     ];
               }
@@ -1091,14 +1091,14 @@ function process_input_line(ticker_map, all_tickers, line) {
             }
             else {
               throw [
-                    Caml_builtin_exceptions.Failure,
+                    Caml_builtin_exceptions.failure,
                     "Invalid input line"
                   ];
             }
           }
           else {
             throw [
-                  Caml_builtin_exceptions.Failure,
+                  Caml_builtin_exceptions.failure,
                   "Invalid input line"
                 ];
           }
@@ -1117,7 +1117,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$5) {
                         if (match$5[1]) {
                           throw [
-                                Caml_builtin_exceptions.Failure,
+                                Caml_builtin_exceptions.failure,
                                 "Invalid input line"
                               ];
                         }
@@ -1133,14 +1133,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                       }
                       else {
                         throw [
-                              Caml_builtin_exceptions.Failure,
+                              Caml_builtin_exceptions.failure,
                               "Invalid input line"
                             ];
                       }
                     }
                     else {
                       throw [
-                            Caml_builtin_exceptions.Failure,
+                            Caml_builtin_exceptions.failure,
                             "Invalid input line"
                           ];
                     }
@@ -1152,7 +1152,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                       if (match$7) {
                         if (match$7[1]) {
                           throw [
-                                Caml_builtin_exceptions.Failure,
+                                Caml_builtin_exceptions.failure,
                                 "Invalid input line"
                               ];
                         }
@@ -1168,14 +1168,14 @@ function process_input_line(ticker_map, all_tickers, line) {
                       }
                       else {
                         throw [
-                              Caml_builtin_exceptions.Failure,
+                              Caml_builtin_exceptions.failure,
                               "Invalid input line"
                             ];
                       }
                     }
                     else {
                       throw [
-                            Caml_builtin_exceptions.Failure,
+                            Caml_builtin_exceptions.failure,
                             "Invalid input line"
                           ];
                     }
@@ -1183,7 +1183,7 @@ function process_input_line(ticker_map, all_tickers, line) {
                 case "S" : 
                     if (match$3[1]) {
                       throw [
-                            Caml_builtin_exceptions.Failure,
+                            Caml_builtin_exceptions.failure,
                             "Invalid input line"
                           ];
                     }
@@ -1204,35 +1204,35 @@ function process_input_line(ticker_map, all_tickers, line) {
                     break;
                 default:
                   throw [
-                        Caml_builtin_exceptions.Failure,
+                        Caml_builtin_exceptions.failure,
                         "Invalid input line"
                       ];
               }
             }
             else {
               throw [
-                    Caml_builtin_exceptions.Failure,
+                    Caml_builtin_exceptions.failure,
                     "Invalid input line"
                   ];
             }
           }
           else {
             throw [
-                  Caml_builtin_exceptions.Failure,
+                  Caml_builtin_exceptions.failure,
                   "Invalid input line"
                 ];
           }
           break;
       default:
         throw [
-              Caml_builtin_exceptions.Failure,
+              Caml_builtin_exceptions.failure,
               "Invalid input line"
             ];
     }
   }
   else {
     throw [
-          Caml_builtin_exceptions.Failure,
+          Caml_builtin_exceptions.failure,
           "Invalid input line"
         ];
   }

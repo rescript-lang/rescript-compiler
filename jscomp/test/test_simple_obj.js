@@ -93,7 +93,7 @@ function test() {
       uu.tag === 248 ? Caml_curry.js1(23515, 1, uu) : uu.id
     ) !== "uu") {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             21,
@@ -105,7 +105,7 @@ function test() {
       uuu.tag === 248 ? Caml_curry.js3(4846113, 2, uuu, 1, 20) : Caml_curry.app2(uuu.add.bind(uuu), 1, 20)
     ) !== 21) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             22,
@@ -117,7 +117,7 @@ function test() {
       v.tag === 248 ? Caml_curry.js3(4846113, 3, v, 3, 7) : Caml_curry.app2(v.add.bind(v), 3, 7)
     ) !== 10) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             23,
@@ -129,7 +129,7 @@ function test() {
       u.tag === 248 ? Caml_curry.js1(5243894, 4, u) : u.id1
     ) !== 3) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             25,
@@ -141,7 +141,7 @@ function test() {
       u.tag === 248 ? Caml_curry.js1(5243895, 5, u) : u.id2
     ) !== 4) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             26,
@@ -153,7 +153,7 @@ function test() {
       u.tag === 248 ? Caml_curry.js3(23297, 6, u, 1, 2) : Caml_curry.app2(u.hi.bind(u), 1, 2)
     ) !== 3) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             27,
@@ -168,7 +168,7 @@ function test() {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "test_simple_obj.ml",
             28,

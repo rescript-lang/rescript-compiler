@@ -7,7 +7,7 @@ var u = 3;
 
 function f() {
   throw [
-        Caml_builtin_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.invalid_argument,
         "hi"
       ];
 }

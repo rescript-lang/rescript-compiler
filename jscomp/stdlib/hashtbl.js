@@ -32,12 +32,12 @@ try {
   params = Caml_sys.caml_sys_getenv("OCAMLRUNPARAM");
 }
 catch (exn){
-  if (exn === Caml_builtin_exceptions.Not_found) {
+  if (exn === Caml_builtin_exceptions.not_found) {
     try {
       params = Caml_sys.caml_sys_getenv("CAMLRUNPARAM");
     }
     catch (exn$1){
-      if (exn$1 === Caml_builtin_exceptions.Not_found) {
+      if (exn$1 === Caml_builtin_exceptions.not_found) {
         params = "";
       }
       else {
@@ -256,7 +256,7 @@ function find(h, key) {
                   }
                 }
                 else {
-                  throw Caml_builtin_exceptions.Not_found;
+                  throw Caml_builtin_exceptions.not_found;
                 }
               };
             }
@@ -265,7 +265,7 @@ function find(h, key) {
             }
           }
           else {
-            throw Caml_builtin_exceptions.Not_found;
+            throw Caml_builtin_exceptions.not_found;
           }
         }
         else {
@@ -273,7 +273,7 @@ function find(h, key) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     }
     else {
@@ -281,7 +281,7 @@ function find(h, key) {
     }
   }
   else {
-    throw Caml_builtin_exceptions.Not_found;
+    throw Caml_builtin_exceptions.not_found;
   }
 }
 
@@ -336,7 +336,7 @@ function replace(h, key, info) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
   var i = key_index(h, key);
@@ -346,7 +346,7 @@ function replace(h, key, info) {
     return /* () */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       h[1][i] = /* Cons */{
         0: key,
         1: info,
@@ -550,21 +550,21 @@ function MakeSeeded(H) {
                 }
               }
               else {
-                throw Caml_builtin_exceptions.Not_found;
+                throw Caml_builtin_exceptions.not_found;
               }
             };
           }
         }
         else {
-          throw Caml_builtin_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
   var find_all = function (h, key) {
@@ -617,7 +617,7 @@ function MakeSeeded(H) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
     var i = key_index(h, key);
@@ -627,7 +627,7 @@ function MakeSeeded(H) {
       return /* () */0;
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         h[1][i] = /* Cons */{
           0: key,
           1: info,
@@ -768,21 +768,21 @@ function Make(H) {
                 }
               }
               else {
-                throw Caml_builtin_exceptions.Not_found;
+                throw Caml_builtin_exceptions.not_found;
               }
             };
           }
         }
         else {
-          throw Caml_builtin_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
   var find_all = function (h, key) {
@@ -835,7 +835,7 @@ function Make(H) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
     var i = key_index(h, key);
@@ -845,7 +845,7 @@ function Make(H) {
       return /* () */0;
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         h[1][i] = /* Cons */{
           0: key,
           1: info,

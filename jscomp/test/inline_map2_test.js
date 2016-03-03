@@ -58,14 +58,14 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
@@ -84,14 +84,14 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Map.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
@@ -170,7 +170,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -211,7 +211,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -233,7 +233,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -249,7 +249,7 @@ function Make(Ord) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.remove_min_elt"
           ];
     }
@@ -531,7 +531,7 @@ function Make(Ord) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "inline_map2_test.ml",
                 270,
@@ -806,14 +806,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -832,14 +832,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -923,7 +923,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -966,7 +966,7 @@ function min_binding(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -989,7 +989,7 @@ function max_binding(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -1011,7 +1011,7 @@ function remove_min_binding(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -1317,7 +1317,7 @@ function merge(f, s1, s2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "inline_map2_test.ml",
               270,
@@ -1630,14 +1630,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -1656,14 +1656,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -1747,7 +1747,7 @@ function find$1(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -1790,7 +1790,7 @@ function min_binding$1(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -1813,7 +1813,7 @@ function max_binding$1(_param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -1835,7 +1835,7 @@ function remove_min_binding$1(param) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Map.remove_min_elt"
         ];
   }
@@ -2141,7 +2141,7 @@ function merge$1(f, s1, s2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "inline_map2_test.ml",
               270,

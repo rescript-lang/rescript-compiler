@@ -20,7 +20,7 @@ var List                    = require("./list");
 
 var Unix_error = {
   0: "Unix.Unix_error",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -347,7 +347,7 @@ var stderr = 2;
 function read(fd, buf, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.read"
         ];
   }
@@ -359,7 +359,7 @@ function read(fd, buf, ofs, len) {
 function write(fd, buf, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.write"
         ];
   }
@@ -371,7 +371,7 @@ function write(fd, buf, ofs, len) {
 function single_write(fd, buf, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.single_write"
         ];
   }
@@ -394,7 +394,7 @@ function try_set_close_on_exec(fd) {
     return /* true */1;
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       return /* false */0;
     }
     else {
@@ -417,7 +417,7 @@ try {
   inet6_addr_any = Caml_unix.unix_inet_addr_of_string("::");
 }
 catch (exn){
-  if (exn[0] === Caml_builtin_exceptions.Failure) {
+  if (exn[0] === Caml_builtin_exceptions.failure) {
     inet6_addr_any = inet_addr_any;
   }
   else {
@@ -431,7 +431,7 @@ try {
   inet6_addr_loopback = Caml_unix.unix_inet_addr_of_string("::1");
 }
 catch (exn$1){
-  if (exn$1[0] === Caml_builtin_exceptions.Failure) {
+  if (exn$1[0] === Caml_builtin_exceptions.failure) {
     inet6_addr_loopback = inet_addr_loopback;
   }
   else {
@@ -456,7 +456,7 @@ function domain_of_sockaddr(param) {
 function recv(fd, buf, ofs, len, flags) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.recv"
         ];
   }
@@ -468,7 +468,7 @@ function recv(fd, buf, ofs, len, flags) {
 function recvfrom(fd, buf, ofs, len, flags) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.recvfrom"
         ];
   }
@@ -480,7 +480,7 @@ function recvfrom(fd, buf, ofs, len, flags) {
 function send(fd, buf, ofs, len, flags) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.send"
         ];
   }
@@ -492,7 +492,7 @@ function send(fd, buf, ofs, len, flags) {
 function sendto(fd, buf, ofs, len, flags, addr) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Unix.sendto"
         ];
   }
@@ -568,7 +568,7 @@ function getaddrinfo(node, service, opts) {
     return List.rev(Caml_unix.unix_getaddrinfo(node, service, opts));
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       var node$1 = node;
       var service$1 = service;
       var opts$1 = opts;
@@ -619,7 +619,7 @@ function getaddrinfo(node, service, opts) {
                   ];
           }
           catch (exn){
-            if (exn[0] === Caml_builtin_exceptions.Failure) {
+            if (exn[0] === Caml_builtin_exceptions.failure) {
               try {
                 return /* :: */[
                         /* tuple */[
@@ -630,7 +630,7 @@ function getaddrinfo(node, service, opts) {
                       ];
               }
               catch (exn$1){
-                if (exn$1 === Caml_builtin_exceptions.Not_found) {
+                if (exn$1 === Caml_builtin_exceptions.not_found) {
                   return /* [] */0;
                 }
                 else {
@@ -690,7 +690,7 @@ function getaddrinfo(node, service, opts) {
           ];
         }
         catch (exn$1){
-          if (exn$1[0] === Caml_builtin_exceptions.Failure) {
+          if (exn$1[0] === Caml_builtin_exceptions.failure) {
             try {
               var he = Caml_unix.unix_gethostbyname(node$1);
               addresses = List.map(function (a) {
@@ -701,7 +701,7 @@ function getaddrinfo(node, service, opts) {
                   }, $$Array.to_list(he[3]));
             }
             catch (exn$2){
-              if (exn$2 === Caml_builtin_exceptions.Not_found) {
+              if (exn$2 === Caml_builtin_exceptions.not_found) {
                 addresses = /* [] */0;
               }
               else {
@@ -744,7 +744,7 @@ function getnameinfo(addr, opts) {
     return Caml_unix.unix_getnameinfo(addr, opts);
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       var addr$1 = addr;
       var opts$1 = opts;
       if (addr$1.tag) {
@@ -753,14 +753,14 @@ function getnameinfo(addr, opts) {
         var hostname;
         try {
           if (List.mem(/* NI_NUMERICHOST */1, opts$1)) {
-            throw Caml_builtin_exceptions.Not_found;
+            throw Caml_builtin_exceptions.not_found;
           }
           hostname = Caml_unix.unix_gethostbyaddr(a)[0];
         }
         catch (exn$1){
-          if (exn$1 === Caml_builtin_exceptions.Not_found) {
+          if (exn$1 === Caml_builtin_exceptions.not_found) {
             if (List.mem(/* NI_NAMEREQD */2, opts$1)) {
-              throw Caml_builtin_exceptions.Not_found;
+              throw Caml_builtin_exceptions.not_found;
             }
             hostname = Caml_unix.unix_string_of_inet_addr(a);
           }
@@ -771,13 +771,13 @@ function getnameinfo(addr, opts) {
         var service;
         try {
           if (List.mem(/* NI_NUMERICSERV */3, opts$1)) {
-            throw Caml_builtin_exceptions.Not_found;
+            throw Caml_builtin_exceptions.not_found;
           }
           var kind = List.mem(/* NI_DGRAM */4, opts$1) ? "udp" : "tcp";
           service = Caml_unix.unix_getservbyport(p, kind)[0];
         }
         catch (exn$2){
-          if (exn$2 === Caml_builtin_exceptions.Not_found) {
+          if (exn$2 === Caml_builtin_exceptions.not_found) {
             service = "" + p;
           }
           else {
@@ -1169,7 +1169,7 @@ function find_proc_id(fun_name, proc) {
     return pid;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       throw [
             Unix_error,
             /* EBADF */3,
@@ -1219,7 +1219,7 @@ function close_process(param) {
     Caml_primitive.caml_ml_close_channel(outchan);
   }
   catch (exn){
-    if (exn[0] !== Caml_builtin_exceptions.Sys_error) {
+    if (exn[0] !== Caml_builtin_exceptions.sys_error) {
       throw exn;
     }
     
@@ -1244,7 +1244,7 @@ function close_process_full(param) {
     Caml_primitive.caml_ml_close_channel(outchan);
   }
   catch (exn){
-    if (exn[0] !== Caml_builtin_exceptions.Sys_error) {
+    if (exn[0] !== Caml_builtin_exceptions.sys_error) {
       throw exn;
     }
     

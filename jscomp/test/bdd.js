@@ -67,7 +67,7 @@ function resize(newSize) {
         var n = bucket[0];
         if (typeof n === "number") {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "bdd.ml",
                   54,
@@ -142,7 +142,7 @@ function mkNode(low, v, high) {
         var n = b[0];
         if (typeof n === "number") {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "bdd.ml",
                   99,
@@ -427,7 +427,7 @@ function main() {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "bdd.ml",
             233,

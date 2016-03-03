@@ -4,11 +4,11 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Mt                      = require("./mt");
 
-var v = Caml_builtin_exceptions.Not_found;
+var v = Caml_builtin_exceptions.not_found;
 
-var u = Caml_builtin_exceptions.Not_found;
+var u = Caml_builtin_exceptions.not_found;
 
-var s = Caml_builtin_exceptions.End_of_file;
+var s = Caml_builtin_exceptions.end_of_file;
 
 var suites_000 = /* tuple */[
   "not_found_equal",

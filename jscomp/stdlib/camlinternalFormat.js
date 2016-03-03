@@ -1385,7 +1385,7 @@ function trans(ty1, ty2) {
     if (typeof ty2 === "number") {
       if (ty2) {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 816,
@@ -1422,7 +1422,7 @@ function trans(ty1, ty2) {
             break;
         default:
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "camlinternalFormat.ml",
                   816,
@@ -1733,7 +1733,7 @@ function trans(ty1, ty2) {
       case 8 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     802,
@@ -1767,7 +1767,7 @@ function trans(ty1, ty2) {
                   break;
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         802,
@@ -1780,7 +1780,7 @@ function trans(ty1, ty2) {
       case 9 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     812,
@@ -1822,7 +1822,7 @@ function trans(ty1, ty2) {
                   break;
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         812,
@@ -1835,7 +1835,7 @@ function trans(ty1, ty2) {
       case 10 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     780,
@@ -1852,7 +1852,7 @@ function trans(ty1, ty2) {
           }
           else {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     780,
@@ -1864,7 +1864,7 @@ function trans(ty1, ty2) {
       case 11 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     784,
@@ -1885,7 +1885,7 @@ function trans(ty1, ty2) {
                         };
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         784,
@@ -1898,7 +1898,7 @@ function trans(ty1, ty2) {
       case 12 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     788,
@@ -1922,7 +1922,7 @@ function trans(ty1, ty2) {
                         };
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         788,
@@ -1935,7 +1935,7 @@ function trans(ty1, ty2) {
       case 13 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     792,
@@ -1962,7 +1962,7 @@ function trans(ty1, ty2) {
                         };
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         792,
@@ -1975,7 +1975,7 @@ function trans(ty1, ty2) {
       case 14 : 
           if (typeof ty2 === "number") {
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     797,
@@ -2005,7 +2005,7 @@ function trans(ty1, ty2) {
                         };
               default:
                 throw [
-                      Caml_builtin_exceptions.Assert_failure,
+                      Caml_builtin_exceptions.assert_failure,
                       [
                         "camlinternalFormat.ml",
                         797,
@@ -2021,7 +2021,7 @@ function trans(ty1, ty2) {
   switch (exit) {
     case 1 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 781,
@@ -2030,7 +2030,7 @@ function trans(ty1, ty2) {
             ];
     case 2 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 785,
@@ -2039,7 +2039,7 @@ function trans(ty1, ty2) {
             ];
     case 3 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 789,
@@ -2048,7 +2048,7 @@ function trans(ty1, ty2) {
             ];
     case 4 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 793,
@@ -2057,7 +2057,7 @@ function trans(ty1, ty2) {
             ];
     case 5 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 798,
@@ -2066,7 +2066,7 @@ function trans(ty1, ty2) {
             ];
     case 6 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 803,
@@ -2075,7 +2075,7 @@ function trans(ty1, ty2) {
             ];
     case 7 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 813,
@@ -2084,7 +2084,7 @@ function trans(ty1, ty2) {
             ];
     case 8 : 
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 817,
@@ -2310,7 +2310,7 @@ function fmtty_of_precision_fmtty(prec, fmtty) {
 
 var Type_mismatch = {
   0: "CamlinternalFormat.Type_mismatch",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -4156,7 +4156,7 @@ function make_printf(_k, o, _acc, _fmt) {
             break;
         case 19 : 
             throw [
-                  Caml_builtin_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
                     "camlinternalFormat.ml",
                     1449,
@@ -4213,7 +4213,7 @@ function make_printf(_k, o, _acc, _fmt) {
               switch (ign) {
                 case 3 : 
                     throw [
-                          Caml_builtin_exceptions.Assert_failure,
+                          Caml_builtin_exceptions.assert_failure,
                           [
                             "camlinternalFormat.ml",
                             1517,
@@ -4328,7 +4328,7 @@ function make_from_fmtty(k, o, acc, fmtty, fmt) {
           };
       case 13 : 
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "camlinternalFormat.ml",
                   1540,
@@ -4337,7 +4337,7 @@ function make_from_fmtty(k, o, acc, fmtty, fmt) {
               ];
       case 14 : 
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "camlinternalFormat.ml",
                   1541,
@@ -4584,7 +4584,7 @@ function output_acc(o, _acc) {
         case 8 : 
             output_acc(o, acc[0]);
             throw [
-                  Caml_builtin_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.invalid_argument,
                   acc[1]
                 ];
         
@@ -4649,7 +4649,7 @@ function bufput_acc(b, _acc) {
             case 8 : 
             bufput_acc(b, acc[0]);
             throw [
-                  Caml_builtin_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.invalid_argument,
                   acc[1]
                 ];
         
@@ -4714,7 +4714,7 @@ function strput_acc(b, _acc) {
             case 8 : 
             strput_acc(b, acc[0]);
             throw [
-                  Caml_builtin_exceptions.Invalid_argument,
+                  Caml_builtin_exceptions.invalid_argument,
                   acc[1]
                 ];
         
@@ -4738,7 +4738,7 @@ function failwith_message(param) {
     strput_acc(buf, acc);
     var s = Buffer.contents(buf);
     throw [
-          Caml_builtin_exceptions.Failure,
+          Caml_builtin_exceptions.failure,
           s
         ];
   };
@@ -4860,7 +4860,7 @@ function open_box_of_string(str) {
         indent = Caml_format.caml_int_of_string($$String.sub(str, nstart, nend - nstart));
       }
       catch (exn){
-        if (exn[0] === Caml_builtin_exceptions.Failure) {
+        if (exn[0] === Caml_builtin_exceptions.failure) {
           indent = invalid_box(/* () */0);
         }
         else {
@@ -6793,21 +6793,21 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 var match$7;
                 try {
                   if (str_ind$1 === end_ind$1 || str.charCodeAt(str_ind$1) !== /* "<" */60) {
-                    throw Caml_builtin_exceptions.Not_found;
+                    throw Caml_builtin_exceptions.not_found;
                   }
                   var str_ind_1 = parse_spaces(str_ind$1 + 1, end_ind$1);
                   var match$8 = str.charCodeAt(str_ind_1);
                   var exit$1 = 0;
                   if (match$8 >= 48) {
                     if (match$8 >= 58) {
-                      throw Caml_builtin_exceptions.Not_found;
+                      throw Caml_builtin_exceptions.not_found;
                     }
                     else {
                       exit$1 = 1;
                     }
                   }
                   else if (match$8 !== 45) {
-                    throw Caml_builtin_exceptions.Not_found;
+                    throw Caml_builtin_exceptions.not_found;
                   }
                   else {
                     exit$1 = 1;
@@ -6820,7 +6820,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     var switcher$1 = match$10 - 45;
                     if (switcher$1 > 12 || switcher$1 < 0) {
                       if (switcher$1 !== 17) {
-                        throw Caml_builtin_exceptions.Not_found;
+                        throw Caml_builtin_exceptions.not_found;
                       }
                       else {
                         var s = $$String.sub(str, str_ind$1 - 2, str_ind_3 - str_ind$1 + 3);
@@ -6837,13 +6837,13 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       }
                     }
                     else if (switcher$1 === 2 || switcher$1 === 1) {
-                      throw Caml_builtin_exceptions.Not_found;
+                      throw Caml_builtin_exceptions.not_found;
                     }
                     else {
                       var match$11 = parse_integer(str_ind_3, end_ind$1);
                       var str_ind_5 = parse_spaces(match$11[0], end_ind$1);
                       if (str.charCodeAt(str_ind_5) !== /* ">" */62) {
-                        throw Caml_builtin_exceptions.Not_found;
+                        throw Caml_builtin_exceptions.not_found;
                       }
                       var s$1 = $$String.sub(str, str_ind$1 - 2, str_ind_5 - str_ind$1 + 3);
                       match$7 = /* tuple */[
@@ -6861,7 +6861,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   
                 }
                 catch (exn){
-                  if (exn === Caml_builtin_exceptions.Not_found) {
+                  if (exn === Caml_builtin_exceptions.not_found) {
                     match$7 = /* tuple */[
                       str_ind$1,
                       /* Break */{
@@ -6873,7 +6873,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       }
                     ];
                   }
-                  else if (exn[0] === Caml_builtin_exceptions.Failure) {
+                  else if (exn[0] === Caml_builtin_exceptions.failure) {
                     match$7 = /* tuple */[
                       str_ind$1,
                       /* Break */{
@@ -6927,7 +6927,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     var match$15 = parse_integer(str_ind_1$1, end_ind$2);
                     var str_ind_3$1 = parse_spaces(match$15[0], end_ind$2);
                     if (str.charCodeAt(str_ind_3$1) !== /* ">" */62) {
-                      throw Caml_builtin_exceptions.Not_found;
+                      throw Caml_builtin_exceptions.not_found;
                     }
                     var s$2 = $$String.sub(str, str_ind$2 - 2, str_ind_3$1 - str_ind$2 + 3);
                     match$13 = /* Some */[/* tuple */[
@@ -6943,10 +6943,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   
                 }
                 catch (exn$1){
-                  if (exn$1 === Caml_builtin_exceptions.Not_found) {
+                  if (exn$1 === Caml_builtin_exceptions.not_found) {
                     match$13 = /* None */0;
                   }
-                  else if (exn$1[0] === Caml_builtin_exceptions.Failure) {
+                  else if (exn$1[0] === Caml_builtin_exceptions.failure) {
                     match$13 = /* None */0;
                   }
                   else {
@@ -7090,7 +7090,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           return open_box_of_string(fmt[0]);
         }
         catch (exn){
-          if (exn[0] === Caml_builtin_exceptions.Failure) {
+          if (exn[0] === Caml_builtin_exceptions.failure) {
             return /* () */0;
           }
           else {
@@ -7109,16 +7109,16 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   var parse_tag = function (is_open_tag, str_ind, end_ind) {
     try {
       if (str_ind === end_ind) {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
       var match = str.charCodeAt(str_ind);
       if (match !== 60) {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
       else {
         var ind = $$String.index_from(str, str_ind + 1, /* ">" */62);
         if (ind >= end_ind) {
-          throw Caml_builtin_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
         var sub_str = $$String.sub(str, str_ind, ind - str_ind + 1);
         var beg_ind = ind + 1;
@@ -7153,7 +7153,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
     }
     catch (exn){
-      if (exn === Caml_builtin_exceptions.Not_found) {
+      if (exn === Caml_builtin_exceptions.not_found) {
         var match$3 = parse_literal(str_ind, str_ind, end_ind);
         var sub_format$1 = /* Format */{
           0: /* End_of_format */0,
@@ -7492,7 +7492,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     if (match >= 48) {
       if (match >= 58) {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 2621,
@@ -7506,7 +7506,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     else if (match !== 45) {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "camlinternalFormat.ml",
               2621,
@@ -7776,7 +7776,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     if (exit === 1) {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "camlinternalFormat.ml",
               2683,
@@ -8011,7 +8011,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }
             else {
               throw [
-                    Caml_builtin_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.assert_failure,
                     [
                       "camlinternalFormat.ml",
                       2716,
@@ -8136,7 +8136,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         var switcher$2 = symb - 101;
         if (switcher$2 > 2 || switcher$2 < 0) {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "camlinternalFormat.ml",
                   2744,
@@ -8169,7 +8169,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Assert_failure,
+              Caml_builtin_exceptions.assert_failure,
               [
                 "camlinternalFormat.ml",
                 2744,

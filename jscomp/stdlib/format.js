@@ -34,7 +34,7 @@ function add_queue(x, q) {
 
 var Empty_queue = {
   0: "Format.Empty_queue",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -271,7 +271,7 @@ function format_pp_token(state, size, param) {
                   }
                 }
                 else {
-                  throw Caml_builtin_exceptions.Not_found;
+                  throw Caml_builtin_exceptions.not_found;
                 }
               };
             };
@@ -282,7 +282,7 @@ function format_pp_token(state, size, param) {
                 tab = find(insertion_point, tabs$1[0]);
               }
               catch (exn){
-                if (exn === Caml_builtin_exceptions.Not_found) {
+                if (exn === Caml_builtin_exceptions.not_found) {
                   tab = match$9[0];
                 }
                 else {
@@ -1583,7 +1583,7 @@ function output_acc(ppf, acc) {
       case 8 : 
           output_acc(ppf, acc[0]);
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 acc[1]
               ];
       
@@ -1777,7 +1777,7 @@ function strput_acc(ppf, acc) {
       case 8 : 
           strput_acc(ppf, acc[0]);
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 acc[1]
               ];
       

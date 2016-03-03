@@ -48,10 +48,10 @@ function chop_extension($staropt$star, name) {
     return Filename.chop_extension(name);
   }
   catch (exn){
-    if (exn[0] === Caml_builtin_exceptions.Invalid_argument) {
+    if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
       var s = "Filename.chop_extension (" + (loc + (":" + (name + ")")));
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             s
           ];
     }

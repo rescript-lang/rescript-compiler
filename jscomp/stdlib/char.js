@@ -7,7 +7,7 @@ var Caml_string             = require("../runtime/caml_string");
 function chr(n) {
   if (n < 0 || n > 255) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Char.chr"
         ];
   }

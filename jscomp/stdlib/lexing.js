@@ -62,7 +62,7 @@ function from_function(f) {
                 var newlen = Pervasives.min(2 * lexbuf[1].length, Sys.max_string_length);
                 if (lexbuf[2] - lexbuf[4] + n > newlen) {
                   throw [
-                        Caml_builtin_exceptions.Failure,
+                        Caml_builtin_exceptions.failure,
                         "Lexing.lex_refill: cannot grow buffer"
                       ];
                 }

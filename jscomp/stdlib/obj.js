@@ -38,13 +38,13 @@ function extension_slot(x) {
     name = slot[0];
   }
   else {
-    throw Caml_builtin_exceptions.Not_found;
+    throw Caml_builtin_exceptions.not_found;
   }
   if ((name.tag | 0) === string_tag) {
     return slot;
   }
   else {
-    throw Caml_builtin_exceptions.Not_found;
+    throw Caml_builtin_exceptions.not_found;
   }
 }
 
@@ -54,9 +54,9 @@ function extension_name(x) {
     return slot[0];
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Obj.extension_name"
           ];
     }
@@ -72,9 +72,9 @@ function extension_id(x) {
     return slot[1];
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Obj.extension_id"
           ];
     }
@@ -89,9 +89,9 @@ function extension_slot$1(x) {
     return extension_slot(x);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Obj.extension_slot"
           ];
     }

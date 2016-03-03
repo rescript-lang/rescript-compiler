@@ -77,7 +77,7 @@ function bits(s) {
 function $$int(s, bound) {
   if (bound > 1073741823 || bound <= 0) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Random.int"
         ];
   }
@@ -101,7 +101,7 @@ function $$int(s, bound) {
 function int32(s, bound) {
   if (bound <= 0) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Random.int32"
         ];
   }
@@ -130,7 +130,7 @@ function int64(s, bound) {
           0
         ])) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Random.int64"
         ];
   }

@@ -1,24 +1,8 @@
-// Js_of_ocaml runtime support
-// http://www.ocsigen.org/js_of_ocaml/
-// Copyright (C) 2014 Jérôme Vouillon, Hugo Heuzard, Andy Ray
-// Laboratoire PPS - CNRS Université Paris Diderot
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, with linking exception;
-// either version 2.1 of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//  Copyright (c) 2015 Bloomberg LP. All rights reserved. 
-// Hongbo Zhang (hzhang295@bloomberg.net)              
-"use strict";
+// Generated CODE, PLEASE EDIT WITH CARE
+'use strict';
+
+
+
 /**
  * caml_lex_array("abcd")
  * [25185, 25699]
@@ -117,7 +101,7 @@ var PARSER_TRACE = false;
  * @param arg
  * @returns {number}
  */
-function caml_parse_engine(tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
+function $$caml_parse_engine(tables /* parser_table */, env /* parser_env */, cmd /* parser_input*/, arg /* Obj.t*/) {
     var ERRCODE = 256;
     //var START = 0;
     //var TOKEN_READ = 1;
@@ -340,16 +324,30 @@ function caml_parse_engine(tables /* parser_table */, env /* parser_env */, cmd 
     env[env_errflag] = errflag;
     return res;
 }
-exports.caml_parse_engine = caml_parse_engine;
+
 /**
  * external set_trace: bool -> bool = "caml_set_parser_trace"
  * parsing.ml
  * @param {boolean}
  * @returns {boolean}
  */
-function caml_set_parser_trace(v) {
+function $$caml_set_parser_trace(v) {
     var old = PARSER_TRACE;
     PARSER_TRACE = v;
     return old;
 }
+
+
+;
+
+function caml_parse_engine(prim, prim$1, prim$2, prim$3) {
+  return $$caml_parse_engine(prim, prim$1, prim$2, prim$3);
+}
+
+function caml_set_parser_trace(prim) {
+  return $$caml_set_parser_trace(prim ? /* true */1 : /* false */0);
+}
+
+exports.caml_parse_engine     = caml_parse_engine;
 exports.caml_set_parser_trace = caml_set_parser_trace;
+/*  Not a pure module */

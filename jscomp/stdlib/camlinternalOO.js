@@ -78,14 +78,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -104,14 +104,14 @@ function bal(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -184,7 +184,7 @@ function find(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -245,14 +245,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -271,14 +271,14 @@ function bal$1(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -376,14 +376,14 @@ function bal$2(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -402,14 +402,14 @@ function bal$2(l, x, d, r) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Map.bal"
             ];
       }
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Map.bal"
           ];
     }
@@ -482,7 +482,7 @@ function find$1(x, _param) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -573,12 +573,12 @@ function get_method_label(table, name) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       var label = new_method(table);
       table[2] = add$1(name, label, table[2]);
       table[3] = add$2(label, /* true */1, table[3]);
@@ -623,7 +623,7 @@ function get_method(table, label) {
     return List.assoc(label, table[5]);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       return table[1][label];
     }
     else {
@@ -679,7 +679,7 @@ function narrow(table, vars, virt_meths, concr_meths) {
           $js = find$1(label, table[3]);
         }
         catch (exn){
-          if (exn === Caml_builtin_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.not_found) {
             $js = /* true */1;
           }
           else {
@@ -744,7 +744,7 @@ function new_variable(table, name) {
     return find(name, table[6]);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       var index = new_slot(table);
       if (name !== "") {
         table[6] = add(name, index, table[6]);
@@ -785,9 +785,9 @@ function get_variable(table, name) {
     return find(name, table[6]);
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       throw [
-            Caml_builtin_exceptions.Assert_failure,
+            Caml_builtin_exceptions.assert_failure,
             [
               "camlinternalOO.ml",
               280,
@@ -883,7 +883,7 @@ function make_class_store(pub_meths, class_init, init_table) {
 function dummy_class(loc) {
   var undef = function () {
     throw [
-          Caml_builtin_exceptions.Undefined_recursive_module,
+          Caml_builtin_exceptions.undefined_recursive_module,
           loc
         ];
   };

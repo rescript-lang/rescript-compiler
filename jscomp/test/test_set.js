@@ -42,14 +42,14 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Set.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Set.bal"
             ];
       }
@@ -67,14 +67,14 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Set.bal"
               ];
         }
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Set.bal"
             ];
       }
@@ -183,7 +183,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -202,7 +202,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -218,7 +218,7 @@ function Make(Ord) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Set.remove_min_elt"
           ];
     }
@@ -704,7 +704,7 @@ function Make(Ord) {
         }
       }
       else {
-        throw Caml_builtin_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     };
   };
@@ -830,7 +830,7 @@ function Make(Ord) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
                   "test_set.ml",
                   372,

@@ -5,3 +5,12 @@ caml_oo
 caml_exceptions
 caml_obj
 caml_int64
+caml_builtin_exceptions
+caml_utils
+caml_sys
+caml_io
+caml_float
+caml_lexer
+caml_parser
+caml_primitive
+caml_format

@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 var Custom_inline = {
   0: "Test_literal.Custom_inline",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };

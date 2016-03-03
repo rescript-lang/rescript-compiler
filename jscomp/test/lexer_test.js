@@ -44,7 +44,7 @@ function from_tokens(lst) {
       return match[0];
     }
     else {
-      throw Caml_builtin_exceptions.End_of_file;
+      throw Caml_builtin_exceptions.end_of_file;
     }
   };
   return aux;

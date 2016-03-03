@@ -6,14 +6,14 @@ var Mt                      = require("./mt");
 
 var Str = {
   0: "Extensible_variant_test.Str",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Int = {
   0: "Extensible_variant_test.N.Int",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -22,7 +22,7 @@ var N = [Int];
 
 var Int$1 = {
   0: "Extensible_variant_test.Int",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -39,7 +39,7 @@ function to_int(x) {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "extensible_variant_test.ml",
             16,

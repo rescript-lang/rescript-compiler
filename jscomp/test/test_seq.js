@@ -8,21 +8,21 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 var Bad = {
   0: "Test_seq.Bad",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Help = {
   0: "Test_seq.Help",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
 
 var Stop = {
   0: "Test_seq.Stop",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -42,7 +42,7 @@ function assoc3(x, _l) {
       }
     }
     else {
-      throw Caml_builtin_exceptions.Not_found;
+      throw Caml_builtin_exceptions.not_found;
     }
   };
 }
@@ -74,7 +74,7 @@ function add_help(speclist) {
     add1 = /* [] */0;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
@@ -98,7 +98,7 @@ function add_help(speclist) {
     add2 = /* [] */0;
   }
   catch (exn$1){
-    if (exn$1 === Caml_builtin_exceptions.Not_found) {
+    if (exn$1 === Caml_builtin_exceptions.not_found) {
       add2 = /* :: */[
         /* tuple */[
           "--help",

@@ -10,7 +10,7 @@ var v = "gso";
 function is_equal() {
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "equal_exception_test.ml",
             9,
@@ -20,7 +20,7 @@ function is_equal() {
   }
   if (Bytes.make(3, /* "a" */97)[0] !== /* "a" */97) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "equal_exception_test.ml",
             10,
@@ -32,7 +32,7 @@ function is_equal() {
   u[0] = /* "b" */98;
   if (u[0] !== /* "b" */98) {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "equal_exception_test.ml",
             13,
@@ -45,7 +45,7 @@ function is_equal() {
   }
   else {
     throw [
-          Caml_builtin_exceptions.Assert_failure,
+          Caml_builtin_exceptions.assert_failure,
           [
             "equal_exception_test.ml",
             14,
@@ -57,10 +57,10 @@ function is_equal() {
 
 function is_exception() {
   try {
-    throw Caml_builtin_exceptions.Not_found;
+    throw Caml_builtin_exceptions.not_found;
   }
   catch (exn){
-    if (exn === Caml_builtin_exceptions.Not_found) {
+    if (exn === Caml_builtin_exceptions.not_found) {
       return /* () */0;
     }
     else {
@@ -72,7 +72,7 @@ function is_exception() {
 function is_normal_exception() {
   var A = {
     0: "A",
-    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    1: Caml_builtin_exceptions.get_id(),
     length: 2,
     tag: 248
   };
@@ -101,7 +101,7 @@ function is_normal_exception() {
 function is_arbitrary_exception() {
   var A = {
     0: "A",
-    1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+    1: Caml_builtin_exceptions.get_id(),
     length: 2,
     tag: 248
   };

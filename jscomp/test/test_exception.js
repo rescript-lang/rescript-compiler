@@ -6,7 +6,7 @@ var Test_common             = require("./test_common");
 
 var Local = {
   0: "Test_exception.Local",
-  1: ++ Caml_builtin_exceptions.caml_oo_last_id,
+  1: Caml_builtin_exceptions.get_id(),
   length: 2,
   tag: 248
 };
@@ -19,7 +19,7 @@ function f() {
 }
 
 function g() {
-  throw Caml_builtin_exceptions.Not_found;
+  throw Caml_builtin_exceptions.not_found;
 }
 
 function h() {
@@ -35,7 +35,7 @@ function x() {
 
 function xx() {
   throw [
-        Caml_builtin_exceptions.Invalid_argument,
+        Caml_builtin_exceptions.invalid_argument,
         "x"
       ];
 }

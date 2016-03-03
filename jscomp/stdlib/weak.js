@@ -17,7 +17,7 @@ function length(x) {
 function fill(ar, ofs, len, x) {
   if (ofs < 0 || len < 0 || ofs + len > ar.length - 1) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Weak.fill"
         ];
   }
@@ -229,7 +229,7 @@ function Make(H) {
         var newsz = Pervasives.min((3 * sz / 2 | 0) + 3, Sys.max_array_length - 1);
         if (newsz <= sz) {
           throw [
-                Caml_builtin_exceptions.Failure,
+                Caml_builtin_exceptions.failure,
                 "Weak.Make: hash bucket cannot grow more"
               ];
         }
@@ -353,7 +353,7 @@ function Make(H) {
   };
   var find = function (t, d) {
     return find_or(t, d, function (_, _$1) {
-                throw Caml_builtin_exceptions.Not_found;
+                throw Caml_builtin_exceptions.not_found;
               });
   };
   var find_shadow = function (t, d, iffound, ifnotfound) {

@@ -107,14 +107,14 @@ function filter_map2(f, _xs, _ys) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Ext_list.filter_map2"
             ];
       }
     }
     else if (ys) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Ext_list.filter_map2"
           ];
     }
@@ -151,14 +151,14 @@ function filter_map2i(f, xs, ys) {
         }
         else {
           throw [
-                Caml_builtin_exceptions.Invalid_argument,
+                Caml_builtin_exceptions.invalid_argument,
                 "Ext_list.filter_map2i"
               ];
         }
       }
       else if (ys) {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Ext_list.filter_map2i"
             ];
       }
@@ -207,14 +207,14 @@ function flat_map2(f, lx, ly) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Ext_list.flat_map2"
             ];
       }
     }
     else if (ly$1) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Ext_list.flat_map2"
           ];
     }
@@ -263,7 +263,7 @@ function map2_last(f, l1, l2) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "List.map2_last"
           ];
     }
@@ -277,7 +277,7 @@ function map2_last(f, l1, l2) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "List.map2_last"
             ];
       }
@@ -286,7 +286,7 @@ function map2_last(f, l1, l2) {
   }
   else if (l2) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "List.map2_last"
         ];
   }
@@ -331,7 +331,7 @@ function take(n, l) {
   var arr_length = arr.length;
   if (arr_length < n) {
     throw [
-          Caml_builtin_exceptions.Invalid_argument,
+          Caml_builtin_exceptions.invalid_argument,
           "Ext_list.take"
         ];
   }
@@ -385,7 +385,7 @@ function exclude_tail(x) {
     }
     else {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Ext_list.exclude_tail"
           ];
     }
@@ -442,7 +442,7 @@ function drop(_n, _h) {
     var n = _n;
     if (n < 0) {
       throw [
-            Caml_builtin_exceptions.Invalid_argument,
+            Caml_builtin_exceptions.invalid_argument,
             "Ext_list.drop"
           ];
     }
@@ -455,7 +455,7 @@ function drop(_n, _h) {
       }
       else {
         throw [
-              Caml_builtin_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "Ext_list.drop"
             ];
       }
