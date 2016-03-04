@@ -42,8 +42,6 @@ let max_int = { lo = -0xffff_ffffn; hi = 0x7fff_fffn }
 let one = {lo = 1n; hi = 0n}
 let zero = {lo = 0n; hi = 0n}
 
-let not {lo; hi }  = {lo = lognot lo; hi = lognot hi } 
-
 let of_int32 (lo : nativeint) = 
   if lo < 0n then 
     {lo ; hi = -1n }
@@ -52,17 +50,19 @@ let of_int32 (lo : nativeint) =
 let add
     ({lo = this_low_; hi = this_high_} : t)
     ({lo = other_low_; hi = other_high_} : t) =
-  let low = logand (add this_low_ other_low_) 0xFFFFFFFFn in
-  let overflow = if other_low_ < 1n
-    then sub Nativeint.min_int other_low_ < this_low_
-    else sub Nativeint.max_int other_low_ < this_low_
+  let low = logand (add this_low_ other_low_) 0xffff_ffffn in
+  let overflow = if this_low_ < 0n
+    then other_low_ < 0n || low >= 0n
+    else other_low_ < 0n && low >= 0n
   in
   let high = if overflow then
-    logand (add 1n (add this_high_ other_high_)) 0xFFFFFFFFn
+    logand (add 1n (add this_high_ other_high_)) 0xffff_ffffn
   else
-    logand (add this_high_ other_high_) 0xFFFFFFFFn
+    logand (add this_high_ other_high_) 0xffff_ffffn
   in
   { lo = low; hi = high }
+
+let not {lo; hi }  = {lo = lognot lo; hi = lognot hi }
 
 let neg ({lo; hi} as x) =
   if x == min_int then 
