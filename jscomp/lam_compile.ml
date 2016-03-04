@@ -33,9 +33,21 @@ let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 let rec flat_catches acc (x : Lambda.lambda)
   : (int * Lambda.lambda * Ident.t  list ) list * Lambda.lambda = 
   match x with 
+  | Lstaticcatch( Lstaticcatch(l, (code,bindings), handler), (code1, bindings1),handler1) 
+    when 
+      not @@ Lam_exit_code.has_exit_code 
+        (fun exit -> exit = code1 || List.exists (fun (c, _, _) -> c = exit ) acc ) handler
+    -> 
+    (* when handler does not have [exit code] which [code] belongs to collected,
+       it is okay to merge
+       *)
+    flat_catches ( (code, handler,bindings) :: (code1,handler1,bindings1)  :: acc)  l
   | Lstaticcatch(l, (code, bindings), handler) ->
-    flat_catches ((code,handler,bindings)::acc) l 
+    (code,handler,bindings)::acc, l
+    (* flat_catches ((code,handler,bindings)::acc) l  *)
   | _ -> acc, x
+
+let flatten_caches  x = flat_catches [] x 
 
 (* exception Not_an_expression *)
 
@@ -956,7 +968,7 @@ and
         if not we should use ``javascript break`` or ``continue``
     *)
     | Lstaticcatch _  -> 
-      let code_table, body =  flat_catches [] lam in
+      let code_table, body =  flatten_caches lam in
 
       let exit_id =   Ext_ident.gen_js ~name:"exit" () in
       let exit_expr = E.var exit_id in

@@ -158,8 +158,8 @@ let rec mul this
 
       let b48 = Nativeint.shift_right_logical other_hi 16 in
       let b32 = Nativeint.logand other_hi 0xffffn in
-      let b16 = Nativeint.shift_right_logical other_hi 16 in
-      let b00 = Nativeint.logand other_hi 0xffffn in
+      let b16 = Nativeint.shift_right_logical other_lo 16 in
+      let b00 = Nativeint.logand other_lo 0xffffn in
 
       let c48 = ref 0n in
       let c32 = ref 0n in

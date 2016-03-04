@@ -107,3 +107,4 @@ ppx_entry
 
 literals
 
+lam_exit_code
