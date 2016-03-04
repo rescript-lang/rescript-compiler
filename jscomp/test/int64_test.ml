@@ -13,9 +13,9 @@ let suites = Mt.[
     "add_one", (fun _ -> Eq (v, 2147483648L));
     "add_2", (fun _ -> Eq(4294967294L, Int64.(add a a )));
     "add_3", (fun _ -> Eq(0L, Int64.(add 0L 0L)));
-    "add_4", (fun _ -> commutative_add -2L -3L 1L);
-    "add_5", (fun _ -> commutative_add -3L -3L 0L);
-    "add_6", (fun _ -> commutative_add 4L -3L 7L);
+    "add_4", (fun _ -> commutative_add (-2L) (-3L) 1L);
+    "add_5", (fun _ -> commutative_add (-3L) (-3L) 0L);
+    "add_6", (fun _ -> commutative_add 4L (-3L) 7L);
     "add_7", (fun _ -> commutative_add 0x100000000L 0x80000000L 0x80000000L);
     "add_8", (fun _ -> commutative_add 0x100000000L 0xffffffffL 1L);
     "add_9", (fun _ -> commutative_add 0xffffffffL 0x80000000L 0x7fffffffL);
