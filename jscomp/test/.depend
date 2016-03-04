@@ -142,6 +142,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
+int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
+    ../stdlib/array.cmi
+int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
+    ../stdlib/array.cmx
 int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/array.cmi
 int64_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
@@ -580,6 +584,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
+int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
+    ../stdlib/array.cmi
+int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
+    ../stdlib/array.cmj
 int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/array.cmi
 int64_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
