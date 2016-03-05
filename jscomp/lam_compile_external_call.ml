@@ -78,13 +78,16 @@ type js_global = {
 } 
 
 type js_new = {  name : string }
-
+type js_set = { name : string }
+type js_get = { name : string }
 type ffi = 
   | Obj_create 
   | Js_global of js_global 
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_new external_module
+  | Js_set of js_set
+  | Js_get of js_get
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 type prim = Types.type_expr option Primitive.description
@@ -96,6 +99,8 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
   let is_obj =  ref false in
   let js_global = ref `None in
   let js_send = ref `None in
+  let js_set = ref `None in
+  let js_get = ref `None in
   let js_splice = ref false in
   let start_loc : Location.t option ref = ref None in
   let finish_loc = ref None in
@@ -136,6 +141,19 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
              | Some name -> js_send := `Value name
              | None -> js_send := `Value _prim.prim_name
            end
+         | "js.set"
+           ->
+           begin match is_single_string pay_load with
+             | Some name -> js_set := `Value name
+             | None -> js_set := `Value _prim.prim_name
+           end
+         | "js.get"
+           ->
+           begin match is_single_string pay_load with
+             | Some name -> js_get := `Value name
+             | None -> js_get := `Value _prim.prim_name
+           end
+
          | "js.call"
            (*TODO: check duplicate attributes, at least we should give a warning
              [@@js.call "xx"] [@@js.call]
@@ -180,19 +198,23 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
     | _ -> assert false in
     if !is_obj then Obj_create 
     else 
-      begin match !call_name, !js_global, !js_send, !js_new  with 
+      begin match !call_name, !js_global, !js_send, !js_new, !js_set, !js_get  with 
       | Some (_,fn),
-        `None, `None, _ -> 
+        `None, `None, _, `None, `None -> 
           Js_call { txt = { splice = !js_splice; qualifiers = !qualifiers; name = fn};
                   external_module_name = !external_module_name}
-      | None, `Value name, `None,_  ->  
+      | None, `Value name, `None ,_, `None, `None  ->  
           Js_global {name = name; external_module_name = !external_module_name}
-      | None, `None, `Value name, _  -> 
+      | None, `None, `Value name, _, `None, `None   -> 
           Js_send {splice = !js_splice; name }
-      |   None, `None, `None, Some name -> 
+      | None, `None, `None, Some name, `None, `None  -> 
           Js_new { txt = { name  };
                    external_module_name = ! external_module_name}
-      |  None, `None, `None, None -> Normal 
+      |  None, `None, `None, None, `Value name, `None 
+        -> Js_set { name}
+      |  None, `None, `None, None, `None,  `Value name
+        -> Js_get {name} (* TODO, we should also have index *)
+      |  None, `None, `None, None, `None, `None -> Normal 
       | _ -> 
           Location.raise_errorf ?loc "Ill defined attribute"
       end
@@ -408,7 +430,19 @@ let translate
           E.call ~info:{arity=Full}  (E.dot self name) args
         | _ -> assert false 
       end
-
+    | Js_get {name} -> 
+      begin match args with 
+      | [obj] ->
+        E.dot obj name        
+      | _ ->  
+        assert false  (* TODO: better error reporting*)
+      end  
+    | Js_set {name} -> 
+      begin match args with 
+      | [obj; v] -> 
+        E.assign (E.dot obj name) v         
+      | _ -> assert false
+      end
     | Normal -> Lam_dispatch_primitive.query prim args 
 
 
