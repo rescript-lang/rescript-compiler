@@ -80,6 +80,7 @@ type js_global = {
 type js_new = {  name : string }
 type js_set = { name : string }
 type js_get = { name : string }
+
 type ffi = 
   | Obj_create 
   | Js_global of js_global 
@@ -88,11 +89,13 @@ type ffi =
   | Js_new of js_new external_module
   | Js_set of js_set
   | Js_get of js_get
+  | Js_get_index
+  | Js_set_index
   | Normal 
   (* When it's normal, it is handled as normal c functional ffi call *)
 type prim = Types.type_expr option Primitive.description
 
-let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  = 
+let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t option * ffi  = 
   let qualifiers = ref [] in
   let call_name = ref None in
   let external_module_name  = ref None in
@@ -101,6 +104,8 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
   let js_send = ref `None in
   let js_set = ref `None in
   let js_get = ref `None in
+  let js_set_index = ref false in 
+  let js_get_index = ref false in
   let js_splice = ref false in
   let start_loc : Location.t option ref = ref None in
   let finish_loc = ref None in
@@ -186,6 +191,10 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
              | Some x -> js_new := Some x 
              | None -> js_new := Some _prim.prim_name
            end
+         | "js.set_index" 
+           -> js_set_index := true
+         | "js.get_index"
+           -> js_get_index := true
          |"js.obj"
            -> 
            is_obj := true
@@ -196,7 +205,12 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  =
     | None, None -> None 
     | Some {loc_start;_}, Some{loc_end; _} -> Some {loc_start; loc_end; loc_ghost = false}
     | _ -> assert false in
+    loc, 
     if !is_obj then Obj_create 
+    else if !js_get_index then
+      Js_get_index
+    else if !js_set_index then 
+      Js_set_index
     else 
       begin match !call_name, !js_global, !js_send, !js_new, !js_set, !js_get  with 
       | Some (_,fn),
@@ -290,7 +304,8 @@ let translate
     ({prim_attributes; prim_ty } as prim : Types.type_expr option Primitive.description) 
     (args : J.expression list) = 
   begin 
-    match handle_attributes prim with 
+    let loc, ffi = handle_attributes prim in
+    match ffi with 
     | Obj_create -> 
       begin 
         match prim_ty with 
@@ -428,20 +443,38 @@ let translate
             = Type_util.list_of_arrow ty in
           let args = Ext_list.flat_map2_last (ocaml_to_js js_splice) arg_types args in
           E.call ~info:{arity=Full}  (E.dot self name) args
-        | _ -> assert false 
+        | _ -> 
+          Location.raise_errorf ?loc "Ill defined attribute"
       end
     | Js_get {name} -> 
       begin match args with 
       | [obj] ->
         E.dot obj name        
       | _ ->  
-        assert false  (* TODO: better error reporting*)
+          Location.raise_errorf ?loc "Ill defined attribute"
+        (* There is a minor drawback here, only when it is called, 
+           the error will be triggered *)
       end  
     | Js_set {name} -> 
       begin match args with 
       | [obj; v] -> 
         E.assign (E.dot obj name) v         
-      | _ -> assert false
+      | _ -> 
+        Location.raise_errorf ?loc "Ill defined attribute"
+      end
+    | Js_get_index 
+      -> 
+      begin match args with
+        | [obj; v ] -> 
+          Js_array.ref_array obj v
+        | _ -> Location.raise_errorf ?loc "Ill defined attribute"
+      end
+    | Js_set_index 
+      -> 
+      begin match args with 
+      | [obj; v ; value] -> 
+        Js_array.set_array obj v value
+      | _ -> Location.raise_errorf ?loc "Ill defined attribute"
       end
     | Normal -> Lam_dispatch_primitive.query prim args 
 
