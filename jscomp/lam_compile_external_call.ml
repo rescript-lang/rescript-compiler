@@ -86,8 +86,10 @@ type ffi =
   | Js_send of js_send
   | Js_new of js_new external_module
   | Normal 
+  (* When it's normal, it is handled as normal c functional ffi call *)
+type prim = Types.type_expr option Primitive.description
 
-let handle_attributes (prim_attributes : Parsetree.attributes) : ffi  = 
+let handle_attributes ({prim_attributes ; } as _prim  : prim ) : ffi  = 
   let qualifiers = ref [] in
   let call_name = ref None in
   let external_module_name  = ref None in
@@ -107,11 +109,22 @@ let handle_attributes (prim_attributes : Parsetree.attributes) : ffi  =
          (finish_loc := Some x.loc);
          match x.txt with  (* TODO: Check duplicate attributes *)
          | "js.global"
+           (* can be generalized into 
+              {[
+                [@@js.value]
+              ]}
+              and combined with 
+              {[
+                [@@js.value] [@@js.module]
+              ]}
+           *)
            -> 
            begin  match is_single_string pay_load with
              | Some name -> 
                js_global := `Value name 
-             | None -> () (* we can report error here ... *)
+             | None -> 
+               js_global := `Value _prim.prim_name
+                (* we can report error here ... *)
            end
          |"js.splice"
            -> 
@@ -121,13 +134,16 @@ let handle_attributes (prim_attributes : Parsetree.attributes) : ffi  =
            ->
            begin match is_single_string pay_load with 
              | Some name -> js_send := `Value name
-             | None -> ()
+             | None -> js_send := `Value _prim.prim_name
            end
          | "js.call"
+           (*TODO: check duplicate attributes, at least we should give a warning
+             [@@js.call "xx"] [@@js.call]
+           *)
            ->
            begin match is_single_string pay_load with 
              | Some name -> call_name :=  Some (x.loc, name)
-             | None -> ()
+             | None -> call_name := Some(x.loc, _prim.prim_name)
            end
          | "js.module" -> 
            begin match is_string_or_strings pay_load with 
@@ -149,8 +165,8 @@ let handle_attributes (prim_attributes : Parsetree.attributes) : ffi  =
            end
          | "js.new" -> 
            begin match is_single_string pay_load with 
-             | None -> ()
              | Some x -> js_new := Some x 
+             | None -> js_new := Some _prim.prim_name
            end
          |"js.obj"
            -> 
@@ -252,7 +268,7 @@ let translate
     ({prim_attributes; prim_ty } as prim : Types.type_expr option Primitive.description) 
     (args : J.expression list) = 
   begin 
-    match handle_attributes prim_attributes with 
+    match handle_attributes prim with 
     | Obj_create -> 
       begin 
         match prim_ty with 
@@ -366,13 +382,22 @@ let translate
           E.new_ fn args
         | None -> assert false 
       end
-    | Js_global {name} -> 
+
+    | Js_global {name; external_module_name} -> 
+
       (* TODO #11
          1. check args -- error checking 
          2. support [@@js.scope "window"]
          we need know whether we should call [add_js_module] or not 
       *)
-      E.var (Ext_ident.create_js name)
+      begin match name, external_module_name with 
+        | "true", None -> E.js_bool true
+        | "false", None -> E.js_bool false
+        | "null", None -> E.nil 
+        | "undefined", None -> E.undefined
+        | _, _ -> 
+          E.var (Ext_ident.create_js name)
+      end
     | Js_send {splice  = js_splice ; name } -> 
       begin 
         match args , prim_ty with

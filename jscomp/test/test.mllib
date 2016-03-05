@@ -195,3 +195,4 @@ bigarray_test
 float_of_bits_test
 swap_test
 int64_mul_div_test
+ffi_test
