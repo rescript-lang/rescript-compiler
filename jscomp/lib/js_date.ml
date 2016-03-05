@@ -131,10 +131,10 @@ external parse : string -> number = ""
 external now : unit -> number = ""
   [@@js.call "Date.now"]
 
-external current : unit -> t = ""
-  [@@js.new "Date"] [@@js.nullary]
-external of_string : string -> t = ""
-  [@@js.new "Date"]
+external current : unit -> t = "Date"
+  [@@js.new ] [@@js.nullary]
+external of_string : string -> t = "Date"
+  [@@js.new ]
 
 
 
@@ -176,38 +176,38 @@ external utc_of_y_m_d_h_m_s_m :
   [@@js.call "Date.UTC"]
 
 
-external of_y_m:   year:number -> month:number -> unit -> t = ""
-  [@@js.new "Date"]
+external of_y_m:   year:number -> month:number -> unit -> t = "Date"
+  [@@js.new ]
 
-external of_y_m_d:  year:number -> month:number -> day:number ->   unit -> t = ""
-  [@@js.new "Date"]
+external of_y_m_d:  year:number -> month:number -> day:number ->   unit -> t = "Date"
+  [@@js.new ]
 
 external of_y_m_d_h:  
   year:number -> month:number -> 
   day:number -> hour:number ->
-  unit -> t = ""
-  [@@js.new "Date"]
+  unit -> t = "Date"
+  [@@js.new ]
 
 external of_y_m_d_h_m :
   year:number -> month:number -> 
   day:number -> hour:number ->
   minute:number -> 
-  unit -> t = ""
-  [@@js.new "Date"]
+  unit -> t = "Date"
+  [@@js.new ]
 
 external of_y_m_d_h_m_s :
   year:number -> month:number -> 
   day:number -> hour:number ->
   minute:number -> second:number -> 
-  unit -> t = ""
-  [@@js.new "Date"]
+  unit -> t = "Date"
+  [@@js.new ]
 
 external of_y_m_d_h_m_s_m:
   year:number -> month:number -> 
   day:number -> hour:number  -> 
   minute:number  -> second:number  ->
-  millisecond:number -> unit -> t = ""
-  [@@js.new "Date"]
+  millisecond:number -> unit -> t = "Date"
+  [@@js.new ]
 
 
 

@@ -7,13 +7,13 @@ class type doc =
   object
     method getElementById : string -> html_element
   end
-external doc :  doc = "doc" [@@js.global "doc"]
+external doc :  doc = "doc" [@@js.global ]
 
 class type console = 
     object 
         method log : 'a -> unit
     end
-external console : console  = "console" [@@js.global "console"]
+external console : console  = "console" [@@js.global ]
 
 let v = console#log "hey";;
 let u = console
@@ -22,8 +22,8 @@ external log : 'a -> unit = "" [@@js.call "console.log"]
 let v = log 32
 type t 
 type element
-external document : unit -> t = "" [@@js.global "document"] [@@js.scope "window"]
-external getElementById : t -> string -> element = "" [@@js.send "getElementById"]        
+external document :  t = "document" [@@js.global ] [@@js.scope "window"]
+external getElementById : t -> string -> element = "getElementById" [@@js.send ]        
 
 
 type config 
@@ -78,7 +78,7 @@ render (
                 h3 [| str "type safe!" |];
               |]
                )
-        ()))) (getElementById (document ()) "hi")
+        ()))) (getElementById document  "hi")
   
     
 

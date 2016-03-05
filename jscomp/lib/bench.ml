@@ -32,8 +32,8 @@ class type suites =
     method run : unit -> unit 
   end
 
-external js_new_suites : unit ->  suites = "" 
-    [@@js.new "Suite"] [@@js.module "benchmark" "Bench"] [@@js.scope "Bench"]
+external js_new_suites : unit ->  suites = "Suite" 
+    [@@js.new ] [@@js.module "benchmark" "Bench"] [@@js.scope "Bench"]
 
 let suite = js_new_suites ()
 

@@ -36,11 +36,11 @@ function $$caml_int64_float_of_bits (x) {
 }
 |}]
 
-external caml_int64_float_of_bits : Int64.t -> float = ""
-[@@js.call "$$caml_int64_float_of_bits"] [@@js.local]
+external caml_int64_float_of_bits : Int64.t -> float = "$$caml_int64_float_of_bits"
+[@@js.call ] [@@js.local]
 
-external caml_int64_bits_of_float : float -> Int64.t =  ""
-[@@js.call "$$caml_int64_bits_of_float"] [@@js.call]
+external caml_int64_bits_of_float : float -> Int64.t =  "$$caml_int64_bits_of_float"
+[@@js.call ] [@@js.local]
 
 external is_finite : float -> bool = ""
 [@@js.call "isFinite"]
@@ -59,8 +59,8 @@ let caml_classify_float x : fpclass  =
     FP_nan 
   else FP_infinite
 
-external nan : float = " "  
-[@@js.global "NaN" ] 
+external nan : float = "NaN"
+[@@js.global ] 
 
 let caml_modf_float (x : float) : float * float = 
   if is_finite x then 
