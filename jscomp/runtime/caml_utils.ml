@@ -71,6 +71,6 @@ let i32mod (x : nativeint) (y:nativeint) =
   else Nativeint.rem x  y
 
 
-external repeat : int -> string -> string = "" 
-    [@@js.call "$$repeat"] [@@js.local]
+external repeat : int -> string -> string = "$$repeat"
+    [@@js.call] [@@js.local]
 (*we need an attribute like this to prevent it get inlined *)

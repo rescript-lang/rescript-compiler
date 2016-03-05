@@ -54,3 +54,4 @@ ocaml/man
 osc
 jscomp/pre_load.js
 boot
+*.dump
