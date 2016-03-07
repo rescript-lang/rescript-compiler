@@ -32,7 +32,7 @@ qcc/
 # jscomp/stdlib/external/*.js
 oxml
 *.cmj
-ocamlscript
+
 *.rawlambda
 *.lambda
 ocaml/*.js
