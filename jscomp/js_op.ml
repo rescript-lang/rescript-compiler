@@ -56,7 +56,7 @@ type binop =
   | Mod
 
 (**
-note that we don't need raise [Div_by_zero] in ocamlscript
+note that we don't need raise [Div_by_zero] in BuckleScript
 
 {[
 let add x y = x + y  (* | 0 *)

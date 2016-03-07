@@ -47,18 +47,18 @@ let try_chop_extension s = try Filename.chop_extension s with _ -> s
 
 (** example
     {[
-    "/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/external/pervasives.cmj"
-    "/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/ocaml_array.ml"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
     ]}
 
     The other way
     {[
     
-    "/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/ocaml_array.ml"
-    "/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/external/pervasives.cmj"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj"
     ]}
     {[
-    "/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib//ocaml_array.ml"
+    "/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml"
     ]}
     {[
     /a/b

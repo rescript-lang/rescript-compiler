@@ -47,7 +47,7 @@ ocamlbuild  -no-hygiene -cflags -g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,
 ```
 
 ```sh
-make  bin/ocamlscript
+make  bin/osc
 ```
 
 If you do want to change the JS IR, you also need

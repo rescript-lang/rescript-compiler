@@ -41,7 +41,7 @@ include
           | Mul
           | Div
           | Mod[@@ocaml.doc
-                 "\nnote that we don't need raise [Div_by_zero] in ocamlscript\n\n{[\nlet add x y = x + y  (* | 0 *)\nlet minus x y = x - y (* | 0 *)\nlet mul x y = x * y   (* caml_mul | Math.imul *)\nlet div x y = x / y (* caml_div (x/y|0)*)\nlet imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)\n\nlet bor x y = x lor y   (* x  | y *)\nlet bxor x y = x lxor y (* x ^ y *)\nlet band x y = x land y (* x & y *)\nlet ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)\nlet ilsl x y = x lsl y (* x << y*)\nlet ilsr x y = x lsr y  (* x >>> y | 0 *)\nlet iasr  x y = x asr y (* x >> y *)\n]}\n\n\nNote that js treat unsigned shift 0 bits in a special way\n   Unsigned shifts convert their left-hand side to Uint32, \n   signed shifts convert it to Int32.\n   Shifting by 0 digits returns the converted value.\n   {[\n    function ToUint32(x) {\n        return x >>> 0;\n    }\n    function ToInt32(x) {\n        return x >> 0;\n    }\n   ]}\n   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]\n   and [-1 >>> 0 >> 0 ] will be [-1]\n"]
+                 "\nnote that we don't need raise [Div_by_zero] in bucklescript\n\n{[\nlet add x y = x + y  (* | 0 *)\nlet minus x y = x - y (* | 0 *)\nlet mul x y = x * y   (* caml_mul | Math.imul *)\nlet div x y = x / y (* caml_div (x/y|0)*)\nlet imod x y = x mod y  (* caml_mod (x%y) (zero_divide)*)\n\nlet bor x y = x lor y   (* x  | y *)\nlet bxor x y = x lxor y (* x ^ y *)\nlet band x y = x land y (* x & y *)\nlet ilnot  y  = lnot y (* let lnot x = x lxor (-1) *)\nlet ilsl x y = x lsl y (* x << y*)\nlet ilsr x y = x lsr y  (* x >>> y | 0 *)\nlet iasr  x y = x asr y (* x >> y *)\n]}\n\n\nNote that js treat unsigned shift 0 bits in a special way\n   Unsigned shifts convert their left-hand side to Uint32, \n   signed shifts convert it to Int32.\n   Shifting by 0 digits returns the converted value.\n   {[\n    function ToUint32(x) {\n        return x >>> 0;\n    }\n    function ToInt32(x) {\n        return x >> 0;\n    }\n   ]}\n   So in Js, [-1 >>>0] will be the largest Uint32, while [-1>>0] will remain [-1]\n   and [-1 >>> 0 >> 0 ] will be [-1]\n"]
         type level =
           | Log
           | Info
@@ -1938,7 +1938,7 @@ include
           match go dir1 dir2 with
           | x::_ as ys when x = node_parent -> String.concat node_sep ys
           | ys -> (String.concat node_sep) @@ (node_current :: ys)[@@ocaml.doc
-                                                                    " example\n    {[\n    \"/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/external/pervasives.cmj\"\n    \"/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/ocaml_array.ml\"\n    ]}\n\n    The other way\n    {[\n    \n    \"/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/ocaml_array.ml\"\n    \"/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib/external/pervasives.cmj\"\n    ]}\n    {[\n    \"/bb/mbigc/mbig2899/bgit/ocamlscript/jscomp/stdlib//ocaml_array.ml\"\n    ]}\n    {[\n    /a/b\n    /c/d\n    ]}\n "]
+                                                                    " example\n    {[\n    \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj\"\n    \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml\"\n    ]}\n\n    The other way\n    {[\n    \n    \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/ocaml_array.ml\"\n    \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib/external/pervasives.cmj\"\n    ]}\n    {[\n    \"/bb/mbigc/mbig2899/bgit/bucklescript/jscomp/stdlib//ocaml_array.ml\"\n    ]}\n    {[\n    /a/b\n    /c/d\n    ]}\n "]
         let node_relative_path path1 path2 =
           (relative_path (try_chop_extension (absolute_path path2))
              (try_chop_extension (absolute_path path1)))
@@ -11464,7 +11464,7 @@ include
       end 
     module Lam_compile_group :
       sig
-        [@@@ocaml.text " OCamlscript entry point in the OCaml compiler "]
+        [@@@ocaml.text " BuckleScript entry point in the OCaml compiler "]
         [@@@ocaml.text
           " Compile and register the hook of function to compile  a lambda to JS IR \n "]
         val compile :

@@ -2,7 +2,7 @@
 
 ## Hello world
 
-Currently, `ocamlscript` shares the same command line options as `ocamlc`
+Currently, `BuckleScript` shares the same command line options as `ocamlc`
 bytecode compiler.
 
 Create a file called `hello.ml` as below
@@ -12,7 +12,7 @@ echo 'print_endline "hello world"' > hello.ml
 ```
 
 ```sh
-OCAML_RAW_JS=1 ocamlscript -c hello.ml
+OCAML_RAW_JS=1 osc -c hello.ml
 ```
 
 If everything goes well, you should have
@@ -30,8 +30,8 @@ have module `A`, `B`, `C`, module `C` depends on module `B`,
 Then you need compile `B` first before compiling `C`
 
 ```sh
-OCAML_RAW_JS=1 ocamlscript -c a.ml b.ml
-OCAML_RAW_JS=1 ocamlscript -c c.ml
+OCAML_RAW_JS=1 osc -c a.ml b.ml
+OCAML_RAW_JS=1 osc -c c.ml
 ```
 
 
