@@ -31,7 +31,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 release:snapshot 
 	make releasebuild
-# Note: this target also built bin/ocamlscript which is used in release mode
+# Note: this target also built bin/osc which is used in release mode
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent

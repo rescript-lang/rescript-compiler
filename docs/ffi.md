@@ -5,7 +5,7 @@ the future, we need further document how it works in general.
 
 ## Call OCaml functions from Javascript/Typescript
 
-Since ocamlscript guarantees all ocaml functions are exported as it
+Since BuckleScript guarantees all ocaml functions are exported as it
 is, there is not too much work needed.
 
 Some things need be taken care of:

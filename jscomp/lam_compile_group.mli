@@ -20,7 +20,7 @@
 
 
 
-(** OCamlscript entry point in the OCaml compiler *) 
+(** BuckleScript entry point in the OCaml compiler *) 
 
 (** Compile and register the hook of function to compile  a lambda to JS IR 
  *)
