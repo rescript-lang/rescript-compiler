@@ -175,40 +175,24 @@ let rec mul this
       let c48 = ref 0n in
       let c32 = ref 0n in
       let c16 = ref 0n in 
-      let c00 = ref 0n in
       begin
-        c00 :=  a00 * b00  ;
-        c16 :=  !c00 >>> 16;
-        c00 :=  !c00 & 0xffffn;
-
-        c16 :=  !c16 +   a16 * b00 ;
+        let c00 =  a00 * b00  in
+        c16 :=  (c00 >>> 16) +   a16 * b00 ;
         c32 :=  !c16 >>> 16;
-        c16 :=  !c16 & 0xffffn;
-
-        c16 :=  !c16 + a00 * b16;
-        c32 :=  !c32 +  ( !c16 >>> 16);
-        c16 :=  !c16 & 0xffffn;
-        
-        c32 :=  !c32 +  a32 * b00;
+        c16 :=  ( !c16 & 0xffffn) + a00 * b16;
+        c32 :=  (!c32 +  ( !c16 >>> 16)) +  a32 * b00;
         c48 :=  !c32 >>>  16;
-        c32 :=  !c32 & 0xffffn;
-
-        c32 :=  !c32 +  a16 * b16;
+        c32 :=  (!c32 & 0xffffn) +  a16 * b16;
         c48 :=  !c48 +  ( !c32 >>> 16);
-        c32 :=  !c32 & 0xffffn;
-
-        c32 :=  !c32 +  a00 * b32;
+        c32 :=  (!c32 & 0xffffn) +  a00 * b32;
         c48 :=  !c48 +  (!c32 >>> 16);
         c32 :=  !c32 & 0xffffn;
-
-        c48 := 
-           !c48  + (a48 * b00 + a32 * b16 + 
-           a16 * b32 + a00 * b48);
-        c48 :=  !c48 & 0xffffn;
+        c48 :=  (!c48  + (a48 * b00 + a32 * b16 + 
+           a16 * b32 + a00 * b48)) & 0xffffn;
         {lo = 
            Nativeint.logor 
-             !c00
-             ( !c16 << 16);
+             (c00 & 0xffffn)
+             ( (!c16 & 0xffffn) << 16);
          hi = Nativeint.logor
              !c32
              ( !c48 << 16)

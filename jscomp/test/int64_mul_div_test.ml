@@ -161,6 +161,19 @@ let from xs =
   |> List.mapi (fun  i (a , b, c, d) -> 
       (Printf.sprintf "small_divs %L" i), 
       (fun _ -> Mt.Eq ((c, d), (Int64.div a b, Int64.rem a b )  )))
+let to_string = 
+  [| 0L, "0"
+  |]
+
+
+
+let from_to_string xs = 
+  xs 
+  |> Array.to_list 
+  |> List.mapi (fun i (a, str_a) -> 
+      (Printf.sprintf "to_string %L" i ),
+      (fun _ -> Mt.Eq(str_a, Int64.to_string a))
+    )
 
 ;; Mt.from_pair_suites __FILE__ @@
    from_pairs "random" pairs @
