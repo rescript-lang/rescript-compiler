@@ -1,3 +1,5 @@
+export var min_int: any ;
+export var max_int: any ;
 export var one: any ;
 export var zero: any ;
 export var not: (param : any) => any ;
@@ -9,7 +11,15 @@ export var lsl_: (x : any, numBits : any) => any ;
 export var lsr_: (x : any, numBits : any) => any ;
 export var asr_: (x : any, numBits : any) => any ;
 export var is_zero: (param : any) => any ;
-export var min_int: any ;
 export var mul: ($$this : any, other : any) => any ;
 export var swap: (param : any) => any ;
+export var ge: (param : any, param : any) => any ;
+export var eq: (x : any, y : any) => any ;
+export var neq: (x : any, y : any) => any ;
+export var lt: (x : any, y : any) => any ;
+export var gt: (x : any, y : any) => any ;
+export var le: (x : any, y : any) => any ;
+export var to_float: (param : any) => any ;
+export var of_float: (x : any) => any ;
+export var div: (self : any, other : any) => any ;
 

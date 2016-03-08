@@ -1004,11 +1004,11 @@ let int32_lsr ?comment
     ->
     int @@ 
       (Int32.shift_right_logical  i1 (Int32.to_int i2))
+
+  | Bin(Lsr, _, _), Number (Int {i = 0l}) 
+    ->  e1 (* TODO: more opportunities here *)
   | _ ,  Number( Int {i = i2})
     ->
-    if i2 = 0l then 
-      e1
-    else 
       { comment ; 
         expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
       }

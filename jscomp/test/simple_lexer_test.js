@@ -52,9 +52,8 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
 var suites_000 = /* tuple */[
   "translate",
   function () {
-    var lexbuf = Lexing.from_string("-- current_directory --");
     return /* Eq */{
-            0: __ocaml_lex_translate_rec(lexbuf, 0),
+            0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
             1: "-- . --",
             length: 2,
             tag: 0

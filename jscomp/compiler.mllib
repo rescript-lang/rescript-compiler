@@ -46,6 +46,8 @@ lam_compile
 lam_compile_global
 lam_compile_primitive
 lam_beta_reduce
+lam_beta_reduce_util 
+
 lam_compile_external_call
 lam_compile_group
 lam_inline_util

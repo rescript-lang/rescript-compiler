@@ -144,10 +144,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
-int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
-int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
-    ../stdlib/array.cmx
+int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
+    ../stdlib/int64.cmi ../stdlib/array.cmi
+int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
+    ../stdlib/int64.cmx ../stdlib/array.cmx
 int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/array.cmi
 int64_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
@@ -230,6 +230,8 @@ regression_print.cmo :
 regression_print.cmx :
 runtime_encoding_test.cmo :
 runtime_encoding_test.cmx :
+shift_test.cmo : ../stdlib/nativeint.cmi
+shift_test.cmx : ../stdlib/nativeint.cmx
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/lexing.cmx
 small_inline_test.cmo :
@@ -588,10 +590,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
-int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
-int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
-    ../stdlib/array.cmj
+int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
+    ../stdlib/int64.cmi ../stdlib/array.cmi
+int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
+    ../stdlib/int64.cmj ../stdlib/array.cmj
 int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/array.cmi
 int64_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
@@ -674,6 +676,8 @@ regression_print.cmo :
 regression_print.cmj :
 runtime_encoding_test.cmo :
 runtime_encoding_test.cmj :
+shift_test.cmo : ../stdlib/nativeint.cmi
+shift_test.cmj : ../stdlib/nativeint.cmj
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
 simple_lexer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/lexing.cmj
 small_inline_test.cmo :

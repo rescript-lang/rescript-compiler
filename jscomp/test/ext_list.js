@@ -543,28 +543,79 @@ function rev_iter(f, xs) {
   }
 }
 
-exports.filter_map     = filter_map;
-exports.same_length    = same_length;
-exports.filter_mapi    = filter_mapi;
-exports.filter_map2    = filter_map2;
-exports.filter_map2i   = filter_map2i;
-exports.rev_map_append = rev_map_append;
-exports.flat_map2      = flat_map2;
-exports.flat_map       = flat_map;
-exports.map2_last      = map2_last;
-exports.map_last       = map_last;
-exports.flat_map2_last = flat_map2_last;
-exports.init           = init;
-exports.take           = take;
-exports.try_take       = try_take;
-exports.exclude_tail   = exclude_tail;
-exports.group          = group;
-exports.aux            = aux;
-exports.stable_group   = stable_group;
-exports.drop           = drop;
-exports.for_all_ret    = for_all_ret;
-exports.for_all_opt    = for_all_opt;
-exports.fold           = fold;
-exports.rev_map_acc    = rev_map_acc;
-exports.rev_iter       = rev_iter;
+function for_all2_no_exn(p, _l1, _l2) {
+  while(true) {
+    var l2 = _l2;
+    var l1 = _l1;
+    if (l1) {
+      if (l2) {
+        if (Caml_curry.app2(p, l1[0], l2[0])) {
+          _l2 = l2[1];
+          _l1 = l1[1];
+          continue ;
+          
+        }
+        else {
+          return /* false */0;
+        }
+      }
+      else {
+        return /* false */0;
+      }
+    }
+    else if (l2) {
+      return /* false */0;
+    }
+    else {
+      return /* true */1;
+    }
+  };
+}
+
+function find_no_exn(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      var x = param[0];
+      if (Caml_curry.app1(p, x)) {
+        return /* Some */[x];
+      }
+      else {
+        _param = param[1];
+        continue ;
+        
+      }
+    }
+    else {
+      return /* None */0;
+    }
+  };
+}
+
+exports.filter_map      = filter_map;
+exports.same_length     = same_length;
+exports.filter_mapi     = filter_mapi;
+exports.filter_map2     = filter_map2;
+exports.filter_map2i    = filter_map2i;
+exports.rev_map_append  = rev_map_append;
+exports.flat_map2       = flat_map2;
+exports.flat_map        = flat_map;
+exports.map2_last       = map2_last;
+exports.map_last        = map_last;
+exports.flat_map2_last  = flat_map2_last;
+exports.init            = init;
+exports.take            = take;
+exports.try_take        = try_take;
+exports.exclude_tail    = exclude_tail;
+exports.group           = group;
+exports.aux             = aux;
+exports.stable_group    = stable_group;
+exports.drop            = drop;
+exports.for_all_ret     = for_all_ret;
+exports.for_all_opt     = for_all_opt;
+exports.fold            = fold;
+exports.rev_map_acc     = rev_map_acc;
+exports.rev_iter        = rev_iter;
+exports.for_all2_no_exn = for_all2_no_exn;
+exports.find_no_exn     = find_no_exn;
 /* No side effect */

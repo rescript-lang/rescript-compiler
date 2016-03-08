@@ -3,7 +3,7 @@
 external f : int -> int = "xx" [@@js.call ]
 
 
-let u = f 3 
+let u () = f 3 
 let v = Js.nil
 
 let a, b ,c, d = Js.(true_, false_, nil, undef)
@@ -24,7 +24,7 @@ module Int32Array = struct
   external set : t -> int -> int -> unit = "" [@@js.set_index]
 end
 
-let v =
+let v () =
   let u = Textarea.create () in
    Textarea.set_minHeight u 3 ;
    Textarea.get_minHeight u

@@ -18,19 +18,34 @@
 
 (* Author: Hongbo Zhang  *)
 
-let of_list kvs = 
-  let map = Hashtbl.create 51 in 
-  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
-  map
 
+type t = { lo : nativeint; hi : nativeint; }
+val min_int : t
+val max_int : t
+val one : t
+val zero : t
+val not : t -> t
+val of_int32 : nativeint -> t
 
-let of_list2 ks vs = 
-  let map = Hashtbl.create 51 in 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-  map
+val add : t -> t -> t
+val neg : t -> t
+val sub : t -> t -> t
+val lsl_ : t -> int -> t
+val lsr_ : t -> int -> t
+val asr_ : t -> int -> t
+val is_zero : t -> bool
+val mul : t -> t -> t
 
-let add_list map kvs =    
-  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 
+val swap : t -> t
 
-let add_list2 map ks vs = 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
+type comparison = t -> t -> bool 
+val ge : comparison
+val eq : comparison
+val neq : comparison
+val lt : comparison
+val gt : comparison
+val le : comparison
+
+val to_float : t -> float
+val of_float : float -> t
+val div : t -> t -> t

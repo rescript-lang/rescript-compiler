@@ -18,19 +18,6 @@
 
 (* Author: Hongbo Zhang  *)
 
-let of_list kvs = 
-  let map = Hashtbl.create 51 in 
-  List.iter (fun (k, v) -> Hashtbl.add map k v) kvs ; 
-  map
 
-
-let of_list2 ks vs = 
-  let map = Hashtbl.create 51 in 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
-  map
-
-let add_list map kvs =    
-  List.iter (fun (k, v) ->   Hashtbl.add map  k v) kvs 
-
-let add_list2 map ks vs = 
-  List.iter2 (fun k v -> Hashtbl.add map k v) ks vs ; 
+val simple_beta_reduce : 
+  Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda option

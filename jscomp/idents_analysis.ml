@@ -45,7 +45,8 @@ let calculate_used_idents
             union acc (
               begin match Hashtbl.find ident_free_vars id with 
                 | exception Not_found -> 
-                  Ext_log.err __LOC__ "%s/%d" id.name id.stamp; 
+                  Ext_log.err __LOC__ "%s/%d when compiling %s" 
+                    id.name id.stamp (Lam_current_unit.get_file ()); 
                   assert false 
                 | e -> e 
               end

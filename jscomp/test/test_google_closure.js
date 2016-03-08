@@ -13,8 +13,6 @@ function f2(a) {
   };
 }
 
-var n = 3;
-
 var arr = $$Array.init(2, function () {
       return 0;
     });
@@ -23,7 +21,7 @@ for(var i = 0; i<= 2; ++i){
   arr[i] = i + 1;
 }
 
-var match_000 = "" + n;
+var match_000 = "" + 3;
 
 var a = match_000;
 

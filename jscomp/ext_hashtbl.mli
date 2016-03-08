@@ -24,3 +24,5 @@ val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
 val of_list2 : 'a list -> 'b list -> ('a, 'b) Hashtbl.t
 
 val add_list : ('a, 'b) Hashtbl.t -> ('a * 'b) list -> unit
+
+val add_list2 :  ('a, 'b) Hashtbl.t -> 'a list -> 'b list -> unit

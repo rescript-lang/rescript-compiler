@@ -15,8 +15,7 @@ function f() {
         };
         return +(fib(n) > 10);
       }()) {
-    var n$1 = n;
-    console.log("" + n$1);
+    console.log("" + n);
     ++ n;
   };
   return /* () */0;
