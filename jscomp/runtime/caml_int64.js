@@ -197,7 +197,7 @@ function mul(_this, _other) {
       if (lo$1 !== 0) {
         exit$1 = 2;
       }
-      else if ($$this[1] !== 2147483648) {
+      else if ($$this[1] !== -2147483648) {
         exit$1 = 2;
       }
       else {
@@ -212,7 +212,7 @@ function mul(_this, _other) {
       if (other_lo !== 0) {
         exit$4 = 3;
       }
-      else if (other[1] !== 2147483648) {
+      else if (other[1] !== -2147483648) {
         exit$4 = 3;
       }
       else {
@@ -515,6 +515,11 @@ function div(_self, _other) {
   };
 }
 
+function mod_(self, other) {
+  var y = mul(div(self, other), other);
+  return add(self, neg(y));
+}
+
 exports.min_int  = min_int;
 exports.max_int  = max_int;
 exports.one      = one;
@@ -539,4 +544,5 @@ exports.le       = le;
 exports.to_float = to_float;
 exports.of_float = of_float;
 exports.div      = div;
+exports.mod_     = mod_;
 /* two_ptr_32_dbl Not a pure module */

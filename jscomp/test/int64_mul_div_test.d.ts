@@ -5,4 +5,6 @@ export var small_pairs: any ;
 export var to_floats: any ;
 export var check_complete_compare: any ;
 export var of_float_pairs: any ;
+export var simple_divs: any ;
+export var from: (xs : any) => any ;
 

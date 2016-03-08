@@ -49,3 +49,4 @@ val le : comparison
 val to_float : t -> float
 val of_float : float -> t
 val div : t -> t -> t
+val mod_ : t -> t -> t

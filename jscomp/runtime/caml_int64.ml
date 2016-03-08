@@ -133,8 +133,8 @@ let rec mul this
   | {lo = 0n ; hi = 0n}, _ 
   | _, {lo = 0n; hi = 0n}
     -> zero
-  | {lo = 0n; hi = 0x80000000n}, {lo }
-  | {lo}, {lo = 0n; hi = 0x80000000n}
+  | {lo = 0n; hi = - 0x80000000n}, {lo }
+  | {lo}, {lo = 0n; hi = - 0x80000000n}
     ->
     if Nativeint.logand lo 0x1n = 0n then
       zero
@@ -366,3 +366,5 @@ let rec div self other =
       done;
       !res 
 
+let mod_ self other = 
+  sub self (mul (div self other) other)

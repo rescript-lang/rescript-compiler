@@ -1224,6 +1224,464 @@ var of_float_pairs = Caml_obj.caml_obj_dup(/* array */[
       ]
     ]);
 
+var simple_divs = Caml_obj.caml_obj_dup(/* array */[
+      /* tuple */[
+        /* int64 */[
+          6,
+          0
+        ],
+        /* int64 */[
+          3,
+          0
+        ],
+        /* int64 */[
+          2,
+          0
+        ],
+        /* int64 */[
+          0,
+          0
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          120,
+          0
+        ],
+        /* int64 */[
+          11,
+          0
+        ],
+        /* int64 */[
+          10,
+          0
+        ],
+        /* int64 */[
+          10,
+          0
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          0,
+          -2147483648
+        ],
+        /* int64 */[
+          2,
+          0
+        ],
+        /* int64 */[
+          0,
+          -1073741824
+        ],
+        /* int64 */[
+          0,
+          0
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -163100511,
+          1112580415
+        ],
+        /* int64 */[
+          -1689560617,
+          2013350321
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -163100511,
+          1112580415
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          1414064366,
+          983582600
+        ],
+        /* int64 */[
+          720592487,
+          1027627185
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          1414064366,
+          983582600
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -244174718,
+          707587463
+        ],
+        /* int64 */[
+          -1441985079,
+          457824592
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          1197810361,
+          249762871
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -452010802,
+          3696312
+        ],
+        /* int64 */[
+          1932508180,
+          303263066
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -452010802,
+          3696312
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          530108890,
+          1998955230
+        ],
+        /* int64 */[
+          -1300251594,
+          1876081138
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          1830360484,
+          122874091
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1842975846,
+          1123314058
+        ],
+        /* int64 */[
+          -1636954134,
+          1077511003
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          -206021712,
+          45803054
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -474132284,
+          772515434
+        ],
+        /* int64 */[
+          435807891,
+          1485983210
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -474132284,
+          772515434
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          1357533220,
+          1437309318
+        ],
+        /* int64 */[
+          541080542,
+          1141241105
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          816452678,
+          296068213
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          407118687,
+          1559319564
+        ],
+        /* int64 */[
+          -280613636,
+          211092740
+        ],
+        /* int64 */[
+          7,
+          0
+        ],
+        /* int64 */[
+          -1923553157,
+          81670377
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          1054256000,
+          897058469
+        ],
+        /* int64 */[
+          661312616,
+          57853316
+        ],
+        /* int64 */[
+          15,
+          0
+        ],
+        /* int64 */[
+          -275498648,
+          29258726
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1265124412,
+          1771820319
+        ],
+        /* int64 */[
+          222584391,
+          1113086871
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          -1487708803,
+          658733448
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1564422518,
+          1699471447
+        ],
+        /* int64 */[
+          -398393386,
+          1090632987
+        ],
+        /* int64 */[
+          1,
+          0
+        ],
+        /* int64 */[
+          -1166029132,
+          608838459
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          837406327,
+          1300122432
+        ],
+        /* int64 */[
+          -433706886,
+          349961722
+        ],
+        /* int64 */[
+          3,
+          0
+        ],
+        /* int64 */[
+          2138526985,
+          250237263
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          681013979,
+          1844919629
+        ],
+        /* int64 */[
+          -400929258,
+          141654602
+        ],
+        /* int64 */[
+          13,
+          0
+        ],
+        /* int64 */[
+          1598127037,
+          3409791
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1067617897,
+          876561860
+        ],
+        /* int64 */[
+          1118648885,
+          1635137811
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -1067617897,
+          876561860
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          1188873919,
+          1444234022
+        ],
+        /* int64 */[
+          -1845904707,
+          1506775353
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          1188873919,
+          1444234022
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1338985492,
+          216713133
+        ],
+        /* int64 */[
+          478170254,
+          840978153
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -1338985492,
+          216713133
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1951260634,
+          311131250
+        ],
+        /* int64 */[
+          1397060596,
+          1432032601
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          -1951260634,
+          311131250
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          -2040192977,
+          702252958
+        ],
+        /* int64 */[
+          1983179783,
+          333531300
+        ],
+        /* int64 */[
+          2,
+          0
+        ],
+        /* int64 */[
+          -1711585247,
+          35190357
+        ]
+      ],
+      /* tuple */[
+        /* int64 */[
+          1357843095,
+          222120797
+        ],
+        /* int64 */[
+          -1744534264,
+          1409050141
+        ],
+        /* int64 */[
+          0,
+          0
+        ],
+        /* int64 */[
+          1357843095,
+          222120797
+        ]
+      ]
+    ]);
+
+function from(xs) {
+  return List.mapi(function (i, param) {
+              var d = param[3];
+              var c = param[2];
+              var b = param[1];
+              var a = param[0];
+              return /* tuple */[
+                      Caml_curry.app1(Printf.sprintf(/* Format */{
+                                0: /* String_literal */{
+                                  0: "small_divs ",
+                                  1: /* Scan_get_counter */{
+                                    0: /* Token_counter */2,
+                                    1: /* End_of_format */0,
+                                    length: 2,
+                                    tag: 21
+                                  },
+                                  length: 2,
+                                  tag: 11
+                                },
+                                1: "small_divs %L",
+                                length: 2,
+                                tag: 0
+                              }), i),
+                      function () {
+                        return /* Eq */{
+                                0: /* tuple */[
+                                  c,
+                                  d
+                                ],
+                                1: /* tuple */[
+                                  Caml_int64.div(a, b),
+                                  Caml_int64.mod_(a, b)
+                                ],
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ];
+            }, $$Array.to_list(xs));
+}
+
 Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi(function (i, param) {
                       var f = param[1];
                       var i64 = param[0];
@@ -1286,44 +1744,22 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                           };
                                   }
                                 ];
-                        }, $$Array.to_list(of_float_pairs)), /* :: */[
-                      /* tuple */[
-                        "compare_check_complete",
-                        function () {
-                          return /* Eq */{
-                                  0: $$Array.map(function () {
-                                        return /* true */1;
-                                      }, check_complete_compare),
-                                  1: check_complete_compare,
-                                  length: 2,
-                                  tag: 0
-                                };
-                        }
-                      ],
-                      /* :: */[
-                        /* tuple */[
-                          "simple_div",
-                          function () {
-                            return /* Eq */{
-                                    0: /* int64 */[
-                                      2,
-                                      0
-                                    ],
-                                    1: Caml_int64.div(/* int64 */[
-                                          6,
-                                          0
-                                        ], /* int64 */[
-                                          3,
-                                          0
-                                        ]),
-                                    length: 2,
-                                    tag: 0
-                                  };
-                          }
-                        ],
-                        /* [] */0
-                      ]
-                    ])))));
+                        }, $$Array.to_list(of_float_pairs)), Pervasives.$at(/* :: */[
+                          /* tuple */[
+                            "compare_check_complete",
+                            function () {
+                              return /* Eq */{
+                                      0: $$Array.map(function () {
+                                            return /* true */1;
+                                          }, check_complete_compare),
+                                      1: check_complete_compare,
+                                      length: 2,
+                                      tag: 0
+                                    };
+                            }
+                          ],
+                          /* [] */0
+                        ], from(simple_divs)))))));
 
 exports.commutative_mul        = commutative_mul;
 exports.pairs                  = pairs;
@@ -1332,4 +1768,6 @@ exports.small_pairs            = small_pairs;
 exports.to_floats              = to_floats;
 exports.check_complete_compare = check_complete_compare;
 exports.of_float_pairs         = of_float_pairs;
+exports.simple_divs            = simple_divs;
+exports.from                   = from;
 /*  Not a pure module */
