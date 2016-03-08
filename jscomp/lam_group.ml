@@ -271,9 +271,28 @@ let deep_flatten
             [ Lconst (Const_base (Const_int64 i))]) 
       ->  
       Lconst (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-
-    | Lprim(prim, ll) -> Lprim(prim, List.map aux  ll)
-
+    | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
+            [ Lconst (Const_base (Const_int64 i))]) 
+      -> 
+      (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
+      Lconst (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+    | Lprim(p, ll)
+      -> 
+      begin
+        let ll = List.map aux ll in
+        match p, ll with
+        (* Simplify %revapply, for n-ary functions with n > 1 *)
+        | Prevapply loc, [x; Lapply (f, args, _)]
+        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
+          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; f] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+        (* Simplify %apply, for n-ary functions with n > 1 *)
+        | Pdirapply loc, [Lapply(f, args, _); x]
+        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
+          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+        | _ -> Lprim(p,ll)
+      end
     | Lfunction(kind, params, l) -> Lfunction (kind, params , aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 

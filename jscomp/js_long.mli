@@ -18,24 +18,28 @@
 
 (* Author: Hongbo Zhang  *)
 
+type int64_call = J.expression list -> J.expression  
+
 val make_const : lo:Int32.t -> hi:Int32.t -> J.expression
 
 val of_const : Int64.t -> J.expression
 
-val to_int32 : J.expression list -> J.expression
+val to_int32 : int64_call
 
-val of_int32 : J.expression list -> J.expression
-val comp : Lambda.comparison -> J.expression list -> J.expression
-val neg : J.expression list -> J.expression
-val add : J.expression list -> J.expression
-val sub : J.expression list -> J.expression
-val mul : J.expression list -> J.expression
-val div : J.expression list -> J.expression
-val xor : J.expression list -> J.expression
-val mod_ : J.expression list -> J.expression 
-val lsl_ : J.expression list -> J.expression
-val lsr_ : J.expression list -> J.expression
-val asr_ : J.expression list -> J.expression
-val and_ : J.expression list -> J.expression
-val or_ : J.expression list -> J.expression
-val swap : J.expression list -> J.expression  
+val of_int32 : int64_call
+val comp : Lambda.comparison -> int64_call
+val neg : int64_call
+val add : int64_call
+val sub : int64_call
+val mul : int64_call
+val div : int64_call
+val xor : int64_call
+val mod_ : int64_call
+val lsl_ : int64_call
+val lsr_ : int64_call
+val asr_ : int64_call
+val and_ : int64_call
+val or_ : int64_call
+val swap : int64_call
+val to_float : int64_call
+val of_float : int64_call

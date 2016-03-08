@@ -19,11 +19,23 @@
 (* Author: Hongbo Zhang  *)
 
 module E = Js_exp_make
+type int64_call = J.expression list -> J.expression  
+
+let int64_call (fn : string) args  = 
+  E.runtime_call Js_config.int64 fn args 
 
 let make_const ~lo ~hi = 
    E.make_block 
      ~comment:"int64" (E.zero_int_literal) 
-     Record [E.int lo ; E.int hi] Immutable
+     Record 
+     [E.int lo ; E.int hi]
+     (* If we use unsigned int for lo field, 
+        then we can not use [E.int] which is 
+        assumed to to be signed int.
+        Or we can use [Int64] to encode 
+        in the ast node?
+     *)
+     Immutable
 
 let make ~lo ~hi = 
    E.make_block 
@@ -43,13 +55,14 @@ let to_int32 args =
   | [v] ->  E.index v 0l
   | _ -> assert false
   end
+
 let of_int32 (args : J.expression list) = 
   match args with 
   | [{expression_desc = Number (Int {i}) ; _}] 
     -> 
     if i < 0l then make_const ~lo:i ~hi:(-1l)
     else make_const ~lo:i ~hi:0l
-  | _ -> E.runtime_call Js_config.int64 "of_int32" args
+  | _ -> int64_call  "of_int32" args
 
 let comp (cmp : Lambda.comparison) args = 
   E.runtime_call  Js_config.int64
@@ -62,19 +75,19 @@ let comp (cmp : Lambda.comparison) args =
      | Cge -> "ge") args 
 
 let neg args = 
-  E.runtime_call Js_config.int64 "neg" args
+  int64_call "neg" args
 
 let add args = 
-  E.runtime_call Js_config.int64 "add" args
+  int64_call "add" args 
 
 let sub args = 
-  E.runtime_call Js_config.int64 "sub" args
+  int64_call "sub" args
 
 let mul args =  
-  E.runtime_call Js_config.int64 "mul" args
+  int64_call "mul" args
 
 let div args =
-  E.runtime_call Js_config.int64 "div" args
+  int64_call "div" args
 
 let bit_op  op args = 
   match args  with 
@@ -89,18 +102,48 @@ let and_ = bit_op E.int32_band
 
 
 let lsl_ args = 
-  E.runtime_call Js_config.int64 "lsl_" args
+  int64_call "lsl_" args
 
 let lsr_ args = 
-  E.runtime_call Js_config.int64 "lsr_" args
+  int64_call "lsr_" args
 
 let asr_ args = 
-  E.runtime_call Js_config.int64 "asr_" args
+  int64_call "asr_" args
 
 (*FIXME: todo *)
 let mod_ args = 
-  E.runtime_call Js_config.int64 "mod_" args
+  int64_call "mod_" args
 
 
 let swap args = 
-  E.runtime_call Js_config.int64 "swap" args
+  int64_call "swap" args
+
+(* Safe constant propgation 
+   {[
+     Number.MAX_SAFE_INTEGER:
+       Math.pow(2,53) - 1
+   ]}
+   {[
+     Number.MIN_SAFE_INTEGER:
+       - (Math.pow(2,53) -1)
+   ]}
+   Note that [Number._SAFE_INTEGER] is in ES6, 
+   we can hard code this number without bringing browser issue.
+*)
+let of_float (args : J.expression list ) = 
+  int64_call "of_float" args
+let to_float (args : J.expression list ) = 
+  match args with
+  (* | [ {expression_desc  *)
+  (*      = Caml_block (  *)
+  (*          [lo =  *)
+  (*           {expression_desc = Number (Int {i = lo; _}) }; *)
+  (*           hi =  *)
+  (*           {expression_desc = Number (Int {i = hi; _}) }; *)
+  (*          ], _, _, _); _ }]  *)
+  (*   ->  *)
+    
+  | [ _ ] -> 
+      int64_call "to_float" args
+  | _ -> 
+    assert false    

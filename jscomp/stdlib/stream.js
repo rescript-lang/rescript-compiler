@@ -192,10 +192,9 @@ function peek(s) {
         case 2 : 
             var f = match[0];
             var tag = f.tag | 0;
-            var d$1 = tag === 250 ? f[0] : (
+            s[1] = tag === 250 ? f[0] : (
                 tag === 246 ? CamlinternalLazy.force_lazy_block(f) : f
               );
-            s[1] = d$1;
             continue ;
             case 3 : 
             var g = match[0];

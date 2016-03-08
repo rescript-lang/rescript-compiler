@@ -168,7 +168,12 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       Lifused(v,  l) in 
   aux lam
 
+
 let refresh lam = rewrite (Hashtbl.create 17 ) lam
+
+
+
+
 (* 
     A naive beta reduce would break the invariants of the optmization.
 
@@ -193,6 +198,9 @@ let refresh lam = rewrite (Hashtbl.create 17 ) lam
  *)
 let propogate_beta_reduce 
     (meta : Lam_stats.meta) params body args =
+  match Lam_beta_reduce_util.simple_beta_reduce params body  args with 
+  | Some x -> x 
+  | None -> 
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
       (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
@@ -230,6 +238,9 @@ let propogate_beta_reduce
 
 let propogate_beta_reduce_with_map  
     (meta : Lam_stats.meta) (map : Lam_analysis.stats Ident_map.t ) params body args =
+  match Lam_beta_reduce_util.simple_beta_reduce params body args with
+  | Some x -> x
+  | None ->
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
       (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
@@ -285,9 +296,11 @@ let propogate_beta_reduce_with_map
 
 
 
-
 let beta_reduce params body args =
-  List.fold_left2 
-    (fun l param arg ->
-       Lam_util.refine_let param arg l)
-    body params args
+  match Lam_beta_reduce_util.simple_beta_reduce params body args with 
+  | Some x -> x 
+  | None -> 
+    List.fold_left2 
+      (fun l param arg ->
+         Lam_util.refine_let param arg l)
+      body params args

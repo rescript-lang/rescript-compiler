@@ -4,12 +4,7 @@
 
 var v = [0];
 
-while(function () {
-      var n = v[0];
-      console.log("" + n);
-      ++ v[0];
-      return +(v[0] < 10);
-    }()) {
+while(console.log("" + v[0]), ++ v[0], +(v[0] < 10)) {
   
 };
 
@@ -26,8 +21,7 @@ var x = [3];
 
 while(function () {
       var y = 3;
-      var n = x[0];
-      console.log("" + n);
+      console.log("" + x[0]);
       ++ y;
       ++ x[0];
       return +(fib(x[0]) + fib(x[0]) < 20);

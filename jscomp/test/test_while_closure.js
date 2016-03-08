@@ -35,9 +35,7 @@ $$Array.iter(function (x) {
       return Caml_curry.app1(x, /* () */0);
     }, arr);
 
-var n = v[0];
-
-console.log("" + n);
+console.log("" + v[0]);
 
 if (v[0] !== 45) {
   throw [

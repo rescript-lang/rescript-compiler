@@ -282,6 +282,10 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e0; e1] -> E.float_mul e0 e1 
     | _ -> assert false  
     end
+  | "caml_int64_to_float"
+    -> Js_long.to_float args
+  | "caml_int64_of_float"
+    -> Js_long.of_float args
   | "caml_int64_bits_of_float"
   | "caml_int64_float_of_bits"
   | "caml_classify_float"
@@ -774,8 +778,6 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_output_value"
   | "caml_input_value"
   | "caml_output_value_to_string"
-  | "caml_int64_format"
-  | "caml_int64_compare"
   | "caml_md5_string"
   | "caml_md5_chan"
   | "caml_hash"
@@ -787,6 +789,8 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_weak_blit"
   | "caml_weak_get_copy"
   | "caml_sys_close"
+  | "caml_int64_format"
+  | "caml_int64_compare"
   | "caml_int64_of_string"
   | "caml_sys_open"
 
@@ -857,10 +861,6 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e] -> E.to_ocaml_boolean e 
     | _ -> assert false
     end
-  | "js_true" -> E.js_bool true
-  | "js_false" -> E.js_bool false
-  | "js_null" -> E.nil 
-  | "js_undefined" -> E.undefined
   | "js_is_instance_array" 
     ->
     begin match args with 

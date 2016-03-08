@@ -51,11 +51,24 @@ val refresh :
   Lambda.lambda 
 
 (** 
-   {[ Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args]}
-   [param_map] collect the usage of parameters, 
+   {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
+       meta param_map
+       params body args]}
+
+   [param_map] collect the usage of parameters, it's readonly
    it can be  produced by 
+
    {[!Lam_analysis.free_variables meta.export_idents 
        (Lam_analysis.param_map_of_list params) body]}
+
+   TODO:
+   replace [propogate_beta_reduce] with such implementation 
+   {[
+     let propogate_beta_reduce meta params body args = 
+       let (_, param_map) = 
+         Lam_analysis.is_closed_with_map Ident_set.empty params body in 
+       propogate_beta_reduce_with_map meta param_map params body args  
+   ]}
 *)
 val propogate_beta_reduce_with_map : 
   Lam_stats.meta ->

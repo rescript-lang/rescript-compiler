@@ -27,7 +27,9 @@ open Nativeint
 type t = { lo : nativeint ; hi : nativeint}
 
 
-let min_int = { lo = 0n; hi =  0x80000000n }
+let min_int = { lo = 0n; hi =  -0x80000000n }
+
+let max_int = { lo = -0xffff_ffffn; hi = 0x7fff_fffn }
 
 let one = {lo = 1n; hi = 0n}
 let zero = {lo = 0n; hi = 0n}
@@ -125,8 +127,6 @@ let is_zero = function
   | {lo = 0n ; hi = 0n} -> true
   | _ -> false
 
-let min_int = {lo = 0n; hi = 0x80000000n}
-
 let rec mul this 
     other = 
   match this, other with 
@@ -221,4 +221,148 @@ let swap {lo ; hi } =
 (*     lo = Nativeint.logxor this_lo other_lo;  *)
 (*    hi = Nativeint.logxor this_hi other_hi  *)
 (*   } *)
+
+(* TODO: if we encode lo int32 bit as unsigned then 
+   this is not necessary, 
+   however (x>>>0 >>>0) is not that bad
+*)
+let to_unsgined (x : nativeint) = 
+  Nativeint.shift_right_logical x 0
+
+type comparison = t -> t -> bool 
+
+let  ge ({hi; lo } : t)  ({hi = other_hi; lo = other_lo}) : bool = 
+  if hi > other_hi then true
+  else if hi < other_hi then false 
+  else (to_unsgined lo ) >= (to_unsgined other_lo)
+
+let eq x y = x.hi = y.hi && x.lo = y.lo
+
+let neq x y = Pervasives.not (eq x y)
+let lt x y  = Pervasives.not (ge x y)
+let gt x y = 
+  if x.hi > y.hi then
+    true
+  else if x.hi < y.hi  then
+    false
+  else 
+    to_unsgined x.lo > to_unsgined y.lo
+
+  
+let le x y = Pervasives.not (gt x y)
+
+
+let to_float ({lo; hi } : t) : float = 
+  (* The low 32-bits as an unsigned value *)
+  let low_bits_unsigned =
+    if lo >= 0n   then
+      lo
+    else Nativeint.add lo 0x1_0000_0000n in
+  Nativeint.to_float (Nativeint.add (Nativeint.mul hi   0x1_0000_0000n) low_bits_unsigned)
+
+external log2 : float = "Math.LN2" [@@ js.global ]  
+
+external is_nan : float -> bool = "isNaN" [@@js.call]
+external is_finite : float -> bool = "isFinite" [@@js.call]
+
+(** sign: Positive  *)
+let two_ptr_32_dbl = 2. ** 32.
+let two_ptr_63_dbl = 2. ** 63.
+let neg_two_ptr_63 = -. (2. ** 63.)
+
+
+(* note that we make sure the const number can acutally be represented 
+   {[ 
+     (2. ** 63. -. 1. = 2. ** 63.) ;;
+   ]}
+*)
+(* let max_int_as_dbl = Int64.to_float 0x7fff_ffff_ffff_ffffL *)
+(* let min_int_as_dbl = Int64.to_float 0x8000_0000_0000_0000L 
+   TODO: (E.math   ) constant folding
+*)
+ 
+(* Note in ocaml [Int64.of_float] is weird
+   {[
+     Int64.of_float 2.e65;;
+     - : int64 = -9223372036854775808L
+   ]}
+   {[
+     Int64.of_float (Int64.to_float (Int64.sub Int64.max_int 1L));;
+     - : int64 = -9223372036854775808L
+   ]}
+*)
+let rec of_float (x : float) : t = 
+  if is_nan x ||  Pervasives.not  (is_finite x ) then zero 
+  else if x <= neg_two_ptr_63 then 
+    min_int
+  else if x  +. 1. >= two_ptr_63_dbl then
+    max_int 
+  else if x < 0. then 
+    neg (of_float (-. x))
+  else { lo = Nativeint.of_float (mod_float  x two_ptr_32_dbl) ;  
+         hi =  Nativeint.of_float (x /. two_ptr_32_dbl)  }
+
+external max_float : float -> float -> float = "Math.max" [@@js.call]
+
+let rec div self other = 
+  match self, other with
+  | _, {lo = 0n ; hi = 0n} -> 
+    raise Division_by_zero
+  | {lo = 0n; hi = 0n}, _ 
+    -> zero 
+  | {lo = 0n ; hi = -0x8000_0000n}, _
+    -> 
+    begin match other with 
+    | ({ lo = 1n ; hi = 0n}
+      |{ lo = -1n; hi = -1n}) 
+      -> self (* -MIN_VALUE = MIN_VALUE*)
+    | {lo = 0n ; hi = -0x8000_0000n} 
+      -> one
+    | {hi = other_hi ; _} -> 
+      (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
+      let half_this = asr_ self 1  in        
+      let approx = lsl_ (div half_this other) 1 in
+      match approx with 
+      | {lo = 0n ; hi = 0n}
+        -> if other_hi < 0n then one else neg one
+      | _ 
+        -> 
+        let rem = sub self (mul other approx) in
+        add approx (div rem other)
+    end
+  | _, {lo = 0n; hi = - 0x8000_0000n} 
+    -> zero
+  | {lo = self_lo; hi = self_hi}, {lo = other_lo; hi = other_hi} 
+    -> 
+    if self_hi < 0n then 
+      if other_hi <0n then 
+        div (neg self) (neg other)
+      else
+        neg (div (neg self)  other)
+    else if other_hi < 0n  then 
+      neg (div self (neg other))
+    else 
+      let res = ref zero in
+      let rem = ref self in 
+      (* assert false *)
+      while ge !rem other  do
+        let approx = ref ( max_float 1.
+             (floor (to_float !rem /. to_float other) )) in
+        let log2 = ceil (log !approx /. log2) in
+        let delta =
+          if log2 <= 48. then 1.
+          else 2. ** (log2 -. 48.) in
+        let approxRes = ref (of_float !approx) in 
+        let approxRem = ref (mul !approxRes other) in 
+        while !approxRem.hi < 0n || gt !approxRem !rem do
+          approx := !approx -. delta;
+          approxRes := of_float !approx;
+          approxRem := mul !approxRes other
+        done;
+        (if is_zero !approxRes then
+          approxRes := one);
+        res := add !res !approxRes;
+        rem := sub !rem !approxRem
+      done;
+      !res 
 

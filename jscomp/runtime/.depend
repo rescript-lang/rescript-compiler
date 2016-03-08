@@ -4,6 +4,7 @@ caml_builtin_exceptions.cmi :
 caml_exceptions.cmi :
 caml_float.cmi :
 caml_format.cmi :
+caml_int64.cmi :
 caml_lexer.cmi :
 caml_obj.cmi :
 caml_oo.cmi :
@@ -26,8 +27,8 @@ caml_float.cmo : caml_float.cmi
 caml_float.cmx : caml_float.cmi
 caml_format.cmo : caml_utils.cmi caml_format.cmi
 caml_format.cmx : caml_utils.cmx caml_format.cmi
-caml_int64.cmo :
-caml_int64.cmx :
+caml_int64.cmo : caml_int64.cmi
+caml_int64.cmx : caml_int64.cmi
 caml_io.cmo :
 caml_io.cmx :
 caml_lexer.cmo : caml_lexer.cmi
@@ -60,8 +61,8 @@ caml_float.cmo : caml_float.cmi
 caml_float.cmj : caml_float.cmi
 caml_format.cmo : caml_utils.cmi caml_format.cmi
 caml_format.cmj : caml_utils.cmj caml_format.cmi
-caml_int64.cmo :
-caml_int64.cmj :
+caml_int64.cmo : caml_int64.cmi
+caml_int64.cmj : caml_int64.cmi
 caml_io.cmo :
 caml_io.cmj :
 caml_lexer.cmo : caml_lexer.cmi

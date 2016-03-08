@@ -22,4 +22,6 @@ export var for_all_opt: (p : any, param : any) => any ;
 export var fold: (f : any, l : any, init : any) => any ;
 export var rev_map_acc: (acc : any, f : any, l : any) => any ;
 export var rev_iter: (f : any, xs : any) => any ;
+export var for_all2_no_exn: (p : any, l1 : any, l2 : any) => any ;
+export var find_no_exn: (p : any, param : any) => any ;
 
