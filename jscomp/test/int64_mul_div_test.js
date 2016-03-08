@@ -1,14 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_int64 = require("../runtime/caml_int64");
-var Caml_obj   = require("../runtime/caml_obj");
-var Pervasives = require("../stdlib/pervasives");
-var Mt         = require("./mt");
-var Printf     = require("../stdlib/printf");
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Caml_int64     = require("../runtime/caml_int64");
+var Caml_obj       = require("../runtime/caml_obj");
+var Pervasives     = require("../stdlib/pervasives");
+var Mt             = require("./mt");
+var Printf         = require("../stdlib/printf");
+var Caml_primitive = require("../runtime/caml_primitive");
+var $$Array        = require("../stdlib/array");
+var Caml_curry     = require("../runtime/caml_curry");
+var List           = require("../stdlib/list");
 
 function commutative_mul(result, a, b) {
   return /* Eq */{
@@ -1682,6 +1683,47 @@ function from(xs) {
             }, $$Array.to_list(xs));
 }
 
+var to_string = /* array */[/* tuple */[
+    /* int64 */[
+      0,
+      0
+    ],
+    "0"
+  ]];
+
+function from_to_string(xs) {
+  return List.mapi(function (i, param) {
+              var str_a = param[1];
+              var a = param[0];
+              return /* tuple */[
+                      Caml_curry.app1(Printf.sprintf(/* Format */{
+                                0: /* String_literal */{
+                                  0: "to_string ",
+                                  1: /* Scan_get_counter */{
+                                    0: /* Token_counter */2,
+                                    1: /* End_of_format */0,
+                                    length: 2,
+                                    tag: 21
+                                  },
+                                  length: 2,
+                                  tag: 11
+                                },
+                                1: "to_string %L",
+                                length: 2,
+                                tag: 0
+                              }), i),
+                      function () {
+                        return /* Eq */{
+                                0: str_a,
+                                1: Caml_primitive.caml_int64_format("%d", a),
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ];
+            }, $$Array.to_list(xs));
+}
+
 Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random", pairs), Pervasives.$at(from_pairs("small", small_pairs), Pervasives.$at(List.mapi(function (i, param) {
                       var f = param[1];
                       var i64 = param[0];
@@ -1770,4 +1812,6 @@ exports.check_complete_compare = check_complete_compare;
 exports.of_float_pairs         = of_float_pairs;
 exports.simple_divs            = simple_divs;
 exports.from                   = from;
+exports.to_string              = to_string;
+exports.from_to_string         = from_to_string;
 /*  Not a pure module */

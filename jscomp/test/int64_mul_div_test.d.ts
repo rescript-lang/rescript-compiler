@@ -7,4 +7,6 @@ export var check_complete_compare: any ;
 export var of_float_pairs: any ;
 export var simple_divs: any ;
 export var from: (xs : any) => any ;
+export var to_string: any ;
+export var from_to_string: (xs : any) => any ;
 
