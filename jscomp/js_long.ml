@@ -110,7 +110,6 @@ let lsr_ args =
 let asr_ args = 
   int64_call "asr_" args
 
-(*FIXME: todo *)
 let mod_ args = 
   int64_call "mod_" args
 
