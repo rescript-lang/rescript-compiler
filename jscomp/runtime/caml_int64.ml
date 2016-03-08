@@ -24,6 +24,14 @@
  *)
 
 open Nativeint
+
+let (>>>) = Nativeint.shift_right_logical
+let (>>) = Nativeint.shift_right
+let (+) = Nativeint.add 
+let ( * ) = Nativeint.mul 
+let ( & ) = Nativeint.logand
+let ( << ) = Nativeint.shift_left
+
 type t = { lo : nativeint ; hi : nativeint}
 
 
@@ -46,24 +54,25 @@ let add
     ({lo = this_low_; hi = this_high_} : t ) 
     ({lo = other_low_; hi = other_high_} : t ) = 
 
-  let a48 = shift_right_logical this_high_  16 in
-  let a32 = logand this_high_  0xFFFFn in
-  let a16 = shift_right_logical this_low_  16 in
-  let a00 = logand this_low_  0xFFFFn in
+  let a48 =  this_high_ >>>  16 in
+  let a32 =  this_high_ &  0xFFFFn in
+  let a16 =  this_low_ >>>  16 in
+  let a00 =  this_low_ &  0xFFFFn in
 
-  let b48 = shift_right_logical other_high_  16 in
-  let b32 = logand other_high_   0xFFFFn in
-  let b16 = shift_right_logical other_low_  16 in
-  let b00 = logand other_low_  0xFFFFn in
+  let b48 =  other_high_ >>>   16 in
+  let b32 =  other_high_ &   0xFFFFn in
+  let b16 =  other_low_ >>>  16 in
+  let b00 =  other_low_ &  0xFFFFn in
 
   begin 
-    let c00 = add a00  b00 in
-    let c16 = add (add (shift_right_logical c00  16) a16)  b16 in
-    let c32 = add (add (shift_right_logical  c16  16) a32)  b32 in
-    let c48 = add (add (shift_right_logical c32 16) a48)  b48 in
+    let c00 = a00 +   b00 in
+    let c16 = (c00 >>>  16) +  a16 +   b16 in
+    let c32 = (c16 >>>  16) +  a32 +   b32 in
+    let c48 = (c32 >>> 16) +  a48 +   b48 in
     {lo = 
-       logor (shift_left (logand c16  0xFFFFn)  16)  (logand c00  0xFFFFn); 
-     hi =  logor (shift_left (logand c48 0xFFFFn)  16)  (logand c32  0xFFFFn)
+       logor (( c16 &  0xFFFFn) <<  16)  ( c00 &  0xFFFFn); 
+     hi =  
+       logor (( c48 & 0xFFFFn) <<  16)  ( c32 &  0xFFFFn)
     }
   end 
 let neg ({lo; hi} as x) =
@@ -84,7 +93,7 @@ let lsl_ ({lo; hi} as x) numBits =
     {lo = Nativeint.shift_left lo numBits; 
      hi = 
        Nativeint.logor 
-         (Nativeint.shift_right_logical lo (32 - numBits))
+         ( lo >>>  (32 - numBits))
          (Nativeint.shift_left hi numBits)
     }
 
@@ -95,13 +104,13 @@ let lsr_ ({lo; hi} as x) numBits =
     if offset = 0 then  
       {hi = 0n; lo = hi}
     else if offset > 0 then 
-      {hi = 0n; lo = Nativeint.shift_right_logical hi offset  }
+      {hi = 0n; lo =  hi >>> offset  }
     else 
-      { hi = Nativeint.shift_right_logical hi numBits;
+      { hi =  hi >>> numBits;
         lo = 
           Nativeint.logor 
             (Nativeint.shift_left hi (-offset))
-            (Nativeint.shift_right_logical lo numBits)
+            ( lo >>> numBits)
       }      
 
 let asr_ ({lo; hi } as x) numBits = 
@@ -110,22 +119,24 @@ let asr_ ({lo; hi } as x) numBits =
   else
   if numBits < 32  then
     {
-      hi = Nativeint.shift_right hi numBits;
+      hi =  hi >> numBits;
       lo = 
        Nativeint.logor
-         (Nativeint.shift_left hi (32 - numBits)) (* zero filled *)
-         (Nativeint.shift_right_logical lo numBits);
+         ( hi << (32 - numBits)) (* zero filled *)
+         ( lo >>> numBits);
 
     }    
   else 
     {
       hi = if hi >= 0n then  0n  else -1n;
-      lo = Nativeint.shift_right hi (numBits - 32)
+      lo =  hi >> (numBits - 32)
     }
   
 let is_zero = function
   | {lo = 0n ; hi = 0n} -> true
   | _ -> false
+
+
 
 let rec mul this 
     other = 
@@ -136,7 +147,7 @@ let rec mul this
   | {lo = 0n; hi = - 0x80000000n}, {lo }
   | {lo}, {lo = 0n; hi = - 0x80000000n}
     ->
-    if Nativeint.logand lo 0x1n = 0n then
+    if  (lo & 0x1n) = 0n then
       zero
     else min_int 
   | {lo = this_lo; hi = this_hi}, 
@@ -151,60 +162,56 @@ let rec mul this
       neg (mul this (neg other) )
     else 
       (* TODO: when both are small, use float multiplication *)
-      let a48 = Nativeint.shift_right_logical this_hi 16 in       
-      let a32 = Nativeint.logand this_hi 0xffffn in
-      let a16 = Nativeint.shift_right_logical this_lo 16 in 
-      let a00 = Nativeint.logand this_lo 0xffffn in
+      let a48 = this_hi >>> 16 in       
+      let a32 =  this_hi & 0xffffn in
+      let a16 =  this_lo >>> 16 in 
+      let a00 =  this_lo & 0xffffn in
 
-      let b48 = Nativeint.shift_right_logical other_hi 16 in
-      let b32 = Nativeint.logand other_hi 0xffffn in
-      let b16 = Nativeint.shift_right_logical other_lo 16 in
-      let b00 = Nativeint.logand other_lo 0xffffn in
+      let b48 =  other_hi >>> 16 in
+      let b32 =  other_hi & 0xffffn in
+      let b16 =  other_lo >>> 16 in
+      let b00 =  other_lo & 0xffffn in
 
       let c48 = ref 0n in
       let c32 = ref 0n in
       let c16 = ref 0n in 
       let c00 = ref 0n in
       begin
-        c00 := Nativeint.mul a00 b00  ;
-        c16 := Nativeint.shift_right_logical !c00 16;
-        c00 := Nativeint.logand !c00 0xffffn;
+        c00 :=  a00 * b00  ;
+        c16 :=  !c00 >>> 16;
+        c00 :=  !c00 & 0xffffn;
 
-        c16 := Nativeint.add !c16 (Nativeint.mul a16 b00 );
-        c32 := Nativeint.shift_right_logical !c16 16;
-        c16 := Nativeint.logand !c16 0xffffn;
+        c16 :=  !c16 +   a16 * b00 ;
+        c32 :=  !c16 >>> 16;
+        c16 :=  !c16 & 0xffffn;
 
-        c16 := Nativeint.add !c16 (Nativeint.mul a00 b16);
-        c32 := Nativeint.add !c32 (Nativeint.shift_right_logical !c16 16);
-        c16 := Nativeint.logand !c16 0xffffn;
+        c16 :=  !c16 + a00 * b16;
+        c32 :=  !c32 +  ( !c16 >>> 16);
+        c16 :=  !c16 & 0xffffn;
         
-        c32 := Nativeint.add !c32 (Nativeint.mul a32 b00);
-        c48 := Nativeint.shift_right_logical !c32 16;
-        c32 := Nativeint.logand !c32 0xffffn;
+        c32 :=  !c32 +  a32 * b00;
+        c48 :=  !c32 >>>  16;
+        c32 :=  !c32 & 0xffffn;
 
-        c32 := Nativeint.add !c32 (Nativeint.mul a16 b16);
-        c48 := Nativeint.add !c48 (Nativeint.shift_right_logical !c32 16);
-        c32 := Nativeint.logand !c32 0xffffn;
+        c32 :=  !c32 +  a16 * b16;
+        c48 :=  !c48 +  ( !c32 >>> 16);
+        c32 :=  !c32 & 0xffffn;
 
-        c32 := Nativeint.add !c32 (Nativeint.mul a00 b32);
-        c48 := Nativeint.add !c48 ( Nativeint.shift_right_logical !c32 16);
-        c32 := Nativeint.logand !c32 0xffffn;
+        c32 :=  !c32 +  a00 * b32;
+        c48 :=  !c48 +  (!c32 >>> 16);
+        c32 :=  !c32 & 0xffffn;
 
         c48 := 
-          (* TODO: investigate why [@@] not optimized at best *)
-          Nativeint.add !c48 (
-          Nativeint.add (Nativeint.mul a48 b00) (
-          Nativeint.add (Nativeint.mul a32 b16) (
-          Nativeint.add (Nativeint.mul a16 b32) (
-          (Nativeint.mul a00 b48)))));
-        c48 := Nativeint.logand !c48 0xffffn;
+           !c48  + (a48 * b00 + a32 * b16 + 
+           a16 * b32 + a00 * b48);
+        c48 :=  !c48 & 0xffffn;
         {lo = 
            Nativeint.logor 
              !c00
-             (Nativeint.shift_left !c16 16);
+             ( !c16 << 16);
          hi = Nativeint.logor
              !c32
-             (Nativeint.shift_left !c48 16)
+             ( !c48 << 16)
         }
       end
 
@@ -227,7 +234,7 @@ let swap {lo ; hi } =
    however (x>>>0 >>>0) is not that bad
 *)
 let to_unsgined (x : nativeint) = 
-  Nativeint.shift_right_logical x 0
+   x >>> 0
 
 type comparison = t -> t -> bool 
 
@@ -257,8 +264,8 @@ let to_float ({lo; hi } : t) : float =
   let low_bits_unsigned =
     if lo >= 0n   then
       lo
-    else Nativeint.add lo 0x1_0000_0000n in
-  Nativeint.to_float (Nativeint.add (Nativeint.mul hi   0x1_0000_0000n) low_bits_unsigned)
+    else  lo +  0x1_0000_0000n in
+  Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
 
 external log2 : float = "Math.LN2" [@@ js.global ]  
 
