@@ -165,7 +165,20 @@ let to_string =
   [| 0L, "0"
   |]
 
+let int64_compare_tests = 
+  [| 
+    1L, 2L, -1;
+    2L, 1L, 1; 
+    2L, 1L, 1
+  |]
 
+let from_compare xs = 
+  xs 
+  |> Array.to_list 
+  |> List.mapi (fun i (a, b,c) -> 
+      (Printf.sprintf "int64_compare %L" i ), 
+      (fun _ -> Mt.Eq(c, Int64.compare a b))
+    )
 
 let from_to_string xs = 
   xs 
@@ -191,5 +204,7 @@ let from_to_string xs =
         Mt.Eq
          (Array.map (fun _ ->  true) check_complete_compare,
            check_complete_compare))
-   ] @ from simple_divs
+   ]
+   @ from simple_divs
+   @ from_compare int64_compare_tests
 

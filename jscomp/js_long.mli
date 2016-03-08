@@ -43,3 +43,5 @@ val or_ : int64_call
 val swap : int64_call
 val to_float : int64_call
 val of_float : int64_call
+val compare : int64_call
+val of_string : int64_call

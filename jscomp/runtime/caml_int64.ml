@@ -217,7 +217,7 @@ let swap {lo ; hi } =
    this is not necessary, 
    however (x>>>0 >>>0) is not that bad
 *)
-let to_unsgined (x : nativeint) = 
+let to_unsigned (x : nativeint) = 
    x >>> 0
 
 type comparison = t -> t -> bool 
@@ -225,7 +225,7 @@ type comparison = t -> t -> bool
 let  ge ({hi; lo } : t)  ({hi = other_hi; lo = other_lo}) : bool = 
   if hi > other_hi then true
   else if hi < other_hi then false 
-  else (to_unsgined lo ) >= (to_unsgined other_lo)
+  else (to_unsigned lo ) >= (to_unsigned other_lo)
 
 let eq x y = x.hi = y.hi && x.lo = y.lo
 
@@ -237,7 +237,7 @@ let gt x y =
   else if x.hi < y.hi  then
     false
   else 
-    to_unsgined x.lo > to_unsgined y.lo
+    to_unsigned x.lo > to_unsigned y.lo
 
   
 let le x y = Pervasives.not (gt x y)
@@ -359,3 +359,24 @@ let rec div self other =
 
 let mod_ self other = 
   sub self (mul (div self other) other)
+
+let compare self other = 
+  let v = Pervasives.compare self.hi other.hi in
+  if v = 0 then 
+    Pervasives.compare 
+      (to_unsigned self.lo) (to_unsigned other.lo)
+  else v 
+
+(* let rec to_string self : string =  *)
+(*   match self with *)
+(*   | {lo=0n; hi = 0n}  *)
+(*     ->  *)
+(*     "0" *)
+(*   | {lo = 0n ; hi = - 0x8000_0000n} *)
+(*     ->  *)
+(*     "-9223372036854775808" (\* Int64.min_int *\) *)
+(*   | {lo; hi} ->  *)
+(*     if  hi < 0n then "-" ^ to_string (neg self) *)
+(*     else  *)
+
+(*       let radixToPower = 1000000L *)

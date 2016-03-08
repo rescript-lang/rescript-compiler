@@ -42,7 +42,7 @@ function to_string(n) {
 }
 
 function compare(x, y) {
-  return Caml_primitive.caml_int64_compare(x, y);
+  return Caml_int64.compare(x, y);
 }
 
 var zero = /* int64 */[
