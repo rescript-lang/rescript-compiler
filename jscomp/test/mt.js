@@ -38,12 +38,14 @@ function from_pair_suites(name, suites) {
                                                     Caml_builtin_exceptions.assert_failure,
                                                     [
                                                       "mt.ml",
-                                                      52,
+                                                      54,
                                                       16
                                                     ]
                                                   ];
                                             }
                                             break;
+                                        case 3 : 
+                                            return Assert.throws(match[0]);
                                         
                                       }
                                     });

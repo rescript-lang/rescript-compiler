@@ -21,6 +21,8 @@
 val parse_digit : char -> int 
 val caml_invalid_argument : string -> 'a
 val repeat : int -> string -> string 
+val parse_sign_and_base : string -> int * nativeint * nativeint
+val caml_failwith : string -> 'a 
 (* *)
 val caml_format_float : string -> float -> string
 val caml_format_int : string -> int -> string
@@ -28,6 +30,6 @@ val caml_nativeint_format : string -> int -> string
 val caml_int32_format : string -> int -> string
 val caml_float_of_string : string -> float 
 
-val caml_int_of_string : string -> int
-val caml_int32_of_string : string -> int
-val caml_nativeint_of_string : string -> int
+val caml_int_of_string : string -> nativeint
+val caml_int32_of_string : string -> nativeint
+val caml_nativeint_of_string : string -> nativeint

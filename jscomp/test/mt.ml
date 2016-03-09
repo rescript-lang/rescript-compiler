@@ -16,7 +16,8 @@ external neq : 'a -> 'a -> unit = ""
 
 (* external dump : 'a array -> unit = "js_dump" [@@js.splice] *)
 
-external dump : 'a array -> unit = "" [@@js.call "console.log"] [@@js.splice]
+external dump : 'a array -> unit = "console.log" [@@js.call ] [@@js.splice]
+external throws : (unit -> unit) -> unit = "throws" [@@js.call] [@@js.module "assert"]
 (** There is a problem --
     it does not return [unit ]
  *)
@@ -33,6 +34,7 @@ type _ eq =
   | Eq :  'a *'a  -> _ eq
   | Neq : 'a * 'a -> _ eq
   | Approx : float * float -> _ eq  
+  | ThrowAny : (unit -> unit) -> _ eq
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
 type 'a pair_suites = (string * (unit -> 'a eq)) list
@@ -50,6 +52,7 @@ let from_pair_suites name (suites : 'a pair_suites) =
               | Approx(a,b) 
                 -> 
                 assert (close_enough a b)
+              | ThrowAny fn -> throws fn 
             )
               ) suites
                 ) 
