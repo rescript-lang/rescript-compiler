@@ -23,4 +23,5 @@ export var to_float: (param : any) => any ;
 export var of_float: (x : any) => any ;
 export var div: (self : any, other : any) => any ;
 export var mod_: (self : any, other : any) => any ;
+export var compare: (self : any, other : any) => any ;
 

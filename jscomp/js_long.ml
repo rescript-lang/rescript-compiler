@@ -131,6 +131,13 @@ let swap args =
 *)
 let of_float (args : J.expression list ) = 
   int64_call "of_float" args
+
+let compare (args : J.expression list) = 
+  int64_call "compare" args 
+
+let of_string (args : J.expression list) = 
+  int64_call "of_string" args 
+ 
 let to_float (args : J.expression list ) = 
   match args with
   (* | [ {expression_desc  *)

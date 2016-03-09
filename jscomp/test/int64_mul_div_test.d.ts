@@ -8,5 +8,7 @@ export var of_float_pairs: any ;
 export var simple_divs: any ;
 export var from: (xs : any) => any ;
 export var to_string: any ;
+export var int64_compare_tests: any ;
+export var from_compare: (xs : any) => any ;
 export var from_to_string: (xs : any) => any ;
 

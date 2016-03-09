@@ -286,6 +286,10 @@ let query (prim : Lam_compile_env.primitive_description)
     -> Js_long.to_float args
   | "caml_int64_of_float"
     -> Js_long.of_float args
+  | "caml_int64_compare"
+    -> Js_long.compare args 
+  | "caml_int64_of_string"
+    -> Js_long.of_string args
   | "caml_int64_bits_of_float"
   | "caml_int64_float_of_bits"
   | "caml_classify_float"
@@ -790,8 +794,6 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_weak_get_copy"
   | "caml_sys_close"
   | "caml_int64_format"
-  | "caml_int64_compare"
-  | "caml_int64_of_string"
   | "caml_sys_open"
 
   | "caml_ml_input"

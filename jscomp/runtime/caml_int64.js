@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Caml_obj                = require("./caml_obj");
 var Caml_primitive          = require("./caml_primitive");
 
 var min_int = /* record */[
@@ -511,6 +512,16 @@ function mod_(self, other) {
   return add(self, neg(y));
 }
 
+function compare(self, other) {
+  var v = Caml_obj.caml_nativeint_compare(self[1], other[1]);
+  if (v) {
+    return v;
+  }
+  else {
+    return Caml_obj.caml_nativeint_compare((self[0] >>> 0), (other[0] >>> 0));
+  }
+}
+
 exports.min_int  = min_int;
 exports.max_int  = max_int;
 exports.one      = one;
@@ -536,4 +547,5 @@ exports.to_float = to_float;
 exports.of_float = of_float;
 exports.div      = div;
 exports.mod_     = mod_;
+exports.compare  = compare;
 /* two_ptr_32_dbl Not a pure module */

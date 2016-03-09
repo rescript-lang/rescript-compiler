@@ -1691,6 +1691,76 @@ var to_string = /* array */[/* tuple */[
     "0"
   ]];
 
+var int64_compare_tests = /* array */[
+  /* tuple */[
+    /* int64 */[
+      1,
+      0
+    ],
+    /* int64 */[
+      2,
+      0
+    ],
+    -1
+  ],
+  /* tuple */[
+    /* int64 */[
+      2,
+      0
+    ],
+    /* int64 */[
+      1,
+      0
+    ],
+    1
+  ],
+  /* tuple */[
+    /* int64 */[
+      2,
+      0
+    ],
+    /* int64 */[
+      1,
+      0
+    ],
+    1
+  ]
+];
+
+function from_compare(xs) {
+  return List.mapi(function (i, param) {
+              var c = param[2];
+              var b = param[1];
+              var a = param[0];
+              return /* tuple */[
+                      Caml_curry.app1(Printf.sprintf(/* Format */{
+                                0: /* String_literal */{
+                                  0: "int64_compare ",
+                                  1: /* Scan_get_counter */{
+                                    0: /* Token_counter */2,
+                                    1: /* End_of_format */0,
+                                    length: 2,
+                                    tag: 21
+                                  },
+                                  length: 2,
+                                  tag: 11
+                                },
+                                1: "int64_compare %L",
+                                length: 2,
+                                tag: 0
+                              }), i),
+                      function () {
+                        return /* Eq */{
+                                0: c,
+                                1: Caml_int64.compare(a, b),
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ];
+            }, $$Array.to_list(xs));
+}
+
 function from_to_string(xs) {
   return List.mapi(function (i, param) {
               var str_a = param[1];
@@ -1801,7 +1871,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                             }
                           ],
                           /* [] */0
-                        ], from(simple_divs)))))));
+                        ], Pervasives.$at(from(simple_divs), from_compare(int64_compare_tests))))))));
 
 exports.commutative_mul        = commutative_mul;
 exports.pairs                  = pairs;
@@ -1813,5 +1883,7 @@ exports.of_float_pairs         = of_float_pairs;
 exports.simple_divs            = simple_divs;
 exports.from                   = from;
 exports.to_string              = to_string;
+exports.int64_compare_tests    = int64_compare_tests;
+exports.from_compare           = from_compare;
 exports.from_to_string         = from_to_string;
 /*  Not a pure module */
