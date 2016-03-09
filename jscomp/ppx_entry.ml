@@ -50,8 +50,13 @@ let predef_string_type =
   Ast_helper.Typ.var "string" 
 let predef_any_type = 
   Ast_helper.Typ.any ()
+let predef_unit_type = 
+  Ast_helper.Typ.var "unit"
+let predef_val_unit  = 
+  Ast_helper.Exp.construct {txt = Lident "()"; loc = Location.none }  None
 let prim = "js_pure_expr"
 let prim_stmt = "js_pure_stmt"
+let prim_debugger = "js_debugger"
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
@@ -82,6 +87,29 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               -> 
               Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
           end
+        | Pexp_extension ({txt = "js.debug"; loc} , payload)
+          ->
+          begin
+            match payload with
+            | Parsetree.PStr ( [])
+              ->
+              Ast_helper.Exp.letmodule
+                {txt = tmp_module_name; loc }
+                (Ast_helper.Mod.structure [
+                    Ast_helper.Str.primitive
+                      (Ast_helper.Val.mk {loc ; txt = tmp_fn}
+                         ~prim:[prim_debugger]
+                         (Ast_helper.Typ.arrow "" predef_unit_type predef_unit_type))]
+                )
+                (Ast_helper.Exp.apply
+                   (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
+                   [("",  predef_val_unit)])
+            | Parsetree.PTyp _
+            | Parsetree.PPat (_,_)
+            | Parsetree.PStr _
+              ->
+              Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
+          end
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     structure_item = (fun mapper (str : Parsetree.structure_item) -> 
@@ -110,7 +138,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               | Parsetree.PStr _ 
                 -> 
                 Location.raise_errorf ~loc "bb.unsafe can only be applied to a string"
-
             end
         | _ -> Ast_mapper.default_mapper.structure_item mapper str 
         end

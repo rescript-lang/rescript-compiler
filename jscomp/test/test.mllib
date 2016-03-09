@@ -197,3 +197,4 @@ swap_test
 int64_mul_div_test
 ffi_test
 shift_test
+debugger_test

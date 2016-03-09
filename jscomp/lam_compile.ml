@@ -675,8 +675,13 @@ and
           Js_output.handle_block_return st should_return lam args_code exp
       end
 
-    | Lprim (Pccall{prim_name = "js_debugger"; _}, []) 
-      ->  Js_output.handle_block_return st should_return lam  [S.debugger] E.unit 
+    | Lprim (Pccall{prim_name = "js_debugger"; _}, 
+             _) 
+      -> 
+      (* [%js.debugger] guarantees that the expression does not matter 
+         TODO: make it even safer
+         *)
+      Js_output.handle_block_return st should_return lam  [S.debugger] E.unit 
     | Lprim (prim, args_lambda)  ->
       begin
         let args_block, args_expr =

@@ -80,6 +80,8 @@ cps_test.cmo : mt.cmi ../stdlib/array.cmi
 cps_test.cmx : mt.cmx ../stdlib/array.cmx
 cross_module_inline_test.cmo :
 cross_module_inline_test.cmx :
+debugger_test.cmo : ../lib/js.cmi
+debugger_test.cmx : ../lib/js.cmx
 demo.cmo :
 demo.cmx :
 demo_page.cmo :
@@ -526,6 +528,8 @@ cps_test.cmo : mt.cmi ../stdlib/array.cmi
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
 cross_module_inline_test.cmo :
 cross_module_inline_test.cmj :
+debugger_test.cmo : ../lib/js.cmi
+debugger_test.cmj : ../lib/js.cmj
 demo.cmo :
 demo.cmj :
 demo_page.cmo :
