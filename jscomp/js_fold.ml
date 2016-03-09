@@ -310,6 +310,7 @@ class virtual fold =
                  let o = o#exception_ident _x in let o = o#block _x_i1 in o)
               _x_i1 in
           let o = o#option (fun o -> o#block) _x_i2 in o
+      | Debugger -> o
     method statement : statement -> 'self_type =
       fun { statement_desc = _x; comment = _x_i1 } ->
         let o = o#statement_desc _x in

@@ -326,7 +326,7 @@ and statement_desc =
   | String_switch of expression * string case_clause list * block option 
   | Throw of expression
   | Try of block * (exception_ident * block) option * block option
-
+  | Debugger
 and return_expression = {
  (* since in ocaml, it's expression oriented langauge, [return] in
     general has no jumps, it only happens when we do 
