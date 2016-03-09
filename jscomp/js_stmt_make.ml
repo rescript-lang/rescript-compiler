@@ -350,3 +350,7 @@ let continue  ?comment   ?(label="") unit  : t =
     comment;
   }
 
+let debugger : t = 
+  { statement_desc = J.Debugger ; 
+    comment = None 
+  }

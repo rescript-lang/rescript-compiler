@@ -97,3 +97,4 @@ val break : ?comment:string  -> unit -> t
 (** if [label] is not set, it will default to empty *)  
 val continue : ?comment:string  -> ?label:J.label -> unit  -> t
 
+val debugger :  t
