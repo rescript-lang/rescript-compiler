@@ -327,6 +327,7 @@ class virtual map =
               _x_i1 in
           let _x_i2 = o#option (fun o -> o#block) _x_i2
           in Try (_x, _x_i1, _x_i2)
+      | Debugger -> Debugger
     method statement : statement -> statement =
       fun { statement_desc = _x; comment = _x_i1 } ->
         let _x = o#statement_desc _x in
