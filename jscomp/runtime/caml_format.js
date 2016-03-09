@@ -4,6 +4,13 @@
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_utils              = require("./caml_utils");
 
+function caml_failwith(s) {
+  throw [
+        Caml_builtin_exceptions.failure,
+        s
+      ];
+}
+
 function caml_invalid_argument(s) {
   throw [
         Caml_builtin_exceptions.invalid_argument,
@@ -36,75 +43,125 @@ function parse_digit(c) {
   }
 }
 
-
-
-/**
- *
- * @param {string} s
- * @returns {number[]}
- */
-function $$parse_sign_and_base(s) {
-    var i = 0;
-    var len = s.length;
-    var base = 10;
-    var sign = (len > 0 && s.charCodeAt(0) == 45) ? (i++, -1) : 1;
-    if (i + 1 < len && s.charCodeAt(i) == 48)
-        switch (s.charCodeAt(i + 1)) {
-            case 120:
-            case 88:
-                base = 16;
-                i += 2;
-                break;
-            case 111:
-            case 79:
-                base = 8;
-                i += 2;
-                break;
-            case 98:
-            case 66:
-                base = 2;
-                i += 2;
-                break;
+function parse_sign_and_base(s) {
+  var sign = 1;
+  var base = 10;
+  var i = 0;
+  if (s[i] === "-") {
+    sign = -1;
+    ++ i;
+  }
+  var match = s.charCodeAt(i);
+  var match$1 = s.charCodeAt(i + 1);
+  if (match === 48) {
+    if (match$1 >= 89) {
+      if (match$1 !== 98) {
+        if (match$1 !== 111) {
+          if (match$1 === 120) {
+            base = 16;
+            i += 2;
+          }
+          
         }
-    return [i, sign, base];
+        else {
+          base = 8;
+          i += 2;
+        }
+      }
+      else {
+        base = 2;
+        i += 2;
+      }
+    }
+    else if (match$1 !== 66) {
+      if (match$1 !== 79) {
+        if (match$1 >= 88) {
+          base = 16;
+          i += 2;
+        }
+        
+      }
+      else {
+        base = 8;
+        i += 2;
+      }
+    }
+    else {
+      base = 2;
+      i += 2;
+    }
+  }
+  return /* tuple */[
+          i,
+          sign,
+          base
+        ];
 }
 
-
-/**
- *
- * @param {string} s
- * @returns {number}
- */
-function $$caml_int_of_string(s) {
-    var _a = $$parse_sign_and_base(s), i = _a[0], sign = _a[1], base = _a[2];
-    var len = s.length;
-    var threshold = -1 >>> 0;
-    var c = (i < len) ? s.charCodeAt(i) : 0;
-    var d = parse_digit(c);
-    if (d < 0 || d >= base)
-        caml_failwith("int_of_string");
-    var res = d;
-    for (i++; i < len; i++) {
-        c = s.charCodeAt(i);
-        if (c == 95)
-            continue;
-        d = parse_digit(c);
-        if (d < 0 || d >= base)
-            break;
-        res = base * res + d;
-        if (res > threshold)
-            caml_failwith("int_of_string");
-    }
-    if (i != len)
-        caml_failwith("int_of_string");
-    // For base different from 10, we expect an unsigned representation,
-    // hence any value of 'res' (less than 'threshold') is acceptable.
-    // But we have to convert the result back to a signed integer.
-    res = sign * res;
-    if ((base == 10) && ((res | 0) != res))
-        /* Signed representation expected, allow -2^(nbits-1) to 2^(nbits-1) - 1 */
-        caml_failwith("int_of_string");
-    return res | 0;
+function caml_int_of_string(s) {
+  var match = parse_sign_and_base(s);
+  var base = match[2];
+  var i = match[0];
+  var threshold = (-1 >>> 0);
+  var len = s.length;
+  var c = i < len ? s.charCodeAt(i) : /* "\000" */0;
+  var d = parse_digit(c);
+  if (d < 0 || d >= base) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "int_of_string"
+        ];
+  }
+  var aux = function (_acc, _k) {
+    while(true) {
+      var k = _k;
+      var acc = _acc;
+      if (k === len) {
+        return acc;
+      }
+      else {
+        var a = s.charCodeAt(k);
+        if (a === /* "_" */95) {
+          _k = k + 1;
+          continue ;
+          
+        }
+        else {
+          var v = parse_digit(a);
+          if (v < 0 || v >= base) {
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "int_of_string"
+                ];
+          }
+          else {
+            var acc$1 = base * acc + v;
+            if (acc$1 > threshold) {
+              throw [
+                    Caml_builtin_exceptions.failure,
+                    "int_of_string"
+                  ];
+            }
+            else {
+              _k = k + 1;
+              _acc = acc$1;
+              continue ;
+              
+            }
+          }
+        }
+      }
+    };
+  };
+  var res = match[1] * aux(d, i + 1);
+  var or_res = res | 0;
+  if (base === 10 && res !== or_res) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "int_of_string"
+        ];
+  }
+  return or_res;
 }
 
 
@@ -402,10 +459,6 @@ function caml_int32_format(prim, prim$1) {
   return $$caml_format_int(prim, prim$1);
 }
 
-function caml_int32_of_string(prim) {
-  return $$caml_int_of_string(prim);
-}
-
 var repeat = Caml_utils.repeat;
 
 function caml_format_float(prim, prim$1) {
@@ -420,15 +473,15 @@ function caml_float_of_string(prim) {
   return $$caml_float_of_string(prim);
 }
 
-function caml_int_of_string(prim) {
-  return $$caml_int_of_string(prim);
-}
+var caml_int32_of_string = caml_int_of_string;
 
-var caml_nativeint_of_string = caml_int32_of_string;
+var caml_nativeint_of_string = caml_int_of_string;
 
 exports.parse_digit              = parse_digit;
 exports.caml_invalid_argument    = caml_invalid_argument;
 exports.repeat                   = repeat;
+exports.parse_sign_and_base      = parse_sign_and_base;
+exports.caml_failwith            = caml_failwith;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;
 exports.caml_nativeint_format    = caml_nativeint_format;

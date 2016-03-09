@@ -22,6 +22,12 @@ let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
 
+let (>>>) = Nativeint.shift_right_logical
+let (+~) = Nativeint.add 
+let to_nat x = Nativeint.of_int x 
+let of_nat x = Nativeint.to_int x 
+let ( *~ ) = Nativeint.mul  
+
 let parse_digit c = 
   match c with 
   | '0' .. '9' 
@@ -32,78 +38,61 @@ let parse_digit c =
     -> Char.code c - (Char.code 'a' - 10 )
   | _ -> -1
 
+let parse_sign_and_base (s : string) = 
+  let sign = ref 1n in
+  let base = ref 10n in
+  let i  = ref 0 in
+  begin 
+    (
+      if s.[!i] = '-' then
+        begin 
+          sign :=  -1n;
+          incr i
+        end
+    );
+    (match s.[!i], s.[!i + 1] with 
+     | '0', ('x' | 'X')
+       -> base := 16n; i:=!i + 2 
+     | '0', ( 'o' | 'O')
+       -> base := 8n; i := !i + 2
+     | '0', ('b' | 'B' )
+       -> base := 2n; i := !i + 2 
+     | _, _ -> ()); 
+    (!i, !sign, !base)
+  end
+
+let caml_int_of_string s = 
+  let i, sign, base = parse_sign_and_base s in 
+  let threshold = (-1n >>> 0) in 
+  let len = String.length s in  
+  let c = if i < len then s.[i] else '\000' in
+  let d = to_nat @@ parse_digit c in
+  let () =
+    if d < 0n || d >=  base then
+      failwith "int_of_string" in
+  (* let () = [%js.debug]  in *)
+  let rec aux acc k = 
+    if k = len then acc 
+    else 
+      let a = s.[k] in
+      if a  = '_' then aux acc ( k +  1) 
+      else 
+        let v = to_nat @@ parse_digit a in  
+        if v < 0n || v >=  base then 
+          failwith "int_of_string"
+        else 
+          let acc = base *~ acc +~  v in 
+          if acc > threshold then 
+            failwith "int_of_string"
+          else aux acc  ( k +   1)
+  in 
+  let res = sign *~ aux d (i + 1) in 
+  let or_res = Nativeint.logor res 0n in 
+  (if base = 10n && res != or_res then 
+    failwith "int_of_string");
+  or_res
+
 [%%bb.unsafe{|
-
-/**
- *
- * @param {string} s
- * @returns {number[]}
- */
-function $$parse_sign_and_base(s) {
-    var i = 0;
-    var len = s.length;
-    var base = 10;
-    var sign = (len > 0 && s.charCodeAt(0) == 45) ? (i++, -1) : 1;
-    if (i + 1 < len && s.charCodeAt(i) == 48)
-        switch (s.charCodeAt(i + 1)) {
-            case 120:
-            case 88:
-                base = 16;
-                i += 2;
-                break;
-            case 111:
-            case 79:
-                base = 8;
-                i += 2;
-                break;
-            case 98:
-            case 66:
-                base = 2;
-                i += 2;
-                break;
-        }
-    return [i, sign, base];
-}
-
-
-/**
- *
- * @param {string} s
- * @returns {number}
- */
-function $$caml_int_of_string(s) {
-    var _a = $$parse_sign_and_base(s), i = _a[0], sign = _a[1], base = _a[2];
-    var len = s.length;
-    var threshold = -1 >>> 0;
-    var c = (i < len) ? s.charCodeAt(i) : 0;
-    var d = parse_digit(c);
-    if (d < 0 || d >= base)
-        caml_failwith("int_of_string");
-    var res = d;
-    for (i++; i < len; i++) {
-        c = s.charCodeAt(i);
-        if (c == 95)
-            continue;
-        d = parse_digit(c);
-        if (d < 0 || d >= base)
-            break;
-        res = base * res + d;
-        if (res > threshold)
-            caml_failwith("int_of_string");
-    }
-    if (i != len)
-        caml_failwith("int_of_string");
-    // For base different from 10, we expect an unsigned representation,
-    // hence any value of 'res' (less than 'threshold') is acceptable.
-    // But we have to convert the result back to a signed integer.
-    res = sign * res;
-    if ((base == 10) && ((res | 0) != res))
-        /* Signed representation expected, allow -2^(nbits-1) to 2^(nbits-1) - 1 */
-        caml_failwith("int_of_string");
-    return res | 0;
-}
-
-
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"
@@ -401,8 +390,6 @@ let caml_int32_format = caml_format_int
 external caml_float_of_string : string -> float = ""
 [@@js.call "$$caml_float_of_string"] [@@js.local]
 
-external caml_int_of_string : string -> int = ""
-[@@js.call "$$caml_int_of_string"] [@@js.local]
 
 let caml_int32_of_string = caml_int_of_string
 let caml_nativeint_of_string = caml_int32_of_string

@@ -60,6 +60,8 @@ buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
     ../stdlib/buffer.cmx
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmx : mt.cmx
+caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/array.cmi
+caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/array.cmx
 class_type_ffi_test.cmo : ../lib/js.cmi
 class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -508,6 +510,8 @@ buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
+caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/array.cmi
+caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/array.cmj
 class_type_ffi_test.cmo : ../lib/js.cmi
 class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi

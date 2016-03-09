@@ -123,7 +123,10 @@ let reserved_words =
     (* also reserved in ECMAScript 3 *)
     "abstract"; "boolean"; "byte"; "char"; "const"; "double";
     "final"; "float"; "goto"; "int"; "long"; "native"; "short";
-    "synchronized"; "throws"; "transient"; "volatile";
+    "synchronized"; 
+    (* "throws";  *)
+    (* seems to be fine, like nodejs [assert.throws] *)
+    "transient"; "volatile";
 
     (* also reserved in ECMAScript 6 *)
     "await";
