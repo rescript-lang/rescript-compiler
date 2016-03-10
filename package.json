@@ -3,6 +3,7 @@
     "babel": "^6.3.13",
     "babel-cli": "^6.3.17",
     "benchmark": "^2.1.0",
+    "istanbul": "^0.4.2",
     "karma": "^0.13.9",
     "karma-jasmine-html-reporter": "^0.1.8",
     "lodash": "^3.10.1",
@@ -14,6 +15,10 @@
     "webpack": "^1.12.6"
   },
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js'  -R spec"
+      "test": 
+      "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js'  -R spec",
+      "cover" : 
+      "node ./node_modules/istanbul/lib/cli.js cover --report html ./node_modules/.bin/_mocha --   jscomp/test/*test.js"
+
   }
 }

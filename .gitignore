@@ -39,7 +39,7 @@ ocaml/*.js
 ocaml/*/*/*.js
 ocaml/*.js
 
-test.sh
+
 test.json
 ocaml/bin
 ocaml/lib
@@ -55,3 +55,5 @@ osc
 jscomp/pre_load.js
 boot
 *.dump
+coverage
+*.log
