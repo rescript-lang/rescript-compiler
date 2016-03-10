@@ -20,7 +20,7 @@
 
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
-[%%bb.unsafe{|
+[%%js.raw{|
 if (!String.prototype.repeat) {
     String.prototype.repeat = function(count , self) {
         if (self.length == 0 || count == 0) {

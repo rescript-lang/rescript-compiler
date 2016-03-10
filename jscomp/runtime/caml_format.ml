@@ -92,7 +92,7 @@ let caml_int_of_string s =
     caml_failwith "int_of_string");
   or_res
 
-[%%bb.unsafe{|
+[%%js.raw{|
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"

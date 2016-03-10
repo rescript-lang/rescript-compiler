@@ -57,7 +57,7 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
       if Ext_string.starts_with id.name "Caml_" then 
         let path = 
           (* For the runtime, only [JS] files are needed, and 
-             unlike the stdlib, [osc] have some pre-built knowledge 
+             unlike the stdlib, [bsc] have some pre-built knowledge 
              about where it is, since in general, [runtime] 
              is *transparent* to the user
           *)        

@@ -25,7 +25,7 @@
 (* @returns {any[]} *)
 
 let fail () = raise (Failure "lexing: empty token")
-[%%bb.unsafe{| 
+[%%js.raw{| 
 function caml_lex_array(s) {
     var l = s.length / 2;
     var a = new Array(l);

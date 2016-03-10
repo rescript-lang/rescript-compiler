@@ -89,7 +89,7 @@ let index_offset_fortran
     !offs     
   end
 
-[%%bb.unsafe{|
+[%%js.raw{|
 
 function $$bigarray_compare(b, total, layout, n_dims, kind, nth_dim, data, data2) {
     if (layout != b.layout)

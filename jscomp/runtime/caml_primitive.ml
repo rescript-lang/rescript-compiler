@@ -30,7 +30,7 @@ let caml_int32_bswap (x : nativeint) =
         (logor (shift_right_logical (logand x  0x00FF0000n)  8) 
       (shift_right_logical (logand x  0xFF000000n)  24)))
 
-[%%bb.unsafe{|
+[%%js.raw{|
 
 /**
  * Maximum value of #goog.string.hashCode, exclusive. 2^32.

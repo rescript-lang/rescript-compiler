@@ -18,7 +18,7 @@
 
 (* Author: Hongbo Zhang  *)
 
-[%%bb.unsafe{|
+[%%js.raw{|
 /**
  * caml_lex_array("abcd")
  * [25185, 25699]

@@ -150,7 +150,7 @@ let mark_dead_code js =
        object 
        end      
    ]}   
-   Since user may use `osc -c xx.ml xy.ml xz.ml` and we need clean up state
+   Since user may use `bsc -c xx.ml xy.ml xz.ml` and we need clean up state
  *)
 let subst_map name = object (self)
   inherit Js_map.map as super
