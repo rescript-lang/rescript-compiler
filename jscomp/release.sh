@@ -16,7 +16,7 @@ cp js_cmj_datasets.ml $BUCKLESCRIPT_RELEASE/jscomp
 cd $BUCKLESCRIPT_RELEASE/jscomp
 
 git clean -dfx
-ocamlopt.opt -g -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/osc
+ocamlopt.opt -g -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 cd runtime
 make all

@@ -81,7 +81,7 @@ let implementation ppf sourcefile outputprefix =
           | e -> e 
           | exception e -> 
             (* Save to a file instead so that it will not scare user *)            
-            let file = "osc.dump" in
+            let file = "bsc.dump" in
             Ext_pervasives.with_file_as_chan file
               (fun ch -> output_string ch @@             
                 Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
