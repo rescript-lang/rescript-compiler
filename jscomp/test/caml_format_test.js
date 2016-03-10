@@ -202,26 +202,84 @@ var pairs$1 = /* array */[
   ]
 ];
 
-Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
-              /* tuple */[
-                "isnan_of_string",
-                function () {
-                  return /* Eq */{
-                          0: /* true */1,
-                          1: +(Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4),
-                          length: 2,
-                          tag: 0
-                        };
-                }
-              ],
-              /* [] */0
-            ], Pervasives.$at($$Array.to_list($$Array.mapi(function (i, param) {
+var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
+          /* tuple */[
+            "isnan_of_string",
+            function () {
+              return /* Eq */{
+                      0: /* true */1,
+                      1: +(Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4),
+                      length: 2,
+                      tag: 0
+                    };
+            }
+          ],
+          /* [] */0
+        ], Pervasives.$at($$Array.to_list($$Array.mapi(function (i, param) {
+                      var b = param[1];
+                      var a = param[0];
+                      return /* tuple */[
+                              Caml_curry.app1(Printf.sprintf(/* Format */{
+                                        0: /* String_literal */{
+                                          0: "infinity_of_string ",
+                                          1: /* Int */{
+                                            0: /* Int_d */0,
+                                            1: /* No_padding */0,
+                                            2: /* No_precision */0,
+                                            3: /* End_of_format */0,
+                                            length: 4,
+                                            tag: 4
+                                          },
+                                          length: 2,
+                                          tag: 11
+                                        },
+                                        1: "infinity_of_string %d",
+                                        length: 2,
+                                        tag: 0
+                                      }), i),
+                              function () {
+                                return /* Eq */{
+                                        0: a,
+                                        1: Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b)),
+                                        length: 2,
+                                        tag: 0
+                                      };
+                              }
+                            ];
+                    }, pairs)), Pervasives.$at(/* :: */[
+                  /* tuple */[
+                    "throw",
+                    function () {
+                      return /* ThrowAny */{
+                              0: function () {
+                                return Caml_format.caml_float_of_string("");
+                              },
+                              length: 1,
+                              tag: 3
+                            };
+                    }
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      "format_int",
+                      function () {
+                        return /* Eq */{
+                                0: "                              33",
+                                1: Caml_format.caml_format_int("%32d", 33),
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ],
+                    /* [] */0
+                  ]
+                ], $$Array.to_list($$Array.mapi(function (i, param) {
                           var b = param[1];
                           var a = param[0];
                           return /* tuple */[
                                   Caml_curry.app1(Printf.sprintf(/* Format */{
                                             0: /* String_literal */{
-                                              0: "infinity_of_string ",
+                                              0: "normal_float_of_string ",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
                                                 1: /* No_padding */0,
@@ -233,65 +291,26 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(from_of_string(of_stri
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "infinity_of_string %d",
+                                            1: "normal_float_of_string %d",
                                             length: 2,
                                             tag: 0
                                           }), i),
                                   function () {
                                     return /* Eq */{
                                             0: a,
-                                            1: Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b)),
+                                            1: Caml_format.caml_float_of_string(b),
                                             length: 2,
                                             tag: 0
                                           };
                                   }
                                 ];
-                        }, pairs)), Pervasives.$at(/* :: */[
-                      /* tuple */[
-                        "throw",
-                        function () {
-                          return /* ThrowAny */{
-                                  0: function () {
-                                    return Caml_format.caml_float_of_string("");
-                                  },
-                                  length: 1,
-                                  tag: 3
-                                };
-                        }
-                      ],
-                      /* [] */0
-                    ], $$Array.to_list($$Array.mapi(function (i, param) {
-                              var b = param[1];
-                              var a = param[0];
-                              return /* tuple */[
-                                      Caml_curry.app1(Printf.sprintf(/* Format */{
-                                                0: /* String_literal */{
-                                                  0: "normal_float_of_string ",
-                                                  1: /* Int */{
-                                                    0: /* Int_d */0,
-                                                    1: /* No_padding */0,
-                                                    2: /* No_precision */0,
-                                                    3: /* End_of_format */0,
-                                                    length: 4,
-                                                    tag: 4
-                                                  },
-                                                  length: 2,
-                                                  tag: 11
-                                                },
-                                                1: "normal_float_of_string %d",
-                                                length: 2,
-                                                tag: 0
-                                              }), i),
-                                      function () {
-                                        return /* Eq */{
-                                                0: a,
-                                                1: Caml_format.caml_float_of_string(b),
-                                                length: 2,
-                                                tag: 0
-                                              };
-                                      }
-                                    ];
-                            }, pairs$1)))))));
+                        }, pairs$1))))));
+
+function ff(param) {
+  return Caml_format.caml_format_int("%32d", param);
+}
+
+Mt.from_pair_suites("caml_format_test.ml", suites);
 
 exports.of_string            = of_string;
 exports.from_float_of_string = from_float_of_string;
@@ -299,4 +318,6 @@ exports.from_of_string       = from_of_string;
 exports.u                    = u;
 exports.to_str               = to_str;
 exports.v                    = v;
+exports.suites               = suites;
+exports.ff                   = ff;
 /* v Not a pure module */

@@ -23,42 +23,54 @@ let from_of_string xs =
   |>  Array.mapi (fun i (a,b) -> 
       (Printf.sprintf "of_string %L" i), fun _ -> Mt.Eq(int_of_string b,a ))
   |> Array.to_list 
+
 let u v = Printf.sprintf "%33d" v 
+
 let to_str s = int_of_string s
+
 let v = Printf.sprintf "%3d" 3333
+external format_int : string -> int -> string = "caml_format_int"
 
-;; Mt.from_pair_suites __FILE__ @@ 
-    (from_of_string of_string @
-     ["isnan_of_string", (fun _ -> 
-          Mt.Eq (true,classify_float( float_of_string "nan") = FP_nan))] @
-     (let pairs =
-       [| FP_infinite, "infinity";
-          FP_infinite, "+infinity"; 
-          FP_infinite, "-infinity";
-          FP_zero, "0";
-          FP_zero, "0."
-       |] 
-     in 
-     pairs 
-     |> Array.mapi 
-       (fun i (a,b) ->
-          (Printf.sprintf "infinity_of_string %d" i ),
-          (fun _ -> Mt.Eq(a,
-                          classify_float @@ float_of_string b))) 
-     |> Array.to_list ) @ 
-     [ "throw", (fun _ -> Mt.ThrowAny (fun _ -> ignore @@ float_of_string ""))] @
-     (let pairs =
-       [| 3232., "32_32.0";
-          1.000, "1.000";
-          12.000, "12.000"
-       |] 
-     in 
-     pairs 
-     |> Array.mapi 
-       (fun i (a,b) ->
-          (Printf.sprintf "normal_float_of_string %d" i ),
-          (fun _ -> Mt.Eq(a,
-                          float_of_string b))) 
-     |> Array.to_list )
+let suites : _ Mt.pair_suites = 
+  from_of_string of_string @
+  ["isnan_of_string", (fun _ -> 
+       Mt.Eq (true,classify_float( float_of_string "nan") = FP_nan))] @
+  (let pairs =
+    [| FP_infinite, "infinity";
+       FP_infinite, "+infinity"; 
+       FP_infinite, "-infinity";
+       FP_zero, "0";
+       FP_zero, "0."
+    |] 
+   in 
+   pairs 
+   |> Array.mapi 
+     (fun i (a,b) ->
+        (Printf.sprintf "infinity_of_string %d" i ),
+        (fun _ -> Mt.Eq(a,
+                        classify_float @@ float_of_string b))) 
+   |> Array.to_list ) @ 
+  [ "throw", (fun _ -> Mt.ThrowAny (fun _ -> ignore @@ float_of_string ""));
+    "format_int", (fun _ -> 
+        Mt.Eq("                              33", format_int "%32d" 33))
+  ] @
+  (let pairs =
+    [| 3232., "32_32.0";
+       1.000, "1.000";
+       12.000, "12.000"
+    |] 
+   in 
+   pairs 
+   |> Array.mapi 
+     (fun i (a,b) ->
+        (Printf.sprintf "normal_float_of_string %d" i ),
+        (fun _ -> Mt.Eq(a,
+                        float_of_string b))) 
+   |> Array.to_list ) 
 
-    )
+
+    
+let ff = format_int "%32d"
+
+;; Mt.from_pair_suites __FILE__ suites
+    
