@@ -144,10 +144,16 @@ module Options = Main_args.Make_bytecomp_options (struct
   let anonymous = anonymous
 end)
 
+
+let buckle_script_flags = 
+  ("-js-module", Arg.String Js_config.cmd_set_module, 
+    " set module system: commonjs (default), amdjs, google:package_name")
+  :: Options.list 
+
 let main () =
   try
     readenv ppf Before_args;
-    Arg.parse Options.list anonymous usage;
+    Arg.parse buckle_script_flags anonymous usage;
     readenv ppf Before_link;
     if
       List.length (List.filter (fun x -> !x)

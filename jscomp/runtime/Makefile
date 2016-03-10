@@ -5,7 +5,8 @@ CAMLC=../bin/osc
 SOURCE_LIST := $(shell cat runtime.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
-COMPFLAGS := -w -40 -safe-string
+COMPFLAGS := -w -40 -safe-string 
+# -js-module goog:buckle
 
 $(RUNTIME): $(CAMLC)
 

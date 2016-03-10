@@ -127,22 +127,23 @@ let export_to_cmj
 
   let () =
     if not @@ Ext_string.is_empty meta.filename then
-      Ext_pervasives.with_file_as_pp 
+      Ext_pervasives.with_file_as_pp
         (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
-      @@ fun fmt -> 
+      @@ fun fmt ->
         pp fmt "@[<v>%a@]@." dump meta.exports
   in
-  let pure = 
+  let effect = 
     match maybe_pure with
     | None ->  
       Ext_option.bind ( Ext_list.for_all_ret 
                           (fun (id : Lam_module_ident.t) -> 
-                             Lam_compile_env.query_and_add_if_not_exist id meta.env 
+                             Lam_compile_env.query_and_add_if_not_exist id 
+                               (Has_env meta.env )
                                ~not_found:(fun _ -> false ) ~found:(fun i -> 
                                    i.pure)
                           ) external_ids) (fun x -> Lam_module_ident.name x)
     | Some _ -> maybe_pure
 
   in
-  {values; pure }
+  {values; effect ; goog_package = Js_config.get_goog_package_name ()}
 

@@ -55,5 +55,6 @@ osc
 jscomp/pre_load.js
 boot
 *.dump
+
 coverage
 *.log

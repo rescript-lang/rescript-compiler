@@ -694,4 +694,4 @@ let caml_ba_map_file_bytecode :
   Unix.file_descr -> ('a, 'b) Bigarray.kind -> 
   'c Bigarray.layout -> bool ->
   int array -> int64 -> ('a, 'b, 'c) Bigarray.Genarray.t = 
-  function _ -> failwith "caml_ba_map_file_bytecode not implemented"
+  function _ -> raise @@ Failure "caml_ba_map_file_bytecode not implemented"

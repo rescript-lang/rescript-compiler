@@ -61,6 +61,10 @@ module L = struct
   let return = "return"
   let eq = "="
   let require = "require"
+  let goog_require = "goog.require" 
+  let goog_module = "goog.module"
+  let lparen = "("
+  let rparen = ")"
   let exports = "exports"
   let dot = "."
   let comma = ","
@@ -1425,7 +1429,7 @@ let exports cxt f (idents : Ident.t list) =
 
 
 (* Node style *)
-let requires cxt f (modules : (Ident.t * string) list ) =
+let requires require_lit cxt f (modules : (Ident.t * string) list ) =
   P.newline f ; 
   (* the context used to print the following program *)  
   let outer_cxt, reversed_list, margin  =
@@ -1443,7 +1447,7 @@ let requires cxt f (modules : (Ident.t * string) list ) =
       P.nspace f (margin - String.length s + 1) ;
       P.string f L.eq;
       P.space f;
-      P.string f L.require;
+      P.string f require_lit;
       P.paren_group f 0 @@ (fun _ ->
           pp_string f ~utf:true ~quote:(best_string_quote s) file  );
       semi f ;
@@ -1457,8 +1461,18 @@ let program f cxt   ( x : J.program ) =
   let () = P.force_newline f in
   exports cxt f x.exports
 
+let goog_program f goog_package x  = 
+  P.newline f ;
+  P.string f L.goog_module;
+  P.string f "(";
+  P.string f (Printf.sprintf "%S" goog_package);
+  P.string f ")";
+  semi f ;
+  let cxt = requires L.goog_require ( Ext_pp_scope.empty)  f x.J.modules in
+  program f cxt x.program  
+
 let node_program f ( x : J.deps_program) = 
-  let cxt = requires ( Ext_pp_scope.empty)  f x.modules in
+  let cxt = requires L.require ( Ext_pp_scope.empty)  f x.modules in
   program f cxt x.program  
   
 
@@ -1515,7 +1529,18 @@ let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) =
            node_program f program
            (* amd_program f program *)
          | _ -> amd_program f program
-       end ) ;
+       end 
+     | Goog opt -> 
+       let goog_package = 
+         let v = Lam_current_unit.get_module_name () in
+         match opt with 
+         | None 
+         | Some ""
+           -> v 
+         | Some x -> x ^ "." ^ v 
+       in 
+       goog_program f goog_package  program
+      ) ;
     P.newline f ;
     P.string f (
       match program.side_effect with

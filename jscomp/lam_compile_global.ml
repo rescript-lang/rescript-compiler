@@ -30,7 +30,8 @@ open Js_output.Ops
  *)
 
 let query_lambda id env = 
-  Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) env
+  Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
+    (Has_env env)
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature = sigs; _} -> 
         (* TODO: add module into taginfo*)
@@ -49,7 +50,9 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
     if Ident.is_predef_exn id 
     then Js_of_lam_exception.get_builtin_by_name id.name
     else 
-      Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) env
+      Lam_compile_env.query_and_add_if_not_exist 
+        (Lam_module_ident.of_ml id) 
+        (Has_env env)
         ~not_found:(fun id -> assert false)
         ~found:(fun   {signature = sigs; _} -> 
             if expand 

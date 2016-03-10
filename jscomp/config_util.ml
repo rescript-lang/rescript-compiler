@@ -37,14 +37,23 @@ let find_cmj file =
     Js_cmj_format.from_file f             
   | exception Not_found -> 
     (* TODO: add an logger module *)
+    let target = String.uncapitalize (Filename.basename file) in
     begin match 
-        String_map.find (String.uncapitalize (Filename.basename file)) 
+        String_map.find  target
           Js_cmj_datasets.cmj_data_sets with 
     | v
-      -> Lazy.force v 
+      -> 
+      begin match Lazy.force v with
+      | exception _ 
+        -> 
+        Ext_log.warn __LOC__ 
+          "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_file ())  ;
+        Js_cmj_format.no_pure_dummy; (* FIXME *)
+      | v -> v 
+      end
     | exception Not_found 
       ->     
       Ext_log.warn __LOC__ "@[%s not found @]" file ;
-      Js_cmj_format.dummy  (); (* FIXME *)
+      Js_cmj_format.no_pure_dummy (* FIXME *)
     end
   end

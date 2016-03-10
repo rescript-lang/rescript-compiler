@@ -21,12 +21,12 @@
 type env = 
   | Browser
   | NodeJS
-
+  | Goog of string option
 
 val get_env : unit -> env
-
+val get_goog_package_name : unit -> string option
 val set_env : env -> unit
-
+val cmd_set_module : string -> unit  
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 

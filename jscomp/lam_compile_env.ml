@@ -80,13 +80,13 @@ let add_js_module ?id module_name =
   Hashtbl.replace cached_tbl (Lam_module_ident.of_external id module_name) External;
   id  
 
-let find_cached_tbl = Hashtbl.find cached_tbl
+
 
 let add_cached_tbl = Hashtbl.add cached_tbl
 
 let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
   let oid  = Lam_module_ident.of_ml id in
-  begin match find_cached_tbl oid with 
+  begin match Hashtbl.find cached_tbl oid with 
     | exception Not_found -> 
       let cmj_table = Config_util.find_cmj (id.name ^ ".cmj") in
       begin match
@@ -131,48 +131,89 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
 (* TODO: it does not make sense to cache
    [Runtime] 
    and [externals]*)
+type _ t = 
+  | No_env :  Js_cmj_format.cmj_table t 
+  | Has_env : Env.t  -> module_info t 
 
-let query_and_add_if_not_exist (oid : Lam_module_ident.t) env ~not_found ~found =
-  match find_cached_tbl oid with 
+
+let query_and_add_if_not_exist (type u)
+    (oid : Lam_module_ident.t) 
+    (env : u t) ~not_found ~found:(found : u -> _) =
+  match Hashtbl.find cached_tbl oid with 
   | exception Not_found -> 
     begin match oid.kind with
       | Runtime  -> 
         add_cached_tbl oid (Runtime true) ; 
-        found {signature = []; pure = true}
-
+        begin match env with 
+        | Has_env _ -> 
+          found {signature = []; pure = true}
+        | No_env -> 
+          found (Js_cmj_format.pure_dummy)
+        end
       | External _  -> 
         add_cached_tbl oid External;
         (** This might be wrong, if we happen to expand  an js module
             we should assert false (but this in general should not happen)
         *)
-        found {signature = []; pure = false}
+        begin match env with 
+        | Has_env _ 
+          -> 
+          found {signature = []; pure = false}
+        | No_env -> 
+          found (Js_cmj_format.no_pure_dummy)
+        end
 
       | Ml 
         -> 
         let cmj_table = 
           Config_util.find_cmj (Lam_module_ident.name oid ^ ".cmj") in           
-        begin 
-          match Type_util.find_serializable_signatures_by_path (Pident oid.id) env with 
-          | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
-          | Some signature -> 
-            add_cached_tbl oid (Visit {signatures = signature; cmj_table }) ;
-            found  { signature ; pure = cmj_table.pure = None} 
+        begin match env with 
+          | Has_env env -> 
+            begin match 
+                Type_util.find_serializable_signatures_by_path (Pident oid.id) env with 
+            | None -> not_found () (* actually when [not_found] in the call site, we throw... *)
+            | Some signature -> 
+              add_cached_tbl oid (Visit {signatures = signature; cmj_table }) ;
+              found  { signature ; pure = cmj_table.effect = None} 
+            end
+          | No_env -> 
+            found cmj_table
         end
     end
-  | Visit {signatures  ; cmj_table = {pure; _}; _} -> 
-    found   { signature =  signatures  ; pure = (pure = None)} 
+  | Visit {signatures  ; cmj_table =  cmj_table; _} -> 
+    begin match env with 
+      | Has_env _ -> 
+        found   { signature =  signatures  ; pure = (cmj_table.effect = None)} 
+      | No_env  -> found cmj_table
+    end
 
   | Runtime pure -> 
-    found {signature = []  ; pure }
-
+    begin match env with 
+      | Has_env _ -> 
+        found {signature = []  ; pure }
+      | No_env -> 
+        found (if pure then Js_cmj_format.pure_dummy 
+               else Js_cmj_format.no_pure_dummy
+              )
+    end
   | External -> 
-    found {signature = []  ; pure  = false}
+    begin match env with 
+    | Has_env _ -> 
+      found {signature = []  ; pure  = false}
+    | No_env -> found Js_cmj_format.no_pure_dummy
+    end
 
 (* Conservative interface *)
-let is_pure id env = 
-  query_and_add_if_not_exist id env 
+let is_pure id  = 
+  query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> false) 
-    ~found:(fun x -> x.pure)
+    ~found:(fun x -> x.effect = None)
+
+let get_goog_package_name id = 
+  query_and_add_if_not_exist id No_env
+    ~not_found:(fun _ -> None) 
+    ~found:(fun x -> x.goog_package)
+
 
 (* TODO: [env] is not hard dependency *)
 
@@ -180,7 +221,7 @@ let get_requried_modules env (extras : module_id list ) (hard_dependencies
   : _ Hash_set.hashset) : module_id list =  
 
   let mem (x : Lam_module_ident.t) = 
-    not (is_pure x env ) || Hash_set.mem hard_dependencies  x 
+    not (is_pure x ) || Hash_set.mem hard_dependencies  x 
   in
   Hashtbl.iter (fun (id : module_id)  _  ->
       if mem id 

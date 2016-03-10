@@ -23,11 +23,17 @@ for(var i = 0; i<= 2; ++i){
 
 var match_000 = "" + 3;
 
-var a = match_000;
+var c = arr;
 
 var b = 101;
 
-var c = arr;
+var a = match_000;
+
+console.log(/* tuple */[
+      a,
+      b,
+      c
+    ]);
 
 exports.f  = f;
 exports.f2 = f2;

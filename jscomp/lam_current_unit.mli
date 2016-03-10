@@ -20,6 +20,7 @@
 
 val set_file : string -> unit 
 val get_file : unit -> string
+val get_module_name : unit -> string
 
 val iset_debug_file : string -> unit
 val set_debug_file : string -> unit

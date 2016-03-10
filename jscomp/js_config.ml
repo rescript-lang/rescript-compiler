@@ -22,14 +22,36 @@
 type env = 
   | Browser
   | NodeJS
-
+  | Goog of string option
 
 let default_env = ref NodeJS 
 
 let get_env () = !default_env
 
 let set_env env = default_env := env 
+let cmd_set_module str = 
+  match str with 
+  | "commonjs" -> default_env := NodeJS
+  | "amdjs" -> 
+    default_env := Browser
+  | _ -> 
+    if Ext_string.starts_with str "goog" then
+      let len = String.length str in
+      if  len = 4  then
+        default_env := Goog (Some "")
+      else
+      if str.[4] = ':' && len > 5 then 
+        default_env := Goog (Some (Ext_string.tail_from str 5  ))
+      else 
+        raise (Arg.Bad (Printf.sprintf "invalid module system %s" str))
+    else
+      raise (Arg.Bad (Printf.sprintf "invalid module system %s" str))
 
+let get_goog_package_name () = 
+  match !default_env with 
+  | Goog x -> x 
+  | Browser | NodeJS -> None
+     
 let stdlib_set = String_set.of_list [
     "arg";
     "gc";
@@ -133,3 +155,5 @@ let internalMod = "Caml_internalMod"
 let bigarray = "Caml_bigarray"
 let unix = "Caml_unix"
 let int64 = "Caml_int64"
+
+

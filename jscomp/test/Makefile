@@ -2,12 +2,13 @@ include ../Makefile.shared
 
 CAMLC=../bin/osc
 
-INCLUDES= -I ../stdlib -I ../runtime -I ../lib
+INCLUDES= -I ../stdlib -I ../runtime -I ../lib 
 
 SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
 COMPFLAGS+= -safe-string -w -40 
+# -js-module goog:buckle.test
 
 $(TESTS): $(CAMLC)
 

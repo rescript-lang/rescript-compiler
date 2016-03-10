@@ -371,7 +371,7 @@ let compile  ~filename non_export env _sigs lam   =
             (if not @@ Ext_string.is_empty filename then
                Js_cmj_format.to_file 
                  (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
-            Js_program_loader.decorate_deps required_modules v.pure js
+            Js_program_loader.decorate_deps required_modules v.effect js
           )
         | _ -> raise Not_a_module
       end
