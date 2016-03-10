@@ -9,7 +9,7 @@ make js_map.ml js_fold.ml lam_map.ml lam_fold.ml >> build.compile
 
 ocamlbuild  -cflags $OCAMLBUILD_CFLAGS compiler.cmxa > build.compile
 
-make -r bin/osc
+make -r bin/bsc
 # TODO: this quick test is buggy, 
 # since a.ml maybe depend on another module 
 # we can not just comment it, it will also produce jslambda

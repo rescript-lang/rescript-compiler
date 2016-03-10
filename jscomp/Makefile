@@ -20,7 +20,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/osc: _build/compiler.cmxa
+./bin/bsc: _build/compiler.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
@@ -31,7 +31,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 release:snapshot 
 	make releasebuild
-# Note: this target also built bin/osc which is used in release mode
+# Note: this target also built bin/bsc which is used in release mode
 
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
@@ -48,7 +48,7 @@ snapshotcmj:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/osc
+	$(NATIVE) -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 stdlib:
 	cd stdlib && ./build.sh

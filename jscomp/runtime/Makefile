@@ -1,6 +1,6 @@
 include ../Makefile.shared
 
-CAMLC=../bin/osc
+CAMLC=../bin/bsc
 
 SOURCE_LIST := $(shell cat runtime.mllib)
 
