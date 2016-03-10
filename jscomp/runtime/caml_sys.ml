@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 let caml_raise_not_found () = raise Not_found
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_sys_getenv(n) {
     //nodejs env
     if (typeof process !== 'undefined'
@@ -37,7 +37,7 @@ external caml_sys_getenv : string -> string = ""
 [@@js.call "$$caml_sys_getenv"] [@@js.local]
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$date(){
   return (+new Date())
 };

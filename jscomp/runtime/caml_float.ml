@@ -18,7 +18,7 @@
 
 (* Author: Hongbo Zhang  *)
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_int64_bits_of_float (x) {
   // TODO:
   // can be allocated globally to avoid allocation each time
@@ -74,7 +74,7 @@ let caml_modf_float (x : float) : float * float =
   else if is_nan x then nan ,  nan 
   else (1. /. x , x)
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_ldexp_float (x,exp) {
     exp |= 0;
     if (exp > 1023) {
@@ -98,7 +98,7 @@ external caml_ldexp_float : float -> int -> float = ""
 [@@js.call "$$caml_ldexp_float"] [@@js.local]
 (* let caml_ldexp_float  (x : float)  (exp : nativeint) : float =  *)
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_frexp_float (x) {
     if ((x == 0) || !isFinite(x)) return [0, x, 0];
     var neg = x < 0;
@@ -146,7 +146,7 @@ let caml_log1p_float  : float -> float = function x ->
   if z = 0. then x else x *. log y /. z 
 
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_hypot_float (x, y) {
     var x0 = Math.abs(x), y0 = Math.abs(y);
     var a = Math.max(x0, y0), b = Math.min(x0,y0) / (a?a:1);
@@ -157,7 +157,7 @@ function $$caml_hypot_float (x, y) {
 external caml_hypot_float : float -> float -> float = ""
 [@@js.call "$$caml_hypot_float"] [@@js.local]
 
-[%%bb.unsafe{|
+[%%js.raw{|
 function $$caml_log10_float (x) { return Math.LOG10E * Math.log(x); }
 |} ]
 
