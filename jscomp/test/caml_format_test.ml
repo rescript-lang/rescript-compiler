@@ -46,5 +46,19 @@ let v = Printf.sprintf "%3d" 3333
           (fun _ -> Mt.Eq(a,
                           classify_float @@ float_of_string b))) 
      |> Array.to_list ) @ 
-     [ "throw", (fun _ -> Mt.ThrowAny (fun _ -> ignore @@ float_of_string ""))]
+     [ "throw", (fun _ -> Mt.ThrowAny (fun _ -> ignore @@ float_of_string ""))] @
+     (let pairs =
+       [| 3232., "32_32.0";
+          1.000, "1.000";
+          12.000, "12.000"
+       |] 
+     in 
+     pairs 
+     |> Array.mapi 
+       (fun i (a,b) ->
+          (Printf.sprintf "normal_float_of_string %d" i ),
+          (fun _ -> Mt.Eq(a,
+                          float_of_string b))) 
+     |> Array.to_list )
+
     )
