@@ -83,10 +83,10 @@ Note that you have to clone this project with `--recursive` option, as the core 
   Assume that you have `ocamlopt.opt` in the `PATH`
   ```sh
   cd ./jscomp
-  ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/osc
+  ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
   ```
 
-  Now you have a binary called `osc` under `jscomp/bin` directory,
+  Now you have a binary called `bsc` under `jscomp/bin` directory,
   put it in your `PATH`.
 
   Our compiler is released as a single file so that for release-builds
@@ -102,9 +102,9 @@ Note that you have to clone this project with `--recursive` option, as the core 
   echo 'print_endline "hello world";;' >hello.ml
   ```
   
-  Then compile it with `osc`
+  Then compile it with `bsc`
   ```sh
-  osc -I . -I ../ -c hello.ml
+  bsc -I . -I ../ -c hello.ml
   ```
   
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js
@@ -120,20 +120,20 @@ runtime and standard library to verify if it works, you don't need run
 these steps.
 
 
-4. Build the runtime with `osc`
+4. Build the runtime with `bsc`
 
   ```sh
   cd runtime
   make all
   ```
 
-5. Build the ocaml standard library with `osc`
+5. Build the ocaml standard library with `bsc`
 
   ```sh
   cd ../stdlib
   make all 
   ```
-6. Build the bucklescript library (it contains JS bindings) with `osc`
+6. Build the bucklescript library (it contains JS bindings) with `bsc`
 
    ```sh
    cd ../lib
