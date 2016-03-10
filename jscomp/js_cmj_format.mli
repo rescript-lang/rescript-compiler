@@ -53,10 +53,13 @@ type effect = string option
 
 type cmj_table = {
   values : cmj_value String_map.t;
-  pure : effect
+  effect : effect;
+  goog_package : string option
 }
 
-val dummy : ?pure:string option -> unit -> cmj_table
+val pure_dummy : cmj_table
+val no_pure_dummy : cmj_table
+
 
 val from_file : string -> cmj_table
 val from_string : string -> cmj_table

@@ -31,6 +31,7 @@ let (+) = Nativeint.add
 let ( * ) = Nativeint.mul 
 let ( & ) = Nativeint.logand
 let ( << ) = Nativeint.shift_left
+let lognot x = Nativeint.logxor x (-1n)
 
 type t = { lo : nativeint ; hi : nativeint}
 

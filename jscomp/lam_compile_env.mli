@@ -47,6 +47,10 @@ type module_info = {
   pure : bool 
 }
 
+type _ t = 
+  | No_env :  Js_cmj_format.cmj_table t 
+  | Has_env : Env.t  -> module_info t 
+
 val find_and_add_if_not_exist : 
   Ident.t * int -> 
   Env.t -> 
@@ -54,10 +58,9 @@ val find_and_add_if_not_exist :
   found:(ident_info -> 'a) -> 'a
 
 val query_and_add_if_not_exist : 
-  Lam_module_ident.t -> 
-  Env.t -> 
-  not_found:(unit -> 'a) -> 
-  found:( module_info -> 'a) -> 'a
+  Lam_module_ident.t ->
+  'a t -> not_found:(unit -> 'b) ->
+  found:('a -> 'b) -> 'b
 
 val add_js_module : ?id:Ident.t -> string  -> Ident.t 
 (** add third party dependency *)
@@ -78,8 +81,8 @@ val add_js_module : ?id:Ident.t -> string  -> Ident.t
 
 val reset : unit -> unit 
 
-val is_pure : Lam_module_ident.t -> Env.t -> bool
-
+val is_pure : Lam_module_ident.t -> bool
+val get_goog_package_name : Lam_module_ident.t -> string option
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]
 *)

@@ -1,6 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Filename = require("../stdlib/filename");
+var $$String = require("../stdlib/string");
 
 var file = [""];
 
@@ -13,6 +15,10 @@ function set_file(f) {
 
 function get_file() {
   return file[0];
+}
+
+function get_module_name() {
+  return Filename.chop_extension($$String.uncapitalize(file[0]));
 }
 
 function iset_debug_file() {
@@ -41,8 +47,9 @@ exports.file            = file;
 exports.debug_file      = debug_file;
 exports.set_file        = set_file;
 exports.get_file        = get_file;
+exports.get_module_name = get_module_name;
 exports.iset_debug_file = iset_debug_file;
 exports.set_debug_file  = set_debug_file;
 exports.get_debug_file  = get_debug_file;
 exports.is_same_file    = is_same_file;
-/* No side effect */
+/* Filename Not a pure module */

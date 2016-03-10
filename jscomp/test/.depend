@@ -168,8 +168,8 @@ js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmx : mt.cmx ../lib/js_date.cmx
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmx : mt.cmx
-lam_current_unit.cmo :
-lam_current_unit.cmx :
+lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
+lam_current_unit.cmx : ../stdlib/string.cmx ../stdlib/filename.cmx
 lam_methname.cmo : ../stdlib/string.cmi ../stdlib/list.cmi \
     lam_current_unit.cmo ext_string.cmo ext_log.cmo
 lam_methname.cmx : ../stdlib/string.cmx ../stdlib/list.cmx \
@@ -324,8 +324,8 @@ test_generative_module.cmo :
 test_generative_module.cmx :
 test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
-test_google_closure.cmo : ../stdlib/array.cmi
-test_google_closure.cmx : ../stdlib/array.cmx
+test_google_closure.cmo : ../lib/js.cmi ../stdlib/array.cmi
+test_google_closure.cmx : ../lib/js.cmx ../stdlib/array.cmx
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -618,8 +618,8 @@ js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmj : mt.cmj ../lib/js_date.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
-lam_current_unit.cmo :
-lam_current_unit.cmj :
+lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
+lam_current_unit.cmj : ../stdlib/string.cmj ../stdlib/filename.cmj
 lam_methname.cmo : ../stdlib/string.cmi ../stdlib/list.cmi \
     lam_current_unit.cmo ext_string.cmo ext_log.cmo
 lam_methname.cmj : ../stdlib/string.cmj ../stdlib/list.cmj \
@@ -774,8 +774,8 @@ test_generative_module.cmo :
 test_generative_module.cmj :
 test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
-test_google_closure.cmo : ../stdlib/array.cmi
-test_google_closure.cmj : ../stdlib/array.cmj
+test_google_closure.cmo : ../lib/js.cmi ../stdlib/array.cmi
+test_google_closure.cmj : ../lib/js.cmj ../stdlib/array.cmj
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \

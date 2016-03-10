@@ -24,6 +24,8 @@ let debug_file = ref ""
 
 let set_file f  = file := f 
 let get_file () = !file
+let get_module_name () = 
+  Filename.chop_extension (String.uncapitalize !file)
 
 let iset_debug_file _ = ()
 let set_debug_file  f = debug_file := f

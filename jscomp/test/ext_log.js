@@ -306,4 +306,4 @@ exports.iwarn = iwarn;
 exports.dwarn = dwarn;
 exports.info  = info;
 exports.iinfo = iinfo;
-/* Format Not a pure module */
+/* Lam_current_unit Not a pure module */

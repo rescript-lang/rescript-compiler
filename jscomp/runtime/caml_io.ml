@@ -26,21 +26,21 @@ let stdout = undef
 let stderr = undef 
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
-  failwith "caml_ml_open_descriptor_in not implemented"  
+  raise (Failure "caml_ml_open_descriptor_in not implemented")  
 let caml_ml_open_descriptor_out (i : int)  : out_channel = 
-  failwith "caml_ml_open_descriptor_out not implemented"  
+  raise (Failure "caml_ml_open_descriptor_out not implemented")
 let caml_ml_output_char (oc : out_channel)  (char : char) =
-  failwith "caml_ml_output_char not implemented"  
+  raise (Failure "caml_ml_output_char not implemented"  )
 
 (** note we need provide both [bytes] and [string] version 
 *)
 let caml_ml_output (oc : out_channel) (bytes : bytes) offset len  =
-  failwith "caml_ml_output not implemented"  
+  raise @@ Failure  "caml_ml_output not implemented"  
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
-  failwith "caml_ml_input ic not implemented"
+  raise @@ Failure  "caml_ml_input ic not implemented"
 
 let caml_ml_input_char (ic : in_channel) : char = 
-  failwith "caml_ml_input_char not implemnted"
+  raise @@ Failure "caml_ml_input_char not implemnted"
 
 let caml_ml_out_channels_list () : out_channel list  =
   assert false 

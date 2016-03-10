@@ -68,12 +68,14 @@ function $$caml_hash(count, limit, seed, o) {
 |}]
 
 
-external caml_hash : int -> int -> int -> 'a -> int = ""
-[@@js.call "$$caml_hash"] [@@js.local]
+external caml_hash : int -> int -> int -> 'a -> int = "$$caml_hash"
+    [@@js.call ] [@@js.local]
 
 let caml_nativeint_bswap = caml_int32_bswap
 
 let caml_sys_getcwd () = "/"
 
-let caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc. backtrace_slot =
-  function _ -> failwith "caml_convert_raw_backtrace_slot unimplemented"
+let caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc. backtrace_slot 
+  =
+  function _ -> 
+    raise @@ Failure "caml_convert_raw_backtrace_slot unimplemented"

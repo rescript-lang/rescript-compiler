@@ -69,7 +69,7 @@ let caml_int_of_string s =
   let d = to_nat @@ parse_digit c in
   let () =
     if d < 0n || d >=  base then
-      failwith "int_of_string" in
+      caml_failwith "int_of_string" in
   (* let () = [%js.debug]  in *)
   let rec aux acc k = 
     if k = len then acc 
@@ -79,17 +79,17 @@ let caml_int_of_string s =
       else 
         let v = to_nat @@ parse_digit a in  
         if v < 0n || v >=  base then 
-          failwith "int_of_string"
+          caml_failwith "int_of_string"
         else 
           let acc = base *~ acc +~  v in 
           if acc > threshold then 
-            failwith "int_of_string"
+            caml_failwith "int_of_string"
           else aux acc  ( k +   1)
   in 
   let res = sign *~ aux d (i + 1) in 
   let or_res = Nativeint.logor res 0n in 
   (if base = 10n && res != or_res then 
-    failwith "int_of_string");
+    caml_failwith "int_of_string");
   or_res
 
 [%%bb.unsafe{|

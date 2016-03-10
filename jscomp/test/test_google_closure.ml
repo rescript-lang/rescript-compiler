@@ -15,3 +15,6 @@ let a, b , c =
       arr.(i)<- (f3 2);
     done;
     arr))
+
+
+let () = Js.log (a,b,c)
