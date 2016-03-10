@@ -1,12 +1,12 @@
 
 
 
-let x : string = [%bb.unsafe{|"\x01\x02\x03"|}]
+let x : string = [%js.raw{|"\x01\x02\x03"|}]
 
-let max : float -> float -> float = [%bb.unsafe{|Math.max|}[@arity 2] (* TODO *) ]  
+let max : float -> float -> float = [%js.raw{|Math.max|}[@arity 2] (* TODO *) ]  
 
-(* let max2 : float -> float -> float = [%bb.unsafe {Math.max} ]   *)
-[%%bb.unsafe {|
+(* let max2 : float -> float -> float = [%js.raw {Math.max} ]   *)
+[%%js.raw {|
 
 function $$test(x,y){
   return x + y;
