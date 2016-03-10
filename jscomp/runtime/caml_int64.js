@@ -25,13 +25,6 @@ var zero = /* record */[
   0
 ];
 
-function not(param) {
-  return /* record */[
-          param[0] ^ -1,
-          param[1] ^ -1
-        ];
-}
-
 function of_int32(lo) {
   if (lo < 0) {
     return /* record */[
@@ -52,21 +45,19 @@ function add(param, param$1) {
   var other_low_ = param$1[0];
   var this_high_ = param[1];
   var this_low_ = param[0];
-  var a48 = (this_high_ >>> 16);
-  var a32 = this_high_ & 65535;
-  var a16 = (this_low_ >>> 16);
-  var a00 = this_low_ & 65535;
-  var b48 = (other_high_ >>> 16);
-  var b32 = other_high_ & 65535;
-  var b16 = (other_low_ >>> 16);
-  var b00 = other_low_ & 65535;
-  var c00 = a00 + b00;
-  var c16 = (c00 >>> 16) + a16 + b16;
-  var c32 = (c16 >>> 16) + a32 + b32;
-  var c48 = (c32 >>> 16) + a48 + b48;
+  var low = this_low_ + other_low_ & 4294967295;
+  var overflow = this_low_ < 0 ? +(other_low_ < 0 || low >= 0) : +(other_low_ < 0 && low >= 0);
+  var high = overflow ? 1 + (this_high_ + other_high_) & 4294967295 : this_high_ + other_high_ & 4294967295;
   return /* record */[
-          ((c16 & 65535) << 16) | c00 & 65535,
-          ((c48 & 65535) << 16) | c32 & 65535
+          low,
+          high
+        ];
+}
+
+function not(param) {
+  return /* record */[
+          param[0] ^ -1,
+          param[1] ^ -1
         ];
 }
 
