@@ -1,6 +1,6 @@
 # Interaction with Javascript/Typescript
 
-Note this section is still in design space, it's subject to change in
+Note this section is still in the design phase, it's subject to change in
 the future, we need further document how it works in general.
 
 ## Call OCaml functions from Javascript/Typescript
