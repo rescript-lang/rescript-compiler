@@ -51,7 +51,7 @@ ocaml/man
 *.bak
 .vscode
 *.jsx
-osc
+bsc
 jscomp/pre_load.js
 boot
 *.dump
