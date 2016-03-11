@@ -534,7 +534,7 @@ var max_float = Number.MAX_VALUE;
 
 var min_float = Number.MIN_VALUE;
 
-var epsilon_float = Number.EPSILON;
+var epsilon_float = 2.220446049250313e-16;
 
 function flush(prim) {
   return Caml_io.caml_ml_flush(prim);
