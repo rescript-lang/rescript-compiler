@@ -22,10 +22,11 @@
 
 module E = Js_exp_make 
 
+let empty_record_info = Lambda.Record [||] (* careful to share*)
 (* TODO: add label to the comment *)
 let make  mutable_flag (args : (string * J.expression) list) =
   E.make_block ~comment:"record" 
-    E.zero_int_literal Record (List.map snd args) mutable_flag
+    E.zero_int_literal empty_record_info (List.map snd args) mutable_flag
 
 
 let field e i = E.index e i 

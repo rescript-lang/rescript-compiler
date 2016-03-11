@@ -812,7 +812,7 @@ and
     begin match tag.expression_desc, tag_info with 
 
     | Number (Int { i = 0l ; _})  , 
-      (Tuple | Array | Variant _ | Record | NA 
+      (Tuple | Array | Variant _ | Record _ | NA | Module _
       |  Constructor ("Some" | "::")) 
       (* Hack to optimize option which is really pervasive in ocaml, 
          we need concrete benchmark to support this

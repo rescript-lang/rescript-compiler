@@ -1,11 +1,12 @@
 
 
-external u: int = "u" [@@js.global]
+external u: int = "u" [@@js.val]
 
-external vv : int = "vv" [@@js.global] [@@js.module "x"]
+external vv : int = "vv" [@@js.val] [@@js.module "x"]
 
-external vvv : int = "vv" [@@js.global] [@@js.module "x" "U"]
-external vvvv : int = "vvvv" [@@js.global] [@@js.module "x" "U"]
+external vvv : int = "vv" [@@js.val] [@@js.module "x" "U"]
+external vvvv : int = "vvvv" [@@js.val] [@@js.module "x" "U"]
+
 (* TODO: unify all [js.module] name, here ideally, 
    we should have only one [require("x")] here *)
 let h = u 

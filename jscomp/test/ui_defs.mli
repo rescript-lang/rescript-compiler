@@ -5,7 +5,7 @@
 https://github.com/jaked/ocamljs/issues/2
  *)
 
-(* external dom : widget = "x" [@@js.global ] *)
+(* external dom : widget = "x" [@@js.val ] *)
 
 class type dom = object 
 end
@@ -15,4 +15,4 @@ class type doc =
   object
     method getElementById : string -> html_element
   end
-external doc :  doc = "doc" [@@js.global]
+external doc :  doc = "doc" [@@js.val]

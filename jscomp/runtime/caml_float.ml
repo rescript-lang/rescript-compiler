@@ -60,7 +60,7 @@ let caml_classify_float x : fpclass  =
   else FP_infinite
 
 external nan : float = "NaN"
-[@@js.global ] 
+[@@js.val ] 
 
 let caml_modf_float (x : float) : float * float = 
   if is_finite x then 

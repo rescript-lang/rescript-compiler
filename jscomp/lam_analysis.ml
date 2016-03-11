@@ -312,8 +312,11 @@ and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) =
 
            } -> 
     n0 = n1 (* No attributes, should be class api, comparison by name is good *)
+  | Pfield (n0, _),  Pfield (n1, _) 
+    -> n0 = n1
   | _ , _ -> 
-    (* FIXME: relies on structure equality *) 
+    (* FIXME: relies on structure equality
+    *) 
     try p = p1 with _ -> false
 
 

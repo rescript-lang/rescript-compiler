@@ -4,7 +4,8 @@ set -e
 . ./env.sh
 
 ## Only make sense for dev 
-make js_map.ml js_fold.ml lam_map.ml lam_fold.ml >> build.compile
+make js_map.ml js_fold.ml  >> build.compile
+# lam_map.ml lam_fold.ml
 ## Disable it when make a release 
 
 ocamlbuild  -cflags $OCAMLBUILD_CFLAGS compiler.cmxa > build.compile

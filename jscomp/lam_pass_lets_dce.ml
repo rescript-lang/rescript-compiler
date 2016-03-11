@@ -20,7 +20,7 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
-  | Lprim(Pfield 0, [Lvar v]) when Ident.same v id ->
+  | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
     Lvar id
   | Lfunction(kind, params, body) as lam ->
     if Lambda.IdentSet.mem id (Lambda.free_variables lam)

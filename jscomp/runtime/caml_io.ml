@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 
 type 'a def
-external undef : 'a def = "undefined" [@@js.global]
+external undef : 'a def = "undefined" [@@js.val]
 
 let stdin = undef
 let stdout = undef 

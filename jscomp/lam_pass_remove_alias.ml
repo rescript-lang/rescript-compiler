@@ -46,7 +46,7 @@ let simplify_alias
             for the inner expression
         *)
       else v
-    | Lprim (Pfield i, [Lvar v]) -> 
+    | Lprim (Pfield (i,_), [Lvar v]) -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       Lam_util.get lam v  i meta.ident_tbl 
@@ -91,7 +91,7 @@ let simplify_alias
       {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
     *)      
-    | Lapply(Lprim(Pfield index , [Lprim (Pgetglobal ident, [])]) as l1,
+    | Lapply(Lprim(Pfield (index, _) , [Lprim (Pgetglobal ident, [])]) as l1,
                                                                      args, info) ->
       begin
         Lam_compile_env.find_and_add_if_not_exist (ident,index) meta.env

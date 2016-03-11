@@ -118,7 +118,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
          ); 
          (finish_loc := Some x.loc);
          match x.txt with  (* TODO: Check duplicate attributes *)
-         | "js.global"
+         | "js.val"
            (* can be generalized into 
               {[
                 [@@js.value]

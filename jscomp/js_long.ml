@@ -23,11 +23,11 @@ type int64_call = J.expression list -> J.expression
 
 let int64_call (fn : string) args  = 
   E.runtime_call Js_config.int64 fn args 
-
+let record_info = Lambda.Record [|"lo"; "hi"|]
 let make_const ~lo ~hi = 
    E.make_block 
      ~comment:"int64" (E.zero_int_literal) 
-     Record 
+     record_info
      [E.int lo ; E.int hi]
      (* If we use unsigned int for lo field, 
         then we can not use [E.int] which is 
@@ -40,7 +40,7 @@ let make_const ~lo ~hi =
 let make ~lo ~hi = 
    E.make_block 
      ~comment:"int64" (E.zero_int_literal) 
-     Record [ lo ;  hi]
+     record_info [ lo ;  hi]
      Immutable
 let get_lo x = E.index x 0l
 let get_hi x = E.index x 1l

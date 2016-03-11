@@ -7,13 +7,13 @@ class type doc =
   object
     method getElementById : string -> html_element
   end
-external doc :  doc = "doc" [@@js.global ]
+external doc :  doc = "doc" [@@js.val ]
 
 class type console = 
     object 
         method log : 'a -> unit
     end
-external console : console  = "console" [@@js.global ]
+external console : console  = "console" [@@js.val ]
 
 let v = console#log "hey";;
 let u = console
@@ -22,7 +22,7 @@ external log : 'a -> unit = "" [@@js.call "console.log"]
 let v = log 32
 type t 
 type element
-external document :  t = "document" [@@js.global ] [@@js.scope "window"]
+external document :  t = "document" [@@js.val ] [@@js.scope "window"]
 external getElementById : t -> string -> element = "getElementById" [@@js.send ]        
 
 

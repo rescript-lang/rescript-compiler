@@ -474,7 +474,7 @@ and
       compile_lambda  cxt  
         (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
     (* External function calll *)
-    | Lapply(Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
+    | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
 
       get_exp_with_args cxt lam  args_lambda id n  env
 
@@ -613,7 +613,7 @@ and
     | Lconst c -> 
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
-    | Lprim(Pfield n, [ Lprim(Pgetglobal id,[])]) -> (* should be before Pgetglobal *)
+    | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
     | Lprim(Praise _raise_kind, [ e ]) -> 

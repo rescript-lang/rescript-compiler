@@ -39,7 +39,7 @@ let query_lambda id env =
         (* TODO: could be optimized *)
         Lambda.Lprim (Pmakeblock(0,NA, Immutable) , 
                       (List.mapi (fun i _ -> 
-                           Lambda.Lprim(Pfield i, [Lprim(Pgetglobal id,[])])))
+                           Lambda.Lprim(Pfield (i, Lambda.Fld_na), [Lprim(Pgetglobal id,[])])))
                         sigs))
 
 
