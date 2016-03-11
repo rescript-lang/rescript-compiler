@@ -444,7 +444,10 @@ function print_float(f) {
   return output_string(stdout, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
 }
 
-var print_endline = console.log;
+function print_endline(param) {
+  console.log(param);
+  return 0;
+}
 
 function print_newline() {
   Caml_io.caml_ml_output_char(stdout, /* "\n" */10);
@@ -471,7 +474,10 @@ function prerr_float(f) {
   return output_string(stderr, valid_float_lexem(Caml_format.caml_format_float("%.12g", f)));
 }
 
-var prerr_endline = console.error;
+function prerr_endline(param) {
+  console.error(param);
+  return 0;
+}
 
 function prerr_newline() {
   Caml_io.caml_ml_output_char(stderr, /* "\n" */10);
