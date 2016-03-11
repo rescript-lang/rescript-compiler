@@ -97,7 +97,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
       ~exp:(E.js_global_dot  "Number" "MIN_VALUE")
   | Single(_, ({name="epsilon_float";_} as id) ,_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(E.js_global_dot  "Number" "EPSILON")
+      ~exp:(E.float "2.220446049250313e-16")
   | Single(_, ({name="cat";_} as id) ,_ ),  "bytes.ml" ->
     Js_output.of_stmt @@ S.alias_variable id
       ~exp:(let a = Ext_ident.create "a" in 

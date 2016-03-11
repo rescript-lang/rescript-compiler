@@ -90,6 +90,8 @@ demo_page.cmo :
 demo_page.cmx :
 empty_obj.cmo :
 empty_obj.cmx :
+epsilon_test.cmo : mt.cmi
+epsilon_test.cmx : mt.cmx
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi
 equal_exception_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx
 equal_test.cmo :
@@ -542,6 +544,8 @@ demo_page.cmo :
 demo_page.cmj :
 empty_obj.cmo :
 empty_obj.cmj :
+epsilon_test.cmo : mt.cmi
+epsilon_test.cmj : mt.cmj
 equal_exception_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/bytes.cmi
 equal_exception_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj
 equal_test.cmo :
