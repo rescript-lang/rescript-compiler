@@ -51,6 +51,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
 It is in an *very early* stage and not production ready for your own projects *yet*.
 
+## [Documentation](https://github.com/bloomberg/bucklescript/wiki)
 
 ## Build
 
@@ -253,8 +254,7 @@ Some known issues are listed as below:
 
 1. Language features:
 
-   Int32 operations, currently, Int use Float operations, this should
-   be fixed in the near future.
+   int32 mul (we will have a polyfill for it)
    
 2. Standard libraries distributed with OCaml:
 
@@ -265,7 +265,7 @@ Some known issues are listed as below:
    are then inlined so there will no be performance cost or code size
    penalty.
 
-   Bigarray, Unix, Num, Int64
+   Bigarray, Unix, Num
 
 3. String is immutable, user is expected to compile with flags `-safe-string` for all modules:
 
