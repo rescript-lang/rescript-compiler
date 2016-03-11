@@ -260,7 +260,7 @@ let kind_of_lambda_block kind (xs : Lambda.lambda list) : Lam_stats.kind =
 let get lam v i tbl : Lambda.lambda =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lprim (Pfield i, [Lprim(Pgetglobal g, [])])
+    Lprim (Pfield (i, Lambda.Fld_na), [Lprim(Pgetglobal g, [])])
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 

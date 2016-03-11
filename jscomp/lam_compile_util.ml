@@ -36,8 +36,12 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
   | Constructor n -> Some n 
   | Tuple -> Some "tuple"
   | Variant x -> Some ("`" ^  x)
-  | Record -> Some "record"
+  | Record _ -> Some "record"
+
   | Array -> Some "array"
+  | Module _ ->  
+    None (* Turn it on next time to save some noise diff*)
+    (* Some "module"  *)
   | NA -> None 
 let comment_of_pointer_info (x :  Lambda.pointer_info)= 
   match x with 

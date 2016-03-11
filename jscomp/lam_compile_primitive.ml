@@ -41,7 +41,7 @@ let translate
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
-  | Pfield i -> 
+  | Pfield (i, _fld_info (* XXFLD*)) -> 
     begin match args with 
       | [ e ]  -> Js_of_lam_block.field e (Int32.of_int i) (* Invariant depends on runtime *)
       | _ -> assert false
@@ -498,7 +498,7 @@ let translate
       end
 
 
-  | Pfloatfield i -> (** RUNTIME *)
+  | Pfloatfield (i,_ (*XXFLD*)) -> (** RUNTIME *)
       begin 
         match args with 
         | [e] -> Js_of_lam_float_record.get_double_feild e (Int32.of_int i) 

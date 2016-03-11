@@ -166,6 +166,10 @@ let compile  ~filename non_export env _sigs lam   =
       []    
     else  Translmod.get_export_identifiers()  
   in
+  let () = 
+    export_idents |> List.iter 
+      (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
+  in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
   let _d  = Lam_util.dump env filename in
@@ -203,12 +207,14 @@ let compile  ~filename non_export env _sigs lam   =
     |>  Lam_pass_remove_alias.simplify_alias meta 
     |> _d 
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
+    |> _d
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
+    |> _d
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     |> Lam_pass_exits.simplify_exits
-
+    |> _d
 
 
   in
@@ -276,7 +282,10 @@ let compile  ~filename non_export env _sigs lam   =
                 meta.exports lambda_exports 
                 ([],[], Ident_set.empty, Ident_map.empty)
           in
-
+          let () = 
+            new_exports |> List.iter 
+              (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
+          in
           let meta = { meta with 
                        export_idents = new_export_set;
                        exports = new_exports

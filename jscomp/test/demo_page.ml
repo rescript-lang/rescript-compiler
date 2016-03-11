@@ -24,7 +24,7 @@ let f = test_curry 32
 (** Create a typed binding for react *)
 type t
 type element
-external document : unit -> t = "" [@@js.global "document"] [@@js.scope "window"]
+external document : unit -> t = "" [@@js.val "document"] [@@js.scope "window"]
 external getElementById : t -> string -> element = "" [@@js.send "getElementById"]
 
 (** Phantom types *)

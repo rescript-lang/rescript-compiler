@@ -218,7 +218,8 @@ type tag_info = Lambda.tag_info =
   | Tuple
   | Array
   | Variant of string 
-  | Record 
+  | Record of string array
+  | Module of string list option
   | NA
 
 type length_object = 

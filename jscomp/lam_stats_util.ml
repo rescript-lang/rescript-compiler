@@ -83,7 +83,7 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
-  | Lprim (Pfield n, [Lprim(Pgetglobal id,[])]) ->
+  | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )

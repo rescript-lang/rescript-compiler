@@ -241,7 +241,7 @@ let to_float ({lo; hi } : t) : float =
     else  lo +  0x1_0000_0000n in
   Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
 
-external log2 : float = "Math.LN2" [@@ js.global ]  
+external log2 : float = "Math.LN2" [@@ js.val ]  
 
 external is_nan : float -> bool = "isNaN" [@@js.call]
 external is_finite : float -> bool = "isFinite" [@@js.call]
