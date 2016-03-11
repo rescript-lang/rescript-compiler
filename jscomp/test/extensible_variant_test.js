@@ -18,7 +18,7 @@ var Int = {
   tag: 248
 };
 
-var N = [Int];
+var N = /* module */[Int];
 
 var Int$1 = {
   0: "Extensible_variant_test.Int",

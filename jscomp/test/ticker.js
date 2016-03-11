@@ -72,7 +72,7 @@ function string_of_float_option(param) {
   }
 }
 
-var Util = [
+var Util = /* module */[
   split,
   string_of_float_option
 ];

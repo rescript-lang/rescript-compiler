@@ -474,7 +474,7 @@ function Make(H) {
             lens[len - 1]
           ];
   };
-  return [
+  return /* module */[
           create,
           clear,
           merge,

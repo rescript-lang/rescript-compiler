@@ -9,14 +9,14 @@ var v = [32];
 
 v[0] = 0;
 
-var N = [
+var N = /* module */[
   a,
   v
 ];
 
 var v$1 = [32];
 
-var NN = [
+var NN = /* module */[
   3,
   v$1
 ];

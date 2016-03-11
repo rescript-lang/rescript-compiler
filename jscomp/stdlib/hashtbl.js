@@ -667,7 +667,7 @@ function MakeSeeded(H) {
       }
     };
   };
-  return [
+  return /* module */[
           create,
           clear,
           reset,
@@ -888,7 +888,7 @@ function Make(H) {
   var create$1 = function (sz) {
     return create(/* Some */[/* false */0], sz);
   };
-  return [
+  return /* module */[
           create$1,
           clear,
           reset,

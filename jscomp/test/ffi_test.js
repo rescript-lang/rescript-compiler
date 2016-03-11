@@ -10,9 +10,9 @@ var match_000 = true;
 
 var match_001 = false;
 
-var Textarea = [];
+var Textarea = /* module */[];
 
-var Int32Array = [];
+var Int32Array = /* module */[];
 
 function v() {
   var u = new TextArea();

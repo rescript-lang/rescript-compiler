@@ -22,7 +22,7 @@ catch (exn){
   f = 3;
 }
 
-var N = [f];
+var N = /* module */[f];
 
 exports.N = N;
 /* f Not a pure module */

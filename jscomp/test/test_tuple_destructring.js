@@ -4,7 +4,7 @@
 
 var b = 3;
 
-var N = [b];
+var N = /* module */[b];
 
 var h = 4;
 

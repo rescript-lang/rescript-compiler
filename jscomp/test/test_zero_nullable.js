@@ -155,7 +155,7 @@ function f10$1(x) {
 
 var f11$1 = /* false */0;
 
-var Undef = [
+var Undef = /* module */[
   f1$1,
   f2$1,
   f5$1,
