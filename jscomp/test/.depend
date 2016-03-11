@@ -164,6 +164,8 @@ int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/int32.cmx \
     ../stdlib/char.cmx
+io_test.cmo : ../lib/js.cmi
+io_test.cmx : ../lib/js.cmx
 js_bool_test.cmo : mt.cmi ../lib/js.cmi
 js_bool_test.cmx : mt.cmx ../lib/js.cmx
 js_date_test.cmo : mt.cmi ../lib/js_date.cmo
@@ -618,6 +620,8 @@ int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
     ../stdlib/char.cmj
+io_test.cmo : ../lib/js.cmi
+io_test.cmj : ../lib/js.cmj
 js_bool_test.cmo : mt.cmi ../lib/js.cmi
 js_bool_test.cmj : mt.cmj ../lib/js.cmj
 js_date_test.cmo : mt.cmi ../lib/js_date.cmo

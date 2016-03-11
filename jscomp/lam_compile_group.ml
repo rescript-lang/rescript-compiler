@@ -75,10 +75,18 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
   *)
   | Single(_, ({name="print_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(E.js_global "console.log")
+      ~exp:(let param = Ext_ident.create "param" in 
+            E.fun_ [param] [S.return 
+                              (E.seq (E.call ~info:{arity=Full} 
+                                        (E.js_global "console.log") [E.var param]) 
+                                      E.zero_int_literal )] )
   | Single(_, ({name="prerr_endline";_} as id),_ ),  "pervasives.ml" ->
     Js_output.of_stmt @@ S.alias_variable id 
-      ~exp:(E.js_global "console.error")
+      ~exp:(let param = Ext_ident.create "param" in 
+            E.fun_ [param] [S.return 
+                              (E.seq (E.call ~info:{arity=Full} 
+                                        (E.js_global "console.error") [E.var param]) 
+                                 E.zero_int_literal )] )
 
 
   | Single(_, ({name="string_of_int";_} as id),_ ),  "pervasives.ml" ->
