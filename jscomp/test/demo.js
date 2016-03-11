@@ -97,7 +97,7 @@ function ui_layout(compile, lookup, appContext) {
       });
   Runtime.setInterval(function () {
         return grid.dataSource = Array.prototype.map.call(data, function (param) {
-                    var price = param[1];
+                    var price = param[/* price */1];
                     var bid = price + 20 * Math.random();
                     var ask = price + 20 * Math.random();
                     var result = Caml_curry.app1(computeFunction[0], {
@@ -110,7 +110,7 @@ function ui_layout(compile, lookup, appContext) {
                     return /* array */[
                             {
                               "label": {
-                                "text": param[0]
+                                "text": param[/* ticker */0]
                               }
                             },
                             {

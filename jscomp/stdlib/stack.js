@@ -21,19 +21,19 @@ function clear(s) {
 }
 
 function copy(s) {
-  return /* record */[s[0]];
+  return /* record */[s[/* c */0]];
 }
 
 function push(x, s) {
   s[0] = /* :: */[
     x,
-    s[0]
+    s[/* c */0]
   ];
   return /* () */0;
 }
 
 function pop(s) {
-  var match = s[0];
+  var match = s[/* c */0];
   if (match) {
     s[0] = match[1];
     return match[0];
@@ -44,7 +44,7 @@ function pop(s) {
 }
 
 function top(s) {
-  var match = s[0];
+  var match = s[/* c */0];
   if (match) {
     return match[0];
   }
@@ -54,15 +54,15 @@ function top(s) {
 }
 
 function is_empty(s) {
-  return +(s[0] === /* [] */0);
+  return +(s[/* c */0] === /* [] */0);
 }
 
 function length(s) {
-  return List.length(s[0]);
+  return List.length(s[/* c */0]);
 }
 
 function iter(f, s) {
-  return List.iter(f, s[0]);
+  return List.iter(f, s[/* c */0]);
 }
 
 exports.Empty    = Empty;

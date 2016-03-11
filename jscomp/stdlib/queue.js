@@ -26,9 +26,9 @@ function clear(q) {
 }
 
 function add(x, q) {
-  if (q[0]) {
-    var tail = q[1];
-    var head = tail[1];
+  if (q[/* length */0]) {
+    var tail = q[/* tail */1];
+    var head = tail[/* next */1];
     var cell = /* record */[
       x,
       head
@@ -53,8 +53,8 @@ function add(x, q) {
 }
 
 function peek(q) {
-  if (q[0]) {
-    return q[1][1][0];
+  if (q[/* length */0]) {
+    return q[/* tail */1][/* next */1][/* content */0];
   }
   else {
     throw Empty;
@@ -62,29 +62,29 @@ function peek(q) {
 }
 
 function take(q) {
-  if (!q[0]) {
+  if (!q[/* length */0]) {
     throw Empty;
   }
   -- q[0];
-  var tail = q[1];
-  var head = tail[1];
+  var tail = q[/* tail */1];
+  var head = tail[/* next */1];
   if (head === tail) {
     q[1] = /* None */0;
   }
   else {
-    tail[1] = head[1];
+    tail[1] = head[/* next */1];
   }
-  return head[0];
+  return head[/* content */0];
 }
 
 function copy(q) {
-  if (q[0]) {
-    var tail = q[1];
+  if (q[/* length */0]) {
+    var tail = q[/* tail */1];
     var tail$prime = {
       
     };
     Caml_obj.caml_update_dummy(tail$prime, /* record */[
-          tail[0],
+          tail[/* content */0],
           tail$prime
         ]);
     var copy$1 = function (_prev, _cell) {
@@ -93,11 +93,11 @@ function copy(q) {
         var prev = _prev;
         if (cell !== tail) {
           var res = /* record */[
-            cell[0],
+            cell[/* content */0],
             tail$prime
           ];
           prev[1] = res;
-          _cell = cell[1];
+          _cell = cell[/* next */1];
           _prev = res;
           continue ;
           
@@ -107,9 +107,9 @@ function copy(q) {
         }
       };
     };
-    copy$1(tail$prime, tail[1]);
+    copy$1(tail$prime, tail[/* next */1]);
     return /* record */[
-            q[0],
+            q[/* length */0],
             tail$prime
           ];
   }
@@ -122,22 +122,22 @@ function copy(q) {
 }
 
 function is_empty(q) {
-  return +(q[0] === 0);
+  return +(q[/* length */0] === 0);
 }
 
 function length(q) {
-  return q[0];
+  return q[/* length */0];
 }
 
 function iter(f, q) {
-  if (q[0] > 0) {
-    var tail = q[1];
-    var _cell = tail[1];
+  if (q[/* length */0] > 0) {
+    var tail = q[/* tail */1];
+    var _cell = tail[/* next */1];
     while(true) {
       var cell = _cell;
-      Caml_curry.app1(f, cell[0]);
+      Caml_curry.app1(f, cell[/* content */0]);
       if (cell !== tail) {
-        _cell = cell[1];
+        _cell = cell[/* next */1];
         continue ;
         
       }
@@ -152,19 +152,19 @@ function iter(f, q) {
 }
 
 function fold(f, accu, q) {
-  if (q[0]) {
-    var tail = q[1];
+  if (q[/* length */0]) {
+    var tail = q[/* tail */1];
     var _accu = accu;
-    var _cell = tail[1];
+    var _cell = tail[/* next */1];
     while(true) {
       var cell = _cell;
       var accu$1 = _accu;
-      var accu$2 = Caml_curry.app2(f, accu$1, cell[0]);
+      var accu$2 = Caml_curry.app2(f, accu$1, cell[/* content */0]);
       if (cell === tail) {
         return accu$2;
       }
       else {
-        _cell = cell[1];
+        _cell = cell[/* next */1];
         _accu = accu$2;
         continue ;
         
@@ -177,14 +177,14 @@ function fold(f, accu, q) {
 }
 
 function transfer(q1, q2) {
-  var length1 = q1[0];
+  var length1 = q1[/* length */0];
   if (length1 > 0) {
-    var tail1 = q1[1];
+    var tail1 = q1[/* tail */1];
     clear(q1);
-    if (q2[0] > 0) {
-      var tail2 = q2[1];
-      var head1 = tail1[1];
-      var head2 = tail2[1];
+    if (q2[/* length */0] > 0) {
+      var tail2 = q2[/* tail */1];
+      var head1 = tail1[/* next */1];
+      var head2 = tail2[/* next */1];
       tail1[1] = head2;
       tail2[1] = head1;
     }

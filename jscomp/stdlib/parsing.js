@@ -43,26 +43,26 @@ var env = /* record */[
 ];
 
 function grow_stacks() {
-  var oldsize = env[4];
+  var oldsize = env[/* stacksize */4];
   var newsize = oldsize * 2;
   var new_s = Caml_array.caml_make_vect(newsize, 0);
   var new_v = Caml_array.caml_make_vect(newsize, /* () */0);
   var new_start = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
   var new_end = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
-  $$Array.blit(env[0], 0, new_s, 0, oldsize);
+  $$Array.blit(env[/* s_stack */0], 0, new_s, 0, oldsize);
   env[0] = new_s;
-  $$Array.blit(env[1], 0, new_v, 0, oldsize);
+  $$Array.blit(env[/* v_stack */1], 0, new_v, 0, oldsize);
   env[1] = new_v;
-  $$Array.blit(env[2], 0, new_start, 0, oldsize);
+  $$Array.blit(env[/* symb_start_stack */2], 0, new_start, 0, oldsize);
   env[2] = new_start;
-  $$Array.blit(env[3], 0, new_end, 0, oldsize);
+  $$Array.blit(env[/* symb_end_stack */3], 0, new_end, 0, oldsize);
   env[3] = new_end;
   env[4] = newsize;
   return /* () */0;
 }
 
 function clear_parser() {
-  $$Array.fill(env[1], 0, env[4], /* () */0);
+  $$Array.fill(env[/* v_stack */1], 0, env[/* stacksize */4], /* () */0);
   env[7] = /* () */0;
   return /* () */0;
 }
@@ -72,16 +72,16 @@ var current_lookahead_fun = [function () {
   }];
 
 function yyparse(tables, start, lexer, lexbuf) {
-  var init_asp = env[10];
-  var init_sp = env[13];
-  var init_stackbase = env[5];
-  var init_state = env[14];
-  var init_curr_char = env[6];
-  var init_lval = env[7];
-  var init_errflag = env[15];
-  env[5] = env[13] + 1;
+  var init_asp = env[/* asp */10];
+  var init_sp = env[/* sp */13];
+  var init_stackbase = env[/* stackbase */5];
+  var init_state = env[/* state */14];
+  var init_curr_char = env[/* curr_char */6];
+  var init_lval = env[/* lval */7];
+  var init_errflag = env[/* errflag */15];
+  env[5] = env[/* sp */13] + 1;
   env[6] = start;
-  env[9] = lexbuf[11];
+  env[9] = lexbuf[/* lex_curr_p */11];
   try {
     var _cmd = /* Start */0;
     var _arg = /* () */0;
@@ -92,8 +92,8 @@ function yyparse(tables, start, lexer, lexbuf) {
       switch (match) {
         case 0 : 
             var t = Caml_curry.app1(lexer, lexbuf);
-            env[8] = lexbuf[10];
-            env[9] = lexbuf[11];
+            env[8] = lexbuf[/* lex_start_p */10];
+            env[9] = lexbuf[/* lex_curr_p */11];
             _arg = t;
             _cmd = /* Token_read */1;
             continue ;
@@ -114,7 +114,7 @@ function yyparse(tables, start, lexer, lexbuf) {
             try {
               match$1 = /* tuple */[
                 /* Semantic_action_computed */4,
-                Caml_curry.app1(tables[0][env[12]], env)
+                Caml_curry.app1(tables[/* actions */0][env[/* rule_number */12]], env)
               ];
             }
             catch (exn){
@@ -132,7 +132,7 @@ function yyparse(tables, start, lexer, lexbuf) {
             _cmd = match$1[0];
             continue ;
             case 5 : 
-            Caml_curry.app1(tables[13], "syntax error");
+            Caml_curry.app1(tables[/* error_function */13], "syntax error");
             _arg = /* () */0;
             _cmd = /* Error_detected */5;
             continue ;
@@ -141,7 +141,7 @@ function yyparse(tables, start, lexer, lexbuf) {
     };
   }
   catch (exn$1){
-    var curr_char = env[6];
+    var curr_char = env[/* curr_char */6];
     env[10] = init_asp;
     env[13] = init_sp;
     env[5] = init_stackbase;
@@ -155,10 +155,10 @@ function yyparse(tables, start, lexer, lexbuf) {
     else {
       current_lookahead_fun[0] = function (tok) {
         if (tok.length) {
-          return +(tables[2][tok.tag | 0] === curr_char);
+          return +(tables[/* transl_block */2][tok.tag | 0] === curr_char);
         }
         else {
-          return +(tables[1][tok] === curr_char);
+          return +(tables[/* transl_const */1][tok] === curr_char);
         }
       };
       throw exn$1;
@@ -167,19 +167,19 @@ function yyparse(tables, start, lexer, lexbuf) {
 }
 
 function peek_val(env, n) {
-  return env[1][env[10] - n];
+  return env[/* v_stack */1][env[/* asp */10] - n];
 }
 
 function symbol_start_pos() {
-  var _i = env[11];
+  var _i = env[/* rule_len */11];
   while(true) {
     var i = _i;
     if (i <= 0) {
-      return env[3][env[10]];
+      return env[/* symb_end_stack */3][env[/* asp */10]];
     }
     else {
-      var st = env[2][env[10] - i + 1];
-      var en = env[3][env[10] - i + 1];
+      var st = env[/* symb_start_stack */2][env[/* asp */10] - i + 1];
+      var en = env[/* symb_end_stack */3][env[/* asp */10] - i + 1];
       if (Caml_obj.caml_notequal(st, en)) {
         return st;
       }
@@ -193,31 +193,31 @@ function symbol_start_pos() {
 }
 
 function symbol_end_pos() {
-  return env[3][env[10]];
+  return env[/* symb_end_stack */3][env[/* asp */10]];
 }
 
 function rhs_start_pos(n) {
-  return env[2][env[10] - (env[11] - n)];
+  return env[/* symb_start_stack */2][env[/* asp */10] - (env[/* rule_len */11] - n)];
 }
 
 function rhs_end_pos(n) {
-  return env[3][env[10] - (env[11] - n)];
+  return env[/* symb_end_stack */3][env[/* asp */10] - (env[/* rule_len */11] - n)];
 }
 
 function symbol_start() {
-  return symbol_start_pos(/* () */0)[3];
+  return symbol_start_pos(/* () */0)[/* pos_cnum */3];
 }
 
 function symbol_end() {
-  return symbol_end_pos(/* () */0)[3];
+  return symbol_end_pos(/* () */0)[/* pos_cnum */3];
 }
 
 function rhs_start(n) {
-  return rhs_start_pos(n)[3];
+  return rhs_start_pos(n)[/* pos_cnum */3];
 }
 
 function rhs_end(n) {
-  return rhs_end_pos(n)[3];
+  return rhs_end_pos(n)[/* pos_cnum */3];
 }
 
 function is_current_lookahead(tok) {

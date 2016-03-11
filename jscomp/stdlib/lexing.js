@@ -12,13 +12,13 @@ var Caml_string             = require("../runtime/caml_string");
 function engine(tbl, state, buf) {
   var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[10] = buf[11];
-    var init = buf[11];
+    buf[10] = buf[/* lex_curr_p */11];
+    var init = buf[/* lex_curr_p */11];
     buf[11] = /* record */[
-      init[0],
-      init[1],
-      init[2],
-      buf[3] + buf[5]
+      init[/* pos_fname */0],
+      init[/* pos_lnum */1],
+      init[/* pos_bol */2],
+      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5]
     ];
   }
   return result;
@@ -27,13 +27,13 @@ function engine(tbl, state, buf) {
 function new_engine(tbl, state, buf) {
   var result = Caml_lexer.caml_new_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[10] = buf[11];
-    var init = buf[11];
+    buf[10] = buf[/* lex_curr_p */11];
+    var init = buf[/* lex_curr_p */11];
     buf[11] = /* record */[
-      init[0],
-      init[1],
-      init[2],
-      buf[3] + buf[5]
+      init[/* pos_fname */0],
+      init[/* pos_lnum */1],
+      init[/* pos_bol */2],
+      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5]
     ];
   }
   return result;
@@ -54,29 +54,29 @@ function from_function(f) {
             var lexbuf = param;
             var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
             var n = read > 0 ? read : (lexbuf[8] = /* true */1, 0);
-            if (lexbuf[2] + n > lexbuf[1].length) {
-              if (lexbuf[2] - lexbuf[4] + n <= lexbuf[1].length) {
-                Bytes.blit(lexbuf[1], lexbuf[4], lexbuf[1], 0, lexbuf[2] - lexbuf[4]);
+            if (lexbuf[/* lex_buffer_len */2] + n > lexbuf[/* lex_buffer */1].length) {
+              if (lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n <= lexbuf[/* lex_buffer */1].length) {
+                Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], lexbuf[/* lex_buffer */1], 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4]);
               }
               else {
-                var newlen = Pervasives.min(2 * lexbuf[1].length, Sys.max_string_length);
-                if (lexbuf[2] - lexbuf[4] + n > newlen) {
+                var newlen = Pervasives.min(2 * lexbuf[/* lex_buffer */1].length, Sys.max_string_length);
+                if (lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n > newlen) {
                   throw [
                         Caml_builtin_exceptions.failure,
                         "Lexing.lex_refill: cannot grow buffer"
                       ];
                 }
                 var newbuf = Caml_string.caml_create_string(newlen);
-                Bytes.blit(lexbuf[1], lexbuf[4], newbuf, 0, lexbuf[2] - lexbuf[4]);
+                Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], newbuf, 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4]);
                 lexbuf[1] = newbuf;
               }
-              var s = lexbuf[4];
+              var s = lexbuf[/* lex_start_pos */4];
               lexbuf[3] += s;
               lexbuf[5] -= s;
               lexbuf[4] = 0;
               lexbuf[6] -= s;
               lexbuf[2] -= s;
-              var t = lexbuf[9];
+              var t = lexbuf[/* lex_mem */9];
               for(var i = 0 ,i_finish = t.length - 1; i<= i_finish; ++i){
                 var v = t[i];
                 if (v >= 0) {
@@ -85,7 +85,7 @@ function from_function(f) {
                 
               }
             }
-            Bytes.blit(aux_buffer, 0, lexbuf[1], lexbuf[2], n);
+            Bytes.blit(aux_buffer, 0, lexbuf[/* lex_buffer */1], lexbuf[/* lex_buffer_len */2], n);
             lexbuf[2] += n;
             return /* () */0;
           },
@@ -130,19 +130,19 @@ function from_string(s) {
 }
 
 function lexeme(lexbuf) {
-  var len = lexbuf[5] - lexbuf[4];
-  return Bytes.sub_string(lexbuf[1], lexbuf[4], len);
+  var len = lexbuf[/* lex_curr_pos */5] - lexbuf[/* lex_start_pos */4];
+  return Bytes.sub_string(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], len);
 }
 
 function sub_lexeme(lexbuf, i1, i2) {
   var len = i2 - i1;
-  return Bytes.sub_string(lexbuf[1], i1, len);
+  return Bytes.sub_string(lexbuf[/* lex_buffer */1], i1, len);
 }
 
 function sub_lexeme_opt(lexbuf, i1, i2) {
   if (i1 >= 0) {
     var len = i2 - i1;
-    return /* Some */[Bytes.sub_string(lexbuf[1], i1, len)];
+    return /* Some */[Bytes.sub_string(lexbuf[/* lex_buffer */1], i1, len)];
   }
   else {
     return /* None */0;
@@ -150,12 +150,12 @@ function sub_lexeme_opt(lexbuf, i1, i2) {
 }
 
 function sub_lexeme_char(lexbuf, i) {
-  return lexbuf[1][i];
+  return lexbuf[/* lex_buffer */1][i];
 }
 
 function sub_lexeme_char_opt(lexbuf, i) {
   if (i >= 0) {
-    return /* Some */[lexbuf[1][i]];
+    return /* Some */[lexbuf[/* lex_buffer */1][i]];
   }
   else {
     return /* None */0;
@@ -163,32 +163,32 @@ function sub_lexeme_char_opt(lexbuf, i) {
 }
 
 function lexeme_char(lexbuf, i) {
-  return lexbuf[1][lexbuf[4] + i];
+  return lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4] + i];
 }
 
 function lexeme_start(lexbuf) {
-  return lexbuf[10][3];
+  return lexbuf[/* lex_start_p */10][/* pos_cnum */3];
 }
 
 function lexeme_end(lexbuf) {
-  return lexbuf[11][3];
+  return lexbuf[/* lex_curr_p */11][/* pos_cnum */3];
 }
 
 function lexeme_start_p(lexbuf) {
-  return lexbuf[10];
+  return lexbuf[/* lex_start_p */10];
 }
 
 function lexeme_end_p(lexbuf) {
-  return lexbuf[11];
+  return lexbuf[/* lex_curr_p */11];
 }
 
 function new_line(lexbuf) {
-  var lcp = lexbuf[11];
+  var lcp = lexbuf[/* lex_curr_p */11];
   lexbuf[11] = /* record */[
-    lcp[0],
-    lcp[1] + 1,
-    lcp[3],
-    lcp[3]
+    lcp[/* pos_fname */0],
+    lcp[/* pos_lnum */1] + 1,
+    lcp[/* pos_cnum */3],
+    lcp[/* pos_cnum */3]
   ];
   return /* () */0;
 }
@@ -196,11 +196,11 @@ function new_line(lexbuf) {
 function flush_input(lb) {
   lb[5] = 0;
   lb[3] = 0;
-  var init = lb[11];
+  var init = lb[/* lex_curr_p */11];
   lb[11] = /* record */[
-    init[0],
-    init[1],
-    init[2],
+    init[/* pos_fname */0],
+    init[/* pos_lnum */1],
+    init[/* pos_bol */2],
     0
   ];
   lb[2] = 0;

@@ -624,7 +624,7 @@ function getaddrinfo(node, service, opts) {
                 return /* :: */[
                         /* tuple */[
                           ty,
-                          Caml_unix.unix_getservbyname(service$1, kind)[2]
+                          Caml_unix.unix_getservbyname(service$1, kind)[/* s_port */2]
                         ],
                         /* [] */0
                       ];
@@ -696,9 +696,9 @@ function getaddrinfo(node, service, opts) {
               addresses = List.map(function (a) {
                     return /* tuple */[
                             a,
-                            he[0]
+                            he[/* h_name */0]
                           ];
-                  }, $$Array.to_list(he[3]));
+                  }, $$Array.to_list(he[/* h_addr_list */3]));
             }
             catch (exn$2){
               if (exn$2 === Caml_builtin_exceptions.not_found) {
@@ -755,7 +755,7 @@ function getnameinfo(addr, opts) {
           if (List.mem(/* NI_NUMERICHOST */1, opts$1)) {
             throw Caml_builtin_exceptions.not_found;
           }
-          hostname = Caml_unix.unix_gethostbyaddr(a)[0];
+          hostname = Caml_unix.unix_gethostbyaddr(a)[/* h_name */0];
         }
         catch (exn$1){
           if (exn$1 === Caml_builtin_exceptions.not_found) {
@@ -774,7 +774,7 @@ function getnameinfo(addr, opts) {
             throw Caml_builtin_exceptions.not_found;
           }
           var kind = List.mem(/* NI_DGRAM */4, opts$1) ? "udp" : "tcp";
-          service = Caml_unix.unix_getservbyport(p, kind)[0];
+          service = Caml_unix.unix_getservbyport(p, kind)[/* s_name */0];
         }
         catch (exn$2){
           if (exn$2 === Caml_builtin_exceptions.not_found) {

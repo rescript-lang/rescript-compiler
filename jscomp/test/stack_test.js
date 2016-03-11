@@ -7,7 +7,7 @@ var List  = require("../stdlib/list");
 
 function to_list(v) {
   var acc = /* [] */0;
-  while(v[0] !== /* [] */0) {
+  while(v[/* c */0] !== /* [] */0) {
     acc = /* :: */[
       Stack.pop(v),
       acc

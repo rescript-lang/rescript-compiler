@@ -7,7 +7,7 @@ var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 
 function to_array(q) {
-  var v = Caml_array.caml_make_vect(q[0], 0);
+  var v = Caml_array.caml_make_vect(q[/* length */0], 0);
   Queue.fold(function (i, e) {
         v[i] = e;
         return i + 1;

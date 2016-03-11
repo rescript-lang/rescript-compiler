@@ -41,9 +41,10 @@ let translate
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
-  | Pfield (i, _fld_info (* XXFLD*)) -> 
+  | Pfield (i, fld_info (* XXFLD*)) -> 
     begin match args with 
-      | [ e ]  -> Js_of_lam_block.field e (Int32.of_int i) (* Invariant depends on runtime *)
+      | [ e ]  -> 
+        Js_of_lam_block.field fld_info e (Int32.of_int i) (* Invariant depends on runtime *)
       | _ -> assert false
     end
 
@@ -329,7 +330,7 @@ let translate
   | Poffsetref n ->
     begin match args with
       | [e] -> 
-        let v = (Js_of_lam_block.field e 0l) in
+        let v = (Js_of_lam_block.field Fld_na e 0l) in
         E.assign  v (E.unchecked_int32_add v (E.small_int  n))
       | _ -> assert false
     end

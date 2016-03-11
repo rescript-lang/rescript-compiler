@@ -255,7 +255,7 @@ let index ?comment (e0 : t)  e1 : t =
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
   | Caml_block (l,_mutable_flag, _, _)  when no_side_effect e0 -> 
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
-  | _ -> { expression_desc = Access (e0, int e1); comment} 
+  | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
 let call ?comment ?info e0 args : t = 
   let info = match info with 

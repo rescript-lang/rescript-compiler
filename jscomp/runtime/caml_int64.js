@@ -41,10 +41,10 @@ function of_int32(lo) {
 }
 
 function add(param, param$1) {
-  var other_high_ = param$1[1];
-  var other_low_ = param$1[0];
-  var this_high_ = param[1];
-  var this_low_ = param[0];
+  var other_high_ = param$1[/* hi */1];
+  var other_low_ = param$1[/* lo */0];
+  var this_high_ = param[/* hi */1];
+  var this_low_ = param[/* lo */0];
   var low = this_low_ + other_low_ & 4294967295;
   var overflow = this_low_ < 0 ? +(other_low_ < 0 || low >= 0) : +(other_low_ < 0 && low >= 0);
   var high = overflow ? 1 + (this_high_ + other_high_) & 4294967295 : this_high_ + other_high_ & 4294967295;
@@ -56,8 +56,8 @@ function add(param, param$1) {
 
 function not(param) {
   return /* record */[
-          param[0] ^ -1,
-          param[1] ^ -1
+          param[/* lo */0] ^ -1,
+          param[/* hi */1] ^ -1
         ];
 }
 
@@ -75,7 +75,7 @@ function sub(x, y) {
 }
 
 function lsl_(x, numBits) {
-  var lo = x[0];
+  var lo = x[/* lo */0];
   if (numBits) {
     if (numBits >= 32) {
       return /* record */[
@@ -86,7 +86,7 @@ function lsl_(x, numBits) {
     else {
       return /* record */[
               (lo << numBits),
-              (lo >>> 32 - numBits) | 0 | (x[1] << numBits)
+              (lo >>> 32 - numBits) | 0 | (x[/* hi */1] << numBits)
             ];
     }
   }
@@ -96,7 +96,7 @@ function lsl_(x, numBits) {
 }
 
 function lsr_(x, numBits) {
-  var hi = x[1];
+  var hi = x[/* hi */1];
   if (numBits) {
     var offset = numBits - 32;
     if (offset) {
@@ -108,7 +108,7 @@ function lsr_(x, numBits) {
       }
       else {
         return /* record */[
-                (hi << -offset) | (x[0] >>> numBits) | 0,
+                (hi << -offset) | (x[/* lo */0] >>> numBits) | 0,
                 (hi >>> numBits) | 0
               ];
       }
@@ -126,11 +126,11 @@ function lsr_(x, numBits) {
 }
 
 function asr_(x, numBits) {
-  var hi = x[1];
+  var hi = x[/* hi */1];
   if (numBits) {
     if (numBits < 32) {
       return /* record */[
-              (hi << 32 - numBits) | (x[0] >>> numBits) | 0,
+              (hi << 32 - numBits) | (x[/* lo */0] >>> numBits) | 0,
               (hi >> numBits)
             ];
     }
@@ -147,7 +147,7 @@ function asr_(x, numBits) {
 }
 
 function is_zero(param) {
-  if (param[0] !== 0 || param[1] !== 0) {
+  if (param[/* lo */0] !== 0 || param[/* hi */1] !== 0) {
     return /* false */0;
   }
   else {
@@ -161,24 +161,24 @@ function mul(_this, _other) {
     var $$this = _this;
     var exit = 0;
     var lo;
-    var lo$1 = $$this[0];
+    var lo$1 = $$this[/* lo */0];
     var exit$1 = 0;
     var exit$2 = 0;
     var exit$3 = 0;
     if (lo$1 !== 0) {
       exit$3 = 4;
     }
-    else if ($$this[1] !== 0) {
+    else if ($$this[/* hi */1] !== 0) {
       exit$3 = 4;
     }
     else {
       return zero;
     }
     if (exit$3 === 4) {
-      if (other[0] !== 0) {
+      if (other[/* lo */0] !== 0) {
         exit$2 = 3;
       }
-      else if (other[1] !== 0) {
+      else if (other[/* hi */1] !== 0) {
         exit$2 = 3;
       }
       else {
@@ -189,22 +189,22 @@ function mul(_this, _other) {
       if (lo$1 !== 0) {
         exit$1 = 2;
       }
-      else if ($$this[1] !== -2147483648) {
+      else if ($$this[/* hi */1] !== -2147483648) {
         exit$1 = 2;
       }
       else {
-        lo = other[0];
+        lo = other[/* lo */0];
         exit = 1;
       }
     }
     if (exit$1 === 2) {
-      var other_lo = other[0];
-      var this_hi = $$this[1];
+      var other_lo = other[/* lo */0];
+      var this_hi = $$this[/* hi */1];
       var exit$4 = 0;
       if (other_lo !== 0) {
         exit$4 = 3;
       }
-      else if (other[1] !== -2147483648) {
+      else if (other[/* hi */1] !== -2147483648) {
         exit$4 = 3;
       }
       else {
@@ -212,7 +212,7 @@ function mul(_this, _other) {
         exit = 1;
       }
       if (exit$4 === 3) {
-        var other_hi = other[1];
+        var other_hi = other[/* hi */1];
         if (this_hi < 0) {
           if (other_hi < 0) {
             _other = neg(other);
@@ -273,14 +273,14 @@ function mul(_this, _other) {
 
 function swap(param) {
   return /* record */[
-          Caml_primitive.caml_int32_bswap(param[1]),
-          Caml_primitive.caml_int32_bswap(param[0])
+          Caml_primitive.caml_int32_bswap(param[/* hi */1]),
+          Caml_primitive.caml_int32_bswap(param[/* lo */0])
         ];
 }
 
 function ge(param, param$1) {
-  var other_hi = param$1[1];
-  var hi = param[1];
+  var other_hi = param$1[/* hi */1];
+  var hi = param[/* hi */1];
   if (hi > other_hi) {
     return /* true */1;
   }
@@ -288,13 +288,13 @@ function ge(param, param$1) {
     return /* false */0;
   }
   else {
-    return +((param[0] >>> 0) >= (param$1[0] >>> 0));
+    return +((param[/* lo */0] >>> 0) >= (param$1[/* lo */0] >>> 0));
   }
 }
 
 function eq(x, y) {
-  if (x[1] === y[1]) {
-    return +(x[0] === y[0]);
+  if (x[/* hi */1] === y[/* hi */1]) {
+    return +(x[/* lo */0] === y[/* lo */0]);
   }
   else {
     return /* false */0;
@@ -310,14 +310,14 @@ function lt(x, y) {
 }
 
 function gt(x, y) {
-  if (x[1] > y[1]) {
+  if (x[/* hi */1] > y[/* hi */1]) {
     return /* true */1;
   }
-  else if (x[1] < y[1]) {
+  else if (x[/* hi */1] < y[/* hi */1]) {
     return /* false */0;
   }
   else {
-    return +((x[0] >>> 0) > (y[0] >>> 0));
+    return +((x[/* lo */0] >>> 0) > (y[/* lo */0] >>> 0));
   }
 }
 
@@ -326,9 +326,9 @@ function le(x, y) {
 }
 
 function to_float(param) {
-  var lo = param[0];
+  var lo = param[/* lo */0];
   var low_bits_unsigned = lo >= 0 ? lo : lo + 4294967296;
-  return param[1] * 4294967296 + low_bits_unsigned;
+  return param[/* hi */1] * 4294967296 + low_bits_unsigned;
 }
 
 var two_ptr_32_dbl = Math.pow(2, 32);
@@ -364,21 +364,21 @@ function div(_self, _other) {
     var self = _self;
     var exit = 0;
     var exit$1 = 0;
-    if (other[0] !== 0) {
+    if (other[/* lo */0] !== 0) {
       exit$1 = 2;
     }
-    else if (other[1] !== 0) {
+    else if (other[/* hi */1] !== 0) {
       exit$1 = 2;
     }
     else {
       throw Caml_builtin_exceptions.division_by_zero;
     }
     if (exit$1 === 2) {
-      if (self[0] !== 0) {
+      if (self[/* lo */0] !== 0) {
         exit = 1;
       }
       else {
-        var match = self[1];
+        var match = self[/* hi */1];
         if (match !== -2147483648) {
           if (match !== 0) {
             exit = 1;
@@ -388,28 +388,28 @@ function div(_self, _other) {
           }
         }
         else {
-          var match$1 = other[0];
+          var match$1 = other[/* lo */0];
           var exit$2 = 0;
           if (match$1 !== -1) {
             if (match$1 !== 0) {
               if (match$1 !== 1) {
                 exit$2 = 3;
               }
-              else if (other[1] !== 0) {
+              else if (other[/* hi */1] !== 0) {
                 exit$2 = 3;
               }
               else {
                 return self;
               }
             }
-            else if (other[1] !== -2147483648) {
+            else if (other[/* hi */1] !== -2147483648) {
               exit$2 = 3;
             }
             else {
               return one;
             }
           }
-          else if (other[1] !== -1) {
+          else if (other[/* hi */1] !== -1) {
             exit$2 = 3;
           }
           else {
@@ -419,13 +419,13 @@ function div(_self, _other) {
             var half_this = asr_(self, 1);
             var approx = lsl_(div(half_this, other), 1);
             var exit$3 = 0;
-            if (approx[0] !== 0) {
+            if (approx[/* lo */0] !== 0) {
               exit$3 = 4;
             }
-            else if (approx[1] !== 0) {
+            else if (approx[/* hi */1] !== 0) {
               exit$3 = 4;
             }
-            else if (other[1] < 0) {
+            else if (other[/* hi */1] < 0) {
               return one;
             }
             else {
@@ -444,18 +444,18 @@ function div(_self, _other) {
     }
     if (exit === 1) {
       var exit$4 = 0;
-      if (other[0] !== 0) {
+      if (other[/* lo */0] !== 0) {
         exit$4 = 2;
       }
-      else if (other[1] !== -2147483648) {
+      else if (other[/* hi */1] !== -2147483648) {
         exit$4 = 2;
       }
       else {
         return zero;
       }
       if (exit$4 === 2) {
-        var other_hi = other[1];
-        if (self[1] < 0) {
+        var other_hi = other[/* hi */1];
+        if (self[/* hi */1] < 0) {
           if (other_hi < 0) {
             _other = neg(other);
             _self = neg(self);
@@ -478,7 +478,7 @@ function div(_self, _other) {
             var delta = log2 <= 48 ? 1 : Math.pow(2, log2 - 48);
             var approxRes = of_float(approx$1);
             var approxRem = mul(approxRes, other);
-            while(approxRem[1] < 0 || gt(approxRem, rem$1)) {
+            while(approxRem[/* hi */1] < 0 || gt(approxRem, rem$1)) {
               approx$1 -= delta;
               approxRes = of_float(approx$1);
               approxRem = mul(approxRes, other);
@@ -504,12 +504,12 @@ function mod_(self, other) {
 }
 
 function compare(self, other) {
-  var v = Caml_obj.caml_nativeint_compare(self[1], other[1]);
+  var v = Caml_obj.caml_nativeint_compare(self[/* hi */1], other[/* hi */1]);
   if (v) {
     return v;
   }
   else {
-    return Caml_obj.caml_nativeint_compare((self[0] >>> 0), (other[0] >>> 0));
+    return Caml_obj.caml_nativeint_compare((self[/* lo */0] >>> 0), (other[/* lo */0] >>> 0));
   }
 }
 

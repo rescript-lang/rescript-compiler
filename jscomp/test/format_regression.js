@@ -52,16 +52,16 @@ var pp_infinity = 1000000010;
 
 function advance_loop(state) {
   while(true) {
-    var match = peek_queue(state[3]);
-    var size = match[0];
+    var match = peek_queue(state[/* pp_queue */3]);
+    var size = match[/* elem_size */0];
     var size$1 = int_of_size(size);
-    if (size$1 < 0 && state[2] - state[1] < state[0]) {
+    if (size$1 < 0 && state[/* pp_right_total */2] - state[/* pp_left_total */1] < state[/* pp_space_left */0]) {
       return 0;
     }
     else {
-      take_queue(state[3]);
-      Caml_curry.app1(format_pp_token(state, size$1 < 0 ? pp_infinity : size$1), match[1]);
-      state[1] = match[2] + state[1];
+      take_queue(state[/* pp_queue */3]);
+      Caml_curry.app1(format_pp_token(state, size$1 < 0 ? pp_infinity : size$1), match[/* token */1]);
+      state[1] = match[/* length */2] + state[/* pp_left_total */1];
       continue ;
       
     }

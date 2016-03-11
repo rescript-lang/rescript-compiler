@@ -39,7 +39,14 @@ let make_block mutable_flag (tag_info : Lambda.tag_info) tag args  =
   (*       (E.int  ?comment:(Lam_compile_util.comment_of_tag_info tag_info) tag   *)
   (*        :: args) *)
 
-let field e i = E.index e i
+let field field_info e i =
+  match field_info with 
+  | Lambda.Fld_na -> 
+    E.index e i 
+  | Lambda.Fld_record s 
+  | Lambda.Fld_module s 
+    -> E.index ~comment:s e i
+
 
 let set_field e i e0 = (E.assign (E.index e i)  e0)
 
