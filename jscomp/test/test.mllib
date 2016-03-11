@@ -200,3 +200,4 @@ shift_test
 debugger_test
 caml_format_test
 
+js_val

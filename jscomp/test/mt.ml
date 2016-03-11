@@ -1,17 +1,18 @@
 
 
 
-external describe : string -> ((unit -> unit)[@js.nullary]) -> unit = "" 
-    [@@js.call "describe"]
+external describe : string -> ((unit -> unit)[@js.nullary]) -> unit = "describe"
+    [@@js.call]
 
-external it : string -> (unit -> unit) -> unit = "" [@@js.call "it"]
+external it : string -> (unit -> unit) -> unit = "it" 
+    [@@js.call ]
 
-external eq : 'a -> 'a -> unit = "" 
-    [@@js.call "deepEqual"]
+external eq : 'a -> 'a -> unit = "deepEqual"
+    [@@js.call ]
     [@@js.module "assert"]
 
-external neq : 'a -> 'a -> unit = "" 
-    [@@js.call "notDeepEqual"]
+external neq : 'a -> 'a -> unit = "notDeepEqual"
+    [@@js.call ]
     [@@js.module "assert"]
 
 (* external dump : 'a array -> unit = "js_dump" [@@js.splice] *)
@@ -44,8 +45,9 @@ let close_enough x y =
 
 let from_pair_suites name (suites : 'a pair_suites) = 
   describe name (fun _ -> 
-    List.iter (fun (name, code) -> 
-      it name (fun _ -> 
+      suites |> 
+      List.iter (fun (name, code) -> 
+          it name (fun _ -> 
               match code () with 
               | Eq(a,b) -> assert_equal a b 
               | Neq(a,b) -> assert_notequal a b 
@@ -54,5 +56,5 @@ let from_pair_suites name (suites : 'a pair_suites) =
                 assert (close_enough a b)
               | ThrowAny fn -> throws fn 
             )
-              ) suites
-                ) 
+        ) 
+    ) 
