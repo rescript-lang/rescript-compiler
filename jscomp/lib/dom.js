@@ -10,7 +10,7 @@ function add(x, y) {
   return x | y;
 }
 
-var DocumentPosition = [
+var DocumentPosition = /* module */[
   1,
   2,
   4,

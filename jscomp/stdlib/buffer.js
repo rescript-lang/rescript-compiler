@@ -22,51 +22,51 @@ function create(n) {
 }
 
 function contents(b) {
-  return Bytes.sub_string(b[0], 0, b[1]);
+  return Bytes.sub_string(b[/* buffer */0], 0, b[/* position */1]);
 }
 
 function to_bytes(b) {
-  return Bytes.sub(b[0], 0, b[1]);
+  return Bytes.sub(b[/* buffer */0], 0, b[/* position */1]);
 }
 
 function sub(b, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > b[1] - len) {
+  if (ofs < 0 || len < 0 || ofs > b[/* position */1] - len) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.sub"
         ];
   }
   else {
-    return Bytes.sub_string(b[0], ofs, len);
+    return Bytes.sub_string(b[/* buffer */0], ofs, len);
   }
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
-  if (len < 0 || srcoff < 0 || srcoff > src[1] - len || dstoff < 0 || dstoff > dst.length - len) {
+  if (len < 0 || srcoff < 0 || srcoff > src[/* position */1] - len || dstoff < 0 || dstoff > dst.length - len) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.blit"
         ];
   }
   else {
-    return Bytes.blit(src[0], srcoff, dst, dstoff, len);
+    return Bytes.blit(src[/* buffer */0], srcoff, dst, dstoff, len);
   }
 }
 
 function nth(b, ofs) {
-  if (ofs < 0 || ofs >= b[1]) {
+  if (ofs < 0 || ofs >= b[/* position */1]) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.nth"
         ];
   }
   else {
-    return b[0][ofs];
+    return b[/* buffer */0][ofs];
   }
 }
 
 function length(b) {
-  return b[1];
+  return b[/* position */1];
 }
 
 function clear(b) {
@@ -76,19 +76,19 @@ function clear(b) {
 
 function reset(b) {
   b[1] = 0;
-  b[0] = b[3];
-  b[2] = b[0].length;
+  b[0] = b[/* initial_buffer */3];
+  b[2] = b[/* buffer */0].length;
   return /* () */0;
 }
 
 function resize(b, more) {
-  var len = b[2];
+  var len = b[/* length */2];
   var new_len = len;
-  while(b[1] + more > new_len) {
+  while(b[/* position */1] + more > new_len) {
     new_len = 2 * new_len;
   };
   if (new_len > Sys.max_string_length) {
-    if (b[1] + more <= Sys.max_string_length) {
+    if (b[/* position */1] + more <= Sys.max_string_length) {
       new_len = Sys.max_string_length;
     }
     else {
@@ -99,18 +99,18 @@ function resize(b, more) {
     }
   }
   var new_buffer = Caml_string.caml_create_string(new_len);
-  Bytes.blit(b[0], 0, new_buffer, 0, b[1]);
+  Bytes.blit(b[/* buffer */0], 0, new_buffer, 0, b[/* position */1]);
   b[0] = new_buffer;
   b[2] = new_len;
   return /* () */0;
 }
 
 function add_char(b, c) {
-  var pos = b[1];
-  if (pos >= b[2]) {
+  var pos = b[/* position */1];
+  if (pos >= b[/* length */2]) {
     resize(b, 1);
   }
-  b[0][pos] = c;
+  b[/* buffer */0][pos] = c;
   b[1] = pos + 1;
   return /* () */0;
 }
@@ -122,11 +122,11 @@ function add_substring(b, s, offset, len) {
           "Buffer.add_substring/add_subbytes"
         ];
   }
-  var new_position = b[1] + len;
-  if (new_position > b[2]) {
+  var new_position = b[/* position */1] + len;
+  if (new_position > b[/* length */2]) {
     resize(b, len);
   }
-  Bytes.blit_string(s, offset, b[0], b[1], len);
+  Bytes.blit_string(s, offset, b[/* buffer */0], b[/* position */1], len);
   b[1] = new_position;
   return /* () */0;
 }
@@ -137,11 +137,11 @@ function add_subbytes(b, s, offset, len) {
 
 function add_string(b, s) {
   var len = s.length;
-  var new_position = b[1] + len;
-  if (new_position > b[2]) {
+  var new_position = b[/* position */1] + len;
+  if (new_position > b[/* length */2]) {
     resize(b, len);
   }
-  Bytes.blit_string(s, 0, b[0], b[1], len);
+  Bytes.blit_string(s, 0, b[/* buffer */0], b[/* position */1], len);
   b[1] = new_position;
   return /* () */0;
 }
@@ -151,7 +151,7 @@ function add_bytes(b, s) {
 }
 
 function add_buffer(b, bs) {
-  return add_subbytes(b, bs[0], 0, bs[1]);
+  return add_subbytes(b, bs[/* buffer */0], 0, bs[/* position */1]);
 }
 
 function add_channel(b, ic, len) {
@@ -161,16 +161,16 @@ function add_channel(b, ic, len) {
           "Buffer.add_channel"
         ];
   }
-  if (b[1] + len > b[2]) {
+  if (b[/* position */1] + len > b[/* length */2]) {
     resize(b, len);
   }
-  Pervasives.really_input(ic, b[0], b[1], len);
+  Pervasives.really_input(ic, b[/* buffer */0], b[/* position */1], len);
   b[1] += len;
   return /* () */0;
 }
 
 function output_buffer(oc, b) {
-  return Pervasives.output(oc, b[0], 0, b[1]);
+  return Pervasives.output(oc, b[/* buffer */0], 0, b[/* position */1]);
 }
 
 function closing(param) {

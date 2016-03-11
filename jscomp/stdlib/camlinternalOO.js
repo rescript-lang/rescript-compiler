@@ -533,10 +533,10 @@ function new_table(pub_labels) {
 }
 
 function resize(array, new_size) {
-  var old_size = array[1].length;
+  var old_size = array[/* methods */1].length;
   if (new_size > old_size) {
     var new_buck = Caml_array.caml_make_vect(new_size, dummy_met);
-    $$Array.blit(array[1], 0, new_buck, 0, old_size);
+    $$Array.blit(array[/* methods */1], 0, new_buck, 0, old_size);
     array[1] = new_buck;
     return /* () */0;
   }
@@ -550,7 +550,7 @@ var method_count = [0];
 var inst_var_count = [0];
 
 function new_method(table) {
-  var index = table[1].length;
+  var index = table[/* methods */1].length;
   resize(table, index + 1);
   return index;
 }
@@ -558,7 +558,7 @@ function new_method(table) {
 function get_method_label(table, name) {
   try {
     var x = name;
-    var _param = table[2];
+    var _param = table[/* methods_by_name */2];
     while(true) {
       var param = _param;
       if (param) {
@@ -580,8 +580,8 @@ function get_method_label(table, name) {
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       var label = new_method(table);
-      table[2] = add$1(name, label, table[2]);
-      table[3] = add$2(label, /* true */1, table[3]);
+      table[2] = add$1(name, label, table[/* methods_by_name */2]);
+      table[3] = add$2(label, /* true */1, table[/* methods_by_label */3]);
       return label;
     }
     else {
@@ -598,12 +598,12 @@ function get_method_labels(table, names) {
 
 function set_method(table, label, element) {
   ++ method_count[0];
-  if (find$1(label, table[3])) {
+  if (find$1(label, table[/* methods_by_label */3])) {
     var array = table;
     var label$1 = label;
     var element$1 = element;
     resize(array, label$1 + 1);
-    array[1][label$1] = element$1;
+    array[/* methods */1][label$1] = element$1;
     return /* () */0;
   }
   else {
@@ -612,7 +612,7 @@ function set_method(table, label, element) {
         label,
         element
       ],
-      table[5]
+      table[/* hidden_meths */5]
     ];
     return /* () */0;
   }
@@ -620,11 +620,11 @@ function set_method(table, label, element) {
 
 function get_method(table, label) {
   try {
-    return List.assoc(label, table[5]);
+    return List.assoc(label, table[/* hidden_meths */5]);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      return table[1][label];
+      return table[/* methods */1][label];
     }
     else {
       throw exn;
@@ -653,14 +653,14 @@ function narrow(table, vars, virt_meths, concr_meths) {
       }, concr_meths$1);
   table[4] = /* :: */[
     /* tuple */[
-      table[2],
-      table[3],
-      table[5],
-      table[6],
+      table[/* methods_by_name */2],
+      table[/* methods_by_label */3],
+      table[/* hidden_meths */5],
+      table[/* vars */6],
       virt_meth_labs,
       vars$1
     ],
-    table[4]
+    table[/* previous_states */4]
   ];
   table[6] = fold(function (lab, info, tvars) {
         if (List.mem(lab, vars$1)) {
@@ -669,14 +669,14 @@ function narrow(table, vars, virt_meths, concr_meths) {
         else {
           return tvars;
         }
-      }, table[6], /* Empty */0);
+      }, table[/* vars */6], /* Empty */0);
   var by_name = [/* Empty */0];
   var by_label = [/* Empty */0];
   List.iter2(function (met, label) {
         by_name[0] = add$1(met, label, by_name[0]);
         var $js;
         try {
-          $js = find$1(label, table[3]);
+          $js = find$1(label, table[/* methods_by_label */3]);
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
@@ -706,16 +706,16 @@ function narrow(table, vars, virt_meths, concr_meths) {
                   hm
                 ];
         }
-      }, table[5], /* [] */0);
+      }, table[/* hidden_meths */5], /* [] */0);
   return /* () */0;
 }
 
 function widen(table) {
-  var match = List.hd(table[4]);
+  var match = List.hd(table[/* previous_states */4]);
   var virt_meths = match[4];
-  table[4] = List.tl(table[4]);
+  table[4] = List.tl(table[/* previous_states */4]);
   table[6] = List.fold_left(function (s, v) {
-        return add(v, find(v, table[6]), s);
+        return add(v, find(v, table[/* vars */6]), s);
       }, match[3], match[5]);
   table[2] = match[0];
   table[3] = match[1];
@@ -729,25 +729,25 @@ function widen(table) {
                   hm
                 ];
         }
-      }, table[5], match[2]);
+      }, table[/* hidden_meths */5], match[2]);
   return /* () */0;
 }
 
 function new_slot(table) {
-  var index = table[0];
+  var index = table[/* size */0];
   table[0] = index + 1;
   return index;
 }
 
 function new_variable(table, name) {
   try {
-    return find(name, table[6]);
+    return find(name, table[/* vars */6]);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
       var index = new_slot(table);
       if (name !== "") {
-        table[6] = add(name, index, table[6]);
+        table[6] = add(name, index, table[/* vars */6]);
       }
       return index;
     }
@@ -782,7 +782,7 @@ function new_methods_variables(table, meths, vals) {
 
 function get_variable(table, name) {
   try {
-    return find(name, table[6]);
+    return find(name, table[/* vars */6]);
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
@@ -810,7 +810,7 @@ function get_variables(table, names) {
 function add_initializer(table, f) {
   table[7] = /* :: */[
     f,
-    table[7]
+    table[/* initializers */7]
   ];
   return /* () */0;
 }
@@ -821,8 +821,8 @@ function create_table(public_methods) {
     var table = new_table(tags);
     $$Array.iteri(function (i, met) {
           var lab = i * 2 + 2;
-          table[2] = add$1(met, lab, table[2]);
-          table[3] = add$2(lab, /* true */1, table[3]);
+          table[2] = add$1(met, lab, table[/* methods_by_name */2]);
+          table[3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
           return /* () */0;
         }, public_methods);
     return table;
@@ -833,9 +833,9 @@ function create_table(public_methods) {
 }
 
 function init_class(table) {
-  inst_var_count[0] = inst_var_count[0] + table[0] - 1;
-  table[7] = List.rev(table[7]);
-  return resize(table, 3 + (table[1][1] * 16 / Sys.word_size | 0));
+  inst_var_count[0] = inst_var_count[0] + table[/* size */0] - 1;
+  table[7] = List.rev(table[/* initializers */7]);
+  return resize(table, 3 + (table[/* methods */1][1] * 16 / Sys.word_size | 0));
 }
 
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
@@ -897,10 +897,10 @@ function dummy_class(loc) {
 
 function create_object(table) {
   var obj = {
-    length: table[0],
+    length: table[/* size */0],
     tag: Obj.object_tag
   };
-  obj[0] = table[1];
+  obj[0] = table[/* methods */1];
   return Caml_builtin_exceptions.caml_set_oo_id(obj);
 }
 
@@ -910,10 +910,10 @@ function create_object_opt(obj_0, table) {
   }
   else {
     var obj = {
-      length: table[0],
+      length: table[/* size */0],
       tag: Obj.object_tag
     };
-    obj[0] = table[1];
+    obj[0] = table[/* methods */1];
     return Caml_builtin_exceptions.caml_set_oo_id(obj);
   }
 }
@@ -934,7 +934,7 @@ function iter_f(obj, _param) {
 }
 
 function run_initializers(obj, table) {
-  var inits = table[7];
+  var inits = table[/* initializers */7];
   if (inits !== /* [] */0) {
     return iter_f(obj, inits);
   }
@@ -948,7 +948,7 @@ function run_initializers_opt(obj_0, obj, table) {
     return obj;
   }
   else {
-    var inits = table[7];
+    var inits = table[/* initializers */7];
     if (inits !== /* [] */0) {
       iter_f(obj, inits);
     }
@@ -996,11 +996,11 @@ function lookup_keys(i, keys, tables) {
     var _tables = tables;
     while(true) {
       var tables$1 = _tables;
-      if (tables$1[0] === key) {
-        return lookup_keys(i - 1, keys, tables$1[1]);
+      if (tables$1[/* key */0] === key) {
+        return lookup_keys(i - 1, keys, tables$1[/* data */1]);
       }
-      else if (tables$1[2] !== /* Empty */0) {
-        _tables = tables$1[2];
+      else if (tables$1[/* next */2] !== /* Empty */0) {
+        _tables = tables$1[/* next */2];
         continue ;
         
       }
@@ -1020,8 +1020,8 @@ function lookup_keys(i, keys, tables) {
 }
 
 function lookup_tables(root, keys) {
-  if (root[1] !== /* Empty */0) {
-    return lookup_keys(keys.length - 1, keys, root[1]);
+  if (root[/* data */1] !== /* Empty */0) {
+    return lookup_keys(keys.length - 1, keys, root[/* data */1]);
   }
   else {
     return build_path(keys.length - 1, keys, root);
@@ -1030,8 +1030,8 @@ function lookup_tables(root, keys) {
 
 function new_cache(table) {
   var n = new_method(table);
-  var n$1 = n % 2 === 0 || n > 2 + (table[1][1] * 16 / Sys.word_size | 0) ? n : new_method(table);
-  table[1][n$1] = 0;
+  var n$1 = n % 2 === 0 || n > 2 + (table[/* methods */1][1] * 16 / Sys.word_size | 0) ? n : new_method(table);
+  table[/* methods */1][n$1] = 0;
   return n$1;
 }
 

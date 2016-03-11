@@ -7,7 +7,7 @@ var List       = require("../stdlib/list");
 
 function Make(U) {
   var compare = U[0];
-  return [
+  return /* module */[
           compare,
           compare
         ];
@@ -15,14 +15,14 @@ function Make(U) {
 
 var compare = $$String.compare;
 
-var X = [
+var X = /* module */[
   compare,
   compare
 ];
 
 var compare$1 = Test_order.compare;
 
-var U = [
+var U = /* module */[
   compare$1,
   compare$1
 ];

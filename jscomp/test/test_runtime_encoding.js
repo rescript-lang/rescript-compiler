@@ -32,7 +32,7 @@ function aa(x) {
 }
 
 function aaa(x) {
-  return x[0];
+  return x[/* v */0];
 }
 
 function aaaa(x) {

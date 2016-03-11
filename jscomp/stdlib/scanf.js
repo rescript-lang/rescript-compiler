@@ -19,7 +19,7 @@ var null_char = /* "\000" */0;
 
 function next_char(ib) {
   try {
-    var c = Caml_curry.app1(ib[6], /* () */0);
+    var c = Caml_curry.app1(ib[/* get_next_char */6], /* () */0);
     ib[1] = c;
     ib[2] = /* true */1;
     ++ ib[3];
@@ -42,8 +42,8 @@ function next_char(ib) {
 }
 
 function peek_char(ib) {
-  if (ib[2]) {
-    return ib[1];
+  if (ib[/* current_char_is_valid */2]) {
+    return ib[/* current_char */1];
   }
   else {
     return next_char(ib);
@@ -52,7 +52,7 @@ function peek_char(ib) {
 
 function checked_peek_char(ib) {
   var c = peek_char(ib);
-  if (ib[0]) {
+  if (ib[/* eof */0]) {
     throw Caml_builtin_exceptions.end_of_file;
   }
   return c;
@@ -60,15 +60,15 @@ function checked_peek_char(ib) {
 
 function end_of_input(ib) {
   peek_char(ib);
-  return ib[0];
+  return ib[/* eof */0];
 }
 
 function beginning_of_input(ib) {
-  return +(ib[3] === 0);
+  return +(ib[/* char_count */3] === 0);
 }
 
 function name_of_input(ib) {
-  var match = ib[8];
+  var match = ib[/* input_name */8];
   if (typeof match === "number") {
     if (match) {
       return "unnamed function";
@@ -86,16 +86,16 @@ function name_of_input(ib) {
 }
 
 function char_count(ib) {
-  if (ib[2]) {
-    return ib[3] - 1;
+  if (ib[/* current_char_is_valid */2]) {
+    return ib[/* char_count */3] - 1;
   }
   else {
-    return ib[3];
+    return ib[/* char_count */3];
   }
 }
 
 function token(ib) {
-  var tokbuf = ib[7];
+  var tokbuf = ib[/* tokbuf */7];
   var tok = Buffer.contents(tokbuf);
   tokbuf[1] = 0;
   ++ ib[5];
@@ -109,7 +109,7 @@ function ignore_char(width, ib) {
 }
 
 function store_char(width, ib, c) {
-  Buffer.add_char(ib[7], c);
+  Buffer.add_char(ib[/* tokbuf */7], c);
   return ignore_char(width, ib);
 }
 
@@ -258,7 +258,7 @@ function from_channel(param) {
 }
 
 function close_in(ib) {
-  var match = ib[8];
+  var match = ib[/* input_name */8];
   if (typeof match === "number") {
     return /* () */0;
   }
@@ -361,7 +361,7 @@ function check_char(ib, _c) {
       var ib$1 = ib;
       while(true) {
         var c$1 = peek_char(ib$1);
-        if (ib$1[0]) {
+        if (ib$1[/* eof */0]) {
           return 0;
         }
         else {
@@ -535,7 +535,7 @@ function scan_decimal_digits(_width, ib) {
     var width = _width;
     if (width) {
       var c = peek_char(ib);
-      if (ib[0]) {
+      if (ib[/* eof */0]) {
         return width;
       }
       else if (c >= 58) {
@@ -613,7 +613,7 @@ function scan_digits_plus(basis, digitp, width, ib) {
         var width$1 = _width;
         if (width$1) {
           var c$1 = peek_char(ib);
-          if (ib[0]) {
+          if (ib[/* eof */0]) {
             return width$1;
           }
           else if (Caml_curry.app1(digitp, c$1)) {
@@ -774,7 +774,7 @@ function scan_int_conv(conv, width, ib) {
             var width$4 = store_char(width$3, ib$2, c);
             if (width$4) {
               var c$1 = peek_char(ib$2);
-              if (ib$2[0]) {
+              if (ib$2[/* eof */0]) {
                 return width$4;
               }
               else if (c$1 >= 99) {
@@ -860,7 +860,7 @@ function scan_int_conv(conv, width, ib) {
 function scan_frac_part(width, ib) {
   if (width) {
     var c = peek_char(ib);
-    if (ib[0] || c > 57 || c < 48) {
+    if (ib[/* eof */0] || c > 57 || c < 48) {
       return width;
     }
     else {
@@ -875,7 +875,7 @@ function scan_frac_part(width, ib) {
 function scan_exp_part(width, ib) {
   if (width) {
     var c = peek_char(ib);
-    if (ib[0] || c !== 69 && c !== 101) {
+    if (ib[/* eof */0] || c !== 69 && c !== 101) {
       return width;
     }
     else {
@@ -896,7 +896,7 @@ function scan_float(width, precision, ib) {
   var width$1 = scan_int_part(width, ib);
   if (width$1) {
     var c = peek_char(ib);
-    if (ib[0]) {
+    if (ib[/* eof */0]) {
       return /* tuple */[
               width$1,
               precision
@@ -930,7 +930,7 @@ function scan_caml_float(width, precision, ib) {
   var width$1 = scan_optionally_signed_decimal_int(width, ib);
   if (width$1) {
     var c = peek_char(ib);
-    if (ib[0]) {
+    if (ib[/* eof */0]) {
       throw [
             Scan_failure,
             "no dot or exponent part found in float token"
@@ -977,7 +977,7 @@ function scan_string(stp, width, ib) {
     var width$1 = _width;
     if (width$1) {
       var c = peek_char(ib);
-      if (ib[0]) {
+      if (ib[/* eof */0]) {
         return width$1;
       }
       else if (stp) {
@@ -1136,7 +1136,7 @@ function char_for_hexadecimal_code(c1, c2) {
 function check_next_char(message, width, ib) {
   if (width) {
     var c = peek_char(ib);
-    if (ib[0]) {
+    if (ib[/* eof */0]) {
       var message$1 = message;
       var s = Caml_curry.app1(Printf.sprintf(/* Format */{
                 0: /* String_literal */{
@@ -1416,7 +1416,7 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
     while(true) {
       var i = _i;
       var c = peek_char(ib);
-      if (i > 0 && !ib[0] && CamlinternalFormat.is_in_char_set(char_set, c) && c !== stp) {
+      if (i > 0 && !ib[/* eof */0] && CamlinternalFormat.is_in_char_set(char_set, c) && c !== stp) {
         store_char(Pervasives.max_int, ib, c);
         _i = i - 1;
         continue ;
@@ -1430,7 +1430,7 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
   if (scan_indic) {
     var c = scan_indic[0];
     scan_chars(width, c);
-    if (ib[0]) {
+    if (ib[/* eof */0]) {
       return 0;
     }
     else {
@@ -1508,11 +1508,11 @@ function scanf_bad_input(ib, x) {
 function get_counter(ib, counter) {
   switch (counter) {
     case 0 : 
-        return ib[4];
+        return ib[/* line_count */4];
     case 1 : 
         return char_count(ib);
     case 2 : 
-        return ib[5];
+        return ib[/* token_count */5];
     
   }
 }
@@ -2163,7 +2163,7 @@ function kscanf(ib, ef, param) {
   var str = param[1];
   var fmt = param[0];
   var k = function (readers, f) {
-    Buffer.reset(ib[7]);
+    Buffer.reset(ib[/* tokbuf */7]);
     var match;
     try {
       match = /* Args */{

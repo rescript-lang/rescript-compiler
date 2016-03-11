@@ -503,7 +503,7 @@ function read_float() {
   return Caml_format.caml_float_of_string((Caml_io.caml_ml_flush(stdout), input_line(stdin)));
 }
 
-var LargeFile = [];
+var LargeFile = /* module */[];
 
 function string_of_format(param) {
   return param[1];

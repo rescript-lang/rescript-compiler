@@ -22,7 +22,7 @@ var $$Error = {
 };
 
 function fill_buff(b) {
-  b[2] = Pervasives.input(b[0], b[1], 0, b[1].length);
+  b[2] = Pervasives.input(b[/* ic */0], b[/* buff */1], 0, b[/* buff */1].length);
   b[3] = 0;
   return /* () */0;
 }
@@ -90,7 +90,7 @@ function get_data(count, _d) {
             continue ;
             case 3 : 
             var g = d[0];
-            var match$1 = g[0];
+            var match$1 = g[/* curr */0];
             if (match$1) {
               var match$2 = match$1[0];
               if (match$2) {
@@ -107,7 +107,7 @@ function get_data(count, _d) {
               }
             }
             else {
-              var match$3 = Caml_curry.app1(g[1], count);
+              var match$3 = Caml_curry.app1(g[/* func */1], count);
               if (match$3) {
                 return /* Scons */{
                         0: match$3[0],
@@ -124,11 +124,11 @@ function get_data(count, _d) {
             break;
         case 4 : 
             var b = d[0];
-            if (b[3] >= b[2]) {
+            if (b[/* ind */3] >= b[/* len */2]) {
               fill_buff(b);
             }
-            if (b[2]) {
-              var r = b[1][b[3]];
+            if (b[/* len */2]) {
+              var r = b[/* buff */1][b[/* ind */3]];
               ++ b[3];
               return /* Scons */{
                       0: r,
@@ -149,7 +149,7 @@ function get_data(count, _d) {
 
 function peek(s) {
   while(true) {
-    var match = s[1];
+    var match = s[/* data */1];
     if (typeof match === "number") {
       return /* None */0;
     }
@@ -158,7 +158,7 @@ function peek(s) {
         case 0 : 
             return /* Some */[match[0]];
         case 1 : 
-            var d = get_data(s[0], s[1]);
+            var d = get_data(s[/* count */0], s[/* data */1]);
             if (typeof d === "number") {
               if (d) {
                 throw [
@@ -198,23 +198,23 @@ function peek(s) {
             continue ;
             case 3 : 
             var g = match[0];
-            var match$1 = g[0];
+            var match$1 = g[/* curr */0];
             if (match$1) {
               return match$1[0];
             }
             else {
-              var x = Caml_curry.app1(g[1], s[0]);
+              var x = Caml_curry.app1(g[/* func */1], s[/* count */0]);
               g[0] = /* Some */[x];
               return x;
             }
             break;
         case 4 : 
             var b = match[0];
-            if (b[3] >= b[2]) {
+            if (b[/* ind */3] >= b[/* len */2]) {
               fill_buff(b);
             }
-            if (b[2]) {
-              return /* Some */[b[1][b[3]]];
+            if (b[/* len */2]) {
+              return /* Some */[b[/* buff */1][b[/* ind */3]]];
             }
             else {
               s[1] = /* Sempty */0;
@@ -228,7 +228,7 @@ function peek(s) {
 
 function junk(s) {
   while(true) {
-    var match = s[1];
+    var match = s[/* data */1];
     var exit = 0;
     if (typeof match === "number") {
       exit = 1;
@@ -241,7 +241,7 @@ function junk(s) {
             return /* () */0;
         case 3 : 
             var g = match[0];
-            var match$1 = g[0];
+            var match$1 = g[/* curr */0];
             if (match$1) {
               ++ s[0];
               g[0] = /* None */0;
@@ -278,7 +278,7 @@ function nget(n, s) {
   if (n <= 0) {
     return /* tuple */[
             /* [] */0,
-            s[1],
+            s[/* data */1],
             0
           ];
   }
@@ -305,7 +305,7 @@ function nget(n, s) {
     else {
       return /* tuple */[
               /* [] */0,
-              s[1],
+              s[/* data */1],
               0
             ];
     }
@@ -433,8 +433,8 @@ function iapp(i, s) {
   return /* record */[
           0,
           /* Sapp */{
-            0: i[1],
-            1: s[1],
+            0: i[/* data */1],
+            1: s[/* data */1],
             length: 2,
             tag: 1
           }
@@ -446,7 +446,7 @@ function icons(i, s) {
           0,
           /* Scons */{
             0: i,
-            1: s[1],
+            1: s[/* data */1],
             length: 2,
             tag: 0
           }
@@ -472,8 +472,8 @@ function lapp(f, s) {
             0: {
               0: function () {
                 return /* Sapp */{
-                        0: Caml_curry.app1(f, /* () */0)[1],
-                        1: s[1],
+                        0: Caml_curry.app1(f, /* () */0)[/* data */1],
+                        1: s[/* data */1],
                         length: 2,
                         tag: 1
                       };
@@ -495,7 +495,7 @@ function lcons(f, s) {
               0: function () {
                 return /* Scons */{
                         0: Caml_curry.app1(f, /* () */0),
-                        1: s[1],
+                        1: s[/* data */1],
                         length: 2,
                         tag: 0
                       };
@@ -537,7 +537,7 @@ function slazy(f) {
           /* Slazy */{
             0: {
               0: function () {
-                return Caml_curry.app1(f, /* () */0)[1];
+                return Caml_curry.app1(f, /* () */0)[/* data */1];
               },
               length: 1,
               tag: 246
@@ -550,9 +550,9 @@ function slazy(f) {
 
 function dump(f, s) {
   Pervasives.print_string("{count = ");
-  Pervasives.print_int(s[0]);
+  Pervasives.print_int(s[/* count */0]);
   Pervasives.print_string("; data = ");
-  dump_data(f, s[1]);
+  dump_data(f, s[/* data */1]);
   Pervasives.print_string("}");
   return Pervasives.print_newline(/* () */0);
 }

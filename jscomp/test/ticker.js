@@ -72,7 +72,7 @@ function string_of_float_option(param) {
   }
 }
 
-var Util = [
+var Util = /* module */[
   split,
   string_of_float_option
 ];
@@ -115,15 +115,15 @@ function string_of_rank(param) {
 
 function find_ticker_by_name(all_tickers, ticker) {
   return List.find(function (param) {
-              return +(param[2] === ticker);
+              return +(param[/* ticker_name */2] === ticker);
             }, all_tickers);
 }
 
 function print_all_composite(all_tickers) {
   return List.iter(function (param) {
-              var value = param[0];
-              var ticker_name = param[2];
-              if (param[3]) {
+              var value = param[/* value */0];
+              var ticker_name = param[/* ticker_name */2];
+              if (param[/* type_ */3]) {
                 if (value) {
                   console.log(ticker_name);
                   return /* () */0;
@@ -908,18 +908,18 @@ var Ticker_map = [
 function compute_update_sequences(all_tickers) {
   List.fold_left(function (counter, ticker) {
         var loop = function (counter, ticker) {
-          var rank = ticker[1];
+          var rank = ticker[/* rank */1];
           if (typeof rank === "number") {
             if (rank !== 0) {
               return counter;
             }
             else {
               ticker[1] = /* Visited */1;
-              var match = ticker[3];
+              var match = ticker[/* type_ */3];
               if (match) {
                 var match$1 = match[0];
-                var counter$1 = loop(counter, match$1[2]);
-                var counter$2 = loop(counter$1, match$1[1]);
+                var counter$1 = loop(counter, match$1[/* lhs */2]);
+                var counter$2 = loop(counter$1, match$1[/* rhs */1]);
                 var counter$3 = counter$2 + 1;
                 ticker[1] = /* Ranked */{
                   0: counter$3,
@@ -946,21 +946,21 @@ function compute_update_sequences(all_tickers) {
         return loop(counter, ticker);
       }, 0, all_tickers);
   var map = List.fold_left(function (map, ticker) {
-        if (ticker[3]) {
+        if (ticker[/* type_ */3]) {
           var loop = function (_up, _map, _ticker) {
             while(true) {
               var ticker = _ticker;
               var map = _map;
               var up = _up;
-              var type_ = ticker[3];
-              var ticker_name = ticker[2];
+              var type_ = ticker[/* type_ */3];
+              var ticker_name = ticker[/* ticker_name */2];
               if (type_) {
                 var match = type_[0];
                 var map$1 = loop(/* :: */[
                       ticker,
                       up
-                    ], map, match[2]);
-                _ticker = match[1];
+                    ], map, match[/* lhs */2]);
+                _ticker = match[/* rhs */1];
                 _map = map$1;
                 _up = /* :: */[
                   ticker,
@@ -978,7 +978,7 @@ function compute_update_sequences(all_tickers) {
           return loop(/* [] */0, map, ticker);
         }
         else {
-          return add(ticker[2], /* :: */[
+          return add(ticker[/* ticker_name */2], /* :: */[
                       ticker,
                       /* [] */0
                     ], map);
@@ -986,8 +986,8 @@ function compute_update_sequences(all_tickers) {
       }, /* Empty */0, List.rev(all_tickers));
   return fold(function (k, l, map) {
               var l$1 = List.sort_uniq(function (param, param$1) {
-                    var lhs = param[1];
-                    var rhs = param$1[1];
+                    var lhs = param[/* rank */1];
+                    var rhs = param$1[/* rank */1];
                     if (typeof lhs === "number") {
                       throw [
                             Caml_builtin_exceptions.failure,
@@ -1011,17 +1011,17 @@ function compute_update_sequences(all_tickers) {
 function process_quote(ticker_map, new_ticker, new_value) {
   var update_sequence = find(new_ticker, ticker_map);
   return List.iter(function (ticker) {
-              var match = ticker[3];
+              var match = ticker[/* type_ */3];
               if (match) {
                 var match$1 = match[0];
-                var match$2 = match$1[2][0];
-                var match$3 = match$1[1][0];
+                var match$2 = match$1[/* lhs */2][/* value */0];
+                var match$3 = match$1[/* rhs */1][/* value */0];
                 var value;
                 if (match$2) {
                   if (match$3) {
                     var y = match$3[0];
                     var x = match$2[0];
-                    value = match$1[0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
+                    value = match$1[/* op */0] !== 0 ? /* Some */[x - y] : /* Some */[x + y];
                   }
                   else {
                     value = /* None */0;
@@ -1033,7 +1033,7 @@ function process_quote(ticker_map, new_ticker, new_value) {
                 ticker[0] = value;
                 return /* () */0;
               }
-              else if (ticker[2] === new_ticker) {
+              else if (ticker[/* ticker_name */2] === new_ticker) {
                 ticker[0] = /* Some */[new_value];
                 return /* () */0;
               }

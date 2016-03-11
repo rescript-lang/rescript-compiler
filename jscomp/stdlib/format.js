@@ -19,7 +19,7 @@ function add_queue(x, q) {
     length: 1,
     tag: 0
   };
-  var match = q[0];
+  var match = q[/* insert */0];
   if (match) {
     q[0] = c;
     match[0][1] = c;
@@ -40,9 +40,9 @@ var Empty_queue = {
 };
 
 function peek_queue(param) {
-  var match = param[1];
+  var match = param[/* body */1];
   if (match) {
-    return match[0][0];
+    return match[0][/* head */0];
   }
   else {
     throw Empty_queue;
@@ -50,11 +50,11 @@ function peek_queue(param) {
 }
 
 function take_queue(q) {
-  var match = q[1];
+  var match = q[/* body */1];
   if (match) {
     var match$1 = match[0];
-    var x = match$1[0];
-    var tl = match$1[1];
+    var x = match$1[/* head */0];
+    var tl = match$1[/* tail */1];
     q[1] = tl;
     if (!tl) {
       q[0] = /* Nil */0;
@@ -67,14 +67,14 @@ function take_queue(q) {
 }
 
 function pp_enqueue(state, token) {
-  state[12] += token[2];
-  return add_queue(token, state[26]);
+  state[12] += token[/* length */2];
+  return add_queue(token, state[/* pp_queue */26]);
 }
 
 function pp_clear_queue(state) {
   state[11] = 1;
   state[12] = 1;
-  var q = state[26];
+  var q = state[/* pp_queue */26];
   q[0] = /* Nil */0;
   q[1] = /* Nil */0;
   return /* () */0;
@@ -83,31 +83,31 @@ function pp_clear_queue(state) {
 var pp_infinity = 1000000010;
 
 function pp_output_string(state, s) {
-  return Caml_curry.app3(state[16], s, 0, s.length);
+  return Caml_curry.app3(state[/* pp_out_string */16], s, 0, s.length);
 }
 
 function break_new_line(state, offset, width) {
-  Caml_curry.app1(state[18], /* () */0);
+  Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
   state[10] = /* true */1;
-  var indent = state[5] - width + offset;
-  var real_indent = Pervasives.min(state[7], indent);
+  var indent = state[/* pp_margin */5] - width + offset;
+  var real_indent = Pervasives.min(state[/* pp_max_indent */7], indent);
   state[9] = real_indent;
-  state[8] = state[5] - state[9];
-  return Caml_curry.app1(state[19], state[9]);
+  state[8] = state[/* pp_margin */5] - state[/* pp_current_indent */9];
+  return Caml_curry.app1(state[/* pp_out_spaces */19], state[/* pp_current_indent */9]);
 }
 
 function break_same_line(state, width) {
   state[8] -= width;
-  return Caml_curry.app1(state[19], width);
+  return Caml_curry.app1(state[/* pp_out_spaces */19], width);
 }
 
 function pp_force_break_line(state) {
-  var match = state[1];
+  var match = state[/* pp_format_stack */1];
   if (match) {
     var match$1 = match[0];
     var width = match$1[1];
     var bl_ty = match$1[0];
-    if (width > state[8] && bl_ty !== 0 && bl_ty < 5) {
+    if (width > state[/* pp_space_left */8] && bl_ty !== 0 && bl_ty < 5) {
       return break_new_line(state, 0, width);
     }
     else {
@@ -115,7 +115,7 @@ function pp_force_break_line(state) {
     }
   }
   else {
-    return Caml_curry.app1(state[18], /* () */0);
+    return Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
   }
 }
 
@@ -123,7 +123,7 @@ function format_pp_token(state, size, param) {
   if (typeof param === "number") {
     switch (param) {
       case 0 : 
-          var match = state[2];
+          var match = state[/* pp_tbox_stack */2];
           if (match) {
             var tabs = match[0][0];
             var add_tab = function (n, ls) {
@@ -149,7 +149,7 @@ function format_pp_token(state, size, param) {
                       ];
               }
             };
-            tabs[0] = add_tab(state[5] - state[8], tabs[0]);
+            tabs[0] = add_tab(state[/* pp_margin */5] - state[/* pp_space_left */8], tabs[0]);
             return /* () */0;
           }
           else {
@@ -157,7 +157,7 @@ function format_pp_token(state, size, param) {
           }
           break;
       case 1 : 
-          var match$1 = state[1];
+          var match$1 = state[/* pp_format_stack */1];
           if (match$1) {
             state[1] = match$1[1];
             return /* () */0;
@@ -166,7 +166,7 @@ function format_pp_token(state, size, param) {
             return /* () */0;
           }
       case 2 : 
-          var match$2 = state[2];
+          var match$2 = state[/* pp_tbox_stack */2];
           if (match$2) {
             state[2] = match$2[1];
             return /* () */0;
@@ -175,19 +175,19 @@ function format_pp_token(state, size, param) {
             return /* () */0;
           }
       case 3 : 
-          var match$3 = state[1];
+          var match$3 = state[/* pp_format_stack */1];
           if (match$3) {
             return break_new_line(state, 0, match$3[0][1]);
           }
           else {
-            return Caml_curry.app1(state[18], /* () */0);
+            return Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
           }
       case 4 : 
-          if (state[9] !== state[5] - state[8]) {
+          if (state[/* pp_current_indent */9] !== state[/* pp_margin */5] - state[/* pp_space_left */8]) {
             var state$1 = state;
-            var match$4 = take_queue(state$1[26]);
-            var size$1 = match$4[0];
-            state$1[11] -= match$4[2];
+            var match$4 = take_queue(state$1[/* pp_queue */26]);
+            var size$1 = match$4[/* elem_size */0];
+            state$1[11] -= match$4[/* length */2];
             state$1[8] += size$1;
             return /* () */0;
           }
@@ -195,9 +195,9 @@ function format_pp_token(state, size, param) {
             return 0;
           }
       case 5 : 
-          var match$5 = state[4];
+          var match$5 = state[/* pp_mark_stack */4];
           if (match$5) {
-            var marker = Caml_curry.app1(state[23], match$5[0]);
+            var marker = Caml_curry.app1(state[/* pp_mark_close_tag */23], match$5[0]);
             pp_output_string(state, marker);
             state[4] = match$5[1];
             return /* () */0;
@@ -219,7 +219,7 @@ function format_pp_token(state, size, param) {
       case 1 : 
           var off = param[1];
           var n = param[0];
-          var match$6 = state[1];
+          var match$6 = state[/* pp_format_stack */1];
           if (match$6) {
             var match$7 = match$6[0];
             var width = match$7[1];
@@ -228,14 +228,14 @@ function format_pp_token(state, size, param) {
               case 2 : 
                   return break_new_line(state, off, width);
               case 3 : 
-                  if (size > state[8]) {
+                  if (size > state[/* pp_space_left */8]) {
                     return break_new_line(state, off, width);
                   }
                   else {
                     return break_same_line(state, n);
                   }
               case 4 : 
-                  if (state[10] || !(size > state[8] || state[9] > state[5] - width + off)) {
+                  if (state[/* pp_is_new_line */10] || !(size > state[/* pp_space_left */8] || state[/* pp_current_indent */9] > state[/* pp_margin */5] - width + off)) {
                     return break_same_line(state, n);
                   }
                   else {
@@ -252,8 +252,8 @@ function format_pp_token(state, size, param) {
           }
           break;
       case 2 : 
-          var insertion_point = state[5] - state[8];
-          var match$8 = state[2];
+          var insertion_point = state[/* pp_margin */5] - state[/* pp_space_left */8];
+          var match$8 = state[/* pp_tbox_stack */2];
           if (match$8) {
             var tabs$1 = match$8[0][0];
             var find = function (n, _param) {
@@ -298,7 +298,7 @@ function format_pp_token(state, size, param) {
               return break_same_line(state, offset + param[0]);
             }
             else {
-              return break_new_line(state, tab + param[1], state[5]);
+              return break_new_line(state, tab + param[1], state[/* pp_margin */5]);
             }
           }
           else {
@@ -307,13 +307,13 @@ function format_pp_token(state, size, param) {
           break;
       case 3 : 
           var ty = param[1];
-          var insertion_point$1 = state[5] - state[8];
-          if (insertion_point$1 > state[7]) {
+          var insertion_point$1 = state[/* pp_margin */5] - state[/* pp_space_left */8];
+          if (insertion_point$1 > state[/* pp_max_indent */7]) {
             pp_force_break_line(state);
           }
-          var offset$1 = state[8] - param[0];
+          var offset$1 = state[/* pp_space_left */8] - param[0];
           var bl_type = ty !== 1 ? (
-              size > state[8] ? ty : /* Pp_fits */5
+              size > state[/* pp_space_left */8] ? ty : /* Pp_fits */5
             ) : /* Pp_vbox */1;
           state[1] = /* :: */[
             /* Format_elem */{
@@ -322,22 +322,22 @@ function format_pp_token(state, size, param) {
               length: 2,
               tag: 0
             },
-            state[1]
+            state[/* pp_format_stack */1]
           ];
           return /* () */0;
       case 4 : 
           state[2] = /* :: */[
             param[0],
-            state[2]
+            state[/* pp_tbox_stack */2]
           ];
           return /* () */0;
       case 5 : 
           var tag_name = param[0];
-          var marker$1 = Caml_curry.app1(state[22], tag_name);
+          var marker$1 = Caml_curry.app1(state[/* pp_mark_open_tag */22], tag_name);
           pp_output_string(state, marker$1);
           state[4] = /* :: */[
             tag_name,
-            state[4]
+            state[/* pp_mark_stack */4]
           ];
           return /* () */0;
       
@@ -349,15 +349,15 @@ function advance_left(state) {
   try {
     var state$1 = state;
     while(true) {
-      var match = peek_queue(state$1[26]);
-      var size = match[0];
-      if (size < 0 && state$1[12] - state$1[11] < state$1[8]) {
+      var match = peek_queue(state$1[/* pp_queue */26]);
+      var size = match[/* elem_size */0];
+      if (size < 0 && state$1[/* pp_right_total */12] - state$1[/* pp_left_total */11] < state$1[/* pp_space_left */8]) {
         return 0;
       }
       else {
-        take_queue(state$1[26]);
-        format_pp_token(state$1, size < 0 ? pp_infinity : size, match[1]);
-        state$1[11] = match[2] + state$1[11];
+        take_queue(state$1[/* pp_queue */26]);
+        format_pp_token(state$1, size < 0 ? pp_infinity : size, match[/* token */1]);
+        state$1[11] = match[/* length */2] + state$1[/* pp_left_total */11];
         continue ;
         
       }
@@ -413,19 +413,19 @@ var scan_stack_bottom = /* :: */[
 ];
 
 function set_size(state, ty) {
-  var match = state[0];
+  var match = state[/* pp_scan_stack */0];
   if (match) {
     var match$1 = match[0];
     var queue_elem = match$1[1];
-    var size = queue_elem[0];
+    var size = queue_elem[/* elem_size */0];
     var t = match[1];
-    if (match$1[0] < state[11]) {
+    if (match$1[0] < state[/* pp_left_total */11]) {
       state[0] = scan_stack_bottom;
       return /* () */0;
     }
     else {
       var exit = 0;
-      var $js = queue_elem[1];
+      var $js = queue_elem[/* token */1];
       if (typeof $js === "number") {
         return /* () */0;
       }
@@ -440,7 +440,7 @@ function set_size(state, ty) {
                 return 0;
               }
               else {
-                queue_elem[0] = state[12] + size;
+                queue_elem[0] = state[/* pp_right_total */12] + size;
                 state[0] = t;
                 return /* () */0;
               }
@@ -450,7 +450,7 @@ function set_size(state, ty) {
       }
       if (exit === 1) {
         if (ty) {
-          queue_elem[0] = state[12] + size;
+          queue_elem[0] = state[/* pp_right_total */12] + size;
           state[0] = t;
           return /* () */0;
         }
@@ -473,21 +473,21 @@ function scan_push(state, b, tok) {
   }
   state[0] = /* :: */[
     /* Scan_elem */{
-      0: state[12],
+      0: state[/* pp_right_total */12],
       1: tok,
       length: 2,
       tag: 0
     },
-    state[0]
+    state[/* pp_scan_stack */0]
   ];
   return /* () */0;
 }
 
 function pp_open_box_gen(state, indent, br_ty) {
   ++ state[13];
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
-      -state[12],
+      -state[/* pp_right_total */12],
       /* Pp_begin */{
         0: indent,
         1: br_ty,
@@ -498,9 +498,9 @@ function pp_open_box_gen(state, indent, br_ty) {
     ];
     return scan_push(state, /* false */0, elem);
   }
-  else if (state[13] === state[14]) {
+  else if (state[/* pp_curr_depth */13] === state[/* pp_max_boxes */14]) {
     var state$1 = state;
-    var s = state[15];
+    var s = state[/* pp_ellipsis */15];
     var len = s.length;
     return enqueue_string_as(state$1, len, s);
   }
@@ -510,8 +510,8 @@ function pp_open_box_gen(state, indent, br_ty) {
 }
 
 function pp_close_box(state, _) {
-  if (state[13] > 1) {
-    if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] > 1) {
+    if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
       pp_enqueue(state, /* record */[
             0,
             /* Pp_end */1,
@@ -529,14 +529,14 @@ function pp_close_box(state, _) {
 }
 
 function pp_open_tag(state, tag_name) {
-  if (state[20]) {
+  if (state[/* pp_print_tags */20]) {
     state[3] = /* :: */[
       tag_name,
-      state[3]
+      state[/* pp_tag_stack */3]
     ];
-    Caml_curry.app1(state[24], tag_name);
+    Caml_curry.app1(state[/* pp_print_open_tag */24], tag_name);
   }
-  if (state[21]) {
+  if (state[/* pp_mark_tags */21]) {
     return pp_enqueue(state, /* record */[
                 0,
                 /* Pp_open_tag */{
@@ -553,17 +553,17 @@ function pp_open_tag(state, tag_name) {
 }
 
 function pp_close_tag(state, _) {
-  if (state[21]) {
+  if (state[/* pp_mark_tags */21]) {
     pp_enqueue(state, /* record */[
           0,
           /* Pp_close_tag */5,
           0
         ]);
   }
-  if (state[20]) {
-    var match = state[3];
+  if (state[/* pp_print_tags */20]) {
+    var match = state[/* pp_tag_stack */3];
     if (match) {
-      Caml_curry.app1(state[25], match[0]);
+      Caml_curry.app1(state[/* pp_print_close_tag */25], match[0]);
       state[3] = match[1];
       return /* () */0;
     }
@@ -587,11 +587,11 @@ function pp_set_mark_tags(state, b) {
 }
 
 function pp_get_print_tags(state, _) {
-  return state[20];
+  return state[/* pp_print_tags */20];
 }
 
 function pp_get_mark_tags(state, _) {
-  return state[21];
+  return state[/* pp_mark_tags */21];
 }
 
 function pp_set_tags(state, b) {
@@ -602,18 +602,18 @@ function pp_set_tags(state, b) {
 
 function pp_get_formatter_tag_functions(state, _) {
   return /* record */[
-          state[22],
-          state[23],
-          state[24],
-          state[25]
+          state[/* pp_mark_open_tag */22],
+          state[/* pp_mark_close_tag */23],
+          state[/* pp_print_open_tag */24],
+          state[/* pp_print_close_tag */25]
         ];
 }
 
 function pp_set_formatter_tag_functions(state, param) {
-  state[22] = param[0];
-  state[23] = param[1];
-  state[24] = param[2];
-  state[25] = param[3];
+  state[22] = param[/* mark_open_tag */0];
+  state[23] = param[/* mark_close_tag */1];
+  state[24] = param[/* print_open_tag */2];
+  state[25] = param[/* print_close_tag */3];
   return /* () */0;
 }
 
@@ -626,24 +626,24 @@ function pp_rinit(state) {
   state[4] = /* [] */0;
   state[9] = 0;
   state[13] = 0;
-  state[8] = state[5];
+  state[8] = state[/* pp_margin */5];
   return pp_open_box_gen(state, 0, /* Pp_hovbox */3);
 }
 
 function pp_flush_queue(state, b) {
-  while(state[13] > 1) {
+  while(state[/* pp_curr_depth */13] > 1) {
     pp_close_box(state, /* () */0);
   };
   state[12] = pp_infinity;
   advance_left(state);
   if (b) {
-    Caml_curry.app1(state[18], /* () */0);
+    Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
   }
   return pp_rinit(state);
 }
 
 function pp_print_as_size(state, size, s) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     return enqueue_string_as(state, size, s);
   }
   else {
@@ -697,16 +697,16 @@ function pp_open_box(state, indent) {
 
 function pp_print_newline(state, _) {
   pp_flush_queue(state, /* true */1);
-  return Caml_curry.app1(state[17], /* () */0);
+  return Caml_curry.app1(state[/* pp_out_flush */17], /* () */0);
 }
 
 function pp_print_flush(state, _) {
   pp_flush_queue(state, /* false */0);
-  return Caml_curry.app1(state[17], /* () */0);
+  return Caml_curry.app1(state[/* pp_out_flush */17], /* () */0);
 }
 
 function pp_force_newline(state, _) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     return enqueue_advance(state, /* record */[
                 0,
                 /* Pp_newline */3,
@@ -719,7 +719,7 @@ function pp_force_newline(state, _) {
 }
 
 function pp_print_if_newline(state, _) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     return enqueue_advance(state, /* record */[
                 0,
                 /* Pp_if_newline */4,
@@ -732,9 +732,9 @@ function pp_print_if_newline(state, _) {
 }
 
 function pp_print_break(state, width, offset) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
-      -state[12],
+      -state[/* pp_right_total */12],
       /* Pp_break */{
         0: width,
         1: offset,
@@ -760,7 +760,7 @@ function pp_print_cut(state, _) {
 
 function pp_open_tbox(state, _) {
   ++ state[13];
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       0,
       /* Pp_tbegin */{
@@ -782,8 +782,8 @@ function pp_open_tbox(state, _) {
 }
 
 function pp_close_tbox(state, _) {
-  if (state[13] > 1) {
-    if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] > 1) {
+    if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
       var elem = /* record */[
         0,
         /* Pp_tend */2,
@@ -803,9 +803,9 @@ function pp_close_tbox(state, _) {
 }
 
 function pp_print_tbreak(state, width, offset) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
-      -state[12],
+      -state[/* pp_right_total */12],
       /* Pp_tbreak */{
         0: width,
         1: offset,
@@ -826,7 +826,7 @@ function pp_print_tab(state, _) {
 }
 
 function pp_set_tab(state, _) {
-  if (state[13] < state[14]) {
+  if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       0,
       /* Pp_stab */0,
@@ -910,11 +910,11 @@ function pp_set_max_boxes(state, n) {
 }
 
 function pp_get_max_boxes(state, _) {
-  return state[14];
+  return state[/* pp_max_boxes */14];
 }
 
 function pp_over_max_boxes(state, _) {
-  return +(state[13] === state[14]);
+  return +(state[/* pp_curr_depth */13] === state[/* pp_max_boxes */14]);
 }
 
 function pp_set_ellipsis_text(state, s) {
@@ -923,7 +923,7 @@ function pp_set_ellipsis_text(state, s) {
 }
 
 function pp_get_ellipsis_text(state, _) {
-  return state[15];
+  return state[/* pp_ellipsis */15];
 }
 
 function pp_limit(n) {
@@ -937,11 +937,11 @@ function pp_limit(n) {
 
 function pp_set_max_indent(state, n) {
   var state$1 = state;
-  var n$1 = state[5] - n;
+  var n$1 = state[/* pp_margin */5] - n;
   if (n$1 >= 1) {
     var n$2 = pp_limit(n$1);
     state$1[6] = n$2;
-    state$1[7] = state$1[5] - state$1[6];
+    state$1[7] = state$1[/* pp_margin */5] - state$1[/* pp_min_space_left */6];
     return pp_rinit(state$1);
   }
   else {
@@ -950,14 +950,14 @@ function pp_set_max_indent(state, n) {
 }
 
 function pp_get_max_indent(state, _) {
-  return state[7];
+  return state[/* pp_max_indent */7];
 }
 
 function pp_set_margin(state, n) {
   if (n >= 1) {
     var n$1 = pp_limit(n);
     state[5] = n$1;
-    var new_max_indent = state[7] <= state[5] ? state[7] : Pervasives.max(Pervasives.max(state[5] - state[6], state[5] / 2 | 0), 1);
+    var new_max_indent = state[/* pp_max_indent */7] <= state[/* pp_margin */5] ? state[/* pp_max_indent */7] : Pervasives.max(Pervasives.max(state[/* pp_margin */5] - state[/* pp_min_space_left */6], state[/* pp_margin */5] / 2 | 0), 1);
     return pp_set_max_indent(state, new_max_indent);
   }
   else {
@@ -966,23 +966,23 @@ function pp_set_margin(state, n) {
 }
 
 function pp_get_margin(state, _) {
-  return state[5];
+  return state[/* pp_margin */5];
 }
 
 function pp_set_formatter_out_functions(state, param) {
-  state[16] = param[0];
-  state[17] = param[1];
-  state[18] = param[2];
-  state[19] = param[3];
+  state[16] = param[/* out_string */0];
+  state[17] = param[/* out_flush */1];
+  state[18] = param[/* out_newline */2];
+  state[19] = param[/* out_spaces */3];
   return /* () */0;
 }
 
 function pp_get_formatter_out_functions(state, _) {
   return /* record */[
-          state[16],
-          state[17],
-          state[18],
-          state[19]
+          state[/* pp_out_string */16],
+          state[/* pp_out_flush */17],
+          state[/* pp_out_newline */18],
+          state[/* pp_out_spaces */19]
         ];
 }
 
@@ -994,8 +994,8 @@ function pp_set_formatter_output_functions(state, f, g) {
 
 function pp_get_formatter_output_functions(state, _) {
   return /* tuple */[
-          state[16],
-          state[17]
+          state[/* pp_out_string */16],
+          state[/* pp_out_flush */17]
         ];
 }
 
@@ -1008,15 +1008,15 @@ function pp_set_all_formatter_output_functions(state, f, g, h, i) {
 
 function pp_get_all_formatter_output_functions(state, _) {
   return /* tuple */[
-          state[16],
-          state[17],
-          state[18],
-          state[19]
+          state[/* pp_out_string */16],
+          state[/* pp_out_flush */17],
+          state[/* pp_out_newline */18],
+          state[/* pp_out_spaces */19]
         ];
 }
 
 function display_newline(state, _) {
-  return Caml_curry.app3(state[16], "\n", 0, 1);
+  return Caml_curry.app3(state[/* pp_out_string */16], "\n", 0, 1);
 }
 
 var blank_line = $$String.make(80, /* " " */32);
@@ -1026,10 +1026,10 @@ function display_blanks(state, _n) {
     var n = _n;
     if (n > 0) {
       if (n <= 80) {
-        return Caml_curry.app3(state[16], blank_line, 0, n);
+        return Caml_curry.app3(state[/* pp_out_string */16], blank_line, 0, n);
       }
       else {
-        Caml_curry.app3(state[16], blank_line, 0, 80);
+        Caml_curry.app3(state[/* pp_out_string */16], blank_line, 0, 80);
         _n = n - 80;
         continue ;
         
@@ -1292,7 +1292,7 @@ function set_margin(param) {
 }
 
 function get_margin() {
-  return std_formatter[5];
+  return std_formatter[/* pp_margin */5];
 }
 
 function set_max_indent(param) {
@@ -1300,7 +1300,7 @@ function set_max_indent(param) {
 }
 
 function get_max_indent() {
-  return std_formatter[7];
+  return std_formatter[/* pp_max_indent */7];
 }
 
 function set_max_boxes(param) {
@@ -1308,7 +1308,7 @@ function set_max_boxes(param) {
 }
 
 function get_max_boxes() {
-  return std_formatter[14];
+  return std_formatter[/* pp_max_boxes */14];
 }
 
 function over_max_boxes(param) {
@@ -1321,7 +1321,7 @@ function set_ellipsis_text(param) {
 }
 
 function get_ellipsis_text() {
-  return std_formatter[15];
+  return std_formatter[/* pp_ellipsis */15];
 }
 
 function set_formatter_out_channel(param) {
@@ -1366,7 +1366,7 @@ function set_print_tags(param) {
 }
 
 function get_print_tags() {
-  return std_formatter[20];
+  return std_formatter[/* pp_print_tags */20];
 }
 
 function set_mark_tags(param) {
@@ -1375,7 +1375,7 @@ function set_mark_tags(param) {
 }
 
 function get_mark_tags() {
-  return std_formatter[21];
+  return std_formatter[/* pp_mark_tags */21];
 }
 
 function set_tags(param) {
@@ -1387,7 +1387,7 @@ function compute_tag(output, tag_acc) {
   var ppf = formatter_of_buffer(buf);
   Caml_curry.app2(output, ppf, tag_acc);
   pp_print_flush(ppf, /* () */0);
-  var len = buf[1];
+  var len = buf[/* position */1];
   if (len < 2) {
     return Buffer.contents(buf);
   }

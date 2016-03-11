@@ -1328,7 +1328,7 @@ and
             st should_return
             lam 
             (List.concat args_code)
-            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field obj' 0l) label )
+            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field Fld_na obj' 0l) label )
                (obj' :: args)) 
         (* [E.small_int 1] is because we use array, 
             when we change the runtime represenation, it needs to be adapted 

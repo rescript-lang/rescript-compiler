@@ -22,5 +22,7 @@
 
 val make : J.mutable_flag -> (string * J.expression) list -> J.expression
 
-val field : J.expression -> J.jsint ->J.expression
+
+val field : Lambda.field_dbg_info -> J.expression -> J.jsint ->J.expression
+
 val copy : Js_exp_make.unary_op

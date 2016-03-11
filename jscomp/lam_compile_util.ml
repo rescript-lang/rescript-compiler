@@ -40,8 +40,8 @@ let comment_of_tag_info  (x : Lambda.tag_info) =
 
   | Array -> Some "array"
   | Module _ ->  
-    None (* Turn it on next time to save some noise diff*)
-    (* Some "module"  *)
+     (* Turn it on next time to save some noise diff*)
+    Some "module"
   | NA -> None 
 let comment_of_pointer_info (x :  Lambda.pointer_info)= 
   match x with 

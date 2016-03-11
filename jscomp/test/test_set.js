@@ -884,7 +884,7 @@ function Make(Ord) {
       return empty;
     }
   };
-  return [
+  return /* module */[
           height,
           create,
           bal,
@@ -927,7 +927,7 @@ function Make(Ord) {
         ];
 }
 
-var N = [3];
+var N = /* module */[3];
 
 exports.Make = Make;
 exports.N    = N;

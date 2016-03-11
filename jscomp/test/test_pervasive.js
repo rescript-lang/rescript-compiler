@@ -6,7 +6,7 @@ var List       = require("../stdlib/list");
 
 var $at = Pervasives.$at;
 
-var Pervasives$1 = [
+var Pervasives$1 = /* module */[
   List.length,
   List.hd,
   List.tl,

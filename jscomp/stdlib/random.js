@@ -21,8 +21,8 @@ function new_state() {
 }
 
 function assign(st1, st2) {
-  $$Array.blit(st2[0], 0, st1[0], 0, 55);
-  st1[1] = st2[1];
+  $$Array.blit(st2[/* st */0], 0, st1[/* st */0], 0, 55);
+  st1[1] = st2[/* idx */1];
   return /* () */0;
 }
 
@@ -36,14 +36,14 @@ function full_init(s, seed) {
   var seed$1 = seed.length ? seed : /* int array */[0];
   var l = seed$1.length;
   for(var i = 0; i<= 54; ++i){
-    s[0][i] = i;
+    s[/* st */0][i] = i;
   }
   var accu = "x";
   for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l); i$1<= i_finish; ++i$1){
     var j = i$1 % 55;
     var k = i$1 % l;
     accu = combine(accu, seed$1[k]);
-    s[0][j] = (s[0][j] ^ extract(accu)) & 1073741823;
+    s[/* st */0][j] = (s[/* st */0][j] ^ extract(accu)) & 1073741823;
   }
   s[1] = 0;
   return /* () */0;
@@ -66,11 +66,11 @@ function copy(s) {
 }
 
 function bits(s) {
-  s[1] = (s[1] + 1) % 55;
-  var curval = s[0][s[1]];
-  var newval = s[0][(s[1] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
+  s[1] = (s[/* idx */1] + 1) % 55;
+  var curval = s[/* st */0][s[/* idx */1]];
+  var newval = s[/* st */0][(s[/* idx */1] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
   var newval30 = newval & 1073741823;
-  s[0][s[1]] = newval30;
+  s[/* st */0][s[/* idx */1]] = newval30;
   return newval30;
 }
 

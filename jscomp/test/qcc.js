@@ -1189,10 +1189,10 @@ function unary(stk) {
           out(18616);
           var g = globs[i];
           var loc = opos[0];
-          le(64, g[0]);
+          le(64, g[/* loc */0]);
           globs[i] = /* record */[
             loc,
-            g[1]
+            g[/* va */1]
           ];
           read(/* Int */0);
         }
@@ -1398,7 +1398,7 @@ function decl(g, _n, _stk) {
               var stk$prime;
               if (g) {
                 var glo = globs[s];
-                if (glo[1] >= 0) {
+                if (glo[/* va */1] >= 0) {
                   throw [
                         Caml_builtin_exceptions.failure,
                         "symbol defined twice"
@@ -1406,7 +1406,7 @@ function decl(g, _n, _stk) {
                 }
                 var va = gpos[0] + textoff + base;
                 globs[s] = /* record */[
-                  glo[0],
+                  glo[/* loc */0],
                   va
                 ];
                 gpos[0] += 8;
@@ -1700,14 +1700,14 @@ function top(_param) {
       if (match.tag === 3) {
         var f = match[0];
         var g = globs[f];
-        if (g[1] >= 0) {
+        if (g[/* va */1] >= 0) {
           throw [
                 Caml_builtin_exceptions.failure,
                 "symbol defined twice"
               ];
         }
         globs[f] = /* record */[
-          g[0],
+          g[/* loc */0],
           opos[0]
         ];
         var emitargs = function (_regs, _n, _stk) {
@@ -1899,10 +1899,10 @@ function elfgen(outf) {
   out(1217084452);
   out(-1921768440);
   out(18616);
-  le(64, gmain[0]);
+  le(64, gmain[/* loc */0]);
   globs[main] = /* record */[
     opos[0] - 8,
-    gmain[1]
+    gmain[/* va */1]
   ];
   out(65488);
   out(35271);
@@ -1912,8 +1912,8 @@ function elfgen(outf) {
   var itr = function (f) {
     return Caml_curry.app1(symitr, function (i, s) {
                 var g = globs[i];
-                if (g[1] < 0 && g[0] !== 0) {
-                  return Caml_curry.app3(f, s, s.length, g[0]);
+                if (g[/* va */1] < 0 && g[/* loc */0] !== 0) {
+                  return Caml_curry.app3(f, s, s.length, g[/* loc */0]);
                 }
                 else {
                   return 0;
@@ -1925,11 +1925,11 @@ function elfgen(outf) {
   };
   var patchloc = function (i, _) {
     var g = globs[i];
-    if (g[1] >= 0 && g[1] < base) {
-      return patch(/* false */0, g[0], va(g[1]));
+    if (g[/* va */1] >= 0 && g[/* va */1] < base) {
+      return patch(/* false */0, g[/* loc */0], va(g[/* va */1]));
     }
-    else if (g[1] >= 0) {
-      return patch(/* false */0, g[0], g[1]);
+    else if (g[/* va */1] >= 0) {
+      return patch(/* false */0, g[/* loc */0], g[/* va */1]);
     }
     else {
       return 0;

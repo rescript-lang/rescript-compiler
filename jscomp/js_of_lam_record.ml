@@ -29,7 +29,14 @@ let make  mutable_flag (args : (string * J.expression) list) =
     E.zero_int_literal empty_record_info (List.map snd args) mutable_flag
 
 
-let field e i = E.index e i 
+
+let field field_info  e i =
+  match field_info with 
+  | Lambda.Fld_na -> 
+    E.index e i 
+  | Lambda.Fld_record s 
+  | Lambda.Fld_module s 
+    -> E.index ~comment:s e i
 
 (**
    used in [Pduprecord]

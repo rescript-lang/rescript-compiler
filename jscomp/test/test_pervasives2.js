@@ -9,7 +9,7 @@ var length = List.length;
 
 var $at = Pervasives.$at;
 
-var List$1 = [
+var List$1 = /* module */[
   length,
   List.hd,
   List.tl,
@@ -144,7 +144,7 @@ var List$1 = [
 
 var $at$1 = Pervasives.$at;
 
-var U = [
+var U = /* module */[
   Stack.Empty,
   Stack.create,
   Stack.push,

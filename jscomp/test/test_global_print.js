@@ -3,9 +3,9 @@
 
 var Hashtbl = require("../stdlib/hashtbl");
 
-var List = [3];
+var List = /* module */[3];
 
-var X = [List];
+var X = /* module */[List];
 
 var Hashtbl$1 = 0;
 

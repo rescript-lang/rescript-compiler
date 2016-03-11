@@ -29,7 +29,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 2 || __ocaml_lex_state$1 < 0) {
-      Caml_curry.app1(lexbuf[0], lexbuf);
+      Caml_curry.app1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       
@@ -39,7 +39,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
         case 0 : 
             return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
-            var c = lexbuf[1][lexbuf[4]];
+            var c = lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4]];
             return $$String.make(1, c) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";

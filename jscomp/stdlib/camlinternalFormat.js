@@ -273,12 +273,12 @@ function param_format_of_ignored_format(ign, fmt) {
 var default_float_precision = 6;
 
 function buffer_check_size(buf, overhead) {
-  var len = buf[1].length;
-  var min_len = buf[0] + overhead;
+  var len = buf[/* bytes */1].length;
+  var min_len = buf[/* ind */0] + overhead;
   if (min_len > len) {
     var new_len = Pervasives.max(len * 2, min_len);
     var new_str = Caml_string.caml_create_string(new_len);
-    Bytes.blit(buf[1], 0, new_str, 0, len);
+    Bytes.blit(buf[/* bytes */1], 0, new_str, 0, len);
     buf[1] = new_str;
     return /* () */0;
   }
@@ -289,7 +289,7 @@ function buffer_check_size(buf, overhead) {
 
 function buffer_add_char(buf, c) {
   buffer_check_size(buf, 1);
-  buf[1][buf[0]] = c;
+  buf[/* bytes */1][buf[/* ind */0]] = c;
   ++ buf[0];
   return /* () */0;
 }
@@ -297,13 +297,13 @@ function buffer_add_char(buf, c) {
 function buffer_add_string(buf, s) {
   var str_len = s.length;
   buffer_check_size(buf, str_len);
-  $$String.blit(s, 0, buf[1], buf[0], str_len);
+  $$String.blit(s, 0, buf[/* bytes */1], buf[/* ind */0], str_len);
   buf[0] += str_len;
   return /* () */0;
 }
 
 function buffer_contents(buf) {
-  return Bytes.sub_string(buf[1], 0, buf[0]);
+  return Bytes.sub_string(buf[/* bytes */1], 0, buf[/* ind */0]);
 }
 
 function char_of_iconv(iconv) {

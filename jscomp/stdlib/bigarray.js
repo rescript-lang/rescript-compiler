@@ -22,7 +22,7 @@ function map_file(fd, $staropt$star, kind, layout, shared, dims) {
   return Caml_bigarray.caml_ba_map_file_bytecode(fd, kind, layout, shared, dims, pos);
 }
 
-var Genarray = [
+var Genarray = /* module */[
   dims,
   map_file
 ];
@@ -44,7 +44,7 @@ function map_file$1(fd, pos, kind, layout, shared, dim) {
   return map_file(fd, pos, kind, layout, shared, /* int array */[dim]);
 }
 
-var Array1 = [
+var Array1 = /* module */[
   create,
   of_array,
   map_file$1
@@ -92,7 +92,7 @@ function map_file$2(fd, pos, kind, layout, shared, dim1, dim2) {
             ]);
 }
 
-var Array2 = [
+var Array2 = /* module */[
   create$1,
   slice_left,
   slice_right,
@@ -168,7 +168,7 @@ function map_file$3(fd, pos, kind, layout, shared, dim1, dim2, dim3) {
             ]);
 }
 
-var Array3 = [
+var Array3 = /* module */[
   create$2,
   slice_left_1,
   slice_right_1,
