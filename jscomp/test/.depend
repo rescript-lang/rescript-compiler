@@ -168,6 +168,8 @@ js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmx : mt.cmx ../lib/js_date.cmx
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmx : mt.cmx
+js_val.cmo :
+js_val.cmx :
 lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
 lam_current_unit.cmx : ../stdlib/string.cmx ../stdlib/filename.cmx
 lam_methname.cmo : ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -618,6 +620,8 @@ js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmj : mt.cmj ../lib/js_date.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
+js_val.cmo :
+js_val.cmj :
 lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
 lam_current_unit.cmj : ../stdlib/string.cmj ../stdlib/filename.cmj
 lam_methname.cmo : ../stdlib/string.cmi ../stdlib/list.cmi \

@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Assert                  = require("assert");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Assert                  = require("assert");
 var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
@@ -38,7 +38,7 @@ function from_pair_suites(name, suites) {
                                                     Caml_builtin_exceptions.assert_failure,
                                                     [
                                                       "mt.ml",
-                                                      54,
+                                                      56,
                                                       16
                                                     ]
                                                   ];

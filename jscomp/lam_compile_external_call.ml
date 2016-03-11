@@ -74,7 +74,7 @@ type js_send = {
 type js_global = { 
   name : string ;
   external_module_name : external_module_name option;
-  (* TODO: handle this logic *)
+  
 } 
 
 type js_new = {  name : string }
@@ -427,12 +427,15 @@ let translate
          2. support [@@js.scope "window"]
          we need know whether we should call [add_js_module] or not 
       *)
-      begin match name, external_module_name with 
+      begin match name, handle_external external_module_name with 
         | "true", None -> E.js_bool true
         | "false", None -> E.js_bool false
         | "null", None -> E.nil 
         | "undefined", None -> E.undefined
-        | _, _ -> 
+        | _, Some(id,mod_name)
+          -> E.external_var_dot id mod_name name
+        | _, None -> 
+
           E.var (Ext_ident.create_js name)
       end
     | Js_send {splice  = js_splice ; name } -> 
