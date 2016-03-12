@@ -2,24 +2,39 @@
 'use strict';
 
 
+function caml_int64_float_of_bits(x) {
+  var to_int32 = function (x) {
+    return x;
+  };
+  var int32 = new Int32Array(/* array */[
+        to_int32(x[/* lo */0]),
+        to_int32(x[/* hi */1])
+      ]);
+  return new Float64Array(int32.buffer)[0];
+}
 
-function $$caml_int64_bits_of_float (x) {
-  // TODO:
-  // can be allocated globally to avoid allocation each time
-  // Need check existense of the API we used here
-  var u = new Float64Array([x]); 
+function caml_int64_bits_of_float(x) {
+  var to_nat = function (x) {
+    return x;
+  };
+  var u = new Float64Array(/* float array */[x]);
   var int32 = new Int32Array(u.buffer);
-  // actually we can return it directly without a conversion
-  return [int32[0], int32[1]];     
+  return /* record */[
+          to_nat(int32[0]),
+          to_nat(int32[1])
+        ];
 }
 
-function $$caml_int64_float_of_bits (x) {
-    var int32 = new Int32Array(x);
-    var float64 = new Float64Array(int32.buffer); 
-    return float64[0];
+function caml_int32_float_of_bits(x) {
+  var int32 = new Int32Array(/* array */[x]);
+  var float32 = new Float32Array(int32.buffer);
+  return float32[0];
 }
 
-;
+function caml_int32_bits_of_float(x) {
+  var float32 = new Float32Array(/* float array */[x]);
+  return new Int32Array(float32.buffer)[0];
+}
 
 function caml_classify_float(x) {
   if (isFinite(x)) {
@@ -166,14 +181,6 @@ function $$caml_log10_float (x) { return Math.LOG10E * Math.log(x); }
 
 ;
 
-function caml_int64_bits_of_float(prim) {
-  return $$caml_int64_bits_of_float(prim);
-}
-
-function caml_int64_float_of_bits(prim) {
-  return $$caml_int64_float_of_bits(prim);
-}
-
 function caml_ldexp_float(prim, prim$1) {
   return $$caml_ldexp_float(prim, prim$1);
 }
@@ -186,8 +193,10 @@ function caml_hypot_float(prim, prim$1) {
   return $$caml_hypot_float(prim, prim$1);
 }
 
-exports.caml_int64_bits_of_float = caml_int64_bits_of_float;
 exports.caml_int64_float_of_bits = caml_int64_float_of_bits;
+exports.caml_int32_float_of_bits = caml_int32_float_of_bits;
+exports.caml_int64_bits_of_float = caml_int64_bits_of_float;
+exports.caml_int32_bits_of_float = caml_int32_bits_of_float;
 exports.caml_classify_float      = caml_classify_float;
 exports.caml_modf_float          = caml_modf_float;
 exports.caml_ldexp_float         = caml_ldexp_float;

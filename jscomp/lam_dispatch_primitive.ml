@@ -290,6 +290,9 @@ let query (prim : Lam_compile_env.primitive_description)
     -> Js_long.compare args 
   | "caml_int64_of_string"
     -> Js_long.of_string args
+
+  | "caml_int32_float_of_bits"
+  | "caml_int32_bits_of_float"
   | "caml_int64_bits_of_float"
   | "caml_int64_float_of_bits"
   | "caml_classify_float"
