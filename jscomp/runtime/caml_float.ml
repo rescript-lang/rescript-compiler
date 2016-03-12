@@ -18,35 +18,44 @@
 
 (* Author: Hongbo Zhang  *)
 
-[%%js.raw{|
-function $$caml_int64_bits_of_float (x) {
-  // TODO:
-  // can be allocated globally to avoid allocation each time
-  // Need check existense of the API we used here
-  var u = new Float64Array([x]); 
-  var int32 = new Int32Array(u.buffer);
-  // actually we can return it directly without a conversion
-  return [int32[0], int32[1]];     
-}
+open Typed_array
 
-function $$caml_int64_float_of_bits (x) {
-    var int32 = new Int32Array(x);
-    var float64 = new Float64Array(int32.buffer); 
-    return float64[0];
-}
-|}]
 
-external caml_int64_float_of_bits : Int64.t -> float = "$$caml_int64_float_of_bits"
-[@@js.call ] [@@js.local]
+let caml_int64_float_of_bits (x : Caml_int64.t) =
+  let to_int32 (x : nativeint) = x |> Nativeint.to_int |> Int32.of_int 
+  in 
+  (*TODO: 
+    This should get inlined, we should apply a simple inliner in the js layer, 
+    the thing is its lambda representation is complex but after js layer, 
+    it's qutie simple 
+  *)
+  let int32 = Int32_array.create [| to_int32 x.lo; to_int32 x.hi |] in
+   Float64_array.get (Float64_array.of_buffer (Int32_array.buffer int32)) 0 
 
-external caml_int64_bits_of_float : float -> Int64.t =  "$$caml_int64_bits_of_float"
-[@@js.call ] [@@js.local]
+let  caml_int64_bits_of_float (x : float) : Caml_int64.t = 
 
-external is_finite : float -> bool = ""
-[@@js.call "isFinite"]
+  let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
 
-external is_nan : float -> bool = ""
-[@@js.call "isNaN"] 
+  let u = Float64_array.create [| x |] in 
+  let int32 = Int32_array.of_buffer (Float64_array.buffer u) in 
+  {lo = to_nat (Int32_array.get int32 0) ; hi = to_nat (Int32_array.get int32 1) }
+
+let caml_int32_float_of_bits (x : int32) =
+  let int32 = Int32_array.create [| x |] in 
+  let float32 = Float32_array.of_buffer ( Int32_array.buffer int32) in
+  Float32_array.get float32 0
+
+let caml_int32_bits_of_float (x : float) = 
+  let float32 = Float32_array.create [|x|] in 
+  Int32_array.get (Int32_array.of_buffer (Float32_array.buffer float32)) 0 
+
+
+
+external is_finite : float -> bool = "isFinite"
+  [@@js.call ]
+
+external is_nan : float -> bool = "isNaN"
+  [@@js.call ] 
 
 let caml_classify_float x : fpclass  = 
   if is_finite x then 
