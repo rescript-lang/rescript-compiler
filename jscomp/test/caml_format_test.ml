@@ -72,5 +72,73 @@ let suites : _ Mt.pair_suites =
     
 let ff = format_int "%32d"
 
-;; Mt.from_pair_suites __FILE__ suites
+let formatter_suites = Mt.[
+    "fmt_concat", 
+    (fun _ -> Eq (Format.asprintf ("%s %03d %L" ^^ "%S %03d %L" ) "32" 33 33 "a" 33 3, "32 033 33\"a\" 033 3"));
+    "fmt_gen",
+    (fun _ -> Eq(Format.asprintf ("%s %03d %L" ^^ "%S %03d %L %a" ) "32" 33 33 "a" 33 3 (Format.pp_print_list Format.pp_print_int) [1;2;3], "32 033 33\"a\" 033 3 12\n3"));
+    "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n  , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "));
+    "long_fmt_2", (fun _ -> Eq(Format.asprintf "@[%23d %2i %3u %4n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]" 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n, "                      1  2   3 4 5l 6L 7 008 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "))
+
+    (* "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no %Ld %Li %Lu %Lx %LX %Lo " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n 12L 13L 14L 15L 16L 17L , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13 12 13 14 f 10 21 ")) *)
+  ]
+
+module Lambda_suites = struct 
+  open Format;;
+
+  let ident ppf s = fprintf ppf "%s" s;;
+  let kwd ppf s = fprintf ppf "%s" s;;
+  type lambda =
+    | Lambda of string * lambda
+    | Var of string
+    | Apply of lambda * lambda
+
+  let rec pr_exp0 ppf = function
+    | Var s -> fprintf ppf "%a" ident s
+    | lam -> fprintf ppf "@[<1>(%a)@]" pr_lambda lam
+
+  and pr_app ppf = function
+    | e ->  fprintf ppf "@[<2>%a@]" pr_other_applications e
+
+  and pr_other_applications ppf f =
+    match f with
+    | Apply (f, arg) -> fprintf ppf "%a@ %a" pr_app f pr_exp0 arg
+    | f -> pr_exp0 ppf f
+
+  and pr_lambda ppf = function
+    | Lambda (s, lam) ->
+      fprintf ppf "@[<1>%a%a%a@ %a@]" kwd "\\" ident s kwd "." pr_lambda lam
+    | e -> pr_app ppf e
+
+  let string_of_lambda  = Format.asprintf "%a" pr_lambda
+end
+
+let lambda_suites = 
+  [|(Lambda_suites.Var "x", "x");
+    (Lambda_suites.Apply (Lambda_suites.Var "x", Lambda_suites.Var "y"), "x y");
+    (Lambda_suites.Lambda ("z",
+                           Lambda_suites.Apply (Lambda_suites.Var "x", Lambda_suites.Var "y")),
+     "\\z. x y");
+    (Lambda_suites.Lambda ("z",
+                           Lambda_suites.Lambda ("z",
+                                                 Lambda_suites.Apply (Lambda_suites.Var "x", Lambda_suites.Var "y"))),
+     "\\z. \\z. x y")|]
+
+let from_lambda_pairs p = 
+  lambda_suites 
+  |> Array.mapi (fun i (a,b) -> Printf.sprintf "lambda_print %d" i, (fun _ -> Mt.Eq(Lambda_suites.string_of_lambda a, b)))
+  |> Array.to_list
+
+
+let ksprintf_suites = Mt.[
+    "ksprintf", (fun _ -> Eq ((let f fmt = Format.ksprintf (fun x -> x ^ x ) fmt in f "%s %s a " "x" "xx"),"x xx a x xx a "));
+    "sprintf", (fun _ -> Eq(Format.sprintf "%s %S" "x" "X", "x \"X\""))
+]
+
+;; Mt.from_pair_suites __FILE__ @@ 
+suites @ 
+formatter_suites @ 
+from_lambda_pairs lambda_suites @
+ksprintf_suites
+
     
