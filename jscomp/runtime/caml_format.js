@@ -465,6 +465,93 @@ function caml_format_int(fmt, i) {
 }
 
 
+function $$js_anything_to_number(x){
+   return +x;
+}
+
+;
+
+function caml_format_float(fmt, x) {
+  var f = _parse_format(fmt);
+  var prec = f[/* prec */9] < 0 ? 6 : f[/* prec */9];
+  var x$1 = x < 0 ? (f[/* sign */8] = -1, -x) : x;
+  var s = "";
+  if (isNaN(x$1)) {
+    s = "nan";
+    f[/* filter */2] = " ";
+  }
+  else if (isFinite(x$1)) {
+    var match = f[/* conv */10];
+    switch (match) {
+      case "e" : 
+          s = x$1.toExponential(prec);
+          var i = s.length;
+          if (s[i - 3] === "e") {
+            s = s.slice(0, i - 1) + ("0" + s.slice(i - 1));
+          }
+          break;
+      case "f" : 
+          s = x$1.toFixed(prec);
+          break;
+      case "g" : 
+          var prec$1 = prec !== 0 ? prec : 1;
+          s = x$1.toExponential(prec$1 - 1);
+          var j = s.indexOf("e");
+          var exp = $$js_anything_to_number(s.slice(j + 1));
+          if (exp < -4 || x$1 >= 1e21 || x$1.toFixed(0).length > prec$1) {
+            var i$1 = j - 1;
+            while(s[i$1] === "0") {
+              -- i$1;
+            };
+            if (s[i$1] === ".") {
+              -- i$1;
+            }
+            s = s.slice(0, i$1 + 1) + s.slice(j);
+            var i$2 = s.length;
+            if (s[i$2 - 3] === "e") {
+              s = s.slice(0, i$2 - 1) + ("0" + s.slice(i$2 - 1));
+            }
+            
+          }
+          else {
+            var p = prec$1;
+            if (exp < 0) {
+              p -= (exp + 1);
+              s = x$1.toFixed(p);
+            }
+            else {
+              while(function () {
+                    s = x$1.toFixed(p);
+                    return +(s.length > prec$1 + 1);
+                  }()) {
+                -- p;
+              };
+            }
+            if (p !== 0) {
+              var k = s.length - 1;
+              while(s[k] === "0") {
+                -- k;
+              };
+              if (s[k] === ".") {
+                -- k;
+              }
+              s = s.slice(0, k + 1);
+            }
+            
+          }
+          break;
+      default:
+        
+    }
+  }
+  else {
+    s = "inf";
+    f[/* filter */2] = " ";
+  }
+  return _finish_formatting(f, s);
+}
+
+
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"
@@ -501,235 +588,8 @@ function $$caml_float_of_string(s) {
     caml_failwith("float_of_string");
 }
 
-/**
- * TODO: Check out how it compares with nodejs util.format
- * */
-function $$parse_format(fmt) {
-    //fmt = caml_bytes_of_string(fmt);
-    var len = fmt.length;
-    if (len > 31)
-        caml_invalid_argument("format_int: format too long");
-    var f = { justify: '+',
-        signstyle: '-',
-        filler: ' ',
-        alternate: false,
-        base: 0,
-        signedconv: false,
-        width: 0, uppercase: false,
-        sign: 1,
-        prec: -1,
-        conv: 'f' };
-    for (var i = 0; i < len; i++) {
-        var c = fmt.charAt(i);
-        switch (c) {
-            case '-':
-                f.justify = '-';
-                break;
-            case '+':
-            case ' ':
-                f.signstyle = c;
-                break;
-            case '#':
-                f.alternate = true;
-                break;
-            case '0':
-                f.filler = '0';
-                break;
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                f.width = 0;
-                var w;
-                while (w = fmt.charCodeAt(i) - 48, w >= 0 && w <= 9) {
-                    f.width = f.width * 10 + w;
-                    i++;
-                }
-                i--;
-                break;
-            case '.':
-                f.prec = 0;
-                i++;
-                var c1;
-                while (c1 = fmt.charCodeAt(i) - 48, c1 >= 0 && c1 <= 9) {
-                    f.prec = f.prec * 10 + c1;
-                    i++;
-                }
-                i--;
-                break;
-            case 'd':
-            case 'i':
-                f.signedconv = true; // fall through to have f.base = 10
-            case 'u':
-                f.base = 10;
-                break;
-            case 'x':
-                f.base = 16;
-                break;
-            case 'X':
-                f.base = 16;
-                f.uppercase = true;
-                break;
-            case 'o':
-                f.base = 8;
-                break;
-            case 'e':
-            case 'f':
-            case 'g':
-                f.signedconv = true;
-                f.conv = c;
-                break;
-            case 'E':
-            case 'F':
-            case 'G':
-                f.signedconv = true;
-                f.uppercase = true;
-                f.conv = c.toLowerCase();
-                break;
-        }
-    }
-    return f;
-}
-
-function $$finish_formatting(f, rawbuffer) {
-    var len = rawbuffer.length;
-    //if (f.uppercase) rawbuffer = rawbuffer.toUpperCase();
-    /* Adjust len to reflect additional chars (sign, etc) */
-    if (f.signedconv && (f.sign < 0 || f.signstyle != '-'))
-        len++;
-    if (f.alternate) {
-        if (f.base == 8)
-            len += 1;
-        if (f.base == 16)
-            len += 2;
-    }
-    /* Do the formatting */
-    var buffer = "";
-    if (f.justify == '+' && f.filler == ' ') {
-        for (var i = len; i < f.width; i++)
-            buffer += ' ';
-    }
-    if (f.signedconv) {
-        if (f.sign < 0)
-            buffer += '-';
-        else if (f.signstyle != '-')
-            buffer += f.signstyle;
-    }
-    if (f.alternate && f.base == 8) {
-        buffer += '0';
-    }
-    if (f.alternate && f.base == 16) {
-        buffer += "0x";
-    }
-    if (f.justify == '+' && f.filler == '0') {
-        for (var i = len; i < f.width; i++)
-            buffer += '0';
-    }
-    if (f.uppercase) {
-        buffer += rawbuffer.toUpperCase();
-    }
-    else {
-        buffer += rawbuffer;
-    }
-    //buffer += rawbuffer;
-    if (f.justify == '-')
-        for (var i = len; i < f.width; i++)
-            buffer += ' ';
-    return buffer;
-}
-
-
-
-
-/**
- * Noat that for {!Pervasives.float_of_string} the first parameter is fixed,
- * We should do code specialization for it
- * @param fmt
- * @param x
- * @returns {string}
- */
-function $$caml_format_float(fmt, x) {
-    var s;
-    var f = $$parse_format(fmt);
-    var prec = (f.prec < 0) ? 6 : f.prec;
-    if (x < 0) {
-        f.sign = -1;
-        x = -x;
-    }
-    if (isNaN(x)) {
-        s = "nan";
-        f.filler = ' ';
-    }
-    else if (!isFinite(x)) {
-        s = "inf";
-        f.filler = ' ';
-    }
-    else {
-        switch (f.conv) {
-            case 'e':
-                var s = x.toExponential(prec);
-                // exponent should be at least two digits
-                var i = s.length;
-                if (s.charAt(i - 3) == 'e')
-                    s = s.slice(0, i - 1) + '0' + s.slice(i - 1);
-                break;
-            case 'f':
-                s = x.toFixed(prec);
-                break;
-            case 'g':
-                prec = prec ? prec : 1;
-                s = x.toExponential(prec - 1);
-                var j = s.indexOf('e');
-                var exp = +s.slice(j + 1);
-                if (exp < -4 || x >= 1e21 || x.toFixed(0).length > prec) {
-                    // remove trailing zeroes
-                    var i = j - 1;
-                    while (s.charAt(i) == '0')
-                        i--;
-                    if (s.charAt(i) == '.')
-                        i--;
-                    s = s.slice(0, i + 1) + s.slice(j);
-                    i = s.length;
-                    if (s.charAt(i - 3) == 'e')
-                        s = s.slice(0, i - 1) + '0' + s.slice(i - 1);
-                    break;
-                }
-                else {
-                    var p = prec;
-                    if (exp < 0) {
-                        p -= exp + 1;
-                        s = x.toFixed(p);
-                    }
-                    else
-                        while (s = x.toFixed(p), s.length > prec + 1)
-                            p--;
-                    if (p) {
-                        // remove trailing zeroes
-                        var i = s.length - 1;
-                        while (s.charAt(i) == '0')
-                            i--;
-                        if (s.charAt(i) == '.')
-                            i--;
-                        s = s.slice(0, i + 1);
-                    }
-                }
-                break;
-        }
-    }
-    return $$finish_formatting(f, s);
-}
-
 
 ;
-
-function caml_format_float(prim, prim$1) {
-  return $$caml_format_float(prim, prim$1);
-}
 
 var caml_nativeint_format = caml_format_int;
 

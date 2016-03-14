@@ -1826,6 +1826,114 @@ var formatter_suites = /* :: */[
   formatter_suites_001
 ];
 
+var float_data = /* array */[
+  /* tuple */[
+    "%f",
+    32,
+    "32.000000"
+  ],
+  /* tuple */[
+    "%f",
+    Pervasives.nan,
+    "nan"
+  ],
+  /* tuple */[
+    "%f",
+    Pervasives.infinity,
+    "inf"
+  ],
+  /* tuple */[
+    "%f",
+    Pervasives.neg_infinity,
+    "-inf"
+  ],
+  /* tuple */[
+    "%1.e",
+    13000,
+    "1e+04"
+  ],
+  /* tuple */[
+    "%1.3e",
+    2.3e-05,
+    "2.300e-05"
+  ],
+  /* tuple */[
+    "%3.10e",
+    3e+56,
+    "3.0000000000e+56"
+  ],
+  /* tuple */[
+    "%3.10f",
+    20000000000,
+    "20000000000.0000000000"
+  ],
+  /* tuple */[
+    "%3.3f",
+    -3300,
+    "-3300.000"
+  ],
+  /* tuple */[
+    "%1.g",
+    13000,
+    "1e+04"
+  ],
+  /* tuple */[
+    "%1.3g",
+    2.3e-05,
+    "2.3e-05"
+  ],
+  /* tuple */[
+    "%3.10g",
+    3e+56,
+    "3e+56"
+  ],
+  /* tuple */[
+    "%3.10g",
+    20000000000,
+    "2e+10"
+  ],
+  /* tuple */[
+    "%3.3g",
+    -3300,
+    "-3.3e+03"
+  ],
+  /* tuple */[
+    "%3.3g",
+    -0.0033,
+    "-0.0033"
+  ],
+  /* tuple */[
+    "%3.10g",
+    30000000000,
+    "3e+10"
+  ],
+  /* tuple */[
+    "%3.0g",
+    30000000000,
+    "3e+10"
+  ],
+  /* tuple */[
+    "%3.g",
+    30000000000,
+    "3e+10"
+  ],
+  /* tuple */[
+    "%3.g",
+    3,
+    "  3"
+  ],
+  /* tuple */[
+    "%1.1g",
+    2.1,
+    "2"
+  ],
+  /* tuple */[
+    "%1.2g",
+    2.1,
+    "2.1"
+  ]
+];
+
 function ident(ppf, s) {
   return Caml_curry.app1(Format.fprintf(ppf, /* Format */{
                   0: /* String */{
@@ -2277,7 +2385,44 @@ var ksprintf_suites = /* :: */[
   ksprintf_suites_001
 ];
 
-Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at(formatter_suites, Pervasives.$at(from_lambda_pairs(lambda_suites), ksprintf_suites))));
+Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at(formatter_suites, Pervasives.$at(from_lambda_pairs(lambda_suites), Pervasives.$at(ksprintf_suites, $$Array.to_list($$Array.mapi(function (i, param) {
+                              var str_result = param[2];
+                              var f = param[1];
+                              var fmt = param[0];
+                              return /* tuple */[
+                                      Caml_curry.app1(Printf.sprintf(/* Format */{
+                                                0: /* String_literal */{
+                                                  0: "float_format ",
+                                                  1: /* Int */{
+                                                    0: /* Int_d */0,
+                                                    1: /* No_padding */0,
+                                                    2: /* No_precision */0,
+                                                    3: /* End_of_format */0,
+                                                    length: 4,
+                                                    tag: 4
+                                                  },
+                                                  length: 2,
+                                                  tag: 11
+                                                },
+                                                1: "float_format %d",
+                                                length: 2,
+                                                tag: 0
+                                              }), i),
+                                      function () {
+                                        return /* Eq */{
+                                                0: Caml_format.caml_format_float(fmt, f),
+                                                1: str_result,
+                                                length: 2,
+                                                tag: 0
+                                              };
+                                      }
+                                    ];
+                            }, float_data)))))));
+
+var float_suites = /* :: */[
+  "float_nan",
+  /* [] */0
+];
 
 exports.of_string            = of_string;
 exports.from_float_of_string = from_float_of_string;
@@ -2289,6 +2434,8 @@ exports.suites               = suites;
 exports.ff                   = ff;
 exports.a                    = a;
 exports.formatter_suites     = formatter_suites;
+exports.float_data           = float_data;
+exports.float_suites         = float_suites;
 exports.Lambda_suites        = Lambda_suites;
 exports.lambda_suites        = lambda_suites;
 exports.from_lambda_pairs    = from_lambda_pairs;

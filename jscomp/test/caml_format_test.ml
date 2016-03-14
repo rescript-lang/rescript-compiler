@@ -96,9 +96,31 @@ let formatter_suites = Mt.[
     "prec_2", (fun _ -> Eq(format_int "%.10d" 32, "0000000032"));
     "prec_3", (fun _ -> Eq(format_int "%.d" 32, "32"));
     "prec_4", (fun _ -> Eq(format_int "%.d" 32, "32"));
+
     (* "long_fmt", (fun _ -> Eq(Format.asprintf "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no %Ld %Li %Lu %Lx %LX %Lo " 1 2 3 4 5 6 7 8 9 10 "a" "b" 'c' 'd' 1. 2. 3. 4. 5. 6. true false 0l 1l 2l 3l 4l 5l 6n 7n 8n 9n 10n 11n 12L 13L 14L 15L 16L 17L , "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13 12 13 14 f 10 21 ")) *)
   ]
 
+external format_float: string -> float -> string
+  = "caml_format_float"
+
+(* ("%3.10f", 3e+56, *)
+    (*  "300000000000000005792779041490073052596128503513888063488.0000000000"); *)
+
+let float_data = 
+  [|("%f", 32., "32.000000"); ("%f", nan, "nan"); ("%f", infinity, "inf");
+  ("%f", neg_infinity, "-inf"); ("%1.e", 13000., "1e+04");
+  ("%1.3e", 2.3e-05, "2.300e-05"); ("%3.10e", 3e+56, "3.0000000000e+56");
+  ("%3.10f", 20000000000., "20000000000.0000000000");
+  ("%3.3f", -3300., "-3300.000"); ("%1.g", 13000., "1e+04");
+  ("%1.3g", 2.3e-05, "2.3e-05"); ("%3.10g", 3e+56, "3e+56");
+  ("%3.10g", 20000000000., "2e+10"); ("%3.3g", -3300., "-3.3e+03");
+  ("%3.3g", -0.0033, "-0.0033"); ("%3.10g", 30000000000., "3e+10");
+  ("%3.0g", 30000000000., "3e+10"); ("%3.g", 30000000000., "3e+10");
+  ("%3.g", 3., "  3"); ("%1.1g", 2.1, "2"); ("%1.2g", 2.1, "2.1")|]
+
+let float_suites = Mt.[
+    "float_nan"
+  ]
 module Lambda_suites = struct 
   open Format;;
 
@@ -158,7 +180,8 @@ let () =
   suites @
   formatter_suites @
   from_lambda_pairs lambda_suites @
-  ksprintf_suites
+  ksprintf_suites @
+  (Array.mapi (fun i (fmt, f,str_result) -> (Printf.sprintf "float_format %d" i ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list)
 
 
     
