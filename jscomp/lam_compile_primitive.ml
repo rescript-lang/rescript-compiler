@@ -483,26 +483,29 @@ let translate
       | [e] -> E.array_length e 
       | _ -> assert false
       end
-  | Psetfield (i, _) -> 
+  | Psetfield (i, _, field_info) -> 
       begin match args with 
       | [e0;e1] ->  (** RUNTIME *)
-          decorate_side_effect cxt (Js_of_lam_block.set_field e0 (Int32.of_int i) e1)
+          decorate_side_effect cxt 
+            (Js_of_lam_block.set_field field_info e0 (Int32.of_int i) e1)
             (*TODO: get rid of [E.unit ()]*)
       | _ -> assert false
       end
-  | Psetfloatfield i -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
+  | Psetfloatfield (i,field_info)
+    -> (** RUNTIME --  RETURN VALUE SHOULD BE UNIT *)
       begin 
         match args with 
-        | [e;e0] -> decorate_side_effect cxt 
-                      (Js_of_lam_float_record.set_double_field e (Int32.of_int i) e0 ) 
+        | [e;e0] -> 
+          decorate_side_effect cxt 
+            (Js_of_lam_float_record.set_double_field field_info e (Int32.of_int i) e0 ) 
         | _ -> assert false
       end
 
 
-  | Pfloatfield (i,_ (*XXFLD*)) -> (** RUNTIME *)
+  | Pfloatfield (i, field_info) -> (** RUNTIME *)
       begin 
         match args with 
-        | [e] -> Js_of_lam_float_record.get_double_feild e (Int32.of_int i) 
+        | [e] -> Js_of_lam_float_record.get_double_feild field_info e (Int32.of_int i) 
         | _ -> assert false 
       end
   | Parrayrefu _kind

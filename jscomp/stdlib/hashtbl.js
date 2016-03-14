@@ -106,7 +106,7 @@ function create($staropt$star, initial_size) {
 }
 
 function clear(h) {
-  h[0] = 0;
+  h[/* size */0] = 0;
   var len = h[/* data */1].length;
   for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
     h[/* data */1][i] = /* Empty */0;
@@ -120,8 +120,8 @@ function reset(h) {
     return clear(h);
   }
   else {
-    h[0] = 0;
-    h[1] = Caml_array.caml_make_vect(h[/* initial_size */3], /* Empty */0);
+    h[/* size */0] = 0;
+    h[/* data */1] = Caml_array.caml_make_vect(h[/* initial_size */3], /* Empty */0);
     return /* () */0;
   }
 }
@@ -145,7 +145,7 @@ function resize(indexfun, h) {
   var nsize = osize * 2;
   if (nsize < Sys.max_array_length) {
     var ndata = Caml_array.caml_make_vect(nsize, /* Empty */0);
-    h[1] = ndata;
+    h[/* data */1] = ndata;
     var insert_bucket = function (param) {
       if (param) {
         var key = param[0];

@@ -61,7 +61,7 @@ function advance_loop(state) {
     else {
       take_queue(state[/* pp_queue */3]);
       Caml_curry.app1(format_pp_token(state, size$1 < 0 ? pp_infinity : size$1), match[/* token */1]);
-      state[1] = match[/* length */2] + state[/* pp_left_total */1];
+      state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1];
       continue ;
       
     }

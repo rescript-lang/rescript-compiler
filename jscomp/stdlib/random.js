@@ -22,7 +22,7 @@ function new_state() {
 
 function assign(st1, st2) {
   $$Array.blit(st2[/* st */0], 0, st1[/* st */0], 0, 55);
-  st1[1] = st2[/* idx */1];
+  st1[/* idx */1] = st2[/* idx */1];
   return /* () */0;
 }
 
@@ -45,7 +45,7 @@ function full_init(s, seed) {
     accu = combine(accu, seed$1[k]);
     s[/* st */0][j] = (s[/* st */0][j] ^ extract(accu)) & 1073741823;
   }
-  s[1] = 0;
+  s[/* idx */1] = 0;
   return /* () */0;
 }
 
@@ -66,7 +66,7 @@ function copy(s) {
 }
 
 function bits(s) {
-  s[1] = (s[/* idx */1] + 1) % 55;
+  s[/* idx */1] = (s[/* idx */1] + 1) % 55;
   var curval = s[/* st */0][s[/* idx */1]];
   var newval = s[/* st */0][(s[/* idx */1] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
   var newval30 = newval & 1073741823;

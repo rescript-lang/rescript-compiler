@@ -52,8 +52,8 @@ function Make(H) {
       t[/* table */0][i] = emptybucket;
       t[/* hashes */1][i] = /* int array */[];
     }
-    t[2] = limit;
-    t[3] = 0;
+    t[/* limit */2] = limit;
+    t[/* oversize */3] = 0;
     return /* () */0;
   };
   var fold = function (f, t, init) {
@@ -215,7 +215,7 @@ function Make(H) {
       }
       
     }
-    t[4] = (t[/* rover */4] + 1) % t[/* table */0].length;
+    t[/* rover */4] = (t[/* rover */4] + 1) % t[/* table */0].length;
     return /* () */0;
   };
   var add_aux = function (t, setter, d, h, index) {
@@ -263,16 +263,16 @@ function Make(H) {
             }
             }(newt));
             iter_weak(add_weak, t$1);
-            t$1[0] = newt[/* table */0];
-            t$1[1] = newt[/* hashes */1];
-            t$1[2] = newt[/* limit */2];
-            t$1[3] = newt[/* oversize */3];
-            t$1[4] = t$1[/* rover */4] % newt[/* table */0].length;
+            t$1[/* table */0] = newt[/* table */0];
+            t$1[/* hashes */1] = newt[/* hashes */1];
+            t$1[/* limit */2] = newt[/* limit */2];
+            t$1[/* oversize */3] = newt[/* oversize */3];
+            t$1[/* rover */4] = t$1[/* rover */4] % newt[/* table */0].length;
             return /* () */0;
           }
           else {
-            t$1[2] = Pervasives.max_int;
-            t$1[3] = 0;
+            t$1[/* limit */2] = Pervasives.max_int;
+            t$1[/* oversize */3] = 0;
             return /* () */0;
           }
         }

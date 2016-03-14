@@ -279,7 +279,7 @@ function buffer_check_size(buf, overhead) {
     var new_len = Pervasives.max(len * 2, min_len);
     var new_str = Caml_string.caml_create_string(new_len);
     Bytes.blit(buf[/* bytes */1], 0, new_str, 0, len);
-    buf[1] = new_str;
+    buf[/* bytes */1] = new_str;
     return /* () */0;
   }
   else {
