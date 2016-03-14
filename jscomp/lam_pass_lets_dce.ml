@@ -49,7 +49,7 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
      TODO: we can refine analysis in later
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
-  | Lprim(Psetfield(0, _), [Lvar v; e]) when Ident.same v id ->
+  | Lprim(Psetfield(0, _,_), [Lvar v; e]) when Ident.same v id ->
     Lassign(id, eliminate_ref id e)
   | Lprim(Poffsetref delta, [Lvar v]) when Ident.same v id ->
     Lassign(id, Lprim(Poffsetint delta, [Lvar id]))

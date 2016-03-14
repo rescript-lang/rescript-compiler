@@ -28,5 +28,7 @@ val make_block :
 
 val field : Lambda.field_dbg_info -> J.expression -> J.jsint -> J.expression
 
-val set_field : J.expression -> J.jsint -> J.expression -> J.expression
+val set_field : 
+  Lambda.set_field_dbg_info -> 
+  J.expression -> J.jsint -> J.expression -> J.expression
 

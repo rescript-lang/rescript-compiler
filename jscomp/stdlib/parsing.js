@@ -50,20 +50,20 @@ function grow_stacks() {
   var new_start = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
   var new_end = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
   $$Array.blit(env[/* s_stack */0], 0, new_s, 0, oldsize);
-  env[0] = new_s;
+  env[/* s_stack */0] = new_s;
   $$Array.blit(env[/* v_stack */1], 0, new_v, 0, oldsize);
-  env[1] = new_v;
+  env[/* v_stack */1] = new_v;
   $$Array.blit(env[/* symb_start_stack */2], 0, new_start, 0, oldsize);
-  env[2] = new_start;
+  env[/* symb_start_stack */2] = new_start;
   $$Array.blit(env[/* symb_end_stack */3], 0, new_end, 0, oldsize);
-  env[3] = new_end;
-  env[4] = newsize;
+  env[/* symb_end_stack */3] = new_end;
+  env[/* stacksize */4] = newsize;
   return /* () */0;
 }
 
 function clear_parser() {
   $$Array.fill(env[/* v_stack */1], 0, env[/* stacksize */4], /* () */0);
-  env[7] = /* () */0;
+  env[/* lval */7] = /* () */0;
   return /* () */0;
 }
 
@@ -79,9 +79,9 @@ function yyparse(tables, start, lexer, lexbuf) {
   var init_curr_char = env[/* curr_char */6];
   var init_lval = env[/* lval */7];
   var init_errflag = env[/* errflag */15];
-  env[5] = env[/* sp */13] + 1;
-  env[6] = start;
-  env[9] = lexbuf[/* lex_curr_p */11];
+  env[/* stackbase */5] = env[/* sp */13] + 1;
+  env[/* curr_char */6] = start;
+  env[/* symb_end */9] = lexbuf[/* lex_curr_p */11];
   try {
     var _cmd = /* Start */0;
     var _arg = /* () */0;
@@ -92,8 +92,8 @@ function yyparse(tables, start, lexer, lexbuf) {
       switch (match) {
         case 0 : 
             var t = Caml_curry.app1(lexer, lexbuf);
-            env[8] = lexbuf[/* lex_start_p */10];
-            env[9] = lexbuf[/* lex_curr_p */11];
+            env[/* symb_start */8] = lexbuf[/* lex_start_p */10];
+            env[/* symb_end */9] = lexbuf[/* lex_curr_p */11];
             _arg = t;
             _cmd = /* Token_read */1;
             continue ;
@@ -142,13 +142,13 @@ function yyparse(tables, start, lexer, lexbuf) {
   }
   catch (exn$1){
     var curr_char = env[/* curr_char */6];
-    env[10] = init_asp;
-    env[13] = init_sp;
-    env[5] = init_stackbase;
-    env[14] = init_state;
-    env[6] = init_curr_char;
-    env[7] = init_lval;
-    env[15] = init_errflag;
+    env[/* asp */10] = init_asp;
+    env[/* sp */13] = init_sp;
+    env[/* stackbase */5] = init_stackbase;
+    env[/* state */14] = init_state;
+    env[/* curr_char */6] = init_curr_char;
+    env[/* lval */7] = init_lval;
+    env[/* errflag */15] = init_errflag;
     if (exn$1[0] === YYexit) {
       return exn$1[1];
     }

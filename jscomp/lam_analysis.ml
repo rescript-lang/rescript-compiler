@@ -312,8 +312,10 @@ and eq_primitive (p : Lambda.primitive) (p1 : Lambda.primitive) =
 
            } -> 
     n0 = n1 (* No attributes, should be class api, comparison by name is good *)
-  | Pfield (n0, _),  Pfield (n1, _) 
+  | Pfield (n0, _dbg_info0),  Pfield (n1, _dbg_info1) 
     -> n0 = n1
+  | Psetfield(i0, b0, _dbg_info0), Psetfield(i1, b1, _dbg_info1)
+    -> i0 = i1 && b0 = b1 
   | _ , _ -> 
     (* FIXME: relies on structure equality
     *) 

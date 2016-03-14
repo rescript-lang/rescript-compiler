@@ -20,6 +20,22 @@
 
 module E = Js_exp_make 
 
-let get_double_feild e i = E.index e i 
+let get_double_feild field_info e i = 
+  match field_info with 
+  | Lambda.Fld_na -> 
+    E.index e i 
+  | Lambda.Fld_record s 
+  | Lambda.Fld_module s 
+    -> E.index ~comment:s e i
 
-let set_double_field e  i e0 =  E.assign (E.index e i)  e0
+
+let set_double_field field_info e  i e0 = 
+  let v = 
+    match field_info with 
+    | Lambda.Fld_set_na 
+      -> 
+      E.index e i 
+    | Fld_record_set s -> 
+      E.index ~comment:s e i in 
+  E.assign v  e0
+

@@ -16,7 +16,7 @@ function create() {
 }
 
 function clear(s) {
-  s[0] = /* [] */0;
+  s[/* c */0] = /* [] */0;
   return /* () */0;
 }
 
@@ -25,7 +25,7 @@ function copy(s) {
 }
 
 function push(x, s) {
-  s[0] = /* :: */[
+  s[/* c */0] = /* :: */[
     x,
     s[/* c */0]
   ];
@@ -35,7 +35,7 @@ function push(x, s) {
 function pop(s) {
   var match = s[/* c */0];
   if (match) {
-    s[0] = match[1];
+    s[/* c */0] = match[1];
     return match[0];
   }
   else {

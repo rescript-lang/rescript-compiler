@@ -36,7 +36,7 @@ function aaa(x) {
 }
 
 function aaaa(x) {
-  return x[0];
+  return x[/* vv */0];
 }
 
 function f(x) {

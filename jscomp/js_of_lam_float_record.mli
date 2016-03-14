@@ -22,6 +22,11 @@
     check the invariant in {!Js_of_lam_array.make_array}
 *)
 
-val set_double_field : J.expression -> J.jsint -> J.expression -> J.expression
+val set_double_field : 
+  Lambda.set_field_dbg_info -> 
+  J.expression -> J.jsint -> 
+  J.expression -> J.expression
 
-val get_double_feild : J.expression -> J.jsint -> J.expression
+val get_double_feild : 
+  Lambda.field_dbg_info -> 
+  J.expression -> J.jsint -> J.expression

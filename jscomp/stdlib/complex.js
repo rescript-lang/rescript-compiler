@@ -9,54 +9,54 @@ var one = /* float array */[
 
 function add(x, y) {
   return /* float array */[
-          x[0] + y[0],
-          x[1] + y[1]
+          x[/* re */0] + y[/* re */0],
+          x[/* im */1] + y[/* im */1]
         ];
 }
 
 function sub(x, y) {
   return /* float array */[
-          x[0] - y[0],
-          x[1] - y[1]
+          x[/* re */0] - y[/* re */0],
+          x[/* im */1] - y[/* im */1]
         ];
 }
 
 function neg(x) {
   return /* float array */[
-          -x[0],
-          -x[1]
+          -x[/* re */0],
+          -x[/* im */1]
         ];
 }
 
 function conj(x) {
   return /* float array */[
-          x[0],
-          -x[1]
+          x[/* re */0],
+          -x[/* im */1]
         ];
 }
 
 function mul(x, y) {
   return /* float array */[
-          x[0] * y[0] - x[1] * y[1],
-          x[0] * y[1] + x[1] * y[0]
+          x[/* re */0] * y[/* re */0] - x[/* im */1] * y[/* im */1],
+          x[/* re */0] * y[/* im */1] + x[/* im */1] * y[/* re */0]
         ];
 }
 
 function div(x, y) {
-  if (Math.abs(y[0]) >= Math.abs(y[1])) {
-    var r = y[1] / y[0];
-    var d = y[0] + r * y[1];
+  if (Math.abs(y[/* re */0]) >= Math.abs(y[/* im */1])) {
+    var r = y[/* im */1] / y[/* re */0];
+    var d = y[/* re */0] + r * y[/* im */1];
     return /* float array */[
-            (x[0] + r * x[1]) / d,
-            (x[1] - r * x[0]) / d
+            (x[/* re */0] + r * x[/* im */1]) / d,
+            (x[/* im */1] - r * x[/* re */0]) / d
           ];
   }
   else {
-    var r$1 = y[0] / y[1];
-    var d$1 = y[1] + r$1 * y[0];
+    var r$1 = y[/* re */0] / y[/* im */1];
+    var d$1 = y[/* im */1] + r$1 * y[/* re */0];
     return /* float array */[
-            (r$1 * x[0] + x[1]) / d$1,
-            (r$1 * x[1] - x[0]) / d$1
+            (r$1 * x[/* re */0] + x[/* im */1]) / d$1,
+            (r$1 * x[/* im */1] - x[/* re */0]) / d$1
           ];
   }
 }
@@ -66,12 +66,12 @@ function inv(x) {
 }
 
 function norm2(x) {
-  return x[0] * x[0] + x[1] * x[1];
+  return x[/* re */0] * x[/* re */0] + x[/* im */1] * x[/* im */1];
 }
 
 function norm(x) {
-  var r = Math.abs(x[0]);
-  var i = Math.abs(x[1]);
+  var r = Math.abs(x[/* re */0]);
+  var i = Math.abs(x[/* im */1]);
   if (r === 0.0) {
     return i;
   }
@@ -89,7 +89,7 @@ function norm(x) {
 }
 
 function arg(x) {
-  return Math.atan2(x[1], x[0]);
+  return Math.atan2(x[/* im */1], x[/* re */0]);
 }
 
 function polar(n, a) {
@@ -100,15 +100,15 @@ function polar(n, a) {
 }
 
 function sqrt(x) {
-  if (x[0] === 0.0 && x[1] === 0.0) {
+  if (x[/* re */0] === 0.0 && x[/* im */1] === 0.0) {
     return /* float array */[
             0.0,
             0.0
           ];
   }
   else {
-    var r = Math.abs(x[0]);
-    var i = Math.abs(x[1]);
+    var r = Math.abs(x[/* re */0]);
+    var i = Math.abs(x[/* im */1]);
     var w;
     if (r >= i) {
       var q = i / r;
@@ -118,33 +118,33 @@ function sqrt(x) {
       var q$1 = r / i;
       w = Math.sqrt(i) * Math.sqrt(0.5 * (q$1 + Math.sqrt(1.0 + q$1 * q$1)));
     }
-    if (x[0] >= 0.0) {
+    if (x[/* re */0] >= 0.0) {
       return /* float array */[
               w,
-              0.5 * x[1] / w
+              0.5 * x[/* im */1] / w
             ];
     }
     else {
       return /* float array */[
               0.5 * i / w,
-              x[1] >= 0.0 ? w : -w
+              x[/* im */1] >= 0.0 ? w : -w
             ];
     }
   }
 }
 
 function exp(x) {
-  var e = Math.exp(x[0]);
+  var e = Math.exp(x[/* re */0]);
   return /* float array */[
-          e * Math.cos(x[1]),
-          e * Math.sin(x[1])
+          e * Math.cos(x[/* im */1]),
+          e * Math.sin(x[/* im */1])
         ];
 }
 
 function log(x) {
   return /* float array */[
           Math.log(norm(x)),
-          Math.atan2(x[1], x[0])
+          Math.atan2(x[/* im */1], x[/* re */0])
         ];
 }
 

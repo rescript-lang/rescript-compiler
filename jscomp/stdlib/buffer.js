@@ -70,14 +70,14 @@ function length(b) {
 }
 
 function clear(b) {
-  b[1] = 0;
+  b[/* position */1] = 0;
   return /* () */0;
 }
 
 function reset(b) {
-  b[1] = 0;
-  b[0] = b[/* initial_buffer */3];
-  b[2] = b[/* buffer */0].length;
+  b[/* position */1] = 0;
+  b[/* buffer */0] = b[/* initial_buffer */3];
+  b[/* length */2] = b[/* buffer */0].length;
   return /* () */0;
 }
 
@@ -100,8 +100,8 @@ function resize(b, more) {
   }
   var new_buffer = Caml_string.caml_create_string(new_len);
   Bytes.blit(b[/* buffer */0], 0, new_buffer, 0, b[/* position */1]);
-  b[0] = new_buffer;
-  b[2] = new_len;
+  b[/* buffer */0] = new_buffer;
+  b[/* length */2] = new_len;
   return /* () */0;
 }
 
@@ -111,7 +111,7 @@ function add_char(b, c) {
     resize(b, 1);
   }
   b[/* buffer */0][pos] = c;
-  b[1] = pos + 1;
+  b[/* position */1] = pos + 1;
   return /* () */0;
 }
 
@@ -127,7 +127,7 @@ function add_substring(b, s, offset, len) {
     resize(b, len);
   }
   Bytes.blit_string(s, offset, b[/* buffer */0], b[/* position */1], len);
-  b[1] = new_position;
+  b[/* position */1] = new_position;
   return /* () */0;
 }
 
@@ -142,7 +142,7 @@ function add_string(b, s) {
     resize(b, len);
   }
   Bytes.blit_string(s, 0, b[/* buffer */0], b[/* position */1], len);
-  b[1] = new_position;
+  b[/* position */1] = new_position;
   return /* () */0;
 }
 

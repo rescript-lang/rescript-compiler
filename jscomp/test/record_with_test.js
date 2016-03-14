@@ -16,11 +16,11 @@ var v = /* record */[
 
 var newrecord = v.slice();
 
-newrecord[1] = 0;
+newrecord[/* imports */1] = 0;
 
 function f(g, h) {
   var newrecord = Caml_curry.app1(g, h).slice();
-  newrecord[1] = 0;
+  newrecord[/* imports */1] = 0;
   return newrecord;
 }
 

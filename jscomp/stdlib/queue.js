@@ -20,8 +20,8 @@ function create() {
 }
 
 function clear(q) {
-  q[0] = 0;
-  q[1] = /* None */0;
+  q[/* length */0] = 0;
+  q[/* tail */1] = /* None */0;
   return /* () */0;
 }
 
@@ -34,8 +34,8 @@ function add(x, q) {
       head
     ];
     ++ q[0];
-    tail[1] = cell;
-    q[1] = cell;
+    tail[/* next */1] = cell;
+    q[/* tail */1] = cell;
     return /* () */0;
   }
   else {
@@ -46,8 +46,8 @@ function add(x, q) {
           x,
           cell$1
         ]);
-    q[0] = 1;
-    q[1] = cell$1;
+    q[/* length */0] = 1;
+    q[/* tail */1] = cell$1;
     return /* () */0;
   }
 }
@@ -69,10 +69,10 @@ function take(q) {
   var tail = q[/* tail */1];
   var head = tail[/* next */1];
   if (head === tail) {
-    q[1] = /* None */0;
+    q[/* tail */1] = /* None */0;
   }
   else {
-    tail[1] = head[/* next */1];
+    tail[/* next */1] = head[/* next */1];
   }
   return head[/* content */0];
 }
@@ -96,7 +96,7 @@ function copy(q) {
             cell[/* content */0],
             tail$prime
           ];
-          prev[1] = res;
+          prev[/* next */1] = res;
           _cell = cell[/* next */1];
           _prev = res;
           continue ;
@@ -185,11 +185,11 @@ function transfer(q1, q2) {
       var tail2 = q2[/* tail */1];
       var head1 = tail1[/* next */1];
       var head2 = tail2[/* next */1];
-      tail1[1] = head2;
-      tail2[1] = head1;
+      tail1[/* next */1] = head2;
+      tail2[/* next */1] = head1;
     }
     q2[0] += length1;
-    q2[1] = tail1;
+    q2[/* tail */1] = tail1;
     return /* () */0;
   }
   else {

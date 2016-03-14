@@ -22,8 +22,8 @@ var $$Error = {
 };
 
 function fill_buff(b) {
-  b[2] = Pervasives.input(b[/* ic */0], b[/* buff */1], 0, b[/* buff */1].length);
-  b[3] = 0;
+  b[/* len */2] = Pervasives.input(b[/* ic */0], b[/* buff */1], 0, b[/* buff */1].length);
+  b[/* ind */3] = 0;
   return /* () */0;
 }
 
@@ -94,7 +94,7 @@ function get_data(count, _d) {
             if (match$1) {
               var match$2 = match$1[0];
               if (match$2) {
-                g[0] = /* None */0;
+                g[/* curr */0] = /* None */0;
                 return /* Scons */{
                         0: match$2[0],
                         1: d,
@@ -117,7 +117,7 @@ function get_data(count, _d) {
                       };
               }
               else {
-                g[0] = /* Some */[/* None */0];
+                g[/* curr */0] = /* Some */[/* None */0];
                 return /* Sempty */0;
               }
             }
@@ -204,7 +204,7 @@ function peek(s) {
             }
             else {
               var x = Caml_curry.app1(g[/* func */1], s[/* count */0]);
-              g[0] = /* Some */[x];
+              g[/* curr */0] = /* Some */[x];
               return x;
             }
             break;
@@ -244,7 +244,7 @@ function junk(s) {
             var match$1 = g[/* curr */0];
             if (match$1) {
               ++ s[0];
-              g[0] = /* None */0;
+              g[/* curr */0] = /* None */0;
               return /* () */0;
             }
             else {

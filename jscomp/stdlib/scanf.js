@@ -20,8 +20,8 @@ var null_char = /* "\000" */0;
 function next_char(ib) {
   try {
     var c = Caml_curry.app1(ib[/* get_next_char */6], /* () */0);
-    ib[1] = c;
-    ib[2] = /* true */1;
+    ib[/* current_char */1] = c;
+    ib[/* current_char_is_valid */2] = /* true */1;
     ++ ib[3];
     if (c === /* "\n" */10) {
       ++ ib[4];
@@ -30,9 +30,9 @@ function next_char(ib) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      ib[1] = null_char;
-      ib[2] = /* false */0;
-      ib[0] = /* true */1;
+      ib[/* current_char */1] = null_char;
+      ib[/* current_char_is_valid */2] = /* false */0;
+      ib[/* eof */0] = /* true */1;
       return null_char;
     }
     else {
@@ -97,14 +97,14 @@ function char_count(ib) {
 function token(ib) {
   var tokbuf = ib[/* tokbuf */7];
   var tok = Buffer.contents(tokbuf);
-  tokbuf[1] = 0;
+  tokbuf[/* position */1] = 0;
   ++ ib[5];
   return tok;
 }
 
 function ignore_char(width, ib) {
   var width$1 = width - 1;
-  ib[2] = /* false */0;
+  ib[/* current_char_is_valid */2] = /* false */0;
   return width$1;
 }
 
@@ -371,7 +371,7 @@ function check_char(ib, _c) {
               return /* () */0;
             }
             else {
-              ib$1[2] = /* false */0;
+              ib$1[/* current_char_is_valid */2] = /* false */0;
               continue ;
               
             }
@@ -380,7 +380,7 @@ function check_char(ib, _c) {
             return /* () */0;
           }
           else {
-            ib$1[2] = /* false */0;
+            ib$1[/* current_char_is_valid */2] = /* false */0;
             continue ;
             
           }
@@ -390,7 +390,7 @@ function check_char(ib, _c) {
     else {
       var ci = checked_peek_char(ib);
       if (ci === c) {
-        ib[2] = /* false */0;
+        ib[/* current_char_is_valid */2] = /* false */0;
         return /* () */0;
       }
       else if (ci !== 13) {
@@ -401,7 +401,7 @@ function check_char(ib, _c) {
             ];
       }
       else if (c === /* "\n" */10) {
-        ib[2] = /* false */0;
+        ib[/* current_char_is_valid */2] = /* false */0;
         _c = /* "\n" */10;
         continue ;
         
@@ -982,7 +982,7 @@ function scan_string(stp, width, ib) {
       }
       else if (stp) {
         if (c === stp[0]) {
-          ib[2] = /* false */0;
+          ib[/* current_char_is_valid */2] = /* false */0;
           return width$1;
         }
         else {
@@ -1436,7 +1436,7 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
     else {
       var ci = peek_char(ib);
       if (c === ci) {
-        ib[2] = /* false */0;
+        ib[/* current_char_is_valid */2] = /* false */0;
         return /* () */0;
       }
       else {

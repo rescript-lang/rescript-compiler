@@ -12,9 +12,9 @@ var Caml_string             = require("../runtime/caml_string");
 function engine(tbl, state, buf) {
   var result = Caml_lexer.caml_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[10] = buf[/* lex_curr_p */11];
+    buf[/* lex_start_p */10] = buf[/* lex_curr_p */11];
     var init = buf[/* lex_curr_p */11];
-    buf[11] = /* record */[
+    buf[/* lex_curr_p */11] = /* record */[
       init[/* pos_fname */0],
       init[/* pos_lnum */1],
       init[/* pos_bol */2],
@@ -27,9 +27,9 @@ function engine(tbl, state, buf) {
 function new_engine(tbl, state, buf) {
   var result = Caml_lexer.caml_new_lex_engine(tbl, state, buf);
   if (result >= 0) {
-    buf[10] = buf[/* lex_curr_p */11];
+    buf[/* lex_start_p */10] = buf[/* lex_curr_p */11];
     var init = buf[/* lex_curr_p */11];
-    buf[11] = /* record */[
+    buf[/* lex_curr_p */11] = /* record */[
       init[/* pos_fname */0],
       init[/* pos_lnum */1],
       init[/* pos_bol */2],
@@ -53,7 +53,7 @@ function from_function(f) {
             var aux_buffer = new Array(512);
             var lexbuf = param;
             var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
-            var n = read > 0 ? read : (lexbuf[8] = /* true */1, 0);
+            var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);
             if (lexbuf[/* lex_buffer_len */2] + n > lexbuf[/* lex_buffer */1].length) {
               if (lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n <= lexbuf[/* lex_buffer */1].length) {
                 Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], lexbuf[/* lex_buffer */1], 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4]);
@@ -68,12 +68,12 @@ function from_function(f) {
                 }
                 var newbuf = Caml_string.caml_create_string(newlen);
                 Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], newbuf, 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4]);
-                lexbuf[1] = newbuf;
+                lexbuf[/* lex_buffer */1] = newbuf;
               }
               var s = lexbuf[/* lex_start_pos */4];
               lexbuf[3] += s;
               lexbuf[5] -= s;
-              lexbuf[4] = 0;
+              lexbuf[/* lex_start_pos */4] = 0;
               lexbuf[6] -= s;
               lexbuf[2] -= s;
               var t = lexbuf[/* lex_mem */9];
@@ -112,7 +112,7 @@ function from_channel(ic) {
 function from_string(s) {
   return /* record */[
           function (lexbuf) {
-            lexbuf[8] = /* true */1;
+            lexbuf[/* lex_eof_reached */8] = /* true */1;
             return /* () */0;
           },
           Bytes.of_string(s),
@@ -184,7 +184,7 @@ function lexeme_end_p(lexbuf) {
 
 function new_line(lexbuf) {
   var lcp = lexbuf[/* lex_curr_p */11];
-  lexbuf[11] = /* record */[
+  lexbuf[/* lex_curr_p */11] = /* record */[
     lcp[/* pos_fname */0],
     lcp[/* pos_lnum */1] + 1,
     lcp[/* pos_cnum */3],
@@ -194,16 +194,16 @@ function new_line(lexbuf) {
 }
 
 function flush_input(lb) {
-  lb[5] = 0;
-  lb[3] = 0;
+  lb[/* lex_curr_pos */5] = 0;
+  lb[/* lex_abs_pos */3] = 0;
   var init = lb[/* lex_curr_p */11];
-  lb[11] = /* record */[
+  lb[/* lex_curr_p */11] = /* record */[
     init[/* pos_fname */0],
     init[/* pos_lnum */1],
     init[/* pos_bol */2],
     0
   ];
-  lb[2] = 0;
+  lb[/* lex_buffer_len */2] = 0;
   return /* () */0;
 }
 

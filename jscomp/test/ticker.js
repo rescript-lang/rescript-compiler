@@ -914,14 +914,14 @@ function compute_update_sequences(all_tickers) {
               return counter;
             }
             else {
-              ticker[1] = /* Visited */1;
+              ticker[/* rank */1] = /* Visited */1;
               var match = ticker[/* type_ */3];
               if (match) {
                 var match$1 = match[0];
                 var counter$1 = loop(counter, match$1[/* lhs */2]);
                 var counter$2 = loop(counter$1, match$1[/* rhs */1]);
                 var counter$3 = counter$2 + 1;
-                ticker[1] = /* Ranked */{
+                ticker[/* rank */1] = /* Ranked */{
                   0: counter$3,
                   length: 1,
                   tag: 0
@@ -930,7 +930,7 @@ function compute_update_sequences(all_tickers) {
               }
               else {
                 var counter$4 = counter + 1;
-                ticker[1] = /* Ranked */{
+                ticker[/* rank */1] = /* Ranked */{
                   0: counter$4,
                   length: 1,
                   tag: 0
@@ -1030,11 +1030,11 @@ function process_quote(ticker_map, new_ticker, new_value) {
                 else {
                   value = /* None */0;
                 }
-                ticker[0] = value;
+                ticker[/* value */0] = value;
                 return /* () */0;
               }
               else if (ticker[/* ticker_name */2] === new_ticker) {
-                ticker[0] = /* Some */[new_value];
+                ticker[/* value */0] = /* Some */[new_value];
                 return /* () */0;
               }
               else {
