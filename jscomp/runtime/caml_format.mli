@@ -24,22 +24,11 @@ val repeat : int -> string -> string
 val parse_sign_and_base : string -> int * nativeint * nativeint
 val caml_failwith : string -> 'a 
 
-type fmt = {
-  justify : string; 
-  signstyle : string;
-  filter : string ;
-  alternate : bool;
-  base : int;
-  signedconv : bool;
-  width :int;
-  uppercase : bool;
-  sign : int;
-  prec : int;
-  conv : string
-}
+type fmt
 
-val _parse_float : string -> fmt 
+val _parse_format : string -> fmt 
 val _finish_formatting :  fmt -> string -> string
+(* val _caml_format_int : string -> int -> string *)
 (* *)
 val caml_format_float : string -> float -> string
 val caml_format_int : string -> int -> string
