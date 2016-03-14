@@ -311,6 +311,8 @@ function ff(param) {
   return Caml_format.caml_format_int("%32d", param);
 }
 
+var a = Format.asprintf;
+
 var formatter_suites_000 = /* tuple */[
   "fmt_concat",
   function () {
@@ -1443,7 +1445,378 @@ var formatter_suites_001 = /* :: */[
                 };
         }
       ],
-      /* [] */0
+      /* :: */[
+        /* tuple */[
+          "width_1",
+          function () {
+            return /* Eq */{
+                    0: Caml_curry.app1(Format.asprintf(/* Format */{
+                              0: /* Int */{
+                                0: /* Int_d */0,
+                                1: /* Lit_padding */{
+                                  0: /* Zeros */2,
+                                  1: 14,
+                                  length: 2,
+                                  tag: 0
+                                },
+                                2: /* No_precision */0,
+                                3: /* End_of_format */0,
+                                length: 4,
+                                tag: 4
+                              },
+                              1: "%014d",
+                              length: 2,
+                              tag: 0
+                            }), 32),
+                    1: "00000000000032",
+                    length: 2,
+                    tag: 0
+                  };
+          }
+        ],
+        /* :: */[
+          /* tuple */[
+            "width_2",
+            function () {
+              return /* Eq */{
+                      0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                0: /* Float */{
+                                  0: /* Float_f */0,
+                                  1: /* Lit_padding */{
+                                    0: /* Right */1,
+                                    1: 10,
+                                    length: 2,
+                                    tag: 0
+                                  },
+                                  2: /* Lit_precision */{
+                                    0: 3,
+                                    length: 1,
+                                    tag: 0
+                                  },
+                                  3: /* End_of_format */0,
+                                  length: 4,
+                                  tag: 8
+                                },
+                                1: "%10.3f",
+                                length: 2,
+                                tag: 0
+                              }), 32333.02),
+                      1: " 32333.020",
+                      length: 2,
+                      tag: 0
+                    };
+            }
+          ],
+          /* :: */[
+            /* tuple */[
+              "alternate_1",
+              function () {
+                return /* Eq */{
+                        0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                  0: /* Int */{
+                                    0: /* Int_x */6,
+                                    1: /* Lit_padding */{
+                                      0: /* Right */1,
+                                      1: 0,
+                                      length: 2,
+                                      tag: 0
+                                    },
+                                    2: /* No_precision */0,
+                                    3: /* End_of_format */0,
+                                    length: 4,
+                                    tag: 4
+                                  },
+                                  1: "%0x",
+                                  length: 2,
+                                  tag: 0
+                                }), 32333),
+                        1: "7e4d",
+                        length: 2,
+                        tag: 0
+                      };
+              }
+            ],
+            /* :: */[
+              /* tuple */[
+                "alternate_2",
+                function () {
+                  return /* Eq */{
+                          0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                    0: /* Int */{
+                                      0: /* Int_Cx */7,
+                                      1: /* Lit_padding */{
+                                        0: /* Right */1,
+                                        1: 0,
+                                        length: 2,
+                                        tag: 0
+                                      },
+                                      2: /* No_precision */0,
+                                      3: /* End_of_format */0,
+                                      length: 4,
+                                      tag: 4
+                                    },
+                                    1: "%#0x",
+                                    length: 2,
+                                    tag: 0
+                                  }), 32333),
+                          1: "0x7e4d",
+                          length: 2,
+                          tag: 0
+                        };
+                }
+              ],
+              /* :: */[
+                /* tuple */[
+                  "alternate_3",
+                  function () {
+                    return /* Eq */{
+                            0: /* tuple */[
+                              Caml_curry.app1(a(/* Format */{
+                                        0: /* Int */{
+                                          0: /* Int_Co */11,
+                                          1: /* No_padding */0,
+                                          2: /* No_precision */0,
+                                          3: /* End_of_format */0,
+                                          length: 4,
+                                          tag: 4
+                                        },
+                                        1: "%#o",
+                                        length: 2,
+                                        tag: 0
+                                      }), 32),
+                              Caml_curry.app1(a(/* Format */{
+                                        0: /* Int */{
+                                          0: /* Int_o */10,
+                                          1: /* No_padding */0,
+                                          2: /* No_precision */0,
+                                          3: /* End_of_format */0,
+                                          length: 4,
+                                          tag: 4
+                                        },
+                                        1: "%o",
+                                        length: 2,
+                                        tag: 0
+                                      }), 32)
+                            ],
+                            1: /* tuple */[
+                              "040",
+                              "40"
+                            ],
+                            length: 2,
+                            tag: 0
+                          };
+                  }
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "justify_0",
+                    function () {
+                      return /* Eq */{
+                              0: Caml_format.caml_format_int("%-8d", 32),
+                              1: "32      ",
+                              length: 2,
+                              tag: 0
+                            };
+                    }
+                  ],
+                  /* :: */[
+                    /* tuple */[
+                      "sign_p",
+                      function () {
+                        return /* Eq */{
+                                0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                          0: /* Int */{
+                                            0: /* Int_pd */1,
+                                            1: /* Lit_padding */{
+                                              0: /* Right */1,
+                                              1: 4,
+                                              length: 2,
+                                              tag: 0
+                                            },
+                                            2: /* No_precision */0,
+                                            3: /* End_of_format */0,
+                                            length: 4,
+                                            tag: 4
+                                          },
+                                          1: "%+4d",
+                                          length: 2,
+                                          tag: 0
+                                        }), 32),
+                                1: " +32",
+                                length: 2,
+                                tag: 0
+                              };
+                      }
+                    ],
+                    /* :: */[
+                      /* tuple */[
+                        "sign_2p",
+                        function () {
+                          return /* Eq */{
+                                  0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                            0: /* Int */{
+                                              0: /* Int_sd */2,
+                                              1: /* Lit_padding */{
+                                                0: /* Right */1,
+                                                1: 4,
+                                                length: 2,
+                                                tag: 0
+                                              },
+                                              2: /* No_precision */0,
+                                              3: /* End_of_format */0,
+                                              length: 4,
+                                              tag: 4
+                                            },
+                                            1: "% 4d",
+                                            length: 2,
+                                            tag: 0
+                                          }), 32),
+                                  1: "  32",
+                                  length: 2,
+                                  tag: 0
+                                };
+                        }
+                      ],
+                      /* :: */[
+                        /* tuple */[
+                          "sign_3p",
+                          function () {
+                            return /* Eq */{
+                                    0: Caml_curry.app1(a(/* Format */{
+                                              0: /* Int32 */{
+                                                0: /* Int_u */12,
+                                                1: /* No_padding */0,
+                                                2: /* No_precision */0,
+                                                3: /* End_of_format */0,
+                                                length: 4,
+                                                tag: 5
+                                              },
+                                              1: "%lu",
+                                              length: 2,
+                                              tag: 0
+                                            }), -1),
+                                    1: "4294967295",
+                                    length: 2,
+                                    tag: 0
+                                  };
+                          }
+                        ],
+                        /* :: */[
+                          /* tuple */[
+                            "sign_4p",
+                            function () {
+                              return /* Eq */{
+                                      0: Caml_curry.app1(a(/* Format */{
+                                                0: /* Int32 */{
+                                                  0: /* Int_d */0,
+                                                  1: /* No_padding */0,
+                                                  2: /* No_precision */0,
+                                                  3: /* End_of_format */0,
+                                                  length: 4,
+                                                  tag: 5
+                                                },
+                                                1: "%ld",
+                                                length: 2,
+                                                tag: 0
+                                              }), -1),
+                                      1: "-1",
+                                      length: 2,
+                                      tag: 0
+                                    };
+                            }
+                          ],
+                          /* :: */[
+                            /* tuple */[
+                              "width_3",
+                              function () {
+                                return /* Eq */{
+                                        0: Caml_format.caml_format_int("%032d", 32),
+                                        1: "00000000000000000000000000000032",
+                                        length: 2,
+                                        tag: 0
+                                      };
+                              }
+                            ],
+                            /* :: */[
+                              /* tuple */[
+                                "prec_1",
+                                function () {
+                                  return /* Eq */{
+                                          0: Caml_curry.app1(a(/* Format */{
+                                                    0: /* Int */{
+                                                      0: /* Int_d */0,
+                                                      1: /* No_padding */0,
+                                                      2: /* Lit_precision */{
+                                                        0: 10,
+                                                        length: 1,
+                                                        tag: 0
+                                                      },
+                                                      3: /* End_of_format */0,
+                                                      length: 4,
+                                                      tag: 4
+                                                    },
+                                                    1: "%.10d",
+                                                    length: 2,
+                                                    tag: 0
+                                                  }), 32),
+                                          1: "0000000032",
+                                          length: 2,
+                                          tag: 0
+                                        };
+                                }
+                              ],
+                              /* :: */[
+                                /* tuple */[
+                                  "prec_2",
+                                  function () {
+                                    return /* Eq */{
+                                            0: Caml_format.caml_format_int("%.10d", 32),
+                                            1: "0000000032",
+                                            length: 2,
+                                            tag: 0
+                                          };
+                                  }
+                                ],
+                                /* :: */[
+                                  /* tuple */[
+                                    "prec_3",
+                                    function () {
+                                      return /* Eq */{
+                                              0: Caml_format.caml_format_int("%.d", 32),
+                                              1: "32",
+                                              length: 2,
+                                              tag: 0
+                                            };
+                                    }
+                                  ],
+                                  /* :: */[
+                                    /* tuple */[
+                                      "prec_4",
+                                      function () {
+                                        return /* Eq */{
+                                                0: Caml_format.caml_format_int("%.d", 32),
+                                                1: "32",
+                                                length: 2,
+                                                tag: 0
+                                              };
+                                      }
+                                    ],
+                                    /* [] */0
+                                  ]
+                                ]
+                              ]
+                            ]
+                          ]
+                        ]
+                      ]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ]
+      ]
     ]
   ]
 ];
@@ -1914,6 +2287,7 @@ exports.to_str               = to_str;
 exports.v                    = v;
 exports.suites               = suites;
 exports.ff                   = ff;
+exports.a                    = a;
 exports.formatter_suites     = formatter_suites;
 exports.Lambda_suites        = Lambda_suites;
 exports.lambda_suites        = lambda_suites;

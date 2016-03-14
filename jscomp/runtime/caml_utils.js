@@ -39,7 +39,7 @@ if (!Math.imul){
 }
 
 var $$repeat = function (n, s) {
-   n.repeat(s)
+   return s.repeat(n);
 }
 
 ;

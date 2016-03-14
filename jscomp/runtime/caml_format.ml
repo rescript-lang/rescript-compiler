@@ -27,7 +27,7 @@ let (+~) = Nativeint.add
 let to_nat x = Nativeint.of_int x 
 let of_nat x = Nativeint.to_int x 
 let ( *~ ) = Nativeint.mul  
-
+external string_of_char_code : char -> string = "String.fromCharCode" [@@js.call]
 let parse_digit c = 
   match c with 
   | '0' .. '9' 
@@ -91,6 +91,170 @@ let caml_int_of_string s =
   (if base = 10n && res != or_res then 
     caml_failwith "int_of_string");
   or_res
+
+type fmt = {
+  justify : string; 
+  signstyle : string;
+  filter : string ;
+  alternate : bool;
+  base : int;
+  signedconv : bool;
+  width :int;
+  uppercase : bool;
+  sign : int;
+  prec : int;
+  conv : string
+}
+
+let lowercase c =
+  if (c >= 'A' && c <= 'Z')
+  || (c >= '\192' && c <= '\214')
+  || (c >= '\216' && c <= '\222')
+  then Char.unsafe_chr(Char.code c + 32)
+  else c
+
+let _parse_float fmt = 
+  let len = String.length fmt in 
+  if len > 31 then 
+    raise @@ Invalid_argument "format_int: format too long" ;
+  let justify = ref "+" in
+  let signstyle =  ref "-"in
+  let filter = ref " " in
+  let alternate = ref false in
+  let base= ref 0 in
+  let signedconv= ref false in
+  let width = ref 0 in
+  let uppercase=  ref false in
+  let sign = ref 1 in
+  let prec = ref (-1) in
+  let conv = ref "f" in
+  let rec aux i = 
+    if i >= len then  ()
+    else
+      let c = fmt.[i] in  
+      match c with
+      | '-' -> justify := "-"; aux (i + 1)
+      | '+'|' ' 
+        ->
+        signstyle := string_of_char_code c ; 
+        aux (i + 1)
+    | '#' -> 
+      alternate := true;
+      aux (i + 1)
+    | '0' -> 
+      filter := "0";
+      aux (i + 1)
+    | '1' .. '9' 
+      -> 
+      begin 
+        width := 0;
+        let j = ref i in 
+
+        while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
+          width := !width * 10 + Char.code fmt.[!j] - Char.code '0';
+          incr j
+        done;
+        aux (!j - 1)
+      end
+    | '.' 
+      -> 
+      prec := 0;
+      let j = ref (i + 1 ) in 
+      while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
+        prec := !prec * 10 + Char.code fmt.[!j] - Char.code '0';
+        incr j;
+      done;
+      aux (!j - 1) 
+    | 'd' 
+    | 'i' -> 
+      signedconv := true;
+      base := 10
+    | 'u' -> base := 10
+    | 'x' -> base := 16
+    | 'X' -> base := 16; uppercase := true
+    | 'o' -> base := 8
+    (* | 'O' -> base := 8; uppercase := true no uppercase for oct *)
+    | 'e' | 'f' | 'g' 
+      -> 
+      signedconv := true;
+      conv := string_of_char_code c 
+    | 'E' | 'F' | 'G' 
+      -> 
+      signedconv := true;
+      uppercase := true;
+      conv := string_of_char_code (lowercase c)
+    | _ -> raise @@ Invalid_argument fmt in 
+  aux 0 ;
+  { justify = !justify ;
+    signstyle = !signstyle;
+    filter = !filter;
+    alternate = !alternate;
+    base = !base;
+    signedconv = !signedconv;
+    width = !width;
+    uppercase = !uppercase;
+    sign = !sign;
+    prec = !prec;
+    conv = !conv
+  }  
+
+external toUpperCase : string -> string = "toUpperCase" [@@js.send]
+let _finish_formatting ({
+  justify; 
+  signstyle;
+  filter ;
+  alternate;
+  base;
+  signedconv;
+  width;
+  uppercase;
+  sign;
+  prec;
+  conv
+}) rawbuffer =  
+  let len = ref (String.length rawbuffer) in 
+  if signedconv && (sign < 0 || signstyle <> "-") then 
+    incr len;
+  if alternate then 
+    begin 
+      if base = 8 then
+        incr len 
+      else
+      if base = 16 then 
+        len := !len + 2
+      else ()
+    end ; 
+  let buffer = ref "" in 
+  if justify = "+" && filter = " " then
+    for i = !len to width - 1 do 
+      buffer := !buffer ^ " "
+    done;
+  if signedconv then 
+    if sign < 0 then 
+      buffer := !buffer ^ "-"
+    else if signstyle <> "-" then 
+      buffer := !buffer ^ signstyle
+    else ()  ;
+  if alternate && base = 8 then 
+    buffer := !buffer ^ "0";
+  if alternate && base == 16 then
+    buffer := !buffer ^ "0x";
+    
+  if justify = "+" && filter = "0" then 
+    for i = !len to width - 1 do 
+      buffer := !buffer ^ "0";
+    done;
+  begin 
+    if uppercase then 
+    buffer := !buffer ^ toUpperCase rawbuffer
+  else
+    buffer := !buffer ^ rawbuffer
+  end;
+  if justify = "-" then 
+    for i = !len to width - 1 do 
+      buffer := !buffer ^ " ";
+    done;
+  !buffer
 
 [%%js.raw{|
 

@@ -51,6 +51,8 @@ let get_goog_package_name () =
   match !default_env with 
   | Goog x -> x 
   | Browser | NodeJS -> None
+
+let default_gen_tds = ref false
      
 let stdlib_set = String_set.of_list [
     "arg";

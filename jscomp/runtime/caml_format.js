@@ -164,6 +164,292 @@ function caml_int_of_string(s) {
   return or_res;
 }
 
+function lowercase(c) {
+  if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
+    return c + 32;
+  }
+  else {
+    return c;
+  }
+}
+
+function _parse_float(fmt) {
+  var len = fmt.length;
+  if (len > 31) {
+    throw [
+          Caml_builtin_exceptions.invalid_argument,
+          "format_int: format too long"
+        ];
+  }
+  var justify = ["+"];
+  var signstyle = ["-"];
+  var filter = [" "];
+  var alternate = [/* false */0];
+  var base = [0];
+  var signedconv = [/* false */0];
+  var width = [0];
+  var uppercase = [/* false */0];
+  var sign = 1;
+  var prec = [-1];
+  var conv = ["f"];
+  var aux = function (_i) {
+    while(true) {
+      var i = _i;
+      if (i >= len) {
+        return /* () */0;
+      }
+      else {
+        var c = fmt.charCodeAt(i);
+        var exit = 0;
+        if (c >= 69) {
+          if (c >= 88) {
+            if (c >= 121) {
+              throw [
+                    Caml_builtin_exceptions.invalid_argument,
+                    fmt
+                  ];
+            }
+            else {
+              switch (c - 88) {
+                case 0 : 
+                    base[0] = 16;
+                    uppercase[0] = /* true */1;
+                    return /* () */0;
+                case 13 : 
+                case 14 : 
+                case 15 : 
+                    exit = 3;
+                    break;
+                case 12 : 
+                case 17 : 
+                    signedconv[0] = /* true */1;
+                    base[0] = 10;
+                    return /* () */0;
+                case 23 : 
+                    base[0] = 8;
+                    return /* () */0;
+                case 29 : 
+                    base[0] = 10;
+                    return /* () */0;
+                case 1 : 
+                case 2 : 
+                case 3 : 
+                case 4 : 
+                case 5 : 
+                case 6 : 
+                case 7 : 
+                case 8 : 
+                case 9 : 
+                case 10 : 
+                case 11 : 
+                case 16 : 
+                case 18 : 
+                case 19 : 
+                case 20 : 
+                case 21 : 
+                case 22 : 
+                case 24 : 
+                case 25 : 
+                case 26 : 
+                case 27 : 
+                case 28 : 
+                case 30 : 
+                case 31 : 
+                    throw [
+                          Caml_builtin_exceptions.invalid_argument,
+                          fmt
+                        ];
+                case 32 : 
+                    base[0] = 16;
+                    return /* () */0;
+                
+              }
+            }
+          }
+          else if (c >= 72) {
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  fmt
+                ];
+          }
+          else {
+            signedconv[0] = /* true */1;
+            uppercase[0] = /* true */1;
+            conv[0] = String.fromCharCode(lowercase(c));
+            return /* () */0;
+          }
+        }
+        else {
+          var switcher = c - 32;
+          if (switcher > 25 || switcher < 0) {
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  fmt
+                ];
+          }
+          else {
+            switch (switcher) {
+              case 3 : 
+                  alternate[0] = /* true */1;
+                  _i = i + 1;
+                  continue ;
+                  case 0 : 
+              case 11 : 
+                  exit = 1;
+                  break;
+              case 13 : 
+                  justify[0] = "-";
+                  _i = i + 1;
+                  continue ;
+                  case 14 : 
+                  prec[0] = 0;
+                  var j = i + 1;
+                  while((function(j){
+                      return function () {
+                        var w = fmt.charCodeAt(j) - /* "0" */48;
+                        return +(w >= 0 && w <= 9);
+                      }
+                      }(j))()) {
+                    prec[0] = prec[0] * 10 + fmt.charCodeAt(j) - /* "0" */48;
+                    ++ j;
+                  };
+                  _i = j - 1;
+                  continue ;
+                  case 1 : 
+              case 2 : 
+              case 4 : 
+              case 5 : 
+              case 6 : 
+              case 7 : 
+              case 8 : 
+              case 9 : 
+              case 10 : 
+              case 12 : 
+              case 15 : 
+                  throw [
+                        Caml_builtin_exceptions.invalid_argument,
+                        fmt
+                      ];
+              case 16 : 
+                  filter[0] = "0";
+                  _i = i + 1;
+                  continue ;
+                  case 17 : 
+              case 18 : 
+              case 19 : 
+              case 20 : 
+              case 21 : 
+              case 22 : 
+              case 23 : 
+              case 24 : 
+              case 25 : 
+                  exit = 2;
+                  break;
+              
+            }
+          }
+        }
+        switch (exit) {
+          case 1 : 
+              signstyle[0] = String.fromCharCode(c);
+              _i = i + 1;
+              continue ;
+              case 2 : 
+              width[0] = 0;
+              var j$1 = i;
+              while((function(j$1){
+                  return function () {
+                    var w = fmt.charCodeAt(j$1) - /* "0" */48;
+                    return +(w >= 0 && w <= 9);
+                  }
+                  }(j$1))()) {
+                width[0] = width[0] * 10 + fmt.charCodeAt(j$1) - /* "0" */48;
+                ++ j$1;
+              };
+              _i = j$1 - 1;
+              continue ;
+              case 3 : 
+              signedconv[0] = /* true */1;
+              conv[0] = String.fromCharCode(c);
+              return /* () */0;
+          
+        }
+      }
+    };
+  };
+  aux(0);
+  return /* record */[
+          justify[0],
+          signstyle[0],
+          filter[0],
+          alternate[0],
+          base[0],
+          signedconv[0],
+          width[0],
+          uppercase[0],
+          sign,
+          prec[0],
+          conv[0]
+        ];
+}
+
+function _finish_formatting(param, rawbuffer) {
+  var sign = param[/* sign */8];
+  var width = param[/* width */6];
+  var signedconv = param[/* signedconv */5];
+  var base = param[/* base */4];
+  var alternate = param[/* alternate */3];
+  var filter = param[/* filter */2];
+  var signstyle = param[/* signstyle */1];
+  var justify = param[/* justify */0];
+  var len = rawbuffer.length;
+  if (signedconv && (sign < 0 || signstyle !== "-")) {
+    ++ len;
+  }
+  if (alternate) {
+    if (base === 8) {
+      ++ len;
+    }
+    else if (base === 16) {
+      len += 2;
+    }
+    
+  }
+  var buffer = "";
+  if (justify === "+" && filter === " ") {
+    for(var i = len ,i_finish = width - 1; i<= i_finish; ++i){
+      buffer = buffer + " ";
+    }
+  }
+  if (signedconv) {
+    if (sign < 0) {
+      buffer = buffer + "-";
+    }
+    else if (signstyle !== "-") {
+      buffer = buffer + signstyle;
+    }
+    
+  }
+  if (alternate && base === 8) {
+    buffer = buffer + "0";
+  }
+  if (alternate && base === 16) {
+    buffer = buffer + "0x";
+  }
+  if (justify === "+" && filter === "0") {
+    for(var i$1 = len ,i_finish$1 = width - 1; i$1<= i_finish$1; ++i$1){
+      buffer = buffer + "0";
+    }
+  }
+  buffer = param[/* uppercase */7] ? buffer + rawbuffer.toUpperCase() : buffer + rawbuffer;
+  if (justify === "-") {
+    for(var i$2 = len ,i_finish$2 = width - 1; i$2<= i_finish$2; ++i$2){
+      buffer = buffer + " ";
+    }
+  }
+  return buffer;
+}
+
 
 
 /**
@@ -482,6 +768,8 @@ exports.caml_invalid_argument    = caml_invalid_argument;
 exports.repeat                   = repeat;
 exports.parse_sign_and_base      = parse_sign_and_base;
 exports.caml_failwith            = caml_failwith;
+exports._parse_float             = _parse_float;
+exports._finish_formatting       = _finish_formatting;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;
 exports.caml_nativeint_format    = caml_nativeint_format;

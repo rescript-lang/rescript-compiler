@@ -4,7 +4,11 @@
 var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
-function from_pair_suites(_, suites) {
+function from_pair_suites(name, suites) {
+  console.log(/* tuple */[
+        name,
+        "testing"
+      ]);
   return List.iter(function (param) {
               var name = param[0];
               var match = Caml_curry.app1(param[1], /* () */0);
@@ -32,6 +36,8 @@ function from_pair_suites(_, suites) {
                           "~",
                           match[1]
                         ]);
+                    return /* () */0;
+                case 3 : 
                     return /* () */0;
                 
               }

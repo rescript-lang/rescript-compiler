@@ -23,6 +23,23 @@ val caml_invalid_argument : string -> 'a
 val repeat : int -> string -> string 
 val parse_sign_and_base : string -> int * nativeint * nativeint
 val caml_failwith : string -> 'a 
+
+type fmt = {
+  justify : string; 
+  signstyle : string;
+  filter : string ;
+  alternate : bool;
+  base : int;
+  signedconv : bool;
+  width :int;
+  uppercase : bool;
+  sign : int;
+  prec : int;
+  conv : string
+}
+
+val _parse_float : string -> fmt 
+val _finish_formatting :  fmt -> string -> string
 (* *)
 val caml_format_float : string -> float -> string
 val caml_format_int : string -> int -> string
