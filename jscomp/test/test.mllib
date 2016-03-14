@@ -89,7 +89,7 @@ ticker
 test_filename
 test_alias
 mt
-mt_mock
+mock_mt
 array_test
 test_nullary
 test_for_map2

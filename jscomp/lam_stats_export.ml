@@ -126,7 +126,7 @@ let export_to_cmj
       dump fmt xs in
 
   let () =
-    if not @@ Ext_string.is_empty meta.filename then
+    if !Js_config.default_gen_tds && not ( Ext_string.is_empty meta.filename) then
       Ext_pervasives.with_file_as_pp
         (Ext_filename.chop_extension ~loc:__LOC__ meta.filename ^ ".d.ts")
       @@ fun fmt ->

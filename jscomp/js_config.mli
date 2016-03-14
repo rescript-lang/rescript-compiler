@@ -27,6 +27,7 @@ val get_env : unit -> env
 val get_goog_package_name : unit -> string option
 val set_env : env -> unit
 val cmd_set_module : string -> unit  
+val default_gen_tds : bool ref
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 

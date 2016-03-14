@@ -10,8 +10,6 @@ mt.cmi :
 test_for_map2.cmi :
 test_is_js.cmi :
 ui_defs.cmi :
-Mt_mock.cmo : ../stdlib/list.cmi ../lib/js.cmi
-Mt_mock.cmx : ../stdlib/list.cmx ../lib/js.cmx
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -210,6 +208,8 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
     ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
+mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmi
+mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../lib/js.cmx
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmo : ../stdlib/list.cmi mt.cmi
@@ -470,8 +470,6 @@ unitest_string.cmo :
 unitest_string.cmx :
 unsafe_ppx_test.cmo : mt.cmi
 unsafe_ppx_test.cmx : mt.cmx
-Mt_mock.cmo : ../stdlib/list.cmi ../lib/js.cmi
-Mt_mock.cmj : ../stdlib/list.cmj ../lib/js.cmj
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -670,6 +668,8 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
+mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmi
+mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../lib/js.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi mt.cmi
