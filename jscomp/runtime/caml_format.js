@@ -3,6 +3,9 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_utils              = require("./caml_utils");
+var Caml_curry              = require("./caml_curry");
+
+var repeat = Caml_utils.repeat;
 
 function caml_failwith(s) {
   throw [
@@ -173,7 +176,7 @@ function lowercase(c) {
   }
 }
 
-function _parse_float(fmt) {
+function _parse_format(fmt) {
   var len = fmt.length;
   if (len > 31) {
     throw [
@@ -181,142 +184,60 @@ function _parse_float(fmt) {
           "format_int: format too long"
         ];
   }
-  var justify = ["+"];
-  var signstyle = ["-"];
-  var filter = [" "];
-  var alternate = [/* false */0];
-  var base = [0];
-  var signedconv = [/* false */0];
-  var width = [0];
-  var uppercase = [/* false */0];
-  var sign = 1;
-  var prec = [-1];
-  var conv = ["f"];
-  var aux = function (_i) {
-    while(true) {
-      var i = _i;
-      if (i >= len) {
-        return /* () */0;
-      }
-      else {
-        var c = fmt.charCodeAt(i);
-        var exit = 0;
-        if (c >= 69) {
-          if (c >= 88) {
-            if (c >= 121) {
-              throw [
-                    Caml_builtin_exceptions.invalid_argument,
-                    fmt
-                  ];
-            }
-            else {
-              switch (c - 88) {
-                case 0 : 
-                    base[0] = 16;
-                    uppercase[0] = /* true */1;
-                    return /* () */0;
-                case 13 : 
-                case 14 : 
-                case 15 : 
-                    exit = 3;
-                    break;
-                case 12 : 
-                case 17 : 
-                    signedconv[0] = /* true */1;
-                    base[0] = 10;
-                    return /* () */0;
-                case 23 : 
-                    base[0] = 8;
-                    return /* () */0;
-                case 29 : 
-                    base[0] = 10;
-                    return /* () */0;
-                case 1 : 
-                case 2 : 
-                case 3 : 
-                case 4 : 
-                case 5 : 
-                case 6 : 
-                case 7 : 
-                case 8 : 
-                case 9 : 
-                case 10 : 
-                case 11 : 
-                case 16 : 
-                case 18 : 
-                case 19 : 
-                case 20 : 
-                case 21 : 
-                case 22 : 
-                case 24 : 
-                case 25 : 
-                case 26 : 
-                case 27 : 
-                case 28 : 
-                case 30 : 
-                case 31 : 
-                    throw [
-                          Caml_builtin_exceptions.invalid_argument,
-                          fmt
-                        ];
-                case 32 : 
-                    base[0] = 16;
-                    return /* () */0;
-                
-              }
-            }
-          }
-          else if (c >= 72) {
-            throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  fmt
-                ];
+  var f = /* record */[
+    "+",
+    "-",
+    " ",
+    /* false */0,
+    0,
+    /* false */0,
+    0,
+    /* false */0,
+    1,
+    -1,
+    "f"
+  ];
+  var _i = 0;
+  while(true) {
+    var i = _i;
+    if (i >= len) {
+      return f;
+    }
+    else {
+      var c = fmt.charCodeAt(i);
+      var exit = 0;
+      if (c >= 69) {
+        if (c >= 88) {
+          if (c >= 121) {
+            exit = 1;
           }
           else {
-            signedconv[0] = /* true */1;
-            uppercase[0] = /* true */1;
-            conv[0] = String.fromCharCode(lowercase(c));
-            return /* () */0;
-          }
-        }
-        else {
-          var switcher = c - 32;
-          if (switcher > 25 || switcher < 0) {
-            throw [
-                  Caml_builtin_exceptions.invalid_argument,
-                  fmt
-                ];
-          }
-          else {
-            switch (switcher) {
-              case 3 : 
-                  alternate[0] = /* true */1;
+            switch (c - 88) {
+              case 0 : 
+                  f[/* base */4] = 16;
+                  f[/* uppercase */7] = /* true */1;
                   _i = i + 1;
                   continue ;
-                  case 0 : 
-              case 11 : 
-                  exit = 1;
+                  case 13 : 
+              case 14 : 
+              case 15 : 
+                  exit = 5;
                   break;
-              case 13 : 
-                  justify[0] = "-";
+              case 12 : 
+              case 17 : 
+                  exit = 4;
+                  break;
+              case 23 : 
+                  f[/* base */4] = 8;
                   _i = i + 1;
                   continue ;
-                  case 14 : 
-                  prec[0] = 0;
-                  var j = i + 1;
-                  while((function(j){
-                      return function () {
-                        var w = fmt.charCodeAt(j) - /* "0" */48;
-                        return +(w >= 0 && w <= 9);
-                      }
-                      }(j))()) {
-                    prec[0] = prec[0] * 10 + fmt.charCodeAt(j) - /* "0" */48;
-                    ++ j;
-                  };
-                  _i = j - 1;
+                  case 29 : 
+                  f[/* base */4] = 10;
+                  _i = i + 1;
                   continue ;
                   case 1 : 
               case 2 : 
+              case 3 : 
               case 4 : 
               case 5 : 
               case 6 : 
@@ -324,84 +245,155 @@ function _parse_float(fmt) {
               case 8 : 
               case 9 : 
               case 10 : 
-              case 12 : 
-              case 15 : 
-                  throw [
-                        Caml_builtin_exceptions.invalid_argument,
-                        fmt
-                      ];
+              case 11 : 
               case 16 : 
-                  filter[0] = "0";
-                  _i = i + 1;
-                  continue ;
-                  case 17 : 
               case 18 : 
               case 19 : 
               case 20 : 
               case 21 : 
               case 22 : 
-              case 23 : 
               case 24 : 
               case 25 : 
-                  exit = 2;
+              case 26 : 
+              case 27 : 
+              case 28 : 
+              case 30 : 
+              case 31 : 
+                  exit = 1;
                   break;
-              
+              case 32 : 
+                  f[/* base */4] = 16;
+                  _i = i + 1;
+                  continue ;
+                  
             }
           }
         }
-        switch (exit) {
-          case 1 : 
-              signstyle[0] = String.fromCharCode(c);
-              _i = i + 1;
-              continue ;
-              case 2 : 
-              width[0] = 0;
-              var j$1 = i;
-              while((function(j$1){
-                  return function () {
-                    var w = fmt.charCodeAt(j$1) - /* "0" */48;
-                    return +(w >= 0 && w <= 9);
-                  }
-                  }(j$1))()) {
-                width[0] = width[0] * 10 + fmt.charCodeAt(j$1) - /* "0" */48;
-                ++ j$1;
-              };
-              _i = j$1 - 1;
-              continue ;
-              case 3 : 
-              signedconv[0] = /* true */1;
-              conv[0] = String.fromCharCode(c);
-              return /* () */0;
+        else if (c >= 72) {
+          exit = 1;
+        }
+        else {
+          f[/* signedconv */5] = /* true */1;
+          f[/* uppercase */7] = /* true */1;
+          f[/* conv */10] = String.fromCharCode(lowercase(c));
+          _i = i + 1;
+          continue ;
           
         }
       }
-    };
+      else {
+        var switcher = c - 32;
+        if (switcher > 25 || switcher < 0) {
+          exit = 1;
+        }
+        else {
+          switch (switcher) {
+            case 3 : 
+                f[/* alternate */3] = /* true */1;
+                _i = i + 1;
+                continue ;
+                case 0 : 
+            case 11 : 
+                exit = 2;
+                break;
+            case 13 : 
+                f[/* justify */0] = "-";
+                _i = i + 1;
+                continue ;
+                case 14 : 
+                f[/* prec */9] = 0;
+                var j = i + 1;
+                while((function(j){
+                    return function () {
+                      var w = fmt.charCodeAt(j) - /* "0" */48;
+                      return +(w >= 0 && w <= 9);
+                    }
+                    }(j))()) {
+                  f[/* prec */9] = f[/* prec */9] * 10 + fmt.charCodeAt(j) - /* "0" */48;
+                  ++ j;
+                };
+                _i = j;
+                continue ;
+                case 1 : 
+            case 2 : 
+            case 4 : 
+            case 5 : 
+            case 6 : 
+            case 7 : 
+            case 8 : 
+            case 9 : 
+            case 10 : 
+            case 12 : 
+            case 15 : 
+                exit = 1;
+                break;
+            case 16 : 
+                f[/* filter */2] = "0";
+                _i = i + 1;
+                continue ;
+                case 17 : 
+            case 18 : 
+            case 19 : 
+            case 20 : 
+            case 21 : 
+            case 22 : 
+            case 23 : 
+            case 24 : 
+            case 25 : 
+                exit = 3;
+                break;
+            
+          }
+        }
+      }
+      switch (exit) {
+        case 1 : 
+            _i = i + 1;
+            continue ;
+            case 2 : 
+            f[/* signstyle */1] = String.fromCharCode(c);
+            _i = i + 1;
+            continue ;
+            case 3 : 
+            f[/* width */6] = 0;
+            var j$1 = i;
+            while((function(j$1){
+                return function () {
+                  var w = fmt.charCodeAt(j$1) - /* "0" */48;
+                  return +(w >= 0 && w <= 9);
+                }
+                }(j$1))()) {
+              f[/* width */6] = f[/* width */6] * 10 + fmt.charCodeAt(j$1) - /* "0" */48;
+              ++ j$1;
+            };
+            _i = j$1;
+            continue ;
+            case 4 : 
+            f[/* signedconv */5] = /* true */1;
+            f[/* base */4] = 10;
+            _i = i + 1;
+            continue ;
+            case 5 : 
+            f[/* signedconv */5] = /* true */1;
+            f[/* conv */10] = String.fromCharCode(c);
+            _i = i + 1;
+            continue ;
+            
+      }
+    }
   };
-  aux(0);
-  return /* record */[
-          justify[0],
-          signstyle[0],
-          filter[0],
-          alternate[0],
-          base[0],
-          signedconv[0],
-          width[0],
-          uppercase[0],
-          sign,
-          prec[0],
-          conv[0]
-        ];
 }
 
 function _finish_formatting(param, rawbuffer) {
-  var sign = param[/* sign */8];
-  var width = param[/* width */6];
-  var signedconv = param[/* signedconv */5];
-  var base = param[/* base */4];
-  var alternate = param[/* alternate */3];
-  var filter = param[/* filter */2];
-  var signstyle = param[/* signstyle */1];
   var justify = param[/* justify */0];
+  var signstyle = param[/* signstyle */1];
+  var filter = param[/* filter */2];
+  var alternate = param[/* alternate */3];
+  var base = param[/* base */4];
+  var signedconv = param[/* signedconv */5];
+  var width = param[/* width */6];
+  var uppercase = param[/* uppercase */7];
+  var sign = param[/* sign */8];
   var len = rawbuffer.length;
   if (signedconv && (sign < 0 || signstyle !== "-")) {
     ++ len;
@@ -418,7 +410,7 @@ function _finish_formatting(param, rawbuffer) {
   var buffer = "";
   if (justify === "+" && filter === " ") {
     for(var i = len ,i_finish = width - 1; i<= i_finish; ++i){
-      buffer = buffer + " ";
+      buffer = buffer + filter;
     }
   }
   if (signedconv) {
@@ -438,16 +430,38 @@ function _finish_formatting(param, rawbuffer) {
   }
   if (justify === "+" && filter === "0") {
     for(var i$1 = len ,i_finish$1 = width - 1; i$1<= i_finish$1; ++i$1){
-      buffer = buffer + "0";
+      buffer = buffer + filter;
     }
   }
-  buffer = param[/* uppercase */7] ? buffer + rawbuffer.toUpperCase() : buffer + rawbuffer;
+  buffer = uppercase ? buffer + rawbuffer.toUpperCase() : buffer + rawbuffer;
   if (justify === "-") {
     for(var i$2 = len ,i_finish$2 = width - 1; i$2<= i_finish$2; ++i$2){
       buffer = buffer + " ";
     }
   }
   return buffer;
+}
+
+function caml_format_int(fmt, i) {
+  if (fmt === "%d") {
+    return "" + i;
+  }
+  else {
+    var f = _parse_format(fmt);
+    var i$1 = i < 0 ? (
+        f[/* signedconv */5] ? (f[/* sign */8] = -1, -i) : (i >>> 0)
+      ) : i;
+    var s = i$1.toString(f[/* base */4]);
+    if (f[/* prec */9] >= 0) {
+      f[/* filter */2] = " ";
+      var n = f[/* prec */9] - s.length;
+      if (n > 0) {
+        s = Caml_curry.app2(repeat, n, "0") + s;
+      }
+      
+    }
+    return _finish_formatting(f, s);
+  }
 }
 
 
@@ -547,6 +561,7 @@ function $$parse_format(fmt) {
                     i++;
                 }
                 i--;
+                break;
             case 'd':
             case 'i':
                 f.signedconv = true; // fall through to have f.base = 10
@@ -628,31 +643,6 @@ function $$finish_formatting(f, rawbuffer) {
     return buffer;
 }
 
-/**
- * external format_int : string -> int -> string = "caml_format_int"
- * pervasives.ml
- * */
-function $$caml_format_int(fmt, i) {
-    if (fmt == "%d")
-        return "" + i;
-    var f = $$parse_format(fmt);
-    if (i < 0) {
-        if (f.signedconv) {
-            f.sign = -1;
-            i = -i;
-        }
-        else
-            i >>>= 0;
-    }
-    var s = i.toString(f.base);
-    if (f.prec >= 0) {
-        f.filler = ' ';
-        var n = f.prec - s.length;
-        if (n > 0)
-            s = repeat(n, '0') + s;
-    }
-    return $$finish_formatting(f, s);
-}
 
 
 
@@ -737,23 +727,13 @@ function $$caml_format_float(fmt, x) {
 
 ;
 
-function caml_nativeint_format(prim, prim$1) {
-  return $$caml_format_int(prim, prim$1);
-}
-
-function caml_int32_format(prim, prim$1) {
-  return $$caml_format_int(prim, prim$1);
-}
-
-var repeat = Caml_utils.repeat;
-
 function caml_format_float(prim, prim$1) {
   return $$caml_format_float(prim, prim$1);
 }
 
-function caml_format_int(prim, prim$1) {
-  return $$caml_format_int(prim, prim$1);
-}
+var caml_nativeint_format = caml_format_int;
+
+var caml_int32_format = caml_format_int;
 
 function caml_float_of_string(prim) {
   return $$caml_float_of_string(prim);
@@ -768,7 +748,7 @@ exports.caml_invalid_argument    = caml_invalid_argument;
 exports.repeat                   = repeat;
 exports.parse_sign_and_base      = parse_sign_and_base;
 exports.caml_failwith            = caml_failwith;
-exports._parse_float             = _parse_float;
+exports._parse_format            = _parse_format;
 exports._finish_formatting       = _finish_formatting;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;

@@ -93,17 +93,17 @@ let caml_int_of_string s =
   or_res
 
 type fmt = {
-  justify : string; 
-  signstyle : string;
-  filter : string ;
-  alternate : bool;
-  base : int;
-  signedconv : bool;
-  width :int;
-  uppercase : bool;
-  sign : int;
-  prec : int;
-  conv : string
+  mutable justify : string; 
+  mutable signstyle : string;
+  mutable filter : string ;
+  mutable alternate : bool;
+  mutable base : int;
+  mutable signedconv : bool;
+  mutable width :int;
+  mutable uppercase : bool;
+  mutable sign : int;
+  mutable prec : int;
+  mutable conv : string
 }
 
 let lowercase c =
@@ -113,90 +113,94 @@ let lowercase c =
   then Char.unsafe_chr(Char.code c + 32)
   else c
 
-let _parse_float fmt = 
+let _parse_format fmt = 
   let len = String.length fmt in 
   if len > 31 then 
     raise @@ Invalid_argument "format_int: format too long" ;
-  let justify = ref "+" in
-  let signstyle =  ref "-"in
-  let filter = ref " " in
-  let alternate = ref false in
-  let base= ref 0 in
-  let signedconv= ref false in
-  let width = ref 0 in
-  let uppercase=  ref false in
-  let sign = ref 1 in
-  let prec = ref (-1) in
-  let conv = ref "f" in
-  let rec aux i = 
-    if i >= len then  ()
+  let rec aux (f : fmt) i : fmt = 
+    if i >= len then  f
     else
       let c = fmt.[i] in  
       match c with
-      | '-' -> justify := "-"; aux (i + 1)
+      | '-' -> 
+        f.justify <- "-";
+        aux f (i + 1)
       | '+'|' ' 
         ->
-        signstyle := string_of_char_code c ; 
-        aux (i + 1)
-    | '#' -> 
-      alternate := true;
-      aux (i + 1)
-    | '0' -> 
-      filter := "0";
-      aux (i + 1)
-    | '1' .. '9' 
-      -> 
-      begin 
-        width := 0;
-        let j = ref i in 
+        f.signstyle <- string_of_char_code c ; 
+        aux f (i + 1)
+      | '#' -> 
+        f.alternate <- true;
+        aux f (i + 1)
+      | '0' -> 
+        f.filter <- "0";
+        aux f (i + 1)
+      | '1' .. '9' 
+        -> 
+        begin 
+          f.width <- 0;
+          let j = ref i in 
 
+          while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
+            f.width <- f.width * 10 + Char.code fmt.[!j] - Char.code '0';
+            incr j
+          done;
+          aux f !j
+        end
+      | '.' 
+        -> 
+        f.prec <- 0;
+        let j = ref (i + 1 ) in 
         while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
-          width := !width * 10 + Char.code fmt.[!j] - Char.code '0';
-          incr j
+          f.prec <- f.prec * 10 + Char.code fmt.[!j] - Char.code '0';
+          incr j;
         done;
-        aux (!j - 1)
-      end
-    | '.' 
-      -> 
-      prec := 0;
-      let j = ref (i + 1 ) in 
-      while (let w = Char.code fmt.[!j] - Char.code '0' in w >=0 && w <= 9  ) do 
-        prec := !prec * 10 + Char.code fmt.[!j] - Char.code '0';
-        incr j;
-      done;
-      aux (!j - 1) 
-    | 'd' 
-    | 'i' -> 
-      signedconv := true;
-      base := 10
-    | 'u' -> base := 10
-    | 'x' -> base := 16
-    | 'X' -> base := 16; uppercase := true
-    | 'o' -> base := 8
-    (* | 'O' -> base := 8; uppercase := true no uppercase for oct *)
-    | 'e' | 'f' | 'g' 
-      -> 
-      signedconv := true;
-      conv := string_of_char_code c 
-    | 'E' | 'F' | 'G' 
-      -> 
-      signedconv := true;
-      uppercase := true;
-      conv := string_of_char_code (lowercase c)
-    | _ -> raise @@ Invalid_argument fmt in 
-  aux 0 ;
-  { justify = !justify ;
-    signstyle = !signstyle;
-    filter = !filter;
-    alternate = !alternate;
-    base = !base;
-    signedconv = !signedconv;
-    width = !width;
-    uppercase = !uppercase;
-    sign = !sign;
-    prec = !prec;
-    conv = !conv
-  }  
+        aux f !j 
+      | 'd' 
+      | 'i' -> 
+        f.signedconv <- true;
+        f.base <- 10;
+        aux f (i + 1)
+      | 'u' -> 
+        f.base <-10;
+        aux f (i + 1)
+      | 'x' -> 
+        f.base <- 16;
+        aux f (i + 1)
+      | 'X' -> 
+        f.base <- 16;
+        f.uppercase <- true;
+        aux f (i + 1)
+      | 'o' -> 
+        f.base <- 8;
+        aux f (i + 1)
+      (* | 'O' -> base := 8; uppercase := true no uppercase for oct *)
+      | 'e' | 'f' | 'g' 
+        -> 
+        f.signedconv <- true;
+        f.conv <- string_of_char_code c ;
+        aux  f (i + 1)
+      | 'E' | 'F' | 'G' 
+        -> 
+        f.signedconv <- true;
+        f.uppercase <- true;
+        f.conv <- string_of_char_code (lowercase c);
+        aux f (i + 1)
+      | _ -> 
+        aux f (i + 1) 
+  in 
+  aux   { justify =  "+" ;
+          signstyle =   "-";
+          filter =  " " ;
+          alternate =  false ;
+          base=  0 ;
+          signedconv=  false ;
+          width =  0 ;
+          uppercase=   false ;
+          sign =  1 ;
+          prec =  (-1); 
+          conv =  "f"} 0 ;
+
 
 external toUpperCase : string -> string = "toUpperCase" [@@js.send]
 let _finish_formatting ({
@@ -225,9 +229,13 @@ let _finish_formatting ({
       else ()
     end ; 
   let buffer = ref "" in 
+  (* let (+=) buffer s = buffer := !buffer ^ s in 
+     FIXME: should get inlined
+  *)
+  (* let (+:) s = buffer := !buffer ^ s in *)
   if justify = "+" && filter = " " then
     for i = !len to width - 1 do 
-      buffer := !buffer ^ " "
+       buffer := !buffer ^ filter
     done;
   if signedconv then 
     if sign < 0 then 
@@ -242,13 +250,13 @@ let _finish_formatting ({
     
   if justify = "+" && filter = "0" then 
     for i = !len to width - 1 do 
-      buffer := !buffer ^ "0";
+      buffer := !buffer ^ filter;
     done;
   begin 
     if uppercase then 
-    buffer := !buffer ^ toUpperCase rawbuffer
-  else
-    buffer := !buffer ^ rawbuffer
+      buffer := !buffer ^ toUpperCase rawbuffer
+    else
+      buffer := !buffer ^ rawbuffer
   end;
   if justify = "-" then 
     for i = !len to width - 1 do 
@@ -256,6 +264,36 @@ let _finish_formatting ({
     done;
   !buffer
 
+external int_to_string : int -> int -> string = "toString" [@@js.send]
+
+(** TODO: depends on ES6 polyfill [String.prototype.repeat]*)
+(* external duplicate : string -> int -> string = "repeat" [@@js.send] *)
+
+let caml_format_int fmt i = 
+  if fmt = "%d" then string_of_int i 
+  else 
+    let f = _parse_format fmt in 
+    let i = 
+      if i < 0 then 
+        if f.signedconv then 
+          begin 
+            f.sign <- -1;
+            -i
+          end
+        else 
+          i lsr 0 
+      else  i  in
+    let s = ref @@ int_to_string i f.base in 
+    if f.prec >= 0 then 
+      begin 
+      f.filter <- " ";
+      let n = f.prec - String.length !s in 
+      if n > 0 then
+        s :=  repeat n "0"  ^ !s
+      end
+    ;
+    _finish_formatting f !s
+      
 [%%js.raw{|
 
 /**
@@ -353,6 +391,7 @@ function $$parse_format(fmt) {
                     i++;
                 }
                 i--;
+                break;
             case 'd':
             case 'i':
                 f.signedconv = true; // fall through to have f.base = 10
@@ -434,31 +473,6 @@ function $$finish_formatting(f, rawbuffer) {
     return buffer;
 }
 
-/**
- * external format_int : string -> int -> string = "caml_format_int"
- * pervasives.ml
- * */
-function $$caml_format_int(fmt, i) {
-    if (fmt == "%d")
-        return "" + i;
-    var f = $$parse_format(fmt);
-    if (i < 0) {
-        if (f.signedconv) {
-            f.sign = -1;
-            i = -i;
-        }
-        else
-            i >>>= 0;
-    }
-    var s = i.toString(f.base);
-    if (f.prec >= 0) {
-        f.filler = ' ';
-        var n = f.prec - s.length;
-        if (n > 0)
-            s = repeat(n, '0') + s;
-    }
-    return $$finish_formatting(f, s);
-}
 
 
 
@@ -542,11 +556,9 @@ function $$caml_format_float(fmt, x) {
 
 |}]
 
-external caml_format_float : string -> float -> string = ""
-[@@js.call "$$caml_format_float"] [@@js.local]
+external caml_format_float : string -> float -> string =  "$$caml_format_float"
+[@@js.call] [@@js.local]
 
-external caml_format_int : string -> int -> string = ""
-[@@js.call "$$caml_format_int"] [@@js.local]
 
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int
