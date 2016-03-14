@@ -1,2 +1,0 @@
-export var suite: any ;
-
