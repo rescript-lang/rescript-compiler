@@ -7,4 +7,4 @@ B stdlib
 S test
 B test
 B +compiler-libs
-FLG -w -40
+FLG -w -40-30

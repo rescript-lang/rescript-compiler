@@ -418,6 +418,13 @@ let to_ocaml_boolean ?comment (e : t) : t =
   | Number _ -> e 
   | _ -> {comment ; expression_desc = Int_of_boolean e}
 
+let to_number ?comment (e : t) : t = 
+  match e.expression_desc with 
+  | Int_of_boolean _
+  | Anything_to_number _
+  | Number _ -> e 
+  | _ -> {comment ; expression_desc = Anything_to_number e}
+
 let caml_true  = int ~comment:"true" 1l (* var (Jident.create_js "true") *)
 
 let caml_false  = int ~comment:"false" 0l

@@ -104,6 +104,7 @@ and expression_desc =
   | String_append of expression * expression 
 
   | Int_of_boolean of expression 
+  | Anything_to_number of expression
   | Bool of bool (* js true/false*)
   (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence 
      [typeof] is an operator     

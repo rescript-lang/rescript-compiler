@@ -599,7 +599,7 @@ and
       else action ()
     ); 
     cxt 
-
+  | J.Anything_to_number e 
   | Int_of_boolean e -> 
     let action () = 
       P.group f 0 @@ fun _ -> 
@@ -1109,6 +1109,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       | Not _ 
       | Bool _
       | New _ 
+      | J.Anything_to_number _ 
       | Int_of_boolean _ -> false
       (* e = function(x){...}(x);  is good
        *)
