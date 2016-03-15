@@ -896,6 +896,12 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e] -> E.anything_to_string e 
     | _ -> assert false
     end
+  | "js_anything_to_number" 
+    -> 
+    begin match args with 
+    | [e] -> E.to_number e 
+    | _ -> assert false
+    end
 
   | "js_json_stringify"      
     -> 

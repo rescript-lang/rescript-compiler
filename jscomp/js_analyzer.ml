@@ -107,7 +107,7 @@ let rec no_side_effect (x : J.expression)  =
   | Array_copy _ 
   (* | Tag_ml_obj _ *)
   | Int_of_boolean _ 
-
+  | J.Anything_to_number _
   | Not _ 
   | String_of_small_int_array _ 
   | Json_stringify _ 

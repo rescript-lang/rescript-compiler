@@ -317,13 +317,9 @@ external index_of : string -> string -> int = "indexOf"
     [@@js.send]
 
 (** TODO: investigate why [caml_int_of_string] does not work here *)
-[%%js.raw{|
-function $$js_anything_to_number(x){
-   return +x;
-}
-|}]
-external to_number : 'a -> int = "$$js_anything_to_number" (* + conversion*)
-[@@js.call] [@@js.local]
+
+external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
+
 
 let caml_format_float fmt x = 
   let f = _parse_format fmt in 

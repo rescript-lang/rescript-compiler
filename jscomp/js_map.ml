@@ -388,6 +388,8 @@ class virtual map =
           let _x = o#expression _x in
           let _x_i1 = o#expression _x_i1 in String_append (_x, _x_i1)
       | Int_of_boolean _x -> let _x = o#expression _x in Int_of_boolean _x
+      | Anything_to_number _x ->
+          let _x = o#expression _x in Anything_to_number _x
       | Bool _x -> let _x = o#bool _x in Bool _x
       | Typeof _x -> let _x = o#expression _x in Typeof _x
       | Not _x -> let _x = o#expression _x in Not _x

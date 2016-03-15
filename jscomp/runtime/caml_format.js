@@ -464,13 +464,6 @@ function caml_format_int(fmt, i) {
   }
 }
 
-
-function $$js_anything_to_number(x){
-   return +x;
-}
-
-;
-
 function caml_format_float(fmt, x) {
   var f = _parse_format(fmt);
   var prec = f[/* prec */9] < 0 ? 6 : f[/* prec */9];
@@ -497,7 +490,7 @@ function caml_format_float(fmt, x) {
           var prec$1 = prec !== 0 ? prec : 1;
           s = x$1.toExponential(prec$1 - 1);
           var j = s.indexOf("e");
-          var exp = $$js_anything_to_number(s.slice(j + 1));
+          var exp = +s.slice(j + 1);
           if (exp < -4 || x$1 >= 1e21 || x$1.toFixed(0).length > prec$1) {
             var i$1 = j - 1;
             while(s[i$1] === "0") {
