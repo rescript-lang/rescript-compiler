@@ -126,6 +126,7 @@ for_side_effect_test
 cps_test
 for_loop_test
 queue_test
+libqueue_test
 loop_suites_test
 const_block_test
 stack_test
