@@ -51,4 +51,4 @@ ocamlbuild  -cflags $OCAMLBUILD_CFLAGS -no-links js_generate_require.byte  -- 2>
 
 echo "........" >> ./build.compile
 
-# npm run cover&
+npm run cover&
