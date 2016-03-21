@@ -79,3 +79,7 @@ let caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc. b
   =
   function _ -> 
     raise @@ Failure "caml_convert_raw_backtrace_slot unimplemented"
+
+let caml_md5_string : string -> int -> int -> t = function _ -> 
+  function _ -> 
+    raise @@ Failure "caml_md5_string unimplemented"

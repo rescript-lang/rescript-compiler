@@ -74,5 +74,46 @@ let suites_64 =
     (fun (a,b) -> (Printf.sprintf "swap64 %d" (Int64.to_int a),
                    fun _ -> Mt.Eq(bswap64 a , b)))
 
+
+
+
+
+
+
+let d16 = 
+  format_of_string "%x",
+  bswap16,
+  [|
+    0x11223344, "4433";
+    0x0000f0f0, "f0f0"
+  |]
+
+let d32 = 
+  format_of_string "%lx",
+  bswap32,
+  [|
+    0x11223344l, "44332211";
+    0xf0f0f0f0l,"f0f0f0f0"
+  |]
+
+(* let d64 () = *)
+(*   format_of_string "%Lx", *)
+
+(*   [| *)
+(*     0x1122334455667788L, "8877665544332211"; *)
+(*     0xf0f0f0f0f0f0f0f0L,"f0f0f0f0f0f0f0f0" *)
+(*   |] *)
+
+let f = Format.asprintf 
+
+let f  s (* : 'a . ('a -> 'b, Format.formatter, unit, string) format4 * ('a * 'b) array -> *)
+  (* (string * ('c -> 'd Mt.eq)) list *)  = fun (x, swap, ls) -> 
+  Array.mapi (fun i (a,  b) -> f "%s %i" s i, fun _ -> Mt.Eq (f x (swap a), b) ) ls
+  |> Array.to_list
+
 ;; Mt.from_pair_suites __FILE__ 
-  (suites_16 @ suites_32  @ suites_64)
+  (suites_16 @ suites_32  @ suites_64 
+   @ f "d16" d16 
+   @ f "d32" d32 
+   (* @ f (d64 ()) *)
+  )

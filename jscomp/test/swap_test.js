@@ -10,6 +10,7 @@ var Caml_primitive = require("../runtime/caml_primitive");
 var $$Array        = require("../stdlib/array");
 var Caml_curry     = require("../runtime/caml_curry");
 var List           = require("../stdlib/list");
+var Format         = require("../stdlib/format");
 
 var tests_16 = Caml_obj.caml_obj_dup(/* array */[
       /* tuple */[
@@ -951,7 +952,121 @@ var suites_64 = List.map(function (param) {
             ];
     }, $$Array.to_list(tests_64));
 
-Mt.from_pair_suites("swap_test.ml", Pervasives.$at(suites_16, Pervasives.$at(suites_32, suites_64)));
+var d16_000 = /* Format */{
+  0: /* Int */{
+    0: /* Int_x */6,
+    1: /* No_padding */0,
+    2: /* No_precision */0,
+    3: /* End_of_format */0,
+    length: 4,
+    tag: 4
+  },
+  1: "%x",
+  length: 2,
+  tag: 0
+};
+
+function d16_001(prim) {
+  return Caml_primitive.caml_bswap16(prim);
+}
+
+var d16_002 = /* array */[
+  /* tuple */[
+    287454020,
+    "4433"
+  ],
+  /* tuple */[
+    61680,
+    "f0f0"
+  ]
+];
+
+var d16 = /* tuple */[
+  d16_000,
+  d16_001,
+  d16_002
+];
+
+var d32_000 = /* Format */{
+  0: /* Int32 */{
+    0: /* Int_x */6,
+    1: /* No_padding */0,
+    2: /* No_precision */0,
+    3: /* End_of_format */0,
+    length: 4,
+    tag: 5
+  },
+  1: "%lx",
+  length: 2,
+  tag: 0
+};
+
+function d32_001(prim) {
+  return Caml_primitive.caml_int32_bswap(prim);
+}
+
+var d32_002 = /* array */[
+  /* tuple */[
+    287454020,
+    "44332211"
+  ],
+  /* tuple */[
+    -252645136,
+    "f0f0f0f0"
+  ]
+];
+
+var d32 = /* tuple */[
+  d32_000,
+  d32_001,
+  d32_002
+];
+
+var f = Format.asprintf;
+
+function f$1(s, param) {
+  var swap = param[1];
+  var x = param[0];
+  return $$Array.to_list($$Array.mapi(function (i, param) {
+                  var b = param[1];
+                  var a = param[0];
+                  return /* tuple */[
+                          Caml_curry.app3(f, /* Format */{
+                                0: /* String */{
+                                  0: /* No_padding */0,
+                                  1: /* Char_literal */{
+                                    0: /* " " */32,
+                                    1: /* Int */{
+                                      0: /* Int_i */3,
+                                      1: /* No_padding */0,
+                                      2: /* No_precision */0,
+                                      3: /* End_of_format */0,
+                                      length: 4,
+                                      tag: 4
+                                    },
+                                    length: 2,
+                                    tag: 12
+                                  },
+                                  length: 2,
+                                  tag: 2
+                                },
+                                1: "%s %i",
+                                length: 2,
+                                tag: 0
+                              }, s, i),
+                          function () {
+                            return /* Eq */{
+                                    0: Caml_curry.app2(f, x, Caml_curry.app1(swap, a)),
+                                    1: b,
+                                    length: 2,
+                                    tag: 0
+                                  };
+                          }
+                        ];
+                }, param[2]));
+}
+
+Mt.from_pair_suites("swap_test.ml", Pervasives.$at(suites_16, Pervasives.$at(suites_32, Pervasives.$at(suites_64, Pervasives.$at(f$1("d16", d16), f$1("d32", d32))))));
 
 exports.tests_16  = tests_16;
 exports.tests_32  = tests_32;
@@ -959,4 +1074,7 @@ exports.tests_64  = tests_64;
 exports.suites_16 = suites_16;
 exports.suites_32 = suites_32;
 exports.suites_64 = suites_64;
+exports.d16       = d16;
+exports.d32       = d32;
+exports.f         = f$1;
 /* suites_16 Not a pure module */
