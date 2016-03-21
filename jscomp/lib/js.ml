@@ -59,3 +59,5 @@ external true_ : boolean = "true" [@@js.val]
 external false_ : boolean = "false" [@@js.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
+
+external string_of_char : char -> string = "js_string_of_char" 

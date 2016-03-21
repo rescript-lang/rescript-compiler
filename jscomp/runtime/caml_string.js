@@ -155,6 +155,10 @@ function caml_is_printable(c) {
   }
 }
 
+function string_of_char(prim) {
+  return String.fromCharCode(prim);
+}
+
 exports.add                       = add;
 exports.bytes_of_string           = bytes_of_string;
 exports.bytes_to_string           = bytes_to_string;
@@ -166,4 +170,5 @@ exports.caml_create_string        = caml_create_string;
 exports.caml_fill_string          = caml_fill_string;
 exports.caml_blit_string          = caml_blit_string;
 exports.caml_blit_bytes           = caml_blit_bytes;
+exports.string_of_char            = string_of_char;
 /* No side effect */

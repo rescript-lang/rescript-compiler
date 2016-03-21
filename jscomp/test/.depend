@@ -268,10 +268,10 @@ string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
 string_runtime_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
     ../runtime/caml_string.cmx ../stdlib/bytes.cmx
-string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
-    ../stdlib/bytes.cmi
-string_test.cmx : ../stdlib/string.cmx mt.cmx ext_string.cmx \
-    ../stdlib/bytes.cmx
+string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
+    ext_string.cmo ../stdlib/bytes.cmi
+string_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
+    ext_string.cmx ../stdlib/bytes.cmx
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi
@@ -738,10 +738,10 @@ string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
 string_runtime_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ../runtime/caml_string.cmj ../stdlib/bytes.cmj
-string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
-    ../stdlib/bytes.cmi
-string_test.cmj : ../stdlib/string.cmj mt.cmj ext_string.cmj \
-    ../stdlib/bytes.cmj
+string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
+    ext_string.cmo ../stdlib/bytes.cmi
+string_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
+    ext_string.cmj ../stdlib/bytes.cmj
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi

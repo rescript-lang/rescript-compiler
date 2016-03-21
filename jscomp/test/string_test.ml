@@ -52,9 +52,14 @@ let xsplit ~delim s =
   | 0 -> []
   | _ -> loop [] len
 
-open Mt
 
-;; from_pair_suites __FILE__ [
+external string_of_char : char -> string = "js_string_of_char" 
+
+let string_of_chars  x = String.concat "" @@ List.map string_of_char  x
+
+
+
+;; Mt.from_pair_suites __FILE__ [
   "mutliple switch", (fun _ -> 
       Eq(9, ff "4"));
   "int switch", (fun _ -> 
@@ -75,4 +80,6 @@ open Mt
   "find", (fun _ -> Eq( 0, Ext_string.find "__index__js" ~sub:"__"));
   "find_2", (fun _ -> Eq( 6, Ext_string.find "_index__js" ~sub:"__"));
   "find_3", (fun _ -> Eq( -1, Ext_string.find "_index_js" ~sub:"__"));
+  "of_char", (fun _ -> Eq( string_of_char '0', String.make 1 '0'));
+  "of_chars", (fun _ -> Eq( string_of_chars ['0' ;'1'; '2'], "012"))
 ]

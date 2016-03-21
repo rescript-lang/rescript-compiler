@@ -29,7 +29,7 @@ external string_of_small_int_array : int array -> string = "js_string_of_small_i
 external bytes_to_int_array : bytes -> int array = "%identity"
 external bytes_of_int_array : int array -> bytes = "%identity"
 external new_uninitialized_bytes : int -> bytes = "js_create_array" 
-
+external string_of_char : char -> string = "String.fromCharCode" [@@js.call]
 let add = append 
 
 let caml_string_get s i= 
