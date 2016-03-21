@@ -205,3 +205,4 @@ caml_format_test
 js_val
 epsilon_test
 io_test
+random_test

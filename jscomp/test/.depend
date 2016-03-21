@@ -240,6 +240,8 @@ qcc.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/array.cmx
 queue_test.cmo : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
 queue_test.cmx : ../stdlib/queue.cmx mt.cmx ../stdlib/array.cmx
+random_test.cmo : ../stdlib/random.cmi
+random_test.cmx : ../stdlib/random.cmx
 rec_module_test.cmo : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
 rec_module_test.cmx : ../stdlib/set.cmx ../stdlib/pervasives.cmx mt.cmx
 rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
@@ -271,9 +273,11 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
 string_test.cmx : ../stdlib/string.cmx mt.cmx ext_string.cmx \
     ../stdlib/bytes.cmx
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
+    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ../stdlib/array.cmi
 swap_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
-    ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/array.cmx
+    ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
+    ../stdlib/array.cmx
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmx : mt.cmx ../stdlib/array.cmx
 test.cmo :
@@ -706,6 +710,8 @@ qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/array.cmj
 queue_test.cmo : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
 queue_test.cmj : ../stdlib/queue.cmj mt.cmj ../stdlib/array.cmj
+random_test.cmo : ../stdlib/random.cmi
+random_test.cmj : ../stdlib/random.cmj
 rec_module_test.cmo : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
 rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
@@ -737,9 +743,11 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ext_string.cmo \
 string_test.cmj : ../stdlib/string.cmj mt.cmj ext_string.cmj \
     ../stdlib/bytes.cmj
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
+    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ../stdlib/array.cmi
 swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
-    ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
+    ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
+    ../stdlib/array.cmj
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
 test.cmo :
