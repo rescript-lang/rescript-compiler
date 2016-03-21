@@ -860,6 +860,13 @@ let query (prim : Lam_compile_env.primitive_description)
     | [e] -> E.string_of_small_int_array e 
     | _ -> assert false
     end
+  | "js_string_of_char" 
+    ->
+      begin match args with 
+      | [{expression_desc = Number (Int {i; _})} ] 
+        -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
+      | _ -> E.runtime_call Js_config.string "string_of_char" args
+      end
   | "js_boolean_to_bool"
     -> 
     begin match args with 

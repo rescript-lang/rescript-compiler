@@ -32,3 +32,4 @@ val caml_create_string : int -> bytes
 val caml_fill_string : bytes -> int -> int -> char -> unit
 val caml_blit_string : string -> int -> bytes -> int -> int -> unit
 val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
+val string_of_char : char -> string 

@@ -6,6 +6,8 @@ var Bytes                   = require("../stdlib/bytes");
 var Mt                      = require("./mt");
 var Ext_string              = require("./ext_string");
 var $$String                = require("../stdlib/string");
+var List                    = require("../stdlib/list");
+var Caml_string             = require("../runtime/caml_string");
 
 function ff(x) {
   var a;
@@ -144,6 +146,12 @@ function xsplit(delim, s) {
   else {
     return /* [] */0;
   }
+}
+
+function string_of_chars(x) {
+  return $$String.concat("", List.map(function (prim) {
+                  return Caml_string.string_of_char(prim);
+                }, x));
 }
 
 Mt.from_pair_suites("string_test.ml", /* :: */[
@@ -332,7 +340,42 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                           };
                                   }
                                 ],
-                                /* [] */0
+                                /* :: */[
+                                  /* tuple */[
+                                    "of_char",
+                                    function () {
+                                      return /* Eq */{
+                                              0: "0",
+                                              1: $$String.make(1, /* "0" */48),
+                                              length: 2,
+                                              tag: 0
+                                            };
+                                    }
+                                  ],
+                                  /* :: */[
+                                    /* tuple */[
+                                      "of_chars",
+                                      function () {
+                                        return /* Eq */{
+                                                0: string_of_chars(/* :: */[
+                                                      /* "0" */48,
+                                                      /* :: */[
+                                                        /* "1" */49,
+                                                        /* :: */[
+                                                          /* "2" */50,
+                                                          /* [] */0
+                                                        ]
+                                                      ]
+                                                    ]),
+                                                1: "012",
+                                                length: 2,
+                                                tag: 0
+                                              };
+                                      }
+                                    ],
+                                    /* [] */0
+                                  ]
+                                ]
                               ]
                             ]
                           ]
@@ -352,4 +395,5 @@ exports.ff                = ff;
 exports.gg                = gg;
 exports.rev_split_by_char = rev_split_by_char;
 exports.xsplit            = xsplit;
+exports.string_of_chars   = string_of_chars;
 /*  Not a pure module */
