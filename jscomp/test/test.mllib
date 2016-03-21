@@ -127,6 +127,7 @@ cps_test
 for_loop_test
 queue_test
 libqueue_test
+libarg_test
 loop_suites_test
 const_block_test
 stack_test
