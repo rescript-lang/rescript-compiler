@@ -1,5 +1,12 @@
-js.cmi :
-bench.cmo : js.cmi
+bench.cmo : js.cmo
 bench.cmj : js.cmj
-js.cmo : js.cmi
-js.cmj : js.cmi
+dom.cmo : js.cmo
+dom.cmj : js.cmj
+js.cmo :
+js.cmj :
+js_date.cmo :
+js_date.cmj :
+js_intf.cmo :
+js_intf.cmj :
+xmlHTTPRequest.cmo : js.cmo
+xmlHTTPRequest.cmj : js.cmj

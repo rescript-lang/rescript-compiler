@@ -3,6 +3,10 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
+function string_of_char(prim) {
+  return String.fromCharCode(prim);
+}
+
 function add(prim, prim$1) {
   return prim + prim$1;
 }
@@ -153,10 +157,6 @@ function caml_is_printable(c) {
   else {
     return /* false */0;
   }
-}
-
-function string_of_char(prim) {
-  return String.fromCharCode(prim);
 }
 
 exports.add                       = add;

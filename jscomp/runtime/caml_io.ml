@@ -19,11 +19,11 @@
 (* Author: Hongbo Zhang  *)
 
 type 'a def
-external undef : 'a def = "undefined" [@@js.val]
 
-let stdin = undef
-let stdout = undef 
-let stderr = undef 
+
+let stdin = Js.undef
+let stdout = Js.undef 
+let stderr = Js.undef 
 
 let caml_ml_open_descriptor_in (i : int) : in_channel = 
   raise (Failure "caml_ml_open_descriptor_in not implemented")  
@@ -35,7 +35,7 @@ let caml_ml_output_char (oc : out_channel)  (char : char) =
 (** note we need provide both [bytes] and [string] version 
 *)
 let caml_ml_output (oc : out_channel) (bytes : bytes) offset len  =
-  raise @@ Failure  "caml_ml_output not implemented"  
+    raise @@ Failure  "caml_ml_output not implemented"  
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
   raise @@ Failure  "caml_ml_input ic not implemented"
 

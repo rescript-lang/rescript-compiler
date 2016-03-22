@@ -62,7 +62,7 @@ caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx \
     ../stdlib/array.cmx
-class_type_ffi_test.cmo : ../lib/js.cmi
+class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmx : mt.cmx ../stdlib/bytes.cmx
@@ -82,7 +82,7 @@ cps_test.cmo : mt.cmi ../stdlib/array.cmi
 cps_test.cmx : mt.cmx ../stdlib/array.cmx
 cross_module_inline_test.cmo :
 cross_module_inline_test.cmx :
-debugger_test.cmo : ../lib/js.cmi
+debugger_test.cmo : ../lib/js.cmo
 debugger_test.cmx : ../lib/js.cmx
 demo.cmo :
 demo.cmx :
@@ -112,7 +112,7 @@ ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/bytes.cmx
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmx : mt.cmx
-ffi_test.cmo : ../lib/js.cmi
+ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmx : ../lib/js.cmx
 fib.cmo :
 fib.cmx :
@@ -166,9 +166,9 @@ int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/int32.cmx \
     ../stdlib/char.cmx
-io_test.cmo : ../lib/js.cmi
+io_test.cmo : ../lib/js.cmo
 io_test.cmx : ../lib/js.cmx
-js_bool_test.cmo : mt.cmi ../lib/js.cmi
+js_bool_test.cmo : mt.cmi ../lib/js.cmo
 js_bool_test.cmx : mt.cmx ../lib/js.cmx
 js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmx : mt.cmx ../lib/js_date.cmx
@@ -190,7 +190,7 @@ lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmx : number_lexer.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx arith_lexer.cmx
-lib_js_test.cmo : mt.cmi ../lib/js.cmi
+lib_js_test.cmo : mt.cmi ../lib/js.cmo
 lib_js_test.cmx : mt.cmx ../lib/js.cmx
 libarg_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
@@ -214,7 +214,7 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
     ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
-mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmi
+mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo
 mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../lib/js.cmx
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
@@ -262,7 +262,7 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
-string_literal_print_test.cmo : mt.cmi ../lib/js.cmi
+string_literal_print_test.cmo : mt.cmi ../lib/js.cmo
 string_literal_print_test.cmx : mt.cmx ../lib/js.cmx
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
@@ -344,7 +344,7 @@ test_generative_module.cmo :
 test_generative_module.cmx :
 test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
-test_google_closure.cmo : ../lib/js.cmi ../stdlib/array.cmi
+test_google_closure.cmo : ../lib/js.cmo ../stdlib/array.cmi
 test_google_closure.cmx : ../lib/js.cmx ../stdlib/array.cmx
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
@@ -468,13 +468,13 @@ test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmx : ../stdlib/array.cmx
 test_while_side_effect.cmo :
 test_while_side_effect.cmx :
-test_zero_nullable.cmo : ../lib/js.cmi
+test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmx : ../lib/js.cmx
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
-typeof_test.cmo : mt.cmi ../lib/js.cmi
+typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
 unitest_string.cmo :
 unitest_string.cmx :
@@ -532,7 +532,7 @@ caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj \
     ../stdlib/array.cmj
-class_type_ffi_test.cmo : ../lib/js.cmi
+class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
@@ -552,7 +552,7 @@ cps_test.cmo : mt.cmi ../stdlib/array.cmi
 cps_test.cmj : mt.cmj ../stdlib/array.cmj
 cross_module_inline_test.cmo :
 cross_module_inline_test.cmj :
-debugger_test.cmo : ../lib/js.cmi
+debugger_test.cmo : ../lib/js.cmo
 debugger_test.cmj : ../lib/js.cmj
 demo.cmo :
 demo.cmj :
@@ -582,7 +582,7 @@ ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/bytes.cmj
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
-ffi_test.cmo : ../lib/js.cmi
+ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmj : ../lib/js.cmj
 fib.cmo :
 fib.cmj :
@@ -636,9 +636,9 @@ int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
     ../stdlib/char.cmj
-io_test.cmo : ../lib/js.cmi
+io_test.cmo : ../lib/js.cmo
 io_test.cmj : ../lib/js.cmj
-js_bool_test.cmo : mt.cmi ../lib/js.cmi
+js_bool_test.cmo : mt.cmi ../lib/js.cmo
 js_bool_test.cmj : mt.cmj ../lib/js.cmj
 js_date_test.cmo : mt.cmi ../lib/js_date.cmo
 js_date_test.cmj : mt.cmj ../lib/js_date.cmj
@@ -660,7 +660,7 @@ lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lib_js_test.cmo : mt.cmi ../lib/js.cmi
+lib_js_test.cmo : mt.cmi ../lib/js.cmo
 lib_js_test.cmj : mt.cmj ../lib/js.cmj
 libarg_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
@@ -684,7 +684,7 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
-mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmi
+mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../lib/js.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
@@ -732,7 +732,7 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
-string_literal_print_test.cmo : mt.cmi ../lib/js.cmi
+string_literal_print_test.cmo : mt.cmi ../lib/js.cmo
 string_literal_print_test.cmj : mt.cmj ../lib/js.cmj
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
@@ -814,7 +814,7 @@ test_generative_module.cmo :
 test_generative_module.cmj :
 test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
-test_google_closure.cmo : ../lib/js.cmi ../stdlib/array.cmi
+test_google_closure.cmo : ../lib/js.cmo ../stdlib/array.cmi
 test_google_closure.cmj : ../lib/js.cmj ../stdlib/array.cmj
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
@@ -938,13 +938,13 @@ test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmj : ../stdlib/array.cmj
 test_while_side_effect.cmo :
 test_while_side_effect.cmj :
-test_zero_nullable.cmo : ../lib/js.cmi
+test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmj : ../lib/js.cmj
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
-typeof_test.cmo : mt.cmi ../lib/js.cmi
+typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
 unitest_string.cmo :
 unitest_string.cmj :

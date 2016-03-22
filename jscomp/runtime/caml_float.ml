@@ -51,28 +51,21 @@ let caml_int32_bits_of_float (x : float) =
 
 
 
-external is_finite : float -> bool = "isFinite"
-  [@@js.call ]
-
-external is_nan : float -> bool = "isNaN"
-  [@@js.call ] 
 
 let caml_classify_float x : fpclass  = 
-  if is_finite x then 
+  if Js.Float.is_finite x then 
     if abs_float x >= 2.2250738585072014e-308  then
       FP_normal
     else if x != 0. then FP_subnormal
     else FP_zero
   else 
-  if is_nan x then 
+  if Js.Float.is_nan x then 
     FP_nan 
   else FP_infinite
 
-external nan : float = "NaN"
-[@@js.val ] 
 
 let caml_modf_float (x : float) : float * float = 
-  if is_finite x then 
+  if Js.Float.is_finite x then 
     let neg = 1. /. x < 0. in 
     let x = abs_float x  in
     let i = floor x in
@@ -80,7 +73,7 @@ let caml_modf_float (x : float) : float * float =
     if neg then 
       -. f, -. i       
     else f, i 
-  else if is_nan x then nan ,  nan 
+  else if Js.Float.is_nan x then Js.Float.nan ,  Js.Float.nan 
   else (1. /. x , x)
 
 [%%js.raw{|
@@ -103,8 +96,8 @@ function $$caml_ldexp_float (x,exp) {
 }
 |}]
 
-external caml_ldexp_float : float -> int -> float = ""
-[@@js.call "$$caml_ldexp_float"] [@@js.local]
+external caml_ldexp_float : float -> int -> float = "$$caml_ldexp_float"
+[@@js.call ] [@@js.local]
 (* let caml_ldexp_float  (x : float)  (exp : nativeint) : float =  *)
 
 [%%js.raw{|
@@ -119,8 +112,8 @@ function $$caml_frexp_float (x) {
     return [x, exp];
 }
 |}]
-external caml_frexp_float  : float -> float * int = ""
-[@@js.call "$$caml_frexp_float"][@@js.local]
+external caml_frexp_float  : float -> float * int = "$$caml_frexp_float"
+[@@js.call ][@@js.local]
 
 let caml_float_compare (x : float) (y : float ) = 
   if x = y then 0 
@@ -136,11 +129,6 @@ let caml_copysign_float   (x : float) (y :  float) :  float =
     if y = 0. then 1. /. y else y in 
   if y < 0. then -. x else x   
 
-external exp : float -> float = ""
-[@@js.call "Math.exp"]
-
-external log : float -> float = ""
-[@@js.call "Math.log"]
 
 let  caml_expm1_float : float -> float = function x -> 
   let y = exp x in 
@@ -163,15 +151,15 @@ function $$caml_hypot_float (x, y) {
 }
 |}]
 
-external caml_hypot_float : float -> float -> float = ""
-[@@js.call "$$caml_hypot_float"] [@@js.local]
+external caml_hypot_float : float -> float -> float = "$$caml_hypot_float"
+[@@js.call ] [@@js.local]
 
 [%%js.raw{|
 function $$caml_log10_float (x) { return Math.LOG10E * Math.log(x); }
 |} ]
 
-external caml_log10_float : float -> float = ""
-[@@js.call "$$caml_log10_float"] [@@js.local]
+external caml_log10_float : float -> float = "$$caml_log10_float"
+[@@js.call ] [@@js.local]
 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2. 
 let caml_sin_float x = exp x -. exp (-. x) /. 2.

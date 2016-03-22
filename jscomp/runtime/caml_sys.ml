@@ -33,8 +33,8 @@ function $$caml_sys_getenv(n) {
   }
 |}]
 
-external caml_sys_getenv : string -> string = ""
-[@@js.call "$$caml_sys_getenv"] [@@js.local]
+external caml_sys_getenv : string -> string = "$$caml_sys_getenv"
+  [@@js.call ] [@@js.local]
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
 [%%js.raw{|
@@ -44,10 +44,8 @@ function $$date(){
 
 |}]
 
-external current_date : unit -> float = "" 
-[@@js.call "$$date"] [@@js.local]
-external random : unit -> float = ""
-[@@js.call "Math.random"]
+external current_date : unit -> float = "$$date"
+  [@@js.call ] [@@js.local]
 
 let caml_initial_time = current_date ()  *. 0.001
 
@@ -57,6 +55,6 @@ let caml_sys_random_seed () : nativeint array =
    [|
      Nativeint.of_float 
      ((Nativeint.to_float (Nativeint.logxor (Nativeint.of_float (current_date ()))
-                             0xffffffffn)) *. random ()) |]
+                             0xffffffffn)) *. Js.Float.random ()) |]
 
 let caml_sys_system_command () = 127

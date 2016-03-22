@@ -241,10 +241,10 @@ let to_float ({lo; hi } : t) : float =
     else  lo +  0x1_0000_0000n in
   Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
 
-external log2 : float = "Math.LN2" [@@ js.val ]  
 
-external is_nan : float -> bool = "isNaN" [@@js.call]
-external is_finite : float -> bool = "isFinite" [@@js.call]
+
+
+
 
 (** sign: Positive  *)
 let two_ptr_32_dbl = 2. ** 32.
@@ -273,7 +273,7 @@ let neg_two_ptr_63 = -. (2. ** 63.)
    ]}
 *)
 let rec of_float (x : float) : t = 
-  if is_nan x ||  Pervasives.not  (is_finite x ) then zero 
+  if Js.Float.is_nan x ||  Pervasives.not  (Js.Float.is_finite x ) then zero 
   else if x <= neg_two_ptr_63 then 
     min_int
   else if x  +. 1. >= two_ptr_63_dbl then
@@ -283,7 +283,7 @@ let rec of_float (x : float) : t =
   else { lo = Nativeint.of_float (mod_float  x two_ptr_32_dbl) ;  
          hi =  Nativeint.of_float (x /. two_ptr_32_dbl)  }
 
-external max_float : float -> float -> float = "Math.max" [@@js.call]
+
 
 let rec div self other = 
   match self, other with
@@ -327,9 +327,9 @@ let rec div self other =
       let rem = ref self in 
       (* assert false *)
       while ge !rem other  do
-        let approx = ref ( max_float 1.
+        let approx = ref ( Js.Float.max 1.
              (floor (to_float !rem /. to_float other) )) in
-        let log2 = ceil (log !approx /. log2) in
+        let log2 = ceil (log !approx /. Js.Float.log2) in
         let delta =
           if log2 <= 48. then 1.
           else 2. ** (log2 -. 48.) in
