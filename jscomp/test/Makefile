@@ -2,7 +2,7 @@ include ../Makefile.shared
 
 CAMLC=../bin/bsc
 
-INCLUDES= -I ../stdlib -I ../runtime -I ../lib 
+INCLUDES= -I ../stdlib  -I ../lib -I ../runtime
 
 SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )

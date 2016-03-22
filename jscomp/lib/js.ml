@@ -18,7 +18,11 @@
 
 (* Author: Hongbo Zhang  *)
 
-
+(** This file will also be exported to external users 
+    Attention: it should not have any code, all its code will be inlined so that 
+    there will be never 
+    {[ require('js')]}
+*)
 external typeof : 'a -> string = "js_typeof"
 
 external to_json_string : 'a -> string = "js_json_stringify"
@@ -59,5 +63,71 @@ external true_ : boolean = "true" [@@js.val]
 external false_ : boolean = "false" [@@js.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
-
+external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
 external string_of_char : char -> string = "js_string_of_char" 
+
+module String = struct 
+  external of_char : char -> string = "String.fromCharCode" 
+    [@@js.call]
+  external toUpperCase : string -> string = "toUpperCase" [@@js.send]
+  external of_int : int -> base:int -> string = "toString" [@@js.send]
+  external slice : string -> int -> int -> string = "slice" 
+    [@@js.send]
+  external slice_rest : string -> int -> string = "slice" 
+    [@@js.send]
+  external index_of : string -> string -> int = "indexOf"
+    [@@js.send]
+  external append : string -> string -> string = "js_string_append"
+  external of_small_int_array : int array -> string = "js_string_of_small_int_array"
+end
+
+module Array = struct 
+  external new_uninitialized : int -> 'a array = "js_create_array"
+  external append : 'a array -> 'a array -> 'a array = "js_array_append"
+
+end
+module Bytes = struct 
+  external to_int_array : bytes -> int array = "%identity"
+  external of_int_array : int array -> bytes = "%identity"
+  external new_uninitialized : int -> bytes = "js_create_array" 
+
+end
+module Float = struct 
+  external nan : float = "NaN"
+    [@@js.val ] 
+  
+  external to_fixed : float -> int -> string = "toFixed" 
+    [@@js.send]
+
+  external is_finite : float -> bool = "isFinite"
+    [@@js.call ]
+
+  external is_nan : float -> bool = "isNaN"
+    [@@js.call ] 
+
+  external exp : float -> float = "Math.exp"
+    [@@js.call ]
+
+  external log : float -> float = "Math.log"
+    [@@js.call ]
+  
+  external to_exponential : float -> prec:int ->  string = "toExponential"
+    [@@js.send]
+
+  external log2 : float = "Math.LN2" [@@ js.val ]  
+  external max : float -> float -> float = "Math.max" 
+    [@@js.call]
+  external random : unit -> float = "Math.random"
+    [@@js.call ]
+
+end
+
+module Caml_obj = struct 
+  external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
+  external set_length : Obj.t -> int -> unit = "js_obj_set_length"
+  external length : Obj.t -> int = "js_obj_length"
+  external tag : Obj.t -> int = "caml_obj_tag"
+  external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
+  external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
+  external is_instance_array : Obj.t -> bool = "js_is_instance_array" (* use Array.isArray instead*)
+end

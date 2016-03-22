@@ -19,14 +19,7 @@
 (* Author: Hongbo Zhang  *)
 
 
-external caml_obj_set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
-external js_obj_set_length : Obj.t -> int -> unit = "js_obj_set_length"
-external js_obj_length : Obj.t -> int = "js_obj_length"
-external caml_obj_tag : Obj.t -> int = "caml_obj_tag"
-external caml_obj_set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
-external js_uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
-external js_is_instance_array : Obj.t -> bool = "js_is_instance_array"
-external js_typeof : 'a -> string = "js_typeof"
+
 
 (** Mainly used in camlinternalOO
     {[
@@ -41,15 +34,15 @@ external js_typeof : 'a -> string = "js_typeof"
     we don't need fill fields, since it is not required by GC    
 *)
 let caml_obj_dup (x : Obj.t) = 
-  let len = js_obj_length x in
-  let v = js_uninitialized_object (caml_obj_tag x ) len in
+  let len = Js.Caml_obj.length x in
+  let v = Js.Caml_obj.uninitialized_object (Js.Caml_obj.tag x ) len in
   for i = 0 to len - 1 do 
     Obj.set_field v i (Obj.field x i)
   done;
   v   
 
 let caml_obj_truncate (x : Obj.t) (new_size : int) = 
-  let len = js_obj_length x in
+  let len = Js.Caml_obj.length x in
   if new_size <= 0 || new_size > len then 
     raise (Invalid_argument "Obj.truncate")
   else 
@@ -58,7 +51,7 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
       for i = new_size  to len - 1  do
         Obj.set_field x  i (Obj.magic 0)
       done;
-      js_obj_set_length x new_size 
+      Js.Caml_obj.set_length x new_size 
     end
 
      
@@ -67,12 +60,12 @@ let caml_lazy_make_forward x = lazy x
 
 (** TODO: the dummy one should be [{}] *)
 let caml_update_dummy x y = 
-  let len = js_obj_length y in
+  let len = Js.Caml_obj.length y in
   for i = 0 to len - 1 do  
     Obj.set_field x i (Obj.field y i)
   done  ;
   Obj.set_tag x (Obj.tag y);
-  js_obj_set_length x   (js_obj_length y)
+  Js.Caml_obj.set_length x   (Js.Caml_obj.length y)
 
 let caml_int_compare (x : int) (y: int) : int = 
   if  x < y then -1 else if x = y then 0 else  1
@@ -98,16 +91,16 @@ let caml_string_compare (x : string) (y: string) : int =
     as well as the [List.sort] and [Array.sort] functions.
 *)
 let rec caml_compare (a : Obj.t) (b : Obj.t) : int = 
-  if js_typeof a = "string" then
+  if Js.typeof a = "string" then
     caml_string_compare (Obj.magic a) (Obj.magic b )
-  else if js_typeof a = "number" then
+  else if Js.typeof a = "number" then
     caml_int_compare (Obj.magic a) (Obj.magic b )
   else
   (* if js_is_instance_array a then  *)
   (*   0 *)
   (* else  *)
-    let tag_a = caml_obj_tag a in
-    let tag_b = caml_obj_tag b in
+    let tag_a = Js.Caml_obj.tag a in
+    let tag_b = Js.Caml_obj.tag b in
     (* double_array_tag: 254
        forward_tag:250
     *)
@@ -122,8 +115,8 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
     else if tag_a != tag_b then
       if tag_a < tag_b then (-1) else  1
     else
-      let len_a = js_obj_length a in 
-      let len_b = js_obj_length b in 
+      let len_a = Js.Caml_obj.length a in 
+      let len_b = Js.Caml_obj.length b in 
       if len_a = len_b then 
         aux_same_length a b 0 len_a 
       else if len_a < len_b then 
@@ -153,11 +146,11 @@ and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length =
 type eq = Obj.t -> Obj.t -> bool
 
 let rec caml_equal (a : Obj.t) (b : Obj.t) : bool = 
-  if js_typeof a = "string" then a == b 
-  else if js_typeof a = "number" then a == b 
+  if Js.typeof a = "string" then a == b 
+  else if Js.typeof a = "number" then a == b 
   else
-    let tag_a = caml_obj_tag a in
-    let tag_b = caml_obj_tag b in
+    let tag_a = Js.Caml_obj.tag a in
+    let tag_b = Js.Caml_obj.tag b in
     (* double_array_tag: 254
        forward_tag:250
     *)
@@ -172,8 +165,8 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
     else if tag_a != tag_b then
       false      
     else
-      let len_a = js_obj_length a in 
-      let len_b = js_obj_length b in 
+      let len_a = Js.Caml_obj.length a in 
+      let len_b = Js.Caml_obj.length b in 
       if len_a = len_b then 
         aux_equal_length a b 0 len_a 
       else false

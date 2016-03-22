@@ -21,11 +21,11 @@
 
 
 
-(** TODO: make it work under both OCaml bytecode and Js runtime *)
-external new_uninitialized_array : int -> 'a array = "js_create_array"
+
+
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
-  let result = new_uninitialized_array len  in
+  let result = Js.Array.new_uninitialized len  in
   let j = ref 0 and i = ref offset in
   while !j < len do
     result.(!j) <- x.(!i);
@@ -56,7 +56,7 @@ let rec fill arr i l =
 
 let  caml_array_concat (l : 'a array list) : 'a array =
   let v = len 0 l in
-  let result = new_uninitialized_array v in
+  let result = Js.Array.new_uninitialized v in
   fill result 0 l ;
   result
 
@@ -71,7 +71,7 @@ let caml_array_get xs index =
   else xs.(index)
 
 let caml_make_vect len init = 
-  let b = new_uninitialized_array len in
+  let b = Js.Array.new_uninitialized len in
   for i = 0 to len - 1 do 
     b.(i) <- init
   done;

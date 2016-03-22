@@ -21,7 +21,7 @@
 
 
 
-(* external new_uninitialized_array : int -> int array = "js_create_array" *)
+
 
 (** TODO: make it resizable instead 
     option1: set new index directly

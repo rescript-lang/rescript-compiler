@@ -27,7 +27,7 @@ let (+~) = Nativeint.add
 let to_nat x = Nativeint.of_int x 
 let of_nat x = Nativeint.to_int x 
 let ( *~ ) = Nativeint.mul  
-external string_of_char_code : char -> string = "String.fromCharCode" [@@js.call]
+
 let parse_digit c = 
   match c with 
   | '0' .. '9' 
@@ -127,7 +127,7 @@ let _parse_format fmt =
         aux f (i + 1)
       | '+'|' ' 
         ->
-        f.signstyle <- string_of_char_code c ; 
+        f.signstyle <- Js.String.of_char c ; 
         aux f (i + 1)
       | '#' -> 
         f.alternate <- true;
@@ -178,13 +178,13 @@ let _parse_format fmt =
       | 'e' | 'f' | 'g' 
         -> 
         f.signedconv <- true;
-        f.conv <- string_of_char_code c ;
+        f.conv <- Js.String.of_char c ;
         aux  f (i + 1)
       | 'E' | 'F' | 'G' 
         -> 
         f.signedconv <- true;
         f.uppercase <- true;
-        f.conv <- string_of_char_code (lowercase c);
+        f.conv <- Js.String.of_char (lowercase c);
         aux f (i + 1)
       | _ -> 
         aux f (i + 1) 
@@ -199,10 +199,10 @@ let _parse_format fmt =
           uppercase=   false ;
           sign =  1 ;
           prec =  (-1); 
-          conv =  "f"} 0 ;
+          conv =  "f"} 0 
 
 
-external toUpperCase : string -> string = "toUpperCase" [@@js.send]
+
 let _finish_formatting ({
   justify; 
   signstyle;
@@ -254,7 +254,7 @@ let _finish_formatting ({
     done;
   begin 
     if uppercase then 
-      buffer := !buffer ^ toUpperCase rawbuffer
+      buffer := !buffer ^ Js.String.toUpperCase rawbuffer
     else
       buffer := !buffer ^ rawbuffer
   end;
@@ -264,7 +264,7 @@ let _finish_formatting ({
     done;
   !buffer
 
-external int_to_string : int -> int -> string = "toString" [@@js.send]
+
 
 (** TODO: depends on ES6 polyfill [String.prototype.repeat]*)
 (* external duplicate : string -> int -> string = "repeat" [@@js.send] *)
@@ -283,7 +283,7 @@ let caml_format_int fmt i =
         else 
           i lsr 0 
       else  i  in
-    let s = ref @@ int_to_string i f.base in 
+    let s = ref @@ Js.String.of_int i ~base:f.base in 
     if f.prec >= 0 then 
       begin 
       f.filter <- " ";
@@ -295,43 +295,17 @@ let caml_format_int fmt i =
     _finish_formatting f !s
 
 
-external is_nan : float -> bool = "isNaN" 
-    [@@js.call]
-
-external is_finite : float -> bool = "isFinite"
-    [@@js.call]
-
-external to_exponential : float -> int ->  string = "toExponential"
-    [@@js.send]
-
-external slice : string -> int -> int -> string = "slice" 
-    [@@js.send]
-
-external slice_rest : string -> int -> string = "slice" 
-    [@@js.send]
-
-external to_fixed : float -> int -> string = "toFixed" 
-    [@@js.send]
-
-external index_of : string -> string -> int = "indexOf"
-    [@@js.send]
-
-(** TODO: investigate why [caml_int_of_string] does not work here *)
-
-external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
-
-
 let caml_format_float fmt x = 
   let f = _parse_format fmt in 
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 
   let s = ref "" in 
-  if is_nan x then 
+  if Js.Float.is_nan x then 
     begin 
       s := "nan";
       f.filter <- " "
     end
-  else if not @@ is_finite x then
+  else if not @@ Js.Float.is_finite x then
     begin 
       s := "inf";
       f.filter <- " " 
@@ -341,7 +315,7 @@ let caml_format_float fmt x =
       match f.conv with 
       | "e"
         -> 
-        s := to_exponential x prec;
+        s := Js.Float.to_exponential x ~prec;
         (* exponent should be at least two digits
            {[
              (3.3).toExponential()
@@ -352,39 +326,39 @@ let caml_format_float fmt x =
         let  i = String.length !s in 
         if !s.[i-3] = 'e' then
           begin 
-            s := slice !s 0 (i - 1) ^ "0" ^ slice_rest !s (i - 1)
+            s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1)
           end
       | "f"
         -> 
         (*  this will not work large numbers *)
         (* ("%3.10f", 3e+56, "300000000000000005792779041490073052596128503513888063488.0000000000") *)
-        s := to_fixed x prec 
+        s := Js.Float.to_fixed x prec 
       | "g" -> 
         let prec = if prec <> 0 then prec else 1 in
-        s := to_exponential x (prec - 1);
-        let j = index_of !s "e" in 
-        let  exp = to_number @@ slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 || String.length (to_fixed x 0) > prec then 
+        s := Js.Float.to_exponential x (prec - 1);
+        let j = Js.String.index_of !s "e" in 
+        let  exp = Js.to_number @@ Js.String.slice_rest !s (j + 1)  in 
+        if exp < -4 || x >= 1e21 || String.length (Js.Float.to_fixed x 0) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
           done;
           if !s.[!i] = '.' then 
             decr i ;
-          s := slice !s 0 (!i+1) ^ slice_rest !s j ;
+          s := Js.String.slice !s 0 (!i+1) ^ Js.String.slice_rest !s j ;
           let i = String.length !s in 
           if !s.[i - 3] = 'e' then 
-            s := slice !s 0 (i - 1) ^ "0" ^ slice_rest !s (i - 1) 
+            s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1) 
           else ()
         else 
           let p = ref prec in 
           if exp < 0 then 
             begin 
               p := !p - (exp + 1);
-              s := to_fixed x !p 
+              s := Js.Float.to_fixed x !p 
             end
           else 
-            while (s := to_fixed x !p; String.length !s > prec + 1) do 
+            while (s := Js.Float.to_fixed x !p; String.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 
@@ -394,7 +368,7 @@ let caml_format_float fmt x =
             done ;
             if !s.[!k] = '.' then 
               decr k ;
-            s := slice !s 0 (!k + 1) 
+            s := Js.String.slice !s 0 (!k + 1) 
 
       | _ -> ()
     end;
@@ -445,8 +419,8 @@ function $$caml_float_of_string(s) {
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int
 
-external caml_float_of_string : string -> float = ""
-[@@js.call "$$caml_float_of_string"] [@@js.local]
+external caml_float_of_string : string -> float = "$$caml_float_of_string"
+  [@@js.call ] [@@js.local]
 
 
 let caml_int32_of_string = caml_int_of_string

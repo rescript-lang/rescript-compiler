@@ -67,7 +67,7 @@ external apply8 :
 external apply_args : 
                         ('a -> 'b) -> _ array -> 'b = "js_apply"
 
-external append : 'a array -> 'a array -> 'a array  = "caml_array_append"
+
 
 external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
@@ -82,7 +82,7 @@ let rec app f args =
     app (Obj.magic (apply_args f (sub args 0 arity)))
       (sub args arity (-d))
   else 
-    Obj.magic (fun x -> app f (append args [|x|] ))
+    Obj.magic (fun x -> app f (Js.Array.append args [|x|] ))
 
 (* Generated code 
    [if/else]
