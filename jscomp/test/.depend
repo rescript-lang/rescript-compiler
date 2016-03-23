@@ -112,6 +112,8 @@ ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/bytes.cmx
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmx : mt.cmx
+ffi_js.cmo :
+ffi_js.cmx :
 ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmx : ../lib/js.cmx
 fib.cmo :
@@ -478,8 +480,8 @@ typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
 unitest_string.cmo :
 unitest_string.cmx :
-unsafe_ppx_test.cmo : mt.cmi
-unsafe_ppx_test.cmx : mt.cmx
+unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo
+unsafe_ppx_test.cmx : mt.cmx ffi_js.cmx
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 a.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -582,6 +584,8 @@ ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/bytes.cmj
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
+ffi_js.cmo :
+ffi_js.cmj :
 ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmj : ../lib/js.cmj
 fib.cmo :
@@ -948,5 +952,5 @@ typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
 unitest_string.cmo :
 unitest_string.cmj :
-unsafe_ppx_test.cmo : mt.cmi
-unsafe_ppx_test.cmj : mt.cmj
+unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo
+unsafe_ppx_test.cmj : mt.cmj ffi_js.cmj

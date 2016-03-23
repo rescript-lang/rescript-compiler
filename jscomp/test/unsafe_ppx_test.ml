@@ -23,8 +23,10 @@ let v = test 1 2
 ;; Mt.from_pair_suites __FILE__ Mt.[
     "unsafe_max", (fun _ -> Eq(2., max 1. 2.));
     "unsafe_test", (fun _ -> Eq(3,v));
-    "unsafe_max2", (fun _ -> Eq(2, [%js.raw({|Math.max|} : int -> int -> int)] 1 2 ))
+    "unsafe_max2", (fun _ -> Eq(2, [%js.raw({|Math.max|} : int -> int -> int)] 1 2 ));
+    "ffi_keys", ( fun _ -> Eq ([|"a"|], Ffi_js.keys [%js.raw{| {a : 3}|}]))
 ]
+
 
 
 

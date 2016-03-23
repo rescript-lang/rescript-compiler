@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt     = require("./mt");
+var Ffi_js = require("./ffi_js");
 
 var x = "\x01\x02\x03";
 
@@ -59,7 +60,20 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
                     };
             }
           ],
-          /* [] */0
+          /* :: */[
+            /* tuple */[
+              "ffi_keys",
+              function () {
+                return /* Eq */{
+                        0: /* array */["a"],
+                        1: Ffi_js.keys( {a : 3}),
+                        length: 2,
+                        tag: 0
+                      };
+              }
+            ],
+            /* [] */0
+          ]
         ]
       ]
     ]);

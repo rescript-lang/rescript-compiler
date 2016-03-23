@@ -206,3 +206,4 @@ js_val
 epsilon_test
 io_test
 random_test
+ffi_js
