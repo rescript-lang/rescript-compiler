@@ -35,7 +35,7 @@
  *)
 
 type function_arities = 
-  | Determin of bool * (int * Ident.t list) list  * bool
+  | Determin of bool * (int * Ident.t list option) list  * bool
   | NA 
 
 type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t

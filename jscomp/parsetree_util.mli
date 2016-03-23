@@ -27,3 +27,7 @@
 val is_single_string : Parsetree.payload -> string option 
 
 val is_string_or_strings : Parsetree.payload -> [ `None | `Single of string | `Some of string list ]
+
+val has_arity : Parsetree.attributes -> int option
+
+val attr_attribute_from_type : Parsetree.core_type -> Parsetree.attribute

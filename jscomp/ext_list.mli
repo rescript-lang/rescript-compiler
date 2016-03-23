@@ -72,3 +72,5 @@ val rev_map_acc : 'a list -> ('b -> 'a) -> 'b list -> 'a list
 val rev_iter : ('a -> unit) -> 'a list -> unit
 
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
+
+val find_opt : ('a -> 'b option) -> 'a list -> 'b option

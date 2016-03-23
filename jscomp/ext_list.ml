@@ -205,3 +205,11 @@ let rec for_all2_no_exn p l1 l2 =
 let rec find_no_exn p = function
   | [] -> None
   | x :: l -> if p x then Some x else find_no_exn p l
+
+
+let rec find_opt p = function
+  | [] -> None
+  | x :: l -> 
+    match  p x with 
+    | Some _ as v  ->  v
+    | None -> find_opt p l

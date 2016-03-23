@@ -23,10 +23,10 @@
 (** Types defined for lambda analysis *)
 
 type function_arities = 
-  | Determin of bool * (int * Ident.t list) list  * bool
+  | Determin of bool * (int * Ident.t list option) list  * bool
   (** when the first argument is true, it is for sure 
+
       approximation sound but not complete 
-      
       the last one means it can take any params later, 
       for an exception: it is (Determin (true,[], true))
    *)

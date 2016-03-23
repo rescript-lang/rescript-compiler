@@ -954,7 +954,8 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_pure_expr"
       -> 
       begin match args with 
-      | [ { expression_desc = Str (_,s )}] -> E.raw_js_code Exp s
+      | [ { expression_desc = Str (_,s )}] -> 
+        E.raw_js_code (Exp (Parsetree_util.has_arity prim.prim_attributes)) s
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
