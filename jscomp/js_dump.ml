@@ -579,7 +579,10 @@ and
   | Raw_js_code (s,info) -> 
     begin match info with 
     | Exp _ -> 
-      P.string f s ; cxt 
+      P.string f "("; 
+      P.string f s ; 
+      P.string f ")";
+      cxt 
     | Stmt -> 
       P.newline f  ;
       P.string f s ;

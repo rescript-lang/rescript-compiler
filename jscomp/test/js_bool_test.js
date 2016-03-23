@@ -33,9 +33,9 @@ function f4(x) {
 
 var f3 = /* true */1;
 
-var u =  1;
+var u = ( 1);
 
-var v =  true;
+var v = ( true);
 
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
@@ -67,7 +67,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */{
                 0: /* false */0,
-                1: Caml_obj.caml_equal(f(true), true),
+                1: Caml_obj.caml_equal(f(true), (true)),
                 length: 2,
                 tag: 0
               };

@@ -4,7 +4,7 @@
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 
-var v = Number.EPSILON?Number.EPSILON:2.220446049250313e-16;
+var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 var suites_000 = /* tuple */[
   "epsilon",
