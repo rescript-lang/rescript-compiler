@@ -61,3 +61,29 @@ let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string
            _},_);
       _}] -> `Single name 
   | _ -> `None
+
+
+let has_arity (attrs : Parsetree.attributes) = 
+  Ext_list.find_opt (fun (attr : Parsetree.attribute)  -> 
+      match attr with 
+      | {txt = "arity"; _ }, 
+        PStr [ { pstr_desc = Pstr_eval ( {pexp_desc = Pexp_constant (Const_int i)},_attr); _}]
+        -> Some i
+      | _ -> None 
+    ) attrs  
+
+
+let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute = 
+  let rec aux acc (x : Parsetree.core_type) = 
+    match x.ptyp_desc with 
+    | Ptyp_arrow (_,_,r) -> 
+      (* 'a -> ('b -> ('c -> 'd )) *)
+      aux (acc + 1) r 
+    | _ -> acc  in 
+  let n  = aux 0 x  in 
+  let loc = x.ptyp_loc in
+  {txt = "arity"; loc},
+  PStr ([ {pstr_desc = 
+             Pstr_eval ({pexp_desc = Pexp_constant (Const_int n); pexp_loc = loc; pexp_attributes = []},[]);
+           pstr_loc = loc
+          }])

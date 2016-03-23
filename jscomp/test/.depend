@@ -262,8 +262,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
-string_literal_print_test.cmo : mt.cmi ../lib/js.cmo
-string_literal_print_test.cmx : mt.cmx ../lib/js.cmx
+string_literal_print_test.cmo : mt.cmi
+string_literal_print_test.cmx : mt.cmx
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
 string_runtime_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
@@ -732,8 +732,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
-string_literal_print_test.cmo : mt.cmi ../lib/js.cmo
-string_literal_print_test.cmj : mt.cmj ../lib/js.cmj
+string_literal_print_test.cmo : mt.cmi
+string_literal_print_test.cmj : mt.cmj
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ../runtime/caml_string.cmi ../stdlib/bytes.cmi
 string_runtime_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \

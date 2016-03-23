@@ -31,8 +31,8 @@ external log : 'a -> unit = "js_dump"
 
 external anything_to_string : 'a -> string = "js_anything_to_string"
 external anything_to_number : 'a -> float = "js_anything_to_number"
-external unsafe_js_expr : string -> 'a = "js_pure_expr"
-external unsafe_js_stmt : string -> 'a = "js_pure_stmt"
+
+
 
 type + 'a opt
 

@@ -83,6 +83,16 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
+  | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes}, 
+           [Lconst (Const_base (Const_string (_str,_)))])
+    ->
+    (* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *)
+    begin match Parsetree_util.has_arity prim_attributes with
+      | Some arity -> 
+        (* Ext_log.dwarn __LOC__ "arity %d" arity; *)
+        Determin(false, [arity, None], false)
+      | None -> NA
+    end
   | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
@@ -107,6 +117,7 @@ let rec get_arity
     get_arity meta body
   (* | Lapply(Lprim( p, _), _args, _info) -> *)
   (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
+
   | Lapply(app, args, _info) -> (* detect functor application *)
     let fn = get_arity meta app in 
     begin match fn with 
@@ -119,7 +130,10 @@ let rec get_arity
             else if arg_length > x then
               take xs (arg_length - x)
             else Determin (b, 
-                           ((x -  arg_length ), Ext_list.drop arg_length y) :: xs ,
+                           ((x -  arg_length ), 
+                            (match y with
+                            | Some y -> Some (Ext_list.drop arg_length y) 
+                            | None -> None)) :: xs ,
                            tail)
           | [] -> 
             if tail then Determin(b, [], tail)
@@ -132,7 +146,7 @@ let rec get_arity
     end
   | Lfunction(kind, params, l) -> 
     let n = List.length params in 
-    merge (n,params)  (get_arity meta l)
+    merge (n, Some params)  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;

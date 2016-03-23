@@ -592,6 +592,26 @@ function find_no_exn(p, _param) {
   };
 }
 
+function find_opt(p, _param) {
+  while(true) {
+    var param = _param;
+    if (param) {
+      var v = Caml_curry.app1(p, param[0]);
+      if (v) {
+        return v;
+      }
+      else {
+        _param = param[1];
+        continue ;
+        
+      }
+    }
+    else {
+      return /* None */0;
+    }
+  };
+}
+
 exports.filter_map      = filter_map;
 exports.same_length     = same_length;
 exports.filter_mapi     = filter_mapi;
@@ -618,4 +638,5 @@ exports.rev_map_acc     = rev_map_acc;
 exports.rev_iter        = rev_iter;
 exports.for_all2_no_exn = for_all2_no_exn;
 exports.find_no_exn     = find_no_exn;
+exports.find_opt        = find_opt;
 /* No side effect */

@@ -57,6 +57,33 @@ let predef_val_unit  =
 let prim = "js_pure_expr"
 let prim_stmt = "js_pure_stmt"
 let prim_debugger = "js_debugger"
+
+
+let handle_raw ?ty loc e attrs  = 
+  let attrs = 
+    match ty with 
+    | Some ty -> 
+      Parsetree_util.attr_attribute_from_type ty :: attrs  
+    | None -> attrs in 
+  Ast_helper.Exp.letmodule 
+    {txt = tmp_module_name; loc }
+    (Ast_helper.Mod.structure [ 
+        Ast_helper.Str.primitive 
+          (Ast_helper.Val.mk ~attrs {loc ; txt = tmp_fn} 
+             ~prim:[prim]
+             (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
+    )    
+  @@ 
+  let u = (Ast_helper.Exp.apply 
+       (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
+       [("",e)]) in 
+  match ty with 
+  | Some ty -> 
+    Ast_helper.Exp.constraint_ ~loc u 
+      ty
+  | None -> u 
+    
+
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
@@ -67,20 +94,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             match payload with
             | Parsetree.PStr 
                 ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                      pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
-                      pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
+                      pexp_desc = Pexp_constant (Const_string (_, _opt_label)) ;
+                      pexp_loc;
+                      pexp_attributes = attrs } as e ,
+                      _attrs); pstr_loc = _ }])
               -> 
-              Ast_helper.Exp.letmodule 
-                {txt = tmp_module_name; loc }
-                (Ast_helper.Mod.structure [ 
-                    Ast_helper.Str.primitive 
-                      (Ast_helper.Val.mk {loc ; txt = tmp_fn} 
-                         ~prim:[prim]
-                         (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
-                )    
-                (Ast_helper.Exp.apply 
-                   (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
-                   [("",e)])
+              handle_raw loc e attrs
+            | Parsetree.PStr 
+                ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
+                      pexp_desc = 
+                        Pexp_constraint ({pexp_desc = Pexp_constant (Const_string (_cont, _opt_label)) ; _} as e,
+                                         ty)
+                      ; pexp_attributes = attrs} , _attrs); pstr_loc= _ }])
+              -> handle_raw ~ty loc e attrs
             | Parsetree.PTyp _ 
             | Parsetree.PPat (_,_) 
             | Parsetree.PStr _ 

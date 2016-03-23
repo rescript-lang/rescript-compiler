@@ -424,6 +424,15 @@ and
 
   | Fun (l, b, env) ->  (* TODO: dump for comments *)
     pp_function cxt f false  l b env
+  (* TODO: 
+     when [e] is [Js_raw_code] with arity
+     print it in a more precise way
+     It seems the optimizer already did work to make sure
+     {[
+       Call (Raw_js_code (s, Exp i), el, {Full})
+         when List.length el = i
+     ]}
+  *)
 
   | Call (e, el, info) ->
     let action () = 
@@ -569,7 +578,7 @@ and
     pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
   | Raw_js_code (s,info) -> 
     begin match info with 
-    | Exp -> 
+    | Exp _ -> 
       P.string f s ; cxt 
     | Stmt -> 
       P.newline f  ;
@@ -1073,7 +1082,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
       | Caml_uninitialized_obj _ 
-      | Raw_js_code (_, Exp) 
+      | Raw_js_code (_, Exp _) 
       | Fun _ | Object _ -> true
       | Raw_js_code (_,Stmt)
       | Caml_block_set_tag _ 

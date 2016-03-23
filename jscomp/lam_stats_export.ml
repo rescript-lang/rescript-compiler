@@ -30,7 +30,10 @@ and dump_arity fmt (arity : Lam_stats.function_arities) =
   match arity with 
   | NA -> pp fmt "any"
   | Determin (_, [], _) -> pp fmt "any"
-  | Determin (_, (_,args)::xs, _) -> 
+  | Determin (_, (n,args)::xs, _) -> 
+    let args = match args with 
+    | Some args -> args 
+    | None -> Ext_list.init n (fun _ -> Ident.create "param") in
     pp fmt "@[(%a)@ =>@ any@]" 
       (Format.pp_print_list  
          ~pp_sep:(fun fmt _ -> 
