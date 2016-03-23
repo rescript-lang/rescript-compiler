@@ -4,9 +4,9 @@
 var Mt     = require("./mt");
 var Ffi_js = require("./ffi_js");
 
-var x = "\x01\x02\x03";
+var x = ("\x01\x02\x03");
 
-var max = Math.max;
+var max = (Math.max);
 
 function u(param) {
   return max(1, param);
@@ -20,7 +20,7 @@ function $$test(x,y){
 
 ;
 
-var empty =  Object.keys(3);
+var empty = ( Object.keys)(3);
 
 var v = $$test(1, 2);
 
@@ -54,7 +54,7 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
             function () {
               return /* Eq */{
                       0: 2,
-                      1: Math.max(1, 2),
+                      1: (Math.max)(1, 2),
                       length: 2,
                       tag: 0
                     };
@@ -66,7 +66,7 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
               function () {
                 return /* Eq */{
                         0: /* array */["a"],
-                        1: Ffi_js.keys( {a : 3}),
+                        1: Ffi_js.keys(( {a : 3})),
                         length: 2,
                         tag: 0
                       };

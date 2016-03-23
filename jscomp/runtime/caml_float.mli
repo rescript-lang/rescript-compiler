@@ -17,3 +17,4 @@ val caml_copysign_float : float -> float -> float
 val caml_expm1_float : float -> float 
 
 val caml_hypot_float : float -> float -> float  
+val caml_log10_float : float -> float

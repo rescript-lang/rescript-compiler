@@ -76,8 +76,7 @@ let caml_modf_float (x : float) : float * float =
   else if Js.Float.is_nan x then Js.Float.nan ,  Js.Float.nan 
   else (1. /. x , x)
 
-[%%js.raw{|
-function $$caml_ldexp_float (x,exp) {
+let caml_ldexp_float = [%js.raw ({| function (x,exp) {
     exp |= 0;
     if (exp > 1023) {
         exp -= 1023;
@@ -94,14 +93,11 @@ function $$caml_ldexp_float (x,exp) {
     x *= Math.pow(2, exp);
     return x;
 }
-|}]
+|} : float -> int -> float)]
 
-external caml_ldexp_float : float -> int -> float = "$$caml_ldexp_float"
-[@@js.call ] [@@js.local]
-(* let caml_ldexp_float  (x : float)  (exp : nativeint) : float =  *)
 
-[%%js.raw{|
-function $$caml_frexp_float (x) {
+
+let caml_frexp_float =  [%js.raw ({|function (x) {
     if ((x == 0) || !isFinite(x)) return [0, x, 0];
     var neg = x < 0;
     if (neg) x = - x;
@@ -111,9 +107,7 @@ function $$caml_frexp_float (x) {
     if (neg) x = - x;
     return [x, exp];
 }
-|}]
-external caml_frexp_float  : float -> float * int = "$$caml_frexp_float"
-[@@js.call ][@@js.local]
+|} : float -> float * int )]
 
 let caml_float_compare (x : float) (y : float ) = 
   if x = y then 0 
@@ -143,23 +137,19 @@ let caml_log1p_float  : float -> float = function x ->
   if z = 0. then x else x *. log y /. z 
 
 
-[%%js.raw{|
-function $$caml_hypot_float (x, y) {
+let caml_hypot_float = [%js.raw ({| function (x, y) {
     var x0 = Math.abs(x), y0 = Math.abs(y);
     var a = Math.max(x0, y0), b = Math.min(x0,y0) / (a?a:1);
-    return (a * Math.sqrt(1 + b*b));
+    return a * Math.sqrt(1 + b*b);
 }
-|}]
+|} : float -> float -> float)
+]
 
-external caml_hypot_float : float -> float -> float = "$$caml_hypot_float"
-[@@js.call ] [@@js.local]
 
-[%%js.raw{|
-function $$caml_log10_float (x) { return Math.LOG10E * Math.log(x); }
-|} ]
+let caml_log10_float =  [%js.raw ({| function  (x) { 
+   return Math.LOG10E * Math.log(x); }
+|} : float -> float) ]
 
-external caml_log10_float : float -> float = "$$caml_log10_float"
-[@@js.call ] [@@js.local]
 
 let caml_cosh_float x = exp x +. exp (-. x) /. 2. 
 let caml_sin_float x = exp x -. exp (-. x) /. 2.
@@ -168,35 +158,6 @@ let caml_tan_float x =
   let z = exp (-. x) in 
   (y +. z) /. (y -. z   )
 
-(* let caml_hypot_float : float -> float -> float *)
-(*                = function x y -> *)
-(*       let x0 = abs_float x in  *)
-(*       let y0 = abs_float y in  *)
-(*       let a = max_float x0 y0 in  *)
-(*       let b = min_float x0 y0 /. (if ) in   *)
-
- 
-(* external ( ** ) : float -> float -> float = "caml_power_float" "pow" "float" *)
-(* external exp : float -> float = "caml_exp_float" "exp" "float" *)
-
-(* external acos : float -> float = "caml_acos_float" "acos" "float" *)
-(* external asin : float -> float = "caml_asin_float" "asin" "float" *)
-(* external atan : float -> float = "caml_atan_float" "atan" "float" *)
-(* external atan2 : float -> float -> float = "caml_atan2_float" "atan2" "float" *)
-(* external cos : float -> float = "caml_cos_float" "cos" "float" *)
-(* external cosh : float -> float = "caml_cosh_float" "cosh" "float" *)
-(* external log : float -> float = "caml_log_float" "log" "float" *)
-
-
-(* external sin : float -> float = "caml_sin_float" "sin" "float" *)
-(* external sinh : float -> float = "caml_sinh_float" "sinh" "float" *)
-(* external sqrt : float -> float = "caml_sqrt_float" "sqrt" "float" *)
-(* external tan : float -> float = "caml_tan_float" "tan" "float" *)
-(* external tanh : float -> float = "caml_tanh_float" "tanh" "float" *)
-(* external ceil : float -> float = "caml_ceil_float" "ceil" "float" *)
-(* external floor : float -> float = "caml_floor_float" "floor" "float" *)
-(* external abs_float : float -> float = "%absfloat" *)
-(* external mod_float : float -> float -> float = "caml_fmod_float" "fmod" "float" *)
 
 
 

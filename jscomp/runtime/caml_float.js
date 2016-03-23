@@ -89,8 +89,7 @@ function caml_modf_float(x) {
   }
 }
 
-
-function $$caml_ldexp_float (x,exp) {
+var caml_ldexp_float = ( function (x,exp) {
     exp |= 0;
     if (exp > 1023) {
         exp -= 1023;
@@ -107,11 +106,9 @@ function $$caml_ldexp_float (x,exp) {
     x *= Math.pow(2, exp);
     return x;
 }
+);
 
-;
-
-
-function $$caml_frexp_float (x) {
+var caml_frexp_float = (function (x) {
     if ((x == 0) || !isFinite(x)) return [0, x, 0];
     var neg = x < 0;
     if (neg) x = - x;
@@ -121,8 +118,7 @@ function $$caml_frexp_float (x) {
     if (neg) x = - x;
     return [x, exp];
 }
-
-;
+);
 
 function caml_float_compare(x, y) {
   if (x === y) {
@@ -167,31 +163,16 @@ function caml_expm1_float(x) {
   }
 }
 
-
-function $$caml_hypot_float (x, y) {
+var caml_hypot_float = ( function (x, y) {
     var x0 = Math.abs(x), y0 = Math.abs(y);
     var a = Math.max(x0, y0), b = Math.min(x0,y0) / (a?a:1);
-    return (a * Math.sqrt(1 + b*b));
+    return a * Math.sqrt(1 + b*b);
 }
+);
 
-;
-
-
-function $$caml_log10_float (x) { return Math.LOG10E * Math.log(x); }
-
-;
-
-function caml_ldexp_float(prim, prim$1) {
-  return $$caml_ldexp_float(prim, prim$1);
-}
-
-function caml_frexp_float(prim) {
-  return $$caml_frexp_float(prim);
-}
-
-function caml_hypot_float(prim, prim$1) {
-  return $$caml_hypot_float(prim, prim$1);
-}
+var caml_log10_float = ( function  (x) { 
+   return Math.LOG10E * Math.log(x); }
+);
 
 exports.caml_int64_float_of_bits = caml_int64_float_of_bits;
 exports.caml_int32_float_of_bits = caml_int32_float_of_bits;
@@ -205,4 +186,5 @@ exports.caml_float_compare       = caml_float_compare;
 exports.caml_copysign_float      = caml_copysign_float;
 exports.caml_expm1_float         = caml_expm1_float;
 exports.caml_hypot_float         = caml_hypot_float;
-/*  Not a pure module */
+exports.caml_log10_float         = caml_log10_float;
+/* caml_ldexp_float Not a pure module */
