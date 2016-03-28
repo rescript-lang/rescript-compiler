@@ -109,7 +109,7 @@ var caml_ldexp_float = ( function (x,exp) {
 );
 
 var caml_frexp_float = (function (x) {
-    if ((x == 0) || !isFinite(x)) return [0, x, 0];
+    if ((x == 0) || !isFinite(x)) return [ x, 0];
     var neg = x < 0;
     if (neg) x = - x;
     var exp = Math.floor(Math.LOG2E*Math.log(x)) + 1;
