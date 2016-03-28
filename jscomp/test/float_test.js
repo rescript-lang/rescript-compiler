@@ -10,6 +10,10 @@ var Caml_curry = require("../runtime/caml_curry");
 
 var match = Caml_float.caml_frexp_float(12.0);
 
+var match$1 = Caml_float.caml_frexp_float(0);
+
+var match$2 = Caml_float.caml_frexp_float(-12.0);
+
 var results = $$Array.append(/* array */[
       /* tuple */[
         Math.log10(2),
@@ -46,14 +50,46 @@ var results = $$Array.append(/* array */[
       /* tuple */[
         Caml_float.caml_hypot_float(12, 5),
         13
+      ],
+      /* tuple */[
+        Caml_float.caml_copysign_float(22.3, -1),
+        -22.3
+      ],
+      /* tuple */[
+        Caml_float.caml_copysign_float(22.3, 1),
+        22.3
+      ],
+      /* tuple */[
+        Caml_float.caml_expm1_float(1e-15),
+        1.00000000000000067e-15
+      ],
+      /* tuple */[
+        Math.log1p(1e-10),
+        9.9999999995000007e-11
       ]
     ], /* array */[
+      /* tuple */[
+        match$1[0],
+        0
+      ],
+      /* tuple */[
+        match$1[1],
+        0
+      ],
       /* tuple */[
         match[0],
         0.75
       ],
       /* tuple */[
         match[1],
+        4
+      ],
+      /* tuple */[
+        match$2[0],
+        -0.75
+      ],
+      /* tuple */[
+        match$2[1],
         4
       ]
     ]);
@@ -93,6 +129,12 @@ function from_pairs(ps) {
                 }, ps));
 }
 
+var match$3 = Caml_float.caml_modf_float(32.3);
+
+var b = match$3[1];
+
+var a = match$3[0];
+
 Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "mod_float",
@@ -105,7 +147,33 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
                     };
             }
           ],
-          /* [] */0
+          /* :: */[
+            /* tuple */[
+              "modf_float1",
+              function () {
+                return /* Approx */{
+                        0: a,
+                        1: 0.299999999999997158,
+                        length: 2,
+                        tag: 2
+                      };
+              }
+            ],
+            /* :: */[
+              /* tuple */[
+                "modf_float2",
+                function () {
+                  return /* Approx */{
+                          0: b,
+                          1: 32,
+                          length: 2,
+                          tag: 2
+                        };
+                }
+              ],
+              /* [] */0
+            ]
+          ]
         ], from_pairs(results)));
 
 var epsilon_float = 2.22044604925031308e-16;

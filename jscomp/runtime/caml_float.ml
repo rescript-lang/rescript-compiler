@@ -50,7 +50,57 @@ let caml_int32_bits_of_float (x : float) =
   Int32_array.get (Int32_array.of_buffer (Float32_array.buffer float32)) 0 
 
 
+(**
+Math methods available prior to ES6 (ES5 or less)
+{[
+  abs,
+  acos,
+  asin,
+  atan,
+  atan2,
+  ceil,
+  cos,
+  exp,
+  floor,
+  log,
+  max,
+  min,
+  pow,
+  random,
+  round,
+  sin,
+  sqrt,
+  tan,
+  E, 
+  LN10,
+  LN2,
+  LOG10E,
+  LOG2E,
+  PI,
+  SQRT1_2,
+  SQRT2
+]}
 
+{[
+  acosh,
+  asinh,
+  atanh,
+  cbrt,
+  clz32,
+  cosh,
+  expm1,
+  fround,
+  hypot,
+  imul,
+  log10,
+  log1p,
+  log2,
+  sign,
+  sinh,
+  tanh,
+  trunc
+]}
+*)
 
 let caml_classify_float x : fpclass  = 
   if Js.Float.is_finite x then 
@@ -98,7 +148,7 @@ let caml_ldexp_float = [%js.raw ({| function (x,exp) {
 
 
 let caml_frexp_float =  [%js.raw ({|function (x) {
-    if ((x == 0) || !isFinite(x)) return [0, x, 0];
+    if ((x == 0) || !isFinite(x)) return [ x, 0];
     var neg = x < 0;
     if (neg) x = - x;
     var exp = Math.floor(Math.LOG2E*Math.log(x)) + 1;
@@ -123,14 +173,14 @@ let caml_copysign_float   (x : float) (y :  float) :  float =
     if y = 0. then 1. /. y else y in 
   if y < 0. then -. x else x   
 
-
+(* http://www.johndcook.com/blog/cpp_expm1/ *)
 let  caml_expm1_float : float -> float = function x -> 
   let y = exp x in 
   let z = y -. 1. in 
   if abs_float x > 1. then z 
   else if z = 0. then x else x *. z /. log y 
 
-
+(* http://blog.csdn.net/liyuanbhu/article/details/8544644 *)
 let caml_log1p_float  : float -> float = function x -> 
   let y = 1. +.  x  in 
   let z =  y -. 1. in 
