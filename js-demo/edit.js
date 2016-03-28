@@ -26,15 +26,30 @@ var outputMirror = CodeMirror.fromTextArea(
     lineNumbers: true
   }
 );
-
+var errorMirror = CodeMirror.fromTextArea(
+  document.getElementById('error'),
+  {
+    readOnly: true,
+    lineWrapping: true,
+    lineNumbers : true
+  }
+);
 var PROMPT = ">" ;
 var log_output = PROMPT;
+var ERR_OUTPUT = "Warnings: "
+var err_output = ERR_OUTPUT;
+ 
 function reset_log_output (){ log_output  = PROMPT;}
-
+function reset_error_output(){ err_output = ERR_OUTPUT;}
 function get_log_output(){
   var old = log_output;
   reset_log_output();
   return old;
+}
+function get_error_output(){
+  var old = err_output;
+  reset_error_output();
+  return old;  
 }
 var compile_code ;
 var evalButton = document.getElementById('option-eval');
@@ -61,6 +76,7 @@ function onShakeButtonChange(){
 
 shakeButton.addEventListener('change', onShakeButtonChange);
 var original_log = console.log;
+var original_err = console.error;
 
 /**
  * TODO: simulate commonjs in browser
@@ -69,10 +85,16 @@ var exports = window;
 
 function redirect() { log_output = log_output + Array.prototype.slice.apply(arguments).join(' ') + "\n"};
 
+function redirect_err() { 
+    err_output = err_output + Array.prototype.slice.apply(arguments).join(' ') + "\n"
+};
 
 myCode1Mirror.setSize(null,codeMirrorDefaultHeight);
 outputMirror.setSize(null,50);
 outputMirror.setValue(PROMPT + '"h,e,l,l,o,o,c,a,m,l"');
+errorMirror.setSize(null,50);
+errorMirror.setValue(ERR_OUTPUT);
+
 
 function evalCode(js){
   console.log = redirect;
@@ -88,14 +110,17 @@ function evalCode(js){
 
 }
 
-function onEditChanges(cm, change) {
+function onEditChanges(cm, change) {  
   if(typeof compile_code === 'undefined'){
     console.log('init....');
     compile_code = ocaml.compile;
   }
+  console.error = redirect_err;
   var raw = compile_code(myCode1Mirror.getValue());
+  errorMirror.setValue(get_error_output());
+  console.error = original_err;
   console.log(raw);
-  var rsp = JSON.parse(raw); // can we save this from parsing?
+  var rsp = JSON.parse(raw); // can we save this from parsing?  
   if (rsp.js_code !== undefined) {
     jsCode1Mirror.setValue(rsp.js_code);
     // eval
@@ -106,7 +131,7 @@ function onEditChanges(cm, change) {
     jsCode1Mirror.setValue(rsp.js_error_msg);
 
   }
-
+  
 }
 myCode1Mirror.on("changes", onEditChanges);
 
