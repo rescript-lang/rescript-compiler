@@ -209,8 +209,13 @@ let is_pure id  =
     ~not_found:(fun _ -> false) 
     ~found:(fun x -> x.effect = None)
 
-let get_goog_package_name id = 
-  query_and_add_if_not_exist id No_env
+let get_goog_package_name ({ kind; _} as id : Lam_module_ident.t) = 
+  match kind with 
+  | Runtime -> 
+    Some "buckle.runtime" (* Invariant check with the build system *)
+  | Ml 
+  | External _ -> 
+      query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> None) 
     ~found:(fun x -> x.goog_package)
 

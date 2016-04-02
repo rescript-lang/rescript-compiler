@@ -6,7 +6,7 @@ SOURCE_LIST := $(shell cat runtime.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 COMPFLAGS := -w -40 -safe-string 
-# -js-module goog:buckle
+# COMPFLAGS += -js-module goog:buckle.runtime
 
 $(RUNTIME): $(CAMLC)
 
