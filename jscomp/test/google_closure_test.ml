@@ -1,4 +1,4 @@
-
+(* module Mt = Mock_mt *)
 
 ;; Mt.from_pair_suites "Closure" Mt.[
 "partial", (fun _ -> 

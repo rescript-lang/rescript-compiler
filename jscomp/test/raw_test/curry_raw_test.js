@@ -1,7 +1,7 @@
 var assert = require("assert")
-var printf = require("./../stdlib/printf")
-var curry = require("../runtime/caml_curry")
-var test_formatter = require("./test_formatter")
+var printf = require("./../../stdlib/printf")
+var curry = require("../../runtime/caml_curry")
+var test_formatter = require("../test_formatter")
 
 // Fmt can be defined other ocaml module : )
 

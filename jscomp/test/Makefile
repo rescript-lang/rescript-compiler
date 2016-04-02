@@ -8,7 +8,7 @@ SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
 COMPFLAGS+= -safe-string -w -40 
-# -js-module goog:buckle.test
+# COMPFLAGS+= -js-module goog:buckle.test
 
 $(TESTS): $(CAMLC)
 

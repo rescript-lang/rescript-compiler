@@ -23,7 +23,7 @@ CAMLC=$(CAMLRUN) $(COMPILER)
 #          -safe-string
 COMPFLAGS=-strict-sequence -w +33..39 -g -warn-error A  -nostdlib \
           -safe-string 
-# -js-module goog
+# COMPFLAGS+= -js-module goog:buckle.std
 
 # OPTCOMPILER=ocamlopt.opt
 # CAMLOPT=$(CAMLRUN) $(OPTCOMPILER)

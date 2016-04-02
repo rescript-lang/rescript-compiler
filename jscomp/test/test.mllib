@@ -37,6 +37,7 @@ test_generative_module
 test_literal
 test_primitive
 test_simple_obj
+empty_obj
 fib
 test_common
 test_include
