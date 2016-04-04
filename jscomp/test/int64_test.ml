@@ -71,7 +71,9 @@ let suites = Mt.[
                           -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L; -1L;
                           -1L; -1L; -1L; -1L|]
                        ));
-    "mul simple", (fun _ -> Eq (6L, mul 3L 2L ))
+    "mul simple", (fun _ -> Eq (6L, mul 3L 2L ));
+    "of_int32", (fun _ -> Eq(Array.map Int64.of_int32 [|0l|], [|0L|]));
+    "to_int32", (fun _ -> Eq(Array.map Int64.to_int32 [|0L|], [|0l|]));
 ]
 
 

@@ -175,13 +175,67 @@ let ksprintf_suites = Mt.[
 
 (* module Mt = Mock_mt *)
 
-let () = 
+let int64_suites = 
+  let a = Format.asprintf in
+  Mt.[
+
+
+    "i32_simple", (fun _ -> Eq(Format.asprintf "%nx" 0xffff_ffffn, "ffffffff")) ;
+    "i32_simple1", (fun _ -> Eq(Format.asprintf "%no" 0xffff_ffffn, "37777777777"));
+    "i64_simple", (fun _ -> Eq( Format.asprintf "%Ld" 3L, "3"));
+    "i64_simple2", (fun _ -> Eq( Format.asprintf "%Lx" 33L, "21"));
+    "i64_simple3", (fun _ -> Eq( Format.asprintf "%Li" 33L, "33"));
+    "i64_simple4", (fun _ -> Eq(a "%LX" 44L, "2C"));
+    "i64_simple5", (fun _ -> Eq(a "%Lx" 44L, "2c"));
+    "i64_simple6", (fun _ -> Eq(a "%*Lx" 5 44L, "   2c"));
+    "i64_simple7", (fun _ -> Eq(Int64.to_string 3333L, "3333"));
+    "i64_simple8", (fun _ -> Eq( a  "%Ld%018Ld" 3L 3L, "3000000000000000003"));
+    "i64_simple9", (fun _ -> Eq( a  "%Ld%018Ld" 460800000000000L 0L, 
+                                 "460800000000000000000000000000000"));
+    "i64_simple10", (fun _ -> Eq( a "%Lx" Int64.max_int,"7fffffffffffffff"
+                                ));
+    "i64_simple15", (fun _ ->
+        Eq( a "%Ld" (-1L), "-1"));
+    "i64_simple16", (fun _ ->
+        Eq( a "%Ld" (-11111L), "-11111"));
+    "i64_simple14", (fun _ ->
+                      Eq( a "%LX" (-1L),
+
+                          "FFFFFFFFFFFFFFFF"
+                        ));
+    "i64_simple17", (fun _ ->
+                      Eq( a "%Lx" (-1L),
+
+                          "ffffffffffffffff"
+                        ));
+
+    "i64_simple11", (fun _ -> Eq( a "%LX" Int64.max_int,"7FFFFFFFFFFFFFFF"
+                                 ));
+    "i64_simple12", (fun _ ->  Eq( a "%LX" Int64.min_int, "8000000000000000"));
+    "i64_simple17", (fun _ ->
+
+        Eq(a "%Lu" (-1L), "18446744073709551615")
+      );
+    "i64_simple21", (fun _ -> Eq(a "%Lu" (-10000L), "18446744073709541616"));    
+    "i64_simple19", (fun _ -> Eq(a "%Lo" Int64.min_int , "1000000000000000000000") );
+    "i64_simple13", (fun _ ->  Eq( a "%LX" Int64.(add min_int 1L),
+                                   "8000000000000001"));
+    
+    "i64_simple20", (fun _ -> Eq(a "%12Lx" 3L, "           3"))    
+  ]
+
+let hh = 922337203685477580L (* 2 ^ 63 / 10 *)
+let hhh = 1152921504606846976L
+(* module Mt = Mock_mt *)
+let () =
   Mt.from_pair_suites __FILE__ @@
   suites @
   formatter_suites @
   from_lambda_pairs lambda_suites @
   ksprintf_suites @
-  (Array.mapi (fun i (fmt, f,str_result) -> (Printf.sprintf "float_format %d" i ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list)
+  (Array.mapi (fun i (fmt, f,str_result) -> (Printf.sprintf "float_format %d" i ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
+  
+  int64_suites
 
 
     

@@ -241,6 +241,11 @@ let to_float ({lo; hi } : t) : float =
     else  lo +  0x1_0000_0000n in
   Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
 
+(** {[
+     u_to_float 0xffffffff_xffffffff = 2 ** 64 - 1     
+   ]}*)
+let u_to_float x : float =
+  Nativeint.to_float  (to_unsigned x.hi  * 0x1_0000_0000n + to_unsigned x.lo )
 
 
 
@@ -350,6 +355,11 @@ let rec div self other =
 let mod_ self other = 
   sub self (mul (div self other) other)
 
+
+let div_mod self other =
+  let quotient = div self other in 
+  quotient, sub self (mul quotient other)
+    
 let compare self other = 
   let v = Pervasives.compare self.hi other.hi in
   if v = 0 then 
@@ -357,16 +367,6 @@ let compare self other =
       (to_unsigned self.lo) (to_unsigned other.lo)
   else v 
 
-(* let rec to_string self : string =  *)
-(*   match self with *)
-(*   | {lo=0n; hi = 0n}  *)
-(*     ->  *)
-(*     "0" *)
-(*   | {lo = 0n ; hi = - 0x8000_0000n} *)
-(*     ->  *)
-(*     "-9223372036854775808" (\* Int64.min_int *\) *)
-(*   | {lo; hi} ->  *)
-(*     if  hi < 0n then "-" ^ to_string (neg self) *)
-(*     else  *)
 
-(*       let radixToPower = 1000000L *)
+let to_int32 x = x.lo
+

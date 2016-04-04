@@ -224,6 +224,7 @@ let convert (name : string) =
      | '/' -> Buffer.add_string buffer "$slash"
      | '|' -> Buffer.add_string buffer "$pipe"
      | '.' -> Buffer.add_string buffer "$dot"
+     | '%' -> Buffer.add_string buffer "$percent"
      | 'a'..'z' | 'A'..'Z'| '_'|'$' |'0'..'9'-> Buffer.add_char buffer  c
      | _ -> Buffer.add_string buffer "$unknown"
    done; Buffer.contents buffer)

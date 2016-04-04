@@ -10,7 +10,6 @@ var Pervasives               = require("./pervasives");
 var Caml_format              = require("../runtime/caml_format");
 var Char                     = require("./char");
 var Sys                      = require("./sys");
-var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
 var $$String                 = require("./string");
@@ -3736,7 +3735,7 @@ function convert_nativeint(iconv, n) {
 }
 
 function convert_int64(iconv, n) {
-  return Caml_primitive.caml_int64_format(format_of_aconv(iconv, /* "L" */76), n);
+  return Caml_format.caml_int64_format(format_of_aconv(iconv, /* "L" */76), n);
 }
 
 function convert_float(fconv, prec, x) {

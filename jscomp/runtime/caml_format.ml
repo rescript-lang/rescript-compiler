@@ -92,12 +92,19 @@ let caml_int_of_string s =
     caml_failwith "int_of_string");
   or_res
 
+type base = 
+  | Oct | Hex | Ten
+let int_of_base = function
+  | Oct -> 8
+  | Hex -> 16
+  | Ten -> 10
+    
 type fmt = {
   mutable justify : string; 
   mutable signstyle : string;
   mutable filter : string ;
   mutable alternate : bool;
-  mutable base : int;
+  mutable base : base;
   mutable signedconv : bool;
   mutable width :int;
   mutable uppercase : bool;
@@ -113,7 +120,7 @@ let lowercase c =
   then Char.unsafe_chr(Char.code c + 32)
   else c
 
-let _parse_format fmt = 
+let parse_format fmt = 
   let len = String.length fmt in 
   if len > 31 then 
     raise @@ Invalid_argument "format_int: format too long" ;
@@ -159,20 +166,20 @@ let _parse_format fmt =
       | 'd' 
       | 'i' -> 
         f.signedconv <- true;
-        f.base <- 10;
+        f.base <- Ten;
         aux f (i + 1)
       | 'u' -> 
-        f.base <-10;
+        f.base <- Ten;
         aux f (i + 1)
       | 'x' -> 
-        f.base <- 16;
+        f.base <- Hex;
         aux f (i + 1)
       | 'X' -> 
-        f.base <- 16;
+        f.base <- Hex;
         f.uppercase <- true;
         aux f (i + 1)
       | 'o' -> 
-        f.base <- 8;
+        f.base <- Oct;
         aux f (i + 1)
       (* | 'O' -> base := 8; uppercase := true no uppercase for oct *)
       | 'e' | 'f' | 'g' 
@@ -193,7 +200,7 @@ let _parse_format fmt =
           signstyle =   "-";
           filter =  " " ;
           alternate =  false ;
-          base=  0 ;
+          base=  Ten ;
           signedconv=  false ;
           width =  0 ;
           uppercase=   false ;
@@ -203,7 +210,7 @@ let _parse_format fmt =
 
 
 
-let _finish_formatting ({
+let finish_formatting ({
   justify; 
   signstyle;
   filter ;
@@ -221,10 +228,10 @@ let _finish_formatting ({
     incr len;
   if alternate then 
     begin 
-      if base = 8 then
+      if base = Oct then
         incr len 
       else
-      if base = 16 then 
+      if base = Hex then 
         len := !len + 2
       else ()
     end ; 
@@ -243,9 +250,9 @@ let _finish_formatting ({
     else if signstyle <> "-" then 
       buffer := !buffer ^ signstyle
     else ()  ;
-  if alternate && base = 8 then 
+  if alternate && base = Oct then 
     buffer := !buffer ^ "0";
-  if alternate && base == 16 then
+  if alternate && base == Hex then
     buffer := !buffer ^ "0x";
     
   if justify = "+" && filter = "0" then 
@@ -268,35 +275,166 @@ let _finish_formatting ({
 
 (** TODO: depends on ES6 polyfill [String.prototype.repeat]*)
 (* external duplicate : string -> int -> string = "repeat" [@@js.send] *)
-
-let caml_format_int fmt i = 
-  if fmt = "%d" then string_of_int i 
-  else 
-    let f = _parse_format fmt in 
-    let i = 
-      if i < 0 then 
-        if f.signedconv then 
-          begin 
-            f.sign <- -1;
-            -i
-          end
-        else 
-          i lsr 0 
-      else  i  in
-    let s = ref @@ Js.String.of_int i ~base:f.base in 
-    if f.prec >= 0 then 
-      begin 
+let aux f i  = 
+  let i = 
+    if i < 0 then 
+      if f.signedconv then 
+        begin 
+          f.sign <- -1;
+          -i
+        end
+      else 
+        i lsr 0 
+    else  i  in
+  let s = ref @@ Js.String.of_int i ~base:(int_of_base f.base) in 
+  if f.prec >= 0 then 
+    begin 
       f.filter <- " ";
       let n = f.prec - String.length !s in 
       if n > 0 then
         s :=  repeat n "0"  ^ !s
-      end
-    ;
-    _finish_formatting f !s
+    end
+  ;
+  finish_formatting f !s
 
+let caml_format_int fmt i = 
+  if fmt = "%d" then string_of_int i 
+  else 
+    let f = parse_format fmt in 
+    aux f i 
+
+let caml_int64_format fmt (x : Caml_int64.t) =
+  let f = parse_format fmt in
+  let x =
+    if f.signedconv && x.hi < 0n then
+      begin
+        f.sign <- -1;
+        Caml_int64.neg x
+      end
+    else x in
+  let s = ref "" in
+
+  begin match f.base with
+    | Hex ->
+      (* width does matter, will it be relevant to endian order?
+      *)
+      let aux v =
+        Js.String.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16 
+      in
+      s := (match x.hi, x.lo with
+          | 0n, 0n -> "0"
+          | _, 0n -> aux x.hi ^ "00000000"
+          | 0n, _ -> aux x.lo
+          | _, _ ->
+            aux x.hi ^ aux x.lo) ^ !s         
+    | Oct ->
+      let wbase : Caml_int64.t = {lo = 8n; hi = 0n } in
+      let  cvtbl = "01234567" in
+
+      if Caml_int64.lt x Caml_int64.zero then
+        begin         
+          [%js.debug];        
+          let y : Caml_int64.t = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi } in
+          (* 2 ^  63 + y `div_mod` 8 *)        
+          let quotient_l : Caml_int64.t =
+            {lo =   0n; hi =  268435456n } (* 2 ^ 31 / 8 *)
+            (* TODO:  int64 constant folding so that we can do idiomatic code
+               2 ^ 63 / 10 *)in 
+
+          (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+             we can not do the code above, it can overflow when y is really large           
+          *)
+          let c, d = Caml_int64.div_mod  y  wbase in
+
+          let quotient =
+            ref (Caml_int64.add quotient_l c )  in
+          let modulus = ref d in
+          s :=
+            Js.string_of_char 
+              cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+
+          while not (Caml_int64.is_zero !quotient ) do
+            let a, b = Caml_int64.div_mod (!quotient) wbase in
+            quotient := a;
+            modulus := b;
+            s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+          done;
+        end
+      else
+        let a, b =  Caml_int64.div_mod x wbase  in
+        let quotient = ref a  in
+        let modulus = ref b in
+        s :=
+          Js.string_of_char 
+            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+
+        while not (Caml_int64.is_zero !quotient ) do
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
+          quotient := a;
+          modulus := b;
+          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+        done
+
+    | Ten ->
+      let wbase : Caml_int64.t = {lo = 10n; hi = 0n } in
+      let  cvtbl = "0123456789" in
+
+      if Caml_int64.lt x Caml_int64.zero then
+        let y : Caml_int64.t = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi } in
+        (* 2 ^  63 + y `div_mod` 10 *)        
+
+        let quotient_l : Caml_int64.t =
+          {lo =   -858993460n; hi =  214748364n}
+          (* TODO:  int64 constant folding so that we can do idiomatic code
+             2 ^ 63 / 10 *)in 
+        let modulus_l : Caml_int64.t = {lo = 8n; hi = 0n} in
+        (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
+           we can not do the code above, it can overflow when y is really large           
+        *)
+        let c, d = Caml_int64.div_mod  y  wbase in
+        let e ,f = Caml_int64.div_mod (Caml_int64.add modulus_l d) wbase in        
+        let quotient =
+          ref (Caml_int64.add (Caml_int64.add quotient_l c )
+                 e)  in
+        let modulus = ref f in
+        s :=
+          Js.string_of_char 
+            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+
+        while not (Caml_int64.is_zero !quotient ) do
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
+          quotient := a;
+          modulus := b;
+          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+        done;
+
+      else
+        let a, b =  Caml_int64.div_mod x wbase  in
+        let quotient = ref a  in
+        let modulus = ref b in
+        s :=
+          Js.string_of_char 
+            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+
+        while not (Caml_int64.is_zero !quotient ) do
+          let a, b = Caml_int64.div_mod (!quotient) wbase in
+          quotient := a;
+          modulus := b;
+          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+        done;
+  end;
+  if f.prec >= 0 then
+    begin
+      f.filter <- " ";
+      let n = f.prec - String.length !s in
+      if n > 0 then
+        s := repeat n "0" ^ !s
+    end;
+
+  finish_formatting f !s
 
 let caml_format_float fmt x = 
-  let f = _parse_format fmt in 
+  let f = parse_format fmt in 
   let prec = if f.prec < 0 then 6 else f.prec in 
   let x = if x < 0. then (f.sign <- (-1); -. x) else x in 
   let s = ref "" in 
@@ -372,7 +510,7 @@ let caml_format_float fmt x =
 
       | _ -> ()
     end;
-  _finish_formatting f !s
+  finish_formatting f !s
 
 [%%js.raw{|
 
@@ -425,3 +563,4 @@ external caml_float_of_string : string -> float = "$$caml_float_of_string"
 
 let caml_int32_of_string = caml_int_of_string
 let caml_nativeint_of_string = caml_int32_of_string
+

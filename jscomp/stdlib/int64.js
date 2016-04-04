@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_int64     = require("../runtime/caml_int64");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_int64  = require("../runtime/caml_int64");
+var Caml_format = require("../runtime/caml_format");
 
 function succ(n) {
   return Caml_int64.add(n, /* int64 */[
@@ -38,7 +38,7 @@ function lognot(n) {
 }
 
 function to_string(n) {
-  return Caml_primitive.caml_int64_format("%d", n);
+  return Caml_format.caml_int64_format("%d", n);
 }
 
 function compare(x, y) {

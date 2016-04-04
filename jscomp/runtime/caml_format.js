@@ -3,7 +3,9 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_utils              = require("./caml_utils");
+var Caml_int64              = require("./caml_int64");
 var Caml_curry              = require("./caml_curry");
+var Caml_string             = require("./caml_string");
 
 var repeat = Caml_utils.repeat;
 
@@ -167,6 +169,18 @@ function caml_int_of_string(s) {
   return or_res;
 }
 
+function int_of_base(param) {
+  switch (param) {
+    case 0 : 
+        return 8;
+    case 1 : 
+        return 16;
+    case 2 : 
+        return 10;
+    
+  }
+}
+
 function lowercase(c) {
   if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
     return c + 32;
@@ -176,7 +190,7 @@ function lowercase(c) {
   }
 }
 
-function _parse_format(fmt) {
+function parse_format(fmt) {
   var len = fmt.length;
   if (len > 31) {
     throw [
@@ -189,7 +203,7 @@ function _parse_format(fmt) {
     "-",
     " ",
     /* false */0,
-    0,
+    /* Ten */2,
     /* false */0,
     0,
     /* false */0,
@@ -214,7 +228,7 @@ function _parse_format(fmt) {
           else {
             switch (c - 88) {
               case 0 : 
-                  f[/* base */4] = 16;
+                  f[/* base */4] = /* Hex */1;
                   f[/* uppercase */7] = /* true */1;
                   _i = i + 1;
                   continue ;
@@ -228,11 +242,11 @@ function _parse_format(fmt) {
                   exit = 4;
                   break;
               case 23 : 
-                  f[/* base */4] = 8;
+                  f[/* base */4] = /* Oct */0;
                   _i = i + 1;
                   continue ;
                   case 29 : 
-                  f[/* base */4] = 10;
+                  f[/* base */4] = /* Ten */2;
                   _i = i + 1;
                   continue ;
                   case 1 : 
@@ -262,7 +276,7 @@ function _parse_format(fmt) {
                   exit = 1;
                   break;
               case 32 : 
-                  f[/* base */4] = 16;
+                  f[/* base */4] = /* Hex */1;
                   _i = i + 1;
                   continue ;
                   
@@ -370,7 +384,7 @@ function _parse_format(fmt) {
             continue ;
             case 4 : 
             f[/* signedconv */5] = /* true */1;
-            f[/* base */4] = 10;
+            f[/* base */4] = /* Ten */2;
             _i = i + 1;
             continue ;
             case 5 : 
@@ -384,7 +398,7 @@ function _parse_format(fmt) {
   };
 }
 
-function _finish_formatting(param, rawbuffer) {
+function finish_formatting(param, rawbuffer) {
   var justify = param[/* justify */0];
   var signstyle = param[/* signstyle */1];
   var filter = param[/* filter */2];
@@ -399,13 +413,15 @@ function _finish_formatting(param, rawbuffer) {
     ++ len;
   }
   if (alternate) {
-    if (base === 8) {
+    if (base) {
+      if (base === /* Hex */1) {
+        len += 2;
+      }
+      
+    }
+    else {
       ++ len;
     }
-    else if (base === 16) {
-      len += 2;
-    }
-    
   }
   var buffer = "";
   if (justify === "+" && filter === " ") {
@@ -422,10 +438,10 @@ function _finish_formatting(param, rawbuffer) {
     }
     
   }
-  if (alternate && base === 8) {
+  if (alternate && base === /* Oct */0) {
     buffer = buffer + "0";
   }
-  if (alternate && base === 16) {
+  if (alternate && base === /* Hex */1) {
     buffer = buffer + "0x";
   }
   if (justify === "+" && filter === "0") {
@@ -447,25 +463,152 @@ function caml_format_int(fmt, i) {
     return "" + i;
   }
   else {
-    var f = _parse_format(fmt);
-    var i$1 = i < 0 ? (
-        f[/* signedconv */5] ? (f[/* sign */8] = -1, -i) : (i >>> 0)
-      ) : i;
-    var s = i$1.toString(f[/* base */4]);
-    if (f[/* prec */9] >= 0) {
-      f[/* filter */2] = " ";
-      var n = f[/* prec */9] - s.length;
+    var f = parse_format(fmt);
+    var f$1 = f;
+    var i$1 = i;
+    var i$2 = i$1 < 0 ? (
+        f$1[/* signedconv */5] ? (f$1[/* sign */8] = -1, -i$1) : (i$1 >>> 0)
+      ) : i$1;
+    var s = i$2.toString(int_of_base(f$1[/* base */4]));
+    if (f$1[/* prec */9] >= 0) {
+      f$1[/* filter */2] = " ";
+      var n = f$1[/* prec */9] - s.length;
       if (n > 0) {
         s = Caml_curry.app2(repeat, n, "0") + s;
       }
       
     }
-    return _finish_formatting(f, s);
+    return finish_formatting(f$1, s);
   }
 }
 
+function caml_int64_format(fmt, x) {
+  var f = parse_format(fmt);
+  var x$1 = f[/* signedconv */5] && x[/* hi */1] < 0 ? (f[/* sign */8] = -1, Caml_int64.neg(x)) : x;
+  var s = "";
+  var match = f[/* base */4];
+  switch (match) {
+    case 0 : 
+        var wbase = /* record */[
+          8,
+          0
+        ];
+        var cvtbl = "01234567";
+        if (Caml_int64.lt(x$1, Caml_int64.zero)) {
+          debugger;
+          var y_000 = x$1[/* lo */0];
+          var y_001 = 2147483647 & x$1[/* hi */1];
+          var y = /* record */[
+            y_000,
+            y_001
+          ];
+          var match$1 = Caml_int64.div_mod(y, wbase);
+          var quotient = Caml_int64.add(/* record */[
+                0,
+                268435456
+              ], match$1[0]);
+          var modulus = match$1[1];
+          s = Caml_string.string_of_char(cvtbl.charCodeAt(modulus[/* lo */0])) + s;
+          while(!Caml_int64.is_zero(quotient)) {
+            var match$2 = Caml_int64.div_mod(quotient, wbase);
+            quotient = match$2[0];
+            modulus = match$2[1];
+            s = Caml_string.string_of_char(cvtbl.charCodeAt(modulus[/* lo */0])) + s;
+          };
+        }
+        else {
+          var match$3 = Caml_int64.div_mod(x$1, wbase);
+          var quotient$1 = match$3[0];
+          var modulus$1 = match$3[1];
+          s = Caml_string.string_of_char(cvtbl.charCodeAt(modulus$1[/* lo */0])) + s;
+          while(!Caml_int64.is_zero(quotient$1)) {
+            var match$4 = Caml_int64.div_mod(quotient$1, wbase);
+            quotient$1 = match$4[0];
+            modulus$1 = match$4[1];
+            s = Caml_string.string_of_char(cvtbl.charCodeAt(modulus$1[/* lo */0])) + s;
+          };
+        }
+        break;
+    case 1 : 
+        var aux = function (v) {
+          return (v >>> 0).toString(16);
+        };
+        var match$5 = x$1[/* hi */1];
+        var match$6 = x$1[/* lo */0];
+        var $js;
+        var exit = 0;
+        if (match$5 !== 0 || match$6 !== 0) {
+          exit = 1;
+        }
+        else {
+          $js = "0";
+        }
+        if (exit === 1) {
+          $js = match$6 !== 0 ? (
+              match$5 !== 0 ? aux(x$1[/* hi */1]) + aux(x$1[/* lo */0]) : aux(x$1[/* lo */0])
+            ) : aux(x$1[/* hi */1]) + "00000000";
+        }
+        s = $js + s;
+        break;
+    case 2 : 
+        var wbase$1 = /* record */[
+          10,
+          0
+        ];
+        var cvtbl$1 = "0123456789";
+        if (Caml_int64.lt(x$1, Caml_int64.zero)) {
+          var y_000$1 = x$1[/* lo */0];
+          var y_001$1 = 2147483647 & x$1[/* hi */1];
+          var y$1 = /* record */[
+            y_000$1,
+            y_001$1
+          ];
+          var match$7 = Caml_int64.div_mod(y$1, wbase$1);
+          var match$8 = Caml_int64.div_mod(Caml_int64.add(/* record */[
+                    8,
+                    0
+                  ], match$7[1]), wbase$1);
+          var quotient$2 = Caml_int64.add(Caml_int64.add(/* record */[
+                    -858993460,
+                    214748364
+                  ], match$7[0]), match$8[0]);
+          var modulus$2 = match$8[1];
+          s = Caml_string.string_of_char(cvtbl$1.charCodeAt(modulus$2[/* lo */0])) + s;
+          while(!Caml_int64.is_zero(quotient$2)) {
+            var match$9 = Caml_int64.div_mod(quotient$2, wbase$1);
+            quotient$2 = match$9[0];
+            modulus$2 = match$9[1];
+            s = Caml_string.string_of_char(cvtbl$1.charCodeAt(modulus$2[/* lo */0])) + s;
+          };
+        }
+        else {
+          var match$10 = Caml_int64.div_mod(x$1, wbase$1);
+          var quotient$3 = match$10[0];
+          var modulus$3 = match$10[1];
+          s = Caml_string.string_of_char(cvtbl$1.charCodeAt(modulus$3[/* lo */0])) + s;
+          while(!Caml_int64.is_zero(quotient$3)) {
+            var match$11 = Caml_int64.div_mod(quotient$3, wbase$1);
+            quotient$3 = match$11[0];
+            modulus$3 = match$11[1];
+            s = Caml_string.string_of_char(cvtbl$1.charCodeAt(modulus$3[/* lo */0])) + s;
+          };
+        }
+        break;
+    
+  }
+  if (f[/* prec */9] >= 0) {
+    f[/* filter */2] = " ";
+    var n = f[/* prec */9] - s.length;
+    if (n > 0) {
+      s = Caml_curry.app2(repeat, n, "0") + s;
+    }
+    
+  }
+  return finish_formatting(f, s);
+}
+
 function caml_format_float(fmt, x) {
-  var f = _parse_format(fmt);
+  var f = parse_format(fmt);
   var prec = f[/* prec */9] < 0 ? 6 : f[/* prec */9];
   var x$1 = x < 0 ? (f[/* sign */8] = -1, -x) : x;
   var s = "";
@@ -541,7 +684,7 @@ function caml_format_float(fmt, x) {
     s = "inf";
     f[/* filter */2] = " ";
   }
-  return _finish_formatting(f, s);
+  return finish_formatting(f, s);
 }
 
 
@@ -601,13 +744,12 @@ exports.caml_invalid_argument    = caml_invalid_argument;
 exports.repeat                   = repeat;
 exports.parse_sign_and_base      = parse_sign_and_base;
 exports.caml_failwith            = caml_failwith;
-exports._parse_format            = _parse_format;
-exports._finish_formatting       = _finish_formatting;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;
 exports.caml_nativeint_format    = caml_nativeint_format;
 exports.caml_int32_format        = caml_int32_format;
 exports.caml_float_of_string     = caml_float_of_string;
+exports.caml_int64_format        = caml_int64_format;
 exports.caml_int_of_string       = caml_int_of_string;
 exports.caml_int32_of_string     = caml_int32_of_string;
 exports.caml_nativeint_of_string = caml_nativeint_of_string;
