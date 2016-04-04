@@ -221,12 +221,14 @@ let int64_suites =
     "i64_simple13", (fun _ ->  Eq( a "%LX" Int64.(add min_int 1L),
                                    "8000000000000001"));
     
-    "i64_simple20", (fun _ -> Eq(a "%12Lx" 3L, "           3"))    
+    "i64_simple20", (fun _ -> Eq(a "%12Lx" 3L, "           3"));
+    "i64_simple21", (fun _ -> Eq(a "%LX" 7985179176134664640L, "6ED10E27455A61C0"));
   ]
 
 let hh = 922337203685477580L (* 2 ^ 63 / 10 *)
 let hhh = 1152921504606846976L
 (* module Mt = Mock_mt *)
+
 let () =
   Mt.from_pair_suites __FILE__ @@
   suites @

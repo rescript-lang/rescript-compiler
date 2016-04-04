@@ -495,7 +495,6 @@ function caml_int64_format(fmt, x) {
         ];
         var cvtbl = "01234567";
         if (Caml_int64.lt(x$1, Caml_int64.zero)) {
-          debugger;
           var y_000 = x$1[/* lo */0];
           var y_001 = 2147483647 & x$1[/* hi */1];
           var y = /* record */[
@@ -544,9 +543,19 @@ function caml_int64_format(fmt, x) {
           $js = "0";
         }
         if (exit === 1) {
-          $js = match$6 !== 0 ? (
-              match$5 !== 0 ? aux(x$1[/* hi */1]) + aux(x$1[/* lo */0]) : aux(x$1[/* lo */0])
-            ) : aux(x$1[/* hi */1]) + "00000000";
+          if (match$6 !== 0) {
+            if (match$5 !== 0) {
+              var lo = aux(x$1[/* lo */0]);
+              var pad = 8 - lo.length;
+              $js = pad <= 0 ? aux(x$1[/* hi */1]) + lo : aux(x$1[/* hi */1]) + (Caml_curry.app2(repeat, pad, "0") + lo);
+            }
+            else {
+              $js = aux(x$1[/* lo */0]);
+            }
+          }
+          else {
+            $js = aux(x$1[/* hi */1]) + "00000000";
+          }
         }
         s = $js + s;
         break;

@@ -326,14 +326,19 @@ let caml_int64_format fmt (x : Caml_int64.t) =
           | _, 0n -> aux x.hi ^ "00000000"
           | 0n, _ -> aux x.lo
           | _, _ ->
-            aux x.hi ^ aux x.lo) ^ !s         
+            let lo =  aux x.lo in
+            let pad = 8 - String.length lo in
+            if pad <= 0 then             
+              aux x.hi ^ lo
+            else
+              aux x.hi ^ repeat pad "0" ^ lo 
+        ) ^ !s         
     | Oct ->
       let wbase : Caml_int64.t = {lo = 8n; hi = 0n } in
       let  cvtbl = "01234567" in
 
       if Caml_int64.lt x Caml_int64.zero then
         begin         
-          [%js.debug];        
           let y : Caml_int64.t = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi } in
           (* 2 ^  63 + y `div_mod` 8 *)        
           let quotient_l : Caml_int64.t =

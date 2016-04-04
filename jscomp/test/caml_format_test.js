@@ -3019,7 +3019,35 @@ var int64_suites_001 = /* :: */[
                                                       };
                                               }
                                             ],
-                                            /* [] */0
+                                            /* :: */[
+                                              /* tuple */[
+                                                "i64_simple21",
+                                                function () {
+                                                  return /* Eq */{
+                                                          0: Caml_curry.app2(a$1, /* Format */{
+                                                                0: /* Int64 */{
+                                                                  0: /* Int_X */8,
+                                                                  1: /* No_padding */0,
+                                                                  2: /* No_precision */0,
+                                                                  3: /* End_of_format */0,
+                                                                  length: 4,
+                                                                  tag: 7
+                                                                },
+                                                                1: "%LX",
+                                                                length: 2,
+                                                                tag: 0
+                                                              }, /* int64 */[
+                                                                1163551168,
+                                                                1859194407
+                                                              ]),
+                                                          1: "6ED10E27455A61C0",
+                                                          length: 2,
+                                                          tag: 0
+                                                        };
+                                                }
+                                              ],
+                                              /* [] */0
+                                            ]
                                           ]
                                         ]
                                       ]
