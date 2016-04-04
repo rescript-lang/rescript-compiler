@@ -19,17 +19,17 @@
 (* Author: Hongbo Zhang  *)
 
 val parse_digit : char -> int 
+
 val caml_invalid_argument : string -> 'a
+
 val repeat : int -> string -> string 
-val parse_sign_and_base : string -> int * nativeint * nativeint
+
 val caml_failwith : string -> 'a 
 
 type fmt
 
 val caml_format_float : string -> float -> string
-(* val _caml_format_int : string -> int -> string *)
-(* *)
-(* val caml_format_float : string -> float -> string *)
+
 val caml_format_int : string -> int -> string
 val caml_nativeint_format : string -> int -> string     
 val caml_int32_format : string -> int -> string
@@ -37,4 +37,5 @@ val caml_float_of_string : string -> float
 val caml_int64_format : string -> Caml_int64.t -> string
 val caml_int_of_string : string -> nativeint
 val caml_int32_of_string : string -> nativeint
+val caml_int64_of_string : string -> Int64.t
 val caml_nativeint_of_string : string -> nativeint

@@ -227,6 +227,18 @@ let int64_suites =
 
 let hh = 922337203685477580L (* 2 ^ 63 / 10 *)
 let hhh = 1152921504606846976L
+let of_string_data =
+  [| (0L, "0");
+     (3L, "3");
+     (33L, "33");
+     (333L, "33_3");
+     (33333L, "33_33_3");
+     (333333333333L, "333333333333");
+     (-1L, "0xffff_ffff_ffff_ffff");
+     (113L, "0b01110001");
+     (1L, "-0xffff_ffff_ffff_ffff")
+  |]
+  
 (* module Mt = Mock_mt *)
 
 let () =
@@ -237,7 +249,13 @@ let () =
   ksprintf_suites @
   (Array.mapi (fun i (fmt, f,str_result) -> (Printf.sprintf "float_format %d" i ) , (fun _ -> Mt.Eq(format_float fmt f, str_result))) float_data |> Array.to_list) @
   
-  int64_suites
+  int64_suites @
+  (of_string_data
+   |>
+   Array.mapi (fun i (a,b) ->
+       ((Printf.sprintf "int64_of_string %d " i),  fun _ -> Mt.Eq(Int64.of_string b, a) )      
+     ) 
+   |> Array.to_list  )
 
 
     

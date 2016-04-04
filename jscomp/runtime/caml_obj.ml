@@ -46,7 +46,7 @@ let caml_obj_truncate (x : Obj.t) (new_size : int) =
   if new_size <= 0 || new_size > len then 
     raise (Invalid_argument "Obj.truncate")
   else 
-  if len != new_size  then
+  if len <> new_size  then
     begin 
       for i = new_size  to len - 1  do
         Obj.set_field x  i (Obj.magic 0)
@@ -112,7 +112,7 @@ let rec caml_compare (a : Obj.t) (b : Obj.t) : int =
       caml_int_compare (Obj.magic @@ Obj.field a 1) (Obj.magic @@ Obj.field b 1 )       
     else if tag_a = 251 (* abstract_tag *) then 
       raise (Invalid_argument "equal: abstract value")
-    else if tag_a != tag_b then
+    else if tag_a <> tag_b then
       if tag_a < tag_b then (-1) else  1
     else
       let len_a = Js.Caml_obj.length a in 
@@ -128,19 +128,19 @@ and aux_same_length  (a : Obj.t) (b : Obj.t) i same_length =
     0
   else 
     let res = caml_compare (Obj.field a i) (Obj.field b i) in
-    if res !=0 then res
+    if res <> 0 then res
     else aux_same_length  a b (i + 1) same_length
 and aux_length_a_short (a : Obj.t)  (b : Obj.t)  i short_length    = 
   if i = short_length then -1 
   else 
     let res = caml_compare (Obj.field a i) (Obj.field b i) in
-    if res !=0 then res
+    if res <> 0 then res
     else aux_length_a_short a b (i+1) short_length
 and aux_length_b_short (a : Obj.t) (b : Obj.t) i short_length = 
   if i = short_length then 1
   else
     let res = caml_compare (Obj.field a i) (Obj.field b i) in
-    if res !=0 then res
+    if res <> 0 then res
     else aux_length_b_short a b (i+1) short_length      
 
 type eq = Obj.t -> Obj.t -> bool
@@ -162,7 +162,7 @@ let rec caml_equal (a : Obj.t) (b : Obj.t) : bool =
       (Obj.magic @@ Obj.field a 1) ==  (Obj.magic @@ Obj.field b 1 )       
     else if tag_a = 251 (* abstract_tag *) then 
       raise (Invalid_argument "equal: abstract value")
-    else if tag_a != tag_b then
+    else if tag_a <> tag_b then
       false      
     else
       let len_a = Js.Caml_obj.length a in 

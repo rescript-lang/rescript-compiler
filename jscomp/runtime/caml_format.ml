@@ -23,9 +23,10 @@ let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
 
 let (>>>) = Nativeint.shift_right_logical
-let (+~) = Nativeint.add 
+
 let to_nat x = Nativeint.of_int x 
 let of_nat x = Nativeint.to_int x 
+let (+~) = Nativeint.add 
 let ( *~ ) = Nativeint.mul  
 
 let parse_digit c = 
@@ -38,9 +39,21 @@ let parse_digit c =
     -> Char.code c - (Char.code 'a' - 10 )
   | _ -> -1
 
+type of_string_base =
+  | Oct
+  | Hex
+  | Dec
+  | Bin
+
+let int_of_string_base = function
+  | Oct -> 8
+  | Hex -> 16
+  | Dec -> 10
+  | Bin -> 2
+    
 let parse_sign_and_base (s : string) = 
   let sign = ref 1n in
-  let base = ref 10n in
+  let base = ref Dec in
   let i  = ref 0 in
   begin 
     (
@@ -52,17 +65,18 @@ let parse_sign_and_base (s : string) =
     );
     (match s.[!i], s.[!i + 1] with 
      | '0', ('x' | 'X')
-       -> base := 16n; i:=!i + 2 
+       -> base := Hex; i:=!i + 2 
      | '0', ( 'o' | 'O')
-       -> base := 8n; i := !i + 2
+       -> base := Oct; i := !i + 2
      | '0', ('b' | 'B' )
-       -> base := 2n; i := !i + 2 
+       -> base := Bin; i := !i + 2 
      | _, _ -> ()); 
     (!i, !sign, !base)
   end
 
 let caml_int_of_string s = 
-  let i, sign, base = parse_sign_and_base s in 
+  let i, sign, hbase = parse_sign_and_base s in
+  let base  = Nativeint.of_int @@ int_of_string_base hbase in
   let threshold = (-1n >>> 0) in 
   let len = String.length s in  
   let c = if i < len then s.[i] else '\000' in
@@ -88,16 +102,62 @@ let caml_int_of_string s =
   in 
   let res = sign *~ aux d (i + 1) in 
   let or_res = Nativeint.logor res 0n in 
-  (if base = 10n && res != or_res then 
+  (if base = 10n && res <> or_res then 
     caml_failwith "int_of_string");
   or_res
 
+
+let caml_int64_of_string s = 
+  let i, sign, hbase = parse_sign_and_base s in
+  let base  = Int64.of_int @@ int_of_string_base hbase in
+  let sign = Int64.of_nativeint sign in
+  let threshold =
+    match hbase with
+    | Hex -> (* 2 ^ 64 - 1 / 16*)
+      1152921504606846975L
+    | Dec ->
+      1844674407370955161L
+    | Oct ->
+      2305843009213693951L
+    | Bin ->
+      9223372036854775807L
+  in 
+  let len = String.length s in  
+  let c = if i < len then s.[i] else '\000' in
+  let d = Int64.of_int @@ parse_digit c in
+  let () =
+    if d < 0L || d >=  base then
+      caml_failwith "int64_of_string" in
+  let (+~) = Int64.add  in
+  let ( *~ ) = Int64.mul  in
+
+  let rec aux acc k = 
+    if k = len then acc 
+    else 
+      let a = s.[k] in
+      if a  = '_' then aux acc ( k +  1) 
+      else 
+        let v = Int64.of_int @@ parse_digit a in  
+        if v < 0L || v >=  base then 
+          caml_failwith "int64_of_string"
+        else 
+          let acc = base *~ acc +~  v in 
+          if acc > threshold then 
+            caml_failwith "int64_of_string"
+          else aux acc  ( k +   1)
+  in 
+  let res = sign *~ aux d (i + 1) in 
+  let or_res = Int64.logor res 0L in 
+  (if base = 10L && res <> or_res then 
+    caml_failwith "int64_of_string");
+  or_res
+
 type base = 
-  | Oct | Hex | Ten
+  | Oct | Hex | Dec
 let int_of_base = function
   | Oct -> 8
   | Hex -> 16
-  | Ten -> 10
+  | Dec -> 10
     
 type fmt = {
   mutable justify : string; 
@@ -166,10 +226,10 @@ let parse_format fmt =
       | 'd' 
       | 'i' -> 
         f.signedconv <- true;
-        f.base <- Ten;
+        f.base <- Dec;
         aux f (i + 1)
       | 'u' -> 
-        f.base <- Ten;
+        f.base <- Dec;
         aux f (i + 1)
       | 'x' -> 
         f.base <- Hex;
@@ -200,7 +260,7 @@ let parse_format fmt =
           signstyle =   "-";
           filter =  " " ;
           alternate =  false ;
-          base=  Ten ;
+          base=  Dec ;
           signedconv=  false ;
           width =  0 ;
           uppercase=   false ;
@@ -273,8 +333,6 @@ let finish_formatting ({
 
 
 
-(** TODO: depends on ES6 polyfill [String.prototype.repeat]*)
-(* external duplicate : string -> int -> string = "repeat" [@@js.send] *)
 let aux f i  = 
   let i = 
     if i < 0 then 
@@ -380,7 +438,7 @@ let caml_int64_format fmt (x : Caml_int64.t) =
           s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
         done
 
-    | Ten ->
+    | Dec ->
       let wbase : Caml_int64.t = {lo = 10n; hi = 0n } in
       let  cvtbl = "0123456789" in
 
@@ -517,7 +575,7 @@ let caml_format_float fmt x =
     end;
   finish_formatting f !s
 
-[%%js.raw{|
+let caml_float_of_string : string -> float = [%js.raw {|
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"
@@ -529,7 +587,7 @@ let caml_format_float fmt x =
  * parseFloat('Infinity') === Infinity
  * parseFloat('infinity') === Nan
  * */
-function $$caml_float_of_string(s) {
+function (s) {
     //s = caml_bytes_of_string (s);
     var res = +s;
     if ((s.length > 0) && (res === res))
@@ -562,8 +620,6 @@ function $$caml_float_of_string(s) {
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int
 
-external caml_float_of_string : string -> float = "$$caml_float_of_string"
-  [@@js.call ] [@@js.local]
 
 
 let caml_int32_of_string = caml_int_of_string

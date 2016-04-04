@@ -3076,6 +3076,72 @@ var int64_suites = /* :: */[
   int64_suites_001
 ];
 
+var of_string_data = Caml_obj.caml_obj_dup(/* array */[
+      /* tuple */[
+        /* int64 */[
+          0,
+          0
+        ],
+        "0"
+      ],
+      /* tuple */[
+        /* int64 */[
+          3,
+          0
+        ],
+        "3"
+      ],
+      /* tuple */[
+        /* int64 */[
+          33,
+          0
+        ],
+        "33"
+      ],
+      /* tuple */[
+        /* int64 */[
+          333,
+          0
+        ],
+        "33_3"
+      ],
+      /* tuple */[
+        /* int64 */[
+          33333,
+          0
+        ],
+        "33_33_3"
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1674115755,
+          77
+        ],
+        "333333333333"
+      ],
+      /* tuple */[
+        /* int64 */[
+          -1,
+          -1
+        ],
+        "0xffff_ffff_ffff_ffff"
+      ],
+      /* tuple */[
+        /* int64 */[
+          113,
+          0
+        ],
+        "0b01110001"
+      ],
+      /* tuple */[
+        /* int64 */[
+          1,
+          0
+        ],
+        "-0xffff_ffff_ffff_ffff"
+      ]
+    ]);
+
 Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at(formatter_suites, Pervasives.$at(from_lambda_pairs(lambda_suites), Pervasives.$at(ksprintf_suites, Pervasives.$at($$Array.to_list($$Array.mapi(function (i, param) {
                                   var str_result = param[2];
                                   var f = param[1];
@@ -3108,7 +3174,43 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                                   };
                                           }
                                         ];
-                                }, float_data)), int64_suites))))));
+                                }, float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi(function (i, param) {
+                                      var b = param[1];
+                                      var a = param[0];
+                                      return /* tuple */[
+                                              Caml_curry.app1(Printf.sprintf(/* Format */{
+                                                        0: /* String_literal */{
+                                                          0: "int64_of_string ",
+                                                          1: /* Int */{
+                                                            0: /* Int_d */0,
+                                                            1: /* No_padding */0,
+                                                            2: /* No_precision */0,
+                                                            3: /* Char_literal */{
+                                                              0: /* " " */32,
+                                                              1: /* End_of_format */0,
+                                                              length: 2,
+                                                              tag: 12
+                                                            },
+                                                            length: 4,
+                                                            tag: 4
+                                                          },
+                                                          length: 2,
+                                                          tag: 11
+                                                        },
+                                                        1: "int64_of_string %d ",
+                                                        length: 2,
+                                                        tag: 0
+                                                      }), i),
+                                              function () {
+                                                return /* Eq */{
+                                                        0: Caml_format.caml_int64_of_string(b),
+                                                        1: a,
+                                                        length: 2,
+                                                        tag: 0
+                                                      };
+                                              }
+                                            ];
+                                    }, of_string_data)))))))));
 
 var float_suites = /* :: */[
   "float_nan",
@@ -3144,4 +3246,5 @@ exports.ksprintf_suites      = ksprintf_suites;
 exports.int64_suites         = int64_suites;
 exports.hh                   = hh;
 exports.hhh                  = hhh;
+exports.of_string_data       = of_string_data;
 /* v Not a pure module */

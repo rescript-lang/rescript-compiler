@@ -32,4 +32,4 @@ let set_debug_file  f = debug_file := f
 let get_debug_file  () = !debug_file
 
 let is_same_file () = 
-  !debug_file != "" &&  !debug_file = !file
+  !debug_file <> "" &&  !debug_file = !file

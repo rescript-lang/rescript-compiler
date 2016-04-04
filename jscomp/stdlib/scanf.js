@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_int64               = require("../runtime/caml_int64");
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
 var Pervasives               = require("./pervasives");
 var Caml_format              = require("../runtime/caml_format");
@@ -1855,7 +1854,7 @@ function make_scanf(ib, _fmt, readers) {
             }(c$5));
             return pad_prec_scanf(ib, fmt[3], readers, fmt[1], fmt[2], scan$8, (function(c$5){
                       return function (param) {
-                        return Caml_int64.of_string(token_int_literal(c$5, param));
+                        return Caml_format.caml_int64_of_string(token_int_literal(c$5, param));
                       }
                       }(c$5)));
         case 8 : 

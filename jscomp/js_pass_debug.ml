@@ -23,7 +23,7 @@ let log_counter = ref 0
 let dump  (prog : J.program) = 
   begin
     let () = 
-      if Js_config.get_env () != Browser 
+      if Js_config.get_env () <> Browser 
       (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
       && Lam_current_unit.is_same_file ()
       then 
