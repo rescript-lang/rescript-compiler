@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Lazy                    = require("../stdlib/lazy");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("../stdlib/camlinternalLazy");
 var Mt                      = require("./mt");
@@ -115,6 +116,28 @@ catch (exn){
   }
 }
 
+var u_v = [0];
+
+var u$1 = {
+  0: function () {
+    u_v[0] = 2;
+    return /* () */0;
+  },
+  length: 1,
+  tag: 246
+};
+
+var tag = u$1.tag | 0;
+
+if (tag !== 250) {
+  if (tag === 246) {
+    CamlinternalLazy.force_lazy_block(u$1);
+  }
+  else {
+    ;
+  }
+}
+
 function exotic(param) {
   var tag = param.tag | 0;
   if (tag === 250) {
@@ -127,6 +150,20 @@ function exotic(param) {
     return param;
   }
 }
+
+var l_from_fun = Lazy.from_fun(function () {
+      return 3;
+    });
+
+var forward_test = {
+  0: function () {
+    var u = 3;
+    ++ u;
+    return u;
+  },
+  length: 1,
+  tag: 246
+};
 
 Mt.from_pair_suites("lazy_test.ml", /* :: */[
       /* tuple */[
@@ -155,17 +192,109 @@ Mt.from_pair_suites("lazy_test.ml", /* :: */[
                   };
           }
         ],
-        /* [] */0
+        /* :: */[
+          /* tuple */[
+            "lazy_force",
+            function () {
+              return /* Eq */{
+                      0: u_v[0],
+                      1: 2,
+                      length: 2,
+                      tag: 0
+                    };
+            }
+          ],
+          /* :: */[
+            /* tuple */[
+              "lazy_from_fun",
+              function () {
+                var tag = l_from_fun.tag | 0;
+                return /* Eq */{
+                        0: tag === 250 ? l_from_fun[0] : (
+                            tag === 246 ? CamlinternalLazy.force_lazy_block(l_from_fun) : l_from_fun
+                          ),
+                        1: 3,
+                        length: 2,
+                        tag: 0
+                      };
+              }
+            ],
+            /* :: */[
+              /* tuple */[
+                "lazy_from_val",
+                function () {
+                  var lzarg = Lazy.from_val(3);
+                  var tag = lzarg.tag | 0;
+                  return /* Eq */{
+                          0: tag === 250 ? lzarg[0] : (
+                              tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
+                            ),
+                          1: 3,
+                          length: 2,
+                          tag: 0
+                        };
+                }
+              ],
+              /* :: */[
+                /* tuple */[
+                  "lazy_from_val2",
+                  function () {
+                    var lzarg = Lazy.from_val(3);
+                    var tag = lzarg.tag | 0;
+                    var prim = tag === 250 ? lzarg[0] : (
+                        tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
+                      );
+                    var tag$1 = prim.tag | 0;
+                    return /* Eq */{
+                            0: tag$1 === 250 ? prim[0] : (
+                                tag$1 === 246 ? CamlinternalLazy.force_lazy_block(prim) : prim
+                              ),
+                            1: 3,
+                            length: 2,
+                            tag: 0
+                          };
+                  }
+                ],
+                /* :: */[
+                  /* tuple */[
+                    "lazy_from_val3",
+                    function () {
+                      debugger;
+                      var lzarg = Lazy.from_val(forward_test);
+                      var tag = lzarg.tag | 0;
+                      var prim = tag === 250 ? lzarg[0] : (
+                          tag === 246 ? CamlinternalLazy.force_lazy_block(lzarg) : lzarg
+                        );
+                      var tag$1 = prim.tag | 0;
+                      return /* Eq */{
+                              0: tag$1 === 250 ? prim[0] : (
+                                  tag$1 === 246 ? CamlinternalLazy.force_lazy_block(prim) : prim
+                                ),
+                              1: 4,
+                              length: 2,
+                              tag: 0
+                            };
+                    }
+                  ],
+                  /* [] */0
+                ]
+              ]
+            ]
+          ]
+        ]
       ]
     ]);
 
-exports.u         = u;
-exports.v         = v;
-exports.lazy_test = lazy_test;
-exports.f         = f;
-exports.s         = s;
-exports.set_true  = set_true;
-exports.set_false = set_false;
-exports.h         = h;
-exports.exotic    = exotic;
+exports.v            = v;
+exports.lazy_test    = lazy_test;
+exports.f            = f;
+exports.s            = s;
+exports.set_true     = set_true;
+exports.set_false    = set_false;
+exports.h            = h;
+exports.u_v          = u_v;
+exports.u            = u$1;
+exports.exotic       = exotic;
+exports.l_from_fun   = l_from_fun;
+exports.forward_test = forward_test;
 /* h Not a pure module */
