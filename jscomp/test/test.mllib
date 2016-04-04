@@ -208,3 +208,5 @@ epsilon_test
 io_test
 random_test
 ffi_js
+stringmatch_test
+# hamming_test

@@ -1228,7 +1228,43 @@ var suites_001 = /* :: */[
                                                         };
                                                 }
                                               ],
-                                              /* [] */0
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "of_int32",
+                                                  function () {
+                                                    return /* Eq */{
+                                                            0: $$Array.map(function (prim) {
+                                                                  return Caml_int64.of_int32(prim);
+                                                                }, /* array */[0]),
+                                                            1: /* array */[/* int64 */[
+                                                                0,
+                                                                0
+                                                              ]],
+                                                            length: 2,
+                                                            tag: 0
+                                                          };
+                                                  }
+                                                ],
+                                                /* :: */[
+                                                  /* tuple */[
+                                                    "to_int32",
+                                                    function () {
+                                                      return /* Eq */{
+                                                              0: $$Array.map(function (prim) {
+                                                                    return prim[0];
+                                                                  }, /* array */[/* int64 */[
+                                                                      0,
+                                                                      0
+                                                                    ]]),
+                                                              1: /* array */[0],
+                                                              length: 2,
+                                                              tag: 0
+                                                            };
+                                                    }
+                                                  ],
+                                                  /* [] */0
+                                                ]
+                                              ]
                                             ]
                                           ]
                                         ]

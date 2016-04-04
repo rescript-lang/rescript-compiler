@@ -58,10 +58,10 @@ buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
     ../stdlib/buffer.cmx
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmx : mt.cmx
-caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi \
-    ../stdlib/array.cmi
-caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/format.cmx \
-    ../stdlib/array.cmx
+caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
+    ../stdlib/format.cmi ../stdlib/array.cmi
+caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
+    ../stdlib/format.cmx ../stdlib/array.cmx
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -142,6 +142,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
 guide_for_ext.cmo :
 guide_for_ext.cmx :
+hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi
+hamming_test.cmx : ../stdlib/printf.cmx ../stdlib/lazy.cmx \
+    ../stdlib/int64.cmx
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
@@ -276,6 +280,8 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ext_string.cmo ../stdlib/bytes.cmi
 string_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/list.cmx \
     ext_string.cmx ../stdlib/bytes.cmx
+stringmatch_test.cmo : ../stdlib/string.cmi
+stringmatch_test.cmx : ../stdlib/string.cmx
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi
@@ -532,10 +538,10 @@ buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
     ../stdlib/buffer.cmj
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
-caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi \
-    ../stdlib/array.cmi
-caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/format.cmj \
-    ../stdlib/array.cmj
+caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
+    ../stdlib/format.cmi ../stdlib/array.cmi
+caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
+    ../stdlib/format.cmj ../stdlib/array.cmj
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -616,6 +622,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
+hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi
+hamming_test.cmj : ../stdlib/printf.cmj ../stdlib/lazy.cmj \
+    ../stdlib/int64.cmj
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
@@ -750,6 +760,8 @@ string_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
     ext_string.cmo ../stdlib/bytes.cmi
 string_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/list.cmj \
     ext_string.cmj ../stdlib/bytes.cmj
+stringmatch_test.cmo : ../stdlib/string.cmi
+stringmatch_test.cmj : ../stdlib/string.cmj
 swap_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/array.cmi

@@ -26,6 +26,7 @@ val one : t
 val zero : t
 val not : t -> t
 val of_int32 : nativeint -> t
+val to_int32 : t -> nativeint
 
 val add : t -> t -> t
 val neg : t -> t
@@ -50,4 +51,6 @@ val to_float : t -> float
 val of_float : float -> t
 val div : t -> t -> t
 val mod_ : t -> t -> t
+
+val div_mod :  t -> t -> t * t 
 val compare : t -> t -> int

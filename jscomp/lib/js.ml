@@ -64,8 +64,15 @@ external false_ : boolean = "false" [@@js.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
 external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
-external string_of_char : char -> string = "js_string_of_char" 
 
+external string_of_char : char -> string = "js_string_of_char" 
+(** TODO: check with {!String.of_char} 
+    it's quite common that we have
+    {[ Js.String.of_char x.[0] ]}
+    It would be nice to generate code as below    
+    {[ x[0]
+    ]}
+*)
 module String = struct 
   external of_char : char -> string = "String.fromCharCode" 
     [@@js.call]

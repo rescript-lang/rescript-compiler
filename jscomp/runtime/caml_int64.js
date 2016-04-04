@@ -503,6 +503,15 @@ function mod_(self, other) {
   return add(self, neg(y));
 }
 
+function div_mod(self, other) {
+  var quotient = div(self, other);
+  var y = mul(quotient, other);
+  return /* tuple */[
+          quotient,
+          add(self, neg(y))
+        ];
+}
+
 function compare(self, other) {
   var v = Caml_obj.caml_nativeint_compare(self[/* hi */1], other[/* hi */1]);
   if (v) {
@@ -513,12 +522,17 @@ function compare(self, other) {
   }
 }
 
+function to_int32(x) {
+  return x[/* lo */0];
+}
+
 exports.min_int  = min_int;
 exports.max_int  = max_int;
 exports.one      = one;
 exports.zero     = zero;
 exports.not      = not;
 exports.of_int32 = of_int32;
+exports.to_int32 = to_int32;
 exports.add      = add;
 exports.neg      = neg;
 exports.sub      = sub;
@@ -538,5 +552,6 @@ exports.to_float = to_float;
 exports.of_float = of_float;
 exports.div      = div;
 exports.mod_     = mod_;
+exports.div_mod  = div_mod;
 exports.compare  = compare;
 /* two_ptr_32_dbl Not a pure module */

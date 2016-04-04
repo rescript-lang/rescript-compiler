@@ -551,7 +551,9 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_float_of_string"
   | "caml_int_of_string" (* what is the semantics?*)
   | "caml_int32_of_string"
-  | "caml_nativeint_of_string" -> 
+  | "caml_nativeint_of_string" 
+  | "caml_int64_format"
+    -> 
     E.runtime_call Js_config.format prim.prim_name args
   | "caml_format_int" -> 
     begin match args with 
@@ -796,7 +798,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_weak_blit"
   | "caml_weak_get_copy"
   | "caml_sys_close"
-  | "caml_int64_format"
+
   | "caml_sys_open"
 
   | "caml_ml_input"

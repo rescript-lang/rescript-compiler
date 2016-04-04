@@ -207,4 +207,7 @@ let from_to_string xs =
    ]
    @ from simple_divs
    @ from_compare int64_compare_tests
-
+   @ [
+     "div_rem_0", (fun _ -> Eq(Int64.div (-1L) 16L,0L));     
+     "div_rem_1", (fun _ -> Eq(Int64.rem (-1L) 16L,-1L));     
+   ]     

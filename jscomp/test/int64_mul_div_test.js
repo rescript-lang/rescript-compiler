@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_int64     = require("../runtime/caml_int64");
-var Caml_obj       = require("../runtime/caml_obj");
-var Pervasives     = require("../stdlib/pervasives");
-var Mt             = require("./mt");
-var Printf         = require("../stdlib/printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array        = require("../stdlib/array");
-var Caml_curry     = require("../runtime/caml_curry");
-var List           = require("../stdlib/list");
+var Caml_int64  = require("../runtime/caml_int64");
+var Caml_obj    = require("../runtime/caml_obj");
+var Pervasives  = require("../stdlib/pervasives");
+var Caml_format = require("../runtime/caml_format");
+var Mt          = require("./mt");
+var Printf      = require("../stdlib/printf");
+var $$Array     = require("../stdlib/array");
+var Caml_curry  = require("../runtime/caml_curry");
+var List        = require("../stdlib/list");
 
 function commutative_mul(result, a, b) {
   return /* Eq */{
@@ -1785,7 +1785,7 @@ function from_to_string(xs) {
                       function () {
                         return /* Eq */{
                                 0: str_a,
-                                1: Caml_primitive.caml_int64_format("%d", a),
+                                1: Caml_format.caml_int64_format("%d", a),
                                 length: 2,
                                 tag: 0
                               };
@@ -1871,7 +1871,51 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                             }
                           ],
                           /* [] */0
-                        ], Pervasives.$at(from(simple_divs), from_compare(int64_compare_tests))))))));
+                        ], Pervasives.$at(from(simple_divs), Pervasives.$at(from_compare(int64_compare_tests), /* :: */[
+                                  /* tuple */[
+                                    "div_rem_0",
+                                    function () {
+                                      return /* Eq */{
+                                              0: Caml_int64.div(/* int64 */[
+                                                    -1,
+                                                    -1
+                                                  ], /* int64 */[
+                                                    16,
+                                                    0
+                                                  ]),
+                                              1: /* int64 */[
+                                                0,
+                                                0
+                                              ],
+                                              length: 2,
+                                              tag: 0
+                                            };
+                                    }
+                                  ],
+                                  /* :: */[
+                                    /* tuple */[
+                                      "div_rem_1",
+                                      function () {
+                                        return /* Eq */{
+                                                0: Caml_int64.mod_(/* int64 */[
+                                                      -1,
+                                                      -1
+                                                    ], /* int64 */[
+                                                      16,
+                                                      0
+                                                    ]),
+                                                1: /* int64 */[
+                                                  -1,
+                                                  -1
+                                                ],
+                                                length: 2,
+                                                tag: 0
+                                              };
+                                      }
+                                    ],
+                                    /* [] */0
+                                  ]
+                                ]))))))));
 
 exports.commutative_mul        = commutative_mul;
 exports.pairs                  = pairs;
