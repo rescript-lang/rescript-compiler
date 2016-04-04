@@ -101,7 +101,7 @@ let rec no_side_effect (x : J.expression)  =
   | Typeof e
     -> no_side_effect e 
   | Bin (op, a, b) -> 
-    op != Eq && no_side_effect a && no_side_effect b     
+    op <> Eq && no_side_effect a && no_side_effect b     
   | Math _ 
   | Array_of_size _
   | Array_copy _ 

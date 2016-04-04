@@ -59,7 +59,7 @@ let empty ?immutable_mask n = {
   bound_loop_mutable_values =Ident_set.empty;
 }
 
-let is_tailcalled x = x.immutable_mask != All_immutable_and_no_tail_call
+let is_tailcalled x = x.immutable_mask <> All_immutable_and_no_tail_call
 
 let mark_unused  t i = 
   t.used_mask.(i) <- true

@@ -106,7 +106,7 @@ let caml_classify_float x : fpclass  =
   if Js.Float.is_finite x then 
     if abs_float x >= 2.2250738585072014e-308  then
       FP_normal
-    else if x != 0. then FP_subnormal
+    else if x <> 0. then FP_subnormal
     else FP_zero
   else 
   if Js.Float.is_nan x then 

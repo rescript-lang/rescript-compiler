@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_obj                = require("../runtime/caml_obj");
 var Caml_format             = require("../runtime/caml_format");
 var Ext_string              = require("./ext_string");
 var Ext_log                 = require("./ext_log");
@@ -81,7 +82,7 @@ function process(x) {
             var update_ref = function (r, k) {
               var match = r[0];
               if (match) {
-                if (match[0] !== k) {
+                if (Caml_obj.caml_notequal(match[0], k)) {
                   return fail('File "lam_methname.ml", line 98, characters 42-49');
                 }
                 else {

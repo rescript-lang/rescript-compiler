@@ -558,7 +558,7 @@ let rec not ({expression_desc; comment} as e : t) : t =
   | Bin(Gt,a,b) -> {e with expression_desc = Bin (Le,a,b)}
 
   | Number (Int {i; _}) -> 
-    if i != 0l then caml_false else caml_true
+    if i <> 0l then caml_false else caml_true
   | Int_of_boolean  e -> not e
   | Not e -> e 
   | x -> {expression_desc = Not e ; comment = None}
@@ -667,7 +667,7 @@ let rec float_equal ?comment (e0 : t) (e1 : t) : t =
       Bin(Bor, 
           ({expression_desc = Caml_block_tag _; _} as a),
           {expression_desc = Number (Int {i = 0l; _})}))
-  , Number _  ->  (* for sure [i != 0 ]*)
+  , Number _  ->  (* for sure [i <> 0 ]*)
     (* since a is integer, if we guarantee there is no overflow 
        of a
        then [a | 0] is a nop unless a is undefined

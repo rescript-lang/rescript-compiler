@@ -106,7 +106,7 @@ let simplify_alias
                         match arg with 
                         | Lvar p -> 
                           begin 
-                            try Hashtbl.find meta.ident_tbl p != Parameter
+                            try Hashtbl.find meta.ident_tbl p <> Parameter
                             with Not_found -> true
                           end
                         |  _ -> true 

@@ -58,7 +58,7 @@ let index_offset_c
     (dims : num array) (index : num array) : num  = 
   let offs = ref 0n in
   begin 
-    (if n_dims != Array.length index then 
+    (if n_dims <> Array.length index then 
       caml_invalid_argument "Bigarray.get/set: bad number of dimensions");
     for i = 0 to n_dims - 1 do
       let index_j = Array.unsafe_get index i  in

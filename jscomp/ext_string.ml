@@ -28,7 +28,7 @@ let split_by ?(keep_empty=false) is_delim str =
     else
       if is_delim str.[pos] then
         let new_len = (last_pos - pos - 1) in
-        if new_len !=0 || keep_empty then 
+        if new_len <> 0 || keep_empty then 
           let v = String.sub str (pos + 1) new_len in
           loop ( v :: acc)
             pos (pos - 1)

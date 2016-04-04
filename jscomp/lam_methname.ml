@@ -95,7 +95,7 @@ let process ( x : string) : t * string =
         let update_ref r k = 
           match !r with 
           | None -> r := Some k 
-          | Some x -> if x != k then fail __LOC__ in
+          | Some x -> if x <> k then fail __LOC__ in
         List.iter (fun  x -> 
           match x with 
           | "js" 

@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_int64              = require("./caml_int64");
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_utils              = require("./caml_utils");
 var Caml_int64              = require("./caml_int64");
@@ -48,9 +49,23 @@ function parse_digit(c) {
   }
 }
 
+function int_of_string_base(param) {
+  switch (param) {
+    case 0 : 
+        return 8;
+    case 1 : 
+        return 16;
+    case 2 : 
+        return 10;
+    case 3 : 
+        return 2;
+    
+  }
+}
+
 function parse_sign_and_base(s) {
   var sign = 1;
-  var base = 10;
+  var base = /* Dec */2;
   var i = 0;
   if (s[i] === "-") {
     sign = -1;
@@ -63,36 +78,36 @@ function parse_sign_and_base(s) {
       if (match$1 !== 98) {
         if (match$1 !== 111) {
           if (match$1 === 120) {
-            base = 16;
+            base = /* Hex */1;
             i += 2;
           }
           
         }
         else {
-          base = 8;
+          base = /* Oct */0;
           i += 2;
         }
       }
       else {
-        base = 2;
+        base = /* Bin */3;
         i += 2;
       }
     }
     else if (match$1 !== 66) {
       if (match$1 !== 79) {
         if (match$1 >= 88) {
-          base = 16;
+          base = /* Hex */1;
           i += 2;
         }
         
       }
       else {
-        base = 8;
+        base = /* Oct */0;
         i += 2;
       }
     }
     else {
-      base = 2;
+      base = /* Bin */3;
       i += 2;
     }
   }
@@ -105,8 +120,8 @@ function parse_sign_and_base(s) {
 
 function caml_int_of_string(s) {
   var match = parse_sign_and_base(s);
-  var base = match[2];
   var i = match[0];
+  var base = int_of_string_base(match[2]);
   var threshold = (-1 >>> 0);
   var len = s.length;
   var c = i < len ? s.charCodeAt(i) : /* "\000" */0;
@@ -169,6 +184,115 @@ function caml_int_of_string(s) {
   return or_res;
 }
 
+function caml_int64_of_string(s) {
+  var match = parse_sign_and_base(s);
+  var hbase = match[2];
+  var i = match[0];
+  var base = Caml_int64.of_int32(int_of_string_base(hbase));
+  var sign = Caml_int64.of_int32(match[1]);
+  var threshold;
+  switch (hbase) {
+    case 0 : 
+        threshold = /* int64 */[
+          -1,
+          536870911
+        ];
+        break;
+    case 1 : 
+        threshold = /* int64 */[
+          -1,
+          268435455
+        ];
+        break;
+    case 2 : 
+        threshold = /* int64 */[
+          -1717986919,
+          429496729
+        ];
+        break;
+    case 3 : 
+        threshold = /* int64 */[
+          -1,
+          2147483647
+        ];
+        break;
+    
+  }
+  var len = s.length;
+  var c = i < len ? s.charCodeAt(i) : /* "\000" */0;
+  var d = Caml_int64.of_int32(parse_digit(c));
+  if (Caml_int64.lt(d, /* int64 */[
+          0,
+          0
+        ]) || Caml_int64.ge(d, base)) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "int64_of_string"
+        ];
+  }
+  var aux = function (_acc, _k) {
+    while(true) {
+      var k = _k;
+      var acc = _acc;
+      if (k === len) {
+        return acc;
+      }
+      else {
+        var a = s.charCodeAt(k);
+        if (a === /* "_" */95) {
+          _k = k + 1;
+          continue ;
+          
+        }
+        else {
+          var v = Caml_int64.of_int32(parse_digit(a));
+          if (Caml_int64.lt(v, /* int64 */[
+                  0,
+                  0
+                ]) || Caml_int64.ge(v, base)) {
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "int64_of_string"
+                ];
+          }
+          else {
+            var acc$1 = Caml_int64.add(Caml_int64.mul(base, acc), v);
+            if (Caml_int64.gt(acc$1, threshold)) {
+              throw [
+                    Caml_builtin_exceptions.failure,
+                    "int64_of_string"
+                  ];
+            }
+            else {
+              _k = k + 1;
+              _acc = acc$1;
+              continue ;
+              
+            }
+          }
+        }
+      }
+    };
+  };
+  var res = Caml_int64.mul(sign, aux(d, i + 1));
+  var or_res_000 = res[0] | 0;
+  var or_res_001 = res[1] | 0;
+  var or_res = /* int64 */[
+    or_res_000,
+    or_res_001
+  ];
+  if (Caml_int64.eq(base, /* int64 */[
+          10,
+          0
+        ]) && Caml_int64.neq(res, or_res)) {
+    throw [
+          Caml_builtin_exceptions.failure,
+          "int64_of_string"
+        ];
+  }
+  return or_res;
+}
+
 function int_of_base(param) {
   switch (param) {
     case 0 : 
@@ -203,7 +327,7 @@ function parse_format(fmt) {
     "-",
     " ",
     /* false */0,
-    /* Ten */2,
+    /* Dec */2,
     /* false */0,
     0,
     /* false */0,
@@ -246,7 +370,7 @@ function parse_format(fmt) {
                   _i = i + 1;
                   continue ;
                   case 29 : 
-                  f[/* base */4] = /* Ten */2;
+                  f[/* base */4] = /* Dec */2;
                   _i = i + 1;
                   continue ;
                   case 1 : 
@@ -384,7 +508,7 @@ function parse_format(fmt) {
             continue ;
             case 4 : 
             f[/* signedconv */5] = /* true */1;
-            f[/* base */4] = /* Ten */2;
+            f[/* base */4] = /* Dec */2;
             _i = i + 1;
             continue ;
             case 5 : 
@@ -696,7 +820,7 @@ function caml_format_float(fmt, x) {
   return finish_formatting(f, s);
 }
 
-
+var caml_float_of_string = (
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"
@@ -708,7 +832,7 @@ function caml_format_float(fmt, x) {
  * parseFloat('Infinity') === Infinity
  * parseFloat('infinity') === Nan
  * */
-function $$caml_float_of_string(s) {
+function (s) {
     //s = caml_bytes_of_string (s);
     var res = +s;
     if ((s.length > 0) && (res === res))
@@ -733,16 +857,11 @@ function $$caml_float_of_string(s) {
     caml_failwith("float_of_string");
 }
 
-
-;
+);
 
 var caml_nativeint_format = caml_format_int;
 
 var caml_int32_format = caml_format_int;
-
-function caml_float_of_string(prim) {
-  return $$caml_float_of_string(prim);
-}
 
 var caml_int32_of_string = caml_int_of_string;
 
@@ -751,7 +870,6 @@ var caml_nativeint_of_string = caml_int_of_string;
 exports.parse_digit              = parse_digit;
 exports.caml_invalid_argument    = caml_invalid_argument;
 exports.repeat                   = repeat;
-exports.parse_sign_and_base      = parse_sign_and_base;
 exports.caml_failwith            = caml_failwith;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;
@@ -761,5 +879,6 @@ exports.caml_float_of_string     = caml_float_of_string;
 exports.caml_int64_format        = caml_int64_format;
 exports.caml_int_of_string       = caml_int_of_string;
 exports.caml_int32_of_string     = caml_int32_of_string;
+exports.caml_int64_of_string     = caml_int64_of_string;
 exports.caml_nativeint_of_string = caml_nativeint_of_string;
-/*  Not a pure module */
+/* caml_float_of_string Not a pure module */
