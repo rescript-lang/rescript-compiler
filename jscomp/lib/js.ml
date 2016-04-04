@@ -75,17 +75,19 @@ external string_of_char : char -> string = "js_string_of_char"
 *)
 module String = struct 
   external of_char : char -> string = "String.fromCharCode" 
-    [@@js.call]
+      [@@js.call]
   external toUpperCase : string -> string = "toUpperCase" [@@js.send]
   external of_int : int -> base:int -> string = "toString" [@@js.send]
   external slice : string -> int -> int -> string = "slice" 
-    [@@js.send]
+      [@@js.send]
   external slice_rest : string -> int -> string = "slice" 
-    [@@js.send]
+      [@@js.send]
   external index_of : string -> string -> int = "indexOf"
-    [@@js.send]
+      [@@js.send]
   external append : string -> string -> string = "js_string_append"
   external of_small_int_array : int array -> string = "js_string_of_small_int_array"
+  external lastIndexOf : string -> string -> int = "lastIndexOf"
+      [@@js.send]    
 end
 
 module Array = struct 
