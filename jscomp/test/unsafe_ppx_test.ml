@@ -14,6 +14,12 @@ function $$test(x,y){
 }
 |}]
 
+let max2 : float -> float -> float = [%js.raw "Math.max"]
+let u = max2 3.
+
+let max3 = ([%js.raw "Math.max"] :  float -> float -> float)
+let uu = max2 3.
+    
 external test : int -> int -> int = "" [@@js.call "$$test"]
 
 let empty = ([%js.raw ({| Object.keys|}  : _ -> string array) ]) 3 

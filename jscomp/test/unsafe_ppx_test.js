@@ -8,10 +8,6 @@ var x = ("\x01\x02\x03");
 
 var max = (Math.max);
 
-function u(param) {
-  return max(1, param);
-}
-
 
 
 function $$test(x,y){
@@ -19,6 +15,18 @@ function $$test(x,y){
 }
 
 ;
+
+var max2 = (Math.max);
+
+function u(param) {
+  return max2(3, param);
+}
+
+var max3 = (Math.max);
+
+function uu(param) {
+  return max2(3, param);
+}
 
 var empty = ( Object.keys)(3);
 
@@ -80,7 +88,10 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
 
 exports.x     = x;
 exports.max   = max;
+exports.max2  = max2;
 exports.u     = u;
+exports.max3  = max3;
+exports.uu    = uu;
 exports.empty = empty;
 exports.v     = v;
 /* x Not a pure module */

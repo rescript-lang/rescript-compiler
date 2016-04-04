@@ -88,31 +88,34 @@ let rec unsafe_mapper : Ast_mapper.mapper =
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
         match e.pexp_desc with 
-        | Pexp_extension ({txt = "js.raw"; loc} , payload)
+        | Pexp_extension (
+            {txt = "js.raw"; loc} ,
+            PStr 
+              ( [{ pstr_desc = Pstr_eval ({ 
+                   pexp_desc = Pexp_constant (Const_string (_, _)) ;
+                   pexp_attributes = attrs } as e ,
+                                                _); pstr_loc = _ }]))
           -> 
-          begin 
-            match payload with
-            | Parsetree.PStr 
-                ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                      pexp_desc = Pexp_constant (Const_string (_, _opt_label)) ;
-                      pexp_loc;
-                      pexp_attributes = attrs } as e ,
-                      _attrs); pstr_loc = _ }])
-              -> 
+
               handle_raw loc e attrs
-            | Parsetree.PStr 
+        | Pexp_extension( {txt = "js.raw"; loc}, PStr 
                 ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
                       pexp_desc = 
-                        Pexp_constraint ({pexp_desc = Pexp_constant (Const_string (_cont, _opt_label)) ; _} as e,
-                                         ty)
-                      ; pexp_attributes = attrs} , _attrs); pstr_loc= _ }])
+                        Pexp_constraint (
+                          {pexp_desc = Pexp_constant (Const_string (_, _)) ; _}
+                          as e,
+                             ty)
+                      ; pexp_attributes = attrs} , _);  }]))
+        | Pexp_constraint({pexp_desc = Pexp_extension( {txt = "js.raw"; loc}, PStr 
+                ( [{ pstr_desc = Pstr_eval ({ 
+                      pexp_desc = 
+                        Pexp_constant (Const_string (_, _)) 
+                      ; pexp_attributes = attrs} as e , _);  }]))}, ty)            
               -> handle_raw ~ty loc e attrs
-            | Parsetree.PTyp _ 
-            | Parsetree.PPat (_,_) 
-            | Parsetree.PStr _ 
+        | Pexp_extension({txt = "js.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
               Location.raise_errorf ~loc "js.raw can only be applied to a string"
-          end
+
         | Pexp_extension ({txt = "js.debug"; loc} , payload)
           ->
           begin
