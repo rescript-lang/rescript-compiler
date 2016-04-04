@@ -617,8 +617,14 @@ let translate
     E.runtime_call Js_config.prim "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
-  | Plazyforce 
+  | Plazyforce
+  (* | Plazyforce -> *)
+  (*     let parm = Ident.create "prim" in *)
+  (*     Lfunction(Curried, [parm], *)
+  (*               Matching.inline_lazy_force (Lvar parm) Location.none) *)
+  (* It is inlined, this should not appear here *)    
   | Pbittest 
+  | Pint_as_pointer 
   | Pstring_load_16 _
   | Pstring_load_32 _
   | Pstring_load_64 _
@@ -631,10 +637,6 @@ let translate
   | Pbigstring_set_16 _
   | Pbigstring_set_32 _
   | Pbigstring_set_64 _
-  | Pint_as_pointer 
-
-
-
     -> 
       let comment = "Missing primitve" in       
       let s = Lam_util.string_of_primitive prim in
