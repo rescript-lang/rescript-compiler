@@ -209,4 +209,5 @@ io_test
 random_test
 ffi_js
 stringmatch_test
+printf_sim
 # hamming_test
