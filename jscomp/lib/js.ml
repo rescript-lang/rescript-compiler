@@ -140,3 +140,9 @@ module Caml_obj = struct
   external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
   external is_instance_array : Obj.t -> bool = "js_is_instance_array" (* use Array.isArray instead*)
 end
+
+module Caml_int64 = struct
+  external discard_sign : int64 -> int64 = "js_int64_discard_sign"
+  external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
+  external to_hex : int64 -> string = "js_int64_to_hex"    
+end  

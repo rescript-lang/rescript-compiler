@@ -4,8 +4,16 @@
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 
-if (!String.prototype.repeat) {
-    String.prototype.repeat = function(count , self) {
+if (!Math.imul){
+    Math.imul = function (x,y)
+        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
+}
+  
+
+;
+
+var repeat = ( (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
+                                                  function(count , self) {
         if (self.length == 0 || count == 0) {
             return '';
         }
@@ -28,21 +36,7 @@ if (!String.prototype.repeat) {
         }
         return rpt;
     }
-}
-
-
-
-
-if (!Math.imul){
-    Math.imul = function (x,y)
-        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
-}
-
-var $$repeat = function (n, s) {
-   return s.repeat(n);
-}
-
-;
+);
 
 function i32div(x, y) {
   if (y === 0) {
@@ -60,10 +54,6 @@ function i32mod(x, y) {
   else {
     return x % y;
   }
-}
-
-function repeat(prim, prim$1) {
-  return $$repeat(prim, prim$1);
 }
 
 exports.i32div = i32div;

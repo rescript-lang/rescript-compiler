@@ -43,10 +43,6 @@ let max_int = { lo = -0xffff_ffffn; hi = 0x7fff_fffn }
 let one = {lo = 1n; hi = 0n}
 let zero = {lo = 0n; hi = 0n}
 
-let of_int32 (lo : nativeint) = 
-  if lo < 0n then 
-    {lo ; hi = -1n }
-  else {lo ; hi = 0n }
 
 let add
     ({lo = this_low_; hi = this_high_} : t)
@@ -367,6 +363,51 @@ let compare self other =
       (to_unsigned self.lo) (to_unsigned other.lo)
   else v 
 
+let of_int32 (lo : nativeint) = 
+  if lo < 0n then 
+    {lo ; hi = -1n }
+  else {lo ; hi = 0n }
 
 let to_int32 x = x.lo
 
+
+(* width does matter, will it be relevant to endian order? *)
+
+let to_hex x =
+  let aux v =
+    Js.String.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16 
+  in
+  match x.hi, x.lo with
+  | 0n, 0n -> "0"
+  | _, 0n -> aux x.hi ^ "00000000"
+  | 0n, _ -> aux x.lo
+  | _, _ ->
+    let lo =  aux x.lo in
+    let pad = 8 - String.length lo in
+    if pad <= 0 then             
+      aux x.hi ^ lo
+    else
+      aux x.hi ^ Caml_utils.repeat pad "0" ^ lo 
+
+let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }  
+
+
+open Typed_array
+let float_of_bits x  =
+  let to_int32 (x : nativeint) = x |> Nativeint.to_int |> Int32.of_int 
+  in 
+  (*TODO: 
+    This should get inlined, we should apply a simple inliner in the js layer, 
+    the thing is its lambda representation is complex but after js layer, 
+    it's qutie simple 
+  *)
+  let int32 = Int32_array.create [| to_int32 x.lo; to_int32 x.hi |] in
+   Float64_array.get (Float64_array.of_buffer (Int32_array.buffer int32)) 0 
+
+let  bits_of_float (x : float) = 
+
+  let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
+
+  let u = Float64_array.create [| x |] in 
+  let int32 = Int32_array.of_buffer (Float64_array.buffer u) in 
+  {lo = to_nat (Int32_array.get int32 0) ; hi = to_nat (Int32_array.get int32 1) }

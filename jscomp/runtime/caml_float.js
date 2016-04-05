@@ -2,29 +2,6 @@
 'use strict';
 
 
-function caml_int64_float_of_bits(x) {
-  var to_int32 = function (x) {
-    return x;
-  };
-  var int32 = new Int32Array(/* array */[
-        to_int32(x[/* lo */0]),
-        to_int32(x[/* hi */1])
-      ]);
-  return new Float64Array(int32.buffer)[0];
-}
-
-function caml_int64_bits_of_float(x) {
-  var to_nat = function (x) {
-    return x;
-  };
-  var u = new Float64Array(/* float array */[x]);
-  var int32 = new Int32Array(u.buffer);
-  return /* record */[
-          to_nat(int32[0]),
-          to_nat(int32[1])
-        ];
-}
-
 function caml_int32_float_of_bits(x) {
   var int32 = new Int32Array(/* array */[x]);
   var float32 = new Float32Array(int32.buffer);
@@ -174,9 +151,7 @@ var caml_log10_float = ( function  (x) {
    return Math.LOG10E * Math.log(x); }
 );
 
-exports.caml_int64_float_of_bits = caml_int64_float_of_bits;
 exports.caml_int32_float_of_bits = caml_int32_float_of_bits;
-exports.caml_int64_bits_of_float = caml_int64_bits_of_float;
 exports.caml_int32_bits_of_float = caml_int32_bits_of_float;
 exports.caml_classify_float      = caml_classify_float;
 exports.caml_modf_float          = caml_modf_float;

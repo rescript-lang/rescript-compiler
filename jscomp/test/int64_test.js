@@ -1262,7 +1262,70 @@ var suites_001 = /* :: */[
                                                             };
                                                     }
                                                   ],
-                                                  /* [] */0
+                                                  /* :: */[
+                                                    /* tuple */[
+                                                      "discard_sign",
+                                                      function () {
+                                                        return /* Eq */{
+                                                                0: Caml_int64.discard_sign(/* int64 */[
+                                                                      -1,
+                                                                      -1
+                                                                    ]),
+                                                                1: /* int64 */[
+                                                                  -1,
+                                                                  2147483647
+                                                                ],
+                                                                length: 2,
+                                                                tag: 0
+                                                              };
+                                                      }
+                                                    ],
+                                                    /* :: */[
+                                                      /* tuple */[
+                                                        "div_mod",
+                                                        function () {
+                                                          return /* Eq */{
+                                                                  0: Caml_int64.div_mod(/* int64 */[
+                                                                        7,
+                                                                        0
+                                                                      ], /* int64 */[
+                                                                        3,
+                                                                        0
+                                                                      ]),
+                                                                  1: /* tuple */[
+                                                                    /* int64 */[
+                                                                      2,
+                                                                      0
+                                                                    ],
+                                                                    /* int64 */[
+                                                                      1,
+                                                                      0
+                                                                    ]
+                                                                  ],
+                                                                  length: 2,
+                                                                  tag: 0
+                                                                };
+                                                        }
+                                                      ],
+                                                      /* :: */[
+                                                        /* tuple */[
+                                                          "to_hex",
+                                                          function () {
+                                                            return /* Eq */{
+                                                                    0: Caml_int64.to_hex(/* int64 */[
+                                                                          -1,
+                                                                          -1
+                                                                        ]),
+                                                                    1: "ffffffffffffffff",
+                                                                    length: 2,
+                                                                    tag: 0
+                                                                  };
+                                                          }
+                                                        ],
+                                                        /* [] */0
+                                                      ]
+                                                    ]
+                                                  ]
                                                 ]
                                               ]
                                             ]
