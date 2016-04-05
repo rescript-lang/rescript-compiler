@@ -80,7 +80,7 @@ It is in an *very early* stage and not production ready for your own projects *y
 
   The patched compiler is installed locally into your `$(pwd)/bin`
   directory; check if `ocamlc.opt` and `ocamlopt.opt` are there, then add
-  them into your `$(PATH)` (eg - `PATH=$(pwd):$PATH`) 
+  them into your `$(PATH)` (eg - `PATH=$(pwd)/bin:$PATH`) 
   
 3. Build BuckleScript Compiler
 
