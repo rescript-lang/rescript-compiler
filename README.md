@@ -55,35 +55,38 @@ It is in an *very early* stage and not production ready for your own projects *y
 
 ## Build
 
-Note that you have to clone this project with `--recursive` option, as the core OCaml compiler is brought into your clone as a Git `submodule`.
 
 ### Linux and Mac OSX
 
+1. Clone the bucklescript repo
 
-1. Build the patched OCaml Compiler
-
-  Checkout the `master` branch in the [OCaml Repo](https://github.com/bloomberg/ocaml/tree/master)
-
-  For exmaple:
-  
   ```sh
-  git clone https://github.com/bloomberg/ocaml
+  git clone https://github.com/bloomberg/bucklescript.git --recursive
+  ```
+  
+  Note that you have to clone this project with `--recursive` option, 
+  as the core OCaml compiler is brought into your clone as a Git `submodule`.
+
+
+2. Build the patched OCaml Compiler
+
+  ```sh
   cd ./ocaml
-  git checkout master
+  git checkout master 
   ./configure -prefix `pwd`
   make world.opt
   make install
   ```
 
   The patched compiler is installed locally into your `$(pwd)/bin`
-  directory, check if `ocamlc.opt` and `ocamlopt.opt` are there, add
-  them into your `$(PATH)`.
+  directory; check if `ocamlc.opt` and `ocamlopt.opt` are there, then add
+  them into your `$(PATH)` (eg - `PATH=$(pwd):$PATH`) 
   
-2. Build BuckleScript Compiler
+3. Build BuckleScript Compiler
 
   Assume that you have `ocamlopt.opt` in the `PATH`
   ```sh
-  cd ./jscomp
+  cd ../jscomp
   ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
   ```
 
@@ -93,7 +96,7 @@ Note that you have to clone this project with `--recursive` option, as the core 
   Our compiler is released as a single file so that for release-builds
   it does not need any build system(easier to be supported on Windows Platform).
   
-3. Test 
+4. Test 
 
   Create a file called `hello.ml`:
 
@@ -121,20 +124,20 @@ runtime and standard library to verify if it works, you don't need run
 these steps.
 
 
-4. Build the runtime with `bsc`
+1. Build the runtime with `bsc`
 
   ```sh
   cd runtime
   make all
   ```
 
-5. Build the ocaml standard library with `bsc`
+2. Build the ocaml standard library with `bsc`
 
   ```sh
   cd ../stdlib
   make all 
   ```
-6. Build the bucklescript library (it contains JS bindings) with `bsc`
+3. Build the bucklescript library (it contains JS bindings) with `bsc`
 
    ```sh
    cd ../lib
