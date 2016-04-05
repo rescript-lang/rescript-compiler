@@ -210,4 +210,5 @@ random_test
 ffi_js
 stringmatch_test
 printf_sim
+test_external_unit
 # hamming_test

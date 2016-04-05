@@ -10,7 +10,7 @@ Caml_curry.app1(console.log.bind(console), "hey");
 
 Caml_curry.app1(doc.getElementById.bind(doc), "haha");
 
-var v = console.log(32);
+var v = (console.log(32), /* () */0);
 
 ReactDom.render(React.createClass({
           "render": function () {

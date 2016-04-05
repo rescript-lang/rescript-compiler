@@ -334,6 +334,8 @@ test_export2.cmo :
 test_export2.cmx :
 test_external.cmo :
 test_external.cmx :
+test_external_unit.cmo :
+test_external_unit.cmx :
 test_ffi.cmo :
 test_ffi.cmx :
 test_fib.cmo :
@@ -816,6 +818,8 @@ test_export2.cmo :
 test_export2.cmj :
 test_external.cmo :
 test_external.cmj :
+test_external_unit.cmo :
+test_external_unit.cmj :
 test_ffi.cmo :
 test_ffi.cmj :
 test_fib.cmo :
