@@ -8,6 +8,8 @@ let a  = Int64.of_int32 2147483647l
 open Int64
 
 let commutative_add result a b = Mt.Eq((result, result), (add a b, add b a))
+let generic_compare = Pervasives.compare
+
 
 let suites = Mt.[
     "add_one", (fun _ -> Eq (v, 2147483648L));
@@ -72,12 +74,23 @@ let suites = Mt.[
                           -1L; -1L; -1L; -1L|]
                        ));
     "mul simple", (fun _ -> Eq (6L, mul 3L 2L ));
-    "of_int32", (fun _ -> Eq(Array.map Int64.of_int32 [|0l|], [|0L|]));
-    "to_int32", (fun _ -> Eq(Array.map Int64.to_int32 [|0L|], [|0l|]));
+    "of_int32", (fun _ ->
+        Eq(Array.map Int64.of_int32 [|0l;(-2147483648l)|], [|0L; (-2147483648L)|]));
+    "to_int32", (fun _ -> 
+        Eq(Array.map Int64.to_int32
+             [|0L; 0x0000_0000_8000_0000L|], [|0l;-2147483648l|]));
     "discard_sign", (fun _ ->
         Eq(Js.Caml_int64.discard_sign (-1L), 0x7fff_ffff_ffff_ffffL));
     "div_mod", (fun _ -> Eq(Js.Caml_int64.div_mod 7L 3L , (2L,1L)));
-    "to_hex", (fun _ -> Eq(Js.Caml_int64.to_hex (-1L), "ffffffffffffffff"))    
+    "to_hex", (fun _ -> Eq(Js.Caml_int64.to_hex (-1L), "ffffffffffffffff"));
+    "generic_compare", (fun _ ->
+        Eq(generic_compare 0x0000_0001_0000_0000L 0x0000_0000_0000_0001L > 0 , true));
+    "test_compier_literal", (fun _ ->
+        Eq(0x0000_0000_ffff_ffffL, 
+           Int64.add (Int64.add 0x0000_0000_7fff_ffffL 0x0000_0000_7fff_ffffL) 1L)        
+      )    ;
+    "generic_compare2", (fun _ ->
+        Eq(generic_compare 0x0000_0000_8000_0000L 0x0000_0000_0000_0001L > 0 , true))
 ]
 
 

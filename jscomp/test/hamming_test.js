@@ -7,29 +7,39 @@ var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 var Printf           = require("../stdlib/printf");
 var Caml_curry       = require("../runtime/caml_curry");
 
+var n0_001 = (0 >>> 0);
+
 var n0 = /* int64 */[
   0,
-  0
+  n0_001
 ];
+
+var n1_001 = (1 >>> 0);
 
 var n1 = /* int64 */[
-  1,
-  0
+  0,
+  n1_001
 ];
+
+var n2_001 = (2 >>> 0);
 
 var n2 = /* int64 */[
-  2,
-  0
+  0,
+  n2_001
 ];
+
+var n3_001 = (3 >>> 0);
 
 var n3 = /* int64 */[
-  3,
-  0
+  0,
+  n3_001
 ];
 
+var n5_001 = (5 >>> 0);
+
 var n5 = /* int64 */[
-  5,
-  0
+  0,
+  n5_001
 ];
 
 function $percent(prim, prim$1) {
@@ -48,9 +58,11 @@ function $plus(prim, prim$1) {
   return Caml_int64.add(prim, prim$1);
 }
 
+var digit_001 = (-1486618624 >>> 0);
+
 var digit = /* int64 */[
-  -1486618624,
-  232830643
+  232830643,
+  digit_001
 ];
 
 function mul(n, param) {

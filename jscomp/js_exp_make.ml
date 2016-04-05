@@ -829,6 +829,7 @@ let obj_length ?comment e : t =
 let rec to_int32  ?comment (e : J.expression)  : J.expression = 
   let expression_desc =  e.expression_desc in
   match expression_desc  with 
+  | Number (Int {i;}) -> e (* signed int 32*)
   | Bin(Bor, a, {expression_desc = Number (Int {i = 0l});  _})
     -> 
     to_int32 ?comment a
@@ -837,6 +838,7 @@ let rec to_int32  ?comment (e : J.expression)  : J.expression =
       expression_desc = Bin (Bor, {comment = None; expression_desc }, zero_int_literal)
     }
 
+(*TODO: introduce unsignedint32 in Ast  *)
 let rec to_uint32 ?comment (e : J.expression)  : J.expression = 
   { comment ; 
     expression_desc = Bin (Lsr, e , zero_int_literal)
