@@ -298,6 +298,8 @@ let query (prim : Lam_compile_env.primitive_description)
     -> Js_long.bits_of_float args     
   | "caml_int64_float_of_bits"
     -> Js_long.float_of_bits args 
+  | "caml_int64_bswap"
+    -> Js_long.swap args    
   | "caml_int32_float_of_bits"
   | "caml_int32_bits_of_float"
   | "caml_classify_float"
@@ -774,7 +776,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap"
-  | "caml_int64_bswap"
+
     -> E.runtime_call Js_config.prim prim.prim_name args 
   | "caml_get_public_method"
     ->

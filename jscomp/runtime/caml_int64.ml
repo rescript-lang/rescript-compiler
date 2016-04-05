@@ -33,36 +33,45 @@ let ( & ) = Nativeint.logand
 let ( << ) = Nativeint.shift_left
 let lognot x = Nativeint.logxor x (-1n)
 
-type t = { lo : nativeint ; hi : nativeint}
+type t = {  hi : nativeint; lo : nativeint ;  }
+
+let to_unsigned (x : nativeint) = 
+   x >>> 0
+
+let mk ~lo ~hi = {lo = to_unsigned lo ; hi}
+
+let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
+
+let max_int = 
+ mk  ~lo:( -0xffff_ffffn) ~hi: 0x7fff_fffn
+
+let one = mk ~lo: 1n ~hi:0n
+let zero = mk ~lo: 0n ~hi: 0n
+let neg_one = mk ~lo:(-1n) ~hi:(-1n)
+    
 
 
-let min_int = { lo = 0n; hi =  -0x80000000n }
-
-let max_int = { lo = -0xffff_ffffn; hi = 0x7fff_fffn }
-
-let one = {lo = 1n; hi = 0n}
-let zero = {lo = 0n; hi = 0n}
-
-
+let neg_signed x =  (x  & 0x8000_0000n) <> 0n
+                         
 let add
     ({lo = this_low_; hi = this_high_} : t)
     ({lo = other_low_; hi = other_high_} : t) =
-  let low = logand (add this_low_ other_low_) 0xffff_ffffn in
-  let overflow = if this_low_ < 0n
-    then other_low_ < 0n || low >= 0n
-    else other_low_ < 0n && low >= 0n
+  let lo =  ( this_low_ + other_low_) &  0xffff_ffffn in
+  let overflow =
+    if (neg_signed this_low_ && (neg_signed other_low_  || not (neg_signed lo)))
+       || (neg_signed other_low_  && not (neg_signed lo))                                 
+    then 1n
+    else  0n
   in
-  let high = if overflow then
-    logand (add 1n (add this_high_ other_high_)) 0xffff_ffffn
-  else
-    logand (add this_high_ other_high_) 0xffff_ffffn
-  in
-  { lo = low; hi = high }
+  mk ~lo ~hi:(( this_high_ + other_high_ + overflow) &  0xffff_ffffn)
 
-let not {lo; hi }  = {lo = lognot lo; hi = lognot hi }
+
+let not {lo; hi }  = mk ~lo:(lognot lo) ~hi:(lognot hi)
+
+let eq x y = x.hi = y.hi && x.lo = y.lo
 
 let neg ({lo; hi} as x) =
-  if x == min_int then 
+  if eq x  min_int then 
     min_int 
   else add (not x) one
 
@@ -76,47 +85,45 @@ let lsl_ ({lo; hi} as x) numBits =
   else if numBits >= 32 then 
     {lo =0n; hi = Nativeint.shift_left lo (numBits - 32) }
   else 
-    {lo = Nativeint.shift_left lo numBits; 
-     hi = 
-       Nativeint.logor 
+    mk ~lo:(Nativeint.shift_left lo numBits)
+     ~hi: 
+       (Nativeint.logor 
          ( lo >>>  (32 - numBits))
-         (Nativeint.shift_left hi numBits)
-    }
+         (Nativeint.shift_left hi numBits))
+    
 
 let lsr_ ({lo; hi} as x) numBits =   
   if numBits = 0 then x 
   else 
     let offset = numBits - 32 in
     if offset = 0 then  
-      {hi = 0n; lo = hi}
-    else if offset > 0 then 
-      {hi = 0n; lo =  hi >>> offset  }
+        mk ~lo:hi ~hi:0n
+    else if offset > 0 then
+      mk ~lo:(hi >>> offset) ~hi:0n      
     else 
-      { hi =  hi >>> numBits;
-        lo = 
+      mk
+      ~hi: ( hi >>> numBits)
+        ~lo:(
           Nativeint.logor 
             (Nativeint.shift_left hi (-offset))
-            ( lo >>> numBits)
-      }      
+            ( lo >>> numBits))
+
 
 let asr_ ({lo; hi } as x) numBits = 
   if numBits = 0  then
     x 
   else
   if numBits < 32  then
-    {
-      hi =  hi >> numBits;
-      lo = 
+    mk ~hi:(  hi >> numBits)
+      ~lo:(
        Nativeint.logor
          ( hi << (32 - numBits)) (* zero filled *)
-         ( lo >>> numBits);
+         ( lo >>> numBits))
 
-    }    
+
   else 
-    {
-      hi = if hi >= 0n then  0n  else -1n;
-      lo =  hi >> (numBits - 32)
-    }
+    mk ~hi:( if hi >= 0n then  0n  else -1n) ~lo:(  hi >> (numBits - 32))
+
   
 let is_zero = function
   | {lo = 0n ; hi = 0n} -> true
@@ -175,21 +182,21 @@ let rec mul this
         c32 :=  !c32 & 0xffffn;
         c48 :=  (!c48  + (a48 * b00 + a32 * b16 + 
            a16 * b32 + a00 * b48)) & 0xffffn;
-        {lo = 
-           Nativeint.logor 
+        mk ~lo:
+           (Nativeint.logor 
              (c00 & 0xffffn)
-             ( (!c16 & 0xffffn) << 16);
-         hi = Nativeint.logor
+             ( (!c16 & 0xffffn) << 16))
+         ~hi:( Nativeint.logor
              !c32
-             ( !c48 << 16)
-        }
+             ( !c48 << 16))
+        
       end
 
 
 external bswap32: nativeint -> nativeint = "%bswap_int32"
 
 let swap {lo ; hi } = 
-  {lo = bswap32 hi; hi = bswap32 lo }
+  mk ~lo:( bswap32 hi) ~hi:( bswap32 lo)
 
 (* Dispatched by the compiler, idea: should we do maximum sharing 
 *)
@@ -203,17 +210,15 @@ let swap {lo ; hi } =
    this is not necessary, 
    however (x>>>0 >>>0) is not that bad
 *)
-let to_unsigned (x : nativeint) = 
-   x >>> 0
 
 type comparison = t -> t -> bool 
 
 let  ge ({hi; lo } : t)  ({hi = other_hi; lo = other_lo}) : bool = 
   if hi > other_hi then true
   else if hi < other_hi then false 
-  else (to_unsigned lo ) >= (to_unsigned other_lo)
+  else (to_unsigned lo ) >= (to_unsigned other_lo) (* IMPROVE*)
 
-let eq x y = x.hi = y.hi && x.lo = y.lo
+
 
 let neq x y = Pervasives.not (eq x y)
 let lt x y  = Pervasives.not (ge x y)
@@ -223,7 +228,7 @@ let gt x y =
   else if x.hi < y.hi  then
     false
   else 
-    to_unsigned x.lo > to_unsigned y.lo
+    to_unsigned x.lo > to_unsigned y.lo (* IMPROVE *)
 
   
 let le x y = Pervasives.not (gt x y)
@@ -234,15 +239,8 @@ let to_float ({lo; hi } : t) : float =
   let low_bits_unsigned =
     if lo >= 0n   then
       lo
-    else  lo +  0x1_0000_0000n in
+    else  lo +  0x1_0000_0000n in (* IMPROVE *)
   Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
-
-(** {[
-     u_to_float 0xffffffff_xffffffff = 2 ** 64 - 1     
-   ]}*)
-let u_to_float x : float =
-  Nativeint.to_float  (to_unsigned x.hi  * 0x1_0000_0000n + to_unsigned x.lo )
-
 
 
 
@@ -281,8 +279,8 @@ let rec of_float (x : float) : t =
     max_int 
   else if x < 0. then 
     neg (of_float (-. x))
-  else { lo = Nativeint.of_float (mod_float  x two_ptr_32_dbl) ;  
-         hi =  Nativeint.of_float (x /. two_ptr_32_dbl)  }
+  else mk  ~lo:(Nativeint.of_float (mod_float  x two_ptr_32_dbl))
+         ~hi:(Nativeint.of_float (x /. two_ptr_32_dbl))
 
 
 
@@ -294,27 +292,25 @@ let rec div self other =
     -> zero 
   | {lo = 0n ; hi = -0x8000_0000n}, _
     -> 
-    begin match other with 
-    | ({ lo = 1n ; hi = 0n}
-      |{ lo = -1n; hi = -1n}) 
-      -> self (* -MIN_VALUE = MIN_VALUE*)
-    | {lo = 0n ; hi = -0x8000_0000n} 
-      -> one
-    | {hi = other_hi ; _} -> 
+    begin
+      if eq other one || eq other neg_one then self
+      else if eq other min_int then one
+      else         
+        let other_hi = other.hi in
       (* now |other| >= 2, so |this/other| < |MIN_VALUE|*)
-      let half_this = asr_ self 1  in        
-      let approx = lsl_ (div half_this other) 1 in
-      match approx with 
-      | {lo = 0n ; hi = 0n}
-        -> if other_hi < 0n then one else neg one
-      | _ 
-        -> 
-        let rem = sub self (mul other approx) in
-        add approx (div rem other)
+        let half_this = asr_ self 1  in        
+        let approx = lsl_ (div half_this other) 1 in
+        match approx with 
+        | {lo = 0n ; hi = 0n}
+          -> if other_hi < 0n then one else neg one
+        | _ 
+          -> 
+          let rem = sub self (mul other approx) in
+          add approx (div rem other)
     end
   | _, {lo = 0n; hi = - 0x8000_0000n} 
     -> zero
-  | {lo = self_lo; hi = self_hi}, {lo = other_lo; hi = other_hi} 
+  | {lo = _; hi = self_hi}, {lo = _; hi = other_hi} 
     -> 
     if self_hi < 0n then 
       if other_hi <0n then 
@@ -360,15 +356,13 @@ let compare self other =
   let v = Pervasives.compare self.hi other.hi in
   if v = 0 then 
     Pervasives.compare 
-      (to_unsigned self.lo) (to_unsigned other.lo)
+      (to_unsigned self.lo) (to_unsigned other.lo) (* IMPROVE *)
   else v 
 
-let of_int32 (lo : nativeint) = 
-  if lo < 0n then 
-    {lo ; hi = -1n }
-  else {lo ; hi = 0n }
+let of_int32 (lo : nativeint) =
+  mk ~lo ~hi:(if lo < 0n then -1n else 0n)  
 
-let to_int32 x = x.lo
+let to_int32 x = Nativeint.logor x.lo  0n (* signed integer *)
 
 
 (* width does matter, will it be relevant to endian order? *)
@@ -394,7 +388,7 @@ let discard_sign x = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi }
 
 open Typed_array
 let float_of_bits x  =
-  let to_int32 (x : nativeint) = x |> Nativeint.to_int |> Int32.of_int 
+  let to_int32 (x : nativeint) = x |> Nativeint.to_int32
   in 
   (*TODO: 
     This should get inlined, we should apply a simple inliner in the js layer, 
@@ -410,4 +404,5 @@ let  bits_of_float (x : float) =
 
   let u = Float64_array.create [| x |] in 
   let int32 = Int32_array.of_buffer (Float64_array.buffer u) in 
-  {lo = to_nat (Int32_array.get int32 0) ; hi = to_nat (Int32_array.get int32 1) }
+  mk ~lo:(to_nat (Int32_array.get int32 0))
+    ~hi:( to_nat (Int32_array.get int32 1))

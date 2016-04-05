@@ -227,4 +227,6 @@ let rec is_constant (x : J.expression)  =
   | Array (xs,_mutable_flag)  -> List.for_all is_constant  xs 
   | Caml_block(xs, Immutable, tag, _) 
     -> List.for_all is_constant xs && is_constant tag 
+  | Bin (op, a, b) -> 
+    is_constant a && is_constant b     
   | _ -> false 
