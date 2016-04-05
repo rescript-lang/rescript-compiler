@@ -2,10 +2,8 @@
 
 
 
-val caml_int64_float_of_bits : Caml_int64.t -> float
-val caml_int32_float_of_bits : int32 -> float
 
-val caml_int64_bits_of_float : float -> Caml_int64.t
+val caml_int32_float_of_bits : int32 -> float
 val caml_int32_bits_of_float : float -> int32
 
 val caml_classify_float : float -> fpclass

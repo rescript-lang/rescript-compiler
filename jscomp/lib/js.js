@@ -12,9 +12,12 @@ var Float = /* module */[];
 
 var Caml_obj = /* module */[];
 
-exports.$$String = $$String;
-exports.$$Array  = $$Array;
-exports.Bytes    = Bytes;
-exports.Float    = Float;
-exports.Caml_obj = Caml_obj;
+var Caml_int64 = /* module */[];
+
+exports.$$String   = $$String;
+exports.$$Array    = $$Array;
+exports.Bytes      = Bytes;
+exports.Float      = Float;
+exports.Caml_obj   = Caml_obj;
+exports.Caml_int64 = Caml_int64;
 /* No side effect */

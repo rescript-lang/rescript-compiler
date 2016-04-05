@@ -74,6 +74,10 @@ let suites = Mt.[
     "mul simple", (fun _ -> Eq (6L, mul 3L 2L ));
     "of_int32", (fun _ -> Eq(Array.map Int64.of_int32 [|0l|], [|0L|]));
     "to_int32", (fun _ -> Eq(Array.map Int64.to_int32 [|0L|], [|0l|]));
+    "discard_sign", (fun _ ->
+        Eq(Js.Caml_int64.discard_sign (-1L), 0x7fff_ffff_ffff_ffffL));
+    "div_mod", (fun _ -> Eq(Js.Caml_int64.div_mod 7L 3L , (2L,1L)));
+    "to_hex", (fun _ -> Eq(Js.Caml_int64.to_hex (-1L), "ffffffffffffffff"))    
 ]
 
 

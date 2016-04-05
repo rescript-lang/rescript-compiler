@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 
 
-type t = { lo : nativeint; hi : nativeint; }
+type t (* = { lo : nativeint; hi : nativeint; } *)
 val min_int : t
 val max_int : t
 val one : t
@@ -54,3 +54,8 @@ val mod_ : t -> t -> t
 
 val div_mod :  t -> t -> t * t 
 val compare : t -> t -> int
+val to_hex : t -> string
+
+val discard_sign : t -> t 
+val float_of_bits : t -> float 
+val bits_of_float : float -> t 

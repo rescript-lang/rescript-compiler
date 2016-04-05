@@ -21,24 +21,6 @@
 open Typed_array
 
 
-let caml_int64_float_of_bits (x : Caml_int64.t) =
-  let to_int32 (x : nativeint) = x |> Nativeint.to_int |> Int32.of_int 
-  in 
-  (*TODO: 
-    This should get inlined, we should apply a simple inliner in the js layer, 
-    the thing is its lambda representation is complex but after js layer, 
-    it's qutie simple 
-  *)
-  let int32 = Int32_array.create [| to_int32 x.lo; to_int32 x.hi |] in
-   Float64_array.get (Float64_array.of_buffer (Int32_array.buffer int32)) 0 
-
-let  caml_int64_bits_of_float (x : float) : Caml_int64.t = 
-
-  let to_nat (x : int32) = x |> Int32.to_int |>  Nativeint.of_int in
-
-  let u = Float64_array.create [| x |] in 
-  let int32 = Int32_array.of_buffer (Float64_array.buffer u) in 
-  {lo = to_nat (Int32_array.get int32 0) ; hi = to_nat (Int32_array.get int32 1) }
 
 let caml_int32_float_of_bits (x : int32) =
   let int32 = Int32_array.create [| x |] in 
