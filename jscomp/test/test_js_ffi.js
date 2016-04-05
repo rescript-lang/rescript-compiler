@@ -4,7 +4,8 @@
 var $$String = require("../stdlib/string");
 
 function v() {
-  return t([$$String.compare]);
+  t([$$String.compare]);
+  return /* () */0;
 }
 
 function u(v) {

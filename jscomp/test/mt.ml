@@ -15,7 +15,7 @@ external neq : 'a -> 'a -> unit = "notDeepEqual"
     [@@js.call ]
     [@@js.module "assert"]
 
-(* external dump : 'a array -> unit = "js_dump" [@@js.splice] *)
+
 
 external dump : 'a array -> unit = "console.log" [@@js.call ] [@@js.splice]
 external throws : (unit -> unit) -> unit = "throws" [@@js.call] [@@js.module "assert"]

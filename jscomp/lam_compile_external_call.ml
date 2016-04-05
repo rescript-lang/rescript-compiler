@@ -244,7 +244,10 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
       unit -->
      *)
 
-let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr)) (arg : J.expression) 
+let ocaml_to_js last
+    (js_splice : bool)
+    ((label : string), (ty : Types.type_expr))
+    (arg : J.expression) 
   : E.t list = 
   if last && js_splice 
   then 
@@ -301,7 +304,8 @@ let ocaml_to_js last (js_splice : bool) ((label : string), (ty : Types.type_expr
 
 let translate 
     (cxt  : Lam_compile_defs.cxt)
-    ({prim_attributes; prim_ty } as prim : Types.type_expr option Primitive.description) 
+    ({prim_attributes; prim_ty } as prim
+     : Types.type_expr option Primitive.description) 
     (args : J.expression list) = 
   begin 
     let loc, ffi = handle_attributes prim in
@@ -378,7 +382,10 @@ let translate
                 | _ -> assert false
               end
           in
-          E.call ~info:{arity=Full} fn args
+          if Type_util.is_unit _return_type then
+            E.seq (E.call ~info:{arity=Full} fn args) (E.unit)
+          else             
+            E.call ~info:{arity=Full} fn args
         | None -> assert false 
       end
     | Js_new { external_module_name = module_name; 
