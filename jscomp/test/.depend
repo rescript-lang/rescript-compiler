@@ -98,6 +98,8 @@ equal_test.cmo :
 equal_test.cmx :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmx : mt.cmx ../stdlib/list.cmx
+ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
+ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -164,10 +166,12 @@ int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/int64.cmx ../stdlib/array.cmx
-int64_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../lib/js.cmo \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
-int64_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../lib/js.cmx \
-    ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/array.cmx
+int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
+    ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
+int64_test.cmx : ../stdlib/pervasives.cmx ../stdlib/nativeint.cmx mt.cmx \
+    ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
+    ../stdlib/format.cmx ext_array.cmx ../stdlib/array.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
@@ -582,6 +586,8 @@ equal_test.cmo :
 equal_test.cmj :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
+ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
+ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -648,10 +654,12 @@ int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/array.cmj
-int64_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../lib/js.cmo \
-    ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
-int64_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../lib/js.cmj \
-    ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
+int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
+    ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
+int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
+    ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
+    ../stdlib/format.cmj ext_array.cmj ../stdlib/array.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \

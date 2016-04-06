@@ -1,9 +1,9 @@
-type 'a eq = 'a Mt.eq = 
+type + 'a eq = 'a Mt.eq = 
   | Eq :  'a *'a  -> _ eq
   | Neq : 'a * 'a -> _ eq
   | Approx : float * float -> _ eq  
   | ThrowAny : (unit -> unit) -> _ eq
-type 'a pair_suites = (string * (unit -> 'a eq)) list
+type + 'a pair_suites = (string * (unit -> 'a eq)) list
 
 
 let from_pair_suites (name : string) (suites : 'a pair_suites) = 

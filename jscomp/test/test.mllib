@@ -211,4 +211,5 @@ ffi_js
 stringmatch_test
 printf_sim
 test_external_unit
+ext_array
 # hamming_test
