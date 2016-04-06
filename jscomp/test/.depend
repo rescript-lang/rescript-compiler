@@ -59,9 +59,9 @@ buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmx : mt.cmx
 caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/array.cmi
+    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
-    ../stdlib/format.cmx ../stdlib/array.cmx
+    ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -144,6 +144,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
 guide_for_ext.cmo :
 guide_for_ext.cmx :
+hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi ../stdlib/buffer.cmi
+hamming_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/lazy.cmx \
+    ../stdlib/int64.cmx ../stdlib/buffer.cmx
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
@@ -547,9 +551,9 @@ buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
 caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/array.cmi
+    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
-    ../stdlib/format.cmj ../stdlib/array.cmj
+    ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -632,6 +636,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
+hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi ../stdlib/buffer.cmi
+hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
+    ../stdlib/int64.cmj ../stdlib/buffer.cmj
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \

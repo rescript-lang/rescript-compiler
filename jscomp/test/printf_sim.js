@@ -4,6 +4,28 @@
 var Printf     = require("../stdlib/printf");
 var Caml_curry = require("../runtime/caml_curry");
 
+Caml_curry.app1(Printf.printf(/* Format */{
+          0: /* Int64 */{
+            0: /* Int_d */0,
+            1: /* No_padding */0,
+            2: /* No_precision */0,
+            3: /* Char_literal */{
+              0: /* "\n" */10,
+              1: /* End_of_format */0,
+              length: 2,
+              tag: 12
+            },
+            length: 4,
+            tag: 7
+          },
+          1: "%Ld\n",
+          length: 2,
+          tag: 0
+        }), /* int64 */[
+      0,
+      32
+    ]);
+
 Printf.printf(/* Format */{
       0: /* String_literal */{
         0: "heloo!\nhelloxx\n",

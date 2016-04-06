@@ -10,6 +10,7 @@ var Mt          = require("./mt");
 var Printf      = require("../stdlib/printf");
 var Int64       = require("../stdlib/int64");
 var $$Array     = require("../stdlib/array");
+var Buffer      = require("../stdlib/buffer");
 var Caml_curry  = require("../runtime/caml_curry");
 var Format      = require("../stdlib/format");
 
@@ -3046,7 +3047,74 @@ var int64_suites_001 = /* :: */[
                                                         };
                                                 }
                                               ],
-                                              /* [] */0
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "missing_neline",
+                                                  function () {
+                                                    return /* Eq */{
+                                                            0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                                                      0: /* Int64 */{
+                                                                        0: /* Int_d */0,
+                                                                        1: /* No_padding */0,
+                                                                        2: /* No_precision */0,
+                                                                        3: /* Char_literal */{
+                                                                          0: /* "\n" */10,
+                                                                          1: /* End_of_format */0,
+                                                                          length: 2,
+                                                                          tag: 12
+                                                                        },
+                                                                        length: 4,
+                                                                        tag: 7
+                                                                      },
+                                                                      1: "%Ld\n",
+                                                                      length: 2,
+                                                                      tag: 0
+                                                                    }), /* int64 */[
+                                                                  0,
+                                                                  32
+                                                                ]),
+                                                            1: "32\n",
+                                                            length: 2,
+                                                            tag: 0
+                                                          };
+                                                  }
+                                                ],
+                                                /* :: */[
+                                                  /* tuple */[
+                                                    "missing_newline2",
+                                                    function () {
+                                                      var buf = Buffer.create(30);
+                                                      return /* Eq */{
+                                                              0: (Caml_curry.app1(Printf.bprintf(buf, /* Format */{
+                                                                          0: /* Int64 */{
+                                                                            0: /* Int_d */0,
+                                                                            1: /* No_padding */0,
+                                                                            2: /* No_precision */0,
+                                                                            3: /* Char_literal */{
+                                                                              0: /* "\n" */10,
+                                                                              1: /* End_of_format */0,
+                                                                              length: 2,
+                                                                              tag: 12
+                                                                            },
+                                                                            length: 4,
+                                                                            tag: 7
+                                                                          },
+                                                                          1: "%Ld\n",
+                                                                          length: 2,
+                                                                          tag: 0
+                                                                        }), /* int64 */[
+                                                                      0,
+                                                                      32
+                                                                    ]), Buffer.contents(buf)),
+                                                              1: "32\n",
+                                                              length: 2,
+                                                              tag: 0
+                                                            };
+                                                    }
+                                                  ],
+                                                  /* [] */0
+                                                ]
+                                              ]
                                             ]
                                           ]
                                         ]
