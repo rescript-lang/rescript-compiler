@@ -10,7 +10,7 @@ var stdout = /* record */[
   "",
   function (_, s) {
     var v = s.length - 1;
-    if (( process && process.stdout && process.stdout.write)) {
+    if (( (typeof process !== "undefined") && process.stdout && process.stdout.write)) {
       return ( process.stdout.write )(s);
     }
     else if (s[v] === "\n") {
@@ -65,14 +65,14 @@ function caml_ml_flush(oc) {
 }
 
 var node_std_output = (function (s){
-   return process && process.stdout && (process.stdout.write(s), true);
+   return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
    }
 );
 
 function caml_ml_output(oc, str, offset, len) {
   var str$1 = offset === 0 && len === str.length ? str : str.slice(offset, len);
-  if ((process && process.stdout && process.stdout.write ) && oc === stdout) {
-    return (process.stdout.write)(str$1);
+  if (( (typeof process !== "undefined") && process.stdout && process.stdout.write ) && oc === stdout) {
+    return ( process.stdout.write )(str$1);
   }
   else {
     var id = str$1.lastIndexOf("\n");
@@ -90,9 +90,7 @@ function caml_ml_output(oc, str, offset, len) {
 }
 
 function caml_ml_output_char(oc, $$char) {
-  return function (param, param$1) {
-    return caml_ml_output(oc, String.fromCharCode($$char), param, param$1);
-  };
+  return caml_ml_output(oc, String.fromCharCode($$char), 0, 1);
 }
 
 function caml_ml_input(_, _$1, _$2, _$3) {
