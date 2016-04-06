@@ -34,3 +34,5 @@ val dump_deps_program : J.deps_program -> out_channel -> unit
 val string_of_block : J.block -> string
 
 val dump_program : J.program -> out_channel -> unit
+
+val string_of_expression : J.expression -> string

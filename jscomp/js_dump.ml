@@ -596,7 +596,11 @@ and
         Js_number.caml_float_literal_to_js_string v 
        (* attach string here for float constant folding?*)
       | Int { i = v; _} 
-        -> Int32.to_string v (* check , js convention with ocaml lexical convention *)in
+        -> Int32.to_string v (* check , js convention with ocaml lexical convention *)
+      | Uint i
+        -> Format.asprintf "%lu" i              
+      | Nint i -> Nativeint.to_string i 
+    in
     let need_paren =
       if s.[0] = '-'
       then l > 13  (* Negative numbers may need to be parenthesized. *)
@@ -1582,5 +1586,13 @@ let string_of_block  block
   end
 
 
+let string_of_expression e =
+  let buffer  = Buffer.create 50 in
+  begin
+    let f = P.from_buffer buffer in
+    let _scope =  expression 0  Ext_pp_scope.empty  f e in
+    P.flush  f ();
+    Buffer.contents buffer     
+  end
 
  

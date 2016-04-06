@@ -333,18 +333,18 @@ let finish_formatting ({
 
 
 
-let aux f i  = 
+let aux f (i : nativeint)  = 
   let i = 
-    if i < 0 then 
+    if i < 0n then 
       if f.signedconv then 
         begin 
           f.sign <- -1;
-          -i
+          Nativeint.neg i
         end
       else 
-        i lsr 0 
+        Nativeint.shift_right_logical i 0 
     else  i  in
-  let s = ref @@ Js.String.of_int i ~base:(int_of_base f.base) in 
+  let s = ref @@ Js.String.of_nativeint i ~base:(int_of_base f.base) in 
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
@@ -356,7 +356,7 @@ let aux f i  =
   finish_formatting f !s
 
 let caml_format_int fmt i = 
-  if fmt = "%d" then string_of_int i 
+  if fmt = "%d" then Js.string_of_nativeint i 
   else 
     let f = parse_format fmt in 
     aux f i 

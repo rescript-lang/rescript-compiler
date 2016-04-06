@@ -144,10 +144,6 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
 guide_for_ext.cmo :
 guide_for_ext.cmx :
-hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi
-hamming_test.cmx : ../stdlib/printf.cmx ../stdlib/lazy.cmx \
-    ../stdlib/int64.cmx
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
@@ -162,6 +158,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
+int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_array.cmo ../stdlib/array.cmi
+int32_test.cmx : mt.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
+    ext_array.cmx ../stdlib/array.cmx
 int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
@@ -632,10 +632,6 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
-hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi
-hamming_test.cmj : ../stdlib/printf.cmj ../stdlib/lazy.cmj \
-    ../stdlib/int64.cmj
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
@@ -650,6 +646,10 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
+int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_array.cmo ../stdlib/array.cmi
+int32_test.cmj : mt.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
+    ext_array.cmj ../stdlib/array.cmj
 int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
