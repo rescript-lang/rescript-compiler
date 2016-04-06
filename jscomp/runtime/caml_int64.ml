@@ -38,7 +38,7 @@ type t = {  hi : nativeint; lo : nativeint ;  }
 let to_unsigned (x : nativeint) = 
    x >>> 0
 
-let mk ~lo ~hi = {lo = to_unsigned lo ; hi}
+let mk ~lo ~hi = {lo =  (* lo >>> 0 *) to_unsigned lo ; hi}
 
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 
@@ -216,7 +216,7 @@ type comparison = t -> t -> bool
 let  ge ({hi; lo } : t)  ({hi = other_hi; lo = other_lo}) : bool = 
   if hi > other_hi then true
   else if hi < other_hi then false 
-  else (to_unsigned lo ) >= (to_unsigned other_lo) (* IMPROVE*)
+  else  lo  >=  other_lo
 
 
 
@@ -228,19 +228,14 @@ let gt x y =
   else if x.hi < y.hi  then
     false
   else 
-    to_unsigned x.lo > to_unsigned y.lo (* IMPROVE *)
+     x.lo >  y.lo
 
   
 let le x y = Pervasives.not (gt x y)
 
 
 let to_float ({lo; hi } : t) : float = 
-  (* The low 32-bits as an unsigned value *)
-  let low_bits_unsigned =
-    if lo >= 0n   then
-      lo
-    else  lo +  0x1_0000_0000n in (* IMPROVE *)
-  Nativeint.to_float ( hi *   0x1_0000_0000n +  low_bits_unsigned)
+  Nativeint.to_float ( hi *   0x1_0000_0000n +  lo)
 
 
 
@@ -355,8 +350,7 @@ let div_mod self other =
 let compare self other = 
   let v = Pervasives.compare self.hi other.hi in
   if v = 0 then 
-    Pervasives.compare 
-      (to_unsigned self.lo) (to_unsigned other.lo) (* IMPROVE *)
+    Pervasives.compare self.lo  other.lo
   else v 
 
 let of_int32 (lo : nativeint) =

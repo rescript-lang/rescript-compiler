@@ -10,11 +10,9 @@ var $$Array    = require("../stdlib/array");
 var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
-var one_float_001 = (0 >>> 0);
-
 var one_float = /* int64 */[
   1072693248,
-  one_float_001
+  0
 ];
 
 var int32_pairs = /* array */[

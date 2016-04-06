@@ -6,39 +6,29 @@ var Caml_obj                = require("./caml_obj");
 var Caml_primitive          = require("./caml_primitive");
 var Caml_utils              = require("./caml_utils");
 
-var min_int_001 = (0 >>> 0);
-
 var min_int = /* record */[
   -2147483648,
-  min_int_001
+  0
 ];
-
-var max_int_001 = (-4294967295 >>> 0);
 
 var max_int = /* record */[
   134217727,
-  max_int_001
+  1
 ];
-
-var one_001 = (1 >>> 0);
 
 var one = /* record */[
   0,
-  one_001
+  1
 ];
-
-var zero_001 = (0 >>> 0);
 
 var zero = /* record */[
   0,
-  zero_001
+  0
 ];
-
-var neg_one_001 = (-1 >>> 0);
 
 var neg_one = /* record */[
   -1,
-  neg_one_001
+  4294967295
 ];
 
 function neg_signed(x) {
@@ -98,7 +88,7 @@ function lsl_(x, numBits) {
             ];
     }
     else {
-      var hi = (lo >>> 32 - numBits) | 0 | (x[/* hi */0] << numBits);
+      var hi = (lo >>> 32 - numBits) | (x[/* hi */0] << numBits);
       return /* record */[
               hi,
               ((lo << numBits) >>> 0)
@@ -116,15 +106,15 @@ function lsr_(x, numBits) {
     var offset = numBits - 32;
     if (offset) {
       if (offset > 0) {
-        var lo = (hi >>> offset) | 0;
+        var lo = (hi >>> offset);
         return /* record */[
                 0,
                 (lo >>> 0)
               ];
       }
       else {
-        var hi$1 = (hi >>> numBits) | 0;
-        var lo$1 = (hi << -offset) | (x[/* lo */1] >>> numBits) | 0;
+        var hi$1 = (hi >>> numBits);
+        var lo$1 = (hi << -offset) | (x[/* lo */1] >>> numBits);
         return /* record */[
                 hi$1,
                 (lo$1 >>> 0)
@@ -148,7 +138,7 @@ function asr_(x, numBits) {
   if (numBits) {
     if (numBits < 32) {
       var hi$1 = (hi >> numBits);
-      var lo = (hi << 32 - numBits) | (x[/* lo */1] >>> numBits) | 0;
+      var lo = (hi << 32 - numBits) | (x[/* lo */1] >>> numBits);
       return /* record */[
               hi$1,
               (lo >>> 0)
@@ -313,7 +303,7 @@ function ge(param, param$1) {
     return /* false */0;
   }
   else {
-    return +((param[/* lo */1] >>> 0) >= (param$1[/* lo */1] >>> 0));
+    return +(param[/* lo */1] >= param$1[/* lo */1]);
   }
 }
 
@@ -333,7 +323,7 @@ function gt(x, y) {
     return /* false */0;
   }
   else {
-    return +((x[/* lo */1] >>> 0) > (y[/* lo */1] >>> 0));
+    return +(x[/* lo */1] > y[/* lo */1]);
   }
 }
 
@@ -342,9 +332,7 @@ function le(x, y) {
 }
 
 function to_float(param) {
-  var lo = param[/* lo */1];
-  var low_bits_unsigned = lo >= 0 ? lo : lo + 4294967296;
-  return param[/* hi */0] * 4294967296 + low_bits_unsigned;
+  return param[/* hi */0] * 4294967296 + param[/* lo */1];
 }
 
 var two_ptr_32_dbl = Math.pow(2, 32);
@@ -514,7 +502,7 @@ function compare(self, other) {
     return v;
   }
   else {
-    return Caml_obj.caml_nativeint_compare((self[/* lo */1] >>> 0), (other[/* lo */1] >>> 0));
+    return Caml_obj.caml_nativeint_compare(self[/* lo */1], other[/* lo */1]);
   }
 }
 

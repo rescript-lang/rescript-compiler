@@ -7,21 +7,21 @@ var Caml_format = require("../runtime/caml_format");
 function succ(n) {
   return Caml_int64.add(n, /* int64 */[
               0,
-              (1 >>> 0)
+              1
             ]);
 }
 
 function pred(n) {
   return Caml_int64.sub(n, /* int64 */[
               0,
-              (1 >>> 0)
+              1
             ]);
 }
 
 function abs(n) {
   if (Caml_int64.ge(n, /* int64 */[
           0,
-          (0 >>> 0)
+          0
         ])) {
     return n;
   }
@@ -33,7 +33,7 @@ function abs(n) {
 function lognot(n) {
   return /* int64 */[
           n[0] ^ -1,
-          ((n[1] ^ (-1 >>> 0)) >>> 0)
+          ((n[1] ^ 4294967295) >>> 0)
         ];
 }
 
@@ -45,39 +45,29 @@ function compare(x, y) {
   return Caml_int64.compare(x, y);
 }
 
-var zero_001 = (0 >>> 0);
-
 var zero = /* int64 */[
   0,
-  zero_001
+  0
 ];
-
-var one_001 = (1 >>> 0);
 
 var one = /* int64 */[
   0,
-  one_001
+  1
 ];
-
-var minus_one_001 = (-1 >>> 0);
 
 var minus_one = /* int64 */[
   -1,
-  minus_one_001
+  4294967295
 ];
-
-var max_int_001 = (-1 >>> 0);
 
 var max_int = /* int64 */[
   2147483647,
-  max_int_001
+  4294967295
 ];
-
-var min_int_001 = (0 >>> 0);
 
 var min_int = /* int64 */[
   -2147483648,
-  min_int_001
+  0
 ];
 
 exports.zero      = zero;
