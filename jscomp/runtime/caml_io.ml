@@ -105,6 +105,6 @@ let caml_ml_input_char (ic : in_channel) : char =
   raise @@ Failure "caml_ml_input_char not implemnted"
 
 let caml_ml_out_channels_list () : out_channel list  =
-  assert false 
+  [stdout; stderr]  
 
 

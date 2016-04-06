@@ -108,14 +108,13 @@ function caml_ml_input_char() {
 }
 
 function caml_ml_out_channels_list() {
-  throw [
-        Caml_builtin_exceptions.assert_failure,
-        [
-          "caml_io.ml",
-          108,
-          2
-        ]
-      ];
+  return /* :: */[
+          stdout,
+          /* :: */[
+            stderr,
+            /* [] */0
+          ]
+        ];
 }
 
 exports.stdin                       = stdin;
