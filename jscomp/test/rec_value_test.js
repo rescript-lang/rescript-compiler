@@ -60,8 +60,6 @@ function naive(n) {
   }
 }
 
-var one = 1;
-
 var four = [2];
 
 var three = [3];
@@ -96,7 +94,7 @@ function fib(n) {
       case 0 : 
           return four[0];
       case 1 : 
-          return one;
+          return 1;
       case 2 : 
           return three[0];
       case 3 : 
@@ -104,7 +102,7 @@ function fib(n) {
           v[0] = tag === 250 ? fib : (
               tag === 246 ? CamlinternalLazy.force_lazy_block(h) : h
             );
-          return one;
+          return 1;
       
     }
   }

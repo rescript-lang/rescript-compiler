@@ -80,8 +80,6 @@ function pp_clear_queue(state) {
   return /* () */0;
 }
 
-var pp_infinity = 1000000010;
-
 function pp_output_string(state, s) {
   return Caml_curry.app3(state[/* pp_out_string */16], s, 0, s.length);
 }
@@ -356,7 +354,7 @@ function advance_left(state) {
       }
       else {
         take_queue(state$1[/* pp_queue */26]);
-        format_pp_token(state$1, size < 0 ? pp_infinity : size, match[/* token */1]);
+        format_pp_token(state$1, size < 0 ? 1000000010 : size, match[/* token */1]);
         state$1[/* pp_left_total */11] = match[/* length */2] + state$1[/* pp_left_total */11];
         continue ;
         
@@ -634,7 +632,7 @@ function pp_flush_queue(state, b) {
   while(state[/* pp_curr_depth */13] > 1) {
     pp_close_box(state, /* () */0);
   };
-  state[/* pp_right_total */12] = pp_infinity;
+  state[/* pp_right_total */12] = 1000000010;
   advance_left(state);
   if (b) {
     Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
@@ -927,11 +925,11 @@ function pp_get_ellipsis_text(state, _) {
 }
 
 function pp_limit(n) {
-  if (n < pp_infinity) {
+  if (n < 1000000010) {
     return n;
   }
   else {
-    return pp_infinity - 1;
+    return 1000000009;
   }
 }
 

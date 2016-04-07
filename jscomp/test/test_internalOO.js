@@ -26,8 +26,6 @@ var params = /* record */[
 
 var step = Sys.word_size / 16 | 0;
 
-var initial_object_size = 2;
-
 var dummy_item = /* () */0;
 
 function public_method_label(s) {
@@ -2378,7 +2376,7 @@ function new_table(pub_labels) {
     methods[i * 2 + 3] = pub_labels[i];
   }
   return /* record */[
-          initial_object_size,
+          2,
           methods,
           /* Empty */0,
           /* Empty */0,
@@ -3171,6 +3169,8 @@ function stats() {
           inst_var_count[0]
         ];
 }
+
+var initial_object_size = 2;
 
 exports.copy                               = copy;
 exports.params                             = params;

@@ -269,8 +269,6 @@ function param_format_of_ignored_format(ign, fmt) {
   }
 }
 
-var default_float_precision = 6;
-
 function buffer_check_size(buf, overhead) {
   var len = buf[/* bytes */1].length;
   var min_len = buf[/* ind */0] + overhead;
@@ -3893,7 +3891,7 @@ function make_printf(_k, o, _acc, _fmt) {
                 else {
                   return (function(k$1,o$1,acc$1,fmt$1,fconv){
                   return function (x) {
-                    var str = convert_float(fconv, default_float_precision, x);
+                    var str = convert_float(fconv, 6, x);
                     return make_printf(k$1, o$1, /* Acc_data_string */{
                                 0: acc$1,
                                 1: str,
@@ -3938,7 +3936,7 @@ function make_printf(_k, o, _acc, _fmt) {
                 else {
                   return (function(k$1,o$1,acc$1,fmt$1,fconv,padty){
                   return function (w, x) {
-                    var str = convert_float(fconv, default_float_precision, x);
+                    var str = convert_float(fconv, 6, x);
                     var str$prime = fix_padding(padty, w, str);
                     return make_printf(k$1, o$1, /* Acc_data_string */{
                                 0: acc$1,
@@ -3985,7 +3983,7 @@ function make_printf(_k, o, _acc, _fmt) {
                 else {
                   return (function(k$1,o$1,acc$1,fmt$1,fconv,padty$1,w){
                   return function (x) {
-                    var str = convert_float(fconv, default_float_precision, x);
+                    var str = convert_float(fconv, 6, x);
                     var str$prime = fix_padding(padty$1, w, str);
                     return make_printf(k$1, o$1, /* Acc_data_string */{
                                 0: acc$1,

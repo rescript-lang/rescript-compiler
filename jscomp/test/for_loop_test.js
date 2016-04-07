@@ -106,16 +106,14 @@ function for_6(x, u) {
 }
 
 function for_7() {
-  var i_len = 7;
-  var j_len = 3;
   var v = [0];
-  var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
+  var arr = Caml_array.caml_make_vect(21, function () {
         return /* () */0;
       });
-  for(var i = 0 ,i_finish = i_len - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 6; ++i){
     (function(i){
-    for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
-      arr[i * j_len + j] = (function(j){
+    for(var j = 0; j<= 2; ++j){
+      arr[i * 3 + j] = (function(j){
       return function () {
         v[0] = v[0] + i + j;
         return /* () */0;
@@ -131,18 +129,16 @@ function for_7() {
 }
 
 function for_8() {
-  var i_len = 7;
-  var j_len = 3;
   var v = [0];
-  var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
+  var arr = Caml_array.caml_make_vect(21, function () {
         return /* () */0;
       });
-  for(var i = 0 ,i_finish = i_len - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 6; ++i){
     var k = 2 * i;
     (function(i,k){
-    for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
+    for(var j = 0; j<= 2; ++j){
       var h = i + j;
-      arr[i * j_len + j] = (function(j,h){
+      arr[i * 3 + j] = (function(j,h){
       return function () {
         v[0] = v[0] + i + j + h + k;
         return /* () */0;
@@ -170,24 +166,22 @@ function for_9() {
     return $$Array.of_list(List.rev(v[0]));
   };
   var collect = match_000;
-  var i_len = 2;
-  var j_len = 2;
   var vv = [0];
   var vv2 = [0];
-  var arr = Caml_array.caml_make_vect(i_len * j_len, function () {
+  var arr = Caml_array.caml_make_vect(4, function () {
         return /* () */0;
       });
-  var arr2 = Caml_array.caml_make_vect(i_len, function () {
+  var arr2 = Caml_array.caml_make_vect(2, function () {
         return /* () */0;
       });
-  for(var i = 0 ,i_finish = i_len - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 1; ++i){
     var v$1 = [0];
     v$1[0] += i;
     (function(v$1){
-    for(var j = 0 ,j_finish = j_len - 1; j<= j_finish; ++j){
+    for(var j = 0; j<= 1; ++j){
       ++ v$1[0];
       Caml_curry.app1(collect, v$1[0]);
-      arr[i * j_len + j] = function () {
+      arr[i * 2 + j] = function () {
         vv[0] += v$1[0];
         return /* () */0;
       };

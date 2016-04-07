@@ -26,11 +26,10 @@ function f(_n, _acc) {
 }
 
 function test_closure() {
-  var n = 6;
-  var arr = Caml_array.caml_make_vect(n, function (x) {
+  var arr = Caml_array.caml_make_vect(6, function (x) {
         return x;
       });
-  for(var i = 0; i<= n; ++i){
+  for(var i = 0; i<= 6; ++i){
     arr[i] = (function(i){
     return function () {
       return i;

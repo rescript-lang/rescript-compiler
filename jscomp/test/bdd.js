@@ -42,7 +42,7 @@ function getId(bdd) {
   }
 }
 
-var initSize_1 = 8 * 1024 - 1;
+var initSize_1 = 8191;
 
 var nodeC = [1];
 
@@ -196,26 +196,24 @@ function mkVar(x) {
   return mkNode(zero, x, one);
 }
 
-var cacheSize = 1999;
+var andslot1 = Caml_array.caml_make_vect(1999, 0);
 
-var andslot1 = Caml_array.caml_make_vect(cacheSize, 0);
+var andslot2 = Caml_array.caml_make_vect(1999, 0);
 
-var andslot2 = Caml_array.caml_make_vect(cacheSize, 0);
+var andslot3 = Caml_array.caml_make_vect(1999, zero);
 
-var andslot3 = Caml_array.caml_make_vect(cacheSize, zero);
+var xorslot1 = Caml_array.caml_make_vect(1999, 0);
 
-var xorslot1 = Caml_array.caml_make_vect(cacheSize, 0);
+var xorslot2 = Caml_array.caml_make_vect(1999, 0);
 
-var xorslot2 = Caml_array.caml_make_vect(cacheSize, 0);
+var xorslot3 = Caml_array.caml_make_vect(1999, zero);
 
-var xorslot3 = Caml_array.caml_make_vect(cacheSize, zero);
+var notslot1 = Caml_array.caml_make_vect(1999, 0);
 
-var notslot1 = Caml_array.caml_make_vect(cacheSize, 0);
-
-var notslot2 = Caml_array.caml_make_vect(cacheSize, one);
+var notslot2 = Caml_array.caml_make_vect(1999, one);
 
 function hash(x, y) {
-  return ((x << 1) + y) % cacheSize;
+  return ((x << 1) + y) % 1999;
 }
 
 function not(n) {
@@ -229,7 +227,7 @@ function not(n) {
   }
   else {
     var id = n[2];
-    var h = id % cacheSize;
+    var h = id % 1999;
     if (id === notslot1[h]) {
       return notslot2[h];
     }
@@ -416,11 +414,10 @@ function test_hwb(bdd, vars) {
 }
 
 function main() {
-  var n = 22;
-  var bdd = hwb(n);
+  var bdd = hwb(22);
   var succeeded = /* true */1;
   for(var i = 1; i<= 100; ++i){
-    succeeded = +(succeeded && test_hwb(bdd, random_vars(n)));
+    succeeded = +(succeeded && test_hwb(bdd, random_vars(22)));
   }
   if (succeeded) {
     return 0;
@@ -438,6 +435,8 @@ function main() {
 }
 
 main(/* () */0);
+
+var cacheSize = 1999;
 
 exports.$$eval      = $$eval;
 exports.getId       = getId;

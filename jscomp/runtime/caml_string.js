@@ -122,14 +122,13 @@ function bytes_to_string(a) {
   var len = a.length;
   var s = "";
   var s_len = len;
-  var seg = 1024;
-  if (i === 0 && len <= 4 * seg && len === bytes.length) {
+  if (i === 0 && len <= 4096 && len === bytes.length) {
     return String.fromCharCode.apply(null,bytes);
   }
   else {
     var offset = 0;
     while(s_len > 0) {
-      var next = s_len < 1024 ? s_len : seg;
+      var next = s_len < 1024 ? s_len : 1024;
       var tmp_bytes = new Array(next);
       caml_blit_bytes(bytes, offset, tmp_bytes, 0, next);
       s = s + String.fromCharCode.apply(null,tmp_bytes);

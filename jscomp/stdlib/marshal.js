@@ -17,10 +17,8 @@ function to_buffer(buff, ofs, len, v, flags) {
   }
 }
 
-var header_size = 20;
-
 function data_size(buff, ofs) {
-  if (ofs < 0 || ofs > buff.length - header_size) {
+  if (ofs < 0 || ofs > buff.length - 20) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Marshal.data_size"
@@ -32,11 +30,11 @@ function data_size(buff, ofs) {
 }
 
 function total_size(buff, ofs) {
-  return header_size + data_size(buff, ofs);
+  return 20 + data_size(buff, ofs);
 }
 
 function from_bytes(buff, ofs) {
-  if (ofs < 0 || ofs > buff.length - header_size) {
+  if (ofs < 0 || ofs > buff.length - 20) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Marshal.from_bytes"
@@ -44,7 +42,7 @@ function from_bytes(buff, ofs) {
   }
   else {
     var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
-    if (ofs > buff.length - (header_size + len)) {
+    if (ofs > buff.length - (20 + len)) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Marshal.from_bytes"
@@ -67,6 +65,8 @@ function to_channel(prim, prim$1, prim$2) {
 function from_channel(prim) {
   return Caml_primitive.caml_input_value(prim);
 }
+
+var header_size = 20;
 
 exports.to_channel   = to_channel;
 exports.to_buffer    = to_buffer;
