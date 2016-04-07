@@ -28,8 +28,6 @@ function set_signal(sig_num, sig_beh) {
   return sig_beh;
 }
 
-var sigint = -6;
-
 var Break = {
   0: "Sys.Break",
   1: Caml_builtin_exceptions.get_id(),
@@ -39,7 +37,7 @@ var Break = {
 
 function catch_break(on) {
   if (on) {
-    ;
+    -6;
     return /* Signal_handle */{
             0: function () {
               throw Break;
@@ -49,7 +47,7 @@ function catch_break(on) {
           };
   }
   else {
-    ;
+    -6;
     return /* Signal_default */0;
   }
 }
@@ -69,6 +67,8 @@ var sigfpe = -3;
 var sighup = -4;
 
 var sigill = -5;
+
+var sigint = -6;
 
 var sigkill = -7;
 

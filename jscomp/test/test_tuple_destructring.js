@@ -2,19 +2,17 @@
 'use strict';
 
 
-var b = 3;
+var N = /* module */[3];
 
-var N = /* module */[b];
-
-var h = 4;
+var v = 3;
 
 var u = 3;
 
-var v = b;
+var h = 4;
 
-var g = u;
+var g = 3;
 
-var gg = h;
+var gg = 4;
 
 exports.N  = N;
 exports.v  = v;

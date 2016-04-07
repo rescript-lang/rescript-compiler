@@ -58,10 +58,9 @@ var list_suites_001 = /* :: */[
     /* tuple */[
       "long_length",
       function () {
-        var v = 100000;
         return /* Eq */{
-                0: v,
-                1: List.length($$Array.to_list($$Array.init(v, function () {
+                0: 100000,
+                1: List.length($$Array.to_list($$Array.init(100000, function () {
                               return 0;
                             }))),
                 length: 2,

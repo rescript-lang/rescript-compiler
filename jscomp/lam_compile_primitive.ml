@@ -145,8 +145,15 @@ let translate
         E.float_minus   e1  e2
       | _ -> assert false 
     end
-  | Pmulint 
   | Pmulbint Lambda.Pnativeint
+    -> 
+    begin match args with
+      | [e1; e2]  ->
+        E.unchecked_int32_mul  e1  e2
+      | _ -> assert false 
+    end
+
+  | Pmulint 
   | Pmulbint Lambda.Pint32
     ->
     begin match args with

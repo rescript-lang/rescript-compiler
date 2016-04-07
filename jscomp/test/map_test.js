@@ -542,12 +542,11 @@ var int_map_suites_001 = /* :: */[
         "iteration",
         function () {
           var m = /* Empty */0;
-          var count = 10000;
-          for(var i = 0; i<= count; ++i){
+          for(var i = 0; i<= 10000; ++i){
             m = add$1("" + i, "" + i, m);
           }
           var v = -1;
-          for(var i$1 = 0; i$1<= count; ++i$1){
+          for(var i$1 = 0; i$1<= 10000; ++i$1){
             if (find("" + i$1, m) !== "" + i$1) {
               v = i$1;
             }

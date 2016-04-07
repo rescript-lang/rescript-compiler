@@ -1018,15 +1018,33 @@ let float_notequal ?comment e1 e2 =
 let unchecked_int32_div ?comment e1 e2 : J.expression = 
   to_int32 (float_div ?comment e1 e2)
 
-let int32_div ?comment e1 e2 : J.expression = 
-  to_int32 (float_div ?comment e1 e2)
+let int32_asr ?comment e1 e2 : J.expression = 
+  { comment ; 
+    expression_desc = Bin (Asr, e1,e2)
+  }
+
+let int32_div ?comment (e1 : J.expression) (e2 : J.expression)
+  : J.expression = 
+  match e1.expression_desc, e2.expression_desc with 
+  | Length _ , Number (Int {i = 2l} | Uint 2l | Nint 2n)
+    -> int32_asr e1 one_int_literal 
+  | Number(Int {i = i0}) , Number (Int {i = i1} ) when i1 <> 0l
+    -> int (Int32.div i0 i1)
+  | _, _ -> 
+    to_int32 (float_div ?comment e1 e2)
 
 
 (* TODO: call primitive *)    
-let int32_mul ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mul, e1,e2)
-  }
+let int32_mul ?comment 
+    (e1 : J.expression) 
+    (e2 : J.expression) : J.expression = 
+  match e1.expression_desc, e2.expression_desc with 
+  | Number (Int{i = i0}), Number (Int {i = i1})
+    -> int (Int32.mul i0 i1)
+  | _ -> 
+    { comment ; 
+      expression_desc = Bin (Mul, e1,e2)
+    }
 
 let unchecked_int32_mul ?comment e1 e2 : J.expression = 
   { comment ; 
@@ -1051,10 +1069,6 @@ let int32_lsl ?comment e1 e2 : J.expression =
 
 
 
-let int32_asr ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Asr, e1,e2)
-  }
 
 let rec int32_bxor ?comment (e1 : t) (e2 : t) : J.expression = 
   match e1.expression_desc, e2.expression_desc with 

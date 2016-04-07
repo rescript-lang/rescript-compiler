@@ -70,15 +70,14 @@ var suites_001 = /* :: */[
   /* tuple */[
     "more_iterations",
     function () {
-      var count = 1000;
       return /* Eq */{
-              0: $$Array.init(count + 1, function (i) {
+              0: $$Array.init(1001, function (i) {
                     return /* tuple */[
                             2 * i,
                             "" + i
                           ];
                   }),
-              1: g(count),
+              1: g(1000),
               length: 2,
               tag: 0
             };

@@ -8,15 +8,13 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 var v = [0];
 
-var count = 10;
-
-var arr = Caml_array.caml_make_vect(count, function () {
+var arr = Caml_array.caml_make_vect(10, function () {
       return /* () */0;
     });
 
 function f() {
   var n = 0;
-  while(n < count) {
+  while(n < 10) {
     var j = n;
     arr[j] = (function(j){
     return function () {
@@ -47,6 +45,8 @@ if (v[0] !== 45) {
         ]
       ];
 }
+
+var count = 10;
 
 exports.v     = v;
 exports.count = count;

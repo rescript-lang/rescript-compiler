@@ -3,14 +3,12 @@
 
 var $$Array = require("../stdlib/array");
 
-var a = 3;
-
 var v = [32];
 
 v[0] = 0;
 
 var N = /* module */[
-  a,
+  3,
   v
 ];
 
@@ -60,6 +58,8 @@ var sort = $$Array.sort;
 var stable_sort = $$Array.stable_sort;
 
 var fast_sort = $$Array.fast_sort;
+
+var a = 3;
 
 exports.init          = init;
 exports.make_matrix   = make_matrix;

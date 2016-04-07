@@ -24,6 +24,9 @@ let shift_left_tests =
   2097152l; 4194304l; 8388608l; 16777216l; 33554432l; 67108864l; 134217728l;
   268435456l; 536870912l; 1073741824l; -2147483648l|] )
 
+let test_div = 61 / 2 
+
+
 ;; Mt.from_pair_suites __FILE__ @@ [
 
 ] @ ((let (a,b) = shift_right_logical_tests in    

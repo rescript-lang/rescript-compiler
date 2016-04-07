@@ -21,9 +21,8 @@ function f() {
       }
     };
   };
-  var len = 10;
-  var v = Caml_array.caml_make_vect(len, 0);
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  var v = Caml_array.caml_make_vect(10, 0);
+  for(var i = 0; i<= 9; ++i){
     v[i] = f$1(0, i);
   }
   return v;

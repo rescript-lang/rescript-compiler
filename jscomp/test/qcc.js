@@ -122,10 +122,6 @@ var glo = Bytes.make(4096, /* "\000" */0);
 
 var gpos = [0];
 
-var base = 4194304;
-
-var textoff = 232;
-
 var s = new Array(100);
 
 function getq() {
@@ -290,7 +286,7 @@ function next() {
           Caml_curry.app1(getch, /* () */0);
           gpos[0] = e + 8 & -8;
           return /* SLit */{
-                  0: b + textoff + base,
+                  0: b + 4194536,
                   1: Bytes.to_string(Bytes.sub(glo, b, e - b)),
                   length: 2,
                   tag: 2
@@ -1404,7 +1400,7 @@ function decl(g, _n, _stk) {
                         "symbol defined twice"
                       ];
                 }
-                var va = gpos[0] + textoff + base;
+                var va = gpos[0] + 4194536;
                 globs[s] = /* record */[
                   glo[/* loc */0],
                   va
@@ -1885,8 +1881,8 @@ function elfphdr(ty, off, sz, align) {
   le(32, ty);
   le(32, 7);
   le(64, off);
-  le(64, off + base);
-  le(64, off + base);
+  le(64, off + 4194304);
+  le(64, off + 4194304);
   le(64, sz);
   le(64, sz);
   return le(64, align);
@@ -1908,7 +1904,7 @@ function elfgen(outf) {
   out(35271);
   load(0, 60);
   out(3845);
-  var off = textoff + gpos[0];
+  var off = 232 + gpos[0];
   var itr = function (f) {
     return Caml_curry.app1(symitr, function (i, s) {
                 var g = globs[i];
@@ -1921,11 +1917,11 @@ function elfgen(outf) {
               });
   };
   var va = function (x) {
-    return x + off + base;
+    return x + off + 4194304;
   };
   var patchloc = function (i, _) {
     var g = globs[i];
-    if (g[/* va */1] >= 0 && g[/* va */1] < base) {
+    if (g[/* va */1] >= 0 && g[/* va */1] < 4194304) {
       return patch(/* false */0, g[/* loc */0], va(g[/* va */1]));
     }
     else if (g[/* va */1] >= 0) {
@@ -2052,13 +2048,13 @@ function elfgen(outf) {
       ]);
   var tend = opos[0];
   Bytes.blit(obuf, 0, obuf, off, tend);
-  Bytes.blit(glo, 0, obuf, textoff, gpos[0]);
+  Bytes.blit(glo, 0, obuf, 232, gpos[0]);
   Bytes.blit(elfhdr, 0, obuf, 0, 64);
   opos[0] = 64;
   elfphdr(3, strtab + 1 + off, 28, 1);
   elfphdr(1, 0, tend + off, 2097152);
   elfphdr(2, dyn + off, tend - dyn, 8);
-  if (opos[0] !== textoff) {
+  if (opos[0] !== 232) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -2235,6 +2231,10 @@ function main() {
 }
 
 main(/* () */0);
+
+var base = 4194304;
+
+var textoff = 232;
 
 exports.dbg       = dbg;
 exports.inch      = inch;

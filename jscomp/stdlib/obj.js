@@ -25,22 +25,16 @@ function unmarshal(str, pos) {
         ];
 }
 
-var object_tag = 248;
-
-var string_tag = 252;
-
-var custom_tag = 255;
-
 function extension_slot(x) {
-  var slot = x.length && (x.tag | 0) !== object_tag && x.length >= 1 ? x[0] : x;
+  var slot = x.length && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
   var name;
-  if (slot.length && (slot.tag | 0) === object_tag) {
+  if (slot.length && slot.tag === 248) {
     name = slot[0];
   }
   else {
     throw Caml_builtin_exceptions.not_found;
   }
-  if ((name.tag | 0) === string_tag) {
+  if (name.tag === 252) {
     return slot;
   }
   else {
@@ -109,6 +103,8 @@ var lazy_tag = 246;
 
 var closure_tag = 247;
 
+var object_tag = 248;
+
 var infix_tag = 249;
 
 var forward_tag = 250;
@@ -117,11 +113,15 @@ var no_scan_tag = 251;
 
 var abstract_tag = 251;
 
+var string_tag = 252;
+
 var double_tag = 253;
 
 var double_array_tag = 254;
 
-var final_tag = custom_tag;
+var custom_tag = 255;
+
+var final_tag = 255;
 
 var int_tag = 1000;
 

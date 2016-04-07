@@ -48,8 +48,6 @@ function format_pp_token(_, _$1) {
       ];
 }
 
-var pp_infinity = 1000000010;
-
 function advance_loop(state) {
   while(true) {
     var match = peek_queue(state[/* pp_queue */3]);
@@ -60,13 +58,15 @@ function advance_loop(state) {
     }
     else {
       take_queue(state[/* pp_queue */3]);
-      Caml_curry.app1(format_pp_token(state, size$1 < 0 ? pp_infinity : size$1), match[/* token */1]);
+      Caml_curry.app1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
       state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1];
       continue ;
       
     }
   };
 }
+
+var pp_infinity = 1000000010;
 
 exports.peek_queue      = peek_queue;
 exports.int_of_size     = int_of_size;

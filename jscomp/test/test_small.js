@@ -4,7 +4,7 @@
 
 var fib = 3;
 
-var u = fib;
+var u = 3;
 
 exports.fib = fib;
 exports.u   = u;

@@ -149,6 +149,8 @@ var shift_left_tests = /* tuple */[
   shift_left_tests_001
 ];
 
+var test_div = 30;
+
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* [] */0, Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
                               Caml_curry.app1(Format.asprintf(/* Format */{
@@ -242,4 +244,5 @@ exports.f                         = f;
 exports.shift_right_logical_tests = shift_right_logical_tests;
 exports.shift_right_tests         = shift_right_tests;
 exports.shift_left_tests          = shift_left_tests;
+exports.test_div                  = test_div;
 /* shift_right_logical_tests Not a pure module */

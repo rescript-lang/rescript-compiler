@@ -355,8 +355,6 @@ function sort(cmp, a) {
   }
 }
 
-var cutoff = 5;
-
 function stable_sort(cmp, a) {
   var merge = function (src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs) {
     var src1r = src1ofs + src1len;
@@ -415,7 +413,7 @@ function stable_sort(cmp, a) {
     return /* () */0;
   };
   var sortto = function (srcofs, dst, dstofs, len) {
-    if (len <= cutoff) {
+    if (len <= 5) {
       return isortto(srcofs, dst, dstofs, len);
     }
     else {
@@ -427,7 +425,7 @@ function stable_sort(cmp, a) {
     }
   };
   var l = a.length;
-  if (l <= cutoff) {
+  if (l <= 5) {
     return isortto(0, a, 0, l);
   }
   else {

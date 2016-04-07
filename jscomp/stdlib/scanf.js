@@ -14,8 +14,6 @@ var Caml_string              = require("../runtime/caml_string");
 var List                     = require("./list");
 var CamlinternalFormat       = require("./camlinternalFormat");
 
-var null_char = /* "\000" */0;
-
 function next_char(ib) {
   try {
     var c = Caml_curry.app1(ib[/* get_next_char */6], /* () */0);
@@ -29,10 +27,10 @@ function next_char(ib) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.end_of_file) {
-      ib[/* current_char */1] = null_char;
+      ib[/* current_char */1] = /* "\000" */0;
       ib[/* current_char_is_valid */2] = /* false */0;
       ib[/* eof */0] = /* true */1;
-      return null_char;
+      return /* "\000" */0;
     }
     else {
       throw exn;
@@ -115,7 +113,7 @@ function store_char(width, ib, c) {
 function create(iname, next) {
   return /* record */[
           /* false */0,
-          null_char,
+          /* "\000" */0,
           /* false */0,
           0,
           0,

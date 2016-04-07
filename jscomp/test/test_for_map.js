@@ -775,11 +775,10 @@ var IntMap = [
 
 function assertion_test() {
   var m = /* Empty */0;
-  var count = 1000000;
-  for(var i = 0; i<= count; ++i){
+  for(var i = 0; i<= 1000000; ++i){
     m = add(i, i, m);
   }
-  for(var i$1 = 0; i$1<= count; ++i$1){
+  for(var i$1 = 0; i$1<= 1000000; ++i$1){
     find(i$1, m);
   }
   return /* () */0;

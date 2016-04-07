@@ -338,12 +338,6 @@ function handle_unix_error(f, arg) {
   }
 }
 
-var stdin = 0;
-
-var stdout = 1;
-
-var stderr = 2;
-
 function read(fd, buf, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > buf.length - len) {
     throw [
@@ -509,16 +503,6 @@ function sendto_substring(fd, buf, ofs, len, flags, addr) {
   return sendto(fd, Caml_string.bytes_of_string(buf), ofs, len, flags, addr);
 }
 
-var bool = 0;
-
-var $$int = 1;
-
-var optint = 2;
-
-var $$float = 3;
-
-var error = 4;
-
 function SO_005(prim, prim$1, prim$2) {
   return Caml_unix.unix_getsockopt(prim, prim$1, prim$2);
 }
@@ -528,39 +512,39 @@ function SO_006(prim, prim$1, prim$2, prim$3) {
 }
 
 function getsockopt(fd, opt) {
-  return Caml_curry.app3(SO_005, bool, fd, opt);
+  return Caml_curry.app3(SO_005, 0, fd, opt);
 }
 
 function setsockopt(fd, opt, v) {
-  return Caml_curry.app4(SO_006, bool, fd, opt, v);
+  return Caml_curry.app4(SO_006, 0, fd, opt, v);
 }
 
 function getsockopt_int(fd, opt) {
-  return Caml_curry.app3(SO_005, $$int, fd, opt);
+  return Caml_curry.app3(SO_005, 1, fd, opt);
 }
 
 function setsockopt_int(fd, opt, v) {
-  return Caml_curry.app4(SO_006, $$int, fd, opt, v);
+  return Caml_curry.app4(SO_006, 1, fd, opt, v);
 }
 
 function getsockopt_optint(fd, opt) {
-  return Caml_curry.app3(SO_005, optint, fd, opt);
+  return Caml_curry.app3(SO_005, 2, fd, opt);
 }
 
 function setsockopt_optint(fd, opt, v) {
-  return Caml_curry.app4(SO_006, optint, fd, opt, v);
+  return Caml_curry.app4(SO_006, 2, fd, opt, v);
 }
 
 function getsockopt_float(fd, opt) {
-  return Caml_curry.app3(SO_005, $$float, fd, opt);
+  return Caml_curry.app3(SO_005, 3, fd, opt);
 }
 
 function setsockopt_float(fd, opt, v) {
-  return Caml_curry.app4(SO_006, $$float, fd, opt, v);
+  return Caml_curry.app4(SO_006, 3, fd, opt, v);
 }
 
 function getsockopt_error(fd) {
-  return Caml_curry.app3(SO_005, error, fd, /* SO_ERROR */0);
+  return Caml_curry.app3(SO_005, 4, fd, /* SO_ERROR */0);
 }
 
 function getaddrinfo(node, service, opts) {
@@ -882,11 +866,11 @@ function perform_redirections(new_stdin, new_stdout, new_stderr) {
   safe_close(new_stdin);
   safe_close(new_stdout);
   safe_close(new_stderr);
-  Caml_unix.unix_dup2(newnewstdin, stdin);
+  Caml_unix.unix_dup2(newnewstdin, 0);
   Caml_unix.unix_close(newnewstdin);
-  Caml_unix.unix_dup2(newnewstdout, stdout);
+  Caml_unix.unix_dup2(newnewstdout, 1);
   Caml_unix.unix_close(newnewstdout);
-  Caml_unix.unix_dup2(newnewstderr, stderr);
+  Caml_unix.unix_dup2(newnewstderr, 2);
   return Caml_unix.unix_close(newnewstderr);
 }
 
@@ -931,12 +915,12 @@ function open_proc(cmd, proc, input, output, toclose) {
     return Hashtbl.add(popen_processes, proc, id);
   }
   else {
-    if (input !== stdin) {
-      Caml_unix.unix_dup2(input, stdin);
+    if (input !== 0) {
+      Caml_unix.unix_dup2(input, 0);
       Caml_unix.unix_close(input);
     }
-    if (output !== stdout) {
-      Caml_unix.unix_dup2(output, stdout);
+    if (output !== 1) {
+      Caml_unix.unix_dup2(output, 1);
       Caml_unix.unix_close(output);
     }
     if (!cloexec) {
@@ -967,7 +951,7 @@ function open_process_in(cmd) {
           0: inchan,
           length: 1,
           tag: 1
-        }, stdin, in_write, /* :: */[
+        }, 0, in_write, /* :: */[
           in_read,
           /* [] */0
         ]);
@@ -991,7 +975,7 @@ function open_process_out(cmd) {
           0: outchan,
           length: 1,
           tag: 2
-        }, out_read, stdout, /* :: */[
+        }, out_read, 1, /* :: */[
           out_write,
           /* [] */0
         ]);
@@ -1070,11 +1054,11 @@ function open_proc_full(cmd, env, proc, input, output, error, toclose) {
     return Hashtbl.add(popen_processes, proc, id);
   }
   else {
-    Caml_unix.unix_dup2(input, stdin);
+    Caml_unix.unix_dup2(input, 0);
     Caml_unix.unix_close(input);
-    Caml_unix.unix_dup2(output, stdout);
+    Caml_unix.unix_dup2(output, 1);
     Caml_unix.unix_close(output);
-    Caml_unix.unix_dup2(error, stderr);
+    Caml_unix.unix_dup2(error, 2);
     Caml_unix.unix_close(error);
     if (!cloexec) {
       List.iter(function (prim) {
@@ -1384,6 +1368,12 @@ function getppid(prim) {
 function nice(prim) {
   return Caml_unix.unix_nice(prim);
 }
+
+var stdin = 0;
+
+var stdout = 1;
+
+var stderr = 2;
 
 function openfile(prim, prim$1, prim$2) {
   return Caml_unix.unix_open(prim, prim$1, prim$2);

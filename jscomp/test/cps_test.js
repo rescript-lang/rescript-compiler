@@ -35,12 +35,11 @@ function test() {
 }
 
 function test_closure() {
-  var n = 6;
   var v = [0];
-  var arr = Caml_array.caml_make_vect(n, function (x) {
+  var arr = Caml_array.caml_make_vect(6, function (x) {
         return x;
       });
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 5; ++i){
     arr[i] = (function(i){
     return function () {
       return i;
@@ -55,12 +54,11 @@ function test_closure() {
 }
 
 function test_closure2() {
-  var n = 6;
   var v = [0];
-  var arr = Caml_array.caml_make_vect(n, function (x) {
+  var arr = Caml_array.caml_make_vect(6, function (x) {
         return x;
       });
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
+  for(var i = 0; i<= 5; ++i){
     var j = i + i;
     arr[i] = (function(j){
     return function () {

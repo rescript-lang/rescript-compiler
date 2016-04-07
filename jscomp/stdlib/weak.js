@@ -34,15 +34,13 @@ function Make(H) {
   var get_index = function (t, h) {
     return (h & Pervasives.max_int) % t[/* table */0].length;
   };
-  var limit = 7;
-  var over_limit = 2;
   var create = function (sz) {
     var sz$1 = sz < 7 ? 7 : sz;
     var sz$2 = sz$1 > Sys.max_array_length ? Sys.max_array_length : sz$1;
     return /* record */[
             Caml_array.caml_make_vect(sz$2, emptybucket),
             Caml_array.caml_make_vect(sz$2, /* int array */[]),
-            limit,
+            7,
             0,
             0
           ];
@@ -52,7 +50,7 @@ function Make(H) {
       t[/* table */0][i] = emptybucket;
       t[/* hashes */1][i] = /* int array */[];
     }
-    t[/* limit */2] = limit;
+    t[/* limit */2] = 7;
     t[/* oversize */3] = 0;
     return /* () */0;
   };
@@ -243,11 +241,11 @@ function Make(H) {
         t[/* hashes */1][index] = newhashes;
         if (sz <= t[/* limit */2] && newsz > t[/* limit */2]) {
           ++ t[3];
-          for(var _i$1 = 0; _i$1<= over_limit; ++_i$1){
+          for(var _i$1 = 0; _i$1<= 2; ++_i$1){
             test_shrink_bucket(t);
           }
         }
-        if (t[/* oversize */3] > (t[/* table */0].length / over_limit | 0)) {
+        if (t[/* oversize */3] > (t[/* table */0].length >> 1)) {
           var t$1 = t;
           var oldlen = t$1[/* table */0].length;
           var newlen = next_sz(oldlen);
