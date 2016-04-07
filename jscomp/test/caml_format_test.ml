@@ -223,6 +223,11 @@ let int64_suites =
     
     "i64_simple20", (fun _ -> Eq(a "%12Lx" 3L, "           3"));
     "i64_simple21", (fun _ -> Eq(a "%LX" 7985179176134664640L, "6ED10E27455A61C0"));
+    "missing_neline", (fun _ -> Eq(Format.asprintf "%Ld\n" 32L, "32\n"));
+    "missing_newline2", (fun _ -> 
+        Eq((let buf = Buffer.create 30 in Printf.bprintf buf "%Ld\n" 32L; Buffer.contents buf),
+           "32\n"
+          ))
   ]
 
 let hh = 922337203685477580L (* 2 ^ 63 / 10 *)

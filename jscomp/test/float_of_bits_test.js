@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Caml_int64 = require("../runtime/caml_int64");
 var Caml_float = require("../runtime/caml_float");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
@@ -10,8 +11,8 @@ var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
 var one_float = /* int64 */[
-  0,
-  1072693248
+  1072693248,
+  0
 ];
 
 var int32_pairs = /* array */[
@@ -98,7 +99,7 @@ var suites = Pervasives.$at(/* :: */[
         "one",
         function () {
           return /* Eq */{
-                  0: Caml_float.caml_int64_bits_of_float(1.0),
+                  0: Caml_int64.bits_of_float(1.0),
                   1: one_float,
                   length: 2,
                   tag: 0
@@ -110,7 +111,7 @@ var suites = Pervasives.$at(/* :: */[
           "two",
           function () {
             return /* Eq */{
-                    0: Caml_float.caml_int64_float_of_bits(one_float),
+                    0: Caml_int64.float_of_bits(one_float),
                     1: 1.0,
                     length: 2,
                     tag: 0

@@ -7,11 +7,13 @@ var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 function from_suites(name, suite) {
-  return describe(name, function () {
-              return List.iter(function (param) {
-                          return it(param[0], param[1]);
-                        }, suite);
-            });
+  describe(name, function () {
+        return List.iter(function (param) {
+                    it(param[0], param[1]);
+                    return /* () */0;
+                  }, suite);
+      });
+  return /* () */0;
 }
 
 function close_enough(x, y) {
@@ -19,38 +21,43 @@ function close_enough(x, y) {
 }
 
 function from_pair_suites(name, suites) {
-  return describe(name, function () {
-              return List.iter(function (param) {
-                          var code = param[1];
-                          return it(param[0], function () {
-                                      var match = Caml_curry.app1(code, /* () */0);
-                                      switch (match.tag | 0) {
-                                        case 0 : 
-                                            return Assert.deepEqual(match[0], match[1]);
-                                        case 1 : 
-                                            return Assert.notDeepEqual(match[0], match[1]);
-                                        case 2 : 
-                                            if (close_enough(match[0], match[1])) {
-                                              return 0;
-                                            }
-                                            else {
-                                              throw [
-                                                    Caml_builtin_exceptions.assert_failure,
-                                                    [
-                                                      "mt.ml",
-                                                      56,
-                                                      16
-                                                    ]
-                                                  ];
-                                            }
-                                            break;
-                                        case 3 : 
-                                            return Assert.throws(match[0]);
-                                        
-                                      }
-                                    });
-                        }, suites);
-            });
+  describe(name, function () {
+        return List.iter(function (param) {
+                    var code = param[1];
+                    it(param[0], function () {
+                          var match = Caml_curry.app1(code, /* () */0);
+                          switch (match.tag | 0) {
+                            case 0 : 
+                                Assert.deepEqual(match[0], match[1]);
+                                return /* () */0;
+                            case 1 : 
+                                Assert.notDeepEqual(match[0], match[1]);
+                                return /* () */0;
+                            case 2 : 
+                                if (close_enough(match[0], match[1])) {
+                                  return 0;
+                                }
+                                else {
+                                  throw [
+                                        Caml_builtin_exceptions.assert_failure,
+                                        [
+                                          "mt.ml",
+                                          56,
+                                          16
+                                        ]
+                                      ];
+                                }
+                                break;
+                            case 3 : 
+                                Assert.throws(match[0]);
+                                return /* () */0;
+                            
+                          }
+                        });
+                    return /* () */0;
+                  }, suites);
+      });
+  return /* () */0;
 }
 
 exports.from_suites      = from_suites;

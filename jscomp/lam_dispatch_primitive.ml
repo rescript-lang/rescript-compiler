@@ -288,11 +288,20 @@ let query (prim : Lam_compile_env.primitive_description)
     -> Js_long.of_float args
   | "caml_int64_compare"
     -> Js_long.compare args 
-
+  | "js_int64_discard_sign"
+    -> Js_long.discard_sign args
+  | "js_int64_div_mod"
+    -> Js_long.div_mod args
+  | "js_int64_to_hex"
+    -> Js_long.to_hex args    
+  | "caml_int64_bits_of_float"
+    -> Js_long.bits_of_float args     
+  | "caml_int64_float_of_bits"
+    -> Js_long.float_of_bits args 
+  | "caml_int64_bswap"
+    -> Js_long.swap args    
   | "caml_int32_float_of_bits"
   | "caml_int32_bits_of_float"
-  | "caml_int64_bits_of_float"
-  | "caml_int64_float_of_bits"
   | "caml_classify_float"
   | "caml_modf_float"
   | "caml_ldexp_float"
@@ -767,7 +776,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap"
-  | "caml_int64_bswap"
+
     -> E.runtime_call Js_config.prim prim.prim_name args 
   | "caml_get_public_method"
     ->
@@ -1023,6 +1032,7 @@ let query (prim : Lam_compile_env.primitive_description)
         | [a; b] -> E.set_length a b 
         | _ -> assert false 
       end
+
     | _ -> 
 
       let comment = "Missing primitve" in       

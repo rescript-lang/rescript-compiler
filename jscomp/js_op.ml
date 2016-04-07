@@ -160,7 +160,13 @@ type float_lit = { f :  string }
 type number = 
   | Float of float_lit 
   | Int of int_or_char
-
+  | Uint of int32
+  | Nint of nativeint
+  (* becareful when constant folding +/-, 
+     since we treat it as js nativeint, bitwise operators:
+     https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators
+     The operands of all bitwise operators are converted to signed 32-bit integers in two's complement format.'
+  *)      
 
 type mutable_flag = 
   | Mutable

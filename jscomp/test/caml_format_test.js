@@ -10,6 +10,7 @@ var Mt          = require("./mt");
 var Printf      = require("../stdlib/printf");
 var Int64       = require("../stdlib/int64");
 var $$Array     = require("../stdlib/array");
+var Buffer      = require("../stdlib/buffer");
 var Caml_curry  = require("../runtime/caml_curry");
 var Format      = require("../stdlib/format");
 
@@ -2455,8 +2456,8 @@ var int64_suites_001 = /* :: */[
                           length: 2,
                           tag: 0
                         }), /* int64 */[
-                      3,
-                      0
+                      0,
+                      3
                     ]),
                 1: "3",
                 length: 2,
@@ -2482,8 +2483,8 @@ var int64_suites_001 = /* :: */[
                             length: 2,
                             tag: 0
                           }), /* int64 */[
-                        33,
-                        0
+                        0,
+                        33
                       ]),
                   1: "21",
                   length: 2,
@@ -2509,8 +2510,8 @@ var int64_suites_001 = /* :: */[
                               length: 2,
                               tag: 0
                             }), /* int64 */[
-                          33,
-                          0
+                          0,
+                          33
                         ]),
                     1: "33",
                     length: 2,
@@ -2536,8 +2537,8 @@ var int64_suites_001 = /* :: */[
                             length: 2,
                             tag: 0
                           }, /* int64 */[
-                            44,
-                            0
+                            0,
+                            44
                           ]),
                       1: "2C",
                       length: 2,
@@ -2563,8 +2564,8 @@ var int64_suites_001 = /* :: */[
                               length: 2,
                               tag: 0
                             }, /* int64 */[
-                              44,
-                              0
+                              0,
+                              44
                             ]),
                         1: "2c",
                         length: 2,
@@ -2594,8 +2595,8 @@ var int64_suites_001 = /* :: */[
                                 length: 2,
                                 tag: 0
                               }, 5, /* int64 */[
-                                44,
-                                0
+                                0,
+                                44
                               ]),
                           1: "   2c",
                           length: 2,
@@ -2609,8 +2610,8 @@ var int64_suites_001 = /* :: */[
                   function () {
                     return /* Eq */{
                             0: Caml_format.caml_int64_format("%d", /* int64 */[
-                                  3333,
-                                  0
+                                  0,
+                                  3333
                                 ]),
                             1: "3333",
                             length: 2,
@@ -2648,11 +2649,11 @@ var int64_suites_001 = /* :: */[
                                     length: 2,
                                     tag: 0
                                   }, /* int64 */[
-                                    3,
-                                    0
+                                    0,
+                                    3
                                   ], /* int64 */[
-                                    3,
-                                    0
+                                    0,
+                                    3
                                   ]),
                               1: "3000000000000000003",
                               length: 2,
@@ -2690,8 +2691,8 @@ var int64_suites_001 = /* :: */[
                                       length: 2,
                                       tag: 0
                                     }, /* int64 */[
-                                      1548746752,
-                                      107288
+                                      107288,
+                                      1548746752
                                     ], /* int64 */[
                                       0,
                                       0
@@ -2745,7 +2746,7 @@ var int64_suites_001 = /* :: */[
                                           tag: 0
                                         }, /* int64 */[
                                           -1,
-                                          -1
+                                          4294967295
                                         ]),
                                     1: "-1",
                                     length: 2,
@@ -2771,8 +2772,8 @@ var int64_suites_001 = /* :: */[
                                             length: 2,
                                             tag: 0
                                           }, /* int64 */[
-                                            -11111,
-                                            -1
+                                            -1,
+                                            4294956185
                                           ]),
                                       1: "-11111",
                                       length: 2,
@@ -2799,7 +2800,7 @@ var int64_suites_001 = /* :: */[
                                               tag: 0
                                             }, /* int64 */[
                                               -1,
-                                              -1
+                                              4294967295
                                             ]),
                                         1: "FFFFFFFFFFFFFFFF",
                                         length: 2,
@@ -2826,7 +2827,7 @@ var int64_suites_001 = /* :: */[
                                                 tag: 0
                                               }, /* int64 */[
                                                 -1,
-                                                -1
+                                                4294967295
                                               ]),
                                           1: "ffffffffffffffff",
                                           length: 2,
@@ -2901,7 +2902,7 @@ var int64_suites_001 = /* :: */[
                                                       tag: 0
                                                     }, /* int64 */[
                                                       -1,
-                                                      -1
+                                                      4294967295
                                                     ]),
                                                 1: "18446744073709551615",
                                                 length: 2,
@@ -2927,8 +2928,8 @@ var int64_suites_001 = /* :: */[
                                                         length: 2,
                                                         tag: 0
                                                       }, /* int64 */[
-                                                        -10000,
-                                                        -1
+                                                        -1,
+                                                        4294957296
                                                       ]),
                                                   1: "18446744073709541616",
                                                   length: 2,
@@ -2978,8 +2979,8 @@ var int64_suites_001 = /* :: */[
                                                             length: 2,
                                                             tag: 0
                                                           }, Caml_int64.add(Int64.min_int, /* int64 */[
-                                                                1,
-                                                                0
+                                                                0,
+                                                                1
                                                               ])),
                                                       1: "8000000000000001",
                                                       length: 2,
@@ -3010,8 +3011,8 @@ var int64_suites_001 = /* :: */[
                                                               length: 2,
                                                               tag: 0
                                                             }, /* int64 */[
-                                                              3,
-                                                              0
+                                                              0,
+                                                              3
                                                             ]),
                                                         1: "           3",
                                                         length: 2,
@@ -3037,8 +3038,8 @@ var int64_suites_001 = /* :: */[
                                                                 length: 2,
                                                                 tag: 0
                                                               }, /* int64 */[
-                                                                1163551168,
-                                                                1859194407
+                                                                1859194407,
+                                                                1163551168
                                                               ]),
                                                           1: "6ED10E27455A61C0",
                                                           length: 2,
@@ -3046,7 +3047,74 @@ var int64_suites_001 = /* :: */[
                                                         };
                                                 }
                                               ],
-                                              /* [] */0
+                                              /* :: */[
+                                                /* tuple */[
+                                                  "missing_neline",
+                                                  function () {
+                                                    return /* Eq */{
+                                                            0: Caml_curry.app1(Format.asprintf(/* Format */{
+                                                                      0: /* Int64 */{
+                                                                        0: /* Int_d */0,
+                                                                        1: /* No_padding */0,
+                                                                        2: /* No_precision */0,
+                                                                        3: /* Char_literal */{
+                                                                          0: /* "\n" */10,
+                                                                          1: /* End_of_format */0,
+                                                                          length: 2,
+                                                                          tag: 12
+                                                                        },
+                                                                        length: 4,
+                                                                        tag: 7
+                                                                      },
+                                                                      1: "%Ld\n",
+                                                                      length: 2,
+                                                                      tag: 0
+                                                                    }), /* int64 */[
+                                                                  0,
+                                                                  32
+                                                                ]),
+                                                            1: "32\n",
+                                                            length: 2,
+                                                            tag: 0
+                                                          };
+                                                  }
+                                                ],
+                                                /* :: */[
+                                                  /* tuple */[
+                                                    "missing_newline2",
+                                                    function () {
+                                                      var buf = Buffer.create(30);
+                                                      return /* Eq */{
+                                                              0: (Caml_curry.app1(Printf.bprintf(buf, /* Format */{
+                                                                          0: /* Int64 */{
+                                                                            0: /* Int_d */0,
+                                                                            1: /* No_padding */0,
+                                                                            2: /* No_precision */0,
+                                                                            3: /* Char_literal */{
+                                                                              0: /* "\n" */10,
+                                                                              1: /* End_of_format */0,
+                                                                              length: 2,
+                                                                              tag: 12
+                                                                            },
+                                                                            length: 4,
+                                                                            tag: 7
+                                                                          },
+                                                                          1: "%Ld\n",
+                                                                          length: 2,
+                                                                          tag: 0
+                                                                        }), /* int64 */[
+                                                                      0,
+                                                                      32
+                                                                    ]), Buffer.contents(buf)),
+                                                              1: "32\n",
+                                                              length: 2,
+                                                              tag: 0
+                                                            };
+                                                    }
+                                                  ],
+                                                  /* [] */0
+                                                ]
+                                              ]
                                             ]
                                           ]
                                         ]
@@ -3086,57 +3154,57 @@ var of_string_data = Caml_obj.caml_obj_dup(/* array */[
       ],
       /* tuple */[
         /* int64 */[
-          3,
-          0
+          0,
+          3
         ],
         "3"
       ],
       /* tuple */[
         /* int64 */[
-          33,
-          0
+          0,
+          33
         ],
         "33"
       ],
       /* tuple */[
         /* int64 */[
-          333,
-          0
+          0,
+          333
         ],
         "33_3"
       ],
       /* tuple */[
         /* int64 */[
-          33333,
-          0
+          0,
+          33333
         ],
         "33_33_3"
       ],
       /* tuple */[
         /* int64 */[
-          -1674115755,
-          77
+          77,
+          2620851541
         ],
         "333333333333"
       ],
       /* tuple */[
         /* int64 */[
           -1,
-          -1
+          4294967295
         ],
         "0xffff_ffff_ffff_ffff"
       ],
       /* tuple */[
         /* int64 */[
-          113,
-          0
+          0,
+          113
         ],
         "0b01110001"
       ],
       /* tuple */[
         /* int64 */[
-          1,
-          0
+          0,
+          1
         ],
         "-0xffff_ffff_ffff_ffff"
       ]
@@ -3218,13 +3286,13 @@ var float_suites = /* :: */[
 ];
 
 var hh = /* int64 */[
-  -858993460,
-  214748364
+  214748364,
+  3435973836
 ];
 
 var hhh = /* int64 */[
-  0,
-  268435456
+  268435456,
+  0
 ];
 
 exports.of_string            = of_string;

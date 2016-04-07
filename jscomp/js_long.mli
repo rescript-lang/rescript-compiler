@@ -22,7 +22,7 @@ type int64_call = J.expression list -> J.expression
 
 val make_const : lo:Int32.t -> hi:Int32.t -> J.expression
 
-val of_const : Int64.t -> J.expression
+val of_const : int64 -> J.expression
 
 val to_int32 : int64_call
 
@@ -41,7 +41,12 @@ val asr_ : int64_call
 val and_ : int64_call
 val or_ : int64_call
 val swap : int64_call
+val discard_sign : int64_call
+val div_mod : int64_call
+val to_hex : int64_call  
 val to_float : int64_call
 val of_float : int64_call
 val compare : int64_call
 val of_string : int64_call
+val float_of_bits : int64_call
+val bits_of_float : int64_call  

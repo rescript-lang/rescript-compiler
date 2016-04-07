@@ -59,9 +59,9 @@ buffer_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/bytes.cmx \
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmx : mt.cmx
 caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/array.cmi
+    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
-    ../stdlib/format.cmx ../stdlib/array.cmx
+    ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmx : ../lib/js.cmx
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -98,6 +98,8 @@ equal_test.cmo :
 equal_test.cmx :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmx : mt.cmx ../stdlib/list.cmx
+ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
+ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -142,10 +144,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
 guide_for_ext.cmo :
 guide_for_ext.cmx :
-hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi
-hamming_test.cmx : ../stdlib/printf.cmx ../stdlib/lazy.cmx \
-    ../stdlib/int64.cmx
+hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi ../stdlib/buffer.cmi
+hamming_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/lazy.cmx \
+    ../stdlib/int64.cmx ../stdlib/buffer.cmx
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
@@ -160,14 +162,20 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmx : ../stdlib/string.cmx mt.cmx \
     ../stdlib/filename.cmx
+int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_array.cmo ../stdlib/array.cmi
+int32_test.cmx : mt.cmx ../stdlib/int32.cmx ../stdlib/format.cmx \
+    ext_array.cmx ../stdlib/array.cmx
 int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/int64.cmx ../stdlib/array.cmx
-int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/array.cmi
-int64_test.cmx : mt.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
-    ../stdlib/array.cmx
+int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
+    ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
+int64_test.cmx : ../stdlib/pervasives.cmx ../stdlib/nativeint.cmx mt.cmx \
+    ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
+    ../stdlib/format.cmx ext_array.cmx ../stdlib/array.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
@@ -334,6 +342,8 @@ test_export2.cmo :
 test_export2.cmx :
 test_external.cmo :
 test_external.cmx :
+test_external_unit.cmo :
+test_external_unit.cmx :
 test_ffi.cmo :
 test_ffi.cmx :
 test_fib.cmo :
@@ -541,9 +551,9 @@ buffer_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/bytes.cmj \
 caml_compare_test.cmo : mt.cmi
 caml_compare_test.cmj : mt.cmj
 caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/format.cmi ../stdlib/array.cmi
+    ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
-    ../stdlib/format.cmj ../stdlib/array.cmj
+    ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 class_type_ffi_test.cmo : ../lib/js.cmo
 class_type_ffi_test.cmj : ../lib/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
@@ -580,6 +590,8 @@ equal_test.cmo :
 equal_test.cmj :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
+ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
+ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
@@ -624,10 +636,10 @@ google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
 guide_for_ext.cmo :
 guide_for_ext.cmj :
-hamming_test.cmo : ../stdlib/printf.cmi ../stdlib/lazy.cmi \
-    ../stdlib/int64.cmi
-hamming_test.cmj : ../stdlib/printf.cmj ../stdlib/lazy.cmj \
-    ../stdlib/int64.cmj
+hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
+    ../stdlib/int64.cmi ../stdlib/buffer.cmi
+hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
+    ../stdlib/int64.cmj ../stdlib/buffer.cmj
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
@@ -642,14 +654,20 @@ inline_regression_test.cmo : ../stdlib/string.cmi mt.cmi \
     ../stdlib/filename.cmi
 inline_regression_test.cmj : ../stdlib/string.cmj mt.cmj \
     ../stdlib/filename.cmj
+int32_test.cmo : mt.cmi ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_array.cmo ../stdlib/array.cmi
+int32_test.cmj : mt.cmj ../stdlib/int32.cmj ../stdlib/format.cmj \
+    ext_array.cmj ../stdlib/array.cmj
 int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/array.cmi
 int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/array.cmj
-int64_test.cmo : mt.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
-    ../stdlib/array.cmi
-int64_test.cmj : mt.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
-    ../stdlib/array.cmj
+int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
+    ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
+int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
+    ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
+    ../stdlib/format.cmj ext_array.cmj ../stdlib/array.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
@@ -816,6 +834,8 @@ test_export2.cmo :
 test_export2.cmj :
 test_external.cmo :
 test_external.cmj :
+test_external_unit.cmo :
+test_external_unit.cmj :
 test_ffi.cmo :
 test_ffi.cmj :
 test_fib.cmo :

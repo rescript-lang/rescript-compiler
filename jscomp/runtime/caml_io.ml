@@ -34,9 +34,9 @@ let stdout = {
   buffer = "";
   output = (fun _ s ->
     let v = String.length s - 1 in
-    if [%js.raw{| process && process.stdout && process.stdout.write|}] then
+    if [%js.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%js.raw{| process.stdout.write |} ] : string -> unit) s
-    else         
+    else
     if s.[v] = '\n' then
       Js.log (Js.String.slice s 0 v)
     else Js.log s)
@@ -65,7 +65,7 @@ let caml_ml_flush (oc : out_channel)  : unit =
     end      
 
 let node_std_output  : string -> bool = [%js.raw{|function (s){
-   return process && process.stdout && (process.stdout.write(s), true);
+   return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
    }
 |}]
 
@@ -75,11 +75,11 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
     if offset = 0 && len = String.length str then str    
     else Js.String.slice str offset len in
-  if [%js.raw{|process && process.stdout && process.stdout.write |}] &&
+  if [%js.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
     begin     
 
-      ([%js.raw{|process.stdout.write|}] : string -> unit ) str
+      ([%js.raw{| process.stdout.write |}] : string -> unit ) str
     end        
   else
     begin     
@@ -95,8 +95,8 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
         end
     end      
 
-let caml_ml_output_char (oc : out_channel)  (char : char) =
-  caml_ml_output oc (Js.String.of_char char)
+let caml_ml_output_char (oc : out_channel)  (char : char) : unit =
+  caml_ml_output oc (Js.String.of_char char) 0 1 
 
 let caml_ml_input (ic : in_channel) (bytes : bytes) offset len : int = 
   raise @@ Failure  "caml_ml_input ic not implemented"
@@ -105,6 +105,6 @@ let caml_ml_input_char (ic : in_channel) : char =
   raise @@ Failure "caml_ml_input_char not implemnted"
 
 let caml_ml_out_channels_list () : out_channel list  =
-  assert false 
+  [stdout; stderr]  
 
 

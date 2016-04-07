@@ -64,7 +64,7 @@ external false_ : boolean = "false" [@@js.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
 external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
-
+external string_of_nativeint : nativeint -> string = "js_anything_to_string"
 external string_of_char : char -> string = "js_string_of_char" 
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
@@ -78,6 +78,7 @@ module String = struct
       [@@js.call]
   external toUpperCase : string -> string = "toUpperCase" [@@js.send]
   external of_int : int -> base:int -> string = "toString" [@@js.send]
+  external of_nativeint : nativeint -> base:int -> string = "toString" [@@js.send]
   external slice : string -> int -> int -> string = "slice" 
       [@@js.send]
   external slice_rest : string -> int -> string = "slice" 
@@ -140,3 +141,9 @@ module Caml_obj = struct
   external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
   external is_instance_array : Obj.t -> bool = "js_is_instance_array" (* use Array.isArray instead*)
 end
+
+module Caml_int64 = struct
+  external discard_sign : int64 -> int64 = "js_int64_discard_sign"
+  external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
+  external to_hex : int64 -> string = "js_int64_to_hex"    
+end  

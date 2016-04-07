@@ -617,7 +617,8 @@ function caml_ba_get_generic(prim, prim$1) {
 }
 
 function caml_ba_set_generic(prim, prim$1, prim$2) {
-  return $$caml_ba_set_generic(prim, prim$1, prim$2);
+  $$caml_ba_set_generic(prim, prim$1, prim$2);
+  return /* () */0;
 }
 
 function caml_ba_num_dims(prim) {
@@ -645,11 +646,13 @@ function caml_ba_slice(prim, prim$1) {
 }
 
 function caml_ba_blit(prim, prim$1) {
-  return $$caml_ba_blit(prim, prim$1);
+  $$caml_ba_blit(prim, prim$1);
+  return /* () */0;
 }
 
 function caml_ba_fill(prim, prim$1) {
-  return $$caml_ba_fill(prim, prim$1);
+  $$caml_ba_fill(prim, prim$1);
+  return /* () */0;
 }
 
 function caml_ba_reshape(prim, prim$1) {
@@ -661,11 +664,13 @@ function caml_ba_get_1(prim, prim$1) {
 }
 
 function caml_ba_set_1(prim, prim$1, prim$2) {
-  return $$caml_ba_set_1(prim, prim$1, prim$2);
+  $$caml_ba_set_1(prim, prim$1, prim$2);
+  return /* () */0;
 }
 
 function caml_ba_set_2(prim, prim$1, prim$2, prim$3) {
-  return $$caml_ba_set_2(prim, prim$1, prim$2, prim$3);
+  $$caml_ba_set_2(prim, prim$1, prim$2, prim$3);
+  return /* () */0;
 }
 
 function caml_ba_get_2(prim, prim$1, prim$2) {
@@ -689,7 +694,8 @@ function caml_ba_get_3(prim, prim$1, prim$2, prim$3) {
 }
 
 function caml_ba_set_3(prim, prim$1, prim$2, prim$3, prim$4) {
-  return $$caml_ba_set_3(prim, prim$1, prim$2, prim$3, prim$4);
+  $$caml_ba_set_3(prim, prim$1, prim$2, prim$3, prim$4);
+  return /* () */0;
 }
 
 exports.caml_array_bound_error    = caml_array_bound_error;

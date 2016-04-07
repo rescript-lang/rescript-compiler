@@ -7,7 +7,8 @@ var Sys        = require("../stdlib/sys");
 var Caml_curry = require("../runtime/caml_curry");
 
 var l = Sys.is_js ? function (prim) {
-    return console.log(prim);
+    console.log(prim);
+    return /* () */0;
   } : function (param) {
     return Pervasives.output_string(Pervasives.stdout, param);
   };

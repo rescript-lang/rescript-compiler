@@ -20,9 +20,17 @@
 
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
+
 [%%js.raw{|
-if (!String.prototype.repeat) {
-    String.prototype.repeat = function(count , self) {
+if (!Math.imul){
+    Math.imul = function (x,y)
+        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
+}
+  
+|}]
+
+let repeat : int -> string -> string = [%js.raw{| (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
+                                                  function(count , self) {
         if (self.length == 0 || count == 0) {
             return '';
         }
@@ -45,19 +53,6 @@ if (!String.prototype.repeat) {
         }
         return rpt;
     }
-}
-
-
-
-
-if (!Math.imul){
-    Math.imul = function (x,y)
-        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
-}
-
-var $$repeat = function (n, s) {
-   return s.repeat(n);
-}
 |} ]
 
 let i32div (x:nativeint) (y:nativeint) = 
@@ -71,6 +66,4 @@ let i32mod (x : nativeint) (y:nativeint) =
   else Nativeint.rem x  y
 
 
-external repeat : int -> string -> string = "$$repeat"
-    [@@js.call] [@@js.local]
 (*we need an attribute like this to prevent it get inlined *)

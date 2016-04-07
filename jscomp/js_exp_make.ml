@@ -810,6 +810,30 @@ let set_length ?comment e tag : t =
   seq {expression_desc = Caml_block_set_length (e,tag); comment } unit 
 let obj_length ?comment e : t = 
   {expression_desc = Length (e, Caml_block); comment }
+
+(* Note that [lsr] or [bor] are js semantics *)
+let rec int32_bor ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
+  match e1.expression_desc, e2.expression_desc with 
+  | Number (Int {i = i1} | Uint i1), Number (Int {i = i2})
+    -> int ?comment (Int32.logor i1 i2)
+
+  | _, (Bin(Lsr,e2, {expression_desc = Number(Int{i=0l} | Uint 0l | Nint 0n) ; _})) ->
+    int32_bor  e1 e2
+  | (Bin(Lsr,e1, {expression_desc = Number(Int{i=0l} | Uint 0l | Nint 0n) ; _})), _ ->
+    int32_bor  e1 e2
+  | (Bin(Lsr,_, {expression_desc = Number(Int{i} | Uint i ) ; _})),
+    Number(Int{i=0l} | Uint 0l | Nint 0n)
+    when i > 0l  -> (* a >>> 3 | 0 -> a >>> 3 *)
+    e1
+
+  | Bin (Bor, e1, {expression_desc = Number(Int{i=0l} | Uint 0l | Nint 0n) ; _} ), 
+    Number(Int{i=0l} | Uint 0l | Nint 0n) ->
+    int32_bor e1 e2  
+  | _ -> 
+    { comment ; 
+      expression_desc = Bin (Bor, e1,e2)
+    }
+
 (* Arithmatic operations
    TODO: distinguish between int and float
    TODO: Note that we have to use Int64 to avoid integer overflow, this is fine
@@ -826,21 +850,16 @@ let obj_length ?comment e : t =
 
    check: Re-association: avoid integer overflow
 *) 
-let rec to_int32  ?comment (e : J.expression)  : J.expression = 
-  let expression_desc =  e.expression_desc in
-  match expression_desc  with 
-  | Bin(Bor, a, {expression_desc = Number (Int {i = 0l});  _})
-    -> 
-    to_int32 ?comment a
-  | _ ->
-    { comment ;
-      expression_desc = Bin (Bor, {comment = None; expression_desc }, zero_int_literal)
-    }
+let  to_int32  ?comment (e : J.expression)  : J.expression = 
+  int32_bor ?comment e zero_int_literal
+(* TODO: if we already know the input is int32, [x|0] can be reduced into [x] *)
+let nint ?comment n : J.expression =
+  {expression_desc = Number (Nint n); comment }
 
-let rec to_uint32 ?comment (e : J.expression)  : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Lsr, e , zero_int_literal)
-  }
+let uint32 ?comment n : J.expression =
+  {expression_desc = Number (Uint n); comment }
+
+
 
 let string_comp cmp ?comment  e0 e1 = 
   to_ocaml_boolean @@ bin ?comment cmp e0 e1
@@ -863,6 +882,34 @@ let rec int_comp (cmp : Lambda.comparison) ?comment  (e0 : t) (e1 : t) =
 let float_comp cmp ?comment  e0 e1 = 
   to_ocaml_boolean @@ bin ?comment (Lam_compile_util.jsop_of_comp cmp) e0 e1
 
+
+
+let rec int32_lsr ?comment
+    (e1 : J.expression) 
+    (e2 : J.expression) : J.expression =
+  let aux i1 i =
+    uint32 (Int32.shift_right_logical i1 i) in    
+  match e1.expression_desc, e2.expression_desc with
+  | Number (Int { i = i1} | Uint i1 ), Number( Int {i = i2} | Uint i2)
+    -> aux i1 (Int32.to_int i2)
+  | Number (Nint i1), Number( Int {i = i2} | Uint i2)
+    ->
+    aux (Nativeint.to_int32 i1) (Int32.to_int i2)    
+  | Number (Nint i1), Number (Nint i2)
+    ->
+    aux (Nativeint.to_int32 i1) (Nativeint.to_int i2)
+  | (Bin(Lsr, _, _)), Number (Int {i = 0l} | Uint 0l | Nint 0n) 
+    ->  e1 (* TODO: more opportunities here *)
+  | Bin(Bor, e1, {expression_desc = Number (Int {i=0l;_} | Uint 0l | Nint 0n) ; _}),
+    Number (Int {i = 0l} | Uint 0l | Nint 0n) 
+    -> int32_lsr ?comment e1 e2
+  | _, _ ->
+     { comment ; 
+       expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
+     }
+
+let to_uint32 ?comment (e : J.expression)  : J.expression =
+  int32_lsr ?comment e zero_int_literal
 
 
 (* TODO: 
@@ -1002,37 +1049,22 @@ let int32_lsl ?comment e1 e2 : J.expression =
     expression_desc = Bin (Lsl, e1,e2)
   }
 
-(* TODO: optimization *)    
-let int32_lsr ?comment
-    (e1 : J.expression) 
-    (e2 : J.expression) : J.expression = 
-  match e1.expression_desc, e2.expression_desc with
-  | Number (Int { i = i1}), Number( Int {i = i2})
-    ->
-    int @@ 
-      (Int32.shift_right_logical  i1 (Int32.to_int i2))
 
-  | Bin(Lsr, _, _), Number (Int {i = 0l}) 
-    ->  e1 (* TODO: more opportunities here *)
-  | _ ,  Number( Int {i = i2})
-    ->
-      { comment ; 
-        expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
-      }
-  | _, _ ->
-    to_int32  { comment ; 
-                expression_desc = Bin (Lsr, e1,e2) (* uint32 *)
-              }
 
 let int32_asr ?comment e1 e2 : J.expression = 
   { comment ; 
     expression_desc = Bin (Asr, e1,e2)
   }
 
-let int32_bxor ?comment (e1 : t) (e2 : t) : J.expression = 
+let rec int32_bxor ?comment (e1 : t) (e2 : t) : J.expression = 
   match e1.expression_desc, e2.expression_desc with 
   | Number (Int {i = i1}), Number (Int {i = i2})
     -> int ?comment (Int32.logxor i1 i2)
+  | _, (Bin(Lsr,e2, {expression_desc = Number(Int{i=0l} | Uint 0l | Nint 0n) ; _})) ->
+    int32_bxor  e1 e2
+  | (Bin(Lsr,e1, {expression_desc = Number(Int{i=0l} | Uint 0l | Nint 0n) ; _})), _ ->
+    int32_bxor  e1 e2
+
   | _ -> 
     { comment ; 
       expression_desc = Bin (Bxor, e1,e2)
@@ -1052,10 +1084,6 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) : J.expressi
       expression_desc = Bin (Band, e1,e2)
     }
 
-let int32_bor ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Bor, e1,e2)
-  }
 
 (* let int32_bin ?comment op e1 e2 : J.expression =  *)
 (*   {expression_desc = Int32_bin(op,e1, e2); comment} *)

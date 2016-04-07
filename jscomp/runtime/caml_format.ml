@@ -333,18 +333,18 @@ let finish_formatting ({
 
 
 
-let aux f i  = 
+let aux f (i : nativeint)  = 
   let i = 
-    if i < 0 then 
+    if i < 0n then 
       if f.signedconv then 
         begin 
           f.sign <- -1;
-          -i
+          Nativeint.neg i
         end
       else 
-        i lsr 0 
+        Nativeint.shift_right_logical i 0 
     else  i  in
-  let s = ref @@ Js.String.of_int i ~base:(int_of_base f.base) in 
+  let s = ref @@ Js.String.of_nativeint i ~base:(int_of_base f.base) in 
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
@@ -356,134 +356,117 @@ let aux f i  =
   finish_formatting f !s
 
 let caml_format_int fmt i = 
-  if fmt = "%d" then string_of_int i 
+  if fmt = "%d" then Js.string_of_nativeint i 
   else 
     let f = parse_format fmt in 
     aux f i 
 
-let caml_int64_format fmt (x : Caml_int64.t) =
+let caml_int64_format fmt x =
   let f = parse_format fmt in
   let x =
-    if f.signedconv && x.hi < 0n then
+    if f.signedconv &&  x < 0L then
       begin
         f.sign <- -1;
-        Caml_int64.neg x
+        Int64.neg x
       end
     else x in
   let s = ref "" in
 
   begin match f.base with
     | Hex ->
-      (* width does matter, will it be relevant to endian order?
-      *)
-      let aux v =
-        Js.String.of_int (Nativeint.to_int @@ Nativeint.shift_right_logical v 0) ~base:16 
-      in
-      s := (match x.hi, x.lo with
-          | 0n, 0n -> "0"
-          | _, 0n -> aux x.hi ^ "00000000"
-          | 0n, _ -> aux x.lo
-          | _, _ ->
-            let lo =  aux x.lo in
-            let pad = 8 - String.length lo in
-            if pad <= 0 then             
-              aux x.hi ^ lo
-            else
-              aux x.hi ^ repeat pad "0" ^ lo 
-        ) ^ !s         
+      s := Js.Caml_int64.to_hex x ^ !s       
     | Oct ->
-      let wbase : Caml_int64.t = {lo = 8n; hi = 0n } in
+      let wbase  = 8L  in
       let  cvtbl = "01234567" in
 
-      if Caml_int64.lt x Caml_int64.zero then
+      if  x < 0L then
         begin         
-          let y : Caml_int64.t = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi } in
+          let y = Js.Caml_int64.discard_sign x  in
           (* 2 ^  63 + y `div_mod` 8 *)        
-          let quotient_l : Caml_int64.t =
-            {lo =   0n; hi =  268435456n } (* 2 ^ 31 / 8 *)
-            (* TODO:  int64 constant folding so that we can do idiomatic code
-               2 ^ 63 / 10 *)in 
+          let quotient_l  = 1152921504606846976L (**)
+            (* {lo =   0n; hi =  268435456n } *) (* 2 ^ 31 / 8 *)
+          in 
 
           (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
              we can not do the code above, it can overflow when y is really large           
           *)
-          let c, d = Caml_int64.div_mod  y  wbase in
+          let c, d = Js.Caml_int64.div_mod  y  wbase in
 
           let quotient =
-            ref (Caml_int64.add quotient_l c )  in
+            ref (Int64.add quotient_l c )  in
           let modulus = ref d in
           s :=
             Js.string_of_char 
-              cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+              cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
-          while not (Caml_int64.is_zero !quotient ) do
-            let a, b = Caml_int64.div_mod (!quotient) wbase in
+          while  !quotient <> 0L do
+            let a, b = Js.Caml_int64.div_mod (!quotient) wbase in
             quotient := a;
             modulus := b;
-            s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+            s := Js.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
           done;
         end
       else
-        let a, b =  Caml_int64.div_mod x wbase  in
+        let a, b =  Js.Caml_int64.div_mod x wbase  in
         let quotient = ref a  in
         let modulus = ref b in
         s :=
           Js.string_of_char 
-            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+            cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
-        while not (Caml_int64.is_zero !quotient ) do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while  !quotient <> 0L do
+          let a, b = Js.Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+          s := Js.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done
 
     | Dec ->
-      let wbase : Caml_int64.t = {lo = 10n; hi = 0n } in
+      let wbase  =  10L  in
       let  cvtbl = "0123456789" in
 
-      if Caml_int64.lt x Caml_int64.zero then
-        let y : Caml_int64.t = {x with hi = Nativeint.logand 0x7fff_ffffn x.hi } in
+      if  x < 0L then
+        let y  = Js.Caml_int64.discard_sign x  in
         (* 2 ^  63 + y `div_mod` 10 *)        
 
-        let quotient_l : Caml_int64.t =
-          {lo =   -858993460n; hi =  214748364n}
+        let quotient_l  = 922337203685477580L (* 2 ^ 63 / 10 *)
+          (* {lo =   -858993460n; hi =  214748364n} *)
           (* TODO:  int64 constant folding so that we can do idiomatic code
              2 ^ 63 / 10 *)in 
-        let modulus_l : Caml_int64.t = {lo = 8n; hi = 0n} in
+        let modulus_l  =  8L  in
         (* let c, d = Caml_int64.div_mod (Caml_int64.add y modulus_l) wbase in
            we can not do the code above, it can overflow when y is really large           
         *)
-        let c, d = Caml_int64.div_mod  y  wbase in
-        let e ,f = Caml_int64.div_mod (Caml_int64.add modulus_l d) wbase in        
+        let c, d = Js.Caml_int64.div_mod  y  wbase in
+        let e ,f = Js.Caml_int64.div_mod (Int64.add modulus_l d) wbase in        
         let quotient =
-          ref (Caml_int64.add (Caml_int64.add quotient_l c )
+          ref (Int64.add (Int64.add quotient_l c )
                  e)  in
         let modulus = ref f in
         s :=
           Js.string_of_char 
-            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+            cvtbl.[Int64.to_int !modulus] ^ !s ;
 
-        while not (Caml_int64.is_zero !quotient ) do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while !quotient <> 0L do
+          let a, b = Js.Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+          s := Js.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done;
 
       else
-        let a, b =  Caml_int64.div_mod x wbase  in
+        let a, b =  Js.Caml_int64.div_mod x wbase  in
         let quotient = ref a  in
         let modulus = ref b in
         s :=
           Js.string_of_char 
-            cvtbl.[ Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+            cvtbl.[ Int64.to_int !modulus] ^ !s ;
 
-        while not (Caml_int64.is_zero !quotient ) do
-          let a, b = Caml_int64.div_mod (!quotient) wbase in
+        while  !quotient <> 0L do
+          let a, b = Js.Caml_int64.div_mod (!quotient) wbase in
           quotient := a;
           modulus := b;
-          s := Js.string_of_char cvtbl.[Nativeint.to_int @@ Caml_int64.to_int32 !modulus] ^ !s ;
+          s := Js.string_of_char cvtbl.[Int64.to_int !modulus] ^ !s ;
         done;
   end;
   if f.prec >= 0 then

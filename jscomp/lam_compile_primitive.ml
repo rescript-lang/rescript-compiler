@@ -203,13 +203,22 @@ let translate
     end
   | Plslbint Lambda.Pint64 
     -> Js_long.lsl_ args
-  | Plsrint 
   | Plsrbint Lambda.Pnativeint
-  | Plsrbint Lambda.Pint32
-    ->
+    -> 
     begin match args with
       | [e1; e2] ->
         E.int32_lsr   e1  e2
+      | _ -> assert false
+    end
+  | Plsrint 
+  | Plsrbint Lambda.Pint32
+    ->
+    begin match args with
+      | [e1; {J.expression_desc = Number (Int {i=0l; _}|Uint 0l | Nint 0n); _}]
+        -> 
+        e1
+      | [e1; e2] ->
+        E.to_int32 @@ E.int32_lsr   e1  e2
       | _ -> assert false
     end
   | Plsrbint Lambda.Pint64

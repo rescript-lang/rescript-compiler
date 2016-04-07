@@ -113,3 +113,8 @@ let label_name l =
   if is_optional l 
   then `Optional (String.sub l 1 (String.length l - 1))
   else `Label l
+
+let is_unit (x : Types.type_desc) =
+  match x with
+  | Tconstr(p,_,_) when Path.same p Predef.path_unit -> true
+  | _ -> false    
