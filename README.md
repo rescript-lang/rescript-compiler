@@ -1,7 +1,7 @@
 # [BuckleScript](http://bloomberg.github.io/bucklescript/)
 
 ## Introduction
-BuckleScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/). 
+BuckleScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/).
 
 You can try
 [BuckleScript in the browser](http://bloomberg.github.io/bucklescript/js-demo/),
@@ -45,7 +45,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 
 
 
-  
+
 ## Disclaimer
 
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
@@ -55,19 +55,22 @@ It is in an *very early* stage and not production ready for your own projects *y
 
 ## Build
 
-Note that you have to clone this project with `--recursive` option, as the core OCaml compiler is brought into your clone as a Git `submodule`.
 
 ### Linux and Mac OSX
 
+1. Clone the bucklescript repo
 
-1. Build the patched OCaml Compiler
-
-  Checkout the `master` branch in the [OCaml Repo](https://github.com/bloomberg/ocaml/tree/master)
-
-  For exmaple:
-  
   ```sh
-  git clone https://github.com/bloomberg/ocaml
+  git clone https://github.com/bloomberg/bucklescript.git --recursive
+  ```
+
+  Note that you have to clone this project with `--recursive` option,
+  as the core OCaml compiler is brought into your clone as a Git `submodule`.
+
+
+2. Build the patched OCaml Compiler
+
+  ```sh
   cd ./ocaml
   git checkout master
   ./configure -prefix `pwd`
@@ -76,44 +79,46 @@ Note that you have to clone this project with `--recursive` option, as the core 
   ```
 
   The patched compiler is installed locally into your `$(pwd)/bin`
-  directory, check if `ocamlc.opt` and `ocamlopt.opt` are there, add
-  them into your `$(PATH)`.
-  
-2. Build BuckleScript Compiler
+  directory; check if `ocamlc.opt` and `ocamlopt.opt` are there, then temporarily
+  add them into your `$(PATH)` (eg - `PATH=$(pwd)/bin:$PATH`).
+
+3. Build BuckleScript Compiler
 
   Assume that you have `ocamlopt.opt` in the `PATH`
   ```sh
-  cd ./jscomp
+  cd ../jscomp
   ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
   ```
 
   Now you have a binary called `bsc` under `jscomp/bin` directory,
-  put it in your `PATH`.
+  put it in your `PATH`. You could also set an environment variable
+  pointing to the stdlib, like `BSC_LIB=/path/to/jscomp/stdlib`
+
 
   Our compiler is released as a single file so that for release-builds
   it does not need any build system(easier to be supported on Windows Platform).
-  
-3. Test 
 
-  Create a file called `hello.ml`:
+4. Test
+
+  In a separate directory, create a file called `hello.ml`:
 
   ```sh
-  mkdir tmp  # create tmp directory inside the stdlib
-  cd tmp 
+  mkdir tmp
+  cd tmp
   echo 'print_endline "hello world";;' >hello.ml
   ```
-  
+
   Then compile it with `bsc`
   ```sh
-  bsc -I . -I ../ -c hello.ml
+  bsc -I . -I $BSC_LIB -c hello.ml
   ```
-  
+
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js
 
   ```sh
   node hello.js
   ```
-  
+
   If everything goes well, you will see `hello world` on your screen.
 
 Note that the following steps  are optional, it is used to build the
@@ -121,31 +126,31 @@ runtime and standard library to verify if it works, you don't need run
 these steps.
 
 
-4. Build the runtime with `bsc`
+1. Build the runtime with `bsc`
 
   ```sh
   cd runtime
   make all
   ```
 
-5. Build the ocaml standard library with `bsc`
+2. Build the ocaml standard library with `bsc`
 
   ```sh
   cd ../stdlib
-  make all 
+  make all
   ```
-6. Build the bucklescript library (it contains JS bindings) with `bsc`
+3. Build the bucklescript library (it contains JS bindings) with `bsc`
 
    ```sh
    cd ../lib
    make all
    ```
-   
+
 ## Windows support
 
 We plan to provide a Windows installer in the near future.
 
-# Licensing 
+# Licensing
 
 The [OCaml](./ocaml) directory is the official OCaml compiler (version 4.02.3). Refer to its copyright and license notices for information about its licensing.
 
@@ -172,13 +177,13 @@ Since our work is derivative work of [js_of_ocaml](http://ocsigen.org/js_of_ocam
 
 ## Design goals
 
-1. Readability 
+1. Readability
  1.   No name mangling.
  2.   Support JavaScript module system.
  3.   Integrate with existing JavaScript ecosystem, for example,
       [npm](https://www.npmjs.com/), [webpack](https://github.com/webpack).
  4.   Straight-forward FFI, generate tds file to target [Typescript](http://www.typescriptlang.org/) for better tooling.
- 
+
 2. Separate and *extremely fast* compilation.
 
 3. Better performance than hand-written Javascript:
@@ -255,7 +260,7 @@ Some known issues are listed as below:
 1. Language features:
 
    int32 mul (we will have a polyfill for it)
-   
+
 2. Standard libraries distributed with OCaml:
 
    IO support, we have very limited support for
