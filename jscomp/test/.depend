@@ -244,6 +244,8 @@ obj_test.cmo : mt.cmi
 obj_test.cmx : mt.cmx
 of_string_test.cmo : mt.cmi
 of_string_test.cmx : mt.cmx
+pr_regression_test.cmo : ../stdlib/printf.cmi
+pr_regression_test.cmx : ../stdlib/printf.cmx
 primitive_reg_test.cmo :
 primitive_reg_test.cmx :
 printf_sim.cmo : ../stdlib/printf.cmi
@@ -736,6 +738,8 @@ obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
 of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
+pr_regression_test.cmo : ../stdlib/printf.cmi
+pr_regression_test.cmj : ../stdlib/printf.cmj
 primitive_reg_test.cmo :
 primitive_reg_test.cmj :
 printf_sim.cmo : ../stdlib/printf.cmi

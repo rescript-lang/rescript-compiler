@@ -41,10 +41,12 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                               List.map simpl ll, {info with apply_status = Full} )
               else if x > len  
               then 
-                let extra_args = Ext_list.init (x - len) (fun _ ->   (Ident.create "param")) in 
-                Lfunction(Curried, extra_args, 
+                (* Lapply(simpl l1, List.map simpl ll,  info ) *)
+                let extra_args = Ext_list.init (x - len)
+                    (fun _ ->   (Ident.create "param")) in
+                Lfunction(Curried, extra_args,
                           Lapply(simpl l1,
-                                 List.map simpl ll @ 
+                                 List.map simpl ll @
                                  List.map (fun x -> Lambda.Lvar x) extra_args ,
                                  {info with  apply_status = Full}
                                 ))

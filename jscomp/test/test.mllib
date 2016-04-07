@@ -214,3 +214,4 @@ test_external_unit
 ext_array
 int32_test
 hamming_test
+pr_regression_test
