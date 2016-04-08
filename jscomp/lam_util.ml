@@ -324,3 +324,39 @@ let is_function (lam : Lambda.lambda) =
 let not_function (lam : Lambda.lambda) = 
   match lam with 
   | Lfunction _ -> false | _ -> true 
+
+(*
+  let f x y =  x + y 
+  Invariant: there is no currying 
+  here since f's arity is 2, no side effect 
+  f 3 --> function(y) -> f 3 y 
+*)
+let eta_conversion n info fn args = 
+  let extra_args = Ext_list.init n
+      (fun _ ->   (Ident.create "param")) in
+  let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in
+  begin match List.fold_right (fun lam (acc, bind) ->
+      match lam with
+      | Lambda.Lvar _
+      | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
+      | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+      | Lfunction _ 
+        ->
+        (lam :: acc, bind)
+      | _ ->
+        let v = Ident.create Literals.partial_arg in
+        (Lambda.Lvar v :: acc),  ((v, lam) :: bind)
+    ) (fn::args) ([],[])   with 
+  | fn::args , bindings ->
+
+    let rest : Lambda.lambda = 
+      Lfunction(Curried, extra_args,
+                Lapply(fn,
+                       args @ extra_lambdas ,
+                       {info with  apply_status = Full}
+                      )) in
+    List.fold_left (fun lam (id,x) ->
+        Lambda.Llet (Strict, id, x,lam)
+      ) rest bindings
+  | _, _ -> assert false
+  end

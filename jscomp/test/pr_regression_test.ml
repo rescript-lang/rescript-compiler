@@ -27,10 +27,18 @@ let c =
   ignore @@ f (+);
   !v 
 
-(* ;; Printf.printf "%d%d%d\n" a b c  *)
+let d = 
+  let v = ref 3 in
+  let action () = incr v  in
+  let f h g = (fun x y -> h x y) (let v = 3 in  action (); v * v ) in
+  ignore @@ f (+) 3;
+  ignore @@ f (+) 3 ;
+  !v
+
+(* ;; Printf.printf "%d%d%d%d\n" a b c d *)
 
 ;; Mt.from_pair_suites __FILE__ Mt.[
-  "partial", (fun _ -> Eq((5,5,5), (a,b,c)))
+  "partial", (fun _ -> Eq((5,5,5,5), (a,b,c,d)))
 ]
 
 
