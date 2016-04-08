@@ -673,7 +673,7 @@ function string_of_formatting_lit(formatting_lit) {
       case 1 : 
           return formatting_lit[0];
       case 2 : 
-          return "@" + $$String.make(1, formatting_lit[0]);
+          return "@" + Caml_string.bytes_to_string(Bytes.make(1, formatting_lit[0]));
       
     }
   }
@@ -3697,7 +3697,7 @@ function format_of_aconv(iconv, c) {
         break;
     
   }
-  return $$String.concat($$String.make(1, c), seps);
+  return $$String.concat(Caml_string.bytes_to_string(Bytes.make(1, c)), seps);
 }
 
 function format_of_fconv(fconv, prec) {

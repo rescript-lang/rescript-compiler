@@ -2,8 +2,8 @@
 'use strict';
 
 var Caml_string = require("../runtime/caml_string");
+var Bytes       = require("../stdlib/bytes");
 var Mt          = require("./mt");
-var $$String    = require("../stdlib/string");
 var List        = require("../stdlib/list");
 var Caml_string = require("../runtime/caml_string");
 
@@ -45,9 +45,9 @@ var suites_001 = /* :: */[
                   Caml_string.caml_fill_string(b, 0, len, /* "c" */99);
                   return /* tuple */[
                           Caml_string.bytes_to_string(b),
-                          $$String.init(len, function () {
-                                return /* "c" */99;
-                              })
+                          Caml_string.bytes_to_string(Bytes.init(len, function () {
+                                    return /* "c" */99;
+                                  }))
                         ];
                 }, /* :: */[
                   1000,

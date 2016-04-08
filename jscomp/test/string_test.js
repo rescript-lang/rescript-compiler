@@ -346,7 +346,7 @@ Mt.from_pair_suites("string_test.ml", /* :: */[
                                     function () {
                                       return /* Eq */{
                                               0: "0",
-                                              1: $$String.make(1, /* "0" */48),
+                                              1: Caml_string.bytes_to_string(Bytes.make(1, /* "0" */48)),
                                               length: 2,
                                               tag: 0
                                             };

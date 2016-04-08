@@ -5,15 +5,11 @@ var Mt         = require("./mt");
 var Ext_string = require("./ext_string");
 var List       = require("../stdlib/list");
 
-var split = Ext_string.split;
-
-var split_by = Ext_string.split_by;
-
 var suites_000 = /* tuple */[
   "split",
   function () {
     return /* Eq */{
-            0: split(/* Some */[/* true */1], "hihi", /* "i" */105),
+            0: Ext_string.split(/* Some */[/* true */1], "hihi", /* "i" */105),
             1: /* :: */[
               "h",
               /* :: */[
@@ -35,7 +31,7 @@ var suites_001 = /* :: */[
     "split_non_empty",
     function () {
       return /* Eq */{
-              0: split(/* None */0, "hihi", /* "i" */105),
+              0: Ext_string.split(/* None */0, "hihi", /* "i" */105),
               1: /* :: */[
                 "h",
                 /* :: */[
@@ -53,7 +49,7 @@ var suites_001 = /* :: */[
       "split_empty",
       function () {
         return /* Eq */{
-                0: split(/* Some */[/* true */1], "", /* "i" */105),
+                0: Ext_string.split(/* Some */[/* true */1], "", /* "i" */105),
                 1: /* [] */0,
                 length: 2,
                 tag: 0
@@ -65,7 +61,7 @@ var suites_001 = /* :: */[
         "split_normal",
         function () {
           return /* Eq */{
-                  0: split(/* Some */[/* true */1], "h i i", /* " " */32),
+                  0: Ext_string.split(/* Some */[/* true */1], "h i i", /* " " */32),
                   1: /* :: */[
                     "h",
                     /* :: */[
@@ -88,7 +84,7 @@ var suites_001 = /* :: */[
             return /* Eq */{
                     0: List.filter(function (s) {
                             return +(s !== "");
-                          })(split_by(/* None */0, function (x) {
+                          })(Ext_string.split_by(/* None */0, function (x) {
                               if (x === /* " " */32) {
                                 return /* true */1;
                               }
@@ -126,6 +122,10 @@ var suites = /* :: */[
 ];
 
 Mt.from_pair_suites("a_string_test.ml", suites);
+
+var split = Ext_string.split;
+
+var split_by = Ext_string.split_by;
 
 exports.split    = split;
 exports.split_by = split_by;

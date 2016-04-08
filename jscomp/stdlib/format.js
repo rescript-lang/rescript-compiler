@@ -3,11 +3,13 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Bytes                   = require("./bytes");
 var Caml_io                 = require("../runtime/caml_io");
 var Pervasives              = require("./pervasives");
 var Buffer                  = require("./buffer");
 var Caml_curry              = require("../runtime/caml_curry");
 var $$String                = require("./string");
+var Caml_string             = require("../runtime/caml_string");
 var CamlinternalFormat      = require("./camlinternalFormat");
 
 function add_queue(x, q) {
@@ -670,7 +672,7 @@ function pp_print_bool(state, b) {
 }
 
 function pp_print_char(state, c) {
-  return pp_print_as(state, 1, $$String.make(1, c));
+  return pp_print_as(state, 1, Caml_string.bytes_to_string(Bytes.make(1, c)));
 }
 
 function pp_open_hbox(state, _) {
@@ -1017,7 +1019,7 @@ function display_newline(state, _) {
   return Caml_curry.app3(state[/* pp_out_string */16], "\n", 0, 1);
 }
 
-var blank_line = $$String.make(80, /* " " */32);
+var blank_line = Caml_string.bytes_to_string(Bytes.make(80, /* " " */32));
 
 function display_blanks(state, _n) {
   while(true) {
@@ -1593,7 +1595,7 @@ function output_acc(ppf, acc) {
         return pp_print_as_size(ppf, size, s);
     case 2 : 
         output_acc(ppf, p$1);
-        return pp_print_as_size(ppf, size$1, $$String.make(1, c));
+        return pp_print_as_size(ppf, size$1, Caml_string.bytes_to_string(Bytes.make(1, c)));
     
   }
 }
@@ -1787,7 +1789,7 @@ function strput_acc(ppf, acc) {
         return pp_print_as_size(ppf, size, s);
     case 2 : 
         strput_acc(ppf, p$1);
-        return pp_print_as_size(ppf, size$1, $$String.make(1, c));
+        return pp_print_as_size(ppf, size$1, Caml_string.bytes_to_string(Bytes.make(1, c)));
     
   }
 }

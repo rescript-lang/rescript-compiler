@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Bytes                   = require("./bytes");
 var Caml_obj                = require("../runtime/caml_obj");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
@@ -10,8 +11,8 @@ var Sys                     = require("./sys");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
-var $$String                = require("./string");
 var Caml_curry              = require("../runtime/caml_curry");
+var Caml_string             = require("../runtime/caml_string");
 var Random                  = require("./random");
 
 function hash(x) {
@@ -50,7 +51,7 @@ catch (exn){
   }
 }
 
-var randomized_default = $$String.contains(params, /* "R" */82);
+var randomized_default = Bytes.contains(Caml_string.bytes_of_string(params), /* "R" */82);
 
 var randomized = [randomized_default];
 

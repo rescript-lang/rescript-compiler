@@ -22,8 +22,6 @@ function abs(n) {
   }
 }
 
-var size = Sys.word_size;
-
 var min_int = -9007199254740991;
 
 var max_int = 9007199254740991;
@@ -45,6 +43,8 @@ var zero = 0;
 var one = 1;
 
 var minus_one = -1;
+
+var size = Sys.word_size;
 
 exports.zero      = zero;
 exports.one       = one;

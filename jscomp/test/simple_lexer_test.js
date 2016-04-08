@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Lexing     = require("../stdlib/lexing");
-var Caml_curry = require("../runtime/caml_curry");
-var $$String   = require("../stdlib/string");
+var Bytes       = require("../stdlib/bytes");
+var Mt          = require("./mt");
+var Lexing      = require("../stdlib/lexing");
+var Caml_curry  = require("../runtime/caml_curry");
+var Caml_string = require("../runtime/caml_string");
 
 var __ocaml_lex_tables = /* record */[
   "\0\0\xfd\xff\xfe\xff\0\0\0\0\x01\0\0\0\0\0\0\0\0\0\0\0\0\0\x04\0\x01\0\x04\0\x03\0\0\0\x06\0\0\0\xff\xff",
@@ -40,7 +41,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
             return "." + __ocaml_lex_translate_rec(lexbuf, 0);
         case 1 : 
             var c = lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4]];
-            return $$String.make(1, c) + __ocaml_lex_translate_rec(lexbuf, 0);
+            return Caml_string.bytes_to_string(Bytes.make(1, c)) + __ocaml_lex_translate_rec(lexbuf, 0);
         case 2 : 
             return "";
         

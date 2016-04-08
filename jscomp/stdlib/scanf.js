@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
+var Bytes                    = require("./bytes");
 var Pervasives               = require("./pervasives");
 var Caml_format              = require("../runtime/caml_format");
 var Printf                   = require("./printf");
@@ -1885,9 +1886,10 @@ function make_scanf(ib, _fmt, readers) {
             }
             break;
         case 11 : 
-            $$String.iter(function (param) {
-                  return check_char(ib, param);
-                }, fmt[0]);
+            var f = function (param) {
+              return check_char(ib, param);
+            };
+            Bytes.iter(f, Caml_string.bytes_of_string(fmt[0]));
             _fmt = fmt[1];
             continue ;
             case 12 : 
@@ -1964,9 +1966,11 @@ function make_scanf(ib, _fmt, readers) {
                   'scanf: bad conversion "%t"'
                 ];
         case 17 : 
-            $$String.iter(function (param) {
-                  return check_char(ib, param);
-                }, CamlinternalFormat.string_of_formatting_lit(fmt[0]));
+            var s$2 = CamlinternalFormat.string_of_formatting_lit(fmt[0]);
+            var f$1 = function (param) {
+              return check_char(ib, param);
+            };
+            Bytes.iter(f$1, Caml_string.bytes_of_string(s$2));
             _fmt = fmt[1];
             continue ;
             case 18 : 
@@ -2005,7 +2009,7 @@ function make_scanf(ib, _fmt, readers) {
               var match$6 = stopper_of_formatting_lit(rest$1[0]);
               var width = width_of_pad_opt(width_opt);
               scan_chars_in_char_set(char_set, /* Some */[match$6[0]], width, ib);
-              var s$2 = token(ib);
+              var s$3 = token(ib);
               var str_rest_000$1 = match$6[1];
               var str_rest_001$1 = rest$1[1];
               var str_rest$1 = /* String_literal */{
@@ -2015,7 +2019,7 @@ function make_scanf(ib, _fmt, readers) {
                 tag: 11
               };
               return /* Cons */{
-                      0: s$2,
+                      0: s$3,
                       1: make_scanf(ib, str_rest$1, readers),
                       length: 2,
                       tag: 0
@@ -2027,9 +2031,9 @@ function make_scanf(ib, _fmt, readers) {
             if (exit$1 === 1) {
               var width$1 = width_of_pad_opt(width_opt);
               scan_chars_in_char_set(char_set, /* None */0, width$1, ib);
-              var s$3 = token(ib);
+              var s$4 = token(ib);
               return /* Cons */{
-                      0: s$3,
+                      0: s$4,
                       1: make_scanf(ib, rest$1, readers),
                       length: 2,
                       tag: 0

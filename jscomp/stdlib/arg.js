@@ -3,6 +3,7 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Bytes                   = require("./bytes");
 var Pervasives              = require("./pervasives");
 var Caml_format             = require("../runtime/caml_format");
 var Sys                     = require("./sys");
@@ -11,6 +12,7 @@ var Buffer                  = require("./buffer");
 var Caml_curry              = require("../runtime/caml_curry");
 var $$String                = require("./string");
 var List                    = require("./list");
+var Caml_string             = require("../runtime/caml_string");
 
 var Bad = {
   0: "Arg.Bad",
@@ -863,7 +865,7 @@ function parse_dynamic(l, f, msg) {
 function second_word(s) {
   var len = s.length;
   try {
-    var _n = $$String.index(s, /* " " */32);
+    var _n = Bytes.index(Caml_string.bytes_of_string(s), /* " " */32);
     while(true) {
       var n = _n;
       if (n >= len) {
@@ -915,7 +917,8 @@ function align($staropt$star, speclist) {
               else if (spec.tag === 11) {
                 var msg = ksd[2];
                 var cutcol = second_word(msg);
-                var spaces = $$String.make(Pervasives.max(0, len$2 - cutcol) + 3, /* " " */32);
+                var n = Pervasives.max(0, len$2 - cutcol) + 3;
+                var spaces = Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
                 return /* tuple */[
                         kwd,
                         spec,
@@ -935,7 +938,7 @@ function align($staropt$star, speclist) {
                         ];
                 }
                 else {
-                  var spaces$1 = $$String.make(diff, /* " " */32);
+                  var spaces$1 = Caml_string.bytes_to_string(Bytes.make(diff, /* " " */32));
                   var prefix = $$String.sub(msg$1, 0, cutcol$1);
                   var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
                   return /* tuple */[

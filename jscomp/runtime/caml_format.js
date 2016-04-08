@@ -6,8 +6,6 @@ var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_utils              = require("./caml_utils");
 var Caml_string             = require("./caml_string");
 
-var repeat = Caml_utils.repeat;
-
 function caml_failwith(s) {
   throw [
         Caml_builtin_exceptions.failure,
@@ -596,7 +594,7 @@ function caml_format_int(fmt, i) {
       f$1[/* filter */2] = " ";
       var n = f$1[/* prec */9] - s.length;
       if (n > 0) {
-        s = repeat(n, "0") + s;
+        s = Caml_utils.repeat(n, "0") + s;
       }
       
     }
@@ -714,7 +712,7 @@ function caml_int64_format(fmt, x) {
     f[/* filter */2] = " ";
     var n = f[/* prec */9] - s.length;
     if (n > 0) {
-      s = repeat(n, "0") + s;
+      s = Caml_utils.repeat(n, "0") + s;
     }
     
   }
@@ -839,6 +837,8 @@ function (s) {
 }
 
 );
+
+var repeat = Caml_utils.repeat;
 
 var caml_nativeint_format = caml_format_int;
 
