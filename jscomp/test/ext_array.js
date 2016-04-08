@@ -12,10 +12,10 @@ function reverse_in_place(a) {
   var i = 0;
   var len = a.length;
   if (len) {
-    for(var k = 0 ,k_finish = (len - 1) / 2 | 0; k<= k_finish; ++k){
+    for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k<= k_finish; ++k){
       var t = a$1[i + k | 0];
-      a$1[i + k | 0] = a$1[(i + len | 0) - 1 - k];
-      a$1[(i + len | 0) - 1 - k] = t;
+      a$1[i + k | 0] = a$1[((i + len | 0) - 1 | 0) - k | 0];
+      a$1[((i + len | 0) - 1 | 0) - k | 0] = t;
     }
     return /* () */0;
   }
@@ -34,7 +34,7 @@ function reverse_of_list(l) {
       var param = _param;
       var i = _i;
       if (param) {
-        a[len - i - 2] = param[0];
+        a[(len - i | 0) - 2 | 0] = param[0];
         _param = param[1];
         _i = i + 1 | 0;
         continue ;
@@ -118,7 +118,7 @@ function range(from, to_) {
         ];
   }
   else {
-    return $$Array.init(to_ - from + 1 | 0, function (i) {
+    return $$Array.init((to_ - from | 0) + 1 | 0, function (i) {
                 return i + from | 0;
               });
   }

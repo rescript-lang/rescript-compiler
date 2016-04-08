@@ -63,7 +63,7 @@ function nth(l, n) {
       var l$1 = _l;
       if (l$1) {
         if (n$1) {
-          _n = n$1 - 1;
+          _n = n$1 - 1 | 0;
           _l = l$1[1];
           continue ;
           
@@ -815,7 +815,7 @@ function chop(_k, _l) {
     if (k) {
       if (l) {
         _l = l[1];
-        _k = k - 1;
+        _k = k - 1 | 0;
         continue ;
         
       }
@@ -971,7 +971,7 @@ function stable_sort(cmp, l) {
     }
     if (exit === 1) {
       var n1 = (n >> 1);
-      var n2 = n - n1;
+      var n2 = n - n1 | 0;
       var l2 = chop(n1, l);
       var s1 = rev_sort(n1, l);
       var s2 = rev_sort(n2, l2);
@@ -1150,7 +1150,7 @@ function stable_sort(cmp, l) {
     }
     if (exit === 1) {
       var n1 = (n >> 1);
-      var n2 = n - n1;
+      var n2 = n - n1 | 0;
       var l2 = chop(n1, l);
       var s1 = sort(n1, l);
       var s2 = sort(n2, l2);
@@ -1434,7 +1434,7 @@ function sort_uniq(cmp, l) {
     }
     if (exit === 1) {
       var n1 = (n >> 1);
-      var n2 = n - n1;
+      var n2 = n - n1 | 0;
       var l2 = chop(n1, l);
       var s1 = rev_sort(n1, l);
       var s2 = rev_sort(n2, l2);
@@ -1723,7 +1723,7 @@ function sort_uniq(cmp, l) {
     }
     if (exit === 1) {
       var n1 = (n >> 1);
-      var n2 = n - n1;
+      var n2 = n - n1 | 0;
       var l2 = chop(n1, l);
       var s1 = sort(n1, l);
       var s2 = sort(n2, l2);

@@ -10,7 +10,7 @@ function caml_get_public_method(obj, tag, cacheid) {
   var meths = obj[0];
   var offs = caml_methods_cache[cacheid];
   if (meths[offs] === tag) {
-    return meths[offs - 1];
+    return meths[offs - 1 | 0];
   }
   else {
     var aux = function (_i) {
@@ -31,13 +31,13 @@ function caml_get_public_method(obj, tag, cacheid) {
           return i;
         }
         else {
-          _i = i - 2;
+          _i = i - 2 | 0;
           continue ;
           
         }
       };
     };
-    return meths[aux((meths[0] << 1) + 1 | 0) - 1];
+    return meths[aux((meths[0] << 1) + 1 | 0) - 1 | 0];
   }
 }
 

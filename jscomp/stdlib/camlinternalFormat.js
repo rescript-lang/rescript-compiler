@@ -372,7 +372,7 @@ function char_of_counter(counter) {
 function bprint_char_set(buf, char_set) {
   var print_start = function (set) {
     var is_alone = function (c) {
-      var match_000 = Char.chr(c - 1);
+      var match_000 = Char.chr(c - 1 | 0);
       var match_001 = Char.chr(c + 1 | 0);
       if (is_in_char_set(set, c)) {
         return !(is_in_char_set(set, match_000) && is_in_char_set(set, match_001));
@@ -446,7 +446,7 @@ function bprint_char_set(buf, char_set) {
           exit = 1;
         }
         else {
-          print_char(buf, i - 1);
+          print_char(buf, i - 1 | 0);
           return print_out(set, i + 1 | 0);
         }
       }
@@ -456,14 +456,14 @@ function bprint_char_set(buf, char_set) {
       if (exit === 1) {
         if (is_in_char_set(set, Pervasives.char_of_int(i + 1 | 0))) {
           var set$1 = set;
-          var i$1 = i - 1;
+          var i$1 = i - 1 | 0;
           var _j = i + 2 | 0;
           while(true) {
             var j = _j;
             if (j === 256 || !is_in_char_set(set$1, Pervasives.char_of_int(j))) {
               print_char(buf, i$1);
               print_char(buf, /* "-" */45);
-              print_char(buf, j - 1);
+              print_char(buf, j - 1 | 0);
               if (j < 256) {
                 return print_out(set$1, j + 1 | 0);
               }
@@ -479,7 +479,7 @@ function bprint_char_set(buf, char_set) {
           };
         }
         else {
-          print_char(buf, i - 1);
+          print_char(buf, i - 1 | 0);
           print_char(buf, i);
           return print_out(set, i + 2 | 0);
         }
@@ -487,7 +487,7 @@ function bprint_char_set(buf, char_set) {
       
     }
     else {
-      print_char(buf, i - 1);
+      print_char(buf, i - 1 | 0);
       return print_out(set, i + 1 | 0);
     }
   };
@@ -694,7 +694,7 @@ function bprint_char_literal(buf, chr) {
 }
 
 function bprint_string_literal(buf, str) {
-  for(var i = 0 ,i_finish = str.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = str.length - 1 | 0; i<= i_finish; ++i){
     bprint_char_literal(buf, str.charCodeAt(i));
   }
   return /* () */0;
@@ -3423,19 +3423,19 @@ function fix_padding(padty, width, str) {
           $$String.blit(str, 0, res, 0, len);
           break;
       case 1 : 
-          $$String.blit(str, 0, res, width$1 - len, len);
+          $$String.blit(str, 0, res, width$1 - len | 0, len);
           break;
       case 2 : 
           if (len > 0 && (str[0] === "+" || str[0] === "-" || str[0] === " ")) {
             res[0] = str.charCodeAt(0);
-            $$String.blit(str, 1, res, width$1 - len + 1 | 0, len - 1);
+            $$String.blit(str, 1, res, (width$1 - len | 0) + 1 | 0, len - 1 | 0);
           }
           else if (len > 1 && str[0] === "0" && (str[1] === "x" || str[1] === "X")) {
             res[1] = str.charCodeAt(1);
-            $$String.blit(str, 2, res, width$1 - len + 2 | 0, len - 2);
+            $$String.blit(str, 2, res, (width$1 - len | 0) + 2 | 0, len - 2 | 0);
           }
           else {
-            $$String.blit(str, 0, res, width$1 - len, len);
+            $$String.blit(str, 0, res, width$1 - len | 0, len);
           }
           break;
       
@@ -3480,7 +3480,7 @@ function fix_int_precision(prec, str) {
             if ((prec$1 + 2 | 0) > len && len > 1 && (str[1] === "x" || str[1] === "X")) {
               var res = Bytes.make(prec$1 + 2 | 0, /* "0" */48);
               res[1] = str.charCodeAt(1);
-              $$String.blit(str, 2, res, prec$1 - len + 4 | 0, len - 2);
+              $$String.blit(str, 2, res, (prec$1 - len | 0) + 4 | 0, len - 2 | 0);
               return Caml_string.bytes_to_string(res);
             }
             else {
@@ -3513,7 +3513,7 @@ function fix_int_precision(prec, str) {
         if ((prec$1 + 1 | 0) > len) {
           var res$1 = Bytes.make(prec$1 + 1 | 0, /* "0" */48);
           res$1[0] = c;
-          $$String.blit(str, 1, res$1, prec$1 - len + 2 | 0, len - 1);
+          $$String.blit(str, 1, res$1, (prec$1 - len | 0) + 2 | 0, len - 1 | 0);
           return Caml_string.bytes_to_string(res$1);
         }
         else {
@@ -3523,7 +3523,7 @@ function fix_int_precision(prec, str) {
     case 2 : 
         if (prec$1 > len) {
           var res$2 = Bytes.make(prec$1, /* "0" */48);
-          $$String.blit(str, 0, res$2, prec$1 - len, len);
+          $$String.blit(str, 0, res$2, prec$1 - len | 0, len);
           return Caml_string.bytes_to_string(res$2);
         }
         else {
@@ -4846,7 +4846,7 @@ function open_box_of_string(str) {
     };
     var wstart = parse_spaces(0);
     var wend = parse_lword(wstart, wstart);
-    var box_name = $$String.sub(str, wstart, wend - wstart);
+    var box_name = $$String.sub(str, wstart, wend - wstart | 0);
     var nstart = parse_spaces(wend);
     var nend = parse_int(nstart, nstart);
     var indent;
@@ -4855,7 +4855,7 @@ function open_box_of_string(str) {
     }
     else {
       try {
-        indent = Caml_format.caml_int_of_string($$String.sub(str, nstart, nend - nstart));
+        indent = Caml_format.caml_int_of_string($$String.sub(str, nstart, nend - nstart | 0));
       }
       catch (exn){
         if (exn[0] === Caml_builtin_exceptions.failure) {
@@ -5340,7 +5340,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           switch (padty) {
             case 0 : 
                 if (!legacy_behavior$1) {
-                  invalid_format_without(str_ind$2 - 1, /* "-" */45, "padding");
+                  invalid_format_without(str_ind$2 - 1 | 0, /* "-" */45, "padding");
                 }
                 return parse_after_padding(pct_ind$1, str_ind$2, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, /* No_padding */0);
             case 1 : 
@@ -5436,7 +5436,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     });
         }
         else {
-          return invalid_format_without(str_ind$1 - 1, /* "." */46, "precision");
+          return invalid_format_without(str_ind$1 - 1 | 0, /* "." */46, "precision");
         }
       }
       
@@ -6557,7 +6557,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 1: 'invalid format %S: at character number %d, invalid conversion "%%%c"',
                 length: 2,
                 tag: 0
-              }), str, str_ind - 1, symb);
+              }), str, str_ind - 1 | 0, symb);
     }
     if (!legacy_behavior$1) {
       if (!plus_used && plus) {
@@ -6826,7 +6826,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                         throw Caml_builtin_exceptions.not_found;
                       }
                       else {
-                        var s = $$String.sub(str, str_ind$1 - 2, str_ind_3 - str_ind$1 + 3 | 0);
+                        var s = $$String.sub(str, str_ind$1 - 2 | 0, (str_ind_3 - str_ind$1 | 0) + 3 | 0);
                         match$7 = /* tuple */[
                           str_ind_3 + 1 | 0,
                           /* Break */{
@@ -6848,7 +6848,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       if (str.charCodeAt(str_ind_5) !== /* ">" */62) {
                         throw Caml_builtin_exceptions.not_found;
                       }
-                      var s$1 = $$String.sub(str, str_ind$1 - 2, str_ind_5 - str_ind$1 + 3 | 0);
+                      var s$1 = $$String.sub(str, str_ind$1 - 2 | 0, (str_ind_5 - str_ind$1 | 0) + 3 | 0);
                       match$7 = /* tuple */[
                         str_ind_5 + 1 | 0,
                         /* Break */{
@@ -6932,7 +6932,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     if (str.charCodeAt(str_ind_3$1) !== /* ">" */62) {
                       throw Caml_builtin_exceptions.not_found;
                     }
-                    var s$2 = $$String.sub(str, str_ind$2 - 2, str_ind_3$1 - str_ind$2 + 3 | 0);
+                    var s$2 = $$String.sub(str, str_ind$2 - 2 | 0, (str_ind_3$1 - str_ind$2 | 0) + 3 | 0);
                     match$13 = /* Some */[/* tuple */[
                         str_ind_3$1 + 1 | 0,
                         /* Magic_size */{
@@ -7123,7 +7123,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         if (ind >= end_ind) {
           throw Caml_builtin_exceptions.not_found;
         }
-        var sub_str = $$String.sub(str, str_ind, ind - str_ind + 1 | 0);
+        var sub_str = $$String.sub(str, str_ind, (ind - str_ind | 0) + 1 | 0);
         var beg_ind = ind + 1 | 0;
         var match$1 = parse_literal(beg_ind, beg_ind, end_ind);
         var match$2 = parse_literal(str_ind, str_ind, ind + 1 | 0);
@@ -7436,7 +7436,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               ];
       }
       else {
-        var new_acc = Caml_primitive.imul(acc, 10) + (c - /* "0" */48) | 0;
+        var new_acc = Caml_primitive.imul(acc, 10) + (c - /* "0" */48 | 0) | 0;
         if (new_acc > Sys.max_string_length) {
           return Caml_curry.app3(failwith_message(/* Format */{
                           0: /* String_literal */{
@@ -7536,7 +7536,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
   };
   var add_literal = function (lit_start, str_ind, fmt) {
-    var size = str_ind - lit_start;
+    var size = str_ind - lit_start | 0;
     if (size !== 0) {
       if (size !== 1) {
         return /* Fmt_EBB */{
@@ -8184,7 +8184,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     };
   };
   var incompatible_flag = function (pct_ind, str_ind, symb, option) {
-    var subfmt = $$String.sub(str, pct_ind, str_ind - pct_ind);
+    var subfmt = $$String.sub(str, pct_ind, str_ind - pct_ind | 0);
     return Caml_curry.app5(failwith_message(/* Format */{
                     0: /* String_literal */{
                       0: "invalid format ",

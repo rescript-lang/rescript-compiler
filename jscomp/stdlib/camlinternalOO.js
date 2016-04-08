@@ -27,12 +27,12 @@ var params = /* record */[
 
 function public_method_label(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
     accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
   }
-  accu = accu & (1 << 31) - 1;
+  accu = accu & 2147483647;
   if (accu > 1073741823) {
-    return accu - (1 << 31);
+    return accu - -2147483648 | 0;
   }
   else {
     return accu;
@@ -517,8 +517,8 @@ function new_table(pub_labels) {
   var len = pub_labels.length;
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
   methods[0] = len;
-  methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1;
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     methods[(i << 1) + 3 | 0] = pub_labels[i];
   }
   return /* record */[
@@ -772,10 +772,10 @@ function new_methods_variables(table, meths, vals) {
   var nmeths = meths$1.length;
   var nvals = vals.length;
   var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
-  for(var i = 0 ,i_finish = nmeths - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = nmeths - 1 | 0; i<= i_finish; ++i){
     res[i] = get_method_label(table, meths$1[i]);
   }
-  for(var i$1 = 0 ,i_finish$1 = nvals - 1; i$1<= i_finish$1; ++i$1){
+  for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1<= i_finish$1; ++i$1){
     res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
   }
   return res;
@@ -834,7 +834,7 @@ function create_table(public_methods) {
 }
 
 function init_class(table) {
-  inst_var_count[0] = (inst_var_count[0] + table[/* size */0] | 0) - 1;
+  inst_var_count[0] = (inst_var_count[0] + table[/* size */0] | 0) - 1 | 0;
   table[/* initializers */7] = List.rev(table[/* initializers */7]);
   return resize(table, 3 + ((table[/* methods */1][1] << 4) / Sys.word_size | 0) | 0);
 }
@@ -998,7 +998,7 @@ function lookup_keys(i, keys, tables) {
     while(true) {
       var tables$1 = _tables;
       if (tables$1[/* key */0] === key) {
-        return lookup_keys(i - 1, keys, tables$1[/* data */1]);
+        return lookup_keys(i - 1 | 0, keys, tables$1[/* data */1]);
       }
       else if (tables$1[/* next */2] !== /* Empty */0) {
         _tables = tables$1[/* next */2];
@@ -1014,7 +1014,7 @@ function lookup_keys(i, keys, tables) {
           tag: 0
         };
         tables$1[/* next */2] = next;
-        return build_path(i - 1, keys, next);
+        return build_path(i - 1 | 0, keys, next);
       }
     };
   }
@@ -1022,10 +1022,10 @@ function lookup_keys(i, keys, tables) {
 
 function lookup_tables(root, keys) {
   if (root[/* data */1] !== /* Empty */0) {
-    return lookup_keys(keys.length - 1, keys, root[/* data */1]);
+    return lookup_keys(keys.length - 1 | 0, keys, root[/* data */1]);
   }
   else {
-    return build_path(keys.length - 1, keys, root);
+    return build_path(keys.length - 1 | 0, keys, root);
   }
 }
 

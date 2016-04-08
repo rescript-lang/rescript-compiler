@@ -112,7 +112,7 @@ let translate
     -> 
     begin match args with 
     | [e1; e2] ->     
-      E.unchecked_int32_minus e1 e2 
+      E.int32_minus e1 e2 
     | _ -> assert false
     end
   | Psubbint Pint32

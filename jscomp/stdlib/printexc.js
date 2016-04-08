@@ -441,7 +441,7 @@ function print_raw_backtrace(outchan, raw_backtrace) {
   var backtrace = convert_raw_backtrace(raw_backtrace);
   if (backtrace) {
     var a = backtrace[0];
-    for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
         Caml_curry.app1(Printf.fprintf(outchan$1, /* Format */{
@@ -488,7 +488,7 @@ function backtrace_to_string(backtrace) {
   if (backtrace) {
     var a = backtrace[0];
     var b = Buffer.create(1024);
-    for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
         Caml_curry.app1(Printf.bprintf(b, /* Format */{
@@ -559,7 +559,7 @@ function backtrace_slots(raw_backtrace) {
             return /* true */1;
           }
           else {
-            _i = i - 1;
+            _i = i - 1 | 0;
             continue ;
             
           }
@@ -569,7 +569,7 @@ function backtrace_slots(raw_backtrace) {
         }
       };
     };
-    if (exists_usable(backtrace.length - 1)) {
+    if (exists_usable(backtrace.length - 1 | 0)) {
       return /* Some */[backtrace];
     }
     else {

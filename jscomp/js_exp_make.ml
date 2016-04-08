@@ -1053,10 +1053,15 @@ let int32_mod ?comment e1 e2 : J.expression =
     expression_desc = Bin (Mod, e1,e2)
   }
 
-let int32_lsl ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Lsl, e1,e2)
-  }
+let int32_lsl ?comment (e1 : J.expression) (e2 : J.expression) : J.expression = 
+  match e1, e2  with 
+  | {expression_desc = Number (Int {i = i0} | Uint i0)}, 
+    {expression_desc = Number (Int {i = i1} | Uint i1)}
+    -> int ?comment (Int32.shift_left i0 (Int32.to_int i1))
+  | _ -> 
+    { comment ; 
+      expression_desc = Bin (Lsl, e1,e2)
+    }
 
 
 let int32_mul ?comment 

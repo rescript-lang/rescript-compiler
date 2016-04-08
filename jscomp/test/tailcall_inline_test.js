@@ -11,7 +11,7 @@ function f() {
       var n = _n;
       var acc = _acc;
       if (n > 0) {
-        _n = n - 1;
+        _n = n - 1 | 0;
         _acc = acc + n | 0;
         continue ;
         

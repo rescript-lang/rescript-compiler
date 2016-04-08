@@ -729,7 +729,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 break;
             case 12 : 
                 var f = param[0];
-                while(current$1[0] < l - 1) {
+                while(current$1[0] < (l - 1 | 0)) {
                   Caml_curry.app1(f, argv[current$1[0] + 1 | 0]);
                   current$1[0] = current$1[0] + 1 | 0;
                 };
@@ -917,7 +917,7 @@ function align($staropt$star, speclist) {
               else if (spec.tag === 11) {
                 var msg = ksd[2];
                 var cutcol = second_word(msg);
-                var n = Pervasives.max(0, len$2 - cutcol) + 3 | 0;
+                var n = Pervasives.max(0, len$2 - cutcol | 0) + 3 | 0;
                 var spaces = Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
                 return /* tuple */[
                         kwd,
@@ -929,7 +929,7 @@ function align($staropt$star, speclist) {
                 var msg$1 = ksd[2];
                 var cutcol$1 = second_word(msg$1);
                 var kwd_len = kwd.length;
-                var diff = len$2 - kwd_len - cutcol$1;
+                var diff = (len$2 - kwd_len | 0) - cutcol$1 | 0;
                 if (diff <= 0) {
                   return /* tuple */[
                           kwd,
@@ -940,7 +940,7 @@ function align($staropt$star, speclist) {
                 else {
                   var spaces$1 = Caml_string.bytes_to_string(Bytes.make(diff, /* " " */32));
                   var prefix = $$String.sub(msg$1, 0, cutcol$1);
-                  var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1);
+                  var suffix = $$String.sub(msg$1, cutcol$1, msg$1.length - cutcol$1 | 0);
                   return /* tuple */[
                           kwd,
                           spec,

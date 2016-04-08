@@ -19,7 +19,7 @@ function caml_invalid_argument(s) {
 
 function caml_ba_get_size(dims) {
   var size = 1;
-  for(var i = 0 ,i_finish = dims.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = dims.length - 1 | 0; i<= i_finish; ++i){
     var v = dims[i];
     if (v < 0) {
       throw [
@@ -42,7 +42,7 @@ function index_offset_c(n_dims, dims, index) {
           "Bigarray.get/set: bad number of dimensions"
         ];
   }
-  for(var i = 0 ,i_finish = n_dims - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n_dims - 1 | 0; i<= i_finish; ++i){
     var index_j = index[i];
     var dim_j = dims[i];
     if (index_j < 0 || index_j >= dim_j) {
@@ -66,7 +66,7 @@ function index_offset_fortran(n_dims, dims, index) {
           "Bigarray.get/set: bad number of dimensions"
         ];
   }
-  for(var i = n_dims - 1; i>= 0; --i){
+  for(var i = n_dims - 1 | 0; i>= 0; --i){
     var index_j = index[i];
     var dim_j = dims[i];
     if (index_j < 1 || index_j > dim_j) {

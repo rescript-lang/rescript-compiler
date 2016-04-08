@@ -7,11 +7,25 @@ var Caml_primitive = require("../runtime/caml_primitive");
 
 function hash_variant(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
-    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) & (1 << 31) - 1;
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) & 2147483647;
   }
   if (accu > 1073741823) {
-    return accu - (1 << 31) | 0;
+    return accu - -2147483648 | 0;
+  }
+  else {
+    return accu;
+  }
+}
+
+function hash_variant2(s) {
+  var accu = 0;
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
+  }
+  accu = accu & 2147483647;
+  if (accu > 1073741823) {
+    return accu - -2147483648 | 0;
   }
   else {
     return accu;
@@ -101,11 +115,11 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                 ],
                 /* :: */[
                   /* tuple */[
-                    "int_literal_flow",
+                    'File "int_overflow_test.ml", line 37, characters 2-9',
                     function () {
                       return /* Eq */{
-                              0: -1,
-                              1: -1,
+                              0: hash_variant2("xxyyzzuuxxzzyy00112233"),
+                              1: 544087776,
                               length: 2,
                               tag: 0
                             };
@@ -113,11 +127,11 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                   ],
                   /* :: */[
                     /* tuple */[
-                      "int_literal_flow2",
+                      'File "int_overflow_test.ml", line 38, characters 2-9',
                       function () {
                         return /* Eq */{
-                                0: -1,
-                                1: -1,
+                                0: hash_variant2("xxyyzxzzyy"),
+                                1: -449896130,
                                 length: 2,
                                 tag: 0
                               };
@@ -125,7 +139,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                     ],
                     /* :: */[
                       /* tuple */[
-                        "int_literal_flow3",
+                        "int_literal_flow",
                         function () {
                           return /* Eq */{
                                   0: -1,
@@ -135,7 +149,33 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
                                 };
                         }
                       ],
-                      /* [] */0
+                      /* :: */[
+                        /* tuple */[
+                          "int_literal_flow2",
+                          function () {
+                            return /* Eq */{
+                                    0: -1,
+                                    1: -1,
+                                    length: 2,
+                                    tag: 0
+                                  };
+                          }
+                        ],
+                        /* :: */[
+                          /* tuple */[
+                            "int_literal_flow3",
+                            function () {
+                              return /* Eq */{
+                                      0: -1,
+                                      1: -1,
+                                      length: 2,
+                                      tag: 0
+                                    };
+                            }
+                          ],
+                          /* [] */0
+                        ]
+                      ]
                     ]
                   ]
                 ]
@@ -146,6 +186,7 @@ Mt.from_pair_suites("int_overflow_test.ml", /* :: */[
       ]
     ]);
 
-exports.hash_variant = hash_variant;
-exports.fib          = fib;
+exports.hash_variant  = hash_variant;
+exports.hash_variant2 = hash_variant2;
+exports.fib           = fib;
 /*  Not a pure module */

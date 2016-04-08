@@ -49,7 +49,7 @@ function caml_string_compare(s1, s2) {
 
 function caml_fill_string(s, i, l, c) {
   if (l > 0) {
-    for(var k = i ,k_finish = (l + i | 0) - 1; k<= k_finish; ++k){
+    for(var k = i ,k_finish = (l + i | 0) - 1 | 0; k<= k_finish; ++k){
       s[k] = c;
     }
     return /* () */0;
@@ -61,18 +61,18 @@ function caml_fill_string(s, i, l, c) {
 
 function caml_blit_string(s1, i1, s2, i2, len) {
   if (len > 0) {
-    var off1 = s1.length - i1;
+    var off1 = s1.length - i1 | 0;
     if (len <= off1) {
-      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
         s2[i2 + i | 0] = s1.charCodeAt(i1 + i | 0);
       }
       return /* () */0;
     }
     else {
-      for(var i$1 = 0 ,i_finish$1 = off1 - 1; i$1<= i_finish$1; ++i$1){
+      for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1<= i_finish$1; ++i$1){
         s2[i2 + i$1 | 0] = s1.charCodeAt(i1 + i$1 | 0);
       }
-      for(var i$2 = off1 ,i_finish$2 = len - 1; i$2<= i_finish$2; ++i$2){
+      for(var i$2 = off1 ,i_finish$2 = len - 1 | 0; i$2<= i_finish$2; ++i$2){
         s2[i2 + i$2 | 0] = /* "\000" */0;
       }
       return /* () */0;
@@ -85,18 +85,18 @@ function caml_blit_string(s1, i1, s2, i2, len) {
 
 function caml_blit_bytes(s1, i1, s2, i2, len) {
   if (len > 0) {
-    var off1 = s1.length - i1;
+    var off1 = s1.length - i1 | 0;
     if (len <= off1) {
-      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
         s2[i2 + i | 0] = s1[i1 + i | 0];
       }
       return /* () */0;
     }
     else {
-      for(var i$1 = 0 ,i_finish$1 = off1 - 1; i$1<= i_finish$1; ++i$1){
+      for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1<= i_finish$1; ++i$1){
         s2[i2 + i$1 | 0] = s1[i1 + i$1 | 0];
       }
-      for(var i$2 = off1 ,i_finish$2 = len - 1; i$2<= i_finish$2; ++i$2){
+      for(var i$2 = off1 ,i_finish$2 = len - 1 | 0; i$2<= i_finish$2; ++i$2){
         s2[i2 + i$2 | 0] = /* "\000" */0;
       }
       return /* () */0;
@@ -110,7 +110,7 @@ function caml_blit_bytes(s1, i1, s2, i2, len) {
 function bytes_of_string(s) {
   var len = s.length;
   var res = new Array(len);
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     res[i] = s.charCodeAt(i);
   }
   return res;
@@ -132,7 +132,7 @@ function bytes_to_string(a) {
       var tmp_bytes = new Array(next);
       caml_blit_bytes(bytes, offset, tmp_bytes, 0, next);
       s = s + String.fromCharCode.apply(null,tmp_bytes);
-      s_len -= next;
+      s_len = s_len - next | 0;
       offset = offset + next | 0;
     };
     return s;
@@ -142,7 +142,7 @@ function bytes_to_string(a) {
 function caml_string_of_char_array(chars) {
   var len = chars.length;
   var bytes = new Array(len);
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     bytes[i] = chars[i];
   }
   return bytes_to_string(bytes);

@@ -12,7 +12,7 @@ function for_3(x) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length - 1 | 0; i<= i_finish; ++i){
     var j = (i << 1);
     arr[i] = (function(j){
     return function () {
@@ -32,7 +32,7 @@ function for_4(x) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length - 1 | 0; i<= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
     arr[i] = (function(k){
@@ -53,7 +53,7 @@ function for_5(x, u) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length - 1 | 0; i<= i_finish; ++i){
     var k = Caml_primitive.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
@@ -81,7 +81,7 @@ function for_6(x, u) {
     v5[0] = v5[0] + 1 | 0;
     var v2 = [0];
     (function(v2){
-    for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = x.length - 1 | 0; i<= i_finish; ++i){
       var k = Caml_primitive.imul((u << 1), u);
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;

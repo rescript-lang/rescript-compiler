@@ -9,7 +9,7 @@ function caml_obj_dup(x) {
     length: len,
     tag: x.tag | 0
   };
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     v[i] = x[i];
   }
   return v;
@@ -24,7 +24,7 @@ function caml_obj_truncate(x, new_size) {
         ];
   }
   else if (len !== new_size) {
-    for(var i = new_size ,i_finish = len - 1; i<= i_finish; ++i){
+    for(var i = new_size ,i_finish = len - 1 | 0; i<= i_finish; ++i){
       x[i] = 0;
     }
     x.length = new_size;
@@ -45,7 +45,7 @@ function caml_lazy_make_forward(x) {
 
 function caml_update_dummy(x, y) {
   var len = y.length;
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     x[i] = y[i];
   }
   x.tag = y.tag | 0;

@@ -314,7 +314,7 @@ function nget(n, s) {
 
 function npeek(n, s) {
   var match = nget(n, s);
-  s[0] -= match[2];
+  s[0] = s[/* count */0] - match[2] | 0;
   s[1] = match[1];
   return match[0];
 }

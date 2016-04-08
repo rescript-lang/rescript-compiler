@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
-  for(var j = 0 ,j_finish = len - 1; j<= j_finish; ++j){
+  for(var j = 0 ,j_finish = len - 1 | 0; j<= j_finish; ++j){
     result[j] = x[offset + j | 0];
   }
   return result;
@@ -38,7 +38,7 @@ function caml_array_get(xs, index) {
 
 function caml_make_vect(len, init) {
   var b = new Array(len);
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     b[i] = init;
   }
   return b;

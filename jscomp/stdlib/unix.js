@@ -339,7 +339,7 @@ function handle_unix_error(f, arg) {
 }
 
 function read(fd, buf, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.read"
@@ -351,7 +351,7 @@ function read(fd, buf, ofs, len) {
 }
 
 function write(fd, buf, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.write"
@@ -363,7 +363,7 @@ function write(fd, buf, ofs, len) {
 }
 
 function single_write(fd, buf, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.single_write"
@@ -448,7 +448,7 @@ function domain_of_sockaddr(param) {
 }
 
 function recv(fd, buf, ofs, len, flags) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.recv"
@@ -460,7 +460,7 @@ function recv(fd, buf, ofs, len, flags) {
 }
 
 function recvfrom(fd, buf, ofs, len, flags) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.recvfrom"
@@ -472,7 +472,7 @@ function recvfrom(fd, buf, ofs, len, flags) {
 }
 
 function send(fd, buf, ofs, len, flags) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.send"
@@ -484,7 +484,7 @@ function send(fd, buf, ofs, len, flags) {
 }
 
 function sendto(fd, buf, ofs, len, flags, addr) {
-  if (ofs < 0 || len < 0 || ofs > buf.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (buf.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Unix.sendto"

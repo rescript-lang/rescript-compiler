@@ -167,7 +167,7 @@ function yyparse(tables, start, lexer, lexbuf) {
 }
 
 function peek_val(env, n) {
-  return env[/* v_stack */1][env[/* asp */10] - n];
+  return env[/* v_stack */1][env[/* asp */10] - n | 0];
 }
 
 function symbol_start_pos() {
@@ -178,13 +178,13 @@ function symbol_start_pos() {
       return env[/* symb_end_stack */3][env[/* asp */10]];
     }
     else {
-      var st = env[/* symb_start_stack */2][env[/* asp */10] - i + 1 | 0];
-      var en = env[/* symb_end_stack */3][env[/* asp */10] - i + 1 | 0];
+      var st = env[/* symb_start_stack */2][(env[/* asp */10] - i | 0) + 1 | 0];
+      var en = env[/* symb_end_stack */3][(env[/* asp */10] - i | 0) + 1 | 0];
       if (Caml_obj.caml_notequal(st, en)) {
         return st;
       }
       else {
-        _i = i - 1;
+        _i = i - 1 | 0;
         continue ;
         
       }
@@ -197,11 +197,11 @@ function symbol_end_pos() {
 }
 
 function rhs_start_pos(n) {
-  return env[/* symb_start_stack */2][env[/* asp */10] - (env[/* rule_len */11] - n)];
+  return env[/* symb_start_stack */2][env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0];
 }
 
 function rhs_end_pos(n) {
-  return env[/* symb_end_stack */3][env[/* asp */10] - (env[/* rule_len */11] - n)];
+  return env[/* symb_end_stack */3][env[/* asp */10] - (env[/* rule_len */11] - n | 0) | 0];
 }
 
 function symbol_start() {

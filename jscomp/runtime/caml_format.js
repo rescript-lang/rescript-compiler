@@ -28,21 +28,21 @@ function parse_digit(c) {
         return -1;
       }
       else {
-        return c - 87;
+        return c - 87 | 0;
       }
     }
     else if (c >= 91) {
       return -1;
     }
     else {
-      return c - 55;
+      return c - 55 | 0;
     }
   }
   else if (c > 57 || c < 48) {
     return -1;
   }
   else {
-    return c - /* "0" */48;
+    return c - /* "0" */48 | 0;
   }
 }
 
@@ -440,11 +440,11 @@ function parse_format(fmt) {
                 var j = i + 1 | 0;
                 while((function(j){
                     return function () {
-                      var w = fmt.charCodeAt(j) - /* "0" */48;
+                      var w = fmt.charCodeAt(j) - /* "0" */48 | 0;
                       return +(w >= 0 && w <= 9);
                     }
                     }(j))()) {
-                  f[/* prec */9] = (Caml_primitive.imul(f[/* prec */9], 10) + fmt.charCodeAt(j) | 0) - /* "0" */48;
+                  f[/* prec */9] = (Caml_primitive.imul(f[/* prec */9], 10) + fmt.charCodeAt(j) | 0) - /* "0" */48 | 0;
                   j = j + 1 | 0;
                 };
                 _i = j;
@@ -494,11 +494,11 @@ function parse_format(fmt) {
             var j$1 = i;
             while((function(j$1){
                 return function () {
-                  var w = fmt.charCodeAt(j$1) - /* "0" */48;
+                  var w = fmt.charCodeAt(j$1) - /* "0" */48 | 0;
                   return +(w >= 0 && w <= 9);
                 }
                 }(j$1))()) {
-              f[/* width */6] = (Caml_primitive.imul(f[/* width */6], 10) + fmt.charCodeAt(j$1) | 0) - /* "0" */48;
+              f[/* width */6] = (Caml_primitive.imul(f[/* width */6], 10) + fmt.charCodeAt(j$1) | 0) - /* "0" */48 | 0;
               j$1 = j$1 + 1 | 0;
             };
             _i = j$1;
@@ -546,7 +546,7 @@ function finish_formatting(param, rawbuffer) {
   }
   var buffer = "";
   if (justify === "+" && filter === " ") {
-    for(var i = len ,i_finish = width - 1; i<= i_finish; ++i){
+    for(var i = len ,i_finish = width - 1 | 0; i<= i_finish; ++i){
       buffer = buffer + filter;
     }
   }
@@ -566,13 +566,13 @@ function finish_formatting(param, rawbuffer) {
     buffer = buffer + "0x";
   }
   if (justify === "+" && filter === "0") {
-    for(var i$1 = len ,i_finish$1 = width - 1; i$1<= i_finish$1; ++i$1){
+    for(var i$1 = len ,i_finish$1 = width - 1 | 0; i$1<= i_finish$1; ++i$1){
       buffer = buffer + filter;
     }
   }
   buffer = uppercase ? buffer + rawbuffer.toUpperCase() : buffer + rawbuffer;
   if (justify === "-") {
-    for(var i$2 = len ,i_finish$2 = width - 1; i$2<= i_finish$2; ++i$2){
+    for(var i$2 = len ,i_finish$2 = width - 1 | 0; i$2<= i_finish$2; ++i$2){
       buffer = buffer + " ";
     }
   }
@@ -593,7 +593,7 @@ function caml_format_int(fmt, i) {
     var s = i$2.toString(int_of_base(f$1[/* base */4]));
     if (f$1[/* prec */9] >= 0) {
       f$1[/* filter */2] = " ";
-      var n = f$1[/* prec */9] - s.length;
+      var n = f$1[/* prec */9] - s.length | 0;
       if (n > 0) {
         s = Caml_utils.repeat(n, "0") + s;
       }
@@ -711,7 +711,7 @@ function caml_int64_format(fmt, x) {
   }
   if (f[/* prec */9] >= 0) {
     f[/* filter */2] = " ";
-    var n = f[/* prec */9] - s.length;
+    var n = f[/* prec */9] - s.length | 0;
     if (n > 0) {
       s = Caml_utils.repeat(n, "0") + s;
     }
@@ -735,8 +735,8 @@ function caml_format_float(fmt, x) {
       case "e" : 
           s = x$1.toExponential(prec);
           var i = s.length;
-          if (s[i - 3] === "e") {
-            s = s.slice(0, i - 1) + ("0" + s.slice(i - 1));
+          if (s[i - 3 | 0] === "e") {
+            s = s.slice(0, i - 1 | 0) + ("0" + s.slice(i - 1 | 0));
           }
           break;
       case "f" : 
@@ -744,11 +744,11 @@ function caml_format_float(fmt, x) {
           break;
       case "g" : 
           var prec$1 = prec !== 0 ? prec : 1;
-          s = x$1.toExponential(prec$1 - 1);
+          s = x$1.toExponential(prec$1 - 1 | 0);
           var j = s.indexOf("e");
           var exp = +s.slice(j + 1 | 0);
           if (exp < -4 || x$1 >= 1e21 || x$1.toFixed(0).length > prec$1) {
-            var i$1 = j - 1;
+            var i$1 = j - 1 | 0;
             while(s[i$1] === "0") {
               i$1 = i$1 - 1 | 0;
             };
@@ -757,15 +757,15 @@ function caml_format_float(fmt, x) {
             }
             s = s.slice(0, i$1 + 1 | 0) + s.slice(j);
             var i$2 = s.length;
-            if (s[i$2 - 3] === "e") {
-              s = s.slice(0, i$2 - 1) + ("0" + s.slice(i$2 - 1));
+            if (s[i$2 - 3 | 0] === "e") {
+              s = s.slice(0, i$2 - 1 | 0) + ("0" + s.slice(i$2 - 1 | 0));
             }
             
           }
           else {
             var p = prec$1;
             if (exp < 0) {
-              p -= (exp + 1 | 0);
+              p = p - (exp + 1 | 0) | 0;
               s = x$1.toFixed(p);
             }
             else {
@@ -777,7 +777,7 @@ function caml_format_float(fmt, x) {
               };
             }
             if (p !== 0) {
-              var k = s.length - 1;
+              var k = s.length - 1 | 0;
               while(s[k] === "0") {
                 k = k - 1 | 0;
               };

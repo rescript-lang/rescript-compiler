@@ -241,8 +241,8 @@ function iter_interval(f, _l, _param) {
         Caml_curry.app1(f, match[0]);
       }
       _param = /* tuple */[
-        start - 1,
-        stop - 1
+        start - 1 | 0,
+        stop - 1 | 0
       ];
       _l = match[1];
       continue ;

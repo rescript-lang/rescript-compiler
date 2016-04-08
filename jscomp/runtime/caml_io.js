@@ -9,7 +9,7 @@ var stdin = undefined;
 var stdout = /* record */[
   "",
   function (_, s) {
-    var v = s.length - 1;
+    var v = s.length - 1 | 0;
     if (( (typeof process !== "undefined") && process.stdout && process.stdout.write)) {
       return ( process.stdout.write )(s);
     }
@@ -27,7 +27,7 @@ var stdout = /* record */[
 var stderr = /* record */[
   "",
   function (_, s) {
-    var v = s.length - 1;
+    var v = s.length - 1 | 0;
     if (s[v] === "\n") {
       console.log(s.slice(0, v));
       return /* () */0;

@@ -14,7 +14,7 @@ function split_by($staropt$star, is_delim, str) {
   var len = str.length;
   var _acc = /* [] */0;
   var _last_pos = len;
-  var _pos = len - 1;
+  var _pos = len - 1 | 0;
   while(true) {
     var pos = _pos;
     var last_pos = _last_pos;
@@ -26,10 +26,10 @@ function split_by($staropt$star, is_delim, str) {
             ];
     }
     else if (Caml_curry.app1(is_delim, str.charCodeAt(pos))) {
-      var new_len = last_pos - pos - 1;
+      var new_len = (last_pos - pos | 0) - 1 | 0;
       if (new_len !== 0 || keep_empty) {
         var v = $$String.sub(str, pos + 1 | 0, new_len);
-        _pos = pos - 1;
+        _pos = pos - 1 | 0;
         _last_pos = pos;
         _acc = /* :: */[
           v,
@@ -39,14 +39,14 @@ function split_by($staropt$star, is_delim, str) {
         
       }
       else {
-        _pos = pos - 1;
+        _pos = pos - 1 | 0;
         _last_pos = pos;
         continue ;
         
       }
     }
     else {
-      _pos = pos - 1;
+      _pos = pos - 1 | 0;
       continue ;
       
     }
@@ -80,8 +80,8 @@ function starts_with(s, beg) {
 }
 
 function ends_with(s, beg) {
-  var s_finish = s.length - 1;
-  var s_beg = beg.length - 1;
+  var s_finish = s.length - 1 | 0;
+  var s_beg = beg.length - 1 | 0;
   if (s_beg > s_finish) {
     return /* false */0;
   }
@@ -95,8 +95,8 @@ function ends_with(s, beg) {
         return /* true */1;
       }
       else if (s[j] === beg[k]) {
-        _k = k - 1;
-        _j = j - 1;
+        _k = k - 1 | 0;
+        _j = j - 1 | 0;
         continue ;
         
       }
@@ -241,7 +241,7 @@ function find($staropt$star, sub, s) {
 
 function rfind(sub, s) {
   var n = sub.length;
-  var i = s.length - n;
+  var i = s.length - n | 0;
   var Exit = {
     0: "Exit",
     1: Caml_builtin_exceptions.get_id(),
@@ -277,7 +277,7 @@ function tail_from(s, x) {
         ];
   }
   else {
-    return $$String.sub(s, x, len - x);
+    return $$String.sub(s, x, len - x | 0);
   }
 }
 

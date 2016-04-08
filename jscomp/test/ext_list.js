@@ -338,7 +338,7 @@ function take(n, l) {
   else {
     return /* tuple */[
             $$Array.to_list($$Array.sub(arr, 0, n)),
-            $$Array.to_list($$Array.sub(arr, n, arr_length - n))
+            $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
           ];
   }
 }
@@ -357,7 +357,7 @@ function try_take(n, l) {
     return /* tuple */[
             $$Array.to_list($$Array.sub(arr, 0, n)),
             n,
-            $$Array.to_list($$Array.sub(arr, n, arr_length - n))
+            $$Array.to_list($$Array.sub(arr, n, arr_length - n | 0))
           ];
   }
 }
@@ -449,7 +449,7 @@ function drop(_n, _h) {
     else if (n) {
       if (h) {
         _h = List.tl(h);
-        _n = n - 1;
+        _n = n - 1 | 0;
         continue ;
         
       }

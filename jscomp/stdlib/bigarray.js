@@ -8,7 +8,7 @@ var Caml_array              = require("../runtime/caml_array");
 function dims(a) {
   var n = Caml_bigarray.caml_ba_num_dims(a);
   var d = Caml_array.caml_make_vect(n, 0);
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
     d[i] = Caml_bigarray.caml_ba_dim(a, i);
   }
   return d;
@@ -34,7 +34,7 @@ function create(kind, layout, dim) {
 function of_array(kind, layout, data) {
   var ba = create(kind, layout, data.length);
   var ofs = layout !== 0 ? 1 : 0;
-  for(var i = 0 ,i_finish = data.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = data.length - 1 | 0; i<= i_finish; ++i){
     Caml_bigarray.caml_ba_set_1(ba, i + ofs | 0, data[i]);
   }
   return ba;
@@ -70,7 +70,7 @@ function of_array$1(kind, layout, data) {
   var dim2 = dim1 ? data[0].length : 0;
   var ba = create$1(kind, layout, dim1, dim2);
   var ofs = layout !== 0 ? 1 : 0;
-  for(var i = 0 ,i_finish = dim1 - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = dim1 - 1 | 0; i<= i_finish; ++i){
     var row = data[i];
     if (row.length !== dim2) {
       throw [
@@ -78,7 +78,7 @@ function of_array$1(kind, layout, data) {
             "Bigarray.Array2.of_array: non-rectangular data"
           ];
     }
-    for(var j = 0 ,j_finish = dim2 - 1; j<= j_finish; ++j){
+    for(var j = 0 ,j_finish = dim2 - 1 | 0; j<= j_finish; ++j){
       Caml_bigarray.caml_ba_set_2(ba, i + ofs | 0, j + ofs | 0, row[j]);
     }
   }
@@ -136,7 +136,7 @@ function of_array$2(kind, layout, data) {
   var dim3 = dim2 ? data[0][0].length : 0;
   var ba = create$2(kind, layout, dim1, dim2, dim3);
   var ofs = layout !== 0 ? 1 : 0;
-  for(var i = 0 ,i_finish = dim1 - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = dim1 - 1 | 0; i<= i_finish; ++i){
     var row = data[i];
     if (row.length !== dim2) {
       throw [
@@ -144,7 +144,7 @@ function of_array$2(kind, layout, data) {
             "Bigarray.Array3.of_array: non-cubic data"
           ];
     }
-    for(var j = 0 ,j_finish = dim2 - 1; j<= j_finish; ++j){
+    for(var j = 0 ,j_finish = dim2 - 1 | 0; j<= j_finish; ++j){
       var col = row[j];
       if (col.length !== dim3) {
         throw [
@@ -152,7 +152,7 @@ function of_array$2(kind, layout, data) {
               "Bigarray.Array3.of_array: non-cubic data"
             ];
       }
-      for(var k = 0 ,k_finish = dim3 - 1; k<= k_finish; ++k){
+      for(var k = 0 ,k_finish = dim3 - 1 | 0; k<= k_finish; ++k){
         Caml_bigarray.caml_ba_set_3(ba, i + ofs | 0, j + ofs | 0, k + ofs | 0, col[k]);
       }
     }

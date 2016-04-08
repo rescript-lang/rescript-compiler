@@ -10,7 +10,7 @@ function app(_f, _args) {
     var f = _f;
     var arity = f.length;
     var len = args.length;
-    var d = arity - len;
+    var d = arity - len | 0;
     if (d) {
       if (d < 0) {
         _args = Caml_array.caml_array_sub(args, arity, -d);

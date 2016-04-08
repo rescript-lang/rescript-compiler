@@ -10,7 +10,7 @@ function f() {
             return 1;
           }
           else {
-            return fib(n - 1) + fib(n - 2) | 0;
+            return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
           }
         };
         return +(fib(n) > 10);

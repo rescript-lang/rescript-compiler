@@ -18,7 +18,7 @@ function make(n, c) {
 
 function init(n, f) {
   var s = Caml_string.caml_create_string(n);
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
     s[i] = Caml_curry.app1(f, i);
   }
   return s;
@@ -42,7 +42,7 @@ function of_string(s) {
 }
 
 function sub(s, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "String.sub / Bytes.sub"
@@ -71,7 +71,7 @@ function extend(s, left, right) {
     ];
   var dstoff = match[1];
   var srcoff = match[0];
-  var cpylen = Pervasives.min(s.length - srcoff, len - dstoff);
+  var cpylen = Pervasives.min(s.length - srcoff | 0, len - dstoff | 0);
   if (cpylen > 0) {
     Caml_string.caml_blit_bytes(s, srcoff, r, dstoff, cpylen);
   }
@@ -79,7 +79,7 @@ function extend(s, left, right) {
 }
 
 function fill(s, ofs, len, c) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "String.fill / Bytes.fill"
@@ -91,7 +91,7 @@ function fill(s, ofs, len, c) {
 }
 
 function blit(s1, ofs1, s2, ofs2, len) {
-  if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
+  if (len < 0 || ofs1 < 0 || ofs1 > (s1.length - len | 0) || ofs2 < 0 || ofs2 > (s2.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Bytes.blit"
@@ -103,7 +103,7 @@ function blit(s1, ofs1, s2, ofs2, len) {
 }
 
 function blit_string(s1, ofs1, s2, ofs2, len) {
-  if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
+  if (len < 0 || ofs1 < 0 || ofs1 > (s1.length - len | 0) || ofs2 < 0 || ofs2 > (s2.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "String.blit / Bytes.blit_string"
@@ -115,14 +115,14 @@ function blit_string(s1, ofs1, s2, ofs2, len) {
 }
 
 function iter(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
     Caml_curry.app1(f, a[i]);
   }
   return /* () */0;
 }
 
 function iteri(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
     Caml_curry.app2(f, i, a[i]);
   }
   return /* () */0;
@@ -138,7 +138,7 @@ function concat(sep, l) {
           len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1) | 0);
+    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
     Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {
@@ -183,12 +183,12 @@ function trim(s) {
   while(i < len && is_space(s[i])) {
     i = i + 1 | 0;
   };
-  var j = len - 1;
+  var j = len - 1 | 0;
   while(j >= i && is_space(s[j])) {
     j = j - 1 | 0;
   };
   if (j >= i) {
-    return sub(s, i, j - i + 1 | 0);
+    return sub(s, i, (j - i | 0) + 1 | 0);
   }
   else {
     return empty;
@@ -197,7 +197,7 @@ function trim(s) {
 
 function escaped(s) {
   var n = 0;
-  for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
     var c = s[i];
     var $js;
     var exit = 0;
@@ -234,7 +234,7 @@ function escaped(s) {
   else {
     var s$prime = Caml_string.caml_create_string(n);
     n = 0;
-    for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
+    for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
       var switcher = c$1 - 34 | 0;
@@ -312,7 +312,7 @@ function map(f, s) {
   var l = s.length;
   if (l) {
     var r = Caml_string.caml_create_string(l);
-    for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
       r[i] = Caml_curry.app1(f, s[i]);
     }
     return r;
@@ -326,7 +326,7 @@ function mapi(f, s) {
   var l = s.length;
   if (l) {
     var r = Caml_string.caml_create_string(l);
-    for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
       r[i] = Caml_curry.app2(f, i, s[i]);
     }
     return r;
@@ -407,7 +407,7 @@ function rindex_rec(s, _i, c) {
       return i;
     }
     else {
-      _i = i - 1;
+      _i = i - 1 | 0;
       continue ;
       
     }
@@ -415,7 +415,7 @@ function rindex_rec(s, _i, c) {
 }
 
 function rindex(s, c) {
-  return rindex_rec(s, s.length - 1, c);
+  return rindex_rec(s, s.length - 1 | 0, c);
 }
 
 function rindex_from(s, i, c) {

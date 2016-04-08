@@ -60,7 +60,7 @@ function append(a1, a2) {
 }
 
 function sub(a, ofs, len) {
-  if (len < 0 || ofs > a.length - len) {
+  if (len < 0 || ofs > (a.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.sub"
@@ -72,14 +72,14 @@ function sub(a, ofs, len) {
 }
 
 function fill(a, ofs, len, v) {
-  if (ofs < 0 || len < 0 || ofs > a.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (a.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.fill"
         ];
   }
   else {
-    for(var i = ofs ,i_finish = (ofs + len | 0) - 1; i<= i_finish; ++i){
+    for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i<= i_finish; ++i){
       a[i] = v;
     }
     return /* () */0;
@@ -87,7 +87,7 @@ function fill(a, ofs, len, v) {
 }
 
 function blit(a1, ofs1, a2, ofs2, len) {
-  if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
+  if (len < 0 || ofs1 < 0 || ofs1 > (a1.length - len | 0) || ofs2 < 0 || ofs2 > (a2.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Array.blit"
@@ -99,7 +99,7 @@ function blit(a1, ofs1, a2, ofs2, len) {
 }
 
 function iter(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
     Caml_curry.app1(f, a[i]);
   }
   return /* () */0;
@@ -109,7 +109,7 @@ function map(f, a) {
   var l = a.length;
   if (l) {
     var r = Caml_array.caml_make_vect(l, Caml_curry.app1(f, a[0]));
-    for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
+    for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
       r[i] = Caml_curry.app1(f, a[i]);
     }
     return r;
@@ -120,7 +120,7 @@ function map(f, a) {
 }
 
 function iteri(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
     Caml_curry.app2(f, i, a[i]);
   }
   return /* () */0;
@@ -130,7 +130,7 @@ function mapi(f, a) {
   var l = a.length;
   if (l) {
     var r = Caml_array.caml_make_vect(l, Caml_curry.app2(f, 0, a[0]));
-    for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
+    for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
       r[i] = Caml_curry.app2(f, i, a[i]);
     }
     return r;
@@ -141,7 +141,7 @@ function mapi(f, a) {
 }
 
 function to_list(a) {
-  var _i = a.length - 1;
+  var _i = a.length - 1 | 0;
   var _res = /* [] */0;
   while(true) {
     var res = _res;
@@ -154,7 +154,7 @@ function to_list(a) {
         a[i],
         res
       ];
-      _i = i - 1;
+      _i = i - 1 | 0;
       continue ;
       
     }
@@ -204,7 +204,7 @@ function of_list(l) {
 
 function fold_left(f, x, a) {
   var r = x;
-  for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
     r = Caml_curry.app2(f, r, a[i]);
   }
   return r;
@@ -212,7 +212,7 @@ function fold_left(f, x, a) {
 
 function fold_right(f, a, x) {
   var r = x;
-  for(var i = a.length - 1; i>= 0; --i){
+  for(var i = a.length - 1 | 0; i>= 0; --i){
     r = Caml_curry.app2(f, a[i], r);
   }
   return r;
@@ -306,7 +306,7 @@ function sort(cmp, a) {
   var trickleup = function (_i, e) {
     while(true) {
       var i = _i;
-      var father = (i - 1) / 3 | 0;
+      var father = (i - 1 | 0) / 3 | 0;
       if (i === father) {
         throw [
               Caml_builtin_exceptions.assert_failure,
@@ -336,10 +336,10 @@ function sort(cmp, a) {
     };
   };
   var l = a.length;
-  for(var i = ((l + 1 | 0) / 3 | 0) - 1; i>= 0; --i){
+  for(var i = ((l + 1 | 0) / 3 | 0) - 1 | 0; i>= 0; --i){
     trickle(l, i, a[i]);
   }
-  for(var i$1 = l - 1; i$1>= 2; --i$1){
+  for(var i$1 = l - 1 | 0; i$1>= 2; --i$1){
     var e = a[i$1];
     a[i$1] = a[0];
     trickleup(bubble(i$1, 0), e);
@@ -381,7 +381,7 @@ function stable_sort(cmp, a) {
           
         }
         else {
-          return blit(src2, i2, dst, d + 1 | 0, src2r - i2);
+          return blit(src2, i2, dst, d + 1 | 0, src2r - i2 | 0);
         }
       }
       else {
@@ -395,15 +395,15 @@ function stable_sort(cmp, a) {
           
         }
         else {
-          return blit(a, i1, dst, d + 1 | 0, src1r - i1);
+          return blit(a, i1, dst, d + 1 | 0, src1r - i1 | 0);
         }
       }
     };
   };
   var isortto = function (srcofs, dst, dstofs, len) {
-    for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
       var e = a[srcofs + i | 0];
-      var j = (dstofs + i | 0) - 1;
+      var j = (dstofs + i | 0) - 1 | 0;
       while(j >= dstofs && Caml_curry.app2(cmp, dst[j], e) > 0) {
         dst[j + 1 | 0] = dst[j];
         j = j - 1 | 0;
@@ -418,7 +418,7 @@ function stable_sort(cmp, a) {
     }
     else {
       var l1 = len / 2 | 0;
-      var l2 = len - l1;
+      var l2 = len - l1 | 0;
       sortto(srcofs + l1 | 0, dst, dstofs + l1 | 0, l2);
       sortto(srcofs, a, srcofs + l2 | 0, l1);
       return merge(srcofs + l2 | 0, l1, dst, dstofs + l1 | 0, l2, dst, dstofs);
@@ -430,7 +430,7 @@ function stable_sort(cmp, a) {
   }
   else {
     var l1 = l / 2 | 0;
-    var l2 = l - l1;
+    var l2 = l - l1 | 0;
     var t = Caml_array.caml_make_vect(l2, a[0]);
     sortto(l1, t, 0, l2);
     sortto(0, a, l2, l1);

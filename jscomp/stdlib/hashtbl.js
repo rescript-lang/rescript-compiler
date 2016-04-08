@@ -109,7 +109,7 @@ function create($staropt$star, initial_size) {
 function clear(h) {
   h[/* size */0] = 0;
   var len = h[/* data */1].length;
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     h[/* data */1][i] = /* Empty */0;
   }
   return /* () */0;
@@ -165,7 +165,7 @@ function resize(indexfun, h) {
         return /* () */0;
       }
     };
-    for(var i = 0 ,i_finish = osize - 1; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = osize - 1 | 0; i<= i_finish; ++i){
       insert_bucket(odata[i]);
     }
     return /* () */0;
@@ -177,7 +177,7 @@ function resize(indexfun, h) {
 
 function key_index(h, key) {
   if (h.length >= 3) {
-    return Caml_primitive.caml_hash(10, 100, h[/* seed */2], key) & h[/* data */1].length - 1;
+    return Caml_primitive.caml_hash(10, 100, h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
   }
   else {
     return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[/* data */1].length;
@@ -219,7 +219,7 @@ function remove(h, key) {
               };
       }
       else {
-        -- h[0];
+        h[/* size */0] = h[/* size */0] - 1 | 0;
         return next;
       }
     }
@@ -405,7 +405,7 @@ function iter(f, h) {
     };
   };
   var d = h[/* data */1];
-  for(var i = 0 ,i_finish = d.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
     do_bucket(d[i]);
   }
   return /* () */0;
@@ -429,7 +429,7 @@ function fold(f, h, init) {
   };
   var d = h[/* data */1];
   var accu = init;
-  for(var i = 0 ,i_finish = d.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
     accu = do_bucket(d[i], accu);
   }
   return accu;
@@ -471,7 +471,7 @@ function stats(h) {
 
 function MakeSeeded(H) {
   var key_index = function (h, key) {
-    return Caml_curry.app2(H[1], h[/* seed */2], key) & h[/* data */1].length - 1;
+    return Caml_curry.app2(H[1], h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
@@ -498,7 +498,7 @@ function MakeSeeded(H) {
         var next = param[2];
         var k = param[0];
         if (Caml_curry.app2(H[0], k, key)) {
-          -- h[0];
+          h[/* size */0] = h[/* size */0] - 1 | 0;
           return next;
         }
         else {
@@ -689,7 +689,7 @@ function MakeSeeded(H) {
 function Make(H) {
   var equal = H[0];
   var key_index = function (h, key) {
-    return Caml_curry.app1(H[1], key) & h[/* data */1].length - 1;
+    return Caml_curry.app1(H[1], key) & (h[/* data */1].length - 1 | 0);
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
@@ -716,7 +716,7 @@ function Make(H) {
         var next = param[2];
         var k = param[0];
         if (Caml_curry.app2(equal, k, key)) {
-          -- h[0];
+          h[/* size */0] = h[/* size */0] - 1 | 0;
           return next;
         }
         else {

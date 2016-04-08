@@ -64,7 +64,7 @@ function caml_array_concat(l) {
 
 function caml_make_vect(len, init) {
   var b = new Array(len);
-  for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
     b[i] = init;
   }
   return b;
@@ -72,13 +72,13 @@ function caml_make_vect(len, init) {
 
 function caml_array_blit(a1, i1, a2, i2, len) {
   if (i2 <= i1) {
-    for(var j = 0 ,j_finish = len - 1; j<= j_finish; ++j){
+    for(var j = 0 ,j_finish = len - 1 | 0; j<= j_finish; ++j){
       a2[j + i2 | 0] = a1[j + i1 | 0];
     }
     return /* () */0;
   }
   else {
-    for(var j$1 = len - 1; j$1>= 0; --j$1){
+    for(var j$1 = len - 1 | 0; j$1>= 0; --j$1){
       a2[j$1 + i2 | 0] = a1[j$1 + i1 | 0];
     }
     return /* () */0;
