@@ -4,8 +4,6 @@
 var Pervasives = require("../stdlib/pervasives");
 var List       = require("../stdlib/list");
 
-var $at = Pervasives.$at;
-
 var Pervasives$1 = /* module */[
   List.length,
   List.hd,
@@ -72,7 +70,7 @@ var Pervasives$1 = /* module */[
   Pervasives.bool_of_string,
   Pervasives.string_of_int,
   Pervasives.string_of_float,
-  $at,
+  Pervasives.$at,
   Pervasives.stdin,
   Pervasives.stdout,
   Pervasives.stderr,
@@ -139,7 +137,7 @@ var Pervasives$1 = /* module */[
   Pervasives.do_at_exit
 ];
 
-var f = $at;
+var f = Pervasives.$at;
 
 exports.Pervasives = Pervasives$1;
 exports.f          = f;

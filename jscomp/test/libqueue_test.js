@@ -7,32 +7,8 @@ var Queue                   = require("../stdlib/queue");
 var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
-var Empty = Queue.Empty;
-
-var create = Queue.create;
-
-var add = Queue.add;
-
-var take = Queue.take;
-
-var peek = Queue.peek;
-
-var clear = Queue.clear;
-
-var copy = Queue.copy;
-
-var is_empty = Queue.is_empty;
-
-var length = Queue.length;
-
-var iter = Queue.iter;
-
-var fold = Queue.fold;
-
-var transfer = Queue.transfer;
-
 function to_list(q) {
-  return List.rev(Caml_curry.app3(fold, function (l, x) {
+  return List.rev(Queue.fold(function (l, x) {
                   return /* :: */[
                           x,
                           l
@@ -41,21 +17,21 @@ function to_list(q) {
 }
 
 var Q = /* module */[
-  Empty,
-  create,
-  add,
+  Queue.Empty,
+  Queue.create,
+  Queue.add,
   Queue.push,
-  take,
+  Queue.take,
   Queue.pop,
-  peek,
+  Queue.peek,
   Queue.top,
-  clear,
-  copy,
-  is_empty,
-  length,
-  iter,
-  fold,
-  transfer,
+  Queue.clear,
+  Queue.copy,
+  Queue.is_empty,
+  Queue.length,
+  Queue.iter,
+  Queue.fold,
+  Queue.transfer,
   to_list
 ];
 
@@ -65,7 +41,7 @@ function does_raise(f, q) {
     return /* false */0;
   }
   catch (exn){
-    if (exn === Empty) {
+    if (exn === Queue.Empty) {
       return /* true */1;
     }
     else {
@@ -74,9 +50,12 @@ function does_raise(f, q) {
   }
 }
 
-var q = Caml_curry.app1(create, /* () */0);
+var q = /* record */[
+  0,
+  /* None */0
+];
 
-if (!(to_list(q) === /* [] */0 && Caml_curry.app1(length, q) === 0)) {
+if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -87,12 +66,12 @@ if (!(to_list(q) === /* [] */0 && Caml_curry.app1(length, q) === 0)) {
       ];
 }
 
-Caml_curry.app2(add, 1, q);
+Queue.add(1, q);
 
 if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           1,
           /* [] */0
-        ]) && Caml_curry.app1(length, q) === 1)) {
+        ]) && q[/* length */0] === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -103,7 +82,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-Caml_curry.app2(add, 2, q);
+Queue.add(2, q);
 
 if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           1,
@@ -111,7 +90,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
             2,
             /* [] */0
           ]
-        ]) && Caml_curry.app1(length, q) === 2)) {
+        ]) && q[/* length */0] === 2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -122,7 +101,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-Caml_curry.app2(add, 3, q);
+Queue.add(3, q);
 
 if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           1,
@@ -133,7 +112,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
               /* [] */0
             ]
           ]
-        ]) && Caml_curry.app1(length, q) === 3)) {
+        ]) && q[/* length */0] === 3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -144,7 +123,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-Caml_curry.app2(add, 4, q);
+Queue.add(4, q);
 
 if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           1,
@@ -158,7 +137,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
               ]
             ]
           ]
-        ]) && Caml_curry.app1(length, q) === 4)) {
+        ]) && q[/* length */0] === 4)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -169,7 +148,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(take, q) !== 1) {
+if (Queue.take(q) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -189,7 +168,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
               /* [] */0
             ]
           ]
-        ]) && Caml_curry.app1(length, q) === 3)) {
+        ]) && q[/* length */0] === 3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -200,7 +179,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(take, q) !== 2) {
+if (Queue.take(q) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -217,7 +196,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
             4,
             /* [] */0
           ]
-        ]) && Caml_curry.app1(length, q) === 2)) {
+        ]) && q[/* length */0] === 2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -228,7 +207,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(take, q) !== 3) {
+if (Queue.take(q) !== 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -242,7 +221,7 @@ if (Caml_curry.app1(take, q) !== 3) {
 if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
           4,
           /* [] */0
-        ]) && Caml_curry.app1(length, q) === 1)) {
+        ]) && q[/* length */0] === 1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -253,7 +232,7 @@ if (!(Caml_obj.caml_equal(to_list(q), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(take, q) !== 4) {
+if (Queue.take(q) !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -264,7 +243,7 @@ if (Caml_curry.app1(take, q) !== 4) {
       ];
 }
 
-if (!(to_list(q) === /* [] */0 && Caml_curry.app1(length, q) === 0)) {
+if (!(to_list(q) === /* [] */0 && q[/* length */0] === 0)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -275,7 +254,7 @@ if (!(to_list(q) === /* [] */0 && Caml_curry.app1(length, q) === 0)) {
       ];
 }
 
-if (!does_raise(take, q)) {
+if (!does_raise(Queue.take, q)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -286,11 +265,14 @@ if (!does_raise(take, q)) {
       ];
 }
 
-var q$1 = Caml_curry.app1(create, /* () */0);
+var q$1 = /* record */[
+  0,
+  /* None */0
+];
 
-Caml_curry.app2(add, 1, q$1);
+Queue.add(1, q$1);
 
-if (Caml_curry.app1(take, q$1) !== 1) {
+if (Queue.take(q$1) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -301,7 +283,7 @@ if (Caml_curry.app1(take, q$1) !== 1) {
       ];
 }
 
-if (!does_raise(take, q$1)) {
+if (!does_raise(Queue.take, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -312,9 +294,9 @@ if (!does_raise(take, q$1)) {
       ];
 }
 
-Caml_curry.app2(add, 2, q$1);
+Queue.add(2, q$1);
 
-if (Caml_curry.app1(take, q$1) !== 2) {
+if (Queue.take(q$1) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -325,7 +307,7 @@ if (Caml_curry.app1(take, q$1) !== 2) {
       ];
 }
 
-if (!does_raise(take, q$1)) {
+if (!does_raise(Queue.take, q$1)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -336,7 +318,7 @@ if (!does_raise(take, q$1)) {
       ];
 }
 
-if (Caml_curry.app1(length, q$1) !== 0) {
+if (q$1[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -347,11 +329,14 @@ if (Caml_curry.app1(length, q$1) !== 0) {
       ];
 }
 
-var q$2 = Caml_curry.app1(create, /* () */0);
+var q$2 = /* record */[
+  0,
+  /* None */0
+];
 
-Caml_curry.app2(add, 1, q$2);
+Queue.add(1, q$2);
 
-if (Caml_curry.app1(peek, q$2) !== 1) {
+if (Queue.peek(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -362,9 +347,9 @@ if (Caml_curry.app1(peek, q$2) !== 1) {
       ];
 }
 
-Caml_curry.app2(add, 2, q$2);
+Queue.add(2, q$2);
 
-if (Caml_curry.app1(peek, q$2) !== 1) {
+if (Queue.peek(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -375,9 +360,9 @@ if (Caml_curry.app1(peek, q$2) !== 1) {
       ];
 }
 
-Caml_curry.app2(add, 3, q$2);
+Queue.add(3, q$2);
 
-if (Caml_curry.app1(peek, q$2) !== 1) {
+if (Queue.peek(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -388,7 +373,7 @@ if (Caml_curry.app1(peek, q$2) !== 1) {
       ];
 }
 
-if (Caml_curry.app1(peek, q$2) !== 1) {
+if (Queue.peek(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -399,7 +384,7 @@ if (Caml_curry.app1(peek, q$2) !== 1) {
       ];
 }
 
-if (Caml_curry.app1(take, q$2) !== 1) {
+if (Queue.take(q$2) !== 1) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -410,7 +395,7 @@ if (Caml_curry.app1(take, q$2) !== 1) {
       ];
 }
 
-if (Caml_curry.app1(peek, q$2) !== 2) {
+if (Queue.peek(q$2) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -421,7 +406,7 @@ if (Caml_curry.app1(peek, q$2) !== 2) {
       ];
 }
 
-if (Caml_curry.app1(take, q$2) !== 2) {
+if (Queue.take(q$2) !== 2) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -432,7 +417,7 @@ if (Caml_curry.app1(take, q$2) !== 2) {
       ];
 }
 
-if (Caml_curry.app1(peek, q$2) !== 3) {
+if (Queue.peek(q$2) !== 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -443,7 +428,7 @@ if (Caml_curry.app1(peek, q$2) !== 3) {
       ];
 }
 
-if (Caml_curry.app1(take, q$2) !== 3) {
+if (Queue.take(q$2) !== 3) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -454,7 +439,7 @@ if (Caml_curry.app1(take, q$2) !== 3) {
       ];
 }
 
-if (!does_raise(peek, q$2)) {
+if (!does_raise(Queue.peek, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -465,7 +450,7 @@ if (!does_raise(peek, q$2)) {
       ];
 }
 
-if (!does_raise(peek, q$2)) {
+if (!does_raise(Queue.peek, q$2)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -476,15 +461,18 @@ if (!does_raise(peek, q$2)) {
       ];
 }
 
-var q$3 = Caml_curry.app1(create, /* () */0);
+var q$3 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i = 1; i<= 10; ++i){
-  Caml_curry.app2(add, i, q$3);
+  Queue.add(i, q$3);
 }
 
-Caml_curry.app1(clear, q$3);
+Queue.clear(q$3);
 
-if (Caml_curry.app1(length, q$3) !== 0) {
+if (q$3[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -495,7 +483,7 @@ if (Caml_curry.app1(length, q$3) !== 0) {
       ];
 }
 
-if (!does_raise(take, q$3)) {
+if (!does_raise(Queue.take, q$3)) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -506,7 +494,10 @@ if (!does_raise(take, q$3)) {
       ];
 }
 
-if (!Caml_obj.caml_equal(q$3, Caml_curry.app1(create, /* () */0))) {
+if (!Caml_obj.caml_equal(q$3, /* record */[
+        0,
+        /* None */0
+      ])) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -517,9 +508,9 @@ if (!Caml_obj.caml_equal(q$3, Caml_curry.app1(create, /* () */0))) {
       ];
 }
 
-Caml_curry.app2(add, 42, q$3);
+Queue.add(42, q$3);
 
-if (Caml_curry.app1(take, q$3) !== 42) {
+if (Queue.take(q$3) !== 42) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -530,13 +521,16 @@ if (Caml_curry.app1(take, q$3) !== 42) {
       ];
 }
 
-var q1 = Caml_curry.app1(create, /* () */0);
+var q1 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i$1 = 1; i$1<= 10; ++i$1){
-  Caml_curry.app2(add, i$1, q1);
+  Queue.add(i$1, q1);
 }
 
-var q2 = Caml_curry.app1(copy, q1);
+var q2 = Queue.copy(q1);
 
 if (!Caml_obj.caml_equal(to_list(q1), /* :: */[
         1,
@@ -620,7 +614,7 @@ if (!Caml_obj.caml_equal(to_list(q2), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(length, q1) !== 10) {
+if (q1[/* length */0] !== 10) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -631,7 +625,7 @@ if (Caml_curry.app1(length, q1) !== 10) {
       ];
 }
 
-if (Caml_curry.app1(length, q2) !== 10) {
+if (q2[/* length */0] !== 10) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -643,7 +637,7 @@ if (Caml_curry.app1(length, q2) !== 10) {
 }
 
 for(var i$2 = 1; i$2<= 10; ++i$2){
-  if (Caml_curry.app1(take, q1) !== i$2) {
+  if (Queue.take(q1) !== i$2) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -657,7 +651,7 @@ for(var i$2 = 1; i$2<= 10; ++i$2){
 }
 
 for(var i$3 = 1; i$3<= 10; ++i$3){
-  if (Caml_curry.app1(take, q2) !== i$3) {
+  if (Queue.take(q2) !== i$3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -670,9 +664,12 @@ for(var i$3 = 1; i$3<= 10; ++i$3){
   
 }
 
-var q$4 = Caml_curry.app1(create, /* () */0);
+var q$4 = /* record */[
+  0,
+  /* None */0
+];
 
-if (!Caml_curry.app1(is_empty, q$4)) {
+if (q$4[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -684,8 +681,8 @@ if (!Caml_curry.app1(is_empty, q$4)) {
 }
 
 for(var i$4 = 1; i$4<= 10; ++i$4){
-  Caml_curry.app2(add, i$4, q$4);
-  if (Caml_curry.app1(length, q$4) !== i$4) {
+  Queue.add(i$4, q$4);
+  if (q$4[/* length */0] !== i$4) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -695,7 +692,7 @@ for(var i$4 = 1; i$4<= 10; ++i$4){
           ]
         ];
   }
-  if (Caml_curry.app1(is_empty, q$4)) {
+  if (!q$4[/* length */0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -709,7 +706,7 @@ for(var i$4 = 1; i$4<= 10; ++i$4){
 }
 
 for(var i$5 = 10; i$5>= 1; --i$5){
-  if (Caml_curry.app1(length, q$4) !== i$5) {
+  if (q$4[/* length */0] !== i$5) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -719,7 +716,7 @@ for(var i$5 = 10; i$5>= 1; --i$5){
           ]
         ];
   }
-  if (Caml_curry.app1(is_empty, q$4)) {
+  if (!q$4[/* length */0]) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
@@ -729,10 +726,10 @@ for(var i$5 = 10; i$5>= 1; --i$5){
           ]
         ];
   }
-  Caml_curry.app1(take, q$4);
+  Queue.take(q$4);
 }
 
-if (Caml_curry.app1(length, q$4) !== 0) {
+if (q$4[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -743,7 +740,7 @@ if (Caml_curry.app1(length, q$4) !== 0) {
       ];
 }
 
-if (!Caml_curry.app1(is_empty, q$4)) {
+if (q$4[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -754,15 +751,18 @@ if (!Caml_curry.app1(is_empty, q$4)) {
       ];
 }
 
-var q$5 = Caml_curry.app1(create, /* () */0);
+var q$5 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i$6 = 1; i$6<= 10; ++i$6){
-  Caml_curry.app2(add, i$6, q$5);
+  Queue.add(i$6, q$5);
 }
 
 var i$7 = [1];
 
-Caml_curry.app2(iter, function (j) {
+Queue.iter(function (j) {
       if (i$7[0] !== j) {
         throw [
               Caml_builtin_exceptions.assert_failure,
@@ -776,11 +776,17 @@ Caml_curry.app2(iter, function (j) {
       return ++ i$7[0];
     }, q$5);
 
-var q1$1 = Caml_curry.app1(create, /* () */0);
+var q1$1 = /* record */[
+  0,
+  /* None */0
+];
 
-var q2$1 = Caml_curry.app1(create, /* () */0);
+var q2$1 = /* record */[
+  0,
+  /* None */0
+];
 
-if (Caml_curry.app1(length, q1$1) !== 0) {
+if (q1$1[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -802,7 +808,7 @@ if (to_list(q1$1) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$1) !== 0) {
+if (q2$1[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -824,9 +830,9 @@ if (to_list(q2$1) !== /* [] */0) {
       ];
 }
 
-Caml_curry.app2(transfer, q1$1, q2$1);
+Queue.transfer(q1$1, q2$1);
 
-if (Caml_curry.app1(length, q1$1) !== 0) {
+if (q1$1[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -848,7 +854,7 @@ if (to_list(q1$1) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$1) !== 0) {
+if (q2$1[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -870,15 +876,21 @@ if (to_list(q2$1) !== /* [] */0) {
       ];
 }
 
-var q1$2 = Caml_curry.app1(create, /* () */0);
+var q1$2 = /* record */[
+  0,
+  /* None */0
+];
 
-var q2$2 = Caml_curry.app1(create, /* () */0);
+var q2$2 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i$8 = 1; i$8<= 4; ++i$8){
-  Caml_curry.app2(add, i$8, q1$2);
+  Queue.add(i$8, q1$2);
 }
 
-if (Caml_curry.app1(length, q1$2) !== 4) {
+if (q1$2[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -912,7 +924,7 @@ if (!Caml_obj.caml_equal(to_list(q1$2), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(length, q2$2) !== 0) {
+if (q2$2[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -934,9 +946,9 @@ if (to_list(q2$2) !== /* [] */0) {
       ];
 }
 
-Caml_curry.app2(transfer, q1$2, q2$2);
+Queue.transfer(q1$2, q2$2);
 
-if (Caml_curry.app1(length, q1$2) !== 0) {
+if (q1$2[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -958,7 +970,7 @@ if (to_list(q1$2) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$2) !== 4) {
+if (q2$2[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -992,15 +1004,21 @@ if (!Caml_obj.caml_equal(to_list(q2$2), /* :: */[
       ];
 }
 
-var q1$3 = Caml_curry.app1(create, /* () */0);
+var q1$3 = /* record */[
+  0,
+  /* None */0
+];
 
-var q2$3 = Caml_curry.app1(create, /* () */0);
+var q2$3 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i$9 = 5; i$9<= 8; ++i$9){
-  Caml_curry.app2(add, i$9, q2$3);
+  Queue.add(i$9, q2$3);
 }
 
-if (Caml_curry.app1(length, q1$3) !== 0) {
+if (q1$3[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1022,7 +1040,7 @@ if (to_list(q1$3) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$3) !== 4) {
+if (q2$3[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1056,9 +1074,9 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
       ];
 }
 
-Caml_curry.app2(transfer, q1$3, q2$3);
+Queue.transfer(q1$3, q2$3);
 
-if (Caml_curry.app1(length, q1$3) !== 0) {
+if (q1$3[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1080,7 +1098,7 @@ if (to_list(q1$3) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$3) !== 4) {
+if (q2$3[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1114,19 +1132,25 @@ if (!Caml_obj.caml_equal(to_list(q2$3), /* :: */[
       ];
 }
 
-var q1$4 = Caml_curry.app1(create, /* () */0);
+var q1$4 = /* record */[
+  0,
+  /* None */0
+];
 
-var q2$4 = Caml_curry.app1(create, /* () */0);
+var q2$4 = /* record */[
+  0,
+  /* None */0
+];
 
 for(var i$10 = 1; i$10<= 4; ++i$10){
-  Caml_curry.app2(add, i$10, q1$4);
+  Queue.add(i$10, q1$4);
 }
 
 for(var i$11 = 5; i$11<= 8; ++i$11){
-  Caml_curry.app2(add, i$11, q2$4);
+  Queue.add(i$11, q2$4);
 }
 
-if (Caml_curry.app1(length, q1$4) !== 4) {
+if (q1$4[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1160,7 +1184,7 @@ if (!Caml_obj.caml_equal(to_list(q1$4), /* :: */[
       ];
 }
 
-if (Caml_curry.app1(length, q2$4) !== 4) {
+if (q2$4[/* length */0] !== 4) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1194,9 +1218,9 @@ if (!Caml_obj.caml_equal(to_list(q2$4), /* :: */[
       ];
 }
 
-Caml_curry.app2(transfer, q1$4, q2$4);
+Queue.transfer(q1$4, q2$4);
 
-if (Caml_curry.app1(length, q1$4) !== 0) {
+if (q1$4[/* length */0] !== 0) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [
@@ -1218,7 +1242,7 @@ if (to_list(q1$4) !== /* [] */0) {
       ];
 }
 
-if (Caml_curry.app1(length, q2$4) !== 8) {
+if (q2$4[/* length */0] !== 8) {
   throw [
         Caml_builtin_exceptions.assert_failure,
         [

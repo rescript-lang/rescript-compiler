@@ -167,7 +167,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
         |  _, (Lconst (Const_base (
               Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
               | Const_nativeint _ ))
-              (* | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] ) *)
+              | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
             ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 

@@ -13,6 +13,7 @@ var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var Caml_curry              = require("../runtime/caml_curry");
 var $$String                = require("../stdlib/string");
+var Caml_string             = require("../runtime/caml_string");
 var List                    = require("../stdlib/list");
 
 var dbg = [/* true */1];
@@ -370,7 +371,7 @@ function next() {
           }
           else {
             return /* Op */{
-                    0: $$String.make(1, ch$2),
+                    0: Caml_string.bytes_to_string(Bytes.make(1, ch$2)),
                     length: 1,
                     tag: 0
                   };

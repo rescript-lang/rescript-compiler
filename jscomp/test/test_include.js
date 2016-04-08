@@ -13,18 +13,14 @@ function Make(U) {
         ];
 }
 
-var compare = $$String.compare;
-
 var X = /* module */[
-  compare,
-  compare
+  $$String.compare,
+  $$String.compare
 ];
 
-var compare$1 = Test_order.compare;
-
 var U = /* module */[
-  compare$1,
-  compare$1
+  Test_order.compare,
+  Test_order.compare
 ];
 
 var N = 0;

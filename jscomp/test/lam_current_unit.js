@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Filename = require("../stdlib/filename");
-var $$String = require("../stdlib/string");
+var Bytes       = require("../stdlib/bytes");
+var Filename    = require("../stdlib/filename");
+var Caml_string = require("../runtime/caml_string");
 
 var file = [""];
 
@@ -18,7 +19,8 @@ function get_file() {
 }
 
 function get_module_name() {
-  return Filename.chop_extension($$String.uncapitalize(file[0]));
+  var s = file[0];
+  return Filename.chop_extension(Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s))));
 }
 
 function iset_debug_file() {

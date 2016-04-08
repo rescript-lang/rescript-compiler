@@ -2,28 +2,23 @@
 'use strict';
 
 var Bytes       = require("./bytes");
-var Caml_curry  = require("../runtime/caml_curry");
-var List        = require("./list");
 var Caml_string = require("../runtime/caml_string");
-
-var bts = Bytes.unsafe_to_string;
-
-var bos = Bytes.unsafe_of_string;
+var List        = require("./list");
 
 function make(n, c) {
-  return Caml_curry.app1(bts, Bytes.make(n, c));
+  return Caml_string.bytes_to_string(Bytes.make(n, c));
 }
 
 function init(n, f) {
-  return Caml_curry.app1(bts, Bytes.init(n, f));
+  return Caml_string.bytes_to_string(Bytes.init(n, f));
 }
 
 function copy(s) {
-  return Caml_curry.app1(bts, Bytes.copy(Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.copy(Caml_string.bytes_of_string(s)));
 }
 
 function sub(s, ofs, len) {
-  return Caml_curry.app1(bts, Bytes.sub(Caml_curry.app1(bos, s), ofs, len));
+  return Caml_string.bytes_to_string(Bytes.sub(Caml_string.bytes_of_string(s), ofs, len));
 }
 
 function concat(sep, l) {
@@ -54,19 +49,19 @@ function concat(sep, l) {
 }
 
 function iter(f, s) {
-  return Bytes.iter(f, Caml_curry.app1(bos, s));
+  return Bytes.iter(f, Caml_string.bytes_of_string(s));
 }
 
 function iteri(f, s) {
-  return Bytes.iteri(f, Caml_curry.app1(bos, s));
+  return Bytes.iteri(f, Caml_string.bytes_of_string(s));
 }
 
 function map(f, s) {
-  return Caml_curry.app1(bts, Bytes.map(f, Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.map(f, Caml_string.bytes_of_string(s)));
 }
 
 function mapi(f, s) {
-  return Caml_curry.app1(bts, Bytes.mapi(f, Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.mapi(f, Caml_string.bytes_of_string(s)));
 }
 
 function is_space(param) {
@@ -92,7 +87,7 @@ function trim(s) {
     return s;
   }
   else {
-    return Caml_curry.app1(bts, Bytes.trim(Caml_curry.app1(bos, s)));
+    return Caml_string.bytes_to_string(Bytes.trim(Caml_string.bytes_of_string(s)));
   }
 }
 
@@ -148,7 +143,7 @@ function escaped(s) {
     };
   };
   if (needs_escape(0)) {
-    return Caml_curry.app1(bts, Bytes.escaped(Caml_curry.app1(bos, s)));
+    return Caml_string.bytes_to_string(Bytes.escaped(Caml_string.bytes_of_string(s)));
   }
   else {
     return s;
@@ -156,47 +151,47 @@ function escaped(s) {
 }
 
 function index(s, c) {
-  return Bytes.index(Caml_curry.app1(bos, s), c);
+  return Bytes.index(Caml_string.bytes_of_string(s), c);
 }
 
 function rindex(s, c) {
-  return Bytes.rindex(Caml_curry.app1(bos, s), c);
+  return Bytes.rindex(Caml_string.bytes_of_string(s), c);
 }
 
 function index_from(s, i, c) {
-  return Bytes.index_from(Caml_curry.app1(bos, s), i, c);
+  return Bytes.index_from(Caml_string.bytes_of_string(s), i, c);
 }
 
 function rindex_from(s, i, c) {
-  return Bytes.rindex_from(Caml_curry.app1(bos, s), i, c);
+  return Bytes.rindex_from(Caml_string.bytes_of_string(s), i, c);
 }
 
 function contains(s, c) {
-  return Bytes.contains(Caml_curry.app1(bos, s), c);
+  return Bytes.contains(Caml_string.bytes_of_string(s), c);
 }
 
 function contains_from(s, i, c) {
-  return Bytes.contains_from(Caml_curry.app1(bos, s), i, c);
+  return Bytes.contains_from(Caml_string.bytes_of_string(s), i, c);
 }
 
 function rcontains_from(s, i, c) {
-  return Bytes.rcontains_from(Caml_curry.app1(bos, s), i, c);
+  return Bytes.rcontains_from(Caml_string.bytes_of_string(s), i, c);
 }
 
 function uppercase(s) {
-  return Caml_curry.app1(bts, Bytes.uppercase(Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.uppercase(Caml_string.bytes_of_string(s)));
 }
 
 function lowercase(s) {
-  return Caml_curry.app1(bts, Bytes.lowercase(Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.lowercase(Caml_string.bytes_of_string(s)));
 }
 
 function capitalize(s) {
-  return Caml_curry.app1(bts, Bytes.capitalize(Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
 }
 
 function uncapitalize(s) {
-  return Caml_curry.app1(bts, Bytes.uncapitalize(Caml_curry.app1(bos, s)));
+  return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s)));
 }
 
 function compare(x, y) {

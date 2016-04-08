@@ -5,12 +5,8 @@ var Pervasives = require("../stdlib/pervasives");
 var Stack      = require("../stdlib/stack");
 var List       = require("../stdlib/list");
 
-var length = List.length;
-
-var $at = Pervasives.$at;
-
 var List$1 = /* module */[
-  length,
+  List.length,
   List.hd,
   List.tl,
   List.nth,
@@ -75,7 +71,7 @@ var List$1 = /* module */[
   Pervasives.bool_of_string,
   Pervasives.string_of_int,
   Pervasives.string_of_float,
-  $at,
+  Pervasives.$at,
   Pervasives.stdin,
   Pervasives.stdout,
   Pervasives.stderr,
@@ -141,8 +137,6 @@ var List$1 = /* module */[
   Pervasives.unsafe_really_input,
   Pervasives.do_at_exit
 ];
-
-var $at$1 = Pervasives.$at;
 
 var U = /* module */[
   Stack.Empty,
@@ -176,7 +170,7 @@ var U = /* module */[
   Pervasives.bool_of_string,
   Pervasives.string_of_int,
   Pervasives.string_of_float,
-  $at$1,
+  Pervasives.$at,
   Pervasives.stdin,
   Pervasives.stdout,
   Pervasives.stderr,
@@ -243,11 +237,11 @@ var U = /* module */[
   Pervasives.do_at_exit
 ];
 
-var f = $at;
+var f = Pervasives.$at;
 
-var ff = length;
+var ff = List.length;
 
-var fff = $at$1;
+var fff = Pervasives.$at;
 
 exports.List = List$1;
 exports.U    = U;

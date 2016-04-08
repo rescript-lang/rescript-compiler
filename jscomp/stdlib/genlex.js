@@ -7,7 +7,6 @@ var Hashtbl                 = require("./hashtbl");
 var Stream                  = require("./stream");
 var Caml_format             = require("../runtime/caml_format");
 var Char                    = require("./char");
-var $$String                = require("./string");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
@@ -66,7 +65,7 @@ function make_lexer(keywords) {
     }
   };
   var keyword_or_error = function (c) {
-    var s = $$String.make(1, c);
+    var s = Caml_string.bytes_to_string(Bytes.make(1, c));
     try {
       return Hashtbl.find(kwd_table, s);
     }
