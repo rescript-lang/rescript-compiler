@@ -60,6 +60,26 @@ f$2(function (prim, prim$1) {
 
 var c = v$2[0];
 
+var v$3 = [3];
+
+function f$3(h, _) {
+  ++ v$3[0];
+  var partial_arg = 9;
+  return function (param) {
+    return Caml_curry.app2(h, partial_arg, param);
+  };
+}
+
+f$3(function (prim, prim$1) {
+      return prim + prim$1;
+    }, 3);
+
+f$3(function (prim, prim$1) {
+      return prim + prim$1;
+    }, 3);
+
+var d = v$3[0];
+
 Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
       /* tuple */[
         "partial",
@@ -68,12 +88,14 @@ Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
                   0: /* tuple */[
                     5,
                     5,
+                    5,
                     5
                   ],
                   1: /* tuple */[
                     a,
                     b,
-                    c
+                    c,
+                    d
                   ],
                   length: 2,
                   tag: 0
@@ -86,4 +108,5 @@ Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
 exports.a = a;
 exports.b = b;
 exports.c = c;
+exports.d = d;
 /*  Not a pure module */

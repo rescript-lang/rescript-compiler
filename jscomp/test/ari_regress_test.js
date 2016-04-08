@@ -6,6 +6,8 @@ var Caml_curry = require("../runtime/caml_curry");
 
 var g = 7;
 
+var h = [0];
+
 function gg(x, y) {
   var u = x + y;
   return function (z) {
@@ -15,6 +17,7 @@ function gg(x, y) {
 
 function g1(x, y) {
   var u = x + y;
+  ++ h[0];
   return function (xx, yy) {
     return xx + yy + u;
   };
@@ -22,8 +25,10 @@ function g1(x, y) {
 
 var x = gg(3, 5)(6);
 
+var partial_arg = g1(3, 4);
+
 function v(param) {
-  return g1(3, 4)(6, param);
+  return partial_arg(6, param);
 }
 
 var suites_000 = /* tuple */[
@@ -44,7 +49,7 @@ var suites_001 = /* :: */[
     function () {
       return /* Eq */{
               0: 14,
-              1: Caml_curry.app1(v, 1),
+              1: (Caml_curry.app1(v, 1), Caml_curry.app1(v, 1)),
               length: 2,
               tag: 0
             };
@@ -62,7 +67,20 @@ var suites_001 = /* :: */[
               };
       }
     ],
-    /* [] */0
+    /* :: */[
+      /* tuple */[
+        'File "ari_regress_test.ml", line 20, characters 4-11',
+        function () {
+          return /* Eq */{
+                  0: h[0],
+                  1: 1,
+                  length: 2,
+                  tag: 0
+                };
+        }
+      ],
+      /* [] */0
+    ]
   ]
 ];
 

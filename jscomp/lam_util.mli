@@ -64,3 +64,8 @@ val lam_false : Lambda.lambda
 
 val not_function : Lambda.lambda -> bool 
 val is_function : Lambda.lambda -> bool 
+
+
+val eta_conversion : 
+  int ->
+  Lambda.apply_info -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
