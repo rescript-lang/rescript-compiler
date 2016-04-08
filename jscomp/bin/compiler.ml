@@ -1,9 +1,30 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/07-08:47"]
+[@@@ocaml.doc "04/08-13:44"]
 include
   struct
+    module Literals :
+      sig
+        val js_array_ctor : string
+        val js_type_number : string
+        val js_type_string : string
+        val js_type_object : string
+        val js_undefined : string
+        val js_prop_length : string
+        val param : string
+        val partial_arg : string
+      end =
+      struct
+        let js_array_ctor = "Array"
+        let js_type_number = "number"
+        let js_type_string = "string"
+        let js_type_object = "object"
+        let js_undefined = "undefined"
+        let js_prop_length = "length"
+        let param = "param"
+        let partial_arg = "partial_arg"
+      end 
     module Js_op =
       struct
         [@@@ocaml.text " Define some basic types used in JS IR "]
@@ -1887,6 +1908,7 @@ include
                           | '|' -> Buffer.add_string buffer "$pipe"
                           | '.' -> Buffer.add_string buffer "$dot"
                           | '%' -> Buffer.add_string buffer "$percent"
+                          | '~' -> Buffer.add_string buffer "$tilde"
                           | 'a'..'z'|'A'..'Z'|'_'|'$'|'0'..'9' ->
                               Buffer.add_char buffer c
                           | _ -> Buffer.add_string buffer "$unknown")
@@ -2037,6 +2059,10 @@ include
         val lam_false : Lambda.lambda
         val not_function : Lambda.lambda -> bool
         val is_function : Lambda.lambda -> bool
+        val eta_conversion :
+          int ->
+            Lambda.apply_info ->
+              Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
       end =
       struct
         let string_of_lambda = Format.asprintf "%a" Printlambda.lambda
@@ -2223,6 +2249,35 @@ include
           match lam with | Lfunction _ -> true | _ -> false
         let not_function (lam : Lambda.lambda) =
           match lam with | Lfunction _ -> false | _ -> true
+        let eta_conversion n info fn args =
+          let extra_args = Ext_list.init n (fun _  -> Ident.create "param") in
+          let extra_lambdas = List.map (fun x  -> Lambda.Lvar x) extra_args in
+          match List.fold_right
+                  (fun lam  ->
+                     fun (acc,bind)  ->
+                       match lam with
+                       | Lambda.Lvar _|Lconst
+                         (Const_base _|Const_pointer _|Const_immstring _)
+                         |Lprim
+                         (Lambda.Pfield _,(Lprim
+                          (Lambda.Pgetglobal _,_))::[])|Lfunction _ ->
+                           ((lam :: acc), bind)
+                       | _ ->
+                           let v = Ident.create Literals.partial_arg in
+                           (((Lambda.Lvar v) :: acc), ((v, lam) :: bind)))
+                  (fn :: args) ([], [])
+          with
+          | (fn::args,bindings) ->
+              let rest: Lambda.lambda =
+                Lfunction
+                  (Curried, extra_args,
+                    (Lapply
+                       (fn, (args @ extra_lambdas),
+                         { info with apply_status = Full }))) in
+              List.fold_left
+                (fun lam  -> fun (id,x)  -> Lambda.Llet (Strict, id, x, lam))
+                rest bindings
+          | (_,_) -> assert false
       end 
     module Js_number :
       sig
@@ -2739,23 +2794,6 @@ include
         let of_list (xs : ('a* 'b) list) =
           List.fold_left (fun acc  -> fun (k,v)  -> add k v acc) empty xs
       end 
-    module Literals :
-      sig
-        val js_array_ctor : string
-        val js_type_number : string
-        val js_type_string : string
-        val js_type_object : string
-        val js_undefined : string
-        val js_prop_length : string
-      end =
-      struct
-        let js_array_ctor = "Array"
-        let js_type_number = "number"
-        let js_type_string = "string"
-        let js_type_object = "object"
-        let js_undefined = "undefined"
-        let js_prop_length = "length"
-      end 
     module Lam_compile_util :
       sig
         [@@@ocaml.text " Some utilities for lambda compilation"]
@@ -2902,6 +2940,7 @@ include
         val free_variables_of_expression :
           Ident_set.t ->
             Ident_set.t -> J.finish_ident_expression -> Ident_set.t
+        val no_side_effect_expression_desc : J.expression_desc -> bool
         val no_side_effect_expression : J.expression -> bool[@@ocaml.doc
                                                               " [no_side_effect] means this expression has no side effect, \n    but it might *depend on value store*, so you can not just move it around,\n\n    for example,\n    when you want to do a deep copy, the expression passed to you is pure\n    but you still have to call the function to make a copy, \n    since it maybe changed later\n "]
         val no_side_effect_statement : J.statement -> bool[@@ocaml.doc
@@ -2945,8 +2984,8 @@ include
           ((free_variables used_idents defined_idents)#statement st)#get_depenencies
         let free_variables_of_expression used_idents defined_idents st =
           ((free_variables used_idents defined_idents)#expression st)#get_depenencies
-        let rec no_side_effect (x : J.expression) =
-          match x.expression_desc with
+        let rec no_side_effect_expression_desc (x : J.expression_desc) =
+          match x with
           | Bool _ -> true
           | Var _ -> true
           | Access (a,b) -> (no_side_effect a) && (no_side_effect b)
@@ -2970,6 +3009,8 @@ include
             |Call _|Dot _|New _|Caml_uninitialized_obj _|String_access _
             |Raw_js_code _|Caml_block_set_tag _|Caml_block_set_length _ ->
               false
+        and no_side_effect (x : J.expression) =
+          no_side_effect_expression_desc x.expression_desc
         let no_side_effect_expression (x : J.expression) = no_side_effect x
         let no_side_effect init =
           object (self)
@@ -3051,6 +3092,44 @@ include
               (List.for_all is_constant xs) && (is_constant tag)
           | Bin (op,a,b) -> (is_constant a) && (is_constant b)
           | _ -> false
+      end 
+    module Ext_pervasives :
+      sig
+        [@@@ocaml.text
+          " Extension to standard library [Pervavives] module, safe to open \n  "]
+        external reraise : exn -> 'a = "%reraise"
+        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+        val is_pos_pow : Int32.t -> int
+      end =
+      struct
+        external reraise : exn -> 'a = "%reraise"
+        let finally v f action =
+          match f v with
+          | exception e -> (action v; reraise e)
+          | e -> (action v; e)
+        let with_file_as_chan filename f =
+          let chan = open_out filename in finally chan f close_out
+        let with_file_as_pp filename f =
+          let chan = open_out filename in
+          finally chan
+            (fun chan  ->
+               let fmt = Format.formatter_of_out_channel chan in
+               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
+        let is_pos_pow n =
+          let module M = struct exception E end in
+            let rec aux c (n : Int32.t) =
+              if n <= 0l
+              then (-2)
+              else
+                if n = 1l
+                then c
+                else
+                  if (Int32.logand n 1l) = 0l
+                  then aux (c + 1) (Int32.shift_right n 1)
+                  else raise M.E in
+            try aux 0 n with | M.E  -> (-1)
       end 
     module Js_exp_make :
       sig
@@ -3174,7 +3253,6 @@ include
                                                              " [math \"abs\"] --> Math[\"abs\"] "]
         val inc : unary_op
         val dec : unary_op
-        val unchecked_prefix_inc : ?comment:string -> J.vident -> t
         val tag : ?comment:string -> J.expression -> t
         val set_tag : ?comment:string -> J.expression -> J.expression -> t
         [@@@ocaml.text
@@ -3882,7 +3960,7 @@ include
           J.expression)
         let to_uint32 ?comment  (e : J.expression) =
           (int32_lsr ?comment e zero_int_literal : J.expression)
-        let is_out ?comment  (e : t) (range : t) =
+        let rec is_out ?comment  (e : t) (range : t) =
           (match ((range.expression_desc), (e.expression_desc)) with
            | (Number (Int { i = 1l }),Var _) ->
                not
@@ -3924,6 +4002,22 @@ include
                  (int_comp Clt x (int i))
            | (Number (Int { i = k }),Var _) ->
                or_ (int_comp Cgt e (int k)) (int_comp Clt e zero_int_literal)
+           | (_,Bin
+              (Bor
+               ,({
+                   expression_desc =
+                     (Bin
+                      ((Plus |Minus ),{ expression_desc = Number (Int { i;_})
+                                        },{ expression_desc = Var _;_})|Bin
+                      ((Plus |Minus ),{ expression_desc = Var _;_},{
+                                                                    expression_desc
+                                                                    = Number
+                                                                    (Int
+                                                                    { i;_}) }))
+                   } as e),{
+                             expression_desc = Number
+                               (Int { i = 0l }|Uint 0l|Nint 0n);_}))
+               -> is_out ?comment e range
            | (_,_) -> int_comp ?comment Cgt (to_uint32 e) range : t)
         let rec float_add ?comment  (e1 : t) (e2 : t) =
           match ((e1.expression_desc), (e2.expression_desc)) with
@@ -3956,27 +4050,58 @@ include
           (to_int32 @@ (float_minus ?comment e1 e2) : J.expression)
         let unchecked_int32_minus ?comment  e1 e2 =
           (float_minus ?comment e1 e2 : J.expression)
-        let unchecked_prefix_inc ?comment  (i : J.vident) =
-          let v: t = { expression_desc = (Var i); comment = None } in
-          assign ?comment v (unchecked_int32_add v one_int_literal)
         let float_div ?comment  e1 e2 = bin ?comment Div e1 e2
         let float_notequal ?comment  e1 e2 = bin ?comment NotEqEq e1 e2
         let unchecked_int32_div ?comment  e1 e2 =
           (to_int32 (float_div ?comment e1 e2) : J.expression)[@@ocaml.doc
                                                                 " Division by zero is undefined behavior"]
-        let int32_div ?comment  e1 e2 =
-          (to_int32 (float_div ?comment e1 e2) : J.expression)
-        let int32_mul ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
-        let unchecked_int32_mul ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
+        let int32_asr ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Asr, e1, e2)) } : J.expression)
+        let int32_div ?comment  (e1 : J.expression) (e2 : J.expression) =
+          (match ((e1.expression_desc), (e2.expression_desc)) with
+           | (Length _,Number (Int { i = 2l }|Uint 2l|Nint 2n)) ->
+               int32_asr e1 one_int_literal
+           | (Number (Int { i = i0 }),Number (Int { i = i1 })) when i1 <> 0l
+               -> int (Int32.div i0 i1)
+           | (_,_) -> to_int32 (float_div ?comment e1 e2) : J.expression)
         let float_mul ?comment  e1 e2 = bin ?comment Mul e1 e2
         let int32_mod ?comment  e1 e2 =
           ({ comment; expression_desc = (Bin (Mod, e1, e2)) } : J.expression)
-        let int32_lsl ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Lsl, e1, e2)) } : J.expression)
-        let int32_asr ?comment  e1 e2 =
-          ({ comment; expression_desc = (Bin (Asr, e1, e2)) } : J.expression)
+        let int32_lsl ?comment  (e1 : J.expression) (e2 : J.expression) =
+          (match (e1, e2) with
+           | ({ expression_desc = Number (Int { i = i0 }|Uint i0) },{
+                                                                    expression_desc
+                                                                    = Number
+                                                                    (Int
+                                                                    { i = i1
+                                                                    }|Uint i1)
+                                                                    })
+               -> int ?comment (Int32.shift_left i0 (Int32.to_int i1))
+           | _ -> { comment; expression_desc = (Bin (Lsl, e1, e2)) } : 
+          J.expression)
+        let int32_mul ?comment  (e1 : J.expression) (e2 : J.expression) =
+          (match (e1, e2) with
+           | ({ expression_desc = Number (Int { i = 0l }|Uint 0l|Nint 0n);_},x)
+             |(x,{
+                   expression_desc = Number (Int { i = 0l }|Uint 0l|Nint 0n);_})
+               when Js_analyzer.no_side_effect_expression x ->
+               zero_int_literal
+           | ({ expression_desc = Number (Int { i = i0 });_},{
+                                                               expression_desc
+                                                                 = Number
+                                                                 (Int
+                                                                 { i = i1 });_})
+               -> int (Int32.mul i0 i1)
+           | (e,{ expression_desc = Number (Int { i = i0 }|Uint i0);_})
+             |({ expression_desc = Number (Int { i = i0 }|Uint i0);_},e) ->
+               let i = Ext_pervasives.is_pos_pow i0 in
+               if i >= 0
+               then int32_lsl e (small_int i)
+               else runtime_call ?comment Js_config.prim "imul" [e1; e2]
+           | _ -> runtime_call ?comment Js_config.prim "imul" [e1; e2] : 
+          J.expression)
+        let unchecked_int32_mul ?comment  e1 e2 =
+          ({ comment; expression_desc = (Bin (Mul, e1, e2)) } : J.expression)
         let rec int32_bxor ?comment  (e1 : t) (e2 : t) =
           (match ((e1.expression_desc), (e2.expression_desc)) with
            | (Number (Int { i = i1 }),Number (Int { i = i2 })) ->
@@ -4513,30 +4638,6 @@ include
                        | exception Not_found  ->
                            String_map.add i.name imap acc
                        | _ -> acc)) ident_collection cxt : t)
-      end 
-    module Ext_pervasives :
-      sig
-        [@@@ocaml.text
-          " Extension to standard library [Pervavives] module, safe to open \n  "]
-        external reraise : exn -> 'a = "%reraise"
-        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
-        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-      end =
-      struct
-        external reraise : exn -> 'a = "%reraise"
-        let finally v f action =
-          match f v with
-          | exception e -> (action v; reraise e)
-          | e -> (action v; e)
-        let with_file_as_chan filename f =
-          let chan = open_out filename in finally chan f close_out
-        let with_file_as_pp filename f =
-          let chan = open_out filename in
-          finally chan
-            (fun chan  ->
-               let fmt = Format.formatter_of_out_channel chan in
-               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
       end 
     module Ext_pp :
       sig
@@ -6187,7 +6288,7 @@ include
             ("string.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\004\011\000\000\001Z\000\000\004j\000\000\004L\176\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\144\160\176\001\004G!s@@@@@\208@'compare\160\176@\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@\144\179@\004\b\166\155\2403caml_string_compareB@ @@@\160\144\004\014\160\144\004\r@@ABC&concat\160\176A\160\160B\144\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\144\160\176\001\0048!s@\160\176\001\0049!c@@@@@\208@-contains_from\160\176A\160\160C\144\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\144\160\176\001\004\002!s@@@@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004*!s@\160\176\001\004+!c@@@@@\208@*index_from\160\176@\160\160C\144\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\144\160\176\001\003\255!n@\160\176\001\004\000!f@@@@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004\021!f@\160\176\001\004\022!s@@@@@\208@%iteri\160\176A\160\160B\144\160\176\001\004\024!f@\160\176\001\004\025!s@@@@@\208@)lowercase\160\176@\160\160A\144\160\176\001\004E!s@@@@@@ABC$make\160\176@\160\160B\144\160\176\001\003\252!n@\160\176\001\003\253!c@@@@@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\144\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004-!s@\160\176\001\004.!c@@@@@\208@+rindex_from\160\176@\160\160C\144\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\144\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\144\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\144\160\176\001\004I!s@@@@@@A)uppercase\160\176@\160\160A\144\160\176\001\004C!s@@@@@@BCDEF@@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\b\164\000\000\002\162\000\000\b\181\000\000\b\149\176\208\208\208\208@$blit\160\176@\160\160E\144\160\176\001\004,\"s1@\160\176\001\004-$ofs1@\160\176\001\004.\"s2@\160\176\001\004/$ofs2@\160\176\001\0040#len@@@@@\208@*capitalize\160\176@\160\160A\144\160\176\001\004G!s@@@@\144\179@\004\005\178\166\166`@\160\166\147\176@%BytesA@@\160\178\166\166]@\160\166\147\004\t@@\160\178\166\166a@\160\166\147\004\016@@\160\144\004\028@\160\176\192)string.ml\000x\001\014\154\001\014\169\192\004\002\000x\001\014\154\001\014\176@@@\160\176\192\004\005\000x\001\014\154\001\014\156\004\004@A@\160\176\004\003\192\004\b\000x\001\014\154\001\014\183@@\208@'compare\160\176@\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@\144\179@\004\b\166\155\2403caml_string_compareB@ @@@\160\144\004\014\160\144\004\r@@ABC&concat\160\176A\160\160B\144\160\176\001\004\n#sep@\160\176\001\004\011!l@@@@@\208@(contains\160\176A\160\160B\144\160\176\001\0048!s@\160\176\001\0049!c@@@@\144\179@\004\b\178\166\166X@\160\166\147\004V@@\160\178\166\004M\160\166\004L@@\160\144\004\020@\160\176\192\004K\000n\001\r\160\001\r\173\192\004L\000n\001\r\160\001\r\180@@\160\144\004\023@\160\176\192\004Q\000n\001\r\160\001\r\162\192\004R\000n\001\r\160\001\r\182@A\208@-contains_from\160\176A\160\160C\144\160\176\001\004;!s@\160\176\001\004<!i@\160\176\001\004=!c@@@@@@ABD$copy\160\176@\160\160A\144\160\176\001\004\002!s@@@@\144\179@\004\005\178\166\004\136\160\166\004\135@@\160\178\166\166C@\160\166\147\004\141@@\160\178\166\004\132\160\166\004\131@@\160\144\004\022@\160\176\192\004\130e\001\006\173\001\006\182\192\004\131e\001\006\173\001\006\189@@@\160\176\192\004\134e\001\006\173\001\006\175\004\004@A@\160\176\004\003\192\004\137e\001\006\173\001\006\196@@\208\208@'escaped\160\176@\160\160A\144\160\176\001\004%!s@@@@@@A$fill\160\176@\160\160D\144\160\176\001\004!!s@\160\176\001\004\"#ofs@\160\176\001\004##len@\160\176\001\004$!c@@@@@\208@%index\160\176@\160\160B\144\160\176\001\004*!s@\160\176\001\004+!c@@@@\144\179@\004\b\178\166\166T@\160\166\147\004\208@@\160\178\166\004\199\160\166\004\198@@\160\144\004\020@\160\176\192\004\197\000f\001\012\238\001\012\248\192\004\198\000f\001\012\238\001\012\255@@\160\144\004\023@\160\176\192\004\203\000f\001\012\238\001\012\240\192\004\204\000f\001\012\238\001\r\001@A\208@*index_from\160\176@\160\160C\144\160\176\001\0040!s@\160\176\001\0041!i@\160\176\001\0042!c@@@@@@ABCE$init\160\176@\160\160B\144\160\176\001\003\255!n@\160\176\001\004\000!f@@@@\144\179@\004\b\178\166\005\001\005\160\166\005\001\004@@\160\178\166\166A@\160\166\147\005\001\n@@\160\144\004\020\160\144\004\019@\160\176\192\004\252c\001\006\140\001\006\142\192\004\253c\001\006\140\001\006\152@A@\160\176\004\004\192\005\001\000c\001\006\140\001\006\159@@\208\208@$iter\160\176A\160\160B\144\160\176\001\004\021!f@\160\176\001\004\022!s@@@@\144\179@\004\b\178\166\166N@\160\166\147\005\001+@@\160\144\004\015\160\178\166\005\001$\160\166\005\001#@@\160\144\004\019@\160\176\192\005\001\"\000@\001\tU\001\t`\192\005\001#\000@\001\tU\001\tg@@@\160\176\192\005\001&\000@\001\tU\001\tW\004\004@A\208@%iteri\160\176A\160\160B\144\160\176\001\004\024!f@\160\176\001\004\025!s@@@@\144\179@\004\b\178\166\166O@\160\166\147\005\001P@@\160\144\004\015\160\178\166\005\001I\160\166\005\001H@@\160\144\004\019@\160\176\192\005\001G\000B\001\tx\001\t\132\192\005\001H\000B\001\tx\001\t\139@@@\160\176\192\005\001K\000B\001\tx\001\tz\004\004@A\208@)lowercase\160\176@\160\160A\144\160\176\001\004E!s@@@@\144\179@\004\005\178\166\005\001r\160\166\005\001q@@\160\178\166\166\\@\160\166\147\005\001w@@\160\178\166\005\001n\160\166\005\001m@@\160\144\004\022@\160\176\192\005\001l\000v\001\014j\001\014x\192\005\001m\000v\001\014j\001\014\127@@@\160\176\192\005\001p\000v\001\014j\001\014l\004\004@A@\160\176\004\003\192\005\001s\000v\001\014j\001\014\134@@@ABC$make\160\176@\160\160B\144\160\176\001\003\252!n@\160\176\001\003\253!c@@@@\144\179@\004\b\178\166\005\001\156\160\166\005\001\155@@\160\178\166\166@@\160\166\147\005\001\161@@\160\144\004\020\160\144\004\019@\160\176\192\005\001\147a\001\006i\001\006k\192\005\001\148a\001\006i\001\006u@A@\160\176\004\004\192\005\001\151a\001\006i\001\006|@@\208\208\208@#map\160\176@\160\160B\144\160\176\001\004\027!f@\160\176\001\004\028!s@@@@@@A$mapi\160\176@\160\160B\144\160\176\001\004\030!f@\160\176\001\004\031!s@@@@@\208\208@.rcontains_from\160\176A\160\160C\144\160\176\001\004?!s@\160\176\001\004@!i@\160\176\001\004A!c@@@@@@A&rindex\160\176@\160\160B\144\160\176\001\004-!s@\160\176\001\004.!c@@@@\144\179@\004\b\178\166\166U@\160\166\147\005\001\236@@\160\178\166\005\001\227\160\166\005\001\226@@\160\144\004\020@\160\176\192\005\001\225\000h\001\r\019\001\r\030\192\005\001\226\000h\001\r\019\001\r%@@\160\144\004\023@\160\176\192\005\001\231\000h\001\r\019\001\r\021\192\005\001\232\000h\001\r\019\001\r'@A\208@+rindex_from\160\176@\160\160C\144\160\176\001\0044!s@\160\176\001\0045!i@\160\176\001\0046!c@@@@@@ABC#sub\160\176@\160\160C\144\160\176\001\004\004!s@\160\176\001\004\005#ofs@\160\176\001\004\006#len@@@@@\208@$trim\160\176@\160\160A\144\160\176\001\004#!s@@@@@\208\208@,uncapitalize\160\176@\160\160A\144\160\176\001\004I!s@@@@\144\179@\004\005\178\166\005\0029\160\166\005\0028@@\160\178\166\166^@\160\166\147\005\002>@@\160\178\166\005\0025\160\166\005\0024@@\160\144\004\022@\160\176\192\005\0023\000z\001\014\205\001\014\222\192\005\0024\000z\001\014\205\001\014\229@@@\160\176\192\005\0027\000z\001\014\205\001\014\207\004\004@A@\160\176\004\003\192\005\002:\000z\001\014\205\001\014\236@@@A)uppercase\160\176@\160\160A\144\160\176\001\004C!s@@@@\144\179@\004\005\178\166\005\002`\160\166\005\002_@@\160\178\166\166[@\160\166\147\005\002e@@\160\178\166\005\002\\\160\166\005\002[@@\160\144\004\022@\160\176\192\005\002Z\000t\001\014;\001\014I\192\005\002[\000t\001\014;\001\014P@@@\160\176\192\005\002^\000t\001\014;\001\014=\004\004@A@\160\176\004\003\192\005\002a\000t\001\014;\001\014W@@@BCDEF@@")));
             ("stringLabels.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6263,7 +6364,7 @@ include
             ("caml_primitive.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\0017\000\000\000G\000\000\000\255\000\000\000\233\176\208\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\241!x@@@@@\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@AB)caml_hash\160@@@C0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\243!x@@@@@\208\208@4caml_nativeint_bswap\160\004\011@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\005\004)@@@@\144\179@\004\004\145\144\162!/@@BD\144 @")));
+                    "BUCKLE20160310\132\149\166\190\000\000\001I\000\000\000M\000\000\001\021\000\000\000\254\176\208\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\241!x@@@@@\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\004\006%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@AB)caml_hash\160@@@C0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\243!x@@@@@\208\208@4caml_nativeint_bswap\160\004\011@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\b\004)@@@@\144\179@\004\004\145\144\162!/@\208@$imul\160\176@\160\160B@@@@@ABD\144 @")));
             ("caml_string.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6275,7 +6376,7 @@ include
             ("caml_utils.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\000c\000\000\000#\000\000\000r\000\000\000o\176\208@&i32div\160\176A\160\160B\144\160\176\001\003\247!x@\160\176\001\003\248!y@@@@@\208@&i32mod\160\176A\160\160B\144\160\176\001\003\250!x@\160\176\001\003\251!y@@@@@\208@&repeat\160\176@\160\160B@@@@@ABC\144 @")));
+                    "BUCKLE20160310\132\149\166\190\000\000\000i\000\000\000#\000\000\000s\000\000\000o\176\208@&i32div\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@\208@&i32mod\160\176A\160\160B\144\160\176\001\003\247!x@\160\176\001\003\248!y@@@@@\208@&repeat\160\176@\160\160B@@@@@ABC\144&repeat@")));
             ("js.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -8027,11 +8128,7 @@ include
                (match args with
                 | e::[] -> E.float_minus E.zero_float_lit e
                 | _ -> assert false)
-           | Paddint  ->
-               (match args with
-                | e1::e2::[] -> E.unchecked_int32_add e1 e2
-                | _ -> assert false)
-           | Paddbint (Pint32 ) ->
+           | Paddint |Paddbint (Pint32 ) ->
                (match args with
                 | e1::e2::[] -> E.int32_add e1 e2
                 | _ -> assert false)
@@ -8046,7 +8143,7 @@ include
                 | _ -> assert false)
            | Psubint  ->
                (match args with
-                | e1::e2::[] -> E.unchecked_int32_minus e1 e2
+                | e1::e2::[] -> E.int32_minus e1 e2
                 | _ -> assert false)
            | Psubbint (Pint32 ) ->
                (match args with
@@ -8061,8 +8158,11 @@ include
                (match args with
                 | e1::e2::[] -> E.float_minus e1 e2
                 | _ -> assert false)
-           | Pmulint |Pmulbint (Lambda.Pnativeint )|Pmulbint (Lambda.Pint32 )
-               ->
+           | Pmulbint (Lambda.Pnativeint ) ->
+               (match args with
+                | e1::e2::[] -> E.unchecked_int32_mul e1 e2
+                | _ -> assert false)
+           | Pmulint |Pmulbint (Lambda.Pint32 ) ->
                (match args with
                 | e1::e2::[] -> E.int32_mul e1 e2
                 | _ -> assert false)
@@ -8157,13 +8257,13 @@ include
                (match args with | e::[] -> E.not e | _ -> assert false)
            | Poffsetint n ->
                (match args with
-                | e::[] -> E.unchecked_int32_add e (E.small_int n)
+                | e::[] -> E.int32_add e (E.small_int n)
                 | _ -> assert false)
            | Poffsetref n ->
                (match args with
                 | e::[] ->
                     let v = Js_of_lam_block.field Fld_na e 0l in
-                    E.assign v (E.unchecked_int32_add v (E.small_int n))
+                    E.assign v (E.int32_add v (E.small_int n))
                 | _ -> assert false)
            | Psequand  ->
                (match args with
@@ -9546,7 +9646,7 @@ include
                      ->
                      [S.exp
                         (E.assign (E.var id)
-                           (E.unchecked_int32_add (E.var id) (E.small_int v)))]
+                           (E.int32_add (E.var id) (E.small_int v)))]
                  | _ ->
                      (match compile_lambda
                               {
@@ -10315,8 +10415,12 @@ include
                 (match ((count_var v), l1) with
                  | ({ times = 0;_},_) -> simplif l2
                  | ({ times = 1; captured = false  },_)
-                   |({ times = 1; captured = true  },(Lconst _|Lvar _)) ->
-                     (Hashtbl.add subst v (simplif l1); simplif l2)
+                   |({ times = 1; captured = true  },(Lconst _|Lvar _))
+                   |(_,(Lconst (Const_base
+                        (Const_int _|Const_char _|Const_float _|Const_int32 _
+                         |Const_nativeint _))|Lprim
+                        (Lambda.Pfield _,(Lprim (Lambda.Pgetglobal _,_))::[])))
+                     -> (Hashtbl.add subst v (simplif l1); simplif l2)
                  | _ -> Llet (Alias, v, (simplif l1), (simplif l2)))
             | Llet ((StrictOpt  as kind),v,l1,l2) ->
                 if not @@ (used v)
@@ -10804,18 +10908,10 @@ include
                             else
                               if x > len
                               then
-                                (let extra_args =
-                                   Ext_list.init (x - len)
-                                     (fun _  -> Ident.create "param") in
-                                 Lfunction
-                                   (Curried, extra_args,
-                                     (Lapply
-                                        ((simpl l1),
-                                          ((List.map simpl ll) @
-                                             (List.map
-                                                (fun x  -> Lambda.Lvar x)
-                                                extra_args)),
-                                          { info with apply_status = Full }))))
+                                (let fn = simpl l1 in
+                                 let args = List.map simpl ll in
+                                 Lam_util.eta_conversion (x - len) info fn
+                                   args)
                               else
                                 (let (first,rest) = Ext_list.take x ll in
                                  Lapply
