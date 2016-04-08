@@ -87,7 +87,7 @@ function $$int(s, bound) {
     while(true) {
       var r = bits(s$1);
       var v = r % n;
-      if (r - v > (1073741823 - n + 1 | 0)) {
+      if ((r - v | 0) > ((1073741823 - n | 0) + 1 | 0)) {
         continue ;
         
       }

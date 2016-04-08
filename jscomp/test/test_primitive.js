@@ -92,8 +92,8 @@ function fib(n) {
     return 1;
   }
   else {
-    var fib1 = fib(n - 1);
-    var fib2 = fib(n - 2);
+    var fib1 = fib(n - 1 | 0);
+    var fib2 = fib(n - 2 | 0);
     return (fib1 + fib2 | 0) + 3 | 0;
   }
 }

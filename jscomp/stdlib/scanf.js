@@ -85,7 +85,7 @@ function name_of_input(ib) {
 
 function char_count(ib) {
   if (ib[/* current_char_is_valid */2]) {
-    return ib[/* char_count */3] - 1;
+    return ib[/* char_count */3] - 1 | 0;
   }
   else {
     return ib[/* char_count */3];
@@ -101,7 +101,7 @@ function token(ib) {
 }
 
 function ignore_char(width, ib) {
-  var width$1 = width - 1;
+  var width$1 = width - 1 | 0;
   ib[/* current_char_is_valid */2] = /* false */0;
   return width$1;
 }
@@ -520,7 +520,7 @@ function token_int_literal(conv, ib) {
     return tok;
   }
   else {
-    return $$String.sub(tok, 1, l - 1);
+    return $$String.sub(tok, 1, l - 1 | 0);
   }
 }
 
@@ -909,7 +909,7 @@ function scan_float(width, precision, ib) {
     else {
       var width$2 = store_char(width$1, ib, c);
       var precision$1 = Pervasives.min(width$2, precision);
-      var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib));
+      var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib) | 0) | 0;
       return /* tuple */[
               scan_exp_part(width$3, ib),
               precision$1
@@ -946,7 +946,7 @@ function scan_caml_float(width, precision, ib) {
         else {
           var width$2 = store_char(width$1, ib, c);
           var precision$1 = Pervasives.min(width$2, precision);
-          var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib));
+          var width$3 = width$2 - (precision$1 - scan_frac_part(precision$1, ib) | 0) | 0;
           return scan_exp_part(width$3, ib);
         }
       }
@@ -1052,7 +1052,7 @@ function char_for_backslash(c) {
 }
 
 function char_for_decimal_code(c0, c1, c2) {
-  var c = (Caml_primitive.imul(100, c0 - /* "0" */48) + Caml_primitive.imul(10, c1 - /* "0" */48) | 0) + (c2 - /* "0" */48) | 0;
+  var c = (Caml_primitive.imul(100, c0 - /* "0" */48 | 0) + Caml_primitive.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
   if (c < 0 || c > 255) {
     var s = Caml_curry.app3(Printf.sprintf(/* Format */{
               0: /* String_literal */{
@@ -1089,13 +1089,13 @@ function char_for_decimal_code(c0, c1, c2) {
 
 function hexadecimal_value_of_char(c) {
   if (c >= /* "a" */97) {
-    return c - 87;
+    return c - 87 | 0;
   }
   else if (c >= /* "A" */65) {
-    return c - 55;
+    return c - 55 | 0;
   }
   else {
-    return c - /* "0" */48;
+    return c - /* "0" */48 | 0;
   }
 }
 
@@ -1234,7 +1234,7 @@ function scan_backslash_char(width, ib) {
               };
               var c1 = get_digit(/* () */0);
               var c2 = get_digit(/* () */0);
-              return store_char(width - 2, ib, char_for_hexadecimal_code(c1, c2));
+              return store_char(width - 2 | 0, ib, char_for_hexadecimal_code(c1, c2));
           
         }
       }
@@ -1251,7 +1251,7 @@ function scan_backslash_char(width, ib) {
       };
       var c1$1 = get_digit$1(/* () */0);
       var c2$1 = get_digit$1(/* () */0);
-      return store_char(width - 2, ib, char_for_decimal_code(c, c1$1, c2$1));
+      return store_char(width - 2 | 0, ib, char_for_decimal_code(c, c1$1, c2$1));
     }
     else {
       return bad_input_escape(c);
@@ -1416,7 +1416,7 @@ function scan_chars_in_char_set(char_set, scan_indic, width, ib) {
       var c = peek_char(ib);
       if (i > 0 && !ib[/* eof */0] && CamlinternalFormat.is_in_char_set(char_set, c) && c !== stp) {
         store_char(Pervasives.max_int, ib, c);
-        _i = i - 1;
+        _i = i - 1 | 0;
         continue ;
         
       }
@@ -1534,7 +1534,7 @@ function stopper_of_formatting_lit(fmting) {
   else {
     var str = CamlinternalFormat.string_of_formatting_lit(fmting);
     var stp = str.charCodeAt(1);
-    var sub_str = $$String.sub(str, 2, str.length - 2);
+    var sub_str = $$String.sub(str, 2, str.length - 2 | 0);
     return /* tuple */[
             stp,
             sub_str
@@ -2283,7 +2283,7 @@ function string_to_String(s) {
   var l = s.length;
   var b = Buffer.create(l + 2 | 0);
   Buffer.add_char(b, /* "\"" */34);
-  for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
     var c = s.charCodeAt(i);
     if (c === /* "\"" */34) {
       Buffer.add_char(b, /* "\\" */92);

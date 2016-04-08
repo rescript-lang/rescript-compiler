@@ -107,7 +107,7 @@ function match_001(n) {
 }
 
 function match_002(f) {
-  for(var i = 0 ,i_finish = syms[0] - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = syms[0] - 1 | 0; i<= i_finish; ++i){
     Caml_curry.app2(f, i, symtab[i]);
   }
   return /* () */0;
@@ -231,7 +231,7 @@ function next() {
           exit = 1;
         }
         else {
-          var _n = c - 48;
+          var _n = c - 48 | 0;
           while(true) {
             var n = _n;
             var match$1 = peekch(/* () */0);
@@ -243,7 +243,7 @@ function next() {
                     };
             }
             else {
-              _n = (Caml_primitive.imul(10, n) + Caml_curry.app1(getch, /* () */0) | 0) - 48;
+              _n = (Caml_primitive.imul(10, n) + Caml_curry.app1(getch, /* () */0) | 0) - 48 | 0;
               continue ;
               
             }
@@ -288,7 +288,7 @@ function next() {
           gpos[0] = e + 8 & -8;
           return /* SLit */{
                   0: (b + 232 | 0) + 4194304 | 0,
-                  1: Bytes.to_string(Bytes.sub(glo, b, e - b)),
+                  1: Bytes.to_string(Bytes.sub(glo, b, e - b | 0)),
                   length: 2,
                   tag: 2
                 };
@@ -418,7 +418,7 @@ function out(x) {
 }
 
 function le(n, x) {
-  for(var i = 0 ,i_finish = (n / 8 | 0) - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = (n / 8 | 0) - 1 | 0; i<= i_finish; ++i){
     var $$byte = (x >>> (i << 3)) & 255;
     obuf[opos[0]] = Char.chr($$byte);
     opos[0] = opos[0] + 1 | 0;
@@ -444,7 +444,7 @@ function patch(rel, loc, n) {
   if (loc !== 0) {
     var i = opos[0];
     var loc$prime = get32(loc);
-    var x = rel ? n - (loc + 4 | 0) : n;
+    var x = rel ? n - (loc + 4 | 0) | 0 : n;
     if (dbg[0]) {
       Caml_curry.app3(Printf.eprintf(/* Format */{
                 0: /* String_literal */{
@@ -531,7 +531,7 @@ function push(r) {
     return out(80 + r | 0);
   }
   else {
-    return out((16720 + r | 0) - 8);
+    return out((16720 + r | 0) - 8 | 0);
   }
 }
 
@@ -541,7 +541,7 @@ function pop(r) {
     return out(88 + r | 0);
   }
   else {
-    return out((16728 + r | 0) - 8);
+    return out((16728 + r | 0) - 8 | 0);
   }
 }
 
@@ -557,11 +557,11 @@ var lval = [/* tuple */[
 function patchlval() {
   var match = lval[0][0];
   if (match.tag) {
-    opos[0] -= match[0];
+    opos[0] = opos[0] - match[0] | 0;
     return /* () */0;
   }
   else {
-    obuf[opos[0] - match[0]] = /* "\141" */141;
+    obuf[opos[0] - match[0] | 0] = /* "\141" */141;
     return /* () */0;
   }
 }
@@ -996,8 +996,8 @@ function binary(stk, lvl) {
           return loc;
         }
         else if (lvlof(t[0]) === lvl) {
-          var loc$prime = test(lvl - 8, loc);
-          binary(stk, lvl - 1);
+          var loc$prime = test(lvl - 8 | 0, loc);
+          binary(stk, lvl - 1 | 0);
           _loc = loc$prime;
           continue ;
           
@@ -1008,7 +1008,7 @@ function binary(stk, lvl) {
         }
       };
     };
-    binary(stk, lvl - 1);
+    binary(stk, lvl - 1 | 0);
     if (lvl < 8) {
       var _param = /* () */0;
       while(true) {
@@ -1020,7 +1020,7 @@ function binary(stk, lvl) {
           var o = t[0];
           if (lvlof(o) === lvl) {
             push(0);
-            binary(stk, lvl - 1);
+            binary(stk, lvl - 1 | 0);
             pop(1);
             var match = List.assoc(o, inss);
             if (match.tag) {
@@ -1413,7 +1413,7 @@ function decl(g, _n, _stk) {
                 stk$prime = /* :: */[
                   /* tuple */[
                     s,
-                    top - (n$prime << 3)
+                    top - (n$prime << 3) | 0
                   ],
                   stk
                 ];
@@ -1579,7 +1579,7 @@ function stmt(brk, stk) {
       expr(stk);
       Caml_curry.app1(next$1, /* () */0);
       out(233);
-      le(32, top - opos[0] - 4);
+      le(32, (top - opos[0] | 0) - 4 | 0);
       match = /* tuple */[
         bdy,
         itr
@@ -1591,7 +1591,7 @@ function stmt(brk, stk) {
           match_001
         ], stk);
     out(233);
-    le(32, match[1] - opos[0] - 4);
+    le(32, (match[1] - opos[0] | 0) - 4 | 0);
     return patch(/* true */1, bl[0], opos[0]);
   }
   else if (Caml_obj.caml_equal(t, tokret)) {
@@ -1612,7 +1612,7 @@ function stmt(brk, stk) {
   else if (Caml_obj.caml_equal(t, tokbreak)) {
     Caml_curry.app1(next$1, /* () */0);
     var brkl = brk[0];
-    var n = align[0] - brk[1];
+    var n = align[0] - brk[1] | 0;
     if (n < 0) {
       throw [
             Caml_builtin_exceptions.assert_failure,
@@ -1669,7 +1669,7 @@ function block(brk, stk) {
   if (n !== 0) {
     out(4752324);
     out((n << 3));
-    align[0] -= n;
+    align[0] = align[0] - n | 0;
     return /* () */0;
   }
   else {
@@ -1898,7 +1898,7 @@ function elfgen(outf) {
   out(18616);
   le(64, gmain[/* loc */0]);
   globs[main] = /* record */[
-    opos[0] - 8,
+    opos[0] - 8 | 0,
     gmain[/* va */1]
   ];
   out(65488);
@@ -1978,7 +1978,7 @@ function elfgen(outf) {
         return n$1[0] = n$1[0] + 1 | 0;
       });
   var hash = opos[0];
-  var n$2 = ((rel - symtab) / 24 | 0) - 1;
+  var n$2 = ((rel - symtab | 0) / 24 | 0) - 1 | 0;
   le(32, 1);
   le(32, n$2 + 1 | 0);
   le(32, n$2 > 0 ? 1 : 0);
@@ -2012,7 +2012,7 @@ function elfgen(outf) {
                           /* :: */[
                             8,
                             /* :: */[
-                              hash - rel,
+                              hash - rel | 0,
                               /* :: */[
                                 9,
                                 /* :: */[
@@ -2020,7 +2020,7 @@ function elfgen(outf) {
                                   /* :: */[
                                     10,
                                     /* :: */[
-                                      symtab - strtab,
+                                      symtab - strtab | 0,
                                       /* :: */[
                                         11,
                                         /* :: */[
@@ -2054,7 +2054,7 @@ function elfgen(outf) {
   opos[0] = 64;
   elfphdr(3, (strtab + 1 | 0) + off | 0, 28, 1);
   elfphdr(1, 0, tend + off | 0, 2097152);
-  elfphdr(2, dyn + off | 0, tend - dyn, 8);
+  elfphdr(2, dyn + off | 0, tend - dyn | 0, 8);
   if (opos[0] !== 232) {
     throw [
           Caml_builtin_exceptions.assert_failure,

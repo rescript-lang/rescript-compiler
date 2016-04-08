@@ -59,7 +59,7 @@ function hashVal(x, y, v) {
 
 function resize(newSize) {
   var arr = htab[0];
-  var newSz_1 = newSize - 1;
+  var newSz_1 = newSize - 1 | 0;
   var newArr = Caml_array.caml_make_vect(newSize, /* [] */0);
   var copyBucket = function (_bucket) {
     while(true) {
@@ -357,7 +357,7 @@ function hwb(n) {
       return mkNode(zero, i, one);
     }
     else {
-      return xor(and2(not(mkNode(zero, j, one)), h(i, j - 1)), and2(mkNode(zero, j, one), g(i, j - 1)));
+      return xor(and2(not(mkNode(zero, j, one)), h(i, j - 1 | 0)), and2(mkNode(zero, j, one), g(i, j - 1 | 0)));
     }
   };
   var g = function (i, j) {
@@ -368,7 +368,7 @@ function hwb(n) {
       return xor(and2(not(mkNode(zero, i, one)), h(i + 1 | 0, j)), and2(mkNode(zero, i, one), g(i + 1 | 0, j)));
     }
   };
-  return h(0, n - 1);
+  return h(0, n - 1 | 0);
 }
 
 var seed = [0];
@@ -380,7 +380,7 @@ function random() {
 
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, /* false */0);
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
     vars[i] = random(/* () */0);
   }
   return vars;
@@ -405,13 +405,13 @@ function bool_equal(a, b) {
 
 function test_hwb(bdd, vars) {
   var ntrue = 0;
-  for(var i = 0 ,i_finish = vars.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = vars.length - 1 | 0; i<= i_finish; ++i){
     if (vars[i]) {
       ntrue = ntrue + 1 | 0;
     }
     
   }
-  return bool_equal($$eval(bdd, vars), ntrue > 0 ? vars[ntrue - 1] : /* false */0);
+  return bool_equal($$eval(bdd, vars), ntrue > 0 ? vars[ntrue - 1 | 0] : /* false */0);
 }
 
 function main() {

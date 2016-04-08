@@ -8,7 +8,7 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2) | 0;
+    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
 
@@ -17,7 +17,7 @@ function fib2(n) {
     return 1;
   }
   else {
-    return fib2(n - 1) + fib2(n - 2) | 0;
+    return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
   }
 }
 
@@ -88,7 +88,7 @@ function fib3(n) {
     var b = _b;
     var a = _a;
     if (n$1 > 0) {
-      _n = n$1 - 1;
+      _n = n$1 - 1 | 0;
       _b = a + b | 0;
       _a = b;
       continue ;

@@ -17,14 +17,14 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
     return current_dir_name;
   }
   else {
-    var _n = name.length - 1;
+    var _n = name.length - 1 | 0;
     while(true) {
       var n = _n;
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
       else if (Caml_curry.app2(is_dir_sep, name, n)) {
-        _n = n - 1;
+        _n = n - 1 | 0;
         continue ;
         
       }
@@ -37,10 +37,10 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
             return $$String.sub(name, 0, p);
           }
           else if (Caml_curry.app2(is_dir_sep, name, n$1)) {
-            return $$String.sub(name, n$1 + 1 | 0, p - n$1 - 1);
+            return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
           }
           else {
-            _n$1 = n$1 - 1;
+            _n$1 = n$1 - 1 | 0;
             continue ;
             
           }
@@ -55,14 +55,14 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
     return current_dir_name;
   }
   else {
-    var _n = name.length - 1;
+    var _n = name.length - 1 | 0;
     while(true) {
       var n = _n;
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
       else if (Caml_curry.app2(is_dir_sep, name, n)) {
-        _n = n - 1;
+        _n = n - 1 | 0;
         continue ;
         
       }
@@ -81,7 +81,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
                 return $$String.sub(name, 0, 1);
               }
               else if (Caml_curry.app2(is_dir_sep, name, n$2)) {
-                _n$2 = n$2 - 1;
+                _n$2 = n$2 - 1 | 0;
                 continue ;
                 
               }
@@ -91,7 +91,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
             };
           }
           else {
-            _n$1 = n$1 - 1;
+            _n$1 = n$1 - 1 | 0;
             continue ;
             
           }
@@ -132,7 +132,7 @@ function is_implicit(n) {
 
 function check_suffix(name, suff) {
   if (name.length >= suff.length) {
-    return +($$String.sub(name, name.length - suff.length, suff.length) === suff);
+    return +($$String.sub(name, name.length - suff.length | 0, suff.length) === suff);
   }
   else {
     return /* false */0;
@@ -159,7 +159,7 @@ function quote(param) {
   var l = s.length;
   var b = Buffer.create(l + 20 | 0);
   Buffer.add_char(b, /* "'" */39);
-  for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
     if (s[i] === "'") {
       Buffer.add_string(b, quotequote);
     }
@@ -201,7 +201,7 @@ var dir_sep = "/";
 
 function concat(dirname, filename) {
   var l = dirname.length;
-  if (l === 0 || Caml_curry.app2(is_dir_sep$1, dirname, l - 1)) {
+  if (l === 0 || Caml_curry.app2(is_dir_sep$1, dirname, l - 1 | 0)) {
     return dirname + filename;
   }
   else {
@@ -210,7 +210,7 @@ function concat(dirname, filename) {
 }
 
 function chop_suffix(name, suff) {
-  var n = name.length - suff.length;
+  var n = name.length - suff.length | 0;
   if (n < 0) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -223,7 +223,7 @@ function chop_suffix(name, suff) {
 }
 
 function chop_extension(name) {
-  var _i = name.length - 1;
+  var _i = name.length - 1 | 0;
   while(true) {
     var i = _i;
     if (i < 0 || Caml_curry.app2(is_dir_sep$1, name, i)) {
@@ -236,7 +236,7 @@ function chop_extension(name) {
       return $$String.sub(name, 0, i);
     }
     else {
-      _i = i - 1;
+      _i = i - 1 | 0;
       continue ;
       
     }

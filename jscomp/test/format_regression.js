@@ -53,7 +53,7 @@ function advance_loop(state) {
     var match = peek_queue(state[/* pp_queue */3]);
     var size = match[/* elem_size */0];
     var size$1 = int_of_size(size);
-    if (size$1 < 0 && state[/* pp_right_total */2] - state[/* pp_left_total */1] < state[/* pp_space_left */0]) {
+    if (size$1 < 0 && (state[/* pp_right_total */2] - state[/* pp_left_total */1] | 0) < state[/* pp_space_left */0]) {
       return 0;
     }
     else {

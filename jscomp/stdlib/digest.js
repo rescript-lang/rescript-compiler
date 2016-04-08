@@ -17,7 +17,7 @@ function bytes(b) {
 }
 
 function substring(str, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > str.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (str.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Digest.substring"
@@ -92,7 +92,7 @@ function from_hex(s) {
               ];
         }
         else {
-          return c - /* "a" */97 + 10 | 0;
+          return (c - /* "a" */97 | 0) + 10 | 0;
         }
       }
       else if (c >= 71) {
@@ -102,7 +102,7 @@ function from_hex(s) {
             ];
       }
       else {
-        return c - /* "A" */65 + 10 | 0;
+        return (c - /* "A" */65 | 0) + 10 | 0;
       }
     }
     else if (c > 57 || c < 48) {
@@ -112,7 +112,7 @@ function from_hex(s) {
           ];
     }
     else {
-      return c - /* "0" */48;
+      return c - /* "0" */48 | 0;
     }
   };
   var $$byte = function (i) {

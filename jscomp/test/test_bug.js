@@ -6,7 +6,7 @@ var Caml_string = require("../runtime/caml_string");
 
 function escaped(s) {
   var n = 0;
-  for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
     var c = s[i];
     var $js;
     var exit = 0;
@@ -43,7 +43,7 @@ function escaped(s) {
   else {
     var s$prime = Caml_string.caml_create_string(n);
     n = 0;
-    for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
+    for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
       var switcher = c$1 - 34 | 0;

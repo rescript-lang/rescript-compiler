@@ -83,12 +83,12 @@ function lsl_(x, numBits) {
   if (numBits) {
     if (numBits >= 32) {
       return /* record */[
-              (lo << numBits - 32),
+              (lo << (numBits - 32 | 0)),
               0
             ];
     }
     else {
-      var hi = (lo >>> 32 - numBits) | (x[/* hi */0] << numBits);
+      var hi = (lo >>> (32 - numBits | 0)) | (x[/* hi */0] << numBits);
       return /* record */[
               hi,
               ((lo << numBits) >>> 0)
@@ -103,7 +103,7 @@ function lsl_(x, numBits) {
 function lsr_(x, numBits) {
   var hi = x[/* hi */0];
   if (numBits) {
-    var offset = numBits - 32;
+    var offset = numBits - 32 | 0;
     if (offset) {
       if (offset > 0) {
         var lo = (hi >>> offset);
@@ -138,14 +138,14 @@ function asr_(x, numBits) {
   if (numBits) {
     if (numBits < 32) {
       var hi$1 = (hi >> numBits);
-      var lo = (hi << 32 - numBits) | (x[/* lo */1] >>> numBits);
+      var lo = (hi << (32 - numBits | 0)) | (x[/* lo */1] >>> numBits);
       return /* record */[
               hi$1,
               (lo >>> 0)
             ];
     }
     else {
-      var lo$1 = (hi >> numBits - 32);
+      var lo$1 = (hi >> (numBits - 32 | 0));
       return /* record */[
               hi >= 0 ? 0 : -1,
               (lo$1 >>> 0)
@@ -537,7 +537,7 @@ function to_hex(x) {
     if (match$1 !== 0) {
       if (match !== 0) {
         var lo = aux(x[/* lo */1]);
-        var pad = 8 - lo.length;
+        var pad = 8 - lo.length | 0;
         if (pad <= 0) {
           return aux(x[/* hi */0]) + lo;
         }

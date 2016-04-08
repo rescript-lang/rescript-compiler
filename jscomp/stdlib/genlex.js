@@ -724,7 +724,7 @@ function make_lexer(keywords) {
               }
               else {
                 Stream.junk(strm__);
-                return Char.chr((Caml_primitive.imul(c1 - 48, 100) + Caml_primitive.imul(c2 - 48, 10) | 0) + (c3 - 48) | 0);
+                return Char.chr((Caml_primitive.imul(c1 - 48 | 0, 100) + Caml_primitive.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
               }
             }
             else {

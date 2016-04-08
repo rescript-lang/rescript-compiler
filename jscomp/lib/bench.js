@@ -23,7 +23,7 @@ Caml_curry.app3(suite.add.bind(suite), "second", function () {
     });
 
 Caml_curry.app2(suite.on.bind(suite), "complete", function () {
-      for(var i = 0 ,i_finish = suite.length - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = suite.length - 1 | 0; i<= i_finish; ++i){
         console.log(suite[i]);
       }
       return /* () */0;

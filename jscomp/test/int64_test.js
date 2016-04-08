@@ -865,7 +865,7 @@ function fib(_n, _a, _b) {
     if (n) {
       _b = Caml_int64.add(a, b);
       _a = b;
-      _n = n - 1;
+      _n = n - 1 | 0;
       continue ;
       
     }
@@ -881,7 +881,7 @@ function fac(_n, _acc) {
     var n = _n;
     if (n) {
       _acc = Caml_int64.mul(acc, Caml_int64.of_int32(n));
-      _n = n - 1;
+      _n = n - 1 | 0;
       continue ;
       
     }

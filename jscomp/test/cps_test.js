@@ -19,7 +19,7 @@ function test() {
           return Caml_curry.app1(acc, /* () */0);
         }
         }(n,acc));
-        _n = n - 1;
+        _n = n - 1 | 0;
         continue ;
         
       }

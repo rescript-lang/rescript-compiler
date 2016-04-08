@@ -56,7 +56,7 @@ function naive(n) {
     return 1;
   }
   else {
-    return (n + naive(n - 1) | 0) + naive(n - 2) | 0;
+    return (n + naive(n - 1 | 0) | 0) + naive(n - 2 | 0) | 0;
   }
 }
 
@@ -87,7 +87,7 @@ Caml_obj.caml_update_dummy(h, {
 
 function fib(n) {
   if (n > 3 || n < 0) {
-    return fib(n - 1) + fib(n - 2) | 0;
+    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
   else {
     switch (n) {
@@ -165,7 +165,7 @@ function fib2(n) {
     return 1;
   }
   else {
-    return fib2(n - 1) + fib2(n - 2) | 0;
+    return fib2(n - 1 | 0) + fib2(n - 2 | 0) | 0;
   }
 }
 
@@ -174,18 +174,18 @@ function fib3(n) {
     return 1;
   }
   else {
-    return fib3(n - 1) + fib3(n - 2) | 0;
+    return fib3(n - 1 | 0) + fib3(n - 2 | 0) | 0;
   }
 }
 
 function even(n) {
   if (n) {
-    var n$1 = n - 1;
+    var n$1 = n - 1 | 0;
     if (n$1 === 1) {
       return /* true */1;
     }
     else {
-      return even(n$1 - 1);
+      return even(n$1 - 1 | 0);
     }
   }
   else {
@@ -197,7 +197,7 @@ function even2(_n) {
   while(true) {
     var n = _n;
     if (n) {
-      _n = n - 1;
+      _n = n - 1 | 0;
       continue ;
       
     }
@@ -225,7 +225,7 @@ function sum(_acc, _n) {
     var n = _n;
     var acc = _acc;
     if (n > 0) {
-      _n = n - 1;
+      _n = n - 1 | 0;
       _acc = acc + n | 0;
       continue ;
       

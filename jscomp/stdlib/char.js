@@ -84,7 +84,7 @@ function lowercase(c) {
 
 function uppercase(c) {
   if (c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254) {
-    return c - 32;
+    return c - 32 | 0;
   }
   else {
     return c;
@@ -92,7 +92,7 @@ function uppercase(c) {
 }
 
 function compare(c1, c2) {
-  return c1 - c2;
+  return c1 - c2 | 0;
 }
 
 exports.chr       = chr;

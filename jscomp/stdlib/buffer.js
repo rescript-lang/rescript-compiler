@@ -30,7 +30,7 @@ function to_bytes(b) {
 }
 
 function sub(b, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > b[/* position */1] - len) {
+  if (ofs < 0 || len < 0 || ofs > (b[/* position */1] - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.sub"
@@ -42,7 +42,7 @@ function sub(b, ofs, len) {
 }
 
 function blit(src, srcoff, dst, dstoff, len) {
-  if (len < 0 || srcoff < 0 || srcoff > src[/* position */1] - len || dstoff < 0 || dstoff > dst.length - len) {
+  if (len < 0 || srcoff < 0 || srcoff > (src[/* position */1] - len | 0) || dstoff < 0 || dstoff > (dst.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.blit"
@@ -213,7 +213,7 @@ function advance_to_closing(opening, closing, k, s, start) {
     else if (s.charCodeAt(i) === closing) {
       if (k$1) {
         _i = i + 1 | 0;
-        _k = k$1 - 1;
+        _k = k$1 - 1 | 0;
         continue ;
         
       }
@@ -291,7 +291,7 @@ function find_ident(s, start, lim) {
       if (c !== 123) {
         var stop = advance_to_non_alpha(s, start + 1 | 0);
         return /* tuple */[
-                $$String.sub(s, start, stop - start),
+                $$String.sub(s, start, stop - start | 0),
                 stop
               ];
       }
@@ -306,7 +306,7 @@ function find_ident(s, start, lim) {
       var new_start = start + 1 | 0;
       var stop$1 = advance_to_closing(c, closing(c), 0, s, new_start);
       return /* tuple */[
-              $$String.sub(s, new_start, stop$1 - start - 1),
+              $$String.sub(s, new_start, (stop$1 - start | 0) - 1 | 0),
               stop$1 + 1 | 0
             ];
     }

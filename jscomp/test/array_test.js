@@ -12,7 +12,7 @@ function is_sorted(x) {
   var _i = 0;
   while(true) {
     var i = _i;
-    if (i >= len - 1) {
+    if (i >= (len - 1 | 0)) {
       return /* true */1;
     }
     else if (Caml_obj.caml_lessthan(x[i], x[i + 1 | 0])) {

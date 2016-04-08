@@ -117,7 +117,7 @@ function array(cmp, arr) {
     while(true) {
       var hi = _hi;
       var lo = _lo;
-      if (hi - lo >= 6) {
+      if ((hi - lo | 0) >= 6) {
         var mid = ((lo + hi | 0) >>> 1);
         if (Caml_curry.app2(cmp, arr[mid], arr[lo])) {
           swap(arr, mid, lo);
@@ -131,7 +131,7 @@ function array(cmp, arr) {
         }
         var pivot = arr[mid];
         var i = lo + 1 | 0;
-        var j = hi - 1;
+        var j = hi - 1 | 0;
         if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
@@ -151,7 +151,7 @@ function array(cmp, arr) {
           i = i + 1 | 0;
           j = j - 1 | 0;
         };
-        if (j - lo <= hi - i) {
+        if ((j - lo | 0) <= (hi - i | 0)) {
           qsort(lo, j);
           _lo = i;
           continue ;
@@ -169,14 +169,14 @@ function array(cmp, arr) {
       }
     };
   };
-  qsort(0, arr.length - 1);
-  for(var i = 1 ,i_finish = arr.length - 1; i<= i_finish; ++i){
+  qsort(0, arr.length - 1 | 0);
+  for(var i = 1 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
     var val_i = arr[i];
-    if (!Caml_curry.app2(cmp, arr[i - 1], val_i)) {
-      arr[i] = arr[i - 1];
-      var j = i - 1;
-      while(j >= 1 && !Caml_curry.app2(cmp, arr[j - 1], val_i)) {
-        arr[j] = arr[j - 1];
+    if (!Caml_curry.app2(cmp, arr[i - 1 | 0], val_i)) {
+      arr[i] = arr[i - 1 | 0];
+      var j = i - 1 | 0;
+      while(j >= 1 && !Caml_curry.app2(cmp, arr[j - 1 | 0], val_i)) {
+        arr[j] = arr[j - 1 | 0];
         j = j - 1 | 0;
       };
       arr[j] = val_i;

@@ -72,7 +72,7 @@ function rev_split_by_char(c, s) {
     var i = _i;
     try {
       var i$prime = $$String.index_from(s, i, c);
-      var s$prime = $$String.sub(s, i, i$prime - i);
+      var s$prime = $$String.sub(s, i, i$prime - i | 0);
       _l = s$prime === "" ? l : /* :: */[
           s$prime,
           l
@@ -84,7 +84,7 @@ function rev_split_by_char(c, s) {
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         return /* :: */[
-                $$String.sub(s, i, s.length - i),
+                $$String.sub(s, i, s.length - i | 0),
                 l
               ];
       }
@@ -107,7 +107,7 @@ function xsplit(delim, s) {
         var exit = 0;
         var i$prime;
         try {
-          i$prime = $$String.rindex_from(s, i - 1, delim);
+          i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
           exit = 1;
         }
         catch (exn){
@@ -122,7 +122,7 @@ function xsplit(delim, s) {
           }
         }
         if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1 | 0, i - i$prime - 1);
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
           var l$1 = /* :: */[
             l_000,
             l

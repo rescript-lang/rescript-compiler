@@ -89,15 +89,15 @@ function pp_output_string(state, s) {
 function break_new_line(state, offset, width) {
   Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
   state[/* pp_is_new_line */10] = /* true */1;
-  var indent = state[/* pp_margin */5] - width + offset | 0;
+  var indent = (state[/* pp_margin */5] - width | 0) + offset | 0;
   var real_indent = Pervasives.min(state[/* pp_max_indent */7], indent);
   state[/* pp_current_indent */9] = real_indent;
-  state[/* pp_space_left */8] = state[/* pp_margin */5] - state[/* pp_current_indent */9];
+  state[/* pp_space_left */8] = state[/* pp_margin */5] - state[/* pp_current_indent */9] | 0;
   return Caml_curry.app1(state[/* pp_out_spaces */19], state[/* pp_current_indent */9]);
 }
 
 function break_same_line(state, width) {
-  state[8] -= width;
+  state[/* pp_space_left */8] = state[/* pp_space_left */8] - width | 0;
   return Caml_curry.app1(state[/* pp_out_spaces */19], width);
 }
 
@@ -149,7 +149,7 @@ function format_pp_token(state, size, param) {
                       ];
               }
             };
-            tabs[0] = add_tab(state[/* pp_margin */5] - state[/* pp_space_left */8], tabs[0]);
+            tabs[0] = add_tab(state[/* pp_margin */5] - state[/* pp_space_left */8] | 0, tabs[0]);
             return /* () */0;
           }
           else {
@@ -183,11 +183,11 @@ function format_pp_token(state, size, param) {
             return Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
           }
       case 4 : 
-          if (state[/* pp_current_indent */9] !== state[/* pp_margin */5] - state[/* pp_space_left */8]) {
+          if (state[/* pp_current_indent */9] !== (state[/* pp_margin */5] - state[/* pp_space_left */8] | 0)) {
             var state$1 = state;
             var match$4 = take_queue(state$1[/* pp_queue */26]);
             var size$1 = match$4[/* elem_size */0];
-            state$1[11] -= match$4[/* length */2];
+            state$1[/* pp_left_total */11] = state$1[/* pp_left_total */11] - match$4[/* length */2] | 0;
             state$1[/* pp_space_left */8] = state$1[/* pp_space_left */8] + size$1 | 0;
             return /* () */0;
           }
@@ -212,7 +212,7 @@ function format_pp_token(state, size, param) {
   else {
     switch (param.tag | 0) {
       case 0 : 
-          state[8] -= size;
+          state[/* pp_space_left */8] = state[/* pp_space_left */8] - size | 0;
           pp_output_string(state, param[0]);
           state[/* pp_is_new_line */10] = /* false */0;
           return /* () */0;
@@ -235,7 +235,7 @@ function format_pp_token(state, size, param) {
                     return break_same_line(state, n);
                   }
               case 4 : 
-                  if (state[/* pp_is_new_line */10] || !(size > state[/* pp_space_left */8] || state[/* pp_current_indent */9] > (state[/* pp_margin */5] - width + off | 0))) {
+                  if (state[/* pp_is_new_line */10] || !(size > state[/* pp_space_left */8] || state[/* pp_current_indent */9] > ((state[/* pp_margin */5] - width | 0) + off | 0))) {
                     return break_same_line(state, n);
                   }
                   else {
@@ -252,7 +252,7 @@ function format_pp_token(state, size, param) {
           }
           break;
       case 2 : 
-          var insertion_point = state[/* pp_margin */5] - state[/* pp_space_left */8];
+          var insertion_point = state[/* pp_margin */5] - state[/* pp_space_left */8] | 0;
           var match$8 = state[/* pp_tbox_stack */2];
           if (match$8) {
             var tabs$1 = match$8[0][0];
@@ -293,7 +293,7 @@ function format_pp_token(state, size, param) {
             else {
               tab = insertion_point;
             }
-            var offset = tab - insertion_point;
+            var offset = tab - insertion_point | 0;
             if (offset >= 0) {
               return break_same_line(state, offset + param[0] | 0);
             }
@@ -307,11 +307,11 @@ function format_pp_token(state, size, param) {
           break;
       case 3 : 
           var ty = param[1];
-          var insertion_point$1 = state[/* pp_margin */5] - state[/* pp_space_left */8];
+          var insertion_point$1 = state[/* pp_margin */5] - state[/* pp_space_left */8] | 0;
           if (insertion_point$1 > state[/* pp_max_indent */7]) {
             pp_force_break_line(state);
           }
-          var offset$1 = state[/* pp_space_left */8] - param[0];
+          var offset$1 = state[/* pp_space_left */8] - param[0] | 0;
           var bl_type = ty !== 1 ? (
               size > state[/* pp_space_left */8] ? ty : /* Pp_fits */5
             ) : /* Pp_vbox */1;
@@ -351,7 +351,7 @@ function advance_left(state) {
     while(true) {
       var match = peek_queue(state$1[/* pp_queue */26]);
       var size = match[/* elem_size */0];
-      if (size < 0 && state$1[/* pp_right_total */12] - state$1[/* pp_left_total */11] < state$1[/* pp_space_left */8]) {
+      if (size < 0 && (state$1[/* pp_right_total */12] - state$1[/* pp_left_total */11] | 0) < state$1[/* pp_space_left */8]) {
         return 0;
       }
       else {
@@ -520,7 +520,7 @@ function pp_close_box(state, _) {
       set_size(state, /* true */1);
       set_size(state, /* false */0);
     }
-    -- state[13];
+    state[/* pp_curr_depth */13] = state[/* pp_curr_depth */13] - 1 | 0;
     return /* () */0;
   }
   else {
@@ -790,7 +790,7 @@ function pp_close_tbox(state, _) {
         0
       ];
       enqueue_advance(state, elem);
-      -- state[13];
+      state[/* pp_curr_depth */13] = state[/* pp_curr_depth */13] - 1 | 0;
       return /* () */0;
     }
     else {
@@ -870,7 +870,7 @@ function pp_print_text(ppf, s) {
   var left = [0];
   var right = [0];
   var flush = function () {
-    pp_print_string(ppf, $$String.sub(s, left[0], right[0] - left[0]));
+    pp_print_string(ppf, $$String.sub(s, left[0], right[0] - left[0] | 0));
     right[0] = right[0] + 1 | 0;
     left[0] = right[0];
     return /* () */0;
@@ -937,11 +937,11 @@ function pp_limit(n) {
 
 function pp_set_max_indent(state, n) {
   var state$1 = state;
-  var n$1 = state[/* pp_margin */5] - n;
+  var n$1 = state[/* pp_margin */5] - n | 0;
   if (n$1 >= 1) {
     var n$2 = pp_limit(n$1);
     state$1[/* pp_min_space_left */6] = n$2;
-    state$1[/* pp_max_indent */7] = state$1[/* pp_margin */5] - state$1[/* pp_min_space_left */6];
+    state$1[/* pp_max_indent */7] = state$1[/* pp_margin */5] - state$1[/* pp_min_space_left */6] | 0;
     return pp_rinit(state$1);
   }
   else {
@@ -957,7 +957,7 @@ function pp_set_margin(state, n) {
   if (n >= 1) {
     var n$1 = pp_limit(n);
     state[/* pp_margin */5] = n$1;
-    var new_max_indent = state[/* pp_max_indent */7] <= state[/* pp_margin */5] ? state[/* pp_max_indent */7] : Pervasives.max(Pervasives.max(state[/* pp_margin */5] - state[/* pp_min_space_left */6], state[/* pp_margin */5] / 2 | 0), 1);
+    var new_max_indent = state[/* pp_max_indent */7] <= state[/* pp_margin */5] ? state[/* pp_max_indent */7] : Pervasives.max(Pervasives.max(state[/* pp_margin */5] - state[/* pp_min_space_left */6] | 0, state[/* pp_margin */5] / 2 | 0), 1);
     return pp_set_max_indent(state, new_max_indent);
   }
   else {
@@ -1030,7 +1030,7 @@ function display_blanks(state, _n) {
       }
       else {
         Caml_curry.app3(state[/* pp_out_string */16], blank_line, 0, 80);
-        _n = n - 80;
+        _n = n - 80 | 0;
         continue ;
         
       }
@@ -1392,7 +1392,7 @@ function compute_tag(output, tag_acc) {
     return Buffer.contents(buf);
   }
   else {
-    return Buffer.sub(buf, 1, len - 2);
+    return Buffer.sub(buf, 1, len - 2 | 0);
   }
 }
 

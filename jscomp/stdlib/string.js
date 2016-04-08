@@ -32,7 +32,7 @@ function concat(sep, l) {
           len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1) | 0);
+    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
     Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {
@@ -84,7 +84,7 @@ function is_space(param) {
 }
 
 function trim(s) {
-  if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1)))) {
+  if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1 | 0)))) {
     return s;
   }
   else {

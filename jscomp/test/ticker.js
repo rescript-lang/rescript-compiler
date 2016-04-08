@@ -22,7 +22,7 @@ function split(delim, s) {
         var exit = 0;
         var i$prime;
         try {
-          i$prime = $$String.rindex_from(s, i - 1, delim);
+          i$prime = $$String.rindex_from(s, i - 1 | 0, delim);
           exit = 1;
         }
         catch (exn){
@@ -37,7 +37,7 @@ function split(delim, s) {
           }
         }
         if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1 | 0, i - i$prime - 1);
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, (i - i$prime | 0) - 1 | 0);
           var l$1 = /* :: */[
             l_000,
             l

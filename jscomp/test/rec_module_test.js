@@ -26,7 +26,7 @@ function even(n) {
       return /* false */0;
     }
     else {
-      return Caml_curry.app1(B[0], n - 1);
+      return Caml_curry.app1(B[0], n - 1 | 0);
     }
   }
   else {
@@ -41,7 +41,7 @@ function odd(n) {
     return /* true */1;
   }
   else if (n) {
-    return Caml_curry.app1(A[0], n - 1);
+    return Caml_curry.app1(A[0], n - 1 | 0);
   }
   else {
     return /* false */0;
@@ -74,7 +74,7 @@ function even$1(n) {
       return /* false */0;
     }
     else {
-      return Caml_curry.app1(BB[0], n - 1);
+      return Caml_curry.app1(BB[0], n - 1 | 0);
     }
   }
   else {
@@ -99,7 +99,7 @@ function odd$1(n) {
     return /* true */1;
   }
   else if (n) {
-    return Caml_curry.app1(AA[0], n - 1);
+    return Caml_curry.app1(AA[0], n - 1 | 0);
   }
   else {
     return /* false */0;
@@ -995,7 +995,7 @@ function of_list(l) {
                   var match$3 = sub(nl, l);
                   var l$1 = match$3[1];
                   if (l$1) {
-                    var match$4 = sub(n - nl - 1, l$1[1]);
+                    var match$4 = sub((n - nl | 0) - 1 | 0, l$1[1]);
                     return /* tuple */[
                             create(match$3[0], l$1[0], match$4[0]),
                             match$4[1]

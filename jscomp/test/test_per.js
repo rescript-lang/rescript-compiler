@@ -234,7 +234,7 @@ function output_string(oc, s) {
 }
 
 function output(oc, s, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "output"
@@ -246,7 +246,7 @@ function output(oc, s, ofs, len) {
 }
 
 function output_substring(oc, s, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "output_substring"
@@ -306,7 +306,7 @@ function open_in_bin(name) {
 }
 
 function input(ic, s, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "input"
@@ -327,7 +327,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
     else {
       var r = Caml_primitive.caml_ml_input(ic, s, ofs, len);
       if (r) {
-        _len = len - r;
+        _len = len - r | 0;
         _ofs = ofs + r | 0;
         continue ;
         
@@ -340,7 +340,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
 }
 
 function really_input(ic, s, ofs, len) {
-  if (ofs < 0 || len < 0 || ofs > s.length - len) {
+  if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "really_input"
@@ -365,9 +365,9 @@ function input_line(chan) {
       if (param) {
         var hd = param[0];
         var len = hd.length;
-        Caml_string.caml_blit_string(hd, 0, buf, pos - len, len);
+        Caml_string.caml_blit_string(hd, 0, buf, pos - len | 0, len);
         _param = param[1];
-        _pos = pos - len;
+        _pos = pos - len | 0;
         continue ;
         
       }
@@ -384,11 +384,11 @@ function input_line(chan) {
     var n = Caml_primitive.caml_ml_input_scan_line(chan);
     if (n) {
       if (n > 0) {
-        var res = Caml_string.caml_create_string(n - 1);
-        Caml_primitive.caml_ml_input(chan, res, 0, n - 1);
+        var res = Caml_string.caml_create_string(n - 1 | 0);
+        Caml_primitive.caml_ml_input(chan, res, 0, n - 1 | 0);
         Caml_io.caml_ml_input_char(chan);
         if (accu) {
-          var len$1 = (len + n | 0) - 1;
+          var len$1 = (len + n | 0) - 1 | 0;
           return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
                       res,
                       accu
@@ -401,7 +401,7 @@ function input_line(chan) {
       else {
         var beg = Caml_string.caml_create_string(-n);
         Caml_primitive.caml_ml_input(chan, beg, 0, -n);
-        _len = len - n;
+        _len = len - n | 0;
         _accu = /* :: */[
           beg,
           accu

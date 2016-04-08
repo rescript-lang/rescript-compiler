@@ -65,7 +65,7 @@ function take(q) {
   if (!q[/* length */0]) {
     throw Empty;
   }
-  -- q[0];
+  q[/* length */0] = q[/* length */0] - 1 | 0;
   var tail = q[/* tail */1];
   var head = tail[/* next */1];
   if (head === tail) {

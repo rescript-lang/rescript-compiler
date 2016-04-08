@@ -121,17 +121,17 @@ function f8(_x, _y) {
       
     }
     else if (x < 5) {
-      _x = x - 1;
+      _x = x - 1 | 0;
       continue ;
       
     }
     else if (x > 6) {
-      _x = x - 2;
+      _x = x - 2 | 0;
       continue ;
       
     }
     else {
-      return f8(x, y + 1 | 0) + f8(x - 1, y) | 0;
+      return f8(x, y + 1 | 0) + f8(x - 1 | 0, y) | 0;
     }
   };
 }
