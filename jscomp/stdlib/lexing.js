@@ -47,10 +47,11 @@ var zero_pos = /* record */[
 ];
 
 function from_function(f) {
+  var partial_arg = new Array(512);
   return /* record */[
           function (param) {
             var read_fun = f;
-            var aux_buffer = new Array(512);
+            var aux_buffer = partial_arg;
             var lexbuf = param;
             var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
             var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);

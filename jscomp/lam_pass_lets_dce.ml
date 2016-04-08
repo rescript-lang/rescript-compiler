@@ -165,8 +165,10 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
         | {times = 1; captured = false }, _ 
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
         |  _, (Lconst (Const_base (
-            Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
-          | Const_nativeint _ ))) 
+              Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
+              | Const_nativeint _ ))
+              (* | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] ) *)
+            ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 
              inlined, we can still record it and

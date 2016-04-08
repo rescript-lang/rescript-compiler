@@ -44,12 +44,32 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                 (* Lapply(simpl l1, List.map simpl ll,  info ) *)
                 let extra_args = Ext_list.init (x - len)
                     (fun _ ->   (Ident.create "param")) in
-                Lfunction(Curried, extra_args,
-                          Lapply(simpl l1,
-                                 List.map simpl ll @
-                                 List.map (fun x -> Lambda.Lvar x) extra_args ,
-                                 {info with  apply_status = Full}
-                                ))
+                let fn = simpl l1 in
+                let args = List.map simpl ll in
+                let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in
+                let args, bindings =
+                  List.fold_right (fun lam (acc, bind) ->
+                      match lam with
+                      | Lambda.Lvar _
+                      | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
+                      | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+                      | Lfunction _ 
+                        ->
+                        (lam :: acc, bind)
+                      | _ ->
+                        let v = Ident.create Literals.partial_arg in
+                        (Lambda.Lvar v :: acc),  ((v, lam) :: bind)
+                    ) args ([],[])   in 
+                (* let args, bindings = args, [] in *)
+                let rest : Lambda.lambda = 
+                  Lfunction(Curried, extra_args,
+                            Lapply(fn,
+                                   args @ extra_lambdas ,
+                                   {info with  apply_status = Full}
+                                  )) in
+                List.fold_left (fun lam (id,x) ->
+                      Lambda.Llet (Strict, id, x,lam)
+                    ) rest bindings
                                   (*
                                     let f x y =  x + y 
                                     Invariant: there is no currying 
