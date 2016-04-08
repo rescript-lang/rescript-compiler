@@ -41,38 +41,9 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                               List.map simpl ll, {info with apply_status = Full} )
               else if x > len  
               then 
-                (* Lapply(simpl l1, List.map simpl ll,  info ) *)
                 let fn = simpl l1 in
                 let args = List.map simpl ll in
                 Lam_util.eta_conversion (x - len) info fn args 
-                (* let extra_args = Ext_list.init (x - len) *)
-                (*     (fun _ ->   (Ident.create "param")) in *)
-                (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
-                (* begin match List.fold_right (fun lam (acc, bind) -> *)
-                (*       match lam with *)
-                (*       | Lambda.Lvar _ *)
-                (*       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ )  *)
-                (*       | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] ) *)
-                (*       | Lfunction _  *)
-                (*         -> *)
-                (*         (lam :: acc, bind) *)
-                (*       | _ -> *)
-                (*         let v = Ident.create Literals.partial_arg in *)
-                (*         (Lambda.Lvar v :: acc),  ((v, lam) :: bind) *)
-                (*     ) (fn::args) ([],[])   with  *)
-                (* | fn::args , bindings -> *)
-
-                (*   let rest : Lambda.lambda =  *)
-                (*     Lfunction(Curried, extra_args, *)
-                (*               Lapply(fn, *)
-                (*                      args @ extra_lambdas , *)
-                (*                      {info with  apply_status = Full} *)
-                (*                     )) in *)
-                (*   List.fold_left (fun lam (id,x) -> *)
-                (*       Lambda.Llet (Strict, id, x,lam) *)
-                (*     ) rest bindings *)
-                (* | _, _ -> assert false *)
-                (* end             *)
               else 
                 let first,rest = Ext_list.take x ll in 
                 Lapply (
