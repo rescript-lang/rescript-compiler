@@ -498,6 +498,8 @@ ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
+to_string_test.cmo : mt.cmi
+to_string_test.cmx : mt.cmx
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
 unitest_string.cmo :
@@ -992,6 +994,8 @@ ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
+to_string_test.cmo : mt.cmi
+to_string_test.cmj : mt.cmj
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
 unitest_string.cmo :

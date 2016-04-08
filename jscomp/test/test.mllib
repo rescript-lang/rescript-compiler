@@ -215,3 +215,4 @@ ext_array
 int32_test
 hamming_test
 pr_regression_test
+to_string_test
