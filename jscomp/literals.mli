@@ -24,3 +24,6 @@ val js_type_string : string
 val js_type_object : string
 val js_undefined : string
 val js_prop_length : string
+
+val param : string
+val partial_arg : string

@@ -25,3 +25,6 @@ let js_type_string = "string"
 let js_type_object = "object" 
 let js_undefined = "undefined"
 let js_prop_length = "length"
+
+let param = "param"
+let partial_arg = "partial_arg"

@@ -2180,11 +2180,13 @@ function main() {
   var f = Sys.argv.length < 2 ? "-blk" : Sys.argv[1];
   switch (f) {
     case "-blk" : 
+        var partial_arg_000 = [0];
+        var partial_arg = /* tuple */[
+          partial_arg_000,
+          0
+        ];
         var c = function (param) {
-          return block(/* tuple */[
-                      [0],
-                      0
-                    ], param);
+          return block(partial_arg, param);
         };
         var stk = /* [] */0;
         opos[0] = 0;
