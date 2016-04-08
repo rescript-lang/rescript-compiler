@@ -9,17 +9,17 @@ var g = 7;
 var h = [0];
 
 function gg(x, y) {
-  var u = x + y;
+  var u = x + y | 0;
   return function (z) {
-    return u + z;
+    return u + z | 0;
   };
 }
 
 function g1(x, y) {
-  var u = x + y;
-  ++ h[0];
+  var u = x + y | 0;
+  h[0] = h[0] + 1 | 0;
   return function (xx, yy) {
-    return xx + yy + u;
+    return (xx + yy | 0) + u | 0;
   };
 }
 

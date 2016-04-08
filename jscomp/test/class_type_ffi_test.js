@@ -14,7 +14,7 @@ function sum_float_array(arr) {
 function sum_int_array(arr) {
   var v = 0;
   for(var i = 0 ,i_finish = arr.length - 1; i<= i_finish; ++i){
-    v += arr[i];
+    v = v + arr[i] | 0;
   }
   return v;
 }

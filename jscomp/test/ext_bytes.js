@@ -10,7 +10,7 @@ function escaped(s) {
     var match = s[i];
     var $js;
     if (match >= 32) {
-      var switcher = match - 34;
+      var switcher = match - 34 | 0;
       $js = switcher > 58 || switcher < 0 ? (
           switcher >= 93 ? 4 : 1
         ) : (
@@ -24,7 +24,7 @@ function escaped(s) {
           match >= 8 ? 2 : 4
         );
     }
-    n += $js;
+    n = n + $js | 0;
   }
   if (n === s.length) {
     return Bytes.copy(s);
@@ -63,17 +63,17 @@ function escaped(s) {
         switch (c) {
           case 8 : 
               s$prime[n] = /* "\\" */92;
-              ++ n;
+              n = n + 1 | 0;
               s$prime[n] = /* "b" */98;
               break;
           case 9 : 
               s$prime[n] = /* "\\" */92;
-              ++ n;
+              n = n + 1 | 0;
               s$prime[n] = /* "t" */116;
               break;
           case 10 : 
               s$prime[n] = /* "\\" */92;
-              ++ n;
+              n = n + 1 | 0;
               s$prime[n] = /* "n" */110;
               break;
           case 0 : 
@@ -90,7 +90,7 @@ function escaped(s) {
               break;
           case 13 : 
               s$prime[n] = /* "\\" */92;
-              ++ n;
+              n = n + 1 | 0;
               s$prime[n] = /* "r" */114;
               break;
           
@@ -99,21 +99,21 @@ function escaped(s) {
       switch (exit) {
         case 1 : 
             s$prime[n] = /* "\\" */92;
-            ++ n;
-            s$prime[n] = 48 + (c / 100 | 0);
-            ++ n;
-            s$prime[n] = 48 + (c / 10 | 0) % 10;
-            ++ n;
-            s$prime[n] = 48 + c % 10;
+            n = n + 1 | 0;
+            s$prime[n] = 48 + (c / 100 | 0) | 0;
+            n = n + 1 | 0;
+            s$prime[n] = 48 + (c / 10 | 0) % 10 | 0;
+            n = n + 1 | 0;
+            s$prime[n] = 48 + c % 10 | 0;
             break;
         case 2 : 
             s$prime[n] = /* "\\" */92;
-            ++ n;
+            n = n + 1 | 0;
             s$prime[n] = c;
             break;
         
       }
-      ++ n;
+      n = n + 1 | 0;
     }
     return s$prime;
   }

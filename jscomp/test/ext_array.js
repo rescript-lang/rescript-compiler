@@ -13,9 +13,9 @@ function reverse_in_place(a) {
   var len = a.length;
   if (len) {
     for(var k = 0 ,k_finish = (len - 1) / 2 | 0; k<= k_finish; ++k){
-      var t = a$1[i + k];
-      a$1[i + k] = a$1[i + len - 1 - k];
-      a$1[i + len - 1 - k] = t;
+      var t = a$1[i + k | 0];
+      a$1[i + k | 0] = a$1[(i + len | 0) - 1 - k];
+      a$1[(i + len | 0) - 1 - k] = t;
     }
     return /* () */0;
   }
@@ -36,7 +36,7 @@ function reverse_of_list(l) {
       if (param) {
         a[len - i - 2] = param[0];
         _param = param[1];
-        _i = i + 1;
+        _i = i + 1 | 0;
         continue ;
         
       }
@@ -63,7 +63,7 @@ function filter(f, a) {
     else {
       var v = a[i];
       if (Caml_curry.app1(f, v)) {
-        _i = i + 1;
+        _i = i + 1 | 0;
         _acc = /* :: */[
           v,
           acc
@@ -72,7 +72,7 @@ function filter(f, a) {
         
       }
       else {
-        _i = i + 1;
+        _i = i + 1 | 0;
         continue ;
         
       }
@@ -93,7 +93,7 @@ function filter_map(f, a) {
     else {
       var v = a[i];
       var match = Caml_curry.app1(f, v);
-      _i = i + 1;
+      _i = i + 1 | 0;
       if (match) {
         _acc = /* :: */[
           match[0],
@@ -118,8 +118,8 @@ function range(from, to_) {
         ];
   }
   else {
-    return $$Array.init(to_ - from + 1, function (i) {
-                return i + from;
+    return $$Array.init(to_ - from + 1 | 0, function (i) {
+                return i + from | 0;
               });
   }
 }

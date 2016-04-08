@@ -4,12 +4,12 @@
 var $$Array = require("../stdlib/array");
 
 function f(a, b, _) {
-  return a + b;
+  return a + b | 0;
 }
 
 function f2(a) {
   return function () {
-    return a + 1;
+    return a + 1 | 0;
   };
 }
 
@@ -18,7 +18,7 @@ var arr = $$Array.init(2, function () {
     });
 
 for(var i = 0; i<= 2; ++i){
-  arr[i] = i + 1;
+  arr[i] = i + 1 | 0;
 }
 
 var match_000 = "" + 3;

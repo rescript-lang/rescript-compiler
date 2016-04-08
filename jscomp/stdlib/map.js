@@ -21,7 +21,7 @@ function Make(funarg) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -40,7 +40,7 @@ function Make(funarg) {
   var bal = function (l, x, d, r) {
     var hl = l ? l[4] : 0;
     var hr = r ? r[4] : 0;
-    if (hl > hr + 2) {
+    if (hl > (hr + 2 | 0)) {
       if (l) {
         var lr = l[3];
         var ld = l[2];
@@ -66,7 +66,7 @@ function Make(funarg) {
             ];
       }
     }
-    else if (hr > hl + 2) {
+    else if (hr > (hl + 2 | 0)) {
       if (r) {
         var rr = r[3];
         var rd = r[2];
@@ -98,7 +98,7 @@ function Make(funarg) {
               1: x,
               2: d,
               3: r,
-              4: hl >= hr ? hl + 1 : hr + 1,
+              4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
               length: 5,
               tag: 0
             };
@@ -420,10 +420,10 @@ function Make(funarg) {
       if (r) {
         var rh = r[4];
         var lh = l[4];
-        if (lh > rh + 2) {
+        if (lh > (rh + 2 | 0)) {
           return bal(l[0], l[1], l[2], join(l[3], v, d, r));
         }
-        else if (rh > lh + 2) {
+        else if (rh > (lh + 2 | 0)) {
           return bal(join(l, v, d, r[0]), r[1], r[2], r[3]);
         }
         else {
@@ -681,7 +681,7 @@ function Make(funarg) {
   };
   var cardinal = function (param) {
     if (param) {
-      return cardinal(param[0]) + 1 + cardinal(param[3]);
+      return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
     }
     else {
       return 0;

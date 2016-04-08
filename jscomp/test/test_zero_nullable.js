@@ -8,7 +8,7 @@ function f1(x) {
     return 3;
   }
   else {
-    return x + 1;
+    return x + 1 | 0;
   }
 }
 
@@ -17,7 +17,7 @@ function f2(x) {
     return 3;
   }
   else {
-    return x + 1;
+    return x + 1 | 0;
   }
 }
 
@@ -27,18 +27,18 @@ function f5(h, _) {
     return 3;
   }
   else {
-    return u + 1;
+    return u + 1 | 0;
   }
 }
 
 function f4(h, x) {
   var u = Caml_curry.app1(h, 32);
-  var v = 32 + x;
+  var v = 32 + x | 0;
   if (u === null) {
-    return 1 + v;
+    return 1 + v | 0;
   }
   else {
-    return u + 1;
+    return u + 1 | 0;
   }
 }
 
@@ -84,7 +84,7 @@ function f1$1(x) {
     return 3;
   }
   else {
-    return x + 1;
+    return x + 1 | 0;
   }
 }
 
@@ -93,7 +93,7 @@ function f2$1(x) {
     return 3;
   }
   else {
-    return x + 1;
+    return x + 1 | 0;
   }
 }
 
@@ -103,18 +103,18 @@ function f5$1(h, _) {
     return 3;
   }
   else {
-    return u + 1;
+    return u + 1 | 0;
   }
 }
 
 function f4$1(h, x) {
   var u = Caml_curry.app1(h, 32);
-  var v = 32 + x;
+  var v = 32 + x | 0;
   if (u === undefined) {
-    return 1 + v;
+    return 1 + v | 0;
   }
   else {
-    return u + 1;
+    return u + 1 | 0;
   }
 }
 

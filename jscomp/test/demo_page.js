@@ -10,14 +10,14 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) | 0;
   }
 }
 
 function sum(n) {
   var v = 0;
   for(var i = 0; i<= n; ++i){
-    v += i;
+    v = v + i | 0;
   }
   return v;
 }
@@ -37,11 +37,11 @@ function map(f, param) {
 }
 
 function test_curry(x, y) {
-  return x + y;
+  return x + y | 0;
 }
 
 function f(param) {
-  return 32 + param;
+  return 32 + param | 0;
 }
 
 ReactDom.render(React.createClass({

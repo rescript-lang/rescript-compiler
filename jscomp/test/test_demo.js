@@ -9,7 +9,7 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) | 0;
   }
 }
 
@@ -39,26 +39,26 @@ function map(f, param) {
 function sum(n) {
   var v = 0;
   for(var i = 0; i<= n; ++i){
-    v += i;
+    v = v + i | 0;
   }
   return v;
 }
 
 function f(x, y, z) {
-  return x + y + z;
+  return (x + y | 0) + z | 0;
 }
 
 function g(x, y) {
-  var u = x + y;
+  var u = x + y | 0;
   return function (z) {
-    return u + z;
+    return u + z | 0;
   };
 }
 
 function g1(x, y) {
-  var u = x + y;
+  var u = x + y | 0;
   return function (xx, yy) {
-    return xx + yy + u;
+    return (xx + yy | 0) + u | 0;
   };
 }
 

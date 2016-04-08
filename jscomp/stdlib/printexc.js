@@ -139,7 +139,7 @@ function other_fields(x, i) {
                     1: ", %s%s",
                     length: 2,
                     tag: 0
-                  }), field(x, i), other_fields(x, i + 1));
+                  }), field(x, i), other_fields(x, i + 1 | 0));
   }
 }
 
@@ -235,17 +235,17 @@ function to_string(x) {
     else if (x[0] === Caml_builtin_exceptions.match_failure) {
       var match$1 = x[1];
       var $$char = match$1[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5, "Pattern matching failed");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5 | 0, "Pattern matching failed");
     }
     else if (x[0] === Caml_builtin_exceptions.assert_failure) {
       var match$2 = x[1];
       var $$char$1 = match$2[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6, "Assertion failed");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6 | 0, "Assertion failed");
     }
     else if (x[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       var match$3 = x[1];
       var $$char$2 = match$3[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6, "Undefined recursive module");
+      return Caml_curry.app5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6 | 0, "Undefined recursive module");
     }
     else if ((x.tag | 0) !== 0) {
       return x[0];

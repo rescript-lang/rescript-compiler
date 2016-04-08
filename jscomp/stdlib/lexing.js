@@ -18,7 +18,7 @@ function engine(tbl, state, buf) {
       init[/* pos_fname */0],
       init[/* pos_lnum */1],
       init[/* pos_bol */2],
-      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5]
+      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
     ];
   }
   return result;
@@ -33,7 +33,7 @@ function new_engine(tbl, state, buf) {
       init[/* pos_fname */0],
       init[/* pos_lnum */1],
       init[/* pos_bol */2],
-      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5]
+      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
     ];
   }
   return result;
@@ -55,13 +55,13 @@ function from_function(f) {
             var lexbuf = param;
             var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
             var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);
-            if (lexbuf[/* lex_buffer_len */2] + n > lexbuf[/* lex_buffer */1].length) {
-              if (lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n <= lexbuf[/* lex_buffer */1].length) {
+            if ((lexbuf[/* lex_buffer_len */2] + n | 0) > lexbuf[/* lex_buffer */1].length) {
+              if ((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n | 0) <= lexbuf[/* lex_buffer */1].length) {
                 Bytes.blit(lexbuf[/* lex_buffer */1], lexbuf[/* lex_start_pos */4], lexbuf[/* lex_buffer */1], 0, lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4]);
               }
               else {
-                var newlen = Pervasives.min(2 * lexbuf[/* lex_buffer */1].length, Sys.max_string_length);
-                if (lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n > newlen) {
+                var newlen = Pervasives.min((lexbuf[/* lex_buffer */1].length << 1), Sys.max_string_length);
+                if ((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] + n | 0) > newlen) {
                   throw [
                         Caml_builtin_exceptions.failure,
                         "Lexing.lex_refill: cannot grow buffer"
@@ -72,7 +72,7 @@ function from_function(f) {
                 lexbuf[/* lex_buffer */1] = newbuf;
               }
               var s = lexbuf[/* lex_start_pos */4];
-              lexbuf[3] += s;
+              lexbuf[/* lex_abs_pos */3] = lexbuf[/* lex_abs_pos */3] + s | 0;
               lexbuf[5] -= s;
               lexbuf[/* lex_start_pos */4] = 0;
               lexbuf[6] -= s;
@@ -87,7 +87,7 @@ function from_function(f) {
               }
             }
             Bytes.blit(aux_buffer, 0, lexbuf[/* lex_buffer */1], lexbuf[/* lex_buffer_len */2], n);
-            lexbuf[2] += n;
+            lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] + n | 0;
             return /* () */0;
           },
           new Array(1024),
@@ -164,7 +164,7 @@ function sub_lexeme_char_opt(lexbuf, i) {
 }
 
 function lexeme_char(lexbuf, i) {
-  return lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4] + i];
+  return lexbuf[/* lex_buffer */1][lexbuf[/* lex_start_pos */4] + i | 0];
 }
 
 function lexeme_start(lexbuf) {
@@ -187,7 +187,7 @@ function new_line(lexbuf) {
   var lcp = lexbuf[/* lex_curr_p */11];
   lexbuf[/* lex_curr_p */11] = /* record */[
     lcp[/* pos_fname */0],
-    lcp[/* pos_lnum */1] + 1,
+    lcp[/* pos_lnum */1] + 1 | 0,
     lcp[/* pos_cnum */3],
     lcp[/* pos_cnum */3]
   ];

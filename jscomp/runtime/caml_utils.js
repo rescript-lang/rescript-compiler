@@ -3,15 +3,6 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
-
-if (!Math.imul){
-    Math.imul = function (x,y)
-        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
-}
-  
-
-;
-
 var repeat = ( (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
                                                   function(count , self) {
         if (self.length == 0 || count == 0) {
@@ -59,4 +50,4 @@ function i32mod(x, y) {
 exports.i32div = i32div;
 exports.i32mod = i32mod;
 exports.repeat = repeat;
-/*  Not a pure module */
+/* repeat Not a pure module */

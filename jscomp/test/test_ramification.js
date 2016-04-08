@@ -22,13 +22,13 @@ function ff(x) {
     default:
       a = 8;
   }
-  return a + 3;
+  return a + 3 | 0;
 }
 
 function f(x) {
   var y;
   y = x.tag ? 4 : 3;
-  return y + 32;
+  return y + 32 | 0;
 }
 
 function f2(x) {
@@ -37,13 +37,13 @@ function f2(x) {
   v = 1;
   if (x.tag) {
     var z = 33;
-    y = z + 4;
+    y = z + 4 | 0;
   }
   else {
     var z$1 = 33;
-    y = z$1 + 3;
+    y = z$1 + 3 | 0;
   }
-  return y + 32;
+  return y + 32 | 0;
 }
 
 function f3(x) {
@@ -56,7 +56,7 @@ function f3(x) {
   else {
     y = 3;
   }
-  return y + 32;
+  return y + 32 | 0;
 }
 
 exports.ff = ff;

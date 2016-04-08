@@ -26,3 +26,5 @@ val caml_int32_bswap : nativeint -> nativeint
 val caml_nativeint_bswap : nativeint -> nativeint
 
 val caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc. backtrace_slot
+
+val imul :int32 -> int32 -> int32

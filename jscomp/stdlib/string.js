@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes       = require("./bytes");
-var Caml_string = require("../runtime/caml_string");
-var List        = require("./list");
+var Bytes          = require("./bytes");
+var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_string    = require("../runtime/caml_string");
+var List           = require("./list");
 
 function make(n, c) {
   return Caml_string.bytes_to_string(Bytes.make(n, c));
@@ -27,18 +28,18 @@ function concat(sep, l) {
     var num = [0];
     var len = [0];
     List.iter(function (s) {
-          ++ num[0];
-          len[0] += s.length;
+          num[0] = num[0] + 1 | 0;
+          len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + sep.length * (num[0] - 1));
+    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1) | 0);
     Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {
           Caml_string.caml_blit_string(sep, 0, r, pos[0], sep.length);
-          pos[0] += sep.length;
+          pos[0] = pos[0] + sep.length | 0;
           Caml_string.caml_blit_string(s, 0, r, pos[0], s.length);
-          pos[0] += s.length;
+          pos[0] = pos[0] + s.length | 0;
           return /* () */0;
         }, l[1]);
     return Caml_string.bytes_to_string(r);
@@ -65,7 +66,7 @@ function mapi(f, s) {
 }
 
 function is_space(param) {
-  var switcher = param - 9;
+  var switcher = param - 9 | 0;
   if (switcher > 4 || switcher < 0) {
     if (switcher !== 23) {
       return /* false */0;
@@ -130,7 +131,7 @@ function escaped(s) {
         }
         if (exit === 1) {
           if (Caml_string.caml_is_printable(c)) {
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             
           }

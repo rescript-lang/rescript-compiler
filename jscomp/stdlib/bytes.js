@@ -5,6 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
 var Char                    = require("./char");
+var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
@@ -59,7 +60,7 @@ function sub_string(b, ofs, len) {
 }
 
 function extend(s, left, right) {
-  var len = s.length + left + right;
+  var len = (s.length + left | 0) + right | 0;
   var r = Caml_string.caml_create_string(len);
   var match = left < 0 ? /* tuple */[
       -left,
@@ -133,18 +134,18 @@ function concat(sep, l) {
     var num = [0];
     var len = [0];
     List.iter(function (s) {
-          ++ num[0];
-          len[0] += s.length;
+          num[0] = num[0] + 1 | 0;
+          len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + sep.length * (num[0] - 1));
+    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1) | 0);
     Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {
           Caml_string.caml_blit_bytes(sep, 0, r, pos[0], sep.length);
-          pos[0] += sep.length;
+          pos[0] = pos[0] + sep.length | 0;
           Caml_string.caml_blit_bytes(s, 0, r, pos[0], s.length);
-          pos[0] += s.length;
+          pos[0] = pos[0] + s.length | 0;
           return /* () */0;
         }, l[1]);
     return r;
@@ -159,7 +160,7 @@ function cat(a, b) {
 }
 
 function is_space(param) {
-  var switcher = param - 9;
+  var switcher = param - 9 | 0;
   if (switcher > 4 || switcher < 0) {
     if (switcher !== 23) {
       return /* false */0;
@@ -180,14 +181,14 @@ function trim(s) {
   var len = s.length;
   var i = 0;
   while(i < len && is_space(s[i])) {
-    ++ i;
+    i = i + 1 | 0;
   };
   var j = len - 1;
   while(j >= i && is_space(s[j])) {
-    -- j;
+    j = j - 1 | 0;
   };
   if (j >= i) {
-    return sub(s, i, j - i + 1);
+    return sub(s, i, j - i + 1 | 0);
   }
   else {
     return empty;
@@ -225,7 +226,7 @@ function escaped(s) {
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
     }
-    n += $js;
+    n = n + $js | 0;
   }
   if (n === s.length) {
     return copy(s);
@@ -236,26 +237,26 @@ function escaped(s) {
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
-      var switcher = c$1 - 34;
+      var switcher = c$1 - 34 | 0;
       if (switcher > 58 || switcher < 0) {
         if (switcher >= -20) {
           exit$1 = 1;
         }
         else {
-          switch (switcher + 34) {
+          switch (switcher + 34 | 0) {
             case 8 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "b" */98;
                 break;
             case 9 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "t" */116;
                 break;
             case 10 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "n" */110;
                 break;
             case 0 : 
@@ -272,7 +273,7 @@ function escaped(s) {
                 break;
             case 13 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "r" */114;
                 break;
             
@@ -281,7 +282,7 @@ function escaped(s) {
       }
       else if (switcher > 57 || switcher < 1) {
         s$prime[n] = /* "\\" */92;
-        ++ n;
+        n = n + 1 | 0;
         s$prime[n] = c$1;
       }
       else {
@@ -293,15 +294,15 @@ function escaped(s) {
         }
         else {
           s$prime[n] = /* "\\" */92;
-          ++ n;
-          s$prime[n] = 48 + (c$1 / 100 | 0);
-          ++ n;
-          s$prime[n] = 48 + (c$1 / 10 | 0) % 10;
-          ++ n;
-          s$prime[n] = 48 + c$1 % 10;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + c$1 % 10 | 0;
         }
       }
-      ++ n;
+      n = n + 1 | 0;
     }
     return s$prime;
   }
@@ -372,7 +373,7 @@ function index_rec(s, lim, _i, c) {
       return i;
     }
     else {
-      _i = i + 1;
+      _i = i + 1 | 0;
       continue ;
       
     }

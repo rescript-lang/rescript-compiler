@@ -44,7 +44,7 @@ function process(x) {
       }
       else {
         var len_sub = sub.length;
-        var indicator = Ext_string.tail_from(x, v + len_sub);
+        var indicator = Ext_string.tail_from(x, v + len_sub | 0);
         var normal_name = $$String.sub(x, 0, v);
         switch (indicator) {
           case "r" : 

@@ -228,9 +228,6 @@ val inc : unary_op
 
 val dec : unary_op
 
-val unchecked_prefix_inc : ?comment:string -> J.vident -> t
-
-
 
 
 

@@ -7,6 +7,7 @@ var Hashtbl                 = require("./hashtbl");
 var Stream                  = require("./stream");
 var Caml_format             = require("../runtime/caml_format");
 var Char                    = require("./char");
+var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
@@ -24,12 +25,12 @@ function reset_buffer() {
 
 function store(c) {
   if (bufpos[0] >= buffer[0].length) {
-    var newbuffer = Caml_string.caml_create_string(2 * bufpos[0]);
+    var newbuffer = Caml_string.caml_create_string((bufpos[0] << 1));
     Bytes.blit(buffer[0], 0, newbuffer, 0, bufpos[0]);
     buffer[0] = newbuffer;
   }
   buffer[0][bufpos[0]] = c;
-  return ++ bufpos[0];
+  return bufpos[0] = bufpos[0] + 1 | 0;
 }
 
 function get_string() {
@@ -88,13 +89,13 @@ function make_lexer(keywords) {
         var c = match[0];
         var exit = 0;
         if (c < 124) {
-          var switcher = c - 65;
+          var switcher = c - 65 | 0;
           if (switcher > 57 || switcher < 0) {
             if (switcher >= 58) {
               exit = 1;
             }
             else {
-              switch (switcher + 65) {
+              switch (switcher + 65 | 0) {
                 case 9 : 
                 case 10 : 
                 case 12 : 
@@ -259,7 +260,7 @@ function make_lexer(keywords) {
             }
           }
           else {
-            var switcher$1 = switcher - 26;
+            var switcher$1 = switcher - 26 | 0;
             if (switcher$1 > 5 || switcher$1 < 0) {
               exit = 2;
             }
@@ -304,7 +305,7 @@ function make_lexer(keywords) {
                   var c$3 = match$4[0];
                   var exit$1 = 0;
                   if (c$3 >= 91) {
-                    var switcher$2 = c$3 - 95;
+                    var switcher$2 = c$3 - 95 | 0;
                     if (switcher$2 > 27 || switcher$2 < 0) {
                       if (switcher$2 >= 97) {
                         exit$1 = 1;
@@ -371,7 +372,7 @@ function make_lexer(keywords) {
         var c = match[0];
         var exit = 0;
         if (c >= 94) {
-          var switcher = c - 95;
+          var switcher = c - 95 | 0;
           if (switcher > 30 || switcher < 0) {
             if (switcher >= 32) {
               return /* Some */[ident_or_keyword(get_string(/* () */0))];
@@ -396,7 +397,7 @@ function make_lexer(keywords) {
           }
         }
         else if (c >= 33) {
-          switch (c - 33) {
+          switch (c - 33 | 0) {
             case 1 : 
             case 6 : 
             case 7 : 
@@ -494,7 +495,7 @@ function make_lexer(keywords) {
             var exit$1 = 0;
             if (match$1) {
               var c$1 = match$1[0];
-              var switcher = c$1 - 69;
+              var switcher = c$1 - 69 | 0;
               if (switcher > 32 || switcher < 0) {
                 if ((switcher + 21 >>> 0) > 9) {
                   exit$1 = 1;
@@ -673,7 +674,7 @@ function make_lexer(keywords) {
     if (match) {
       var c1 = match[0];
       if (c1 >= 58) {
-        var switcher = c1 - 110;
+        var switcher = c1 - 110 | 0;
         if (switcher > 6 || switcher < 0) {
           Stream.junk(strm__);
           return c1;
@@ -723,7 +724,7 @@ function make_lexer(keywords) {
               }
               else {
                 Stream.junk(strm__);
-                return Char.chr((c1 - 48) * 100 + (c2 - 48) * 10 + (c3 - 48));
+                return Char.chr((Caml_primitive.imul(c1 - 48, 100) + Caml_primitive.imul(c2 - 48, 10) | 0) + (c3 - 48) | 0);
               }
             }
             else {
@@ -754,7 +755,7 @@ function make_lexer(keywords) {
     while(true) {
       var match = Stream.peek(strm__);
       if (match) {
-        var switcher = match[0] - 40;
+        var switcher = match[0] - 40 | 0;
         if (switcher > 2 || switcher < 0) {
           Stream.junk(strm__);
           continue ;

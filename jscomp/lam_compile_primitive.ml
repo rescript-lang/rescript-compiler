@@ -81,12 +81,6 @@ let translate
 (** Negate boxed int end*)
 (* Int addition and subtraction *)
   | Paddint 
-    -> 
-      begin match args with 
-      | [e1; e2] 
-        -> E.unchecked_int32_add e1 e2
-      | _ -> assert false 
-      end
   | Paddbint  Pint32
     ->
     begin match args with
@@ -340,14 +334,14 @@ let translate
     end
   | Poffsetint n ->
     begin match args with
-      | [e] ->  E.unchecked_int32_add  e (E.small_int  n)
+      | [e] ->  E.int32_add  e (E.small_int  n)
       | _ -> assert false
     end
   | Poffsetref n ->
     begin match args with
       | [e] -> 
         let v = (Js_of_lam_block.field Fld_na e 0l) in
-        E.assign  v (E.unchecked_int32_add v (E.small_int  n))
+        E.assign  v (E.int32_add v (E.small_int  n))
       | _ -> assert false
     end
 

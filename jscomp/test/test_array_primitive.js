@@ -6,7 +6,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 function caml_array_sub(x, offset, len) {
   var result = new Array(len);
   for(var j = 0 ,j_finish = len - 1; j<= j_finish; ++j){
-    result[j] = x[offset + j];
+    result[j] = x[offset + j | 0];
   }
   return result;
 }

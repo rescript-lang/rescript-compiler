@@ -12,7 +12,7 @@ function f() {
       var acc = _acc;
       if (n > 0) {
         _n = n - 1;
-        _acc = acc + n;
+        _acc = acc + n | 0;
         continue ;
         
       }

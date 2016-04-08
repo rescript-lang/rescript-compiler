@@ -129,7 +129,7 @@ function get_data(count, _d) {
             }
             if (b[/* len */2]) {
               var r = b[/* buff */1][b[/* ind */3]];
-              ++ b[3];
+              b[/* ind */3] = b[/* ind */3] + 1 | 0;
               return /* Scons */{
                       0: r,
                       1: d,
@@ -236,14 +236,14 @@ function junk(s) {
     else {
       switch (match.tag | 0) {
         case 0 : 
-            ++ s[0];
+            s[0] = s[/* count */0] + 1 | 0;
             s[1] = match[1];
             return /* () */0;
         case 3 : 
             var g = match[0];
             var match$1 = g[/* curr */0];
             if (match$1) {
-              ++ s[0];
+              s[0] = s[/* count */0] + 1 | 0;
               g[/* curr */0] = /* None */0;
               return /* () */0;
             }
@@ -253,8 +253,8 @@ function junk(s) {
             break;
         case 4 : 
             var b = match[0];
-            ++ s[0];
-            ++ b[3];
+            s[0] = s[/* count */0] + 1 | 0;
+            b[/* ind */3] = b[/* ind */3] + 1 | 0;
             return /* () */0;
         default:
           exit = 1;
@@ -287,7 +287,7 @@ function nget(n, s) {
     if (match) {
       var a = match[0];
       junk(s);
-      var match$1 = nget(n - 1, s);
+      var match$1 = nget(n - 1 | 0, s);
       return /* tuple */[
               /* :: */[
                 a,
@@ -299,7 +299,7 @@ function nget(n, s) {
                 length: 2,
                 tag: 0
               },
-              match$1[2] + 1
+              match$1[2] + 1 | 0
             ];
     }
     else {
@@ -390,7 +390,7 @@ function of_string(s) {
   return from(function () {
               var c = count[0];
               if (c < s.length) {
-                ++ count[0];
+                count[0] = count[0] + 1 | 0;
                 return /* Some */[s.charCodeAt(c)];
               }
               else {
@@ -404,7 +404,7 @@ function of_bytes(s) {
   return from(function () {
               var c = count[0];
               if (c < s.length) {
-                ++ count[0];
+                count[0] = count[0] + 1 | 0;
                 return /* Some */[s[c]];
               }
               else {

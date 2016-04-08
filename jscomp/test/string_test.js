@@ -29,7 +29,7 @@ function ff(x) {
     default:
       a = 8;
   }
-  return a + 3;
+  return a + 3 | 0;
 }
 
 function gg(x) {
@@ -61,7 +61,7 @@ function gg(x) {
       
     }
   }
-  return a + 3;
+  return a + 3 | 0;
 }
 
 function rev_split_by_char(c, s) {
@@ -77,7 +77,7 @@ function rev_split_by_char(c, s) {
           s$prime,
           l
         ];
-      _i = i$prime + 1;
+      _i = i$prime + 1 | 0;
       continue ;
       
     }
@@ -122,7 +122,7 @@ function xsplit(delim, s) {
           }
         }
         if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, i - i$prime - 1);
           var l$1 = /* :: */[
             l_000,
             l

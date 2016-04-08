@@ -15,8 +15,8 @@ function is_sorted(x) {
     if (i >= len - 1) {
       return /* true */1;
     }
-    else if (Caml_obj.caml_lessthan(x[i], x[i + 1])) {
-      _i = i + 1;
+    else if (Caml_obj.caml_lessthan(x[i], x[i + 1 | 0])) {
+      _i = i + 1 | 0;
       continue ;
       
     }
@@ -159,7 +159,7 @@ var array_suites_001 = /* :: */[
                 0
               ];
               var v = $$Array.init(3, function (x) {
-                    return x * 2;
+                    return (x << 1);
                   });
               $$Array.blit(v, 1, u, 1, 2);
               return /* Eq */{

@@ -35,7 +35,7 @@ function escaped(s) {
     if (exit === 1) {
       $js = Caml_string.caml_is_printable(c) ? 1 : 4;
     }
-    n += $js;
+    n = n + $js | 0;
   }
   if (n === s.length) {
     return Bytes.copy(s);
@@ -46,26 +46,26 @@ function escaped(s) {
     for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
-      var switcher = c$1 - 34;
+      var switcher = c$1 - 34 | 0;
       if (switcher > 58 || switcher < 0) {
         if (switcher >= -20) {
           exit$1 = 1;
         }
         else {
-          switch (switcher + 34) {
+          switch (switcher + 34 | 0) {
             case 8 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "b" */98;
                 break;
             case 9 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "t" */116;
                 break;
             case 10 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "n" */110;
                 break;
             case 0 : 
@@ -82,7 +82,7 @@ function escaped(s) {
                 break;
             case 13 : 
                 s$prime[n] = /* "\\" */92;
-                ++ n;
+                n = n + 1 | 0;
                 s$prime[n] = /* "r" */114;
                 break;
             
@@ -91,7 +91,7 @@ function escaped(s) {
       }
       else if (switcher > 57 || switcher < 1) {
         s$prime[n] = /* "\\" */92;
-        ++ n;
+        n = n + 1 | 0;
         s$prime[n] = c$1;
       }
       else {
@@ -103,15 +103,15 @@ function escaped(s) {
         }
         else {
           s$prime[n] = /* "\\" */92;
-          ++ n;
-          s$prime[n] = 48 + (c$1 / 100 | 0);
-          ++ n;
-          s$prime[n] = 48 + (c$1 / 10 | 0) % 10;
-          ++ n;
-          s$prime[n] = 48 + c$1 % 10;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
+          n = n + 1 | 0;
+          s$prime[n] = 48 + c$1 % 10 | 0;
         }
       }
-      ++ n;
+      n = n + 1 | 0;
     }
     return s$prime;
   }

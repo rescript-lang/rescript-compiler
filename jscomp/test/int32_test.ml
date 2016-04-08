@@ -26,9 +26,11 @@ let shift_left_tests =
 
 let test_div = 61 / 2 
 
+let ( *~ ) = Int32.mul 
 
-;; Mt.from_pair_suites __FILE__ @@ [
-
+;; Mt.from_pair_suites __FILE__ @@ Mt.[
+  __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0xffff_ffffl, 1l));
+  __LOC__, (fun _ -> Eq (0xffff_ffffl *~ 0x7fff_ffffl, -2147483647l))
 ] @ ((let (a,b) = shift_right_logical_tests in    
                                    Ext_array.map2i (fun i a b -> Format.asprintf "shift_right_logical_cases %d" i, (fun _ -> Mt.Eq(a,b)) ) a b
                                    |>  Array.to_list))

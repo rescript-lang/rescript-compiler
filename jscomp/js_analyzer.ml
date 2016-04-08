@@ -71,8 +71,8 @@ let free_variables_of_statement used_idents defined_idents st =
 let free_variables_of_expression used_idents defined_idents st = 
   ((free_variables used_idents defined_idents)#expression st) # get_depenencies
 
-let rec no_side_effect (x : J.expression)  = 
-  match x.expression_desc with 
+let rec no_side_effect_expression_desc (x : J.expression_desc)  = 
+  match x with 
   | Bool _ -> true 
   | Var _ -> true 
   | Access (a,b) -> no_side_effect a && no_side_effect b 
@@ -125,6 +125,8 @@ let rec no_side_effect (x : J.expression)  =
   | Caml_block_set_tag _ 
   | Caml_block_set_length _ (* actually true? *)
     -> false 
+and no_side_effect (x : J.expression)  = 
+  no_side_effect_expression_desc x.expression_desc
 
 let no_side_effect_expression (x : J.expression) = no_side_effect x 
 

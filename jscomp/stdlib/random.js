@@ -31,7 +31,7 @@ function full_init(s, seed) {
     return Digest.string(accu + x);
   };
   var extract = function (d) {
-    return d.charCodeAt(0) + (d.charCodeAt(1) << 8) + (d.charCodeAt(2) << 16) + (d.charCodeAt(3) << 24);
+    return ((d.charCodeAt(0) + (d.charCodeAt(1) << 8) | 0) + (d.charCodeAt(2) << 16) | 0) + (d.charCodeAt(3) << 24) | 0;
   };
   var seed$1 = seed.length ? seed : /* int array */[0];
   var l = seed$1.length;
@@ -39,7 +39,7 @@ function full_init(s, seed) {
     s[/* st */0][i] = i;
   }
   var accu = "x";
-  for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l); i$1<= i_finish; ++i$1){
+  for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l) | 0; i$1<= i_finish; ++i$1){
     var j = i$1 % 55;
     var k = i$1 % l;
     accu = combine(accu, seed$1[k]);
@@ -66,9 +66,9 @@ function copy(s) {
 }
 
 function bits(s) {
-  s[/* idx */1] = (s[/* idx */1] + 1) % 55;
+  s[/* idx */1] = (s[/* idx */1] + 1 | 0) % 55;
   var curval = s[/* st */0][s[/* idx */1]];
-  var newval = s[/* st */0][(s[/* idx */1] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
+  var newval = s[/* st */0][(s[/* idx */1] + 24 | 0) % 55] + (curval ^ (curval >>> 25) & 31) | 0;
   var newval30 = newval & 1073741823;
   s[/* st */0][s[/* idx */1]] = newval30;
   return newval30;
@@ -87,7 +87,7 @@ function $$int(s, bound) {
     while(true) {
       var r = bits(s$1);
       var v = r % n;
-      if (r - v > 1073741823 - n + 1) {
+      if (r - v > (1073741823 - n + 1 | 0)) {
         continue ;
         
       }

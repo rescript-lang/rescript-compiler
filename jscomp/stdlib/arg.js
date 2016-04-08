@@ -424,7 +424,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
           ];
     }
   };
-  ++ current$1[0];
+  current$1[0] = current$1[0] + 1 | 0;
   while(current$1[0] < l) {
     var s = argv[current$1[0]];
     if (s.length >= 1 && s[0] === "-") {
@@ -451,8 +451,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
             case 0 : 
                 return Caml_curry.app1(param[0], /* () */0);
             case 1 : 
-                if (current$1[0] + 1 < l) {
-                  var arg = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg = argv[current$1[0] + 1 | 0];
                   try {
                     Caml_curry.app1(param[0], Pervasives.bool_of_string(arg));
                   }
@@ -478,7 +478,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       throw exn;
                     }
                   }
-                  return ++ current$1[0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -498,9 +498,9 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 param[0][0] = /* false */0;
                 return /* () */0;
             case 4 : 
-                if (current$1[0] + 1 < l) {
-                  Caml_curry.app1(param[0], argv[current$1[0] + 1]);
-                  return ++ current$1[0];
+                if ((current$1[0] + 1 | 0) < l) {
+                  Caml_curry.app1(param[0], argv[current$1[0] + 1 | 0]);
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -514,9 +514,9 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 }
                 break;
             case 5 : 
-                if (current$1[0] + 1 < l) {
-                  param[0][0] = argv[current$1[0] + 1];
-                  return ++ current$1[0];
+                if ((current$1[0] + 1 | 0) < l) {
+                  param[0][0] = argv[current$1[0] + 1 | 0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -530,8 +530,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 }
                 break;
             case 6 : 
-                if (current$1[0] + 1 < l) {
-                  var arg$1 = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg$1 = argv[current$1[0] + 1 | 0];
                   try {
                     Caml_curry.app1(param[0], Caml_format.caml_int_of_string(arg$1));
                   }
@@ -557,7 +557,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       throw exn$1;
                     }
                   }
-                  return ++ current$1[0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -571,8 +571,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 }
                 break;
             case 7 : 
-                if (current$1[0] + 1 < l) {
-                  var arg$2 = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg$2 = argv[current$1[0] + 1 | 0];
                   try {
                     param[0][0] = Caml_format.caml_int_of_string(arg$2);
                   }
@@ -598,7 +598,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       throw exn$2;
                     }
                   }
-                  return ++ current$1[0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -612,8 +612,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 }
                 break;
             case 8 : 
-                if (current$1[0] + 1 < l) {
-                  var arg$3 = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg$3 = argv[current$1[0] + 1 | 0];
                   try {
                     Caml_curry.app1(param[0], Caml_format.caml_float_of_string(arg$3));
                   }
@@ -639,7 +639,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       throw exn$3;
                     }
                   }
-                  return ++ current$1[0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -653,8 +653,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 }
                 break;
             case 9 : 
-                if (current$1[0] + 1 < l) {
-                  var arg$4 = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg$4 = argv[current$1[0] + 1 | 0];
                   try {
                     param[0][0] = Caml_format.caml_float_of_string(arg$4);
                   }
@@ -680,7 +680,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       throw exn$4;
                     }
                   }
-                  return ++ current$1[0];
+                  return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
                   throw [
@@ -697,11 +697,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 return List.iter(treat_action, param[0]);
             case 11 : 
                 var symb = param[0];
-                if (current$1[0] + 1 < l) {
-                  var arg$5 = argv[current$1[0] + 1];
+                if ((current$1[0] + 1 | 0) < l) {
+                  var arg$5 = argv[current$1[0] + 1 | 0];
                   if (List.mem(arg$5, symb)) {
-                    Caml_curry.app1(param[1], argv[current$1[0] + 1]);
-                    return ++ current$1[0];
+                    Caml_curry.app1(param[1], argv[current$1[0] + 1 | 0]);
+                    return current$1[0] = current$1[0] + 1 | 0;
                   }
                   else {
                     throw [
@@ -730,8 +730,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
             case 12 : 
                 var f = param[0];
                 while(current$1[0] < l - 1) {
-                  Caml_curry.app1(f, argv[current$1[0] + 1]);
-                  ++ current$1[0];
+                  Caml_curry.app1(f, argv[current$1[0] + 1 | 0]);
+                  current$1[0] = current$1[0] + 1 | 0;
                 };
                 return /* () */0;
             
@@ -755,7 +755,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
           throw exn$1;
         }
       }
-      ++ current$1[0];
+      current$1[0] = current$1[0] + 1 | 0;
     }
     else {
       try {
@@ -773,7 +773,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
           throw exn$2;
         }
       }
-      ++ current$1[0];
+      current$1[0] = current$1[0] + 1 | 0;
     }
   };
   return /* () */0;
@@ -872,7 +872,7 @@ function second_word(s) {
         return len;
       }
       else if (s[n] === " ") {
-        _n = n + 1;
+        _n = n + 1 | 0;
         continue ;
         
       }
@@ -897,7 +897,7 @@ function max_arg_len(cur, param) {
     return Pervasives.max(cur, kwd.length);
   }
   else {
-    return Pervasives.max(cur, kwd.length + second_word(param[2]));
+    return Pervasives.max(cur, kwd.length + second_word(param[2]) | 0);
   }
 }
 
@@ -917,7 +917,7 @@ function align($staropt$star, speclist) {
               else if (spec.tag === 11) {
                 var msg = ksd[2];
                 var cutcol = second_word(msg);
-                var n = Pervasives.max(0, len$2 - cutcol) + 3;
+                var n = Pervasives.max(0, len$2 - cutcol) + 3 | 0;
                 var spaces = Caml_string.bytes_to_string(Bytes.make(n, /* " " */32));
                 return /* tuple */[
                         kwd,

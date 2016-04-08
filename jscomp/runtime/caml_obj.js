@@ -134,7 +134,7 @@ function caml_compare(_a, _b) {
                 return res;
               }
               else {
-                _i = i + 1;
+                _i = i + 1 | 0;
                 continue ;
                 
               }
@@ -157,7 +157,7 @@ function caml_compare(_a, _b) {
                 return res$1;
               }
               else {
-                _i$1 = i$1 + 1;
+                _i$1 = i$1 + 1 | 0;
                 continue ;
                 
               }
@@ -180,7 +180,7 @@ function caml_compare(_a, _b) {
                 return res$2;
               }
               else {
-                _i$2 = i$2 + 1;
+                _i$2 = i$2 + 1 | 0;
                 continue ;
                 
               }
@@ -241,7 +241,7 @@ function caml_equal(_a, _b) {
               return /* true */1;
             }
             else if (caml_equal(a$1[i], b$1[i])) {
-              _i = i + 1;
+              _i = i + 1 | 0;
               continue ;
               
             }

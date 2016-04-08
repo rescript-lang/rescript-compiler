@@ -64,9 +64,9 @@ function escaped(c) {
       var n = c;
       return Caml_string.caml_string_of_char_array(/* int array */[
                   /* "\\" */92,
-                  48 + (n / 100 | 0),
-                  48 + (n / 10 | 0) % 10,
-                  48 + n % 10
+                  48 + (n / 100 | 0) | 0,
+                  48 + (n / 10 | 0) % 10 | 0,
+                  48 + n % 10 | 0
                 ]);
     }
   }
@@ -75,7 +75,7 @@ function escaped(c) {
 
 function lowercase(c) {
   if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
-    return c + 32;
+    return c + 32 | 0;
   }
   else {
     return c;

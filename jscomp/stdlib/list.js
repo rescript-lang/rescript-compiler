@@ -14,7 +14,7 @@ function length(l) {
     var len = _len;
     if (param) {
       _param = param[1];
-      _len = len + 1;
+      _len = len + 1 | 0;
       continue ;
       
     }
@@ -132,7 +132,7 @@ function mapi(i, f, param) {
     var r = Caml_curry.app2(f, i, param[0]);
     return /* :: */[
             r,
-            mapi(i + 1, f, param[1])
+            mapi(i + 1 | 0, f, param[1])
           ];
   }
   else {
@@ -190,7 +190,7 @@ function iteri(f, l) {
     if (param) {
       Caml_curry.app2(f$1, i, param[0]);
       _param = param[1];
-      _i = i + 1;
+      _i = i + 1 | 0;
       continue ;
       
     }

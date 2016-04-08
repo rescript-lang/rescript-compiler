@@ -6,6 +6,7 @@ var Caml_obj                = require("../runtime/caml_obj");
 var Obj                     = require("./obj");
 var Caml_oo                 = require("../runtime/caml_oo");
 var Sys                     = require("./sys");
+var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
 var Caml_curry              = require("../runtime/caml_curry");
@@ -27,7 +28,7 @@ var params = /* record */[
 function public_method_label(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
-    accu = 223 * accu + s.charCodeAt(i);
+    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
   }
   accu = accu & (1 << 31) - 1;
   if (accu > 1073741823) {
@@ -55,7 +56,7 @@ function create(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -64,7 +65,7 @@ function create(l, x, d, r) {
 function bal(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -90,7 +91,7 @@ function bal(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -122,7 +123,7 @@ function bal(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -222,7 +223,7 @@ function create$1(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -231,7 +232,7 @@ function create$1(l, x, d, r) {
 function bal$1(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -257,7 +258,7 @@ function bal$1(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -289,7 +290,7 @@ function bal$1(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -353,7 +354,7 @@ function create$2(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -362,7 +363,7 @@ function create$2(l, x, d, r) {
 function bal$2(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -388,7 +389,7 @@ function bal$2(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -420,7 +421,7 @@ function bal$2(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -507,18 +508,18 @@ function fit_size(n) {
     return n;
   }
   else {
-    return fit_size((n + 1) / 2 | 0) * 2;
+    return (fit_size((n + 1 | 0) / 2 | 0) << 1);
   }
 }
 
 function new_table(pub_labels) {
-  ++ table_count[0];
+  table_count[0] = table_count[0] + 1 | 0;
   var len = pub_labels.length;
-  var methods = Caml_array.caml_make_vect(len * 2 + 2, dummy_met);
+  var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
   methods[0] = len;
-  methods[1] = (fit_size(len) * Sys.word_size / 8 | 0) - 1;
+  methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1;
   for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-    methods[i * 2 + 3] = pub_labels[i];
+    methods[(i << 1) + 3 | 0] = pub_labels[i];
   }
   return /* record */[
           2,
@@ -551,7 +552,7 @@ var inst_var_count = [0];
 
 function new_method(table) {
   var index = table[/* methods */1].length;
-  resize(table, index + 1);
+  resize(table, index + 1 | 0);
   return index;
 }
 
@@ -597,12 +598,12 @@ function get_method_labels(table, names) {
 }
 
 function set_method(table, label, element) {
-  ++ method_count[0];
+  method_count[0] = method_count[0] + 1 | 0;
   if (find$1(label, table[/* methods_by_label */3])) {
     var array = table;
     var label$1 = label;
     var element$1 = element;
-    resize(array, label$1 + 1);
+    resize(array, label$1 + 1 | 0);
     array[/* methods */1][label$1] = element$1;
     return /* () */0;
   }
@@ -735,7 +736,7 @@ function widen(table) {
 
 function new_slot(table) {
   var index = table[/* size */0];
-  table[/* size */0] = index + 1;
+  table[/* size */0] = index + 1 | 0;
   return index;
 }
 
@@ -770,12 +771,12 @@ function new_methods_variables(table, meths, vals) {
   var meths$1 = to_array(meths);
   var nmeths = meths$1.length;
   var nvals = vals.length;
-  var res = Caml_array.caml_make_vect(nmeths + nvals, 0);
+  var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
   for(var i = 0 ,i_finish = nmeths - 1; i<= i_finish; ++i){
     res[i] = get_method_label(table, meths$1[i]);
   }
   for(var i$1 = 0 ,i_finish$1 = nvals - 1; i$1<= i_finish$1; ++i$1){
-    res[i$1 + nmeths] = new_variable(table, vals[i$1]);
+    res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
   }
   return res;
 }
@@ -820,7 +821,7 @@ function create_table(public_methods) {
     var tags = $$Array.map(public_method_label, public_methods);
     var table = new_table(tags);
     $$Array.iteri(function (i, met) {
-          var lab = i * 2 + 2;
+          var lab = (i << 1) + 2 | 0;
           table[/* methods_by_name */2] = add$1(met, lab, table[/* methods_by_name */2]);
           table[/* methods_by_label */3] = add$2(lab, /* true */1, table[/* methods_by_label */3]);
           return /* () */0;
@@ -833,9 +834,9 @@ function create_table(public_methods) {
 }
 
 function init_class(table) {
-  inst_var_count[0] = inst_var_count[0] + table[/* size */0] - 1;
+  inst_var_count[0] = (inst_var_count[0] + table[/* size */0] | 0) - 1;
   table[/* initializers */7] = List.rev(table[/* initializers */7]);
-  return resize(table, 3 + (table[/* methods */1][1] * 16 / Sys.word_size | 0));
+  return resize(table, 3 + ((table[/* methods */1][1] << 4) / Sys.word_size | 0) | 0);
 }
 
 function inherits(cla, vals, virt_meths, concr_meths, param, top) {
@@ -1030,14 +1031,14 @@ function lookup_tables(root, keys) {
 
 function new_cache(table) {
   var n = new_method(table);
-  var n$1 = n % 2 === 0 || n > 2 + (table[/* methods */1][1] * 16 / Sys.word_size | 0) ? n : new_method(table);
+  var n$1 = n % 2 === 0 || n > (2 + ((table[/* methods */1][1] << 4) / Sys.word_size | 0) | 0) ? n : new_method(table);
   table[/* methods */1][n$1] = 0;
   return n$1;
 }
 
 function method_impl(table, i, arr) {
   var next = function () {
-    ++ i[0];
+    i[0] = i[0] + 1 | 0;
     return arr[i[0]];
   };
   var clo = next(/* () */0);
@@ -1260,7 +1261,7 @@ function set_methods(table, methods) {
     var label = methods[i[0]];
     var clo = method_impl(table, i, methods);
     set_method(table, label, clo);
-    ++ i[0];
+    i[0] = i[0] + 1 | 0;
   };
   return /* () */0;
 }

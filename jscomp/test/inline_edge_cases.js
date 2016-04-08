@@ -11,7 +11,7 @@ function test3(_n) {
       
     }
     else {
-      return n + 9;
+      return (n + 5 | 0) + 4 | 0;
     }
   };
 }
@@ -25,7 +25,7 @@ function test2(_n) {
       
     }
     else {
-      return test3(n) + 3;
+      return test3(n) + 3 | 0;
     }
   };
 }
@@ -48,7 +48,7 @@ function test0(_n) {
           
         }
         else {
-          return test2(n$1) + 2;
+          return test2(n$1) + 2 | 0;
         }
       };
     }
@@ -57,7 +57,7 @@ function test0(_n) {
 
 var v = test0(10);
 
-test0(10) + 2;
+test0(10) + 2 | 0;
 
 exports.v = v;
 /* v Not a pure module */

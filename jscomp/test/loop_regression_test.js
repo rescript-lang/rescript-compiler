@@ -12,8 +12,8 @@ function f() {
       return acc[0];
     }
     else {
-      acc[0] += v[0];
-      ++ v[0];
+      acc[0] = acc[0] + v[0] | 0;
+      v[0] = v[0] + 1 | 0;
       continue ;
       
     }

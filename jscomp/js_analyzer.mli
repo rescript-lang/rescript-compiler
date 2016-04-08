@@ -31,8 +31,10 @@ val free_variables_of_statement :
 val free_variables_of_expression : 
     Ident_set.t -> Ident_set.t -> J.finish_ident_expression -> Ident_set.t
 
+val no_side_effect_expression_desc :
+  J.expression_desc -> bool   
 val no_side_effect_expression : 
-    J.expression -> bool
+  J.expression -> bool
 (** [no_side_effect] means this expression has no side effect, 
     but it might *depend on value store*, so you can not just move it around,
 

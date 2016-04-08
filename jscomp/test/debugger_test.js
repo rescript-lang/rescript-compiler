@@ -7,7 +7,7 @@ function f(x, y) {
         x,
         y
       ]);
-  return x + y;
+  return x + y | 0;
 }
 
 function g() {

@@ -84,11 +84,11 @@ function reset(b) {
 function resize(b, more) {
   var len = b[/* length */2];
   var new_len = len;
-  while(b[/* position */1] + more > new_len) {
-    new_len = 2 * new_len;
+  while((b[/* position */1] + more | 0) > new_len) {
+    new_len = (new_len << 1);
   };
   if (new_len > Sys.max_string_length) {
-    if (b[/* position */1] + more <= Sys.max_string_length) {
+    if ((b[/* position */1] + more | 0) <= Sys.max_string_length) {
       new_len = Sys.max_string_length;
     }
     else {
@@ -111,18 +111,18 @@ function add_char(b, c) {
     resize(b, 1);
   }
   b[/* buffer */0][pos] = c;
-  b[/* position */1] = pos + 1;
+  b[/* position */1] = pos + 1 | 0;
   return /* () */0;
 }
 
 function add_substring(b, s, offset, len) {
-  if (offset < 0 || len < 0 || offset + len > s.length) {
+  if (offset < 0 || len < 0 || (offset + len | 0) > s.length) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
           "Buffer.add_substring/add_subbytes"
         ];
   }
-  var new_position = b[/* position */1] + len;
+  var new_position = b[/* position */1] + len | 0;
   if (new_position > b[/* length */2]) {
     resize(b, len);
   }
@@ -137,7 +137,7 @@ function add_subbytes(b, s, offset, len) {
 
 function add_string(b, s) {
   var len = s.length;
-  var new_position = b[/* position */1] + len;
+  var new_position = b[/* position */1] + len | 0;
   if (new_position > b[/* length */2]) {
     resize(b, len);
   }
@@ -161,11 +161,11 @@ function add_channel(b, ic, len) {
           "Buffer.add_channel"
         ];
   }
-  if (b[/* position */1] + len > b[/* length */2]) {
+  if ((b[/* position */1] + len | 0) > b[/* length */2]) {
     resize(b, len);
   }
   Pervasives.really_input(ic, b[/* buffer */0], b[/* position */1], len);
-  b[1] += len;
+  b[/* position */1] = b[/* position */1] + len | 0;
   return /* () */0;
 }
 
@@ -205,14 +205,14 @@ function advance_to_closing(opening, closing, k, s, start) {
       throw Caml_builtin_exceptions.not_found;
     }
     else if (s.charCodeAt(i) === opening) {
-      _i = i + 1;
-      _k = k$1 + 1;
+      _i = i + 1 | 0;
+      _k = k$1 + 1 | 0;
       continue ;
       
     }
     else if (s.charCodeAt(i) === closing) {
       if (k$1) {
-        _i = i + 1;
+        _i = i + 1 | 0;
         _k = k$1 - 1;
         continue ;
         
@@ -222,7 +222,7 @@ function advance_to_closing(opening, closing, k, s, start) {
       }
     }
     else {
-      _i = i + 1;
+      _i = i + 1 | 0;
       continue ;
       
     }
@@ -271,7 +271,7 @@ function advance_to_non_alpha(s, start) {
         return i;
       }
       if (exit === 1) {
-        _i = i + 1;
+        _i = i + 1 | 0;
         continue ;
         
       }
@@ -289,7 +289,7 @@ function find_ident(s, start, lim) {
     var exit = 0;
     if (c !== 40) {
       if (c !== 123) {
-        var stop = advance_to_non_alpha(s, start + 1);
+        var stop = advance_to_non_alpha(s, start + 1 | 0);
         return /* tuple */[
                 $$String.sub(s, start, stop - start),
                 stop
@@ -303,11 +303,11 @@ function find_ident(s, start, lim) {
       exit = 1;
     }
     if (exit === 1) {
-      var new_start = start + 1;
+      var new_start = start + 1 | 0;
       var stop$1 = advance_to_closing(c, closing(c), 0, s, new_start);
       return /* tuple */[
               $$String.sub(s, new_start, stop$1 - start - 1),
-              stop$1 + 1
+              stop$1 + 1 | 0
             ];
     }
     
@@ -327,20 +327,20 @@ function add_substitute(b, f, s) {
         if (previous === /* "\\" */92) {
           add_char(b, /* "\\" */92);
           add_char(b, current);
-          _i = i + 1;
+          _i = i + 1 | 0;
           _previous = /* " " */32;
           continue ;
           
         }
         else if (current !== 92) {
           add_char(b, current);
-          _i = i + 1;
+          _i = i + 1 | 0;
           _previous = current;
           continue ;
           
         }
         else {
-          _i = i + 1;
+          _i = i + 1 | 0;
           _previous = current;
           continue ;
           
@@ -348,13 +348,13 @@ function add_substitute(b, f, s) {
       }
       else if (previous === /* "\\" */92) {
         add_char(b, current);
-        _i = i + 1;
+        _i = i + 1 | 0;
         _previous = /* " " */32;
         continue ;
         
       }
       else {
-        var j = i + 1;
+        var j = i + 1 | 0;
         var match = find_ident(s, j, lim);
         add_string(b, Caml_curry.app1(f, match[0]));
         _i = match[1];

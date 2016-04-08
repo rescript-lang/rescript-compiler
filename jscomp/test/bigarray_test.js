@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_bigarray = require("../runtime/caml_bigarray");
-var Bigarray      = require("../stdlib/bigarray");
-var Caml_curry    = require("../runtime/caml_curry");
+var Caml_bigarray  = require("../runtime/caml_bigarray");
+var Bigarray       = require("../stdlib/bigarray");
+var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_curry     = require("../runtime/caml_curry");
 
 var v = Caml_curry.app3(Bigarray.Array1[0], /* Int32 */6, /* C_layout */0, 20);
 
@@ -20,8 +21,8 @@ var vv = Caml_curry.app3(Bigarray.Array1[0], /* Int32 */6, /* Fortran_layout */1
 function init(v) {
   for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1; i<= i_finish; ++i){
     v[i] = /* float array */[
-      i * i,
-      i * i * i
+      Caml_primitive.imul(i, i),
+      Caml_primitive.imul(Caml_primitive.imul(i, i), i)
     ];
   }
   return /* () */0;

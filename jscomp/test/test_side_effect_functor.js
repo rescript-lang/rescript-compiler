@@ -4,7 +4,7 @@
 
 var v = 0;
 
-++ v;
+v = v + 1 | 0;
 
 console.log("" + v);
 

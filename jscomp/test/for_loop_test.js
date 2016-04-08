@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_array = require("../runtime/caml_array");
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_array     = require("../runtime/caml_array");
+var $$Array        = require("../stdlib/array");
+var Caml_curry     = require("../runtime/caml_curry");
+var List           = require("../stdlib/list");
 
 function for_3(x) {
   var v = [0];
@@ -12,10 +13,10 @@ function for_3(x) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
-    var j = i * 2;
+    var j = (i << 1);
     arr[i] = (function(j){
     return function () {
-      v[0] += j;
+      v[0] = v[0] + j | 0;
       return /* () */0;
     }
     }(j));
@@ -32,11 +33,11 @@ function for_4(x) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
-    var j = i * 2;
-    var k = 2 * j;
+    var j = (i << 1);
+    var k = (j << 1);
     arr[i] = (function(k){
     return function () {
-      v[0] += k;
+      v[0] = v[0] + k | 0;
       return /* () */0;
     }
     }(k));
@@ -53,10 +54,10 @@ function for_5(x, u) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
-    var k = 2 * u * u;
+    var k = Caml_primitive.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
-      v[0] += k;
+      v[0] = v[0] + k | 0;
       return /* () */0;
     }
     }(k));
@@ -75,18 +76,18 @@ function for_6(x, u) {
   var v4 = [0];
   var v5 = [0];
   var inspect_3 = -1;
-  ++ v4[0];
+  v4[0] = v4[0] + 1 | 0;
   for(var j = 0; j<= 1; ++j){
-    ++ v5[0];
+    v5[0] = v5[0] + 1 | 0;
     var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length - 1; i<= i_finish; ++i){
-      var k = 2 * u * u;
-      var h = 2 * v5[0];
-      ++ v2[0];
+      var k = Caml_primitive.imul((u << 1), u);
+      var h = (v5[0] << 1);
+      v2[0] = v2[0] + 1 | 0;
       arr[i] = (function(k,h){
       return function () {
-        v[0] = v[0] + k + v2[0] + v4[0] + v5[0] + h + u;
+        v[0] = (((((v[0] + k | 0) + v2[0] | 0) + v4[0] | 0) + v5[0] | 0) + h | 0) + u | 0;
         return /* () */0;
       }
       }(k,h));
@@ -113,9 +114,9 @@ function for_7() {
   for(var i = 0; i<= 6; ++i){
     (function(i){
     for(var j = 0; j<= 2; ++j){
-      arr[i * 3 + j] = (function(j){
+      arr[Caml_primitive.imul(i, 3) + j | 0] = (function(j){
       return function () {
-        v[0] = v[0] + i + j;
+        v[0] = (v[0] + i | 0) + j | 0;
         return /* () */0;
       }
       }(j));
@@ -134,13 +135,13 @@ function for_8() {
         return /* () */0;
       });
   for(var i = 0; i<= 6; ++i){
-    var k = 2 * i;
+    var k = (i << 1);
     (function(i,k){
     for(var j = 0; j<= 2; ++j){
-      var h = i + j;
-      arr[i * 3 + j] = (function(j,h){
+      var h = i + j | 0;
+      arr[Caml_primitive.imul(i, 3) + j | 0] = (function(j,h){
       return function () {
-        v[0] = v[0] + i + j + h + k;
+        v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
         return /* () */0;
       }
       }(j,h));
@@ -176,20 +177,20 @@ function for_9() {
       });
   for(var i = 0; i<= 1; ++i){
     var v$1 = [0];
-    v$1[0] += i;
+    v$1[0] = v$1[0] + i | 0;
     (function(v$1){
     for(var j = 0; j<= 1; ++j){
-      ++ v$1[0];
+      v$1[0] = v$1[0] + 1 | 0;
       Caml_curry.app1(collect, v$1[0]);
-      arr[i * 2 + j] = function () {
-        vv[0] += v$1[0];
+      arr[(i << 1) + j | 0] = function () {
+        vv[0] = vv[0] + v$1[0] | 0;
         return /* () */0;
       };
     }
     }(v$1));
     arr2[i] = (function(v$1){
     return function () {
-      vv2[0] += v$1[0];
+      vv2[0] = vv2[0] + v$1[0] | 0;
       return /* () */0;
     }
     }(v$1));

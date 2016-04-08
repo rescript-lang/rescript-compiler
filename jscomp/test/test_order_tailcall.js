@@ -25,7 +25,7 @@ function f1(_x, _y, _z) {
 function f2(_, _y) {
   while(true) {
     var y = _y;
-    _y = y + 10;
+    _y = y + 10 | 0;
     continue ;
     
   };
@@ -35,7 +35,7 @@ function f3(_x, _y) {
   while(true) {
     var y = _y;
     var x = _x;
-    _y = x + 10;
+    _y = x + 10 | 0;
     _x = y;
     continue ;
     
@@ -46,8 +46,8 @@ function f4(_x, _y) {
   while(true) {
     var y = _y;
     var x = _x;
-    _y = y + x;
-    _x = x + 10;
+    _y = y + x | 0;
+    _x = x + 10 | 0;
     continue ;
     
   };
@@ -56,8 +56,8 @@ function f4(_x, _y) {
 function f5(_x, _y, z) {
   while(true) {
     var y = _y;
-    _y = z + 20;
-    _x = y + 10;
+    _y = z + 20 | 0;
+    _x = y + 10 | 0;
     continue ;
     
   };
@@ -116,7 +116,7 @@ function f8(_x, _y) {
     var y = _y;
     var x = _x;
     if (x > 10) {
-      _y = y + 1;
+      _y = y + 1 | 0;
       continue ;
       
     }
@@ -131,7 +131,7 @@ function f8(_x, _y) {
       
     }
     else {
-      return f8(x, y + 1) + f8(x - 1, y);
+      return f8(x, y + 1 | 0) + f8(x - 1, y) | 0;
     }
   };
 }

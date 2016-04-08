@@ -1,8 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
+var Caml_primitive = require("../runtime/caml_primitive");
+var $$Array        = require("../stdlib/array");
+var Caml_curry     = require("../runtime/caml_curry");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i<= i_finish; ++i){
@@ -24,10 +25,10 @@ function for_3(x) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
-    var j = i * 2;
+    var j = (i << 1);
     arr[i] = (function(j){
     return function () {
-      v[0] += j;
+      v[0] = v[0] + j | 0;
       return /* () */0;
     }
     }(j));
@@ -44,11 +45,11 @@ function for_4(x) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
-    var j = i * 2;
-    var k = 2 * j;
+    var j = (i << 1);
+    var k = (j << 1);
     arr[i] = (function(k){
     return function () {
-      v[0] += k;
+      v[0] = v[0] + k | 0;
       return /* () */0;
     }
     }(k));
@@ -65,10 +66,10 @@ function for_5(x, u) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
-    var k = 2 * u * u;
+    var k = Caml_primitive.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
-      v[0] += k;
+      v[0] = v[0] + k | 0;
       return /* () */0;
     }
     }(k));
@@ -86,18 +87,18 @@ function for_6(x, u) {
       }, x);
   var v4 = [0];
   var v5 = [0];
-  ++ v4[0];
+  v4[0] = v4[0] + 1 | 0;
   for(var j = 0; j<= 1; ++j){
-    ++ v5[0];
+    v5[0] = v5[0] + 1 | 0;
     var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
-      var k = 2 * u * u;
-      var h = 2 * v5[0];
-      ++ v2[0];
+      var k = Caml_primitive.imul((u << 1), u);
+      var h = (v5[0] << 1);
+      v2[0] = v2[0] + 1 | 0;
       arr[i] = (function(k,h){
       return function () {
-        v[0] = v[0] + k + v2[0] + u + v4[0] + v5[0] + h;
+        v[0] = (((((v[0] + k | 0) + v2[0] | 0) + u | 0) + v4[0] | 0) + v5[0] | 0) + h | 0;
         return /* () */0;
       }
       }(k,h));

@@ -37,7 +37,7 @@ function caml_get_public_method(obj, tag, cacheid) {
         }
       };
     };
-    return meths[aux(meths[0] * 2 + 1) - 1];
+    return meths[aux((meths[0] << 1) + 1 | 0) - 1];
   }
 }
 

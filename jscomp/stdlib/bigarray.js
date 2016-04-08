@@ -35,7 +35,7 @@ function of_array(kind, layout, data) {
   var ba = create(kind, layout, data.length);
   var ofs = layout !== 0 ? 1 : 0;
   for(var i = 0 ,i_finish = data.length - 1; i<= i_finish; ++i){
-    Caml_bigarray.caml_ba_set_1(ba, i + ofs, data[i]);
+    Caml_bigarray.caml_ba_set_1(ba, i + ofs | 0, data[i]);
   }
   return ba;
 }
@@ -79,7 +79,7 @@ function of_array$1(kind, layout, data) {
           ];
     }
     for(var j = 0 ,j_finish = dim2 - 1; j<= j_finish; ++j){
-      Caml_bigarray.caml_ba_set_2(ba, i + ofs, j + ofs, row[j]);
+      Caml_bigarray.caml_ba_set_2(ba, i + ofs | 0, j + ofs | 0, row[j]);
     }
   }
   return ba;
@@ -153,7 +153,7 @@ function of_array$2(kind, layout, data) {
             ];
       }
       for(var k = 0 ,k_finish = dim3 - 1; k<= k_finish; ++k){
-        Caml_bigarray.caml_ba_set_3(ba, i + ofs, j + ofs, k + ofs, col[k]);
+        Caml_bigarray.caml_ba_set_3(ba, i + ofs | 0, j + ofs | 0, k + ofs | 0, col[k]);
       }
     }
   }
