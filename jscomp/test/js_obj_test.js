@@ -27,7 +27,7 @@ var suites_000 = /* tuple */[
       var $$class = CamlinternalOO.create_table(["say"]);
       var say = CamlinternalOO.get_method_label($$class, "say");
       CamlinternalOO.set_method($$class, say, function (_, x) {
-            return 1 + x;
+            return 1 + x | 0;
           });
       var env_init = function () {
         return CamlinternalOO.create_object_opt(0, $$class);
@@ -52,7 +52,7 @@ var suites_001 = /* :: */[
               0: 34,
               1: f({
                     "say": function (x) {
-                      return x + 2;
+                      return x + 2 | 0;
                     }
                   }),
               length: 2,

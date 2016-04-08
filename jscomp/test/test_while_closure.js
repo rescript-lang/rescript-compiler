@@ -18,11 +18,11 @@ function f() {
     var j = n;
     arr[j] = (function(j){
     return function () {
-      v[0] += j;
+      v[0] = v[0] + j | 0;
       return /* () */0;
     }
     }(j));
-    ++ n;
+    n = n + 1 | 0;
   };
   return /* () */0;
 }

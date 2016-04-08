@@ -56,7 +56,7 @@ function naive(n) {
     return 1;
   }
   else {
-    return n + naive(n - 1) + naive(n - 2);
+    return (n + naive(n - 1) | 0) + naive(n - 2) | 0;
   }
 }
 
@@ -87,7 +87,7 @@ Caml_obj.caml_update_dummy(h, {
 
 function fib(n) {
   if (n > 3 || n < 0) {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) | 0;
   }
   else {
     switch (n) {
@@ -165,7 +165,7 @@ function fib2(n) {
     return 1;
   }
   else {
-    return fib2(n - 1) + fib2(n - 2);
+    return fib2(n - 1) + fib2(n - 2) | 0;
   }
 }
 
@@ -174,7 +174,7 @@ function fib3(n) {
     return 1;
   }
   else {
-    return fib3(n - 1) + fib3(n - 2);
+    return fib3(n - 1) + fib3(n - 2) | 0;
   }
 }
 
@@ -226,7 +226,7 @@ function sum(_acc, _n) {
     var acc = _acc;
     if (n > 0) {
       _n = n - 1;
-      _acc = acc + n;
+      _acc = acc + n | 0;
       continue ;
       
     }

@@ -33,7 +33,7 @@ function add(x, q) {
       x,
       head
     ];
-    ++ q[0];
+    q[/* length */0] = q[/* length */0] + 1 | 0;
     tail[/* next */1] = cell;
     q[/* tail */1] = cell;
     return /* () */0;
@@ -188,7 +188,7 @@ function transfer(q1, q2) {
       tail1[/* next */1] = head2;
       tail2[/* next */1] = head1;
     }
-    q2[0] += length1;
+    q2[/* length */0] = q2[/* length */0] + length1 | 0;
     q2[/* tail */1] = tail1;
     return /* () */0;
   }

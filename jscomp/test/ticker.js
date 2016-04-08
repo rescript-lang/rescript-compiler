@@ -37,7 +37,7 @@ function split(delim, s) {
           }
         }
         if (exit === 1) {
-          var l_000 = $$String.sub(s, i$prime + 1, i - i$prime - 1);
+          var l_000 = $$String.sub(s, i$prime + 1 | 0, i - i$prime - 1);
           var l$1 = /* :: */[
             l_000,
             l
@@ -156,7 +156,7 @@ function create(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -177,7 +177,7 @@ function singleton(x, d) {
 function bal(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -203,7 +203,7 @@ function bal(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -235,7 +235,7 @@ function bal(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -574,10 +574,10 @@ function join(l, v, d, r) {
     if (r) {
       var rh = r[4];
       var lh = l[4];
-      if (lh > rh + 2) {
+      if (lh > (rh + 2 | 0)) {
         return bal(l[0], l[1], l[2], join(l[3], v, d, r));
       }
-      else if (rh > lh + 2) {
+      else if (rh > (lh + 2 | 0)) {
         return bal(join(l, v, d, r[0]), r[1], r[2], r[3]);
       }
       else {
@@ -845,7 +845,7 @@ function equal(cmp, m1, m2) {
 
 function cardinal(param) {
   if (param) {
-    return cardinal(param[0]) + 1 + cardinal(param[3]);
+    return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
   }
   else {
     return 0;
@@ -920,7 +920,7 @@ function compute_update_sequences(all_tickers) {
                 var match$1 = match[0];
                 var counter$1 = loop(counter, match$1[/* lhs */2]);
                 var counter$2 = loop(counter$1, match$1[/* rhs */1]);
-                var counter$3 = counter$2 + 1;
+                var counter$3 = counter$2 + 1 | 0;
                 ticker[/* rank */1] = /* Ranked */{
                   0: counter$3,
                   length: 1,
@@ -929,7 +929,7 @@ function compute_update_sequences(all_tickers) {
                 return counter$3;
               }
               else {
-                var counter$4 = counter + 1;
+                var counter$4 = counter + 1 | 0;
                 ticker[/* rank */1] = /* Ranked */{
                   0: counter$4,
                   length: 1,

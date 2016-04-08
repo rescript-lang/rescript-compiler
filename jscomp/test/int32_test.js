@@ -1,13 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives = require("../stdlib/pervasives");
-var Mt         = require("./mt");
-var Int32      = require("../stdlib/int32");
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
-var Ext_array  = require("./ext_array");
-var Format     = require("../stdlib/format");
+var Pervasives     = require("../stdlib/pervasives");
+var Mt             = require("./mt");
+var Int32          = require("../stdlib/int32");
+var Caml_primitive = require("../runtime/caml_primitive");
+var $$Array        = require("../stdlib/array");
+var Caml_curry     = require("../runtime/caml_curry");
+var Ext_array      = require("./ext_array");
+var Format         = require("../stdlib/format");
 
 function f(x) {
   return /* tuple */[
@@ -151,7 +152,37 @@ var shift_left_tests = /* tuple */[
 
 var test_div = 30;
 
-Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* [] */0, Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
+function $star$tilde(prim, prim$1) {
+  return Caml_primitive.imul(prim, prim$1);
+}
+
+Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
+          /* tuple */[
+            'File "int32_test.ml", line 32, characters 2-9',
+            function () {
+              return /* Eq */{
+                      0: 1,
+                      1: 1,
+                      length: 2,
+                      tag: 0
+                    };
+            }
+          ],
+          /* :: */[
+            /* tuple */[
+              'File "int32_test.ml", line 33, characters 2-9',
+              function () {
+                return /* Eq */{
+                        0: -2147483647,
+                        1: -2147483647,
+                        length: 2,
+                        tag: 0
+                      };
+              }
+            ],
+            /* [] */0
+          ]
+        ], Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
                               Caml_curry.app1(Format.asprintf(/* Format */{
                                         0: /* String_literal */{
@@ -245,4 +276,5 @@ exports.shift_right_logical_tests = shift_right_logical_tests;
 exports.shift_right_tests         = shift_right_tests;
 exports.shift_left_tests          = shift_left_tests;
 exports.test_div                  = test_div;
+exports.$star$tilde               = $star$tilde;
 /* shift_right_logical_tests Not a pure module */

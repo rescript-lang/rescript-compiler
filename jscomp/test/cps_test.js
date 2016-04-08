@@ -15,7 +15,7 @@ function test() {
       if (n) {
         _acc = (function(n,acc){
         return function () {
-          v[0] += n;
+          v[0] = v[0] + n | 0;
           return Caml_curry.app1(acc, /* () */0);
         }
         }(n,acc));
@@ -47,7 +47,7 @@ function test_closure() {
     }(i));
   }
   $$Array.iter(function (i) {
-        v[0] += Caml_curry.app1(i, 0);
+        v[0] = v[0] + Caml_curry.app1(i, 0) | 0;
         return /* () */0;
       }, arr);
   return v[0];
@@ -59,7 +59,7 @@ function test_closure2() {
         return x;
       });
   for(var i = 0; i<= 5; ++i){
-    var j = i + i;
+    var j = i + i | 0;
     arr[i] = (function(j){
     return function () {
       return j;
@@ -67,7 +67,7 @@ function test_closure2() {
     }(j));
   }
   $$Array.iter(function (i) {
-        v[0] += Caml_curry.app1(i, 0);
+        v[0] = v[0] + Caml_curry.app1(i, 0) | 0;
         return /* () */0;
       }, arr);
   return v[0];

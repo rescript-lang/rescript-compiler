@@ -62,15 +62,15 @@ function input(chan) {
 function char_hex(n) {
   return n + (
           n < 10 ? /* "0" */48 : 87
-        );
+        ) | 0;
 }
 
 function to_hex(d) {
   var result = new Array(32);
   for(var i = 0; i<= 15; ++i){
     var x = d.charCodeAt(i);
-    result[i * 2] = char_hex((x >>> 4));
-    result[i * 2 + 1] = char_hex(x & 15);
+    result[(i << 1)] = char_hex((x >>> 4));
+    result[(i << 1) + 1 | 0] = char_hex(x & 15);
   }
   return Caml_string.bytes_to_string(result);
 }
@@ -92,7 +92,7 @@ function from_hex(s) {
               ];
         }
         else {
-          return c - /* "a" */97 + 10;
+          return c - /* "a" */97 + 10 | 0;
         }
       }
       else if (c >= 71) {
@@ -102,7 +102,7 @@ function from_hex(s) {
             ];
       }
       else {
-        return c - /* "A" */65 + 10;
+        return c - /* "A" */65 + 10 | 0;
       }
     }
     else if (c > 57 || c < 48) {
@@ -116,11 +116,11 @@ function from_hex(s) {
     }
   };
   var $$byte = function (i) {
-    return (digit(s.charCodeAt(i)) << 4) + digit(s.charCodeAt(i + 1));
+    return (digit(s.charCodeAt(i)) << 4) + digit(s.charCodeAt(i + 1 | 0)) | 0;
   };
   var result = new Array(16);
   for(var i = 0; i<= 15; ++i){
-    result[i] = Char.chr($$byte(2 * i));
+    result[i] = Char.chr($$byte((i << 1)));
   }
   return Caml_string.bytes_to_string(result);
 }

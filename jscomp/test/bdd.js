@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 
 function $$eval(_bdd, vars) {
@@ -48,12 +49,12 @@ var nodeC = [1];
 
 var sz_1 = [initSize_1];
 
-var htab = [Caml_array.caml_make_vect(sz_1[0] + 1, /* [] */0)];
+var htab = [Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
 
 var n_items = [0];
 
 function hashVal(x, y, v) {
-  return (x << 1) + y + (v << 2);
+  return ((x << 1) + y | 0) + (v << 2) | 0;
 }
 
 function resize(newSize) {
@@ -105,10 +106,10 @@ function insert(idl, idh, v, ind, bucket, newNode) {
       newNode,
       bucket
     ];
-    return ++ n_items[0];
+    return n_items[0] = n_items[0] + 1 | 0;
   }
   else {
-    resize(sz_1[0] + sz_1[0] + 2);
+    resize((sz_1[0] + sz_1[0] | 0) + 2 | 0);
     var ind$1 = hashVal(idl, idh, v) & sz_1[0];
     htab[0][ind$1] = /* :: */[
       newNode,
@@ -120,7 +121,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
 
 function resetUnique() {
   sz_1[0] = initSize_1;
-  htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1, /* [] */0);
+  htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0);
   n_items[0] = 0;
   nodeC[0] = 1;
   return /* () */0;
@@ -160,7 +161,7 @@ function mkNode(low, v, high) {
         }
       }
       else {
-        var n_002 = (++ nodeC[0], nodeC[0]);
+        var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);
         var n$1 = /* Node */{
           0: low,
           1: v,
@@ -213,7 +214,7 @@ var notslot1 = Caml_array.caml_make_vect(1999, 0);
 var notslot2 = Caml_array.caml_make_vect(1999, one);
 
 function hash(x, y) {
-  return ((x << 1) + y) % 1999;
+  return ((x << 1) + y | 0) % 1999;
 }
 
 function not(n) {
@@ -364,7 +365,7 @@ function hwb(n) {
       return mkNode(zero, i, one);
     }
     else {
-      return xor(and2(not(mkNode(zero, i, one)), h(i + 1, j)), and2(mkNode(zero, i, one), g(i + 1, j)));
+      return xor(and2(not(mkNode(zero, i, one)), h(i + 1 | 0, j)), and2(mkNode(zero, i, one), g(i + 1 | 0, j)));
     }
   };
   return h(0, n - 1);
@@ -373,7 +374,7 @@ function hwb(n) {
 var seed = [0];
 
 function random() {
-  seed[0] = seed[0] * 25173 + 17431;
+  seed[0] = Caml_primitive.imul(seed[0], 25173) + 17431 | 0;
   return +((seed[0] & 1) > 0);
 }
 
@@ -406,7 +407,7 @@ function test_hwb(bdd, vars) {
   var ntrue = 0;
   for(var i = 0 ,i_finish = vars.length - 1; i<= i_finish; ++i){
     if (vars[i]) {
-      ++ ntrue;
+      ntrue = ntrue + 1 | 0;
     }
     
   }

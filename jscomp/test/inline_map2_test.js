@@ -25,7 +25,7 @@ function Make(Ord) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -44,7 +44,7 @@ function Make(Ord) {
   var bal = function (l, x, d, r) {
     var hl = l ? l[4] : 0;
     var hr = r ? r[4] : 0;
-    if (hl > hr + 2) {
+    if (hl > (hr + 2 | 0)) {
       if (l) {
         var lr = l[3];
         var ld = l[2];
@@ -70,7 +70,7 @@ function Make(Ord) {
             ];
       }
     }
-    else if (hr > hl + 2) {
+    else if (hr > (hl + 2 | 0)) {
       if (r) {
         var rr = r[3];
         var rd = r[2];
@@ -102,7 +102,7 @@ function Make(Ord) {
               1: x,
               2: d,
               3: r,
-              4: hl >= hr ? hl + 1 : hr + 1,
+              4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
               length: 5,
               tag: 0
             };
@@ -424,10 +424,10 @@ function Make(Ord) {
       if (r) {
         var rh = r[4];
         var lh = l[4];
-        if (lh > rh + 2) {
+        if (lh > (rh + 2 | 0)) {
           return bal(l[0], l[1], l[2], join(l[3], v, d, r));
         }
-        else if (rh > lh + 2) {
+        else if (rh > (lh + 2 | 0)) {
           return bal(join(l, v, d, r[0]), r[1], r[2], r[3]);
         }
         else {
@@ -685,7 +685,7 @@ function Make(Ord) {
   };
   var cardinal = function (param) {
     if (param) {
-      return cardinal(param[0]) + 1 + cardinal(param[3]);
+      return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
     }
     else {
       return 0;
@@ -771,7 +771,7 @@ function create(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -792,7 +792,7 @@ function singleton(x, d) {
 function bal(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -818,7 +818,7 @@ function bal(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -850,7 +850,7 @@ function bal(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -1201,10 +1201,10 @@ function join(l, v, d, r) {
     if (r) {
       var rh = r[4];
       var lh = l[4];
-      if (lh > rh + 2) {
+      if (lh > (rh + 2 | 0)) {
         return bal(l[0], l[1], l[2], join(l[3], v, d, r));
       }
-      else if (rh > lh + 2) {
+      else if (rh > (lh + 2 | 0)) {
         return bal(join(l, v, d, r[0]), r[1], r[2], r[3]);
       }
       else {
@@ -1479,7 +1479,7 @@ function equal(cmp, m1, m2) {
 
 function cardinal(param) {
   if (param) {
-    return cardinal(param[0]) + 1 + cardinal(param[3]);
+    return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
   }
   else {
     return 0;
@@ -1595,7 +1595,7 @@ function create$1(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -1616,7 +1616,7 @@ function singleton$1(x, d) {
 function bal$1(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -1642,7 +1642,7 @@ function bal$1(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -1674,7 +1674,7 @@ function bal$1(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -2025,10 +2025,10 @@ function join$1(l, v, d, r) {
     if (r) {
       var rh = r[4];
       var lh = l[4];
-      if (lh > rh + 2) {
+      if (lh > (rh + 2 | 0)) {
         return bal$1(l[0], l[1], l[2], join$1(l[3], v, d, r));
       }
-      else if (rh > lh + 2) {
+      else if (rh > (lh + 2 | 0)) {
         return bal$1(join$1(l, v, d, r[0]), r[1], r[2], r[3]);
       }
       else {
@@ -2301,7 +2301,7 @@ function equal$1(cmp, m1, m2) {
 
 function cardinal$1(param) {
   if (param) {
-    return cardinal$1(param[0]) + 1 + cardinal$1(param[3]);
+    return (cardinal$1(param[0]) + 1 | 0) + cardinal$1(param[3]) | 0;
   }
   else {
     return 0;

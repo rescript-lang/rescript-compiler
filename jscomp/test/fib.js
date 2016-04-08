@@ -7,7 +7,7 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) | 0;
   }
 }
 
@@ -23,8 +23,8 @@ function fib2(n) {
       return a;
     }
     else {
-      _i = i + 1;
-      _b = a + b;
+      _i = i + 1 | 0;
+      _b = a + b | 0;
       _a = b;
       continue ;
       
@@ -38,7 +38,7 @@ function fib3(n) {
   for(var i = 1; i<= n; ++i){
     var tmp = a;
     a = b;
-    b += tmp;
+    b = b + tmp | 0;
   }
   return a;
 }

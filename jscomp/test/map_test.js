@@ -25,7 +25,7 @@ function create(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -34,7 +34,7 @@ function create(l, x, d, r) {
 function bal(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -60,7 +60,7 @@ function bal(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -92,7 +92,7 @@ function bal(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };
@@ -238,7 +238,7 @@ function equal(cmp, m1, m2) {
 
 function cardinal(param) {
   if (param) {
-    return cardinal(param[0]) + 1 + cardinal(param[3]);
+    return (cardinal(param[0]) + 1 | 0) + cardinal(param[3]) | 0;
   }
   else {
     return 0;
@@ -262,7 +262,7 @@ function create$1(l, x, d, r) {
           1: x,
           2: d,
           3: r,
-          4: hl >= hr ? hl + 1 : hr + 1,
+          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
           length: 5,
           tag: 0
         };
@@ -271,7 +271,7 @@ function create$1(l, x, d, r) {
 function bal$1(l, x, d, r) {
   var hl = l ? l[4] : 0;
   var hr = r ? r[4] : 0;
-  if (hl > hr + 2) {
+  if (hl > (hr + 2 | 0)) {
     if (l) {
       var lr = l[3];
       var ld = l[2];
@@ -297,7 +297,7 @@ function bal$1(l, x, d, r) {
           ];
     }
   }
-  else if (hr > hl + 2) {
+  else if (hr > (hl + 2 | 0)) {
     if (r) {
       var rr = r[3];
       var rd = r[2];
@@ -329,7 +329,7 @@ function bal$1(l, x, d, r) {
             1: x,
             2: d,
             3: r,
-            4: hl >= hr ? hl + 1 : hr + 1,
+            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 5,
             tag: 0
           };

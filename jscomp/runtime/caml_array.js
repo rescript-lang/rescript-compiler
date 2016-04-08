@@ -8,8 +8,8 @@ function caml_array_sub(x, offset, len) {
   var i = offset;
   while(j < len) {
     result[j] = x[i];
-    ++ j;
-    ++ i;
+    j = j + 1 | 0;
+    i = i + 1 | 0;
   };
   return result;
 }
@@ -20,7 +20,7 @@ function len(_acc, _l) {
     var acc = _acc;
     if (l) {
       _l = l[1];
-      _acc = l[0].length + acc;
+      _acc = l[0].length + acc | 0;
       continue ;
       
     }
@@ -41,8 +41,8 @@ function fill(arr, _i, _l) {
       var j = 0;
       while(j < l$1) {
         arr[k] = x[j];
-        ++ k;
-        ++ j;
+        k = k + 1 | 0;
+        j = j + 1 | 0;
       };
       _l = l[1];
       _i = k;
@@ -73,13 +73,13 @@ function caml_make_vect(len, init) {
 function caml_array_blit(a1, i1, a2, i2, len) {
   if (i2 <= i1) {
     for(var j = 0 ,j_finish = len - 1; j<= j_finish; ++j){
-      a2[j + i2] = a1[j + i1];
+      a2[j + i2 | 0] = a1[j + i1 | 0];
     }
     return /* () */0;
   }
   else {
     for(var j$1 = len - 1; j$1>= 0; --j$1){
-      a2[j$1 + i2] = a1[j$1 + i1];
+      a2[j$1 + i2 | 0] = a1[j$1 + i1 | 0];
     }
     return /* () */0;
   }

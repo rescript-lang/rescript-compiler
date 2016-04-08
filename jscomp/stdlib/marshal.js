@@ -30,7 +30,7 @@ function data_size(buff, ofs) {
 }
 
 function total_size(buff, ofs) {
-  return 20 + data_size(buff, ofs);
+  return 20 + data_size(buff, ofs) | 0;
 }
 
 function from_bytes(buff, ofs) {
@@ -42,7 +42,7 @@ function from_bytes(buff, ofs) {
   }
   else {
     var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
-    if (ofs > buff.length - (20 + len)) {
+    if (ofs > buff.length - (20 + len | 0)) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Marshal.from_bytes"

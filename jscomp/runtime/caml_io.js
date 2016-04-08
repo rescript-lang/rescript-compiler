@@ -81,9 +81,9 @@ function caml_ml_output(oc, str, offset, len) {
       return /* () */0;
     }
     else {
-      oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(0, id + 1);
+      oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(0, id + 1 | 0);
       caml_ml_flush(oc);
-      oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(id + 1);
+      oc[/* buffer */0] = oc[/* buffer */0] + str$1.slice(id + 1 | 0);
       return /* () */0;
     }
   }

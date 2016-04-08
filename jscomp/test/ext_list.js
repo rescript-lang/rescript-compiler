@@ -65,12 +65,12 @@ function filter_mapi(f, xs) {
         if (match) {
           return /* :: */[
                   match[0],
-                  aux(i + 1, ys)
+                  aux(i + 1 | 0, ys)
                 ];
         }
         else {
           _xs = ys;
-          _i = i + 1;
+          _i = i + 1 | 0;
           continue ;
           
         }
@@ -138,13 +138,13 @@ function filter_map2i(f, xs, ys) {
           if (match) {
             return /* :: */[
                     match[0],
-                    aux(i + 1, us, vs)
+                    aux(i + 1 | 0, us, vs)
                   ];
           }
           else {
             _ys = vs;
             _xs = us;
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             
           }

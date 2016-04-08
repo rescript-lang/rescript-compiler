@@ -4,12 +4,12 @@
 var Caml_curry = require("../runtime/caml_curry");
 
 function u(_, x) {
-  return x + x;
+  return x + x | 0;
 }
 
 function f(g, x) {
   var u = Caml_curry.app1(g, x);
-  return u + u;
+  return u + u | 0;
 }
 
 exports.u = u;

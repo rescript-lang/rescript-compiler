@@ -21,7 +21,7 @@ function Make(Ord) {
             0: l,
             1: v,
             2: r,
-            3: hl >= hr ? hl + 1 : hr + 1,
+            3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
             length: 4,
             tag: 0
           };
@@ -29,7 +29,7 @@ function Make(Ord) {
   var bal = function (l, v, r) {
     var hl = l ? l[3] : 0;
     var hr = r ? r[3] : 0;
-    if (hl > hr + 2) {
+    if (hl > (hr + 2 | 0)) {
       if (l) {
         var lr = l[2];
         var lv = l[1];
@@ -54,7 +54,7 @@ function Make(Ord) {
             ];
       }
     }
-    else if (hr > hl + 2) {
+    else if (hr > (hl + 2 | 0)) {
       if (r) {
         var rr = r[2];
         var rv = r[1];
@@ -84,7 +84,7 @@ function Make(Ord) {
               0: l,
               1: v,
               2: r,
-              3: hl >= hr ? hl + 1 : hr + 1,
+              3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
               length: 4,
               tag: 0
             };
@@ -150,10 +150,10 @@ function Make(Ord) {
       if (r) {
         var rh = r[3];
         var lh = l[3];
-        if (lh > rh + 2) {
+        if (lh > (rh + 2 | 0)) {
           return bal(l[0], l[1], join(l[2], v, r));
         }
-        else if (rh > lh + 2) {
+        else if (rh > (lh + 2 | 0)) {
           return bal(join(l, v, r[0]), r[1], r[2]);
         }
         else {
@@ -661,7 +661,7 @@ function Make(Ord) {
   };
   var cardinal = function (param) {
     if (param) {
-      return cardinal(param[0]) + 1 + cardinal(param[2]);
+      return (cardinal(param[0]) + 1 | 0) + cardinal(param[2]) | 0;
     }
     else {
       return 0;

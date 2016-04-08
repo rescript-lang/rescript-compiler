@@ -21,13 +21,6 @@
 
 (* https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/imul *)
 
-[%%js.raw{|
-if (!Math.imul){
-    Math.imul = function (x,y)
-        { y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; }
-}
-  
-|}]
 
 let repeat : int -> string -> string = [%js.raw{| (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
                                                   function(count , self) {

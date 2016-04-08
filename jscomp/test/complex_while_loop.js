@@ -10,13 +10,13 @@ function f() {
             return 1;
           }
           else {
-            return fib(n - 1) + fib(n - 2);
+            return fib(n - 1) + fib(n - 2) | 0;
           }
         };
         return +(fib(n) > 10);
       }()) {
     console.log("" + n);
-    ++ n;
+    n = n + 1 | 0;
   };
   return /* () */0;
 }
@@ -24,7 +24,7 @@ function f() {
 function ff() {
   while(function () {
         var b = 9;
-        return +(3 + b > 10);
+        return +((3 + b | 0) > 10);
       }()) {
     
   };

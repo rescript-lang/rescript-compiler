@@ -158,7 +158,7 @@ var l_from_fun = Lazy.from_fun(function () {
 var forward_test = {
   0: function () {
     var u = 3;
-    ++ u;
+    u = u + 1 | 0;
     return u;
   },
   length: 1,

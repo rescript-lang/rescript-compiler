@@ -118,7 +118,7 @@ function array(cmp, arr) {
       var hi = _hi;
       var lo = _lo;
       if (hi - lo >= 6) {
-        var mid = (lo + hi >>> 1);
+        var mid = ((lo + hi | 0) >>> 1);
         if (Caml_curry.app2(cmp, arr[mid], arr[lo])) {
           swap(arr, mid, lo);
         }
@@ -130,7 +130,7 @@ function array(cmp, arr) {
           
         }
         var pivot = arr[mid];
-        var i = lo + 1;
+        var i = lo + 1 | 0;
         var j = hi - 1;
         if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
           throw [
@@ -140,16 +140,16 @@ function array(cmp, arr) {
         }
         while(i < j) {
           while(!Caml_curry.app2(cmp, pivot, arr[i])) {
-            ++ i;
+            i = i + 1 | 0;
           };
           while(!Caml_curry.app2(cmp, arr[j], pivot)) {
-            -- j;
+            j = j - 1 | 0;
           };
           if (i < j) {
             swap(arr, i, j);
           }
-          ++ i;
-          -- j;
+          i = i + 1 | 0;
+          j = j - 1 | 0;
         };
         if (j - lo <= hi - i) {
           qsort(lo, j);
@@ -177,7 +177,7 @@ function array(cmp, arr) {
       var j = i - 1;
       while(j >= 1 && !Caml_curry.app2(cmp, arr[j - 1], val_i)) {
         arr[j] = arr[j - 1];
-        -- j;
+        j = j - 1 | 0;
       };
       arr[j] = val_i;
     }

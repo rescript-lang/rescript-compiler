@@ -10,7 +10,7 @@ function f(b, _, _n) {
       return /* false */0;
     }
     else if (b) {
-      _n = n + 1;
+      _n = n + 1 | 0;
       continue ;
       
     }
@@ -30,7 +30,7 @@ function or_f(b, _, _n) {
       return /* true */1;
     }
     else {
-      _n = n + 1;
+      _n = n + 1 | 0;
       continue ;
       
     }

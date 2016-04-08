@@ -21,7 +21,7 @@ function marshal(obj) {
 function unmarshal(str, pos) {
   return /* tuple */[
           Marshal.from_bytes(str, pos),
-          pos + Marshal.total_size(str, pos)
+          pos + Marshal.total_size(str, pos) | 0
         ];
 }
 

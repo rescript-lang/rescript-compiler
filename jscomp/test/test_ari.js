@@ -8,12 +8,12 @@ var U          = require("U");
 
 function f(x) {
   return function (param) {
-    return x + param;
+    return x + param | 0;
   };
 }
 
 function f1(x, y) {
-  return x + y;
+  return x + y | 0;
 }
 
 function f3(g, x) {
@@ -21,7 +21,7 @@ function f3(g, x) {
 }
 
 function f2(param) {
-  return 3 + param;
+  return 3 + param | 0;
 }
 
 var g = 7;
@@ -38,7 +38,7 @@ function length_aux(_len, _param) {
     var len = _len;
     if (param) {
       _param = param[1];
-      _len = len + 1;
+      _len = len + 1 | 0;
       continue ;
       
     }

@@ -1194,7 +1194,7 @@ and
         match lambda with
         | Lprim(Poffsetint  v, [Lvar id']) when Ident.same id id' ->
           [ S.exp (E.assign (E.var id) 
-                     (E.unchecked_int32_add (E.var id) (E.small_int  v)))
+                     (E.int32_add (E.var id) (E.small_int  v)))
           ]
         | _ ->
           begin 

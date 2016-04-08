@@ -64,7 +64,7 @@ function lnot(x) {
 
 var max_int = 2147483647;
 
-var min_int = max_int + 1;
+var min_int = max_int + 1 | 0;
 
 function $caret(a, b) {
   return a + b;
@@ -124,7 +124,7 @@ function valid_float_lexem(s) {
           return s;
         }
         else {
-          _i = i + 1;
+          _i = i + 1 | 0;
           continue ;
           
         }
@@ -133,7 +133,7 @@ function valid_float_lexem(s) {
         return s;
       }
       else {
-        _i = i + 1;
+        _i = i + 1 | 0;
         continue ;
         
       }
@@ -323,7 +323,7 @@ function unsafe_really_input(ic, s, _ofs, _len) {
       var r = Caml_primitive.caml_ml_input(ic, s, ofs, len);
       if (r) {
         _len = len - r;
-        _ofs = ofs + r;
+        _ofs = ofs + r | 0;
         continue ;
         
       }
@@ -382,7 +382,7 @@ function input_line(chan) {
           Caml_primitive.caml_ml_input(chan, res, 0, n - 1);
           Caml_io.caml_ml_input_char(chan);
           if (accu) {
-            var len$1 = len + n - 1;
+            var len$1 = (len + n | 0) - 1;
             return build_result(Caml_string.caml_create_string(len$1), len$1, /* :: */[
                         res,
                         accu

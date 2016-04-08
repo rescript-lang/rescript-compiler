@@ -916,7 +916,7 @@ let to_uint32 ?comment (e : J.expression)  : J.expression =
    we can apply a more general optimization here, 
    do some algebraic rewerite rules to rewrite [triple_equal]           
 *)        
-let is_out ?comment (e : t) (range : t) : t  = 
+let rec is_out ?comment (e : t) (range : t) : t  = 
   begin match range.expression_desc, e.expression_desc with 
 
     | Number (Int {i = 1l}), Var _ 
@@ -925,8 +925,8 @@ let is_out ?comment (e : t) (range : t) : t  =
     | Number (Int {i = 1l}), 
       (
         Bin (Plus , {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
-      | Bin (Plus, {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) })
-      ) 
+      | Bin (Plus, {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) }))
+     
       ->
       not (or_ (triple_equal e (int (Int32.neg i ))) (triple_equal e (int (Int32.sub Int32.one  i))))        
     | Number (Int {i = 1l}), 
@@ -946,6 +946,16 @@ let is_out ?comment (e : t) (range : t) : t  =
       *)        
       or_ (int_comp Cgt e (int ( k)))  (int_comp Clt e  zero_int_literal)
 
+    | _, Bin (Bor ,
+             ({expression_desc =
+                (Bin((Plus | Minus ) ,
+                    {expression_desc = Number (Int {i ; _}) }, {expression_desc = Var _; _})
+                |Bin((Plus | Minus ) ,
+                    {expression_desc = Var _; _}, {expression_desc = Number (Int {i ; _}) } ))
+                } as e), {expression_desc = Number (Int {i=0l} | Uint 0l | Nint 0n); _})
+      ->  
+      (* TODO: check correctness *)
+      is_out ?comment e range 
     | _, _ ->
       int_comp ?comment Cgt (to_uint32 e)  range 
   end
@@ -1004,9 +1014,6 @@ let int32_minus ?comment e1 e2 : J.expression =
 let unchecked_int32_minus ?comment e1 e2 : J.expression = 
   float_minus ?comment e1 e2
 
-let unchecked_prefix_inc ?comment (i : J.vident)  = 
-  let v : t = {expression_desc = Var i; comment = None} in
-  assign ?comment  v (unchecked_int32_add v one_int_literal)
 
 
 let float_div ?comment e1 e2 = 
@@ -1034,22 +1041,6 @@ let int32_div ?comment (e1 : J.expression) (e2 : J.expression)
     to_int32 (float_div ?comment e1 e2)
 
 
-(* TODO: call primitive *)    
-let int32_mul ?comment 
-    (e1 : J.expression) 
-    (e2 : J.expression) : J.expression = 
-  match e1.expression_desc, e2.expression_desc with 
-  | Number (Int{i = i0}), Number (Int {i = i1})
-    -> int (Int32.mul i0 i1)
-  | _ -> 
-    { comment ; 
-      expression_desc = Bin (Mul, e1,e2)
-    }
-
-let unchecked_int32_mul ?comment e1 e2 : J.expression = 
-  { comment ; 
-    expression_desc = Bin (Mul, e1,e2)
-  }
 
 let float_mul ?comment e1 e2 = 
   bin ?comment Mul e1 e2 
@@ -1067,6 +1058,32 @@ let int32_lsl ?comment e1 e2 : J.expression =
     expression_desc = Bin (Lsl, e1,e2)
   }
 
+
+let int32_mul ?comment 
+    (e1 : J.expression) 
+    (e2 : J.expression) : J.expression = 
+  match e1, e2 with 
+  | {expression_desc = Number (Int {i = 0l}|  Uint 0l | Nint 0n); _}, x
+  | x, {expression_desc = Number (Int {i = 0l}|  Uint 0l | Nint 0n); _} 
+    when Js_analyzer.no_side_effect_expression x 
+    -> zero_int_literal
+  | {expression_desc = Number (Int{i = i0}); _}, {expression_desc = Number (Int {i = i1}); _}
+    -> int (Int32.mul i0 i1)
+  | e , {expression_desc = Number (Int {i = i0} | Uint i0 ); _}
+  | {expression_desc = Number (Int {i = i0} | Uint i0 ); _}, e 
+    -> 
+    let i =  Ext_pervasives.is_pos_pow i0  in 
+    if i >= 0 then 
+      int32_lsl e (small_int i)
+    else 
+      runtime_call ?comment Js_config.prim "imul" [e1;e2]
+  | _ -> 
+    runtime_call ?comment Js_config.prim "imul" [e1;e2]
+
+let unchecked_int32_mul ?comment e1 e2 : J.expression = 
+  { comment ; 
+    expression_desc = Bin (Mul, e1,e2)
+  }
 
 
 

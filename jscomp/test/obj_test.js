@@ -26,7 +26,7 @@ var hello = ids[1];
 CamlinternalOO.set_methods($$class, /* array */[
       hi,
       function (_, x, y) {
-        return x + y;
+        return x + y | 0;
       },
       hello,
       function (self$neg1, z) {
@@ -92,7 +92,7 @@ var hello$1 = ids$2[3];
 CamlinternalOO.set_methods($$class$2, /* array */[
       hi$1,
       function (_, v, z) {
-        return v + z;
+        return v + z | 0;
       },
       id1,
       function () {
@@ -129,7 +129,7 @@ var $$class$4 = CamlinternalOO.create_table(["add"]);
 var add = CamlinternalOO.get_method_label($$class$4, "add");
 
 CamlinternalOO.set_method($$class$4, add, function (_, x, y) {
-      return x + y;
+      return x + y | 0;
     });
 
 CamlinternalOO.init_class($$class$4);
@@ -147,7 +147,7 @@ var add$1 = ids$3[1];
 CamlinternalOO.set_methods($$class$5, /* array */[
       add$1,
       function (_, x, y) {
-        return x + y;
+        return x + y | 0;
       },
       hi$2,
       function (self$neg6, x) {

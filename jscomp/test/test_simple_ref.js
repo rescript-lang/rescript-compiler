@@ -6,7 +6,7 @@ var Caml_curry = require("../runtime/caml_curry");
 var v = [0];
 
 function gen() {
-  ++ v[0];
+  v[0] = v[0] + 1 | 0;
   return v[0];
 }
 

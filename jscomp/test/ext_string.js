@@ -3,6 +3,7 @@
 
 var Bytes                   = require("../stdlib/bytes");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_primitive          = require("../runtime/caml_primitive");
 var Ext_bytes               = require("./ext_bytes");
 var $$String                = require("../stdlib/string");
 var Caml_curry              = require("../runtime/caml_curry");
@@ -27,7 +28,7 @@ function split_by($staropt$star, is_delim, str) {
     else if (Caml_curry.app1(is_delim, str.charCodeAt(pos))) {
       var new_len = last_pos - pos - 1;
       if (new_len !== 0 || keep_empty) {
-        var v = $$String.sub(str, pos + 1, new_len);
+        var v = $$String.sub(str, pos + 1 | 0, new_len);
         _pos = pos - 1;
         _last_pos = pos;
         _acc = /* :: */[
@@ -69,7 +70,7 @@ function starts_with(s, beg) {
   if (beg_len <= s_len) {
     var i = 0;
     while(i < beg_len && s[i] === beg[i]) {
-      ++ i;
+      i = i + 1 | 0;
     };
     return +(i === beg_len);
   }
@@ -116,13 +117,13 @@ function escaped(s) {
       else {
         var match = s.charCodeAt(i);
         if (match >= 32) {
-          var switcher = match - 34;
+          var switcher = match - 34 | 0;
           if (switcher > 58 || switcher < 0) {
             if (switcher >= 93) {
               return /* true */1;
             }
             else {
-              _i = i + 1;
+              _i = i + 1 | 0;
               continue ;
               
             }
@@ -131,7 +132,7 @@ function escaped(s) {
             return /* true */1;
           }
           else {
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             
           }
@@ -159,7 +160,7 @@ function for_all(p, s) {
       return /* true */1;
     }
     else if (Caml_curry.app1(p, s.charCodeAt(i))) {
-      _i = i + 1;
+      _i = i + 1 | 0;
       continue ;
       
     }
@@ -175,9 +176,9 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_string.caml_create_string(n * len);
-  for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
-    $$String.blit(s, 0, res, i * len, len);
+  var res = Caml_string.caml_create_string(Caml_primitive.imul(n, len));
+  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
+    $$String.blit(s, 0, res, Caml_primitive.imul(i, len), len);
   }
   return Bytes.to_string(res);
 }
@@ -187,15 +188,15 @@ function equal(x, y) {
 }
 
 function _is_sub(sub, i, s, j, len) {
-  if (j + len <= s.length) {
+  if ((j + len | 0) <= s.length) {
     var _k = 0;
     while(true) {
       var k = _k;
       if (k === len) {
         return /* true */1;
       }
-      else if (sub[i + k] === s[j + k]) {
-        _k = k + 1;
+      else if (sub[i + k | 0] === s[j + k | 0]) {
+        _k = k + 1 | 0;
         continue ;
         
       }
@@ -220,11 +221,11 @@ function find($staropt$star, sub, s) {
     tag: 248
   };
   try {
-    while(i + n <= s.length) {
+    while((i + n | 0) <= s.length) {
       if (_is_sub(sub, 0, s, i, n)) {
         throw Exit;
       }
-      ++ i;
+      i = i + 1 | 0;
     };
     return -1;
   }
@@ -252,7 +253,7 @@ function rfind(sub, s) {
       if (_is_sub(sub, 0, s, i, n)) {
         throw Exit;
       }
-      -- i;
+      i = i - 1 | 0;
     };
     return -1;
   }

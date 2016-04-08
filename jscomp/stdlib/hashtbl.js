@@ -74,11 +74,11 @@ function power_2_above(_x, n) {
     if (x >= n) {
       return x;
     }
-    else if (x * 2 > Sys.max_array_length) {
+    else if ((x << 1) > Sys.max_array_length) {
       return x;
     }
     else {
-      _x = x * 2;
+      _x = (x << 1);
       continue ;
       
     }
@@ -143,7 +143,7 @@ function length(h) {
 function resize(indexfun, h) {
   var odata = h[/* data */1];
   var osize = odata.length;
-  var nsize = osize * 2;
+  var nsize = (osize << 1);
   if (nsize < Sys.max_array_length) {
     var ndata = Caml_array.caml_make_vect(nsize, /* Empty */0);
     h[/* data */1] = ndata;
@@ -195,7 +195,7 @@ function add(h, key, info) {
     tag: 0
   };
   h[/* data */1][i] = bucket;
-  ++ h[0];
+  h[/* size */0] = h[/* size */0] + 1 | 0;
   if (h[/* size */0] > (h[/* data */1].length << 1)) {
     return resize(key_index, h);
   }
@@ -355,7 +355,7 @@ function replace(h, key, info) {
         length: 3,
         tag: 0
       };
-      ++ h[0];
+      h[/* size */0] = h[/* size */0] + 1 | 0;
       if (h[/* size */0] > (h[/* data */1].length << 1)) {
         return resize(key_index, h);
       }
@@ -441,7 +441,7 @@ function bucket_length(_accu, _param) {
     var accu = _accu;
     if (param) {
       _param = param[2];
-      _accu = accu + 1;
+      _accu = accu + 1 | 0;
       continue ;
       
     }
@@ -455,10 +455,10 @@ function stats(h) {
   var mbl = $$Array.fold_left(function (m, b) {
         return Pervasives.max(m, bucket_length(0, b));
       }, 0, h[/* data */1]);
-  var histo = Caml_array.caml_make_vect(mbl + 1, 0);
+  var histo = Caml_array.caml_make_vect(mbl + 1 | 0, 0);
   $$Array.iter(function (b) {
         var l = bucket_length(0, b);
-        histo[l] = histo[l] + 1;
+        histo[l] = histo[l] + 1 | 0;
         return /* () */0;
       }, h[/* data */1]);
   return /* record */[
@@ -484,7 +484,7 @@ function MakeSeeded(H) {
       tag: 0
     };
     h[/* data */1][i] = bucket;
-    ++ h[0];
+    h[/* size */0] = h[/* size */0] + 1 | 0;
     if (h[/* size */0] > (h[/* data */1].length << 1)) {
       return resize(key_index, h);
     }
@@ -636,7 +636,7 @@ function MakeSeeded(H) {
           length: 3,
           tag: 0
         };
-        ++ h[0];
+        h[/* size */0] = h[/* size */0] + 1 | 0;
         if (h[/* size */0] > (h[/* data */1].length << 1)) {
           return resize(key_index, h);
         }
@@ -702,7 +702,7 @@ function Make(H) {
       tag: 0
     };
     h[/* data */1][i] = bucket;
-    ++ h[0];
+    h[/* size */0] = h[/* size */0] + 1 | 0;
     if (h[/* size */0] > (h[/* data */1].length << 1)) {
       return resize(key_index, h);
     }
@@ -854,7 +854,7 @@ function Make(H) {
           length: 3,
           tag: 0
         };
-        ++ h[0];
+        h[/* size */0] = h[/* size */0] + 1 | 0;
         if (h[/* size */0] > (h[/* data */1].length << 1)) {
           return resize(key_index, h);
         }

@@ -8,7 +8,7 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1) + fib(n - 2) | 0;
   }
 }
 
@@ -17,14 +17,14 @@ function fib2(n) {
     return 1;
   }
   else {
-    return fib2(n - 1) + fib2(n - 2);
+    return fib2(n - 1) + fib2(n - 2) | 0;
   }
 }
 
 var v = 0;
 
 for(var i = 0; i<= 10; ++i){
-  v += i;
+  v = v + i | 0;
 }
 
 var sum = v;
@@ -32,7 +32,7 @@ var sum = v;
 var v$1 = 0;
 
 for(var i$1 = 10; i$1>= 0; --i$1){
-  v$1 += i$1;
+  v$1 = v$1 + i$1 | 0;
 }
 
 var sumdown = v$1;
@@ -48,7 +48,7 @@ function cons(x, y) {
 
 function length(x) {
   if (x) {
-    return 1 + length(x[1]);
+    return 1 + length(x[1]) | 0;
   }
   else {
     return 0;
@@ -73,8 +73,8 @@ function f(x) {
   var v = x;
   var sum = 0;
   while(v > 0) {
-    sum += v;
-    -- v;
+    sum = sum + v | 0;
+    v = v - 1 | 0;
   };
   return sum;
 }
@@ -89,7 +89,7 @@ function fib3(n) {
     var a = _a;
     if (n$1 > 0) {
       _n = n$1 - 1;
-      _b = a + b;
+      _b = a + b | 0;
       _a = b;
       continue ;
       

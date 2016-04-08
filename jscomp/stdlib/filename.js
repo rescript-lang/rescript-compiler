@@ -30,14 +30,14 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       }
       else {
         var _n$1 = n;
-        var p = n + 1;
+        var p = n + 1 | 0;
         while(true) {
           var n$1 = _n$1;
           if (n$1 < 0) {
             return $$String.sub(name, 0, p);
           }
           else if (Caml_curry.app2(is_dir_sep, name, n$1)) {
-            return $$String.sub(name, n$1 + 1, p - n$1 - 1);
+            return $$String.sub(name, n$1 + 1 | 0, p - n$1 - 1);
           }
           else {
             _n$1 = n$1 - 1;
@@ -86,7 +86,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
                 
               }
               else {
-                return $$String.sub(name, 0, n$2 + 1);
+                return $$String.sub(name, 0, n$2 + 1 | 0);
               }
             };
           }
@@ -157,7 +157,7 @@ function quote(param) {
   var quotequote = "'\\''";
   var s = param;
   var l = s.length;
-  var b = Buffer.create(l + 20);
+  var b = Buffer.create(l + 20 | 0);
   Buffer.add_char(b, /* "'" */39);
   for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
     if (s[i] === "'") {
@@ -322,7 +322,7 @@ function temp_file($staropt$star, prefix, suffix) {
           throw e;
         }
         else {
-          _counter = counter + 1;
+          _counter = counter + 1 | 0;
           continue ;
           
         }
@@ -365,7 +365,7 @@ function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
           throw e;
         }
         else {
-          _counter = counter + 1;
+          _counter = counter + 1 | 0;
           continue ;
           
         }

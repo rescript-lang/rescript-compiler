@@ -3,6 +3,7 @@
 
 var Caml_int64              = require("./caml_int64");
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Caml_primitive          = require("./caml_primitive");
 var Caml_utils              = require("./caml_utils");
 var Caml_string             = require("./caml_string");
 
@@ -65,46 +66,46 @@ function parse_sign_and_base(s) {
   var i = 0;
   if (s[i] === "-") {
     sign = -1;
-    ++ i;
+    i = i + 1 | 0;
   }
   var match = s.charCodeAt(i);
-  var match$1 = s.charCodeAt(i + 1);
+  var match$1 = s.charCodeAt(i + 1 | 0);
   if (match === 48) {
     if (match$1 >= 89) {
       if (match$1 !== 98) {
         if (match$1 !== 111) {
           if (match$1 === 120) {
             base = /* Hex */1;
-            i += 2;
+            i = i + 2 | 0;
           }
           
         }
         else {
           base = /* Oct */0;
-          i += 2;
+          i = i + 2 | 0;
         }
       }
       else {
         base = /* Bin */3;
-        i += 2;
+        i = i + 2 | 0;
       }
     }
     else if (match$1 !== 66) {
       if (match$1 !== 79) {
         if (match$1 >= 88) {
           base = /* Hex */1;
-          i += 2;
+          i = i + 2 | 0;
         }
         
       }
       else {
         base = /* Oct */0;
-        i += 2;
+        i = i + 2 | 0;
       }
     }
     else {
       base = /* Bin */3;
-      i += 2;
+      i = i + 2 | 0;
     }
   }
   return /* tuple */[
@@ -138,7 +139,7 @@ function caml_int_of_string(s) {
       else {
         var a = s.charCodeAt(k);
         if (a === /* "_" */95) {
-          _k = k + 1;
+          _k = k + 1 | 0;
           continue ;
           
         }
@@ -159,7 +160,7 @@ function caml_int_of_string(s) {
                   ];
             }
             else {
-              _k = k + 1;
+              _k = k + 1 | 0;
               _acc = acc$1;
               continue ;
               
@@ -169,7 +170,7 @@ function caml_int_of_string(s) {
       }
     };
   };
-  var res = match[1] * aux(d, i + 1);
+  var res = match[1] * aux(d, i + 1 | 0);
   var or_res = res | 0;
   if (base === 10 && res !== or_res) {
     throw [
@@ -236,7 +237,7 @@ function caml_int64_of_string(s) {
       else {
         var a = s.charCodeAt(k);
         if (a === /* "_" */95) {
-          _k = k + 1;
+          _k = k + 1 | 0;
           continue ;
           
         }
@@ -260,7 +261,7 @@ function caml_int64_of_string(s) {
                   ];
             }
             else {
-              _k = k + 1;
+              _k = k + 1 | 0;
               _acc = acc$1;
               continue ;
               
@@ -270,7 +271,7 @@ function caml_int64_of_string(s) {
       }
     };
   };
-  var res = Caml_int64.mul(sign, aux(d, i + 1));
+  var res = Caml_int64.mul(sign, aux(d, i + 1 | 0));
   var or_res_000 = res[0] | 0;
   var or_res_001 = (res[1] >>> 0);
   var or_res = /* int64 */[
@@ -303,7 +304,7 @@ function int_of_base(param) {
 
 function lowercase(c) {
   if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
-    return c + 32;
+    return c + 32 | 0;
   }
   else {
     return c;
@@ -346,11 +347,11 @@ function parse_format(fmt) {
             exit = 1;
           }
           else {
-            switch (c - 88) {
+            switch (c - 88 | 0) {
               case 0 : 
                   f[/* base */4] = /* Hex */1;
                   f[/* uppercase */7] = /* true */1;
-                  _i = i + 1;
+                  _i = i + 1 | 0;
                   continue ;
                   case 13 : 
               case 14 : 
@@ -363,11 +364,11 @@ function parse_format(fmt) {
                   break;
               case 23 : 
                   f[/* base */4] = /* Oct */0;
-                  _i = i + 1;
+                  _i = i + 1 | 0;
                   continue ;
                   case 29 : 
                   f[/* base */4] = /* Dec */2;
-                  _i = i + 1;
+                  _i = i + 1 | 0;
                   continue ;
                   case 1 : 
               case 2 : 
@@ -397,7 +398,7 @@ function parse_format(fmt) {
                   break;
               case 32 : 
                   f[/* base */4] = /* Hex */1;
-                  _i = i + 1;
+                  _i = i + 1 | 0;
                   continue ;
                   
             }
@@ -410,13 +411,13 @@ function parse_format(fmt) {
           f[/* signedconv */5] = /* true */1;
           f[/* uppercase */7] = /* true */1;
           f[/* conv */10] = String.fromCharCode(lowercase(c));
-          _i = i + 1;
+          _i = i + 1 | 0;
           continue ;
           
         }
       }
       else {
-        var switcher = c - 32;
+        var switcher = c - 32 | 0;
         if (switcher > 25 || switcher < 0) {
           exit = 1;
         }
@@ -424,7 +425,7 @@ function parse_format(fmt) {
           switch (switcher) {
             case 3 : 
                 f[/* alternate */3] = /* true */1;
-                _i = i + 1;
+                _i = i + 1 | 0;
                 continue ;
                 case 0 : 
             case 11 : 
@@ -432,19 +433,19 @@ function parse_format(fmt) {
                 break;
             case 13 : 
                 f[/* justify */0] = "-";
-                _i = i + 1;
+                _i = i + 1 | 0;
                 continue ;
                 case 14 : 
                 f[/* prec */9] = 0;
-                var j = i + 1;
+                var j = i + 1 | 0;
                 while((function(j){
                     return function () {
                       var w = fmt.charCodeAt(j) - /* "0" */48;
                       return +(w >= 0 && w <= 9);
                     }
                     }(j))()) {
-                  f[/* prec */9] = f[/* prec */9] * 10 + fmt.charCodeAt(j) - /* "0" */48;
-                  ++ j;
+                  f[/* prec */9] = (Caml_primitive.imul(f[/* prec */9], 10) + fmt.charCodeAt(j) | 0) - /* "0" */48;
+                  j = j + 1 | 0;
                 };
                 _i = j;
                 continue ;
@@ -463,7 +464,7 @@ function parse_format(fmt) {
                 break;
             case 16 : 
                 f[/* filter */2] = "0";
-                _i = i + 1;
+                _i = i + 1 | 0;
                 continue ;
                 case 17 : 
             case 18 : 
@@ -482,11 +483,11 @@ function parse_format(fmt) {
       }
       switch (exit) {
         case 1 : 
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             case 2 : 
             f[/* signstyle */1] = String.fromCharCode(c);
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             case 3 : 
             f[/* width */6] = 0;
@@ -497,20 +498,20 @@ function parse_format(fmt) {
                   return +(w >= 0 && w <= 9);
                 }
                 }(j$1))()) {
-              f[/* width */6] = f[/* width */6] * 10 + fmt.charCodeAt(j$1) - /* "0" */48;
-              ++ j$1;
+              f[/* width */6] = (Caml_primitive.imul(f[/* width */6], 10) + fmt.charCodeAt(j$1) | 0) - /* "0" */48;
+              j$1 = j$1 + 1 | 0;
             };
             _i = j$1;
             continue ;
             case 4 : 
             f[/* signedconv */5] = /* true */1;
             f[/* base */4] = /* Dec */2;
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             case 5 : 
             f[/* signedconv */5] = /* true */1;
             f[/* conv */10] = String.fromCharCode(c);
-            _i = i + 1;
+            _i = i + 1 | 0;
             continue ;
             
       }
@@ -530,17 +531,17 @@ function finish_formatting(param, rawbuffer) {
   var sign = param[/* sign */8];
   var len = rawbuffer.length;
   if (signedconv && (sign < 0 || signstyle !== "-")) {
-    ++ len;
+    len = len + 1 | 0;
   }
   if (alternate) {
     if (base) {
       if (base === /* Hex */1) {
-        len += 2;
+        len = len + 2 | 0;
       }
       
     }
     else {
-      ++ len;
+      len = len + 1 | 0;
     }
   }
   var buffer = "";
@@ -745,16 +746,16 @@ function caml_format_float(fmt, x) {
           var prec$1 = prec !== 0 ? prec : 1;
           s = x$1.toExponential(prec$1 - 1);
           var j = s.indexOf("e");
-          var exp = +s.slice(j + 1);
+          var exp = +s.slice(j + 1 | 0);
           if (exp < -4 || x$1 >= 1e21 || x$1.toFixed(0).length > prec$1) {
             var i$1 = j - 1;
             while(s[i$1] === "0") {
-              -- i$1;
+              i$1 = i$1 - 1 | 0;
             };
             if (s[i$1] === ".") {
-              -- i$1;
+              i$1 = i$1 - 1 | 0;
             }
-            s = s.slice(0, i$1 + 1) + s.slice(j);
+            s = s.slice(0, i$1 + 1 | 0) + s.slice(j);
             var i$2 = s.length;
             if (s[i$2 - 3] === "e") {
               s = s.slice(0, i$2 - 1) + ("0" + s.slice(i$2 - 1));
@@ -764,26 +765,26 @@ function caml_format_float(fmt, x) {
           else {
             var p = prec$1;
             if (exp < 0) {
-              p -= (exp + 1);
+              p -= (exp + 1 | 0);
               s = x$1.toFixed(p);
             }
             else {
               while(function () {
                     s = x$1.toFixed(p);
-                    return +(s.length > prec$1 + 1);
+                    return +(s.length > (prec$1 + 1 | 0));
                   }()) {
-                -- p;
+                p = p - 1 | 0;
               };
             }
             if (p !== 0) {
               var k = s.length - 1;
               while(s[k] === "0") {
-                -- k;
+                k = k - 1 | 0;
               };
               if (s[k] === ".") {
-                -- k;
+                k = k - 1 | 0;
               }
-              s = s.slice(0, k + 1);
+              s = s.slice(0, k + 1 | 0);
             }
             
           }

@@ -44,7 +44,7 @@ var env = /* record */[
 
 function grow_stacks() {
   var oldsize = env[/* stacksize */4];
-  var newsize = oldsize * 2;
+  var newsize = (oldsize << 1);
   var new_s = Caml_array.caml_make_vect(newsize, 0);
   var new_v = Caml_array.caml_make_vect(newsize, /* () */0);
   var new_start = Caml_array.caml_make_vect(newsize, Lexing.dummy_pos);
@@ -79,7 +79,7 @@ function yyparse(tables, start, lexer, lexbuf) {
   var init_curr_char = env[/* curr_char */6];
   var init_lval = env[/* lval */7];
   var init_errflag = env[/* errflag */15];
-  env[/* stackbase */5] = env[/* sp */13] + 1;
+  env[/* stackbase */5] = env[/* sp */13] + 1 | 0;
   env[/* curr_char */6] = start;
   env[/* symb_end */9] = lexbuf[/* lex_curr_p */11];
   try {
@@ -178,8 +178,8 @@ function symbol_start_pos() {
       return env[/* symb_end_stack */3][env[/* asp */10]];
     }
     else {
-      var st = env[/* symb_start_stack */2][env[/* asp */10] - i + 1];
-      var en = env[/* symb_end_stack */3][env[/* asp */10] - i + 1];
+      var st = env[/* symb_start_stack */2][env[/* asp */10] - i + 1 | 0];
+      var en = env[/* symb_end_stack */3][env[/* asp */10] - i + 1 | 0];
       if (Caml_obj.caml_notequal(st, en)) {
         return st;
       }

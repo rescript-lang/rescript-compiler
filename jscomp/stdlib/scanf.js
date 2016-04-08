@@ -20,9 +20,9 @@ function next_char(ib) {
     var c = Caml_curry.app1(ib[/* get_next_char */6], /* () */0);
     ib[/* current_char */1] = c;
     ib[/* current_char_is_valid */2] = /* true */1;
-    ++ ib[3];
+    ib[/* char_count */3] = ib[/* char_count */3] + 1 | 0;
     if (c === /* "\n" */10) {
-      ++ ib[4];
+      ib[/* line_count */4] = ib[/* line_count */4] + 1 | 0;
     }
     return c;
   }
@@ -96,7 +96,7 @@ function token(ib) {
   var tokbuf = ib[/* tokbuf */7];
   var tok = Buffer.contents(tokbuf);
   tokbuf[/* position */1] = 0;
-  ++ ib[5];
+  ib[/* token_count */5] = ib[/* token_count */5] + 1 | 0;
   return tok;
 }
 
@@ -134,7 +134,7 @@ function from_string(s) {
     }
     else {
       var c = s.charCodeAt(i[0]);
-      ++ i[0];
+      i[0] = i[0] + 1 | 0;
       return c;
     }
   };
@@ -165,7 +165,7 @@ function from_ic(scan_close_ic, iname, ic) {
   var next = function () {
     if (i[0] < lim[0]) {
       var c = buf[i[0]];
-      ++ i[0];
+      i[0] = i[0] + 1 | 0;
       return c;
     }
     else if (eof[0]) {
@@ -363,7 +363,7 @@ function check_char(ib, _c) {
           return 0;
         }
         else {
-          var switcher = c$1 - 9;
+          var switcher = c$1 - 9 | 0;
           if (switcher > 4 || switcher < 0) {
             if (switcher !== 23) {
               return /* () */0;
@@ -453,7 +453,7 @@ function token_bool(ib) {
 function token_int_literal(conv, ib) {
   var tok;
   var exit = 0;
-  var switcher = conv - 88;
+  var switcher = conv - 88 | 0;
   if (switcher > 32 || switcher < 0) {
     exit = 1;
   }
@@ -702,7 +702,7 @@ function scan_octal_int(param, param$1) {
 }
 
 function is_hexa_digit(param) {
-  var switcher = param - 48;
+  var switcher = param - 48 | 0;
   if (switcher > 22 || switcher < 0) {
     if (switcher > 54 || switcher < 49) {
       return /* false */0;
@@ -725,7 +725,7 @@ function scan_hexadecimal_int(param, param$1) {
 
 function scan_sign(width, ib) {
   var c = checked_peek_char(ib);
-  var switcher = c - 43;
+  var switcher = c - 43 | 0;
   if (switcher > 2 || switcher < 0) {
     return width;
   }
@@ -748,7 +748,7 @@ function scan_optionally_signed_decimal_int(width, ib) {
 
 function scan_int_conv(conv, width, ib) {
   var exit = 0;
-  var switcher = conv - 88;
+  var switcher = conv - 88 | 0;
   if (switcher > 32 || switcher < 0) {
     exit = 1;
   }
@@ -935,7 +935,7 @@ function scan_caml_float(width, precision, ib) {
           ];
     }
     else {
-      var switcher = c - 69;
+      var switcher = c - 69 | 0;
       if (switcher > 32 || switcher < 0) {
         if (switcher !== -23) {
           throw [
@@ -990,7 +990,7 @@ function scan_string(stp, width, ib) {
         }
       }
       else {
-        var switcher = c - 9;
+        var switcher = c - 9 | 0;
         if (switcher > 4 || switcher < 0) {
           if (switcher !== 23) {
             _width = store_char(width$1, ib, c);
@@ -1027,7 +1027,7 @@ function char_for_backslash(c) {
       return c;
     }
     else {
-      switch (c - 110) {
+      switch (c - 110 | 0) {
         case 0 : 
             return /* "\n" */10;
         case 4 : 
@@ -1052,7 +1052,7 @@ function char_for_backslash(c) {
 }
 
 function char_for_decimal_code(c0, c1, c2) {
-  var c = 100 * (c0 - /* "0" */48) + 10 * (c1 - /* "0" */48) + (c2 - /* "0" */48);
+  var c = (Caml_primitive.imul(100, c0 - /* "0" */48) + Caml_primitive.imul(10, c1 - /* "0" */48) | 0) + (c2 - /* "0" */48) | 0;
   if (c < 0 || c > 255) {
     var s = Caml_curry.app3(Printf.sprintf(/* Format */{
               0: /* String_literal */{
@@ -1100,7 +1100,7 @@ function hexadecimal_value_of_char(c) {
 }
 
 function char_for_hexadecimal_code(c1, c2) {
-  var c = 16 * hexadecimal_value_of_char(c1) + hexadecimal_value_of_char(c2);
+  var c = (hexadecimal_value_of_char(c1) << 4) + hexadecimal_value_of_char(c2) | 0;
   if (c < 0 || c > 255) {
     var s = Caml_curry.app2(Printf.sprintf(/* Format */{
               0: /* String_literal */{
@@ -1176,7 +1176,7 @@ function scan_backslash_char(width, ib) {
   var exit = 0;
   if (c >= 40) {
     if (c >= 58) {
-      var switcher = c - 92;
+      var switcher = c - 92 | 0;
       if (switcher > 28 || switcher < 0) {
         return bad_input_escape(c);
       }
@@ -1216,7 +1216,7 @@ function scan_backslash_char(width, ib) {
           case 28 : 
               var get_digit = function () {
                 var c = next_char(ib);
-                var switcher = c - 48;
+                var switcher = c - 48 | 0;
                 if (switcher > 22 || switcher < 0) {
                   if (switcher > 54 || switcher < 49) {
                     return bad_input_escape(c);
@@ -2281,7 +2281,7 @@ function sscanf_format(s, format, f) {
 
 function string_to_String(s) {
   var l = s.length;
-  var b = Buffer.create(l + 2);
+  var b = Buffer.create(l + 2 | 0);
   Buffer.add_char(b, /* "\"" */34);
   for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
     var c = s.charCodeAt(i);
