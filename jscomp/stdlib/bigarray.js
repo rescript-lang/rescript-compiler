@@ -263,9 +263,7 @@ var c_layout = /* C_layout */0;
 
 var fortran_layout = /* Fortran_layout */1;
 
-function reshape(prim, prim$1) {
-  return Caml_bigarray.caml_ba_reshape(prim, prim$1);
-}
+var reshape = Caml_bigarray.caml_ba_reshape
 
 exports.float32            = float32;
 exports.float64            = float64;

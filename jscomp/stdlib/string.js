@@ -195,9 +195,7 @@ function uncapitalize(s) {
   return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s)));
 }
 
-function compare(x, y) {
-  return Caml_string.caml_string_compare(x, y);
-}
+var compare = Caml_string.caml_string_compare
 
 var fill = Bytes.fill;
 

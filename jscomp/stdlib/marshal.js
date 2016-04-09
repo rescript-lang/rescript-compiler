@@ -58,13 +58,9 @@ function from_string(buff, ofs) {
   return from_bytes(Caml_string.bytes_of_string(buff), ofs);
 }
 
-function to_channel(prim, prim$1, prim$2) {
-  return Caml_primitive.caml_output_value(prim, prim$1, prim$2);
-}
+var to_channel = Caml_primitive.caml_output_value
 
-function from_channel(prim) {
-  return Caml_primitive.caml_input_value(prim);
-}
+var from_channel = Caml_primitive.caml_input_value
 
 var header_size = 20;
 

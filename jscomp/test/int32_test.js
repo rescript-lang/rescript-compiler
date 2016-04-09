@@ -152,9 +152,7 @@ var shift_left_tests = /* tuple */[
 
 var test_div = 30;
 
-function $star$tilde(prim, prim$1) {
-  return Caml_primitive.imul(prim, prim$1);
-}
+var $star$tilde = Caml_primitive.imul
 
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[

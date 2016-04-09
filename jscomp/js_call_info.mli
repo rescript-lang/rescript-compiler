@@ -26,8 +26,24 @@ type arity =
   | Full 
   | NA 
 
+
+type call_info = 
+  | Call_ml (* called by plain ocaml expression *)
+  | Call_builtin_runtime (* built-in externals *)
+  | Call_na 
+  (* either from [@@js.call] or not available, 
+     such calls does not follow such rules
+     {[ fun x y -> f x y === f ]} when [f] is an atom     
+  *) 
+
+
 type t = { 
-  arity : arity
+  call_info : call_info;
+  arity : arity;
+
 }
 
 val dummy : t
+val builtin_runtime_call : t
+
+val ml_full_call : t 

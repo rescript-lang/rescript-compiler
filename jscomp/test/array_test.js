@@ -208,9 +208,7 @@ var array_suites_001 = /* :: */[
                     0,
                     1
                   ];
-                  $$Array.sort(function (x, y) {
-                        return Caml_obj.caml_int_compare(x, y);
-                      }, u);
+                  $$Array.sort(Caml_obj.caml_int_compare, u);
                   return /* Eq */{
                           0: Caml_obj.caml_equal(/* int array */[
                                 0,
@@ -230,9 +228,7 @@ var array_suites_001 = /* :: */[
                     var v = $$Array.init(4, function (i) {
                           return i % 17;
                         });
-                    $$Array.sort(function (x, y) {
-                          return Caml_obj.caml_int_compare(x, y);
-                        }, v);
+                    $$Array.sort(Caml_obj.caml_int_compare, v);
                     return /* Eq */{
                             0: /* true */1,
                             1: is_sorted(v),

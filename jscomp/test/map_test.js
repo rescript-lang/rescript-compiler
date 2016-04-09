@@ -476,9 +476,7 @@ var int_map_suites_001 = /* :: */[
             ]
           ]);
       return /* Eq */{
-              0: compare(function (prim, prim$1) {
-                    return Caml_obj.caml_compare(prim, prim$1);
-                  }, u, v),
+              0: compare(Caml_obj.caml_compare, u, v),
               1: 0,
               length: 2,
               tag: 0

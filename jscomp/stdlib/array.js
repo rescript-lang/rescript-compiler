@@ -440,9 +440,7 @@ function stable_sort(cmp, a) {
 
 var create_matrix = make_matrix;
 
-function concat(prim) {
-  return Caml_array.caml_array_concat(prim);
-}
+var concat = Caml_array.caml_array_concat
 
 var fast_sort = stable_sort;
 

@@ -947,7 +947,7 @@ let query (prim : Lam_compile_env.primitive_description)
     | "js_apply8" -> 
       begin match args with 
         | fn :: rest -> 
-          E.call ~info:{arity=Full} fn rest 
+          E.call ~info:{arity=Full; call_info =  Call_na} fn rest 
         | _ -> assert false
       end
     | "js_uninitialized_object"

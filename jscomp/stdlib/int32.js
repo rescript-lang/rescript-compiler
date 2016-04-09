@@ -29,9 +29,7 @@ function to_string(n) {
   return Caml_format.caml_int32_format("%d", n);
 }
 
-function compare(x, y) {
-  return Caml_obj.caml_int32_compare(x, y);
-}
+var compare = Caml_obj.caml_int32_compare
 
 var zero = 0;
 

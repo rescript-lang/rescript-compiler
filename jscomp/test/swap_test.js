@@ -966,9 +966,7 @@ var d16_000 = /* Format */{
   tag: 0
 };
 
-function d16_001(prim) {
-  return Caml_primitive.caml_bswap16(prim);
-}
+var d16_001 = Caml_primitive.caml_bswap16
 
 var d16_002 = /* array */[
   /* tuple */[
@@ -1001,9 +999,7 @@ var d32_000 = /* Format */{
   tag: 0
 };
 
-function d32_001(prim) {
-  return Caml_primitive.caml_int32_bswap(prim);
-}
+var d32_001 = Caml_primitive.caml_int32_bswap
 
 var d32_002 = /* array */[
   /* tuple */[

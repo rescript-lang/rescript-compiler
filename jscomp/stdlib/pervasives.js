@@ -542,97 +542,51 @@ var min_float = Number.MIN_VALUE;
 
 var epsilon_float = 2.220446049250313e-16;
 
-function flush(prim) {
-  return Caml_io.caml_ml_flush(prim);
-}
+var flush = Caml_io.caml_ml_flush
 
-function output_char(prim, prim$1) {
-  return Caml_io.caml_ml_output_char(prim, prim$1);
-}
+var output_char = Caml_io.caml_ml_output_char
 
-function output_byte(prim, prim$1) {
-  return Caml_io.caml_ml_output_char(prim, prim$1);
-}
+var output_byte = Caml_io.caml_ml_output_char
 
-function output_binary_int(prim, prim$1) {
-  return Caml_primitive.caml_ml_output_int(prim, prim$1);
-}
+var output_binary_int = Caml_primitive.caml_ml_output_int
 
-function seek_out(prim, prim$1) {
-  return Caml_primitive.caml_ml_seek_out(prim, prim$1);
-}
+var seek_out = Caml_primitive.caml_ml_seek_out
 
-function pos_out(prim) {
-  return Caml_primitive.caml_ml_pos_out(prim);
-}
+var pos_out = Caml_primitive.caml_ml_pos_out
 
-function out_channel_length(prim) {
-  return Caml_primitive.caml_ml_channel_size(prim);
-}
+var out_channel_length = Caml_primitive.caml_ml_channel_size
 
-function set_binary_mode_out(prim, prim$1) {
-  return Caml_primitive.caml_ml_set_binary_mode(prim, prim$1);
-}
+var set_binary_mode_out = Caml_primitive.caml_ml_set_binary_mode
 
-function input_char(prim) {
-  return Caml_io.caml_ml_input_char(prim);
-}
+var input_char = Caml_io.caml_ml_input_char
 
-function input_byte(prim) {
-  return Caml_io.caml_ml_input_char(prim);
-}
+var input_byte = Caml_io.caml_ml_input_char
 
-function input_binary_int(prim) {
-  return Caml_primitive.caml_ml_input_int(prim);
-}
+var input_binary_int = Caml_primitive.caml_ml_input_int
 
-function input_value(prim) {
-  return Caml_primitive.caml_input_value(prim);
-}
+var input_value = Caml_primitive.caml_input_value
 
-function seek_in(prim, prim$1) {
-  return Caml_primitive.caml_ml_seek_in(prim, prim$1);
-}
+var seek_in = Caml_primitive.caml_ml_seek_in
 
-function pos_in(prim) {
-  return Caml_primitive.caml_ml_pos_in(prim);
-}
+var pos_in = Caml_primitive.caml_ml_pos_in
 
-function in_channel_length(prim) {
-  return Caml_primitive.caml_ml_channel_size(prim);
-}
+var in_channel_length = Caml_primitive.caml_ml_channel_size
 
-function close_in(prim) {
-  return Caml_primitive.caml_ml_close_channel(prim);
-}
+var close_in = Caml_primitive.caml_ml_close_channel
 
-function set_binary_mode_in(prim, prim$1) {
-  return Caml_primitive.caml_ml_set_binary_mode(prim, prim$1);
-}
+var set_binary_mode_in = Caml_primitive.caml_ml_set_binary_mode
 
-function LargeFile_000(prim, prim$1) {
-  return Caml_primitive.caml_ml_seek_out_64(prim, prim$1);
-}
+var LargeFile_000 = Caml_primitive.caml_ml_seek_out_64
 
-function LargeFile_001(prim) {
-  return Caml_primitive.caml_ml_pos_out_64(prim);
-}
+var LargeFile_001 = Caml_primitive.caml_ml_pos_out_64
 
-function LargeFile_002(prim) {
-  return Caml_primitive.caml_ml_channel_size_64(prim);
-}
+var LargeFile_002 = Caml_primitive.caml_ml_channel_size_64
 
-function LargeFile_003(prim, prim$1) {
-  return Caml_primitive.caml_ml_seek_in_64(prim, prim$1);
-}
+var LargeFile_003 = Caml_primitive.caml_ml_seek_in_64
 
-function LargeFile_004(prim) {
-  return Caml_primitive.caml_ml_pos_in_64(prim);
-}
+var LargeFile_004 = Caml_primitive.caml_ml_pos_in_64
 
-function LargeFile_005(prim) {
-  return Caml_primitive.caml_ml_channel_size_64(prim);
-}
+var LargeFile_005 = Caml_primitive.caml_ml_channel_size_64
 
 var LargeFile = [
   LargeFile_000,

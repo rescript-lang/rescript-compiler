@@ -51,9 +51,7 @@ function file(filename) {
   
 }
 
-function output(chan, digest) {
-  return Pervasives.output_string(chan, digest);
-}
+var output = Pervasives.output_string
 
 function input(chan) {
   return Pervasives.really_input_string(chan, 16);

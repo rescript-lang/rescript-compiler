@@ -28,9 +28,7 @@ function add_in_char_set(char_set, c) {
   return /* () */0;
 }
 
-function freeze_char_set(char_set) {
-  return Bytes.to_string(char_set);
-}
+var freeze_char_set = Bytes.to_string
 
 function rev_char_set(char_set) {
   var char_set$prime = Bytes.make(32, /* "\000" */0);

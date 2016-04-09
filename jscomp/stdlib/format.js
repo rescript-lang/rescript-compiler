@@ -651,9 +651,7 @@ function pp_print_as_size(state, size, s) {
   }
 }
 
-function pp_print_as(state, isize, s) {
-  return pp_print_as_size(state, isize, s);
-}
+var pp_print_as = pp_print_as_size
 
 function pp_print_string(state, s) {
   return pp_print_as(state, s.length, s);

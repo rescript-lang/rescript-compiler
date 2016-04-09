@@ -145,9 +145,7 @@ function u(v) {
                 }), v);
 }
 
-function to_str(s) {
-  return Caml_format.caml_int_of_string(s);
-}
+var to_str = Caml_format.caml_int_of_string
 
 var v = Caml_curry.app1(Printf.sprintf(/* Format */{
           0: /* Int */{

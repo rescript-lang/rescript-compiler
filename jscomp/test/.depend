@@ -248,6 +248,8 @@ pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmx : mt.cmx
 primitive_reg_test.cmo :
 primitive_reg_test.cmx :
+print_alpha_test.cmo : mt.cmi ../lib/js.cmo
+print_alpha_test.cmx : mt.cmx ../lib/js.cmx
 printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmx : ../stdlib/printf.cmx
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
@@ -744,6 +746,8 @@ pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmj : mt.cmj
 primitive_reg_test.cmo :
 primitive_reg_test.cmj :
+print_alpha_test.cmo : mt.cmi ../lib/js.cmo
+print_alpha_test.cmj : mt.cmj ../lib/js.cmj
 printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi

@@ -73,9 +73,7 @@ var list_suites_001 = /* :: */[
         "sort",
         function () {
           return /* Eq */{
-                  0: List.sort(function (x, y) {
-                        return Caml_obj.caml_int_compare(x, y);
-                      }, /* :: */[
+                  0: List.sort(Caml_obj.caml_int_compare, /* :: */[
                         4,
                         /* :: */[
                           1,
