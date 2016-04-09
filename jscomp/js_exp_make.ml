@@ -257,10 +257,7 @@ let index ?comment (e0 : t)  e1 : t =
     List.nth l  (Int32.to_int e1)  (* Float i -- should not appear here *)
   | _ -> { expression_desc = Access (e0, int ?comment e1); comment = None} 
 
-let call ?comment ?info e0 args : t = 
-  let info = match info with 
-    | None -> Js_call_info.dummy
-    | Some x -> x in
+let call ?comment ~info e0 args : t = 
   {expression_desc = Call(e0,args,info); comment }
 
 let flat_call ?comment e0 es : t = 
@@ -388,13 +385,13 @@ let var_dot ?comment (x : Ident.t)  (e1 : string) : t =
 
 
 let bind_call ?comment obj  (e1 : string) args  : t = 
-  call {expression_desc = 
+  call ~info:Js_call_info.dummy {expression_desc = 
      Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
    comment = None } args 
 
 let bind_var_call ?comment (x : Ident.t)  (e1 : string) args  : t = 
   let obj =  var x in 
-  call {expression_desc = 
+  call ~info:Js_call_info.dummy {expression_desc = 
      Bind ({expression_desc = Dot (obj,  e1, true); comment} , obj);
    comment = None } args 
 
