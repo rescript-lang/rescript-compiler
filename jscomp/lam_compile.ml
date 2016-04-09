@@ -232,9 +232,9 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                *)
                | Determin (a, [], b ), _ ->
                  (* can not happen, unless it's an exception ? *)
-                 E.call acc args
+                 E.call ~info:Js_call_info.dummy acc args
                | NA, _ ->
-                 E.call acc args
+                 E.call ~info:Js_call_info.dummy acc args
              in
              aux (E.ml_var_dot id name) arity args (List.length args ))
       )
@@ -1328,7 +1328,8 @@ and
             st should_return
             lam 
             (List.concat args_code)
-            (E.call (Js_of_lam_array.ref_array (Js_of_lam_record.field Fld_na obj' 0l) label )
+            (E.call ~info:Js_call_info.dummy 
+               (Js_of_lam_array.ref_array (Js_of_lam_record.field Fld_na obj' 0l) label )
                (obj' :: args)) 
         (* [E.small_int 1] is because we use array, 
             when we change the runtime represenation, it needs to be adapted 
@@ -1344,7 +1345,9 @@ and
             end in
           (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
           Js_output.handle_block_return st should_return lam (List.concat args_code)
-            (E.call (E.call get [obj'; label; E.small_int cache]) (obj'::args)) (* avoid duplicated compuattion *)
+            (E.call ~info:Js_call_info.dummy 
+               (E.call ~info:Js_call_info.dummy get [obj'; label; E.small_int cache]) (obj'::args)
+            ) (* avoid duplicated compuattion *)
 
 
         | Public (Some name) -> 
@@ -1362,7 +1365,7 @@ and
                 | [x] -> 
                   Js_array.ref_array obj' x 
                 |  x :: rest  ->
-                  E.call (Js_array.ref_array obj' x ) rest in
+                  E.call ~info:Js_call_info.dummy (Js_array.ref_array obj' x ) rest in
               cont @@ aux args
 
             | (Js_write_index, _name), _  ->
@@ -1381,7 +1384,7 @@ and
                 | [x; y] -> 
                   Js_array.set_array obj' x y 
                 |  x :: y:: rest  ->
-                  E.call (Js_array.set_array obj' x y ) rest in
+                  E.call ~info:Js_call_info.dummy (Js_array.set_array obj' x y ) rest in
               cont @@ aux args
             | (Js_write, name), _ -> 
               let  aux args =
@@ -1408,7 +1411,8 @@ and
                 match rest with
                 | [] -> E.call ~info:{arity=Full} (E.dot obj' name) args 
                 | _ ->  
-                  E.call (E.call ~info:{arity=Full} (E.dot obj' name) args )
+                  E.call ~info:Js_call_info.dummy 
+                    (E.call ~info:{arity=Full} (E.dot obj' name) args )
                     rest 
               else 
                 let rest = Ext_list.init 

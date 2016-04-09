@@ -174,7 +174,7 @@ val float_comp :  Lambda.comparison -> binary_op
 
 val not : t -> t
 
-val call : ?comment:string  -> ?info:Js_call_info.t -> t -> t list -> t 
+val call : ?comment:string  -> info:Js_call_info.t -> t -> t list -> t 
 
 val flat_call : binary_op
 

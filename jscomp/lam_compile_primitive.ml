@@ -471,15 +471,17 @@ let translate
     (** only when Lapply -> expand = true*)
   | Praise _raise_kind -> assert false (* handled before here *)
   | Prevapply _  -> 
+    (* In pracice, this should be optmized away in earlier passes *)
     begin 
       match args with 
-      | [arg;f] -> E.call f [arg]
+      | [arg;f] -> E.call ~info:Js_call_info.dummy f [arg]
       | _ -> assert  false
     end
   | Pdirapply _ -> 
+    (* In pracice, this should be optmized away in earlier passes *)
     begin 
       match args with 
-      | [f; arg] -> E.call f [arg]
+      | [f; arg] -> E.call ~info:Js_call_info.dummy f [arg]
       | _ -> assert false 
     end
   | Ploc kind ->   assert false (* already compiled away here*)
