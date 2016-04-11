@@ -2,4 +2,5 @@ js
 bench
 # dom
 js_date
+js_fn
 xmlHTTPRequest

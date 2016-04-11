@@ -216,4 +216,7 @@ int32_test
 hamming_test
 pr_regression_test
 to_string_test
+
 print_alpha_test
+ffi_arity_test
+

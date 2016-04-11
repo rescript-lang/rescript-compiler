@@ -43,7 +43,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
               then 
                 let fn = simpl l1 in
                 let args = List.map simpl ll in
-                Lam_util.eta_conversion (x - len) info fn args 
+                Lam_util.eta_conversion (x - len) {info with  apply_status = Full} fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
                 Lapply (

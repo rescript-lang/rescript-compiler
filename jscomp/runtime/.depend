@@ -49,6 +49,8 @@ caml_utils.cmo : caml_utils.cmi
 caml_utils.cmx : caml_utils.cmi
 js.cmo :
 js.cmx :
+js_fn.cmo :
+js_fn.cmx :
 typed_array.cmo :
 typed_array.cmx :
 caml_array.cmo : js.cmo caml_array.cmi
@@ -87,5 +89,7 @@ caml_utils.cmo : caml_utils.cmi
 caml_utils.cmj : caml_utils.cmi
 js.cmo :
 js.cmj :
+js_fn.cmo :
+js_fn.cmj :
 typed_array.cmo :
 typed_array.cmj :

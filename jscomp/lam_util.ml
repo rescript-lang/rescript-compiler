@@ -325,6 +325,31 @@ let not_function (lam : Lambda.lambda) =
   match lam with 
   | Lfunction _ -> false | _ -> true 
 
+(* TODO: we need create 
+   1. a smart [let] combinator, reusable beta-reduction 
+   2. [lapply fn args info] 
+   here [fn] should get the last tail
+   for example 
+   {[
+     lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
+   ]}   
+*)
+let (* rec *) lapply (fn : Lambda.lambda) args info = 
+  (* match fn with *)
+  (* | Lambda.Lfunction(kind, params, body) -> *)
+  (*   let rec aux acc params args = *)
+  (*     match params, args with *)
+  (*     | [], [] -> acc, body *)
+  (*     | [], args' -> acc, lapply body args' info *)
+  (*     | params' , [] -> *)
+  (*       acc, Lambda.Lfunction(kind, params', body) *)
+  (*     | x::xs, y::ys -> aux ((x,y)::acc) xs ys in *)
+  (*   let env, rest = aux [] params args in *)
+  (*   List.fold_left *)
+  (*     (fun acc (v,e) -> *)
+  (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
+
+  (* | _ -> *)  Lambda.Lapply (fn, args, info )
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
@@ -333,7 +358,7 @@ let not_function (lam : Lambda.lambda) =
 *)
 let eta_conversion n info fn args = 
   let extra_args = Ext_list.init n
-      (fun _ ->   (Ident.create "param")) in
+      (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in
   begin match List.fold_right (fun lam (acc, bind) ->
       match lam with
@@ -351,12 +376,13 @@ let eta_conversion n info fn args =
 
     let rest : Lambda.lambda = 
       Lfunction(Curried, extra_args,
-                Lapply(fn,
-                       args @ extra_lambdas ,
-                       {info with  apply_status = Full}
-                      )) in
+                lapply fn (args @ extra_lambdas) info) in
     List.fold_left (fun lam (id,x) ->
         Lambda.Llet (Strict, id, x,lam)
       ) rest bindings
   | _, _ -> assert false
   end
+
+
+let default_apply_info : Lambda.apply_info = 
+  { apply_status = NA ; apply_loc = Location.none }
