@@ -503,13 +503,9 @@ function sendto_substring(fd, buf, ofs, len, flags, addr) {
   return sendto(fd, Caml_string.bytes_of_string(buf), ofs, len, flags, addr);
 }
 
-function SO_005(prim, prim$1, prim$2) {
-  return Caml_unix.unix_getsockopt(prim, prim$1, prim$2);
-}
+var SO_005 = Caml_unix.unix_getsockopt
 
-function SO_006(prim, prim$1, prim$2, prim$3) {
-  return Caml_unix.unix_setsockopt(prim, prim$1, prim$2, prim$3);
-}
+var SO_006 = Caml_unix.unix_setsockopt
 
 function getsockopt(fd, opt) {
   return Caml_curry.app3(SO_005, 0, fd, opt);
@@ -924,9 +920,7 @@ function open_proc(cmd, proc, input, output, toclose) {
       Caml_unix.unix_close(output);
     }
     if (!cloexec) {
-      List.iter(function (prim) {
-            return Caml_unix.unix_close(prim);
-          }, toclose);
+      List.iter(Caml_unix.unix_close, toclose);
     }
     try {
       return Caml_unix.unix_execv("/bin/sh", /* array */[
@@ -1040,9 +1034,7 @@ function open_process(cmd) {
           ];
   }
   catch (e){
-    List.iter(function (prim) {
-          return Caml_unix.unix_close(prim);
-        }, fds_to_close);
+    List.iter(Caml_unix.unix_close, fds_to_close);
     throw e;
   }
 }
@@ -1061,9 +1053,7 @@ function open_proc_full(cmd, env, proc, input, output, error, toclose) {
     Caml_unix.unix_dup2(error, 2);
     Caml_unix.unix_close(error);
     if (!cloexec) {
-      List.iter(function (prim) {
-            return Caml_unix.unix_close(prim);
-          }, toclose);
+      List.iter(Caml_unix.unix_close, toclose);
     }
     try {
       return Caml_unix.unix_execve("/bin/sh", /* array */[
@@ -1139,9 +1129,7 @@ function open_process_full(cmd, env) {
           ];
   }
   catch (e){
-    List.iter(function (prim) {
-          return Caml_unix.unix_close(prim);
-        }, fds_to_close);
+    List.iter(Caml_unix.unix_close, fds_to_close);
     throw e;
   }
 }
@@ -1313,61 +1301,33 @@ function establish_server(server_fun, sockaddr) {
   return /* () */0;
 }
 
-function error_message(prim) {
-  return Caml_unix.unix_error_message(prim);
-}
+var error_message = Caml_unix.unix_error_message
 
-function environment(prim) {
-  return Caml_unix.unix_environment(prim);
-}
+var environment = Caml_unix.unix_environment
 
-function getenv(prim) {
-  return Caml_sys.caml_sys_getenv(prim);
-}
+var getenv = Caml_sys.caml_sys_getenv
 
-function putenv(prim, prim$1) {
-  return Caml_unix.unix_putenv(prim, prim$1);
-}
+var putenv = Caml_unix.unix_putenv
 
-function execv(prim, prim$1) {
-  return Caml_unix.unix_execv(prim, prim$1);
-}
+var execv = Caml_unix.unix_execv
 
-function execve(prim, prim$1, prim$2) {
-  return Caml_unix.unix_execve(prim, prim$1, prim$2);
-}
+var execve = Caml_unix.unix_execve
 
-function execvp(prim, prim$1) {
-  return Caml_unix.unix_execvp(prim, prim$1);
-}
+var execvp = Caml_unix.unix_execvp
 
-function execvpe(prim, prim$1, prim$2) {
-  return Caml_unix.unix_execvpe(prim, prim$1, prim$2);
-}
+var execvpe = Caml_unix.unix_execvpe
 
-function fork(prim) {
-  return Caml_unix.unix_fork(prim);
-}
+var fork = Caml_unix.unix_fork
 
-function wait(prim) {
-  return Caml_unix.unix_wait(prim);
-}
+var wait = Caml_unix.unix_wait
 
-function waitpid(prim, prim$1) {
-  return Caml_unix.unix_waitpid(prim, prim$1);
-}
+var waitpid = Caml_unix.unix_waitpid
 
-function getpid(prim) {
-  return Caml_unix.unix_getpid(prim);
-}
+var getpid = Caml_unix.unix_getpid
 
-function getppid(prim) {
-  return Caml_unix.unix_getppid(prim);
-}
+var getppid = Caml_unix.unix_getppid
 
-function nice(prim) {
-  return Caml_unix.unix_nice(prim);
-}
+var nice = Caml_unix.unix_nice
 
 var stdin = 0;
 
@@ -1375,81 +1335,43 @@ var stdout = 1;
 
 var stderr = 2;
 
-function openfile(prim, prim$1, prim$2) {
-  return Caml_unix.unix_open(prim, prim$1, prim$2);
-}
+var openfile = Caml_unix.unix_open
 
-function close(prim) {
-  return Caml_unix.unix_close(prim);
-}
+var close = Caml_unix.unix_close
 
-function in_channel_of_descr(prim) {
-  return Caml_io.caml_ml_open_descriptor_in(prim);
-}
+var in_channel_of_descr = Caml_io.caml_ml_open_descriptor_in
 
-function out_channel_of_descr(prim) {
-  return Caml_io.caml_ml_open_descriptor_out(prim);
-}
+var out_channel_of_descr = Caml_io.caml_ml_open_descriptor_out
 
-function descr_of_in_channel(prim) {
-  return Caml_unix.caml_channel_descriptor(prim);
-}
+var descr_of_in_channel = Caml_unix.caml_channel_descriptor
 
-function descr_of_out_channel(prim) {
-  return Caml_unix.caml_channel_descriptor(prim);
-}
+var descr_of_out_channel = Caml_unix.caml_channel_descriptor
 
-function lseek(prim, prim$1, prim$2) {
-  return Caml_unix.unix_lseek(prim, prim$1, prim$2);
-}
+var lseek = Caml_unix.unix_lseek
 
-function truncate(prim, prim$1) {
-  return Caml_unix.unix_truncate(prim, prim$1);
-}
+var truncate = Caml_unix.unix_truncate
 
-function ftruncate(prim, prim$1) {
-  return Caml_unix.unix_ftruncate(prim, prim$1);
-}
+var ftruncate = Caml_unix.unix_ftruncate
 
-function stat(prim) {
-  return Caml_unix.unix_stat(prim);
-}
+var stat = Caml_unix.unix_stat
 
-function lstat(prim) {
-  return Caml_unix.unix_lstat(prim);
-}
+var lstat = Caml_unix.unix_lstat
 
-function fstat(prim) {
-  return Caml_unix.unix_fstat(prim);
-}
+var fstat = Caml_unix.unix_fstat
 
-function isatty(prim) {
-  return Caml_unix.unix_isatty(prim);
-}
+var isatty = Caml_unix.unix_isatty
 
-function LargeFile_000(prim, prim$1, prim$2) {
-  return Caml_unix.unix_lseek_64(prim, prim$1, prim$2);
-}
+var LargeFile_000 = Caml_unix.unix_lseek_64
 
-function LargeFile_001(prim, prim$1) {
-  return Caml_unix.unix_truncate_64(prim, prim$1);
-}
+var LargeFile_001 = Caml_unix.unix_truncate_64
 
-function LargeFile_002(prim, prim$1) {
-  return Caml_unix.unix_ftruncate_64(prim, prim$1);
-}
+var LargeFile_002 = Caml_unix.unix_ftruncate_64
 
-function LargeFile_003(prim) {
-  return Caml_unix.unix_stat_64(prim);
-}
+var LargeFile_003 = Caml_unix.unix_stat_64
 
-function LargeFile_004(prim) {
-  return Caml_unix.unix_lstat_64(prim);
-}
+var LargeFile_004 = Caml_unix.unix_lstat_64
 
-function LargeFile_005(prim) {
-  return Caml_unix.unix_fstat_64(prim);
-}
+var LargeFile_005 = Caml_unix.unix_fstat_64
 
 var LargeFile = [
   LargeFile_000,
@@ -1460,341 +1382,173 @@ var LargeFile = [
   LargeFile_005
 ];
 
-function unlink(prim) {
-  return Caml_unix.unix_unlink(prim);
-}
-
-function rename(prim, prim$1) {
-  return Caml_unix.unix_rename(prim, prim$1);
-}
-
-function link(prim, prim$1) {
-  return Caml_unix.unix_link(prim, prim$1);
-}
-
-function chmod(prim, prim$1) {
-  return Caml_unix.unix_chmod(prim, prim$1);
-}
-
-function fchmod(prim, prim$1) {
-  return Caml_unix.unix_fchmod(prim, prim$1);
-}
-
-function chown(prim, prim$1, prim$2) {
-  return Caml_unix.unix_chown(prim, prim$1, prim$2);
-}
-
-function fchown(prim, prim$1, prim$2) {
-  return Caml_unix.unix_fchown(prim, prim$1, prim$2);
-}
-
-function umask(prim) {
-  return Caml_unix.unix_umask(prim);
-}
-
-function access(prim, prim$1) {
-  return Caml_unix.unix_access(prim, prim$1);
-}
-
-function dup(prim) {
-  return Caml_unix.unix_dup(prim);
-}
-
-function dup2(prim, prim$1) {
-  return Caml_unix.unix_dup2(prim, prim$1);
-}
-
-function set_nonblock(prim) {
-  return Caml_unix.unix_set_nonblock(prim);
-}
-
-function clear_nonblock(prim) {
-  return Caml_unix.unix_clear_nonblock(prim);
-}
-
-function set_close_on_exec(prim) {
-  return Caml_unix.unix_set_close_on_exec(prim);
-}
-
-function clear_close_on_exec(prim) {
-  return Caml_unix.unix_clear_close_on_exec(prim);
-}
-
-function mkdir(prim, prim$1) {
-  return Caml_unix.unix_mkdir(prim, prim$1);
-}
-
-function rmdir(prim) {
-  return Caml_unix.unix_rmdir(prim);
-}
-
-function chdir(prim) {
-  return Caml_unix.unix_chdir(prim);
-}
-
-function getcwd(prim) {
-  return Caml_unix.unix_getcwd(prim);
-}
-
-function chroot(prim) {
-  return Caml_unix.unix_chroot(prim);
-}
-
-function opendir(prim) {
-  return Caml_unix.unix_opendir(prim);
-}
-
-function readdir(prim) {
-  return Caml_unix.unix_readdir(prim);
-}
-
-function rewinddir(prim) {
-  return Caml_unix.unix_rewinddir(prim);
-}
-
-function closedir(prim) {
-  return Caml_unix.unix_closedir(prim);
-}
-
-function pipe(prim) {
-  return Caml_unix.unix_pipe(prim);
-}
-
-function mkfifo(prim, prim$1) {
-  return Caml_unix.unix_mkfifo(prim, prim$1);
-}
-
-function symlink(prim, prim$1) {
-  return Caml_unix.unix_symlink(prim, prim$1);
-}
-
-function readlink(prim) {
-  return Caml_unix.unix_readlink(prim);
-}
-
-function select(prim, prim$1, prim$2, prim$3) {
-  return Caml_unix.unix_select(prim, prim$1, prim$2, prim$3);
-}
-
-function lockf(prim, prim$1, prim$2) {
-  return Caml_unix.unix_lockf(prim, prim$1, prim$2);
-}
-
-function kill(prim, prim$1) {
-  return Caml_unix.unix_kill(prim, prim$1);
-}
-
-function sigprocmask(prim, prim$1) {
-  return Caml_unix.unix_sigprocmask(prim, prim$1);
-}
-
-function sigpending(prim) {
-  return Caml_unix.unix_sigpending(prim);
-}
-
-function sigsuspend(prim) {
-  return Caml_unix.unix_sigsuspend(prim);
-}
-
-function time(prim) {
-  return Caml_unix.unix_time(prim);
-}
-
-function gettimeofday(prim) {
-  return Caml_unix.unix_gettimeofday(prim);
-}
-
-function gmtime(prim) {
-  return Caml_unix.unix_gmtime(prim);
-}
-
-function localtime(prim) {
-  return Caml_unix.unix_localtime(prim);
-}
-
-function mktime(prim) {
-  return Caml_unix.unix_mktime(prim);
-}
-
-function alarm(prim) {
-  return Caml_unix.unix_alarm(prim);
-}
-
-function sleep(prim) {
-  return Caml_unix.unix_sleep(prim);
-}
-
-function times(prim) {
-  return Caml_unix.unix_times(prim);
-}
-
-function utimes(prim, prim$1, prim$2) {
-  return Caml_unix.unix_utimes(prim, prim$1, prim$2);
-}
-
-function getitimer(prim) {
-  return Caml_unix.unix_getitimer(prim);
-}
-
-function setitimer(prim, prim$1) {
-  return Caml_unix.unix_setitimer(prim, prim$1);
-}
-
-function getuid(prim) {
-  return Caml_unix.unix_getuid(prim);
-}
-
-function geteuid(prim) {
-  return Caml_unix.unix_geteuid(prim);
-}
-
-function setuid(prim) {
-  return Caml_unix.unix_setuid(prim);
-}
-
-function getgid(prim) {
-  return Caml_unix.unix_getgid(prim);
-}
-
-function getegid(prim) {
-  return Caml_unix.unix_getegid(prim);
-}
-
-function setgid(prim) {
-  return Caml_unix.unix_setgid(prim);
-}
-
-function getgroups(prim) {
-  return Caml_unix.unix_getgroups(prim);
-}
-
-function setgroups(prim) {
-  return Caml_unix.unix_setgroups(prim);
-}
-
-function initgroups(prim, prim$1) {
-  return Caml_unix.unix_initgroups(prim, prim$1);
-}
-
-function getlogin(prim) {
-  return Caml_unix.unix_getlogin(prim);
-}
-
-function getpwnam(prim) {
-  return Caml_unix.unix_getpwnam(prim);
-}
-
-function getgrnam(prim) {
-  return Caml_unix.unix_getgrnam(prim);
-}
-
-function getpwuid(prim) {
-  return Caml_unix.unix_getpwuid(prim);
-}
-
-function getgrgid(prim) {
-  return Caml_unix.unix_getgrgid(prim);
-}
-
-function inet_addr_of_string(prim) {
-  return Caml_unix.unix_inet_addr_of_string(prim);
-}
-
-function string_of_inet_addr(prim) {
-  return Caml_unix.unix_string_of_inet_addr(prim);
-}
-
-function socket(prim, prim$1, prim$2) {
-  return Caml_unix.unix_socket(prim, prim$1, prim$2);
-}
-
-function socketpair(prim, prim$1, prim$2) {
-  return Caml_unix.unix_socketpair(prim, prim$1, prim$2);
-}
-
-function accept(prim) {
-  return Caml_unix.unix_accept(prim);
-}
-
-function bind(prim, prim$1) {
-  return Caml_unix.unix_bind(prim, prim$1);
-}
-
-function connect(prim, prim$1) {
-  return Caml_unix.unix_connect(prim, prim$1);
-}
-
-function listen(prim, prim$1) {
-  return Caml_unix.unix_listen(prim, prim$1);
-}
-
-function shutdown(prim, prim$1) {
-  return Caml_unix.unix_shutdown(prim, prim$1);
-}
-
-function getsockname(prim) {
-  return Caml_unix.unix_getsockname(prim);
-}
-
-function getpeername(prim) {
-  return Caml_unix.unix_getpeername(prim);
-}
-
-function gethostname(prim) {
-  return Caml_unix.unix_gethostname(prim);
-}
-
-function gethostbyname(prim) {
-  return Caml_unix.unix_gethostbyname(prim);
-}
-
-function gethostbyaddr(prim) {
-  return Caml_unix.unix_gethostbyaddr(prim);
-}
-
-function getprotobyname(prim) {
-  return Caml_unix.unix_getprotobyname(prim);
-}
-
-function getprotobynumber(prim) {
-  return Caml_unix.unix_getprotobynumber(prim);
-}
-
-function getservbyname(prim, prim$1) {
-  return Caml_unix.unix_getservbyname(prim, prim$1);
-}
-
-function getservbyport(prim, prim$1) {
-  return Caml_unix.unix_getservbyport(prim, prim$1);
-}
-
-function tcgetattr(prim) {
-  return Caml_unix.unix_tcgetattr(prim);
-}
-
-function tcsetattr(prim, prim$1, prim$2) {
-  return Caml_unix.unix_tcsetattr(prim, prim$1, prim$2);
-}
-
-function tcsendbreak(prim, prim$1) {
-  return Caml_unix.unix_tcsendbreak(prim, prim$1);
-}
-
-function tcdrain(prim) {
-  return Caml_unix.unix_tcdrain(prim);
-}
-
-function tcflush(prim, prim$1) {
-  return Caml_unix.unix_tcflush(prim, prim$1);
-}
-
-function tcflow(prim, prim$1) {
-  return Caml_unix.unix_tcflow(prim, prim$1);
-}
-
-function setsid(prim) {
-  return Caml_unix.unix_setsid(prim);
-}
+var unlink = Caml_unix.unix_unlink
+
+var rename = Caml_unix.unix_rename
+
+var link = Caml_unix.unix_link
+
+var chmod = Caml_unix.unix_chmod
+
+var fchmod = Caml_unix.unix_fchmod
+
+var chown = Caml_unix.unix_chown
+
+var fchown = Caml_unix.unix_fchown
+
+var umask = Caml_unix.unix_umask
+
+var access = Caml_unix.unix_access
+
+var dup = Caml_unix.unix_dup
+
+var dup2 = Caml_unix.unix_dup2
+
+var set_nonblock = Caml_unix.unix_set_nonblock
+
+var clear_nonblock = Caml_unix.unix_clear_nonblock
+
+var set_close_on_exec = Caml_unix.unix_set_close_on_exec
+
+var clear_close_on_exec = Caml_unix.unix_clear_close_on_exec
+
+var mkdir = Caml_unix.unix_mkdir
+
+var rmdir = Caml_unix.unix_rmdir
+
+var chdir = Caml_unix.unix_chdir
+
+var getcwd = Caml_unix.unix_getcwd
+
+var chroot = Caml_unix.unix_chroot
+
+var opendir = Caml_unix.unix_opendir
+
+var readdir = Caml_unix.unix_readdir
+
+var rewinddir = Caml_unix.unix_rewinddir
+
+var closedir = Caml_unix.unix_closedir
+
+var pipe = Caml_unix.unix_pipe
+
+var mkfifo = Caml_unix.unix_mkfifo
+
+var symlink = Caml_unix.unix_symlink
+
+var readlink = Caml_unix.unix_readlink
+
+var select = Caml_unix.unix_select
+
+var lockf = Caml_unix.unix_lockf
+
+var kill = Caml_unix.unix_kill
+
+var sigprocmask = Caml_unix.unix_sigprocmask
+
+var sigpending = Caml_unix.unix_sigpending
+
+var sigsuspend = Caml_unix.unix_sigsuspend
+
+var time = Caml_unix.unix_time
+
+var gettimeofday = Caml_unix.unix_gettimeofday
+
+var gmtime = Caml_unix.unix_gmtime
+
+var localtime = Caml_unix.unix_localtime
+
+var mktime = Caml_unix.unix_mktime
+
+var alarm = Caml_unix.unix_alarm
+
+var sleep = Caml_unix.unix_sleep
+
+var times = Caml_unix.unix_times
+
+var utimes = Caml_unix.unix_utimes
+
+var getitimer = Caml_unix.unix_getitimer
+
+var setitimer = Caml_unix.unix_setitimer
+
+var getuid = Caml_unix.unix_getuid
+
+var geteuid = Caml_unix.unix_geteuid
+
+var setuid = Caml_unix.unix_setuid
+
+var getgid = Caml_unix.unix_getgid
+
+var getegid = Caml_unix.unix_getegid
+
+var setgid = Caml_unix.unix_setgid
+
+var getgroups = Caml_unix.unix_getgroups
+
+var setgroups = Caml_unix.unix_setgroups
+
+var initgroups = Caml_unix.unix_initgroups
+
+var getlogin = Caml_unix.unix_getlogin
+
+var getpwnam = Caml_unix.unix_getpwnam
+
+var getgrnam = Caml_unix.unix_getgrnam
+
+var getpwuid = Caml_unix.unix_getpwuid
+
+var getgrgid = Caml_unix.unix_getgrgid
+
+var inet_addr_of_string = Caml_unix.unix_inet_addr_of_string
+
+var string_of_inet_addr = Caml_unix.unix_string_of_inet_addr
+
+var socket = Caml_unix.unix_socket
+
+var socketpair = Caml_unix.unix_socketpair
+
+var accept = Caml_unix.unix_accept
+
+var bind = Caml_unix.unix_bind
+
+var connect = Caml_unix.unix_connect
+
+var listen = Caml_unix.unix_listen
+
+var shutdown = Caml_unix.unix_shutdown
+
+var getsockname = Caml_unix.unix_getsockname
+
+var getpeername = Caml_unix.unix_getpeername
+
+var gethostname = Caml_unix.unix_gethostname
+
+var gethostbyname = Caml_unix.unix_gethostbyname
+
+var gethostbyaddr = Caml_unix.unix_gethostbyaddr
+
+var getprotobyname = Caml_unix.unix_getprotobyname
+
+var getprotobynumber = Caml_unix.unix_getprotobynumber
+
+var getservbyname = Caml_unix.unix_getservbyname
+
+var getservbyport = Caml_unix.unix_getservbyport
+
+var tcgetattr = Caml_unix.unix_tcgetattr
+
+var tcsetattr = Caml_unix.unix_tcsetattr
+
+var tcsendbreak = Caml_unix.unix_tcsendbreak
+
+var tcdrain = Caml_unix.unix_tcdrain
+
+var tcflush = Caml_unix.unix_tcflush
+
+var tcflow = Caml_unix.unix_tcflow
+
+var setsid = Caml_unix.unix_setsid
 
 exports.Unix_error             = Unix_error;
 exports.error_message          = error_message;

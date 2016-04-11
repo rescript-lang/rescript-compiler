@@ -34,9 +34,7 @@ function to_string(n) {
   return Caml_format.caml_nativeint_format("%d", n);
 }
 
-function compare(x, y) {
-  return Caml_obj.caml_nativeint_compare(x, y);
-}
+var compare = Caml_obj.caml_nativeint_compare
 
 var zero = 0;
 

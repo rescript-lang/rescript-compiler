@@ -907,9 +907,7 @@ function Make(H) {
         ];
 }
 
-function seeded_hash_param(prim, prim$1, prim$2, prim$3) {
-  return Caml_primitive.caml_hash(prim, prim$1, prim$2, prim$3);
-}
+var seeded_hash_param = Caml_primitive.caml_hash
 
 exports.create            = create;
 exports.clear             = clear;

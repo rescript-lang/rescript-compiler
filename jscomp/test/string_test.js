@@ -149,9 +149,7 @@ function xsplit(delim, s) {
 }
 
 function string_of_chars(x) {
-  return $$String.concat("", List.map(function (prim) {
-                  return Caml_string.string_of_char(prim);
-                }, x));
+  return $$String.concat("", List.map(Caml_string.string_of_char, x));
 }
 
 Mt.from_pair_suites("string_test.ml", /* :: */[

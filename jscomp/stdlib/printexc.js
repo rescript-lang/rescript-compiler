@@ -321,9 +321,7 @@ function $$catch(fct, arg) {
 
 function convert_raw_backtrace(rbckt) {
   try {
-    return /* Some */[$$Array.map(function (prim) {
-                  return Caml_primitive.caml_convert_raw_backtrace_slot(prim);
-                }, rbckt)];
+    return /* Some */[$$Array.map(Caml_primitive.caml_convert_raw_backtrace_slot, rbckt)];
   }
   catch (exn){
     if (exn[0] === Caml_builtin_exceptions.failure) {
@@ -649,9 +647,7 @@ var Slot = [
   format_backtrace_slot
 ];
 
-function convert_raw_backtrace_slot(prim) {
-  return Caml_primitive.caml_convert_raw_backtrace_slot(prim);
-}
+var convert_raw_backtrace_slot = Caml_primitive.caml_convert_raw_backtrace_slot
 
 exports.to_string                      = to_string;
 exports.print                          = print;

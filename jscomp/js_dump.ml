@@ -249,64 +249,98 @@ f/122 -->
 let rec pp_function 
     cxt (f : P.t) ?name  return 
     (l : Ident.t list) (b : J.block) (env : Js_fun_env.t ) =  
-  let ipp_ident cxt f id un_used = 
-    if un_used then 
-      ident cxt f (Ext_ident.make_unused ())
-    else 
-      ident cxt f id  in
-  let rec formal_parameter_list cxt (f : P.t) l =
-    let rec aux i cxt l = 
-      match l with
-      | []     -> cxt
-      | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-      | id :: r -> 
-        let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-        P.string f L.comma; P.space f;
-        aux (i + 1) cxt  r
-    in
-    match l with 
-    | [] -> cxt 
-    | [i] -> 
-      (** necessary, since some js libraries like [mocha]...*)
-      if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
-    | _ -> 
-      aux 0 cxt l  in
+  match b, (name,  return)  with 
+  | [ {statement_desc =
+         Return {return_value = 
+                   {expression_desc = 
+                      Call({expression_desc = Var v ; _}, 
+                           ls , 
+                           {arity = ( Full | NA ); 
+                            (* TODO: need a case to justify it*)
+                            call_info = 
+                              (Call_builtin_runtime | Call_ml )})}}}],
+    ((_, false) | (None, true))  when
 
-  let rec aux  cxt f ls  =
-    match ls with
-    | [] -> cxt
-    | [x] -> ident cxt f x
-    | y :: ys ->
+      Ext_list.for_all2_no_exn (fun a b -> 
+          match b.J.expression_desc with 
+          | Var (Id i) -> Ident.same a i 
+          | _ -> false) l ls ->
+    begin match name with 
+      | Some i -> 
+        P.string f L.var; 
+        P.space f ; 
+        let cxt = ident cxt f i in
+        P.space f ;
+        P.string f L.eq;
+        P.space f ;
+        vident cxt f v
+      | None ->
+        if return then 
+          begin 
+            P.string f L.return ;
+            P.space f;
+          end;
+        vident cxt f v 
+    end
+  | _, _  -> 
+    let ipp_ident cxt f id un_used = 
+      if un_used then 
+        ident cxt f (Ext_ident.make_unused ())
+      else 
+        ident cxt f id  in
+    let rec formal_parameter_list cxt (f : P.t) l =
+      let rec aux i cxt l = 
+        match l with
+        | []     -> cxt
+        | [id]    -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
+        | id :: r -> 
+          let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
+          P.string f L.comma; P.space f;
+          aux (i + 1) cxt  r
+      in
+      match l with 
+      | [] -> cxt 
+      | [i] -> 
+        (** necessary, since some js libraries like [mocha]...*)
+        if Js_fun_env.get_unused env 0 then cxt else ident cxt f i 
+      | _ -> 
+        aux 0 cxt l  in
+
+    let rec aux  cxt f ls  =
+      match ls with
+      | [] -> cxt
+      | [x] -> ident cxt f x
+      | y :: ys ->
         let cxt = ident cxt f y in
         P.string f L.comma;
         aux cxt f ys  in
 
-  let set_env = (** identifiers will be printed following*)
-    match name with 
-    | None ->
+    let set_env = (** identifiers will be printed following*)
+      match name with 
+      | None ->
         Js_fun_env.get_bound env 
-    | Some id -> Ident_set.add id (Js_fun_env.get_bound env )
-  in
-  (* the context will be continued after this function *)
-  let outer_cxt = Ext_pp_scope.merge set_env cxt in  
+      | Some id -> Ident_set.add id (Js_fun_env.get_bound env )
+    in
+    (* the context will be continued after this function *)
+    let outer_cxt = Ext_pp_scope.merge set_env cxt in  
 
-  (* the context used to be printed inside this function
+    (* the context used to be printed inside this function
 
-     when printing a function, 
-     only the enclosed variables and function name matters, 
-     if the function does not capture any variable, then the context is empty     
-  *)
-  let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
+       when printing a function, 
+       only the enclosed variables and function name matters, 
+       if the function does not capture any variable, then the context is empty     
+    *)
+    let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
 
-  (
+
     (* (if not @@ Js_fun_env.is_empty env then *)
     (* pp_comment  f (Some (Js_fun_env.to_string env))) ; *)
     let action return = 
-
-      (if return then begin 
+      if return then 
+        begin 
           P.string f L.return ;
           P.space f
-        end else ());
+        end ;
       P.string f L.function_;
       P.space f ;
       (match name with None  -> () | Some x -> ignore (ident inner_cxt f x));
@@ -318,31 +352,30 @@ let rec pp_function
     in
     let lexical = Js_fun_env.get_lexical_scope env in
     let enclose action lexical  return = 
-
       if  Ident_set.is_empty lexical  
       then
         action return 
       else
         let lexical = Ident_set.elements lexical in
-        (if return then begin 
+        if return then
+          begin 
             P.string f L.return ; 
             P.space f
-          end else ());
-        P.string f "(";
+          end ;
+        P.string f L.lparen;
         P.string f L.function_; 
-        P.string f "(";
+        P.string f L.lparen;
         ignore @@ aux inner_cxt f lexical;
-        P.string f ")";
+        P.string f L.rparen;
         P.brace_vgroup f 0  (fun _ -> action true);
-        P.string f "(";
+        P.string f L.lparen;
         ignore @@ aux inner_cxt f lexical;
-        P.string f ")";
-        P.string f ")"
-
+        P.string f L.rparen;
+        P.string f L.rparen
     in
     enclose action lexical return 
-  ) ;
-  outer_cxt
+    ;
+    outer_cxt
 
 
 (* Assume the cond would not change the context, 
@@ -462,9 +495,13 @@ and
     if l > 15 then P.paren_group f 1 action   
     else action ()
   | Bind (a,b) -> 
+    (* a.bind(b)
+       {[ fun b -> a.bind(b) ==? a.bind ]}
+    *)
     begin
       expression_desc cxt l f  
-        (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b], {arity = Full}))
+        (Call ({expression_desc = Dot(a,L.bind, true); comment = None }, [b], 
+               {arity = Full; call_info = Call_na}))
     end    
   (* | Tag_ml_obj e ->  *)
   (*   P.group f 1 (fun _ ->  *)

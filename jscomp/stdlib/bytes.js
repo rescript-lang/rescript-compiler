@@ -481,17 +481,11 @@ function rcontains_from(s, i, c) {
   }
 }
 
-function compare(x, y) {
-  return Caml_obj.caml_compare(x, y);
-}
+var compare = Caml_obj.caml_compare
 
-function unsafe_to_string(prim) {
-  return Caml_string.bytes_to_string(prim);
-}
+var unsafe_to_string = Caml_string.bytes_to_string
 
-function unsafe_of_string(prim) {
-  return Caml_string.bytes_of_string(prim);
-}
+var unsafe_of_string = Caml_string.bytes_of_string
 
 exports.make             = make;
 exports.init             = init;

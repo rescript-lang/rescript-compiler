@@ -162,9 +162,7 @@ function int64(s, bound) {
   }
 }
 
-var nativeint = Nativeint.size === 32 ? function (s, bound) {
-    return int32(s, bound);
-  } : function (s, bound) {
+var nativeint = Nativeint.size === 32 ? int32 : function (s, bound) {
     return int64(s, Caml_int64.of_int32(bound))[1] | 0;
   };
 

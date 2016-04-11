@@ -41,9 +41,7 @@ function to_string(n) {
   return Caml_format.caml_int64_format("%d", n);
 }
 
-function compare(x, y) {
-  return Caml_int64.compare(x, y);
-}
+var compare = Caml_int64.compare
 
 var zero = /* int64 */[
   0,

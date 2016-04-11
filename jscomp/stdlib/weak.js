@@ -292,9 +292,7 @@ function Make(H) {
   };
   var add = function (t, d) {
     var h = Caml_curry.app1(H[1], d);
-    return add_aux(t, function (prim, prim$1, prim$2) {
-                return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
-              }, /* Some */[d], h, get_index(t, h));
+    return add_aux(t, Caml_primitive.caml_weak_set, /* Some */[d], h, get_index(t, h));
   };
   var find_or = function (t, d, ifnotfound) {
     var h = Caml_curry.app1(H[1], d);
@@ -343,9 +341,7 @@ function Make(H) {
   };
   var merge = function (t, d) {
     return find_or(t, d, function (h, index) {
-                add_aux(t, function (prim, prim$1, prim$2) {
-                      return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
-                    }, /* Some */[d], h, index);
+                add_aux(t, Caml_primitive.caml_weak_set, /* Some */[d], h, index);
                 return d;
               });
   };
@@ -457,9 +453,7 @@ function Make(H) {
   var stats = function (t) {
     var len = t[/* table */0].length;
     var lens = $$Array.map(length, t[/* table */0]);
-    $$Array.sort(function (prim, prim$1) {
-          return Caml_obj.caml_compare(prim, prim$1);
-        }, lens);
+    $$Array.sort(Caml_obj.caml_compare, lens);
     var totlen = $$Array.fold_left(function (prim, prim$1) {
           return prim + prim$1 | 0;
         }, 0, lens);
@@ -488,29 +482,17 @@ function Make(H) {
         ];
 }
 
-function create(prim) {
-  return Caml_primitive.caml_weak_create(prim);
-}
+var create = Caml_primitive.caml_weak_create
 
-function set(prim, prim$1, prim$2) {
-  return Caml_primitive.caml_weak_set(prim, prim$1, prim$2);
-}
+var set = Caml_primitive.caml_weak_set
 
-function get(prim, prim$1) {
-  return Caml_primitive.caml_weak_get(prim, prim$1);
-}
+var get = Caml_primitive.caml_weak_get
 
-function get_copy(prim, prim$1) {
-  return Caml_primitive.caml_weak_get_copy(prim, prim$1);
-}
+var get_copy = Caml_primitive.caml_weak_get_copy
 
-function check(prim, prim$1) {
-  return Caml_primitive.caml_weak_check(prim, prim$1);
-}
+var check = Caml_primitive.caml_weak_check
 
-function blit(prim, prim$1, prim$2, prim$3, prim$4) {
-  return Caml_primitive.caml_weak_blit(prim, prim$1, prim$2, prim$3, prim$4);
-}
+var blit = Caml_primitive.caml_weak_blit
 
 exports.create   = create;
 exports.length   = length;

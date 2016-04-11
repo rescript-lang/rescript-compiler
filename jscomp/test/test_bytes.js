@@ -3,13 +3,9 @@
 
 var Caml_string = require("../runtime/caml_string");
 
-function f(v) {
-  return Caml_string.bytes_to_string(v);
-}
+var f = Caml_string.bytes_to_string
 
-function ff(v) {
-  return Caml_string.bytes_to_string(v);
-}
+var ff = Caml_string.bytes_to_string
 
 exports.f  = f;
 exports.ff = ff;

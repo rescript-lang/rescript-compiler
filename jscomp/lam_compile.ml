@@ -223,7 +223,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                  then
                    let first_part, continue =  (Ext_list.take x args) in
                    aux
-                     (E.call ~info:{arity=Full} acc first_part)
+                     (E.call ~info:{arity=Full; call_info = Call_ml} acc first_part)
                      (Determin (a, rest, b))
                      continue (len - x)
                  else  acc 
@@ -582,8 +582,8 @@ and
 
             Js_output.handle_block_return st should_return lam args_code 
               (E.call ~info:(match fn, info with 
-                   | _, { apply_status = Full} -> {arity = Full }
-                   | _,  { apply_status = NA} -> {arity = NA} ) fn_code args) 
+                   | _, { apply_status = Full} -> {arity = Full ; call_info = Call_ml}
+                   | _,  { apply_status = NA} -> {arity = NA; call_info = Call_ml } ) fn_code args) 
         end;
       end
 
@@ -1409,16 +1409,16 @@ and
                 Ext_list.try_take arity args  in
               if n = arity then 
                 match rest with
-                | [] -> E.call ~info:{arity=Full} (E.dot obj' name) args 
+                | [] -> E.call ~info:{arity=Full; call_info = Call_na} (E.dot obj' name) args 
                 | _ ->  
                   E.call ~info:Js_call_info.dummy 
-                    (E.call ~info:{arity=Full} (E.dot obj' name) args )
+                    (E.call ~info:{arity=Full; call_info = Call_na} (E.dot obj' name) args )
                     rest 
               else 
                 let rest = Ext_list.init 
                     (arity - n) (fun i -> Ext_ident.create "prim") in
                 E.fun_ rest 
-                  S.[return (E.call ~info:{arity=Full } (E.dot obj' name)
+                  S.[return (E.call ~info:{arity=Full; call_info = Call_na } (E.dot obj' name)
                                (args @ List.map E.var rest )                               
                             ) ]                  
             | (Js None, p_name), _  -> 

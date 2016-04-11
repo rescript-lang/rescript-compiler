@@ -228,9 +228,7 @@ function parse_error() {
   return /* () */0;
 }
 
-function set_trace(prim) {
-  return Caml_parser.caml_set_parser_trace(prim);
-}
+var set_trace = Caml_parser.caml_set_parser_trace
 
 exports.symbol_start         = symbol_start;
 exports.symbol_end           = symbol_end;

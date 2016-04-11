@@ -268,7 +268,9 @@ let flat_call ?comment e0 es : t =
 
 (* Dot .....................**)        
 let runtime_call ?comment module_name fn_name args = 
-  call ?comment ~info:{arity=Full} (runtime_var_dot  module_name fn_name) args
+  call ?comment 
+    ~info:Js_call_info.builtin_runtime_call
+    (runtime_var_dot  module_name fn_name) args
 
 let runtime_ref module_name fn_name = 
   runtime_var_dot  module_name fn_name
@@ -1126,7 +1128,7 @@ let rec int32_band ?comment (e1 : J.expression) (e2 : J.expression) : J.expressi
     remember to add parens..
 *)
 let of_block ?comment block e : t = 
-  call ~info:{arity=Full}
+  call ~info:Js_call_info.ml_full_call
     {
       comment ;
       expression_desc = 

@@ -40,9 +40,7 @@ function commutative_add(result, a, b) {
         };
 }
 
-function generic_compare(prim, prim$1) {
-  return Caml_obj.caml_compare(prim, prim$1);
-}
+var generic_compare = Caml_obj.caml_compare
 
 var shift_left_tests_000 = $$Array.map(function (i) {
       return Caml_int64.lsl_(/* int64 */[
@@ -2089,9 +2087,7 @@ var suites = Pervasives.$at(/* :: */[
                                                         "of_int32",
                                                         function () {
                                                           return /* Eq */{
-                                                                  0: $$Array.map(function (prim) {
-                                                                        return Caml_int64.of_int32(prim);
-                                                                      }, /* array */[
+                                                                  0: $$Array.map(Caml_int64.of_int32, /* array */[
                                                                         0,
                                                                         -2147483648
                                                                       ]),

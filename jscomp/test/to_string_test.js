@@ -4,9 +4,7 @@
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 
-function ff(v) {
-  return Pervasives.string_of_float(v);
-}
+var ff = Pervasives.string_of_float
 
 function f(v) {
   return "" + v;
