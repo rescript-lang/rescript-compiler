@@ -51,7 +51,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
 It is in an *very early* stage and not production ready for your own projects *yet*.
 
-## [Documentation](https://github.com/bloomberg/bucklescript/wiki)
+## [Link to wiki Documentation](https://github.com/bloomberg/bucklescript/wiki)
 
 ## Build
 
@@ -257,11 +257,7 @@ While most of the OCaml language is covered, because this project is still young
 
 Some known issues are listed as below:
 
-1. Language features:
-
-   int32 mul (we will have a polyfill for it)
-
-2. Standard libraries distributed with OCaml:
+1. Standard libraries distributed with OCaml:
 
    IO support, we have very limited support for
    `Pervasives.print_endline` and `Pervasives.prerr_endline`, it's
@@ -272,7 +268,7 @@ Some known issues are listed as below:
 
    Bigarray, Unix, Num
 
-3. String is immutable, user is expected to compile with flags `-safe-string` for all modules:
+2. String is immutable, user is expected to compile with flags `-safe-string` for all modules:
 
    Note that this flag should be applied to all your modules.
 
