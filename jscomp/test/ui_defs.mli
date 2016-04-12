@@ -1,11 +1,11 @@
 
 (* external stackPanel : unit -> stackPanel = ""  
-    [@@js.new] [@@js.module "blp/ui" "UI"] 
+    [@@bs.new] [@@bs.module "blp/ui" "UI"] 
    
 https://github.com/jaked/ocamljs/issues/2
  *)
 
-(* external dom : widget = "x" [@@js.val ] *)
+(* external dom : widget = "x" [@@bs.val ] *)
 
 class type dom = object 
 end
@@ -15,4 +15,4 @@ class type doc =
   object
     method getElementById : string -> html_element
   end
-external doc :  doc = "doc" [@@js.val]
+external doc :  doc = "doc" [@@bs.val]

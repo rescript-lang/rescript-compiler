@@ -2,8 +2,8 @@ include (struct
 module StringMap = Map.Make(struct type t = string 
   let compare 
       (x : string) y = compare x y end)
-external time : string -> unit = "" [@@js.call "console.time"]
-external timeEnd : string -> unit = "" [@@js.call "console.timeEnd"]
+external time : string -> unit = "" [@@bs.call "console.time"]
+external timeEnd : string -> unit = "" [@@bs.call "console.timeEnd"]
 
 let timing label f = 
   begin 

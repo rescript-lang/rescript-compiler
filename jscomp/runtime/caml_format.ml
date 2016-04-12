@@ -84,7 +84,7 @@ let caml_int_of_string s =
   let () =
     if d < 0n || d >=  base then
       caml_failwith "int_of_string" in
-  (* let () = [%js.debug]  in *)
+  (* let () = [%bs.debug]  in *)
   let rec aux acc k = 
     if k = len then acc 
     else 
@@ -558,7 +558,7 @@ let caml_format_float fmt x =
     end;
   finish_formatting f !s
 
-let caml_float_of_string : string -> float = [%js.raw {|
+let caml_float_of_string : string -> float = [%bs.raw {|
 
 /**
  * external float_of_string : string -> float = "caml_float_of_string"

@@ -15,7 +15,7 @@ type suite_config
 external make_suite_config : 
   ?onComplete:(unit -> unit) -> 
   unit -> suite_config = ""
-    [@@js.obj ]
+    [@@bs.obj ]
 
 
 class type suites = 
@@ -33,7 +33,7 @@ class type suites =
   end
 
 external js_new_suites : unit ->  suites = "Suite" 
-    [@@js.new ] [@@js.module "benchmark" "Bench"] [@@js.scope "Bench"]
+    [@@bs.new ] [@@bs.module "benchmark" "Bench"] [@@bs.scope "Bench"]
 
 let suite = js_new_suites ()
 

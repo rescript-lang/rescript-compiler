@@ -34,8 +34,8 @@ let stdout = {
   buffer = "";
   output = (fun _ s ->
     let v = String.length s - 1 in
-    if [%js.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
-      ([%js.raw{| process.stdout.write |} ] : string -> unit) s
+    if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
+      ([%bs.raw{| process.stdout.write |} ] : string -> unit) s
     else
     if s.[v] = '\n' then
       Js.log (Js.String.slice s 0 v)
@@ -64,7 +64,7 @@ let caml_ml_flush (oc : out_channel)  : unit =
       oc.buffer <- ""      
     end      
 
-let node_std_output  : string -> bool = [%js.raw{|function (s){
+let node_std_output  : string -> bool = [%bs.raw{|function (s){
    return (typeof process !== "undefined") && process.stdout && (process.stdout.write(s), true);
    }
 |}]
@@ -75,11 +75,11 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
     if offset = 0 && len = String.length str then str    
     else Js.String.slice str offset len in
-  if [%js.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
+  if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
     begin     
 
-      ([%js.raw{| process.stdout.write |}] : string -> unit ) str
+      ([%bs.raw{| process.stdout.write |}] : string -> unit ) str
     end        
   else
     begin     

@@ -96,11 +96,11 @@ type titleRow
 
 
 
-external mk_text : text: 'b -> <text : 'b>  = "" [@@js.obj]
-external mk_label : label : 'a -> <label: 'a > = "" [@@js.obj]
-external mk_width : width : 'a -> <width: 'a> = "" [@@js.obj]
-external mk_column : width: int -> unit -> column = "" [@@js.obj]
-external mk_titleRow : title: string -> unit ->  titleRow = "" [@@js.obj]
+external mk_text : text: 'b -> <text : 'b>  = "" [@@bs.obj]
+external mk_label : label : 'a -> <label: 'a > = "" [@@bs.obj]
+external mk_width : width : 'a -> <width: 'a> = "" [@@bs.obj]
+external mk_column : width: int -> unit -> column = "" [@@bs.obj]
+external mk_titleRow : title: string -> unit ->  titleRow = "" [@@bs.obj]
 
 class type grid  = 
   object
@@ -112,10 +112,10 @@ class type grid  =
   end
 
 external set_interval : (unit -> unit) -> float -> unit  = "" 
-    [@@js.call "setInterval"] [@@js.module "@runtime" "Runtime"]
-external set_grid_columns : grid -> column array -> unit = ""  [@@js.call "set"]
-external set_grid_titleRows : grid -> string array -> unit = "" [@@js.call "set"]
-external to_fixed : float -> int -> string = ""[@@js.send "toFixed"]
+    [@@bs.call "setInterval"] [@@bs.module "@runtime" "Runtime"]
+external set_grid_columns : grid -> column array -> unit = ""  [@@bs.call "set"]
+external set_grid_titleRows : grid -> string array -> unit = "" [@@bs.call "set"]
+external to_fixed : float -> int -> string = ""[@@bs.send "toFixed"]
 
 class type button = 
   object
@@ -130,37 +130,37 @@ class type textArea =
       inherit measure
       inherit text 
     end
-external addChild : stackPanel -> #widget -> unit = "x" [@@js.send]
+external addChild : stackPanel -> #widget -> unit = "x" [@@bs.send]
 
 
 external new_HostedWindow : unit -> hostedWindow = "" 
-    [@@js.new "HostedWindow"] [@@js.module "@blp/ui" "BUI"]
+    [@@bs.new "HostedWindow"] [@@bs.module "@blp/ui" "BUI"]
 
 external new_HostedContent : unit -> hostedContent = "" 
-    [@@js.new "HostedContent"] [@@js.module "@blp/ui" "BUI"]
+    [@@bs.new "HostedContent"] [@@bs.module "@blp/ui" "BUI"]
 
 external new_StackPanel : unit -> stackPanel = "" 
-    [@@js.new "StackPanel"] [@@js.module "@ui" "UI"]
+    [@@bs.new "StackPanel"] [@@bs.module "@ui" "UI"]
 
 external new_textArea : unit -> textArea = "" 
-    [@@js.new "TextArea"] [@@js.module "@ui" "UI"]
+    [@@bs.new "TextArea"] [@@bs.module "@ui" "UI"]
 
 external new_button : unit -> button = ""
-    [@@js.new "Button"] [@@js.module "@ui" "UI"]
+    [@@bs.new "Button"] [@@bs.module "@ui" "UI"]
 
 external new_grid : unit -> grid = ""
-    [@@js.new "Grid"] [@@js.module "@ui" "UI"]
+    [@@bs.new "Grid"] [@@bs.module "@ui" "UI"]
 
 (* Note, strictly speaking, it 's not returning a primitive string, it returns
    an object string *)
 external stringify : 'a -> string = ""
-    [@@js.new "String"] 
+    [@@bs.new "String"] 
 
 external random : unit -> float = ""
-    [@@js.call "Math.random"] 
-external array_map : 'a array -> ('a -> 'b) -> 'b array = "" [@@js.call"Array.prototype.map.call"] 
+    [@@bs.call "Math.random"] 
+external array_map : 'a array -> ('a -> 'b) -> 'b array = "" [@@bs.call"Array.prototype.map.call"] 
 type env 
-external mk_bid_ask : bid:float -> ask:float -> env = "" [@@js.obj]  
+external mk_bid_ask : bid:float -> ask:float -> env = "" [@@bs.obj]  
 
 
 type data = { ticker : string ; price : float }

@@ -119,38 +119,38 @@ class type t =
   end
 
 external current_date_as_string : unit -> string = "" 
-  [@@js.call "Date"] [@@js.nullary]
+  [@@bs.call "Date"] [@@bs.nullary]
 (* Note here [Date(0)] is the same as [Date()], 
    but this is not always true
 *)
 
 
 external parse : string -> number = ""
-  [@@js.call "Date.parse"]
+  [@@bs.call "Date.parse"]
 
 external now : unit -> number = ""
-  [@@js.call "Date.now"]
+  [@@bs.call "Date.now"]
 
 external current : unit -> t = "Date"
-  [@@js.new ] [@@js.nullary]
+  [@@bs.new ] [@@bs.nullary]
 external of_string : string -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 
 
 external utc_of_y_m :   
   year:number -> month:number -> unit -> number = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 external utc_of_y_m_d :  
   year:number -> month:number -> day:number ->   unit -> number = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 external utc_of_y_m_d_h :  
   year:number -> month:number -> 
   day:number -> hour:number ->
   unit -> number = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 
 external utc_of_y_m_d_h_m :
@@ -158,7 +158,7 @@ external utc_of_y_m_d_h_m :
   day:number -> hour:number ->
   minute:number -> 
   unit -> number = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 
 external utc_of_y_m_d_h_m_s :
@@ -166,48 +166,48 @@ external utc_of_y_m_d_h_m_s :
   day:number -> hour:number ->
   minute:number -> second:number -> 
   unit -> number = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 external utc_of_y_m_d_h_m_s_m :
   year:number -> month:number -> 
   day:number -> hour:number  -> 
   minute:number  -> second:number  ->
   millisecond:number -> unit -> t = ""
-  [@@js.call "Date.UTC"]
+  [@@bs.call "Date.UTC"]
 
 
 external of_y_m:   year:number -> month:number -> unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 external of_y_m_d:  year:number -> month:number -> day:number ->   unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 external of_y_m_d_h:  
   year:number -> month:number -> 
   day:number -> hour:number ->
   unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 external of_y_m_d_h_m :
   year:number -> month:number -> 
   day:number -> hour:number ->
   minute:number -> 
   unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 external of_y_m_d_h_m_s :
   year:number -> month:number -> 
   day:number -> hour:number ->
   minute:number -> second:number -> 
   unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 external of_y_m_d_h_m_s_m:
   year:number -> month:number -> 
   day:number -> hour:number  -> 
   minute:number  -> second:number  ->
   millisecond:number -> unit -> t = "Date"
-  [@@js.new ]
+  [@@bs.new ]
 
 
 

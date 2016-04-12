@@ -79,17 +79,17 @@ if (x = e){
 exception A of int 
 
 let f  = 
-  try [%js.raw{| function () {throw (new Error ("x"))} ()|}] with
+  try [%bs.raw{| function () {throw (new Error ("x"))} ()|}] with
   | A x -> x 
   | _ -> 2 
 
 let ff  = 
-  try [%js.raw{| function () {throw 3} ()|}] with
+  try [%bs.raw{| function () {throw 3} ()|}] with
   | A x -> x 
   | _ -> 2 
 
 let fff  = 
-  try [%js.raw{| function () {throw 2} ()|}] with
+  try [%bs.raw{| function () {throw 2} ()|}] with
   | A x -> x 
   | _ -> 2 
 

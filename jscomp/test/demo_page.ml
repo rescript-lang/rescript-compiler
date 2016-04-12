@@ -24,8 +24,8 @@ let f = test_curry 32
 (** Create a typed binding for react *)
 type t
 type element
-external document : unit -> t = "" [@@js.val "document"] [@@js.scope "window"]
-external getElementById : t -> string -> element = "" [@@js.send "getElementById"]
+external document : unit -> t = "" [@@bs.val "document"] [@@bs.scope "window"]
+external getElementById : t -> string -> element = "" [@@bs.send "getElementById"]
 
 (** Phantom types *)
 type config
@@ -36,25 +36,25 @@ type component_class
 external config :
       ?display_name:string ->
         render:(unit -> component) -> unit ->
-          config = "" [@@js.obj ] (** make a json object *)
+          config = "" [@@bs.obj ] (** make a json object *)
 external attrs:
         ?alt: string ->
         ?autoPlay: bool ->
-          unit -> attrs = "" [@@js.obj]
+          unit -> attrs = "" [@@bs.obj]
 external str : string -> component = "%identity"
 external h1 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h1"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice] (** splice the last argument *)
+    [@@bs.call "h1"] [@@bs.scope  "DOM"] [@@bs.module "react"] [@@bs.splice] (** splice the last argument *)
 external h2 : ?attrs:attrs -> component array  -> component = ""
-    [@@js.call "h2"] [@@js.scope  "DOM"] [@@js.module "react"] [@@js.splice]
+    [@@bs.call "h2"] [@@bs.scope  "DOM"] [@@bs.module "react"] [@@bs.splice]
 external div : ?attrs:attrs -> component array ->  component = ""
-    [@@js.call "div"] [@@js.scope "DOM"] [@@js.module "react"]  [@@js.splice]
+    [@@bs.call "div"] [@@bs.scope "DOM"] [@@bs.module "react"]  [@@bs.splice]
 external createClass :
       config -> component_class = "createClass"
-        [@@js.call "createClass"]
-        [@@js.module "react"]
+        [@@bs.call "createClass"]
+        [@@bs.module "react"]
 external render : component_class -> element -> unit = ""
-    [@@js.call "render"]
-    [@@js.module "react-dom"]
+    [@@bs.call "render"]
+    [@@bs.module "react-dom"]
 ;;
 (** Do the rendering *)
 render (

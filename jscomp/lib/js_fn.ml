@@ -20,13 +20,13 @@
 
 
 
-(* if we allow a ppx like [%js.uncurry [@n]], we would allow creating this 
+(* if we allow a ppx like [%bs.uncurry [@n]], we would allow creating this 
    external functions dynamically. 
    It can not reduce dependency on [Js_fn] though, since the type depends 
    on it.
    Example: 
    {[
-     let  v = [%js.uncurry 3 f ]
+     let  v = [%bs.uncurry 3 f ]
    ]}
 *)
 

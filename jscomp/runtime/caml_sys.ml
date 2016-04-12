@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 let caml_raise_not_found () = raise Not_found
 
-[%%js.raw{|
+[%%bs.raw{|
 function $$caml_sys_getenv(n) {
     //nodejs env
     if (typeof process !== 'undefined'
@@ -34,10 +34,10 @@ function $$caml_sys_getenv(n) {
 |}]
 
 external caml_sys_getenv : string -> string = "$$caml_sys_getenv"
-  [@@js.call ] [@@js.local]
+  [@@bs.call ] [@@bs.local]
 (* TODO: improve [js_pass_scope] to avoid remove unused n here *)
 
-[%%js.raw{|
+[%%bs.raw{|
 function $$date(){
   return (+new Date())
 };
@@ -45,7 +45,7 @@ function $$date(){
 |}]
 
 external current_date : unit -> float = "$$date"
-  [@@js.call ] [@@js.local]
+  [@@bs.call ] [@@bs.local]
 
 let caml_initial_time = current_date ()  *. 0.001
 

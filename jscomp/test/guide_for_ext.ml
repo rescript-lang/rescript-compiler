@@ -10,7 +10,7 @@ let mk () =
         text : 'b;
         label : 'a
       >  = ""
-        [@@js.obj]
+        [@@bs.obj]
   end in
 
   N.mk ~text:32 ~label:"hel"

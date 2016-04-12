@@ -1,6 +1,6 @@
 # 1 "number_lexer.mll"
  
-external log : string -> unit = "caml_alloc_dummy" [@@js.call "console.log"]
+external log : string -> unit = "caml_alloc_dummy" [@@bs.call "console.log"]
 let l = if Sys.is_js then log else output_string stdout
 
 
