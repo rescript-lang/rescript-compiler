@@ -149,3 +149,18 @@ let tail_from s x =
   let len = String.length s  in 
   if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
   else String.sub s x (len - x)
+
+
+(**
+   {[ 
+     digits_of_str "11_js" 2 == 11     
+   ]}
+*)
+let digits_of_str s ~offset x = 
+  let rec aux i acc s x  = 
+    if i >= x then acc 
+    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  aux 0 0 s x 
+
+
+

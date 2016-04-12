@@ -674,9 +674,22 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim (Pccall {prim_name = ("00_js_fn_mk" | "01_js_fn_mk" | "02_js_fn_mk"as name )}, [fn])
+    | Lprim (Pccall {prim_name = 
+                       (
+                         "js_fn_mk_00" 
+                       | "js_fn_mk_01"
+                       | "js_fn_mk_02"
+                       | "js_fn_mk_03"
+                       | "js_fn_mk_04"
+                       | "js_fn_mk_05"
+                       | "js_fn_mk_06"
+                       | "js_fn_mk_07"
+                       | "js_fn_mk_08"
+                       | "js_fn_mk_09"
+                         as name )
+                    }, [fn])
       -> 
-      let arity = int_of_string @@ String.sub name 0 2  in
+      let arity = Ext_string.digits_of_str ~offset:9 (* String.length "js_fn_mk_" *) name 2   in
       begin match fn with
       | Lambda.Lfunction(kind,args, body) 
         ->
