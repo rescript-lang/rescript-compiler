@@ -88,6 +88,10 @@ demo.cmo :
 demo.cmx :
 demo_page.cmo :
 demo_page.cmx :
+digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
+    ext_array.cmo ../stdlib/digest.cmi ../stdlib/array.cmi
+digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
+    ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
 empty_obj.cmo :
 empty_obj.cmx :
 epsilon_test.cmo : mt.cmi
@@ -288,6 +292,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
+string_get_set_test.cmo :
+string_get_set_test.cmx :
 string_literal_print_test.cmo : mt.cmi
 string_literal_print_test.cmx : mt.cmx
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
@@ -590,6 +596,10 @@ demo.cmo :
 demo.cmj :
 demo_page.cmo :
 demo_page.cmj :
+digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
+    ext_array.cmo ../stdlib/digest.cmi ../stdlib/array.cmi
+digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
+    ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
 empty_obj.cmo :
 empty_obj.cmj :
 epsilon_test.cmo : mt.cmi
@@ -790,6 +800,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
+string_get_set_test.cmo :
+string_get_set_test.cmj :
 string_literal_print_test.cmo : mt.cmi
 string_literal_print_test.cmj : mt.cmj
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \

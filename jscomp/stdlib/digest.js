@@ -5,11 +5,12 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Pervasives              = require("./pervasives");
 var Char                    = require("./char");
 var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_md5                = require("../runtime/caml_md5");
 var $$String                = require("./string");
 var Caml_string             = require("../runtime/caml_string");
 
 function string(str) {
-  return Caml_primitive.caml_md5_string(str, 0, str.length);
+  return Caml_md5.caml_md5_string(str, 0, str.length);
 }
 
 function bytes(b) {
@@ -24,7 +25,7 @@ function substring(str, ofs, len) {
         ];
   }
   else {
-    return Caml_primitive.caml_md5_string(str, ofs, len);
+    return Caml_md5.caml_md5_string(str, ofs, len);
   }
 }
 
