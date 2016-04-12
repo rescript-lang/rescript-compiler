@@ -31,7 +31,7 @@
 
 (** TODO: document supported attributes
     Attributes starting with `js` are reserved
-    examples: "js.splice"
+    examples: "bs.splice"
  *)
 
 val translate : 

@@ -1,6 +1,6 @@
 
 
-external f : int -> int = "xx" [@@js.call ]
+external f : int -> int = "xx" [@@bs.call ]
 
 
 let u () = f 3 
@@ -10,18 +10,18 @@ let a, b ,c, d = Js.(true_, false_, nil, undef)
 
 module Textarea = struct
   type t
-  external create : unit -> t  = "TextArea" [@@ js.new ]
+  external create : unit -> t  = "TextArea" [@@ bs.new ]
   (* TODO: *)
-  external set_minHeight : t -> int -> unit = "minHeight" [@@js.set ]
-  external get_minHeight : t ->  int = "minHeight" [@@js.get]
-  external draw : t -> string  -> unit = "string" [@@js.send ]
+  external set_minHeight : t -> int -> unit = "minHeight" [@@bs.set ]
+  external get_minHeight : t ->  int = "minHeight" [@@bs.get]
+  external draw : t -> string  -> unit = "string" [@@bs.send ]
 
 end
 module Int32Array = struct
   type t 
-  external create : int -> t = "Int32Array" [@@js.new]
-  external get : t -> int -> int = "" [@@js.get_index]
-  external set : t -> int -> int -> unit = "" [@@js.set_index]
+  external create : int -> t = "Int32Array" [@@bs.new]
+  external get : t -> int -> int = "" [@@bs.get_index]
+  external set : t -> int -> int -> unit = "" [@@bs.set_index]
 end
 
 let v () =

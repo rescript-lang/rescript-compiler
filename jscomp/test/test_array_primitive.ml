@@ -1,4 +1,4 @@
-external new_uninitialized_array : int -> 'a array = "" [@@js.new "Array"]
+external new_uninitialized_array : int -> 'a array = "" [@@bs.new "Array"]
 
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = new_uninitialized_array len  in

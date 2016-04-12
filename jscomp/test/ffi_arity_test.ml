@@ -1,10 +1,10 @@
 
 
-external map : 'a array -> ('a * 'b) Js_fn.t  -> 'b array = "map" [@@js.send]
-external mapi : 'a array -> ('a * int * 'b) Js_fn.t  -> 'b array = "map" [@@js.send]
+external map : 'a array -> ('a * 'b) Js_fn.t  -> 'b array = "map" [@@bs.send]
+external mapi : 'a array -> ('a * int * 'b) Js_fn.t  -> 'b array = "map" [@@bs.send]
 
-external parseInt : string -> int = "parseInt" [@@js.call]
-external parseInt_radix : string -> int -> int = "parseInt" [@@js.call]
+external parseInt : string -> int = "parseInt" [@@bs.call]
+external parseInt_radix : string -> int -> int = "parseInt" [@@bs.call]
 
 let f v = 
   if v mod 2 = 0 then 

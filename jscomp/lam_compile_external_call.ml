@@ -38,11 +38,11 @@ let handle_external module_name =
     match module_name with 
     | Some module_name -> 
       (* 
-         [@@js.module "react"]
-         [@@js.module "react"]
+         [@@bs.module "react"]
+         [@@bs.module "react"]
          ---
-         [@@js.module "@" "react"]
-         [@@js.module "@" "react"]
+         [@@bs.module "@" "react"]
+         [@@bs.module "@" "react"]
          They should have the same module name 
 
          TODO: we should emit an warning if we bind 
@@ -118,14 +118,14 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
          ); 
          (finish_loc := Some x.loc);
          match x.txt with  (* TODO: Check duplicate attributes *)
-         | "js.val"
+         | "bs.val"
            (* can be generalized into 
               {[
-                [@@js.value]
+                [@@bs.value]
               ]}
               and combined with 
               {[
-                [@@js.value] [@@js.module]
+                [@@bs.value] [@@bs.module]
               ]}
            *)
            -> 
@@ -136,39 +136,39 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
                js_global := `Value _prim.prim_name
                 (* we can report error here ... *)
            end
-         |"js.splice"
+         |"bs.splice"
            -> 
            js_splice := true
 
-         |"js.send" 
+         |"bs.send" 
            ->
            begin match is_single_string pay_load with 
              | Some name -> js_send := `Value name
              | None -> js_send := `Value _prim.prim_name
            end
-         | "js.set"
+         | "bs.set"
            ->
            begin match is_single_string pay_load with
              | Some name -> js_set := `Value name
              | None -> js_set := `Value _prim.prim_name
            end
-         | "js.get"
+         | "bs.get"
            ->
            begin match is_single_string pay_load with
              | Some name -> js_get := `Value name
              | None -> js_get := `Value _prim.prim_name
            end
 
-         | "js.call"
+         | "bs.call"
            (*TODO: check duplicate attributes, at least we should give a warning
-             [@@js.call "xx"] [@@js.call]
+             [@@bs.call "xx"] [@@bs.call]
            *)
            ->
            begin match is_single_string pay_load with 
              | Some name -> call_name :=  Some (x.loc, name)
              | None -> call_name := Some(x.loc, _prim.prim_name)
            end
-         | "js.module" -> 
+         | "bs.module" -> 
            begin match is_string_or_strings pay_load with 
              | `Single name -> external_module_name:= Some (Single name)
              | `Some [a;b] -> external_module_name := Some (Bind (a,b))
@@ -176,26 +176,26 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
              | `None -> () 
            end
          (* -- no scope -- could have 
-            [@@js.module "./react.js"]
-            [@@js.module "react-dom" "React"]
+            [@@bs.module "./react.js"]
+            [@@bs.module "react-dom" "React"]
          *)
-         | "js.scope"
+         | "bs.scope"
            -> 
            begin match is_string_or_strings pay_load with 
              | `None -> ()
              | `Single name -> qualifiers := [name]
              | `Some vs -> qualifiers := List.rev vs 
            end
-         | "js.new" -> 
+         | "bs.new" -> 
            begin match is_single_string pay_load with 
              | Some x -> js_new := Some x 
              | None -> js_new := Some _prim.prim_name
            end
-         | "js.set_index" 
+         | "bs.set_index" 
            -> js_set_index := true
-         | "js.get_index"
+         | "bs.get_index"
            -> js_get_index := true
-         |"js.obj"
+         |"bs.obj"
            -> 
            is_obj := true
          | _ ->  () (* ignore *)
@@ -238,7 +238,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
        -- check whether splice or not for the last element
      *)
     (*
-      special treatment to None for [js.call] as well
+      special treatment to None for [bs.call] as well
       None --> null or undefined 
       Some -> original value
       unit -->
@@ -403,7 +403,7 @@ let translate
               E.external_var_dot id name fn
 
             | None -> 
-              (** TODO: check, no [@@js.module], 
+              (** TODO: check, no [@@bs.module], 
                   assume it's global *)
               E.js_var fn
 
@@ -431,7 +431,7 @@ let translate
 
       (* TODO #11
          1. check args -- error checking 
-         2. support [@@js.scope "window"]
+         2. support [@@bs.scope "window"]
          we need know whether we should call [add_js_module] or not 
       *)
       begin match name, handle_external external_module_name with 

@@ -4,11 +4,11 @@ external (~~) : 'a -> 'b = "%identity"
 (** It's okay to do this in javascript, you will never get segfault*)
 
 type document
-external doc : unit -> document = "" [@@js.call "document"]
-external alert : string -> unit = "" [@@js.call "alert"]
+external doc : unit -> document = "" [@@bs.call "document"]
+external alert : string -> unit = "" [@@bs.call "alert"]
 
 type v  = int -> int
-external f : string -> v = "x" [@@js.call "ff"]
+external f : string -> v = "x" [@@bs.call "ff"]
 
 
 let xx = doc ()

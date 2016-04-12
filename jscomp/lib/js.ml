@@ -44,7 +44,7 @@ external to_opt : 'a -> 'a opt  = "%identity"
 
 external is_nil : 'a opt -> bool = "js_is_nil"
 
-external nil : 'a opt = "null" [@@js.val]
+external nil : 'a opt = "null" [@@bs.val]
 
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
@@ -53,14 +53,14 @@ type + 'a def
 external from_def : 'a def -> 'a option = "js_from_def"
 external to_def : 'a -> 'a def = "%identity"
 external is_undef : 'a def -> bool =  "js_is_undef"
-external undef : 'a def = "undefined" [@@js.val]
+external undef : 'a def = "undefined" [@@bs.val]
 
 type boolean 
 
 (* let true_ : boolean = unsafe_js_expr "true" *)
-external true_ : boolean = "true" [@@js.val]
+external true_ : boolean = "true" [@@bs.val]
 
-external false_ : boolean = "false" [@@js.val]
+external false_ : boolean = "false" [@@bs.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
 external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
@@ -75,21 +75,21 @@ external string_of_char : char -> string = "js_string_of_char"
 *)
 module String = struct 
   external of_char : char -> string = "String.fromCharCode" 
-      [@@js.call]
-  external toUpperCase : string -> string = "toUpperCase" [@@js.send]
-  external of_int : int -> base:int -> string = "toString" [@@js.send]
-  external of_nativeint : nativeint -> base:int -> string = "toString" [@@js.send]
+      [@@bs.call]
+  external toUpperCase : string -> string = "toUpperCase" [@@bs.send]
+  external of_int : int -> base:int -> string = "toString" [@@bs.send]
+  external of_nativeint : nativeint -> base:int -> string = "toString" [@@bs.send]
   external slice : string -> int -> int -> string = "slice" 
-      [@@js.send]
+      [@@bs.send]
   external slice_rest : string -> int -> string = "slice" 
-      [@@js.send]
+      [@@bs.send]
   external index_of : string -> string -> int = "indexOf"
-      [@@js.send]
+      [@@bs.send]
   external append : string -> string -> string = "js_string_append"
   external of_small_int_array : int array -> string = "js_string_of_small_int_array"
   external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
   external lastIndexOf : string -> string -> int = "lastIndexOf"
-      [@@js.send]    
+      [@@bs.send]    
 end
 
 module Array = struct 
@@ -105,31 +105,31 @@ module Bytes = struct
 end
 module Float = struct 
   external nan : float = "NaN"
-    [@@js.val ] 
+    [@@bs.val ] 
   
   external to_fixed : float -> int -> string = "toFixed" 
-    [@@js.send]
+    [@@bs.send]
 
   external is_finite : float -> bool = "isFinite"
-    [@@js.call ]
+    [@@bs.call ]
 
   external is_nan : float -> bool = "isNaN"
-    [@@js.call ] 
+    [@@bs.call ] 
 
   external exp : float -> float = "Math.exp"
-    [@@js.call ]
+    [@@bs.call ]
 
   external log : float -> float = "Math.log"
-    [@@js.call ]
+    [@@bs.call ]
   
   external to_exponential : float -> prec:int ->  string = "toExponential"
-    [@@js.send]
+    [@@bs.send]
 
-  external log2 : float = "Math.LN2" [@@ js.val ]  
+  external log2 : float = "Math.LN2" [@@ bs.val ]  
   external max : float -> float -> float = "Math.max" 
-    [@@js.call]
+    [@@bs.call]
   external random : unit -> float = "Math.random"
-    [@@js.call ]
+    [@@bs.call ]
 
 end
 

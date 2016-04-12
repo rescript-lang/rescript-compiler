@@ -30,7 +30,7 @@ let caml_int32_bswap (x : nativeint) =
         (logor (shift_right_logical (logand x  0x00FF0000n)  8) 
       (shift_right_logical (logand x  0xFF000000n)  24)))
 
-[%%js.raw{|
+[%%bs.raw{|
 
 /**
  * Maximum value of #goog.string.hashCode, exclusive. 2^32.
@@ -69,7 +69,7 @@ function $$caml_hash(count, limit, seed, o) {
 
 
 external caml_hash : int -> int -> int -> 'a -> int = "$$caml_hash"
-    [@@js.call ] [@@js.local]
+    [@@bs.call ] [@@bs.local]
 
 
 let caml_nativeint_bswap = caml_int32_bswap
@@ -85,7 +85,7 @@ let caml_md5_string : string -> int -> int -> t = function _ ->
   function _ -> 
     raise @@ Failure "caml_md5_string unimplemented"
 
-let imul : int32 -> int32 -> int32 = [%js.raw{| Math.imul || function (x,y) {
+let imul : int32 -> int32 -> int32 = [%bs.raw{| Math.imul || function (x,y) {
   y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; 
 }
 |}]

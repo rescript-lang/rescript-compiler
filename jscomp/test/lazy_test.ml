@@ -52,6 +52,6 @@ let forward_test = (lazy  (let u = ref 3 in incr u; !u))
 "lazy_from_val", (fun _ -> Eq(Lazy.force (Lazy.from_val 3) , 3));
 "lazy_from_val2", (fun _ -> Eq((Lazy.force @@ Lazy.force (Lazy.from_val (lazy  3))), 3));
 "lazy_from_val3",
-(fun _ -> Eq(( [%js.debug]; Lazy.force @@ Lazy.force (Lazy.from_val forward_test)), 4))
+(fun _ -> Eq(( [%bs.debug]; Lazy.force @@ Lazy.force (Lazy.from_val forward_test)), 4))
 ]
 

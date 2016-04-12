@@ -25,7 +25,7 @@
 (* @returns {any[]} *)
 
 let fail () = raise (Failure "lexing: empty token")
-[%%js.raw{| 
+[%%bs.raw{| 
 function caml_lex_array(s) {
     var l = s.length / 2;
     var a = new Array(l);
@@ -308,8 +308,8 @@ function $$caml_new_lex_engine(tbl, start_state, lexbuf) {
 |}]
 
 external caml_lex_engine : Lexing.lex_tables -> int -> Lexing.lexbuf -> int = ""
-[@@js.call "$$caml_lex_engine"] [@@js.local]
+[@@bs.call "$$caml_lex_engine"] [@@bs.local]
 
 external caml_new_lex_engine : Lexing.lex_tables -> int -> Lexing.lexbuf -> int
   = ""
-[@@js.call "$$caml_new_lex_engine"] [@@js.local]
+[@@bs.call "$$caml_new_lex_engine"] [@@bs.local]

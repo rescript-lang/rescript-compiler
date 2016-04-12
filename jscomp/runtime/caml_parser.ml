@@ -18,7 +18,7 @@
 
 (* Author: Hongbo Zhang  *)
 
-[%%js.raw{|
+[%%bs.raw{|
 /**
  * caml_lex_array("abcd")
  * [25185, 25699]
@@ -358,9 +358,9 @@ function $$caml_set_parser_trace(v) {
 external caml_parse_engine :     
   Parsing.parse_tables -> Parsing.parser_env -> 
   (* Parsing.parser_input *) Obj.t -> Obj.t -> (* parser_output *) Obj.t = ""
-[@@js.call "$$caml_parse_engine"][@@js.local]
+[@@bs.call "$$caml_parse_engine"][@@bs.local]
 
 
 external caml_set_parser_trace: bool -> bool
     = ""
-[@@js.call "$$caml_set_parser_trace"] [@@js.local]
+[@@bs.call "$$caml_set_parser_trace"] [@@bs.local]

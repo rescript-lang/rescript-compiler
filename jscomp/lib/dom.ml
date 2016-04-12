@@ -24,7 +24,7 @@ class type ['node] nodeList = object
   method index__ : int -> 'node  opt
 
 
-  method length : int [@@js.r]
+  method length : int [@@bs.r]
 
 end
 
@@ -291,5 +291,5 @@ class type ['element] document = object
 
   method adoptNode : element  -> 'element  
   method adoptNode__1 : element  -> 'element  
-end [@@js.class]
+end [@@bs.class]
 

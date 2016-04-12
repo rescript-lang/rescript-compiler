@@ -1,6 +1,6 @@
 module StackPanel = struct
   type t
-  external create : unit -> t  = "" [@@ js.new ]
+  external create : unit -> t  = "" [@@ bs.new ]
   (** what would be like 
       {[ 
       type orientation = [`vertical|`horizontal]
@@ -14,18 +14,18 @@ module StackPanel = struct
       }
       ]}
    *)
-  external set_orientation : t -> [`vertical|`horizontal] = "" [@@js.set]
-  external get_orientation : t -> [`vertical|hor] = "" [@@js.get]
+  external set_orientation : t -> [`vertical|`horizontal] = "" [@@bs.set]
+  external get_orientation : t -> [`vertical|hor] = "" [@@bs.get]
 
-  external set_minHeight : t -> int -> unit = "" [@@js.set]    
-  external get_minHeight : t ->  int = "" [@@js.get]
+  external set_minHeight : t -> int -> unit = "" [@@bs.set]    
+  external get_minHeight : t ->  int = "" [@@bs.get]
 
-  external addChild : t -> widget -> unit = "" [@@js.send]    
+  external addChild : t -> widget -> unit = "" [@@bs.send]    
   (** content *)    
       (* type _ event=  *)
       (*   | Click of (e ->  .. ) event  *)
       (*   | *)
-  external on : t -> string -> (unit -> unit ) -> unit = "" [@@js.send]       
+  external on : t -> string -> (unit -> unit ) -> unit = "" [@@bs.send]       
 end
 
 class type stackpanel = object
@@ -33,14 +33,14 @@ class type stackpanel = object
 end
 module Textarea = struct
   type t
-  external create : unit -> t  = "" [@@ js.new ]
-  external set_orientation : t -> [`vertical|`horizontal] = "" [@@js.set]
-  external get_orientation : t -> [`vertical|hor] = "" [@@js.get]
+  external create : unit -> t  = "" [@@ bs.new ]
+  external set_orientation : t -> [`vertical|`horizontal] = "" [@@bs.set]
+  external get_orientation : t -> [`vertical|hor] = "" [@@bs.get]
 
-  external set_minHeight : t -> int -> unit = "" [@@js.set]    
-  external get_minHeight : t ->  int = "" [@@js.get]
+  external set_minHeight : t -> int -> unit = "" [@@bs.set]    
+  external get_minHeight : t ->  int = "" [@@bs.get]
 
-  external addChild : t -> widget -> unit = "" [@@js.send]    
+  external addChild : t -> widget -> unit = "" [@@bs.send]    
 end
 
 

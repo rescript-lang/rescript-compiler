@@ -1037,7 +1037,8 @@ let query (prim : Lam_compile_env.primitive_description)
     | _ -> 
 
       let comment = "Missing primitve" in       
-      Ext_log.warn __LOC__ "%s" (Printf.sprintf  "%s: %s\n" comment prim.prim_name) ;
+      Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim.prim_name 
+        (Lam_current_unit.get_file ()) ;
       (*we dont use [throw] here, since [throw] is an statement  *)        
       E.dump ~comment Error [( E.str ~comment ~pure:false  prim.prim_name)];
 

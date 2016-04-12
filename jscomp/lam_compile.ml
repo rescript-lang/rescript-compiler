@@ -726,7 +726,7 @@ and
     | Lprim (Pccall{prim_name = "js_debugger"; _}, 
              _) 
       -> 
-      (* [%js.debugger] guarantees that the expression does not matter 
+      (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer
          *)
       Js_output.handle_block_return st should_return lam  [S.debugger] E.unit 

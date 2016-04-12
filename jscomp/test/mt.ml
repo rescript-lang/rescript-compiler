@@ -1,24 +1,24 @@
 
 
 
-external describe : string -> ((unit -> unit)[@js.nullary]) -> unit = "describe"
-    [@@js.call]
+external describe : string -> ((unit -> unit)[@bs.nullary]) -> unit = "describe"
+    [@@bs.call]
 
 external it : string -> (unit -> unit) -> unit = "it" 
-    [@@js.call ]
+    [@@bs.call ]
 
 external eq : 'a -> 'a -> unit = "deepEqual"
-    [@@js.call ]
-    [@@js.module "assert"]
+    [@@bs.call ]
+    [@@bs.module "assert"]
 
 external neq : 'a -> 'a -> unit = "notDeepEqual"
-    [@@js.call ]
-    [@@js.module "assert"]
+    [@@bs.call ]
+    [@@bs.module "assert"]
 
 
 
-external dump : 'a array -> unit = "console.log" [@@js.call ] [@@js.splice]
-external throws : (unit -> unit) -> unit = "throws" [@@js.call] [@@js.module "assert"]
+external dump : 'a array -> unit = "console.log" [@@bs.call ] [@@bs.splice]
+external throws : (unit -> unit) -> unit = "throws" [@@bs.call] [@@bs.module "assert"]
 (** There is a problem --
     it does not return [unit ]
  *)

@@ -89,7 +89,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
     expr = (fun mapper e -> 
         match e.pexp_desc with 
         | Pexp_extension (
-            {txt = "js.raw"; loc} ,
+            {txt = "bs.raw"; loc} ,
             PStr 
               ( [{ pstr_desc = Pstr_eval ({ 
                    pexp_desc = Pexp_constant (Const_string (_, _)) ;
@@ -98,7 +98,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
           -> 
 
               handle_raw loc e attrs
-        | Pexp_extension( {txt = "js.raw"; loc}, PStr 
+        | Pexp_extension( {txt = "bs.raw"; loc}, PStr 
                 ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
                       pexp_desc = 
                         Pexp_constraint (
@@ -106,17 +106,17 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                           as e,
                              ty)
                       ; pexp_attributes = attrs} , _);  }]))
-        | Pexp_constraint({pexp_desc = Pexp_extension( {txt = "js.raw"; loc}, PStr 
+        | Pexp_constraint({pexp_desc = Pexp_extension( {txt = "bs.raw"; loc}, PStr 
                 ( [{ pstr_desc = Pstr_eval ({ 
                       pexp_desc = 
                         Pexp_constant (Const_string (_, _)) 
                       ; pexp_attributes = attrs} as e , _);  }]))}, ty)            
               -> handle_raw ~ty loc e attrs
-        | Pexp_extension({txt = "js.raw"; loc}, (PTyp _ | PPat _ | PStr _))
+        | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
-              Location.raise_errorf ~loc "js.raw can only be applied to a string"
+              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
-        | Pexp_extension ({txt = "js.debug"; loc} , payload)
+        | Pexp_extension ({txt = "bs.debug"; loc} , payload)
           ->
           begin
             match payload with
@@ -137,13 +137,13 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             | Parsetree.PPat (_,_)
             | Parsetree.PStr _
               ->
-              Location.raise_errorf ~loc "js.raw can only be applied to a string"
+              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
           end
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     structure_item = (fun mapper (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
-        | Pstr_extension ( ({txt = "js.raw"; loc}, payload), _attrs) 
+        | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
             begin match payload with 
               | Parsetree.PStr 
@@ -166,7 +166,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               | Parsetree.PPat (_,_) 
               | Parsetree.PStr _ 
                 -> 
-                Location.raise_errorf ~loc "js.raw can only be applied to a string"
+                Location.raise_errorf ~loc "bs.raw can only be applied to a string"
             end
         | _ -> Ast_mapper.default_mapper.structure_item mapper str 
         end

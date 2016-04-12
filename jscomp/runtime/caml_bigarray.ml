@@ -89,7 +89,7 @@ let index_offset_fortran
     !offs     
   end
 
-[%%js.raw{|
+[%%bs.raw{|
 
 function $$bigarray_compare(b, total, layout, n_dims, kind, nth_dim, data, data2) {
     if (layout != b.layout)
@@ -612,83 +612,83 @@ open Bigarray
 external caml_ba_create : ('a, 'b) kind -> 'c layout -> int array -> 
   ('a, 'b, 'c) Genarray.t
 = ""
-[@@js.call "$$caml_ba_create"] [@@js.local]
+[@@bs.call "$$caml_ba_create"] [@@bs.local]
 
 external caml_ba_get_generic: ('a, 'b, 'c) Genarray. t -> int array -> 'a
      = ""
-[@@js.call "$$caml_ba_get_generic"] [@@js.local]
+[@@bs.call "$$caml_ba_get_generic"] [@@bs.local]
 
 external caml_ba_set_generic: ('a, 'b, 'c) Genarray.t -> int array -> 'a -> unit
      = ""
-[@@js.call "$$caml_ba_set_generic"] [@@js.local]
+[@@bs.call "$$caml_ba_set_generic"] [@@bs.local]
 
 external caml_ba_num_dims: ('a, 'b, 'c) Genarray.t -> int = ""
-[@@js.call "$$caml_ba_num_dims"] [@@js.local]
+[@@bs.call "$$caml_ba_num_dims"] [@@bs.local]
 
 external caml_ba_dim: ('a, 'b, 'c) Genarray.t -> int -> int = ""
-[@@js.call "$$caml_ba_dim"] [@@js.local]
+[@@bs.call "$$caml_ba_dim"] [@@bs.local]
 
 external caml_ba_kind: ('a, 'b, 'c) Genarray.t -> ('a, 'b) kind = ""
-[@@js.call "$$caml_ba_kind"] [@@js.local]
+[@@bs.call "$$caml_ba_kind"] [@@bs.local]
 
 external caml_ba_layout: ('a, 'b, 'c) Genarray.t -> 'c layout = ""
-[@@js.call "$$caml_ba_layout"] [@@js.local]
+[@@bs.call "$$caml_ba_layout"] [@@bs.local]
 
 external caml_ba_sub: 
   ('a, 'b, c_layout) Genarray.t -> int -> int -> ('a, 'b, c_layout) Genarray.t
      = ""
-[@@js.call "$$caml_ba_sub"] [@@js.local] (* polymorphic*)
+[@@bs.call "$$caml_ba_sub"] [@@bs.local] (* polymorphic*)
 
 external caml_ba_slice: 
   ('a, 'b, c_layout) Genarray.t -> int array ->
   ('a, 'b, c_layout) Genarray.t
      = ""
-[@@js.call "$$caml_ba_slice"] [@@js.local]
+[@@bs.call "$$caml_ba_slice"] [@@bs.local]
 
 external caml_ba_blit: 
   ('a, 'b, 'c) Genarray.t -> ('a, 'b, 'c) Genarray.t -> unit
      = ""
-[@@js.call "$$caml_ba_blit"] [@@js.local]
+[@@bs.call "$$caml_ba_blit"] [@@bs.local]
 
 external caml_ba_fill: ('a, 'b, 'c) Genarray.t -> 'a -> unit = ""
-[@@js.call "$$caml_ba_fill"] [@@js.local]
+[@@bs.call "$$caml_ba_fill"] [@@bs.local]
 
 external caml_ba_reshape:
    ('a, 'b, 'c) Genarray.t -> int array -> ('a, 'b, 'c) Genarray.t
    = ""
-[@@js.call "$$caml_ba_reshape"] [@@js.local]
+[@@bs.call "$$caml_ba_reshape"] [@@bs.local]
 
 
 external caml_ba_get_1 : ('a, 'b, 'c) Genarray.t -> int -> 'a = ""
-[@@js.call "$$caml_ba_get_1"] [@@js.local]
+[@@bs.call "$$caml_ba_get_1"] [@@bs.local]
 
 external caml_ba_set_1: ('a, 'b, 'c) Genarray.t -> int -> 'a -> unit
      = ""
-[@@js.call "$$caml_ba_set_1"] [@@js.local]
+[@@bs.call "$$caml_ba_set_1"] [@@bs.local]
 
 external caml_ba_set_2: ('a, 'b, 'c) Genarray.t -> int -> int -> 'a -> unit = ""
-[@@js.call "$$caml_ba_set_2"] [@@js.local]
+[@@bs.call "$$caml_ba_set_2"] [@@bs.local]
 
 external caml_ba_get_2 : ('a, 'b, 'c) Genarray.t -> int -> int -> 'a
      = ""
-[@@js.call "$$caml_ba_get_2"] [@@js.local]
+[@@bs.call "$$caml_ba_get_2"] [@@bs.local]
 
 external caml_ba_dim_1: ('a, 'b, 'c) Genarray.t -> int = ""
-[@@js.call "$$caml_ba_dim_1"] [@@js.local]
+[@@bs.call "$$caml_ba_dim_1"] [@@bs.local]
 
 external caml_ba_dim_2: ('a, 'b, 'c) Genarray.t -> int = ""
-[@@js.call "$$caml_ba_dim_2"] [@@js.local]
+[@@bs.call "$$caml_ba_dim_2"] [@@bs.local]
 
 external caml_ba_dim_3: ('a, 'b, 'c) Genarray.t -> int = ""
-[@@js.call "$$caml_ba_dim_3"] [@@js.local]
+[@@bs.call "$$caml_ba_dim_3"] [@@bs.local]
 
 external caml_ba_get_3 : ('a, 'b, 'c) Genarray.t -> int -> int -> int -> 'a
      = ""
-[@@js.call "$$caml_ba_get_3"] [@@js.local]
+[@@bs.call "$$caml_ba_get_3"] [@@bs.local]
 
 external caml_ba_set_3: ('a, 'b, 'c) Genarray.t -> int -> int -> int -> 'a -> unit
      = "$$caml_ba_set_3"
-[@@js.call "$$caml_ba_set_3"] [@@js.local]
+[@@bs.call "$$caml_ba_set_3"] [@@bs.local]
 
 let caml_ba_map_file_bytecode :  
   Unix.file_descr -> ('a, 'b) Bigarray.kind -> 
