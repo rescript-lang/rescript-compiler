@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/08-13:44"]
+[@@@ocaml.doc "04/12-11:53"]
 include
   struct
     module Literals :
@@ -484,17 +484,32 @@ include
         type arity =
           | Full
           | NA
+        type call_info =
+          | Call_ml
+          | Call_builtin_runtime
+          | Call_na
         type t = {
+          call_info: call_info;
           arity: arity;}
         val dummy : t
+        val builtin_runtime_call : t
+        val ml_full_call : t
       end =
       struct
         type arity =
           | Full
           | NA
+        type call_info =
+          | Call_ml
+          | Call_builtin_runtime
+          | Call_na
         type t = {
+          call_info: call_info;
           arity: arity;}
-        let dummy = { arity = NA }
+        let dummy = { arity = NA; call_info = Call_na }
+        let builtin_runtime_call =
+          { arity = Full; call_info = Call_builtin_runtime }
+        let ml_full_call = { arity = Full; call_info = Call_ml }
       end 
     module J =
       struct
@@ -1461,6 +1476,7 @@ include
         val find : ?start:int -> sub:string -> string -> int
         val rfind : sub:string -> string -> int
         val tail_from : string -> int -> string
+        val digits_of_str : string -> offset:int -> int -> int
       end =
       struct
         let split_by ?(keep_empty= false)  is_delim str =
@@ -1569,6 +1585,15 @@ include
             invalid_arg
               ("Ext_string.tail_from " ^ (s ^ (" : " ^ (string_of_int x))))
           else String.sub s x (len - x)
+        let digits_of_str s ~offset  x =
+          let rec aux i acc s x =
+            if i >= x
+            then acc
+            else
+              aux (i + 1) (((10 * acc) + (Char.code (s.[offset + i]))) - 48)
+                s x in
+          aux 0 0 s x[@@ocaml.doc
+                       "\n   {[ \n     digits_of_str \"11_js\" 2 == 11     \n   ]}\n"]
       end 
     module Js_config :
       sig
@@ -1600,6 +1625,7 @@ include
         val bigarray : string
         val unix : string
         val int64 : string
+        val md5 : string
       end =
       struct
         type env =
@@ -1718,6 +1744,7 @@ include
         let bigarray = "Caml_bigarray"
         let unix = "Caml_unix"
         let int64 = "Caml_int64"
+        let md5 = "Caml_md5"
       end 
     module Ext_ident :
       sig
@@ -2063,6 +2090,7 @@ include
           int ->
             Lambda.apply_info ->
               Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+        val default_apply_info : Lambda.apply_info
       end =
       struct
         let string_of_lambda = Format.asprintf "%a" Printlambda.lambda
@@ -2249,8 +2277,11 @@ include
           match lam with | Lfunction _ -> true | _ -> false
         let not_function (lam : Lambda.lambda) =
           match lam with | Lfunction _ -> false | _ -> true
+        let lapply (fn : Lambda.lambda) args info =
+          Lambda.Lapply (fn, args, info)
         let eta_conversion n info fn args =
-          let extra_args = Ext_list.init n (fun _  -> Ident.create "param") in
+          let extra_args =
+            Ext_list.init n (fun _  -> Ident.create Literals.param) in
           let extra_lambdas = List.map (fun x  -> Lambda.Lvar x) extra_args in
           match List.fold_right
                   (fun lam  ->
@@ -2271,13 +2302,13 @@ include
               let rest: Lambda.lambda =
                 Lfunction
                   (Curried, extra_args,
-                    (Lapply
-                       (fn, (args @ extra_lambdas),
-                         { info with apply_status = Full }))) in
+                    (lapply fn (args @ extra_lambdas) info)) in
               List.fold_left
                 (fun lam  -> fun (id,x)  -> Lambda.Llet (Strict, id, x, lam))
                 rest bindings
           | (_,_) -> assert false
+        let default_apply_info: Lambda.apply_info =
+          { apply_status = NA; apply_loc = Location.none }
       end 
     module Js_number :
       sig
@@ -3220,8 +3251,7 @@ include
         val string_comp : Js_op.binop -> binary_op
         val float_comp : Lambda.comparison -> binary_op
         val not : t -> t
-        val call :
-          ?comment:string -> ?info:Js_call_info.t -> t -> t list -> t
+        val call : ?comment:string -> info:Js_call_info.t -> t -> t list -> t
         val flat_call : binary_op
         val dump : ?comment:string -> Js_op.level -> t list -> t
         val anything_to_string : unary_op
@@ -3490,14 +3520,12 @@ include
                  expression_desc = (Access (e0, (int ?comment e1)));
                  comment = None
                } : t)
-        let call ?comment  ?info  e0 args =
-          (let info =
-             match info with | None  -> Js_call_info.dummy | Some x -> x in
-           { expression_desc = (Call (e0, args, info)); comment } : t)
+        let call ?comment  ~info  e0 args =
+          ({ expression_desc = (Call (e0, args, info)); comment } : t)
         let flat_call ?comment  e0 es =
           ({ expression_desc = (FlatCall (e0, es)); comment } : t)
         let runtime_call ?comment  module_name fn_name args =
-          call ?comment ~info:{ arity = Full }
+          call ?comment ~info:Js_call_info.builtin_runtime_call
             (runtime_var_dot module_name fn_name) args
         let runtime_ref module_name fn_name =
           runtime_var_dot module_name fn_name
@@ -3584,7 +3612,7 @@ include
           ({ expression_desc = (Dot ((var x), e1, true)); comment } : 
           t)
         let bind_call ?comment  obj (e1 : string) args =
-          (call
+          (call ~info:Js_call_info.dummy
              {
                expression_desc =
                  (Bind
@@ -3594,7 +3622,7 @@ include
              } args : t)
         let bind_var_call ?comment  (x : Ident.t) (e1 : string) args =
           (let obj = var x in
-           call
+           call ~info:Js_call_info.dummy
              {
                expression_desc =
                  (Bind
@@ -4128,7 +4156,7 @@ include
            | _ -> { comment; expression_desc = (Bin (Band, e1, e2)) } : 
           J.expression)
         let of_block ?comment  block e =
-          (call ~info:{ arity = Full }
+          (call ~info:Js_call_info.ml_full_call
              {
                comment;
                expression_desc =
@@ -4798,6 +4826,10 @@ include
             let tag = "tag"
             let bind = "bind"
             let math = "Math"
+            let apply = "apply"
+            let null = "null"
+            let string_cap = "String"
+            let fromCharcode = "fromCharCode"
           end
         let return_indent = (String.length L.return) / Ext_pp.indent_length
         let throw_indent = (String.length L.throw) / Ext_pp.indent_length
@@ -4868,68 +4900,105 @@ include
           pp_string f ~utf:false ~quote:(best_string_quote s) s
         let rec pp_function cxt (f : P.t) ?name  return (l : Ident.t list)
           (b : J.block) (env : Js_fun_env.t) =
-          let ipp_ident cxt f id un_used =
-            if un_used
-            then ident cxt f (Ext_ident.make_unused ())
-            else ident cxt f id in
-          let rec formal_parameter_list cxt (f : P.t) l =
-            let rec aux i cxt l =
-              match l with
-              | [] -> cxt
-              | id::[] -> ipp_ident cxt f id (Js_fun_env.get_unused env i)
-              | id::r ->
-                  let cxt = ipp_ident cxt f id (Js_fun_env.get_unused env i) in
-                  (P.string f L.comma; P.space f; aux (i + 1) cxt r) in
-            match l with
-            | [] -> cxt
-            | i::[] ->
-                if Js_fun_env.get_unused env 0 then cxt else ident cxt f i
-            | _ -> aux 0 cxt l in
-          let rec aux cxt f ls =
-            match ls with
-            | [] -> cxt
-            | x::[] -> ident cxt f x
-            | y::ys ->
-                let cxt = ident cxt f y in (P.string f L.comma; aux cxt f ys) in
-          let set_env =
-            match name with
-            | None  -> Js_fun_env.get_bound env
-            | Some id -> Ident_set.add id (Js_fun_env.get_bound env) in
-          let outer_cxt = Ext_pp_scope.merge set_env cxt in
-          let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
-          (let action return =
-             if return then (P.string f L.return; P.space f) else ();
-             P.string f L.function_;
-             P.space f;
-             (match name with
-              | None  -> ()
-              | Some x -> ignore (ident inner_cxt f x));
-             (let body_cxt =
-                P.paren_group f 1
-                  (fun _  -> formal_parameter_list inner_cxt f l) in
-              P.space f;
-              ignore @@
-                (P.brace_vgroup f 1
-                   (fun _  -> statement_list false body_cxt f b))) in
-           let lexical = Js_fun_env.get_lexical_scope env in
-           let enclose action lexical return =
-             if Ident_set.is_empty lexical
-             then action return
-             else
-               (let lexical = Ident_set.elements lexical in
-                if return then (P.string f L.return; P.space f) else ();
-                P.string f "(";
+          match (b, (name, return)) with
+          | ({
+               statement_desc = Return
+                 {
+                   return_value =
+                     {
+                       expression_desc = Call
+                         ({ expression_desc = Var v;_},ls,{ arity = Full ;
+                                                            call_info =
+                                                              (Call_builtin_runtime
+                                                               |Call_ml )
+                                                            })
+                       }
+                   }
+               }::[],((_,false )|(None ,true )))
+              when
+              Ext_list.for_all2_no_exn
+                (fun a  ->
+                   fun b  ->
+                     match b.J.expression_desc with
+                     | Var (Id i) -> Ident.same a i
+                     | _ -> false) l ls
+              ->
+              (match name with
+               | Some i ->
+                   (P.string f L.var;
+                    P.space f;
+                    (let cxt = ident cxt f i in
+                     P.space f; P.string f L.eq; P.space f; vident cxt f v))
+               | None  ->
+                   (if return then (P.string f L.return; P.space f);
+                    vident cxt f v))
+          | (_,_) ->
+              let ipp_ident cxt f id un_used =
+                if un_used
+                then ident cxt f (Ext_ident.make_unused ())
+                else ident cxt f id in
+              let rec formal_parameter_list cxt (f : P.t) l =
+                let rec aux i cxt l =
+                  match l with
+                  | [] -> cxt
+                  | id::[] ->
+                      ipp_ident cxt f id (Js_fun_env.get_unused env i)
+                  | id::r ->
+                      let cxt =
+                        ipp_ident cxt f id (Js_fun_env.get_unused env i) in
+                      (P.string f L.comma; P.space f; aux (i + 1) cxt r) in
+                match l with
+                | [] -> cxt
+                | i::[] ->
+                    if Js_fun_env.get_unused env 0
+                    then cxt
+                    else ident cxt f i
+                | _ -> aux 0 cxt l in
+              let rec aux cxt f ls =
+                match ls with
+                | [] -> cxt
+                | x::[] -> ident cxt f x
+                | y::ys ->
+                    let cxt = ident cxt f y in
+                    (P.string f L.comma; aux cxt f ys) in
+              let set_env =
+                match name with
+                | None  -> Js_fun_env.get_bound env
+                | Some id -> Ident_set.add id (Js_fun_env.get_bound env) in
+              let outer_cxt = Ext_pp_scope.merge set_env cxt in
+              let inner_cxt = Ext_pp_scope.sub_scope outer_cxt set_env in
+              let action return =
+                if return then (P.string f L.return; P.space f);
                 P.string f L.function_;
-                P.string f "(";
-                ignore @@ (aux inner_cxt f lexical);
-                P.string f ")";
-                P.brace_vgroup f 0 (fun _  -> action true);
-                P.string f "(";
-                ignore @@ (aux inner_cxt f lexical);
-                P.string f ")";
-                P.string f ")") in
-           enclose action lexical return);
-          outer_cxt
+                P.space f;
+                (match name with
+                 | None  -> ()
+                 | Some x -> ignore (ident inner_cxt f x));
+                (let body_cxt =
+                   P.paren_group f 1
+                     (fun _  -> formal_parameter_list inner_cxt f l) in
+                 P.space f;
+                 ignore @@
+                   (P.brace_vgroup f 1
+                      (fun _  -> statement_list false body_cxt f b))) in
+              let lexical = Js_fun_env.get_lexical_scope env in
+              let enclose action lexical return =
+                if Ident_set.is_empty lexical
+                then action return
+                else
+                  (let lexical = Ident_set.elements lexical in
+                   if return then (P.string f L.return; P.space f);
+                   P.string f L.lparen;
+                   P.string f L.function_;
+                   P.string f L.lparen;
+                   ignore @@ (aux inner_cxt f lexical);
+                   P.string f L.rparen;
+                   P.brace_vgroup f 0 (fun _  -> action true);
+                   P.string f L.lparen;
+                   ignore @@ (aux inner_cxt f lexical);
+                   P.string f L.rparen;
+                   P.string f L.rparen) in
+              (enclose action lexical return; outer_cxt)
         and output_one :
           'a . _ -> P.t -> (P.t -> 'a -> unit) -> 'a J.case_clause -> _=
           fun cxt  ->
@@ -5023,28 +5092,37 @@ include
                     ({
                        expression_desc = (Dot (a, L.bind, true));
                        comment = None
-                     }, [b], { arity = Full }))
+                     }, [b], { arity = Full; call_info = Call_na }))
            | FlatCall (e,el) ->
                P.group f 1
                  (fun _  ->
                     let cxt = expression 15 cxt f e in
-                    P.string f ".apply";
+                    P.string f L.dot;
+                    P.string f L.apply;
                     P.paren_group f 1
                       (fun _  ->
-                         P.string f "null";
+                         P.string f L.null;
                          P.string f L.comma;
                          P.space f;
                          expression 1 cxt f el))
-           | String_of_small_int_array e ->
+           | String_of_small_int_array ({ expression_desc = desc } as e) ->
                let action () =
                  P.group f 1
                    (fun _  ->
-                      P.string f "String.fromCharCode.apply";
-                      P.paren_group f 1
-                        (fun _  ->
-                           P.string f "null";
-                           P.string f L.comma;
-                           expression 1 cxt f e)) in
+                      P.string f L.string_cap;
+                      P.string f L.dot;
+                      P.string f L.fromCharcode;
+                      (match desc with
+                       | Array (el,_mutable) ->
+                           P.paren_group f 1 (fun _  -> arguments cxt f el)
+                       | _ ->
+                           (P.string f L.dot;
+                            P.string f L.apply;
+                            P.paren_group f 1
+                              (fun _  ->
+                                 P.string f L.null;
+                                 P.string f L.comma;
+                                 expression 1 cxt f e)))) in
                if l > 15 then P.paren_group f 1 action else action ()
            | Array_append (e,el) ->
                P.group f 1
@@ -5097,9 +5175,9 @@ include
            | Char_of_int e ->
                P.group f 1
                  (fun _  ->
-                    P.string f "String";
+                    P.string f L.string_cap;
                     P.string f L.dot;
-                    P.string f "fromCharCode";
+                    P.string f L.fromCharcode;
                     P.paren_group f 1 (fun _  -> arguments cxt f [e]))
            | Math (name,el) ->
                P.group f 1
@@ -6340,7 +6418,7 @@ include
             ("caml_int64.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\004B\000\000\001a\000\000\004\144\000\000\004i\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\222%param@\160\176\001\004\223%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004)!x@\160\176\001\004*'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\018!x@\160\176\001\004\019!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\201\004j@\160\176\001\004\202\004i@@@@@\208\208@\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@A'is_zero\160\176A\160\160A\144\160\176\001\004\216\004\127@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ABE$lsl_\160\176@\160\160B\144\160\176\001\004\030!x@\160\176\001\004\031'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004-$this@\160\176\001\004.%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\023!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\221\004\242@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\025!x@\160\176\001\004\026!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\203\005\001\031@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\200\005\001(@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\179@\004\005\166\b\000\000\004!@\160\166\166A\144\"lo\160\144\004\r@\160\145\144\150\018_n\000\001\000\000\000\000@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\004f\000\000\001n\000\000\004\186\000\000\004\146\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\225%param@\160\176\001\004\226%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004)!x@\160\176\001\004*'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\018!x@\160\176\001\004\019!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\204\004j@\160\176\001\004\205\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\219\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\030!x@\160\176\001\004\031'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004-$this@\160\176\001\004.%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\023!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\224\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\025!x@\160\176\001\004\026!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\206\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\203\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\179@\004\005\166\b\000\000\004!@\160\166\166A\144\"lo\160\144\004\r@\160\145\144\150\018_n\000\001\000\000\000\000@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl@")));
             ("caml_io.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6349,6 +6427,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\003.\000\000\000\189\000\000\002\140\000\000\002o\176\208\208@/caml_lex_engine\160@\144\179@\160\176\001\003\251$prim@\160\176\001\003\250\004\003@\160\176\001\003\249\004\005@@\166\155\240 CA @\160\160\160'js.call\176\192-caml_lexer.ml\001\0017\001'\160\001'\163\192\004\002\001\0017\001'\160\001'\170@\144\160\160\160\176\145\1621$$caml_lex_engine@\176\192\004\012\001\0017\001'\160\001'\171\192\004\r\001\0017\001'\160\001'\190@@@\004\003@\160\160\160(js.local\176\192\004\019\001\0017\001'\160\001'\195\192\004\020\001\0017\001'\160\001'\203@\144@@\144\176\193 \176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003|\176\193\004\011\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\127\176\193\004\019\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\130\176\179\004\016@\144@\002\005\245\225\000\001\003\133@\002\005\245\225\000\001\003\136@\002\005\245\225\000\001\003\137@\002\005\245\225\000\001\003\138\160\144\004I\160\144\004H\160\144\004H@\208@3caml_new_lex_engine\160@\144\179@\160\176\001\003\248\004S@\160\176\001\003\247\004U@\160\176\001\003\246\004W@@\166\155\240 CA\004R@\160\160\160'js.call\176\192\004Q\001\001;\001(%\001((\192\004R\001\001;\001(%\001(/@\144\160\160\160\176\145\1625$$caml_new_lex_engine@\176\192\004\\\001\001;\001(%\001(0\192\004]\001\001;\001(%\001(G@@@\004\003@\160\160\160(js.local\176\192\004c\001\001;\001(%\001(L\192\004d\001\001;\001(%\001(T@\144@@\144\176\193\004P\176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003\139\176\193\004Z\176\179\004O@\144@\002\005\245\225\000\001\003\142\176\193\004_\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\145\176\179\004\\@\144@\002\005\245\225\000\001\003\148@\002\005\245\225\000\001\003\151@\002\005\245\225\000\001\003\152@\002\005\245\225\000\001\003\153\160\144\004B\160\144\004B\160\144\004B@@AB$fail\160\176A\160\160A\144\160\176\001\003\252%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 @")));
+            ("caml_md5.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\000@\000\000\000\017\000\000\000:\000\000\0007\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004-!s@\160\176\001\004.%start@\160\176\001\004/#len@@@@@@A@@")));
             ("caml_obj.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6364,7 +6446,7 @@ include
             ("caml_primitive.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\001I\000\000\000M\000\000\001\021\000\000\000\254\176\208\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\241!x@@@@@\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\004\006%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@AB)caml_hash\160@@@C0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\243!x@@@@@\208\208@4caml_nativeint_bswap\160\004\011@@A/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\b\004)@@@@\144\179@\004\004\145\144\162!/@\208@$imul\160\176@\160\160B@@@@@ABD\144 @")));
+                    "BUCKLE20160310\132\149\166\190\000\000\001\169\000\000\000g\000\000\001o\000\000\001T\176\208\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\241!x@@@@@\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\004\012%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@AB)caml_hash\160@@@C0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\243!x@@@@@\208\208@4caml_nativeint_bswap\160\004\011@\208@1caml_string_get16\160\176A\160\160B\144\160\176\001\004\000!s@\160\176\001\004\001!i@@@@@\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\004\003!s@\160\176\001\004\004!i@@@@@@ABC/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\014\004C@@@@\144\179@\004\004\145\144\162!/@\208@$imul\160\176@\160\160B@@@@@ADE\144 @")));
             ("caml_string.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6381,6 +6463,14 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\000U\000\000\000\019\000\000\000N\000\000\000H\176\208\208@%Array\160@@@A%Bytes\160@@\208\208\208@*Caml_int64\160@@@A(Caml_obj\160@@@B%Float\160@@\208@&String\160@@@ACD@@")));
+            ("js_error.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@")));
+            ("js_fn.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@")));
             ("typed_array.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -7054,6 +7144,7 @@ include
         val of_string : int64_call
         val float_of_bits : int64_call
         val bits_of_float : int64_call
+        val get64 : int64_call
       end =
       struct
         module E = Js_exp_make
@@ -7119,6 +7210,7 @@ include
           int64_call "discard_sign" args
         let div_mod (args : J.expression list) = int64_call "div_mod" args
         let to_hex (args : J.expression list) = int64_call "to_hex" args
+        let get64 = int64_call "get64"
         let float_of_bits = int64_call "float_of_bits"
         let bits_of_float = int64_call "bits_of_float"
         let to_float (args : J.expression list) =
@@ -7486,14 +7578,16 @@ include
                (match args with
                 | num::behavior::[] -> E.seq num behavior
                 | _ -> assert false)
+           | "caml_md5_string" ->
+               E.runtime_call Js_config.md5 prim.prim_name args
            | "caml_output_value_to_buffer"|"caml_marshal_data_size"
              |"caml_input_value_from_string"|"caml_output_value"
              |"caml_input_value"|"caml_output_value_to_string"
-             |"caml_md5_string"|"caml_md5_chan"|"caml_hash"
-             |"caml_hash_univ_param"|"caml_weak_set"|"caml_weak_create"
-             |"caml_weak_get"|"caml_weak_check"|"caml_weak_blit"
-             |"caml_weak_get_copy"|"caml_sys_close"|"caml_sys_open"
-             |"caml_ml_input"|"caml_ml_input_scan_line"|"caml_ml_input_int"
+             |"caml_md5_chan"|"caml_hash"|"caml_hash_univ_param"
+             |"caml_weak_set"|"caml_weak_create"|"caml_weak_get"
+             |"caml_weak_check"|"caml_weak_blit"|"caml_weak_get_copy"
+             |"caml_sys_close"|"caml_sys_open"|"caml_ml_input"
+             |"caml_ml_input_scan_line"|"caml_ml_input_int"
              |"caml_ml_close_channel"|"caml_ml_output_int"|"caml_sys_exit"
              |"caml_ml_channel_size_64"|"caml_ml_channel_size"
              |"caml_ml_pos_in_64"|"caml_ml_pos_in"|"caml_ml_seek_in"
@@ -7554,7 +7648,9 @@ include
            | "js_apply1"|"js_apply2"|"js_apply3"|"js_apply4"|"js_apply5"
              |"js_apply6"|"js_apply7"|"js_apply8" ->
                (match args with
-                | fn::rest -> E.call ~info:{ arity = Full } fn rest
+                | fn::rest ->
+                    E.call ~info:{ arity = Full; call_info = Call_na } fn
+                      rest
                 | _ -> assert false)
            | "js_uninitialized_object" ->
                (match args with
@@ -7917,8 +8013,13 @@ include
                           | y::ys -> List.fold_left E.dot (E.js_var y) ys
                           | _ -> assert false) in
                    if Type_util.is_unit _return_type
-                   then E.seq (E.call ~info:{ arity = Full } fn args) E.unit
-                   else E.call ~info:{ arity = Full } fn args
+                   then
+                     E.seq
+                       (E.call ~info:{ arity = Full; call_info = Call_na } fn
+                          args) E.unit
+                   else
+                     E.call ~info:{ arity = Full; call_info = Call_na } fn
+                       args
                | None  -> assert false)
           | Js_new
               { external_module_name = module_name; txt = { name = fn } } ->
@@ -7955,8 +8056,8 @@ include
                      let args =
                        Ext_list.flat_map2_last (ocaml_to_js js_splice)
                          arg_types args in
-                     E.call ~info:{ arity = Full } (E.dot self name) args)
-                   [@warning "-8"])
+                     E.call ~info:{ arity = Full; call_info = Call_na }
+                       (E.dot self name) args)[@warning "-8"])
                | _ -> Location.raise_errorf ?loc "Ill defined attribute")
           | Js_get { name } ->
               (match args with
@@ -8328,11 +8429,11 @@ include
            | Praise _raise_kind -> assert false
            | Prevapply _ ->
                (match args with
-                | arg::f::[] -> E.call f [arg]
+                | arg::f::[] -> E.call ~info:Js_call_info.dummy f [arg]
                 | _ -> assert false)
            | Pdirapply _ ->
                (match args with
-                | f::arg::[] -> E.call f [arg]
+                | f::arg::[] -> E.call ~info:Js_call_info.dummy f [arg]
                 | _ -> assert false)
            | Ploc kind -> assert false
            | Parraylength (Pgenarray )|Parraylength (Paddrarray )
@@ -8430,8 +8531,12 @@ include
            | Pbbswap (Lambda.Pnativeint )|Pbbswap (Lambda.Pint32 ) ->
                E.runtime_call Js_config.prim "caml_int32_bswap" args
            | Pbbswap (Lambda.Pint64 ) -> Js_long.swap args
-           | Plazyforce |Pbittest |Pint_as_pointer |Pstring_load_16 _
-             |Pstring_load_32 _|Pstring_load_64 _|Pstring_set_16 _
+           | Pstring_load_16 unsafe ->
+               E.runtime_call Js_config.prim "caml_string_get16" args
+           | Pstring_load_32 unsafe ->
+               E.runtime_call Js_config.prim "caml_string_get32" args
+           | Pstring_load_64 unsafe -> Js_long.get64 args
+           | Plazyforce |Pbittest |Pint_as_pointer |Pstring_set_16 _
              |Pstring_set_32 _|Pstring_set_64 _|Pbigstring_load_16 _
              |Pbigstring_load_32 _|Pbigstring_load_64 _|Pbigstring_set_16 _
              |Pbigstring_set_32 _|Pbigstring_set_64 _ ->
@@ -8885,14 +8990,20 @@ include
                                            let (first_part,continue) =
                                              Ext_list.take x args in
                                            aux
-                                             (E.call ~info:{ arity = Full }
-                                                acc first_part)
+                                             (E.call
+                                                ~info:{
+                                                        arity = Full;
+                                                        call_info = Call_ml
+                                                      } acc first_part)
                                              (Determin (a, rest, b)) continue
                                              (len - x)
                                          else acc
                                      | (Determin (a,[],b),_) ->
-                                         E.call acc args
-                                     | (NA ,_) -> E.call acc args in
+                                         E.call ~info:Js_call_info.dummy acc
+                                           args
+                                     | (NA ,_) ->
+                                         E.call ~info:Js_call_info.dummy acc
+                                           args in
                                    aux (E.ml_var_dot id name) arity args
                                      (List.length args)))) : Js_output.t)
         and compile_let flag (cxt : Lam_compile_defs.cxt) id
@@ -9196,10 +9307,10 @@ include
                         (E.call
                            ~info:(match (fn, info) with
                                   | (_,{ apply_status = Full  }) ->
-                                      { arity = Full }
+                                      { arity = Full; call_info = Call_ml }
                                   | (_,{ apply_status = NA  }) ->
-                                      { arity = NA }) fn_code args)))
-               [@warning "-8"])
+                                      { arity = NA; call_info = Call_ml })
+                           fn_code args)))[@warning "-8"])
            | Llet (let_kind,id,arg,body) ->
                let args_code = compile_let let_kind cxt id arg in
                args_code ++ (compile_lambda cxt body)
@@ -9281,6 +9392,37 @@ include
                     let exp = E.or_ l_expr r_expr in
                     Js_output.handle_block_return st should_return lam
                       args_code exp)
+           | Lprim
+               (Pccall
+                {
+                  prim_name =
+                    ("js_fn_mk_00"|"js_fn_mk_01"|"js_fn_mk_02"|"js_fn_mk_03"
+                     |"js_fn_mk_04"|"js_fn_mk_05"|"js_fn_mk_06"|"js_fn_mk_07"
+                     |"js_fn_mk_08"|"js_fn_mk_09" as name)
+                  },fn::[])
+               ->
+               let arity = Ext_string.digits_of_str ~offset:9 name 2 in
+               (match fn with
+                | Lambda.Lfunction (kind,args,body) ->
+                    let len = List.length args in
+                    if len = arity
+                    then compile_lambda cxt fn
+                    else
+                      if len > arity
+                      then
+                        (let (first,rest) = Ext_list.take arity args in
+                         compile_lambda cxt
+                           (Lambda.Lfunction
+                              (kind, first,
+                                (Lambda.Lfunction (kind, rest, body)))))
+                      else
+                        compile_lambda cxt
+                          (Lam_util.eta_conversion arity
+                             Lam_util.default_apply_info fn [])
+                | _ ->
+                    compile_lambda cxt
+                      (Lam_util.eta_conversion arity
+                         Lam_util.default_apply_info fn []))
            | Lprim (Pccall { prim_name = "js_debugger";_},_) ->
                Js_output.handle_block_return st should_return lam
                  [S.debugger] E.unit
@@ -9711,7 +9853,7 @@ include
                   | Self  ->
                       Js_output.handle_block_return st should_return lam
                         (List.concat args_code)
-                        (E.call
+                        (E.call ~info:Js_call_info.dummy
                            (Js_of_lam_array.ref_array
                               (Js_of_lam_record.field Fld_na obj' 0l) label)
                            (obj' :: args))
@@ -9722,8 +9864,10 @@ include
                       let () = incr method_cache_id in
                       Js_output.handle_block_return st should_return lam
                         (List.concat args_code)
-                        (E.call (E.call get [obj'; label; E.small_int cache])
-                           (obj' :: args))
+                        (E.call ~info:Js_call_info.dummy
+                           (E.call ~info:Js_call_info.dummy get
+                              [obj'; label; E.small_int cache]) (obj' ::
+                           args))
                   | Public (Some name) ->
                       let cont =
                         Js_output.handle_block_return st should_return lam
@@ -9740,7 +9884,8 @@ include
                                          (Js_array.ref_array obj' (E.var i))])
                              | x::[] -> Js_array.ref_array obj' x
                              | x::rest ->
-                                 E.call (Js_array.ref_array obj' x) rest in
+                                 E.call ~info:Js_call_info.dummy
+                                   (Js_array.ref_array obj' x) rest in
                            cont @@ (aux args)
                        | ((Js_write_index ,_name),_) ->
                            let aux args =
@@ -9764,7 +9909,8 @@ include
                                                (E.var v)) E.unit)])
                              | x::y::[] -> Js_array.set_array obj' x y
                              | x::y::rest ->
-                                 E.call (Js_array.set_array obj' x y) rest in
+                                 E.call ~info:Js_call_info.dummy
+                                   (Js_array.set_array obj' x y) rest in
                            cont @@ (aux args)
                        | ((Js_write ,name),_) ->
                            let aux args =
@@ -9788,12 +9934,19 @@ include
                               then
                                 (match rest with
                                  | [] ->
-                                     E.call ~info:{ arity = Full }
-                                       (E.dot obj' name) args
-                                 | _ ->
                                      E.call
-                                       (E.call ~info:{ arity = Full }
-                                          (E.dot obj' name) args) rest)
+                                       ~info:{
+                                               arity = Full;
+                                               call_info = Call_na
+                                             } (E.dot obj' name) args
+                                 | _ ->
+                                     E.call ~info:Js_call_info.dummy
+                                       (E.call
+                                          ~info:{
+                                                  arity = Full;
+                                                  call_info = Call_na
+                                                } (E.dot obj' name) args)
+                                       rest)
                               else
                                 (let rest =
                                    Ext_list.init (arity - n)
@@ -9801,8 +9954,11 @@ include
                                  E.fun_ rest
                                    (let open S in
                                       [return
-                                         (E.call ~info:{ arity = Full }
-                                            (E.dot obj' name)
+                                         (E.call
+                                            ~info:{
+                                                    arity = Full;
+                                                    call_info = Call_na
+                                                  } (E.dot obj' name)
                                             (args @ (List.map E.var rest)))])))
                        | ((Js (None ),p_name),_) ->
                            cont
@@ -10910,8 +11066,8 @@ include
                               then
                                 (let fn = simpl l1 in
                                  let args = List.map simpl ll in
-                                 Lam_util.eta_conversion (x - len) info fn
-                                   args)
+                                 Lam_util.eta_conversion (x - len)
+                                   { info with apply_status = Full } fn args)
                               else
                                 (let (first,rest) = Ext_list.take x ll in
                                  Lapply
@@ -12100,8 +12256,11 @@ include
                           E.fun_ [param]
                             [S.return
                                (E.seq
-                                  (E.call ~info:{ arity = Full }
-                                     (E.js_global "console.log")
+                                  (E.call
+                                     ~info:{
+                                             arity = Full;
+                                             call_info = Call_na
+                                           } (E.js_global "console.log")
                                      [E.var param]) E.zero_int_literal)]))
            | (Single
               (_,({ name = "prerr_endline";_} as id),_),"pervasives.ml") ->
@@ -12111,8 +12270,11 @@ include
                           E.fun_ [param]
                             [S.return
                                (E.seq
-                                  (E.call ~info:{ arity = Full }
-                                     (E.js_global "console.error")
+                                  (E.call
+                                     ~info:{
+                                             arity = Full;
+                                             call_info = Call_na
+                                           } (E.js_global "console.error")
                                      [E.var param]) E.zero_int_literal)]))
            | (Single
               (_,({ name = "string_of_int";_} as id),_),"pervasives.ml") ->
