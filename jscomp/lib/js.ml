@@ -87,6 +87,7 @@ module String = struct
       [@@js.send]
   external append : string -> string -> string = "js_string_append"
   external of_small_int_array : int array -> string = "js_string_of_small_int_array"
+  external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
   external lastIndexOf : string -> string -> int = "lastIndexOf"
       [@@js.send]    
 end

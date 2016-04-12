@@ -18,46 +18,5 @@
 
 (* Author: Hongbo Zhang  *)
 
-type env = 
-  | Browser
-  | NodeJS
-  | Goog of string option
+val caml_md5_string : string -> int -> int -> string
 
-val get_env : unit -> env
-val get_goog_package_name : unit -> string option
-val set_env : env -> unit
-val cmd_set_module : string -> unit  
-val default_gen_tds : bool ref
-val runtime_set : String_set.t
-val stdlib_set : String_set.t
-
-val prim : string 
-
-val builtin_exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lexer : string 
-val parser : string
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
-
-val curry : string 
-
-val internalMod : string
-
-val bigarray : string
-val unix : string
-val int64 : string
-val md5 : string

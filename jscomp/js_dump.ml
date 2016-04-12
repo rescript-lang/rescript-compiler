@@ -97,6 +97,10 @@ module L = struct
   let tag = "tag"
   let bind = "bind"
   let math = "Math"
+  let apply = "apply"
+  let null = "null"
+  let string_cap = "String"
+  let fromCharcode = "fromCharCode"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -518,25 +522,37 @@ and
   | FlatCall(e,el) -> 
     P.group f 1 (fun _ -> 
         let cxt = expression 15 cxt f e in
-        P.string f ".apply";
+        P.string f L.dot; 
+        P.string f L.apply;
         P.paren_group f 1 (fun _ ->
-            P.string f "null";
+            P.string f L.null;
             P.string f L.comma;
             P.space f ; 
             expression 1 cxt f el
           )
       )
-  | String_of_small_int_array (e) -> 
+  | String_of_small_int_array ({expression_desc = desc } as e) -> 
     let action () = 
       P.group f 1 (fun _ -> 
-          P.string f "String.fromCharCode.apply";
-          P.paren_group f 1 (fun _ -> 
-              P.string f "null";
-              P.string f L.comma;
-              expression 1 cxt  f e  ) ) 
+          P.string f L.string_cap; 
+          P.string f L.dot ;
+          P.string f L.fromCharcode;
+          begin match desc with 
+            | Array (el, _mutable)
+              ->
+              P.paren_group f 1 (fun _ -> arguments cxt f el)
+            | _ -> 
+              P.string f L.dot ;
+              P.string f L.apply; 
+              P.paren_group f 1 (fun _ -> 
+                  P.string f L.null;
+                  P.string f L.comma;
+                  expression 1 cxt  f e  )
+          end ) 
     in
-    if l > 15 then P.paren_group f 1 action   
-    else action ()
+      if l > 15 then P.paren_group f 1 action   
+      else action ()
+
 
   | Array_append (e, el) -> 
     P.group f 1 (fun _ -> 
@@ -592,9 +608,9 @@ and
 
   | Char_of_int e -> 
     P.group f 1 (fun _ -> 
-        P.string f "String";
+        P.string f L.string_cap;
         P.string f L.dot;
-        P.string f "fromCharCode";
+        P.string f L.fromCharcode;
         P.paren_group f 1 (fun _ -> arguments cxt f [e])
       )
 

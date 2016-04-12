@@ -157,5 +157,5 @@ let internalMod = "Caml_internalMod"
 let bigarray = "Caml_bigarray"
 let unix = "Caml_unix"
 let int64 = "Caml_int64"
-
+let md5 = "Caml_md5"
 
