@@ -585,6 +585,15 @@ function bits_of_float(x) {
         ];
 }
 
+function get64(s, i) {
+  var hi = (s.charCodeAt(i + 4 | 0) << 32) | (s.charCodeAt(i + 5 | 0) << 40) | (s.charCodeAt(i + 6 | 0) << 48) | (s.charCodeAt(i + 7 | 0) << 56);
+  var lo = s.charCodeAt(i) | (s.charCodeAt(i + 1 | 0) << 8) | (s.charCodeAt(i + 2 | 0) << 16) | (s.charCodeAt(i + 3 | 0) << 24);
+  return /* record */[
+          hi,
+          (lo >>> 0)
+        ];
+}
+
 exports.min_int       = min_int;
 exports.max_int       = max_int;
 exports.one           = one;
@@ -617,4 +626,5 @@ exports.to_hex        = to_hex;
 exports.discard_sign  = discard_sign;
 exports.float_of_bits = float_of_bits;
 exports.bits_of_float = bits_of_float;
+exports.get64         = get64;
 /* two_ptr_32_dbl Not a pure module */

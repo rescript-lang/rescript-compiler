@@ -292,8 +292,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
-string_get_set_test.cmo :
-string_get_set_test.cmx :
+string_get_set_test.cmo : mt.cmi
+string_get_set_test.cmx : mt.cmx
 string_literal_print_test.cmo : mt.cmi
 string_literal_print_test.cmx : mt.cmx
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \
@@ -800,8 +800,8 @@ stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 statck_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
-string_get_set_test.cmo :
-string_get_set_test.cmj :
+string_get_set_test.cmo : mt.cmi
+string_get_set_test.cmj : mt.cmj
 string_literal_print_test.cmo : mt.cmi
 string_literal_print_test.cmj : mt.cmj
 string_runtime_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/list.cmi \

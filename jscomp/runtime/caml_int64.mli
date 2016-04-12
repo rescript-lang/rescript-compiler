@@ -59,3 +59,4 @@ val to_hex : t -> string
 val discard_sign : t -> t 
 val float_of_bits : t -> float 
 val bits_of_float : float -> t 
+val get64 : string -> int -> t

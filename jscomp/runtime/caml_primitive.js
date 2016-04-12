@@ -65,6 +65,14 @@ var imul = ( Math.imul || function (x,y) {
 }
 );
 
+function caml_string_get16(s, i) {
+  return s.charCodeAt(i) + (s.charCodeAt(i + 1 | 0) << 8) | 0;
+}
+
+function caml_string_get32(s, i) {
+  return ((s.charCodeAt(i) + (s.charCodeAt(i + 1 | 0) << 8) | 0) + (s.charCodeAt(i + 2 | 0) << 16) | 0) + (s.charCodeAt(i + 3 | 0) << 24) | 0;
+}
+
 function caml_hash(prim, prim$1, prim$2, prim$3) {
   return $$caml_hash(prim, prim$1, prim$2, prim$3);
 }
@@ -78,4 +86,6 @@ exports.caml_int32_bswap                = caml_int32_bswap;
 exports.caml_nativeint_bswap            = caml_nativeint_bswap;
 exports.caml_convert_raw_backtrace_slot = caml_convert_raw_backtrace_slot;
 exports.imul                            = imul;
+exports.caml_string_get16               = caml_string_get16;
+exports.caml_string_get32               = caml_string_get32;
 /*  Not a pure module */
