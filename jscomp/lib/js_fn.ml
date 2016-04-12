@@ -34,39 +34,39 @@
 type 'a t
 
 external mk0 : (unit -> 'a0) -> 'a0 t = 
-  "00_js_fn_mk" 
+  "js_fn_mk_00" 
 
 external mk1 : ('a0 -> 'a1) -> ('a0 * 'a1) t  = 
-  "01_js_fn_mk"
+  "js_fn_mk_01"
 
 external mk2 : ('a0 -> 'a1 -> 'a2 ) -> ('a0 *  'a1 * 'a2) t = 
-  "02_js_fn_mk"
+  "js_fn_mk_02"
 
 external mk3 : ('a0 -> 'a1 -> 'a2 -> 'a3 ) -> ('a0 *  'a1 * 'a2 * 'a3)  t = 
-  "03_js_fn_mk"
+  "js_fn_mk_03"
 
 external mk4 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 ) -> ('a0 *  'a1 * 'a2 * 'a3 * 'a4) t = 
-  "04_js_fn_mk"
+  "js_fn_mk_04"
 
 external mk5 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 ) -> ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5) t =
-  "05_js_fn_mk"
+  "js_fn_mk_05"
 
 
 external mk6 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6) -> 
   ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6) t =
-  "06_js_fn_mk"
+  "js_fn_mk_06"
 
 external mk7 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7) -> 
   ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 ) t =
-  "07_js_fn_mk"
+  "js_fn_mk_07"
 
 
 external mk8 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 ) ->
   ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 ) t =
-  "08_js_fn_mk"
+  "js_fn_mk_08"
 
 
 external mk9 : ('a0 -> 'a1 -> 'a2 -> 'a3 -> 'a4 -> 'a5 -> 'a6 -> 'a7 -> 'a8 -> 'a9) ->
   ('a0 *  'a1 * 'a2 * 'a3 * 'a4 * 'a5 * 'a6 * 'a7 * 'a8 * 'a9 ) t =
-  "08_js_fn_mk"
+  "js_fn_mk_09"
 
