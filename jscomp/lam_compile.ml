@@ -674,7 +674,42 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-
+    | Lprim (Pccall {prim_name = ("00_js_fn_mk" | "01_js_fn_mk" | "02_js_fn_mk"as name )}, [fn])
+      -> 
+      let arity = int_of_string @@ String.sub name 0 2  in
+      begin match fn with
+      | Lambda.Lfunction(kind,args, body) 
+        ->
+        let len =  List.length args in 
+        if len = arity then
+          compile_lambda cxt fn 
+        else if len > arity then 
+          let first, rest  = Ext_list.take arity args  in 
+          compile_lambda cxt (Lambda.Lfunction (kind, first, Lambda.Lfunction (kind, rest, body)))
+        else 
+          compile_lambda cxt (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+          (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
+          (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
+          (* Lambda.Lfunction (kind, extra_args @ args , body ) *)
+      (*TODO: can be optimized ?
+        {[\ x y -> (\u -> body x) x y]}
+        {[\u x -> body x]}        
+        rewrite rules 
+        {[
+          \x -> body 
+                --
+                \y (\x -> body ) y 
+        ]}
+        {[\ x y -> (\a b c -> g a b c) x y]}
+        {[ \a b -> \c -> g a b c ]}
+      *)
+      | _ -> 
+        compile_lambda cxt (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+      end
+    (* TODO: 
+       check the arity of fn before wrapping it 
+       we need mark something that such eta-conversion can not be simplified in some cases 
+    *)
     | Lprim (Pccall{prim_name = "js_debugger"; _}, 
              _) 
       -> 

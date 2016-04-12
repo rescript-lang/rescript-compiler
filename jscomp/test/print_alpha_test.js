@@ -7,7 +7,9 @@ var Caml_curry = require("../runtime/caml_curry");
 function f(h, _) {
   var u = 3;
   console.log(u);
-  return h;
+  return function (x, y) {
+    return Caml_curry.app2(h, x, y);
+  };
 }
 
 Mt.from_pair_suites("print_alpha_test.ml", /* :: */[

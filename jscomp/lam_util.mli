@@ -69,3 +69,5 @@ val is_function : Lambda.lambda -> bool
 val eta_conversion : 
   int ->
   Lambda.apply_info -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+
+val default_apply_info : Lambda.apply_info

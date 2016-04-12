@@ -936,7 +936,6 @@ let query (prim : Lam_compile_env.primitive_description)
     (* | "js_dump6" *)
     (* | "js_dump7" (\* TODO: refin api later *\) *)
     (* | "js_dump8" -> E.dump Log args  *)
-
     | "js_apply1"
     | "js_apply2"
     | "js_apply3"

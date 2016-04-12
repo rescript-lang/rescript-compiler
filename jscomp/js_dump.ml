@@ -255,7 +255,7 @@ let rec pp_function
                    {expression_desc = 
                       Call({expression_desc = Var v ; _}, 
                            ls , 
-                           {arity = ( Full | NA ); 
+                           {arity = ( Full (* | NA  *) (* see #234*)); 
                             (* TODO: need a case to justify it*)
                             call_info = 
                               (Call_builtin_runtime | Call_ml )})}}}],
