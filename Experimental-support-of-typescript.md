@@ -1,0 +1,1 @@
+Currently `bsc` also emit `.d.ts` for better interaction with typescript, we will have a dedicated flag in the future

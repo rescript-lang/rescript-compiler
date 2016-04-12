@@ -1,0 +1,17 @@
+Note that the compilation model of buckescript is like ocaml native compiler, if `b.ml` depends on `a.ml`, you have to compile `a.ml` **and** `a.mli` first, since bucklescript will generate `a.cmj` file for inlining and other information.
+
+A simple makefile is like below
+
+```make
+CAMLC=bsc                                                                                                                                                                                                                                                                                                                                                                                    
+SOURCE_LIST := src_a src_b                                                                                                                                                                                                  
+TARGETS := $(addsuffix .cmj, $(SOURCE_LIST))                                                                                                                                                                                                                                                                                                                                                        
+all: $(TARGETS)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+.mli.cmi:                                                                                                                                                                                         
+        $(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<                                                                                                                                                  
+.ml.cmj:                                                                                                                                                                                          
+        $(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<                                                                                                                                                                                                                                                                                                                                                    
+-include .depend                                                                                                                                                                                                                                                                                                                                                                                    
+depend:                                                                                                                                                                                           
+        $(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend    
+```
