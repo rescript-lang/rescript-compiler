@@ -15,6 +15,7 @@ caml_parser
 caml_primitive
 caml_format
 caml_bigarray
+caml_md5
 
 typed_array
 js

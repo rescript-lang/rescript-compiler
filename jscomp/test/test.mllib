@@ -217,3 +217,5 @@ hamming_test
 pr_regression_test
 to_string_test
 print_alpha_test
+digest_test
+string_get_set_test

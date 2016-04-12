@@ -789,13 +789,15 @@ let query (prim : Lam_compile_env.primitive_description)
       -> E.seq num behavior (*TODO:*)
     | _ -> assert false
     end
+  | "caml_md5_string"
+    -> E.runtime_call Js_config.md5 prim.prim_name args
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"
   | "caml_output_value"
   | "caml_input_value"
   | "caml_output_value_to_string"
-  | "caml_md5_string"
+
   | "caml_md5_chan"
   | "caml_hash"
   | "caml_hash_univ_param"
