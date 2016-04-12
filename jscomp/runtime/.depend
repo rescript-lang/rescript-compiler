@@ -52,6 +52,8 @@ caml_utils.cmo : caml_utils.cmi
 caml_utils.cmx : caml_utils.cmi
 js.cmo :
 js.cmx :
+js_error.cmo :
+js_error.cmx :
 js_fn.cmo :
 js_fn.cmx :
 typed_array.cmo :
@@ -94,6 +96,8 @@ caml_utils.cmo : caml_utils.cmi
 caml_utils.cmj : caml_utils.cmi
 js.cmo :
 js.cmj :
+js_error.cmo :
+js_error.cmj :
 js_fn.cmo :
 js_fn.cmj :
 typed_array.cmo :

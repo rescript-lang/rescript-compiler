@@ -27,8 +27,8 @@ open Nativeint
 
 let (>>>) = Nativeint.shift_right_logical
 let (>>) = Nativeint.shift_right
-let (+) = Nativeint.add 
-let ( * ) = Nativeint.mul 
+let ( +~ ) = Nativeint.add 
+let ( *~ ) = Nativeint.mul 
 let ( & ) = Nativeint.logand
 let ( << ) = Nativeint.shift_left
 let lognot x = Nativeint.logxor x (-1n)
@@ -56,14 +56,14 @@ let neg_signed x =  (x  & 0x8000_0000n) <> 0n
 let add
     ({lo = this_low_; hi = this_high_} : t)
     ({lo = other_low_; hi = other_high_} : t) =
-  let lo =  ( this_low_ + other_low_) &  0xffff_ffffn in
+  let lo =  ( this_low_ +~ other_low_) &  0xffff_ffffn in
   let overflow =
     if (neg_signed this_low_ && (neg_signed other_low_  || not (neg_signed lo)))
        || (neg_signed other_low_  && not (neg_signed lo))                                 
     then 1n
     else  0n
   in
-  mk ~lo ~hi:(( this_high_ + other_high_ + overflow) &  0xffff_ffffn)
+  mk ~lo ~hi:(( this_high_ +~ other_high_ +~ overflow) &  0xffff_ffffn)
 
 
 let not {lo; hi }  = mk ~lo:(lognot lo) ~hi:(lognot hi)
@@ -169,19 +169,18 @@ let rec mul this
       let c32 = ref 0n in
       let c16 = ref 0n in 
       begin
-        let c00 =  a00 * b00  in
-        c16 :=  (c00 >>> 16) +   a16 * b00 ;
+        let c00 =  a00 *~ b00  in
+        c16 :=  (c00 >>> 16) +~   a16 *~ b00 ;
         c32 :=  !c16 >>> 16;
-        c16 :=  ( !c16 & 0xffffn) + a00 * b16;
-        c32 :=  (!c32 +  ( !c16 >>> 16)) +  a32 * b00;
+        c16 :=  ( !c16 & 0xffffn) +~ a00 *~ b16;
+        c32 :=  (!c32 +~  ( !c16 >>> 16)) +~  a32 *~ b00;
         c48 :=  !c32 >>>  16;
-        c32 :=  (!c32 & 0xffffn) +  a16 * b16;
-        c48 :=  !c48 +  ( !c32 >>> 16);
-        c32 :=  (!c32 & 0xffffn) +  a00 * b32;
-        c48 :=  !c48 +  (!c32 >>> 16);
+        c32 :=  (!c32 & 0xffffn) +~  a16 *~ b16;
+        c48 :=  !c48 +~  ( !c32 >>> 16);
+        c32 :=  (!c32 & 0xffffn) +~  a00 *~ b32;
+        c48 :=  !c48 +~  (!c32 >>> 16);
         c32 :=  !c32 & 0xffffn;
-        c48 :=  (!c48  + (a48 * b00 + a32 * b16 + 
-           a16 * b32 + a00 * b48)) & 0xffffn;
+        c48 :=  (!c48  +~ (a48 *~ b00 +~ a32 *~ b16 +~ a16 *~ b32 +~ a00 *~ b48)) & 0xffffn;
         mk ~lo:
            (Nativeint.logor 
              (c00 & 0xffffn)
@@ -235,7 +234,7 @@ let le x y = Pervasives.not (gt x y)
 
 
 let to_float ({lo; hi } : t) : float = 
-  Nativeint.to_float ( hi *   0x1_0000_0000n +  lo)
+  Nativeint.to_float ( hi *~   0x1_0000_0000n +~  lo)
 
 
 
@@ -400,3 +399,22 @@ let  bits_of_float (x : float) =
   let int32 = Int32_array.of_buffer (Float64_array.buffer u) in 
   mk ~lo:(to_nat (Int32_array.get int32 0))
     ~hi:( to_nat (Int32_array.get int32 1))
+
+(** used by "%caml_string_get64" *)
+let get64 (s : string) (i:int) : t = 
+  mk ~lo:
+    (Nativeint.logor 
+       (Nativeint.logor 
+          (Nativeint.of_int (Char.code s.[i])) 
+          (Nativeint.of_int (Char.code s.[i+1]) << 8)) 
+       (Nativeint.logor 
+          (Nativeint.of_int (Char.code s.[i+2]) << 16 )
+          (Nativeint.of_int (Char.code s.[i+3]) << 24 )))
+    ~hi:
+      (Nativeint.logor 
+         (Nativeint.logor 
+            (Nativeint.of_int (Char.code s.[i+4]) << 32) 
+            (Nativeint.of_int (Char.code s.[i+5]) << 40)) 
+         (Nativeint.logor 
+            (Nativeint.of_int (Char.code s.[i+6]) << 48 )
+            (Nativeint.of_int (Char.code s.[i+7]) << 56 )))

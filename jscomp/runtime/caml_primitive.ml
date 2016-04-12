@@ -71,6 +71,7 @@ function $$caml_hash(count, limit, seed, o) {
 external caml_hash : int -> int -> int -> 'a -> int = "$$caml_hash"
     [@@js.call ] [@@js.local]
 
+
 let caml_nativeint_bswap = caml_int32_bswap
 
 let caml_sys_getcwd () = "/"
@@ -88,3 +89,13 @@ let imul : int32 -> int32 -> int32 = [%js.raw{| Math.imul || function (x,y) {
   y |= 0; return ((((x >> 16) * y) << 16) + (x & 0xffff) * y)|0; 
 }
 |}]
+
+let caml_string_get16 s i = 
+  Char.code s.[i] + Char.code s.[i+1] lsl 8  
+
+let caml_string_get32 s i = 
+  Char.code s.[i] + 
+  Char.code s.[i+1] lsl 8  + 
+  Char.code s.[i+2] lsl 16 + 
+  Char.code s.[i+3] lsl 24
+

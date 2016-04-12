@@ -149,6 +149,7 @@ let div_mod (args : J.expression list) =
   int64_call "div_mod" args
 let to_hex (args : J.expression list) =
   int64_call "to_hex"  args
+let get64 = int64_call "get64"
 let float_of_bits  =  int64_call "float_of_bits" 
 let bits_of_float = int64_call "bits_of_float"
 let to_float (args : J.expression list ) = 

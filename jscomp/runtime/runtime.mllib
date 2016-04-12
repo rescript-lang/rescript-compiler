@@ -20,3 +20,4 @@ caml_md5
 typed_array
 js
 js_fn
+js_error
