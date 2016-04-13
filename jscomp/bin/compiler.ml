@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/13-08:56"]
+[@@@ocaml.doc "04/13-09:08"]
 include
   struct
     module Literals :
@@ -8344,7 +8344,7 @@ include
            | Pcvtbint (Pint64 ,(Pnativeint |Pint32 )) ->
                Js_long.to_int32 args
            | Pintoffloat  ->
-               (match args with | e::[] -> e | _ -> assert false)
+               (match args with | e::[] -> E.to_int32 e | _ -> assert false)
            | Pbintofint (Pint64 ) -> Js_long.of_int32 args
            | Pbintofint (Pnativeint |Pint32 )|Pintofbint (Pnativeint )
              |Pintofbint (Pint32 )|Pfloatofint  ->
