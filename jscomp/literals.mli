@@ -27,3 +27,7 @@ val js_prop_length : string
 
 val param : string
 val partial_arg : string
+val prim : string
+
+(**temporary varaible used in {!Js_ast_util} *)
+val tmp : string 

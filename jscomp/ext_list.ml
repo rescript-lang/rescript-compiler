@@ -213,3 +213,15 @@ let rec find_opt p = function
     match  p x with 
     | Some _ as v  ->  v
     | None -> find_opt p l
+
+
+let split_map 
+    ( f : 'a -> ('b * 'c)) (xs : 'a list ) : 'b list  * 'c list = 
+  let rec aux bs cs xs =
+    match xs with 
+    | [] -> List.rev bs, List.rev cs 
+    | u::us -> 
+      let b,c =  f u in aux (b::bs) (c ::cs) us in 
+
+  aux [] [] xs 
+

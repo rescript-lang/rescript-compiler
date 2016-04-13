@@ -74,3 +74,6 @@ val rev_iter : ('a -> unit) -> 'a list -> unit
 val for_all2_no_exn : ('a -> 'b -> bool) -> 'a list -> 'b list -> bool
 
 val find_opt : ('a -> 'b option) -> 'a list -> 'b option
+
+(** [f] is applied follow the list order *)
+val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list       

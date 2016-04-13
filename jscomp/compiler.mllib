@@ -61,6 +61,7 @@ lam_current_unit
 lam_methname 
 
 j
+js_ast_util
 js_config
 js_array
 js_program_loader

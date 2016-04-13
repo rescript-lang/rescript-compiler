@@ -1307,35 +1307,15 @@ and
       (* Note that in [Texp_apply] for [%sendcache] the cache might not be used 
          see {!CamlinternalOO.send_meth} and {!Translcore.transl_exp0} the branch
          [Texp_apply] when [public_send ], args are simply dropped
-      *)
-      let [@warning "-8"] (args_code, label::obj'::args) = 
-        (met :: obj :: args) 
-        |> List.map (fun (x : Lambda.lambda) -> 
-            match x with 
-            | Lprim (Pgetglobal i, []) -> 
-              [], Lam_compile_global.get_exp  (i, env, true)
-            | Lprim (Pccall {prim_name ; _}, []) (* nullary external call*)
-              -> 
-              [], E.var (Ext_ident.create_js prim_name)
-            | _ -> 
-              begin
-                match compile_lambda {cxt with st = NeedValue; should_return = False}
-                        x with
-                | {block = a; value = Some b} -> a, b 
-                | _ -> assert false
-              end
-          ) 
-        |> List.split in
-      (* refernce 
+
+         reference 
          [js_of_ocaml] 
          1. GETPUBMET
          2. GETDYNMET
          3. GETMETHOD
          [ocaml]
          Lsend (bytegen.ml)
-      *)
-      (*
-        For the object layout refer to [camlinternalOO/create_object]
+         For the object layout refer to [camlinternalOO/create_object]
          {[
            let create_object table =
              (* XXX Appel de [obj_block] *)
@@ -1368,147 +1348,192 @@ and
                mutable initializers: (obj -> unit) list }
          ]}
       *)
-      begin
-        match meth_kind with 
-        | Self -> 
-          (* TODO: horrible hack -- fixed later *)
-          Js_output.handle_block_return
-            st should_return
-            lam 
-            (List.concat args_code)
-            (E.call ~info:Js_call_info.dummy 
-               (Js_of_lam_array.ref_array (Js_of_lam_record.field Fld_na obj' 0l) label )
-               (obj' :: args)) 
-        (* [E.small_int 1] is because we use array, 
-            when we change the runtime represenation, it needs to be adapted 
-        *)
-
-        | Cached | Public None  (* TODO: check -- 1. js object propagate 2. js object create  *)
-          -> 
-          let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
-          let cache = !method_cache_id in
-          let () = 
-            begin 
-              incr method_cache_id ; 
-            end in
-          (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
-          Js_output.handle_block_return st should_return lam (List.concat args_code)
-            (E.call ~info:Js_call_info.dummy 
-               (E.call ~info:Js_call_info.dummy get [obj'; label; E.small_int cache]) (obj'::args)
-            ) (* avoid duplicated compuattion *)
 
 
-        | Public (Some name) -> 
-          let cont =
-            Js_output.handle_block_return st should_return lam (List.concat args_code) in           
-          begin
-            match Lam_methname.process name, obj with
-            | (Js_read_index, _name), _  ->
-              let aux args =
-                match args with
-                | [] ->
-                  let i = Ext_ident.create "i" in
-                  E.fun_ [i]
-                    S.[return (Js_array.ref_array obj' (E.var i)) ]
-                | [x] -> 
-                  Js_array.ref_array obj' x 
-                |  x :: rest  ->
-                  E.call ~info:Js_call_info.dummy (Js_array.ref_array obj' x ) rest in
-              cont @@ aux args
-
-            | (Js_write_index, _name), _  ->
-              let aux args =
-                match args with
-                | [] ->
-                  let i = Ext_ident.create "i" in
-                  let v = Ext_ident.create "v" in 
-                  E.fun_ [i; v ]
-                    S.[return (E.seq (Js_array.set_array obj' (E.var i) (E.var v)) E.unit) ]
-                | [ i ]
-                  -> 
-                  let v = Ext_ident.create "v" in 
-                  E.fun_ [v]
-                    S.[return (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
-                | [x; y] -> 
-                  Js_array.set_array obj' x y 
-                |  x :: y:: rest  ->
-                  E.call ~info:Js_call_info.dummy (Js_array.set_array obj' x y ) rest in
-              cont @@ aux args
-            | (Js_write, name), _ -> 
-              let  aux args =
-                match args with
-                | [] ->
-                  let v = Ext_ident.create "v" in
-                  E.fun_ [v]
-                    S.[return (E.assign (E.dot obj' name) (E.var v)) ]
-                | [v] ->
-                  E.assign (E.dot obj' name)  v
-                |  _ :: _  -> 
-                  (* TODO: better error message *)
-                  assert false
-                  
-              in
-              cont @@ aux args
-            | (Js_read, name), _ -> 
-              cont @@ E.dot obj' name              
-            | (Js (Some arity), name), _  -> 
-              cont @@
-              let args, n, rest = 
-                Ext_list.try_take arity args  in
-              if n = arity then 
-                match rest with
-                | [] -> E.call ~info:{arity=Full; call_info = Call_na} (E.dot obj' name) args 
-                | _ ->  
-                  E.call ~info:Js_call_info.dummy 
-                    (E.call ~info:{arity=Full; call_info = Call_na} (E.dot obj' name) args )
-                    rest 
-              else 
-                let rest = Ext_list.init 
-                    (arity - n) (fun i -> Ext_ident.create "prim") in
-                E.fun_ rest 
-                  S.[return (E.call ~info:{arity=Full; call_info = Call_na } (E.dot obj' name)
-                               (args @ List.map E.var rest )                               
-                            ) ]                  
-            | (Js None, p_name), _  -> 
-              cont begin match args with 
-                | [] -> E.dot obj' p_name (* [name] *)                
-                | _ -> E.bind_call obj' p_name args end
-
-            | _ , Lprim (Pccall {prim_name = _; _}, []) ->
-              (* we know obj is a truly js object,
-                  shall it always be global?
-                  shall it introduce dependency?
-              *)
-              cont begin match args with
-                | [] -> E.dot obj' name 
-                | _ -> E.bind_call obj' name args end
-              
-
-            (*TODO: if js has such variable -- all ocaml variables should be aliased *)
-            | _, Lvar id when Ext_ident.is_js_object id
-            (*TODO#11: check alias table as well,
-              here we do flow analysis
-              TODO#22: we can also track whether it's an ocaml object
-            *)->
-              
-              cont begin match args with 
-              | [] -> E.dot obj' name 
-              | _ -> E.bind_call obj' name args
+      begin match 
+        (met :: obj :: args) 
+        |> Ext_list.split_map (fun (x : Lambda.lambda) -> 
+            match x with 
+            | Lprim (Pgetglobal i, []) -> 
+              [], Lam_compile_global.get_exp  (i, env, true)
+            | Lprim (Pccall {prim_name ; _}, []) (* nullary external call*)
+              -> 
+              [], E.var (Ext_ident.create_js prim_name)
+            | _ -> 
+              begin
+                match compile_lambda
+                        {cxt with st = NeedValue; should_return = False}
+                        x with
+                | {block = a; value = Some b} -> a, b 
+                | _ -> assert false
               end
+          ) with  
+      | _, ([] | [_]) -> assert false
+      | (args_code, label::obj'::args) 
+        -> 
+        let cont =
+          Js_output.handle_block_return 
+            st should_return lam (List.concat args_code)
+        in
+        let cont2 obj_code v = 
+          Js_output.handle_block_return 
+            st should_return lam 
+            (obj_code :: List.concat args_code) v in 
+        let cont3 obj' k = 
+          match Js_ast_util.named_expression obj' with 
+          | None -> cont (k obj')
+          | Some (obj_code, v) -> 
+            let obj' = E.var v in 
+            cont2 obj_code (k obj') 
+        in
+        begin
+          match meth_kind with 
+          | Self -> 
+            (* TODO: horrible hack -- fixed later *)
+            cont3 obj' (fun obj' -> E.call ~info:Js_call_info.dummy 
+                   (Js_of_lam_array.ref_array 
+                    (Js_of_lam_record.field Fld_na obj' 0l) label )
+                 (obj' :: args))
+          (* [E.small_int 1] is because we use array, 
+              when we change the runtime represenation, it needs to be adapted 
+          *)
 
-            | ((Ml _ | Unknown _), _), _  ->
-              (* For [Ml] or [Unknown]  the name is untouched *)
-              let cache = !method_cache_id in
-              let () = begin
+          | Cached | Public None
+            (* TODO: check -- 1. js object propagate 2. js object create  *)
+            -> 
+            let get = E.runtime_ref  Js_config.oo "caml_get_public_method" in
+            let cache = !method_cache_id in
+            let () = incr method_cache_id  in
+            cont3 obj' (fun obj' -> 
+              E.call ~info:Js_call_info.dummy 
+                 (E.call ~info:Js_call_info.dummy get 
+                    [obj'; label; E.small_int cache]) (obj'::args)
+              ) (* avoid duplicated compuattion *)
+
+
+          | Public (Some name) -> 
+
+
+            let js_no_arity obj' name = 
+              match args with 
+                | [] -> cont @@  E.dot obj' name 
+                | _ -> cont3 obj' (fun obj' -> E.bind_call obj' name args)
+            in 
+            begin
+              match Lam_methname.process name, obj with
+              | (Js_read_index, _name), _  ->
+                begin match args with
+                  | [] ->
+                    let i = Ext_ident.create "i" in
+                    cont3 obj' @@ fun obj' ->  
+                    E.fun_ [i]
+                      S.[return 
+                           (Js_array.ref_array obj' (E.var i)) ]
+                  | [x] -> 
+                    cont @@ Js_array.ref_array obj' x 
+                  |  x :: rest  ->
+                    cont @@
+                    E.call ~info:Js_call_info.dummy 
+                      (Js_array.ref_array obj' x ) 
+                      rest 
+                end
+              | (Js_write_index, _name), _  ->
+                let aux args =
+                  match args with
+                  | [] ->
+                    let i = Ext_ident.create "i" in
+                    let v = Ext_ident.create "v" in 
+                    E.fun_ [i; v ]
+                      S.[return (E.seq 
+                                   (Js_array.set_array
+                                      obj' 
+                                      (E.var i) 
+                                      (E.var v))
+                                   E.unit) 
+                        ]
+                  | [ i ]
+                    -> 
+                    let v = Ext_ident.create "v" in 
+                    E.fun_ [v]
+                      S.[return 
+                           (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
+                  | [x; y] -> 
+                    Js_array.set_array obj' x y 
+                  |  x :: y:: rest  ->
+                    E.call ~info:Js_call_info.dummy
+                      (Js_array.set_array obj' x y ) rest in
+                cont @@ aux args
+              | (Js_write, name), _ -> 
+                let  aux args =
+                  match args with
+                  | [] ->
+                    let v = Ext_ident.create "v" in
+                    E.fun_ [v]
+                      S.[return (E.assign (E.dot obj' name) (E.var v)) ]
+                  | [v] ->
+                    E.assign (E.dot obj' name)  v
+                  |  _ :: _  -> 
+                    (* TODO: better error message *)
+                    assert false
+
+                in
+                cont @@ aux args
+              | (Js_read, name), _ -> 
+                cont @@ E.dot obj' name              
+              | (Js (Some arity), name), _  -> 
+                cont @@
+                let args, n, rest = 
+                  Ext_list.try_take arity args  in
+                if n = arity then 
+                  match rest with
+                  | [] -> 
+                    E.call ~info:{arity=Full; call_info = Call_na}
+                      (E.dot obj' name) args 
+                  | _ ->  
+                    E.call ~info:Js_call_info.dummy 
+                      (E.call 
+                         ~info:{arity=Full; call_info = Call_na}
+                         (E.dot obj' name) args )
+                      rest 
+                else 
+                  let rest = Ext_list.init 
+                      (arity - n) (fun i -> Ext_ident.create Literals.prim) in
+                  E.fun_ rest 
+                    S.[return 
+                         (E.call 
+                            ~info:{arity=Full; call_info = Call_na }
+                            (E.dot obj' name)
+                            (args @ List.map E.var rest )                               
+                         ) ]                  
+              | (Js None, p_name), _  -> 
+                js_no_arity obj' p_name 
+              | _ , Lprim (Pccall {prim_name = _; _}, []) ->
+                (* we know obj is a truly js object,
+                    shall it always be global?
+                    shall it introduce dependency?
+                *)
+                js_no_arity obj' name 
+
+              (*TODO: if js has such variable -- all ocaml variables should be aliased *)
+              | _, Lvar id 
+                when Ext_ident.is_js_object id
+              (*TODO#11: check alias table as well,
+                here we do flow analysis
+                TODO#22: we can also track whether it's an ocaml object
+              *)->
+                js_no_arity obj' name 
+              | ((Ml _ | Unknown _), _), _  ->
+                (* For [Ml] or [Unknown]  the name is untouched *)
+                let cache = !method_cache_id in
                 incr method_cache_id ;
-              end in
-              (* Js_output.make [S.unknown_lambda lam] ~value:(E.unit ()) *)
+                cont3 obj' 
+                  (fun obj' -> E.public_method_call name obj' label 
+                      (Int32.of_int cache) args )
 
-              cont (E.public_method_call name obj' label (Int32.of_int cache) args )
-                (* avoid duplicated compuattion *)
-          end
+
+            end
+        end
       end
-
     (* TODO: object layer *)
     | Levent (lam,_lam_event) -> compile_lambda cxt lam
     (* [J.Empty,J.N] *)  (* TODO debugging, sourcemap, ignore lambda_event currently *)
