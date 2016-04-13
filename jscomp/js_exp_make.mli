@@ -224,6 +224,7 @@ val is_caml_block : ?comment:string -> t -> t
 val math : ?comment:string -> string -> t list -> t
 (** [math "abs"] --> Math["abs"] *)    
 
+(** TODO: FIXME *)
 val inc : unary_op
 
 val dec : unary_op

@@ -14,19 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
 (* Author: Hongbo Zhang  *)
 
+module E = Js_exp_make 
 
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
+module S = Js_stmt_make  
 
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
+let named_expression (e : J.expression)
+  :  (J.statement  * Ident.t) option = 
+  match e.expression_desc with 
+  | Var _ 
+  | Bool _ 
+  | Str _ 
+  | Number _ -> None 
+  | _ ->  
+    let obj = Ext_ident.create Literals.tmp in
+    let obj_code = 
+      S.define
+        ~kind:Strict obj e in 
+    
+    Some (obj_code, obj)

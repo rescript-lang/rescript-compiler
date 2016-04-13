@@ -2996,19 +2996,22 @@ function send_const(m, x, _) {
 
 function send_var(m, n, _) {
   return function (obj) {
-    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[n], m, 2), obj[n]);
+    var tmp = obj[n];
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m, 2), tmp);
   };
 }
 
 function send_env(m, e, n, _) {
   return function (obj) {
-    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[e][n], m, 3), obj[e][n]);
+    var tmp = obj[e][n];
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m, 3), tmp);
   };
 }
 
 function send_meth(m, n, _) {
   return function (obj) {
-    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, Caml_curry.app1(obj[0][n], obj), m, 4), Caml_curry.app1(obj[0][n], obj));
+    var tmp = Caml_curry.app1(obj[0][n], obj);
+    return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m, 4), tmp);
   };
 }
 

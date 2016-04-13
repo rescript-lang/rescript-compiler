@@ -612,6 +612,37 @@ function find_opt(p, _param) {
   };
 }
 
+function split_map(f, xs) {
+  var _bs = /* [] */0;
+  var _cs = /* [] */0;
+  var _xs = xs;
+  while(true) {
+    var xs$1 = _xs;
+    var cs = _cs;
+    var bs = _bs;
+    if (xs$1) {
+      var match = Caml_curry.app1(f, xs$1[0]);
+      _xs = xs$1[1];
+      _cs = /* :: */[
+        match[1],
+        cs
+      ];
+      _bs = /* :: */[
+        match[0],
+        bs
+      ];
+      continue ;
+      
+    }
+    else {
+      return /* tuple */[
+              List.rev(bs),
+              List.rev(cs)
+            ];
+    }
+  };
+}
+
 exports.filter_map      = filter_map;
 exports.same_length     = same_length;
 exports.filter_mapi     = filter_mapi;
@@ -639,4 +670,5 @@ exports.rev_iter        = rev_iter;
 exports.for_all2_no_exn = for_all2_no_exn;
 exports.find_no_exn     = find_no_exn;
 exports.find_opt        = find_opt;
+exports.split_map       = split_map;
 /* No side effect */

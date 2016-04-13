@@ -1224,7 +1224,8 @@ function method_impl(table, i, arr) {
           var n$31 = n$30;
           new_cache(table);
           return function (obj) {
-            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[n$31], m$9, 2), obj[n$31]);
+            var tmp = obj[n$31];
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m$9, 2), tmp);
           };
       case 22 : 
           var m$10 = next(/* () */0);
@@ -1235,7 +1236,8 @@ function method_impl(table, i, arr) {
           var n$33 = n$32;
           new_cache(table);
           return function (obj) {
-            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, obj[e$11][n$33], m$11, 3), obj[e$11][n$33]);
+            var tmp = obj[e$11][n$33];
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m$11, 3), tmp);
           };
       case 23 : 
           var m$12 = next(/* () */0);
@@ -1244,7 +1246,8 @@ function method_impl(table, i, arr) {
           var n$35 = n$34;
           new_cache(table);
           return function (obj) {
-            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, Caml_curry.app1(obj[0][n$35], obj), m$13, 4), Caml_curry.app1(obj[0][n$35], obj));
+            var tmp = Caml_curry.app1(obj[0][n$35], obj);
+            return Caml_curry.app1(Caml_curry.app3(Caml_oo.caml_get_public_method, tmp, m$13, 4), tmp);
           };
       
     }
