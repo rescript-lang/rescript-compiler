@@ -139,8 +139,15 @@ let no_side_effect init =
     method! statement s = 
       if not no_side_effect then self else 
       match s.statement_desc with 
-      | Throw _ ->  {< no_side_effect = false>}
-      | _ -> super#statement s 
+      | Throw _ 
+      | Debugger 
+      | Break 
+      | Variable _ 
+      | Continue _ ->  
+        {< no_side_effect = false>}
+      | Exp e -> self#expression e 
+      | Int_switch _ | String_switch _ | ForRange _ 
+      | If _ | While _   | Block _ | Return _ | Try _  -> super#statement s 
     method! list f x = 
       if not self#get_no_side_effect then self else super#list f x 
     method! expression s = 
