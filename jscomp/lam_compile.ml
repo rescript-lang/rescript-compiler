@@ -1272,6 +1272,22 @@ and
         | NeedValue, _ -> 
           Js_output.make block ~value:E.unit
       end
+    | (Ltrywith(
+        (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+        id, 
+        Lifthenelse(Lprim(Pintcomp(Ceq), 
+                          [Lvar id2 ; Lprim(Pgetglobal {name = "Not_found"}, _)]),
+                    cont, _reraise )
+      )
+      | Ltrywith(
+          (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+          id, 
+          Lifthenelse(Lprim(Pintcomp(Ceq), 
+                            [ Lprim(Pgetglobal {name = "Not_found"; _}, _); Lvar id2 ]),
+                      cont, _reraise )
+        )) when Ident.same id id2 
+      -> 
+      compile_lambda cxt (Ltrywith(body, id, cont))
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (* 
          tail --> should be renamed to `shouldReturn`  

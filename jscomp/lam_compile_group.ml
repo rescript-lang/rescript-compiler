@@ -406,7 +406,7 @@ let lambda_as_module
     Lam_current_unit.set_file filename ;  
     Lam_current_unit.iset_debug_file "caml_int64.ml";
     Ext_pervasives.with_file_as_chan 
-      (Ext_filename.chop_extension ~loc:__LOC__ filename ^  ".js")
+      (Ext_filename.chop_extension ~loc:__LOC__ filename ^  Js_config.get_ext())
       (fun chan -> Js_dump.dump_deps_program (compile ~filename false env sigs lam) chan)
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
