@@ -303,7 +303,7 @@ let translate
   | Pintoffloat -> 
     begin
       match args with 
-      | [e] -> e 
+      | [e] -> E.to_int32 e 
       | _ -> assert false 
     end
   | Pbintofint Pint64

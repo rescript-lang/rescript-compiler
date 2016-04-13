@@ -53,6 +53,7 @@ Mt.from_pair_suites __FILE__ @@ Mt.[
   );
 "modf_float2", (fun _ -> 
     Approx (b, 32.)
-  )
+  );
+"int_of_float", (fun _ -> Eq(int_of_float 3.2, 3))
 ] @ 
 from_pairs results
