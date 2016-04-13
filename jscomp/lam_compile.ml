@@ -1438,12 +1438,11 @@ and
                       rest 
                 end
               | (Js_write_index, _name), _  ->
-                let aux args =
-                  match args with
+                  begin match args with
                   | [] ->
                     let i = Ext_ident.create "i" in
                     let v = Ext_ident.create "v" in 
-                    E.fun_ [i; v ]
+                    cont3 obj' @@ fun obj' -> E.fun_ [i; v ]
                       S.[return (E.seq 
                                    (Js_array.set_array
                                       obj' 
@@ -1454,43 +1453,41 @@ and
                   | [ i ]
                     -> 
                     let v = Ext_ident.create "v" in 
-                    E.fun_ [v]
+                    cont3 obj' @@ fun obj' -> E.fun_ [v]
                       S.[return 
                            (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
                   | [x; y] -> 
-                    Js_array.set_array obj' x y 
+                    cont @@ Js_array.set_array obj' x y 
                   |  x :: y:: rest  ->
-                    E.call ~info:Js_call_info.dummy
-                      (Js_array.set_array obj' x y ) rest in
-                cont @@ aux args
+                    cont @@  E.call ~info:Js_call_info.dummy
+                      (Js_array.set_array obj' x y ) rest 
+                  end
               | (Js_write, name), _ -> 
-                let  aux args =
-                  match args with
+
+                  begin match args with
                   | [] ->
                     let v = Ext_ident.create "v" in
-                    E.fun_ [v]
+                    cont3 obj' @@ fun obj' -> E.fun_ [v]
                       S.[return (E.assign (E.dot obj' name) (E.var v)) ]
                   | [v] ->
-                    E.assign (E.dot obj' name)  v
+                    cont @@ E.assign (E.dot obj' name)  v
                   |  _ :: _  -> 
                     (* TODO: better error message *)
                     assert false
-
-                in
-                cont @@ aux args
+                  end
               | (Js_read, name), _ -> 
                 cont @@ E.dot obj' name              
               | (Js (Some arity), name), _  -> 
-                cont @@
+
                 let args, n, rest = 
                   Ext_list.try_take arity args  in
                 if n = arity then 
                   match rest with
                   | [] -> 
-                    E.call ~info:{arity=Full; call_info = Call_na}
+                    cont @@ E.call ~info:{arity=Full; call_info = Call_na}
                       (E.dot obj' name) args 
                   | _ ->  
-                    E.call ~info:Js_call_info.dummy 
+                    cont @@ E.call ~info:Js_call_info.dummy 
                       (E.call 
                          ~info:{arity=Full; call_info = Call_na}
                          (E.dot obj' name) args )
@@ -1498,7 +1495,7 @@ and
                 else 
                   let rest = Ext_list.init 
                       (arity - n) (fun i -> Ext_ident.create Literals.prim) in
-                  E.fun_ rest 
+                  cont3 obj' @@ fun obj' -> E.fun_ rest 
                     S.[return 
                          (E.call 
                             ~info:{arity=Full; call_info = Call_na }
