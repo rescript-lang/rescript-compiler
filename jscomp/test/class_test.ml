@@ -1,4 +1,4 @@
-let () = [%bs.debug]
+
 class point =
     object
       val mutable x = 0

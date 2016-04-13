@@ -12,8 +12,6 @@ var shared = [
 
 var shared$1 = ["x"];
 
-debugger;
-
 function point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared, shared$1);
   var move = ids[0];
@@ -150,4 +148,4 @@ exports.x0     = x0;
 exports.point2 = point2;
 exports.one    = one;
 exports.two    = two;
-/*  Not a pure module */
+/* point Not a pure module */
