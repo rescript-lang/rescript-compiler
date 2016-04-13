@@ -171,7 +171,20 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
                         };
                 }
               ],
-              /* [] */0
+              /* :: */[
+                /* tuple */[
+                  "int_of_float",
+                  function () {
+                    return /* Eq */{
+                            0: 3.2 | 0,
+                            1: 3,
+                            length: 2,
+                            tag: 0
+                          };
+                  }
+                ],
+                /* [] */0
+              ]
             ]
           ]
         ], from_pairs(results)));
