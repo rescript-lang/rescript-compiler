@@ -224,3 +224,6 @@ ffi_arity_test
 digest_test
 string_get_set_test
 exception_raise_test
+
+# class_test
+debug_keep_test
