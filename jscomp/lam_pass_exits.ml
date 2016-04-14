@@ -278,11 +278,12 @@ let subst_helper (subst : subst_tbl) query lam =
         (new_l,
          {sw with sw_consts = new_consts ; sw_blocks = new_blocks; sw_failaction = new_fail})
     | Lstringswitch(l,sw,d) ->
-      Lstringswitch
-        (simplif l,List.map (fun (s,l) -> s,simplif l) sw,
-         Misc.may_map simplif d)
+      Lam_comb.stringswitch
+        (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
+         (Misc.may_map simplif d)
     | Ltrywith (l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
-    | Lifthenelse (l1, l2, l3) -> Lifthenelse(simplif l1, simplif l2, simplif l3)
+    | Lifthenelse (l1, l2, l3) -> 
+      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lsequence (l1, l2) -> Lsequence(simplif l1, simplif l2)
     | Lwhile (l1, l2) -> Lwhile(simplif l1, simplif l2)
     | Lfor (v, l1, l2, dir, l3) ->

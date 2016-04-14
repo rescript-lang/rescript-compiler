@@ -94,12 +94,12 @@ let subst_lambda s lam =
                        sw_blocks = List.map subst_case sw.sw_blocks;
                        sw_failaction = subst_opt  sw.sw_failaction; })
     | Lstringswitch (arg,cases,default) ->
-      Lstringswitch
-        (subst arg,List.map subst_strcase cases,subst_opt default)
+      Lam_comb.stringswitch
+        (subst arg) (List.map subst_strcase cases) (subst_opt default)
     | Lstaticraise (i,args) ->  Lstaticraise (i, List.map subst args)
     | Lstaticcatch(e1, io, e2) -> Lstaticcatch(subst e1, io, subst e2)
     | Ltrywith(e1, exn, e2) -> Ltrywith(subst e1, exn, subst e2)
-    | Lifthenelse(e1, e2, e3) -> Lifthenelse(subst e1, subst e2, subst e3)
+    | Lifthenelse(e1, e2, e3) -> Lam_comb.if_ (subst e1) (subst e2) (subst e3)
     | Lsequence(e1, e2) -> Lsequence(subst e1, subst e2)
     | Lwhile(e1, e2) -> Lwhile(subst e1, subst e2)
     | Lfor(v, e1, e2, dir, e3) -> Lfor(v, subst e1, subst e2, dir, subst e3)

@@ -189,29 +189,25 @@ function cmpVar(x, y) {
   }
 }
 
-var zero = /* Zero */1;
-
-var one = /* One */0;
-
 function mkVar(x) {
-  return mkNode(zero, x, one);
+  return mkNode(/* Zero */1, x, /* One */0);
 }
 
 var andslot1 = Caml_array.caml_make_vect(1999, 0);
 
 var andslot2 = Caml_array.caml_make_vect(1999, 0);
 
-var andslot3 = Caml_array.caml_make_vect(1999, zero);
+var andslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
 
 var xorslot1 = Caml_array.caml_make_vect(1999, 0);
 
 var xorslot2 = Caml_array.caml_make_vect(1999, 0);
 
-var xorslot3 = Caml_array.caml_make_vect(1999, zero);
+var xorslot3 = Caml_array.caml_make_vect(1999, /* Zero */1);
 
 var notslot1 = Caml_array.caml_make_vect(1999, 0);
 
-var notslot2 = Caml_array.caml_make_vect(1999, one);
+var notslot2 = Caml_array.caml_make_vect(1999, /* One */0);
 
 function hash(x, y) {
   return ((x << 1) + y | 0) % 1999;
@@ -354,18 +350,18 @@ function xor(n1, n2) {
 function hwb(n) {
   var h = function (i, j) {
     if (i === j) {
-      return mkNode(zero, i, one);
+      return mkNode(/* Zero */1, i, /* One */0);
     }
     else {
-      return xor(and2(not(mkNode(zero, j, one)), h(i, j - 1 | 0)), and2(mkNode(zero, j, one), g(i, j - 1 | 0)));
+      return xor(and2(not(mkNode(/* Zero */1, j, /* One */0)), h(i, j - 1 | 0)), and2(mkNode(/* Zero */1, j, /* One */0), g(i, j - 1 | 0)));
     }
   };
   var g = function (i, j) {
     if (i === j) {
-      return mkNode(zero, i, one);
+      return mkNode(/* Zero */1, i, /* One */0);
     }
     else {
-      return xor(and2(not(mkNode(zero, i, one)), h(i + 1 | 0, j)), and2(mkNode(zero, i, one), g(i + 1 | 0, j)));
+      return xor(and2(not(mkNode(/* Zero */1, i, /* One */0)), h(i + 1 | 0, j)), and2(mkNode(/* Zero */1, i, /* One */0), g(i + 1 | 0, j)));
     }
   };
   return h(0, n - 1 | 0);
@@ -436,6 +432,10 @@ function main() {
 }
 
 main(/* () */0);
+
+var zero = /* Zero */1;
+
+var one = /* One */0;
 
 var cacheSize = 1999;
 

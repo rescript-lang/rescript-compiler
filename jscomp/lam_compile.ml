@@ -635,7 +635,7 @@ and
         | {should_return = True _ } 
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt (Lifthenelse (l, r, Lam_util.lam_false))
+          compile_lambda cxt (Lam_comb.if_ l r Lam_util.lam_false )
         | _ -> 
           let l_block,l_expr = 
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with 
@@ -658,7 +658,7 @@ and
         | {should_return = True _ }
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt (Lifthenelse (l, Lam_util.lam_true, r))
+          compile_lambda cxt @@ Lam_comb.if_  l Lam_util.lam_true r
         | _ ->
           let l_block,l_expr =
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with

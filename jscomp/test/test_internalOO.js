@@ -27,8 +27,6 @@ var params = /* record */[
 
 var step = Sys.word_size / 16 | 0;
 
-var dummy_item = /* () */0;
-
 function public_method_label(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
@@ -2345,7 +2343,7 @@ var Labs = [
 
 var dummy_table = /* record */[
   0,
-  /* array */[dummy_item],
+  /* array */[/* () */0],
   /* Empty */0,
   /* Empty */0,
   /* [] */0,
@@ -3175,6 +3173,8 @@ function stats() {
 }
 
 var initial_object_size = 2;
+
+var dummy_item = /* () */0;
 
 exports.copy                               = copy;
 exports.params                             = params;

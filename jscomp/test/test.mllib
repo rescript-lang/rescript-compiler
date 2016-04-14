@@ -227,3 +227,4 @@ exception_raise_test
 
 class_test
 debug_keep_test
+const_test

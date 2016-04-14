@@ -313,17 +313,17 @@ let deep_flatten
                    | Some x -> Some (aux x)
                  end})
     | Lstringswitch(l, sw, d) ->
-      Lstringswitch(aux  l ,
-                    List.map (fun (i, l) -> i,aux  l) sw,
-                    begin 
-                      match d with
-                      | Some d -> Some (aux d )
-                      | None -> None
-                    end)
+      Lam_comb.stringswitch (aux  l) 
+                    (List.map (fun (i, l) -> i,aux  l) sw)
+                    (match d with
+                     | Some d -> Some (aux d )
+                     | None -> None)
+
     | Lstaticraise (i,ls) -> Lstaticraise(i, List.map (aux ) ls)
     | Lstaticcatch(l1, (i,x), l2) -> Lstaticcatch(aux  l1, (i,x), aux  l2)
     | Ltrywith(l1, v, l2) -> Ltrywith(aux  l1,v, aux  l2)
-    | Lifthenelse(l1, l2, l3) -> Lifthenelse(aux  l1, aux  l2, aux  l3)
+    | Lifthenelse(l1, l2, l3) -> 
+      Lam_comb.if_ (aux  l1) (aux l2) (aux l3)
     | Lwhile(l1, l2) -> Lwhile(aux  l1, aux l2)
     | Lfor(flag, l1, l2, dir, l3) -> Lfor(flag,aux  l1, aux  l2, dir, aux  l3)
     | Lassign(v, l) ->

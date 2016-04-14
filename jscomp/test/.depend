@@ -78,6 +78,8 @@ const_defs.cmo :
 const_defs.cmx :
 const_defs_test.cmo : const_defs.cmo
 const_defs_test.cmx : const_defs.cmx
+const_test.cmo :
+const_test.cmx :
 cont_int_fold_test.cmo :
 cont_int_fold_test.cmx :
 cps_test.cmo : mt.cmi ../stdlib/array.cmi
@@ -592,6 +594,8 @@ const_defs.cmo :
 const_defs.cmj :
 const_defs_test.cmo : const_defs.cmo
 const_defs_test.cmj : const_defs.cmj
+const_test.cmo :
+const_test.cmj :
 cont_int_fold_test.cmo :
 cont_int_fold_test.cmj :
 cps_test.cmo : mt.cmi ../stdlib/array.cmi

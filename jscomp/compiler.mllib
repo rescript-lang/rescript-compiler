@@ -28,6 +28,7 @@ ext_map
 ext_hashtbl
 
 lam_mk
+lam_comb
 lam_compile_env
 lam_dispatch_primitive
 lam_stats
