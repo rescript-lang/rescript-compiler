@@ -289,7 +289,6 @@ function Make(Ord) {
             ];
     }
   };
-  var empty = /* Empty */0;
   var is_empty = function (param) {
     if (param) {
       return /* false */0;
@@ -881,7 +880,7 @@ function Make(Ord) {
       }
     }
     else {
-      return empty;
+      return /* Empty */0;
     }
   };
   return /* module */[
@@ -899,7 +898,7 @@ function Make(Ord) {
           merge,
           concat,
           split,
-          empty,
+          /* Empty */0,
           is_empty,
           mem,
           remove,

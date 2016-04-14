@@ -706,28 +706,9 @@ let rec string_equal ?comment (e0 : t) (e1 : t) : t =
 let is_type_number ?comment (e : t) : t = 
   string_equal ?comment (typeof e) (str "number")    
 
-(* handle comment *)
-
-let inc ?comment (e : t ) =
-  match e with
-  | {expression_desc = Number (Int ({i; _} as v));_ } -> 
-    {e with expression_desc = Number (Int {v with i  = Int32.add i  1l} )} (*comment ?*)
-  | _ -> {comment ; expression_desc = Bin(Plus, e, one_int_literal)}
-    (* bin ?comment Plus e (int 1 ) *)
-
-
 
 let string_of_small_int_array ?comment xs : t = 
   {expression_desc = String_of_small_int_array xs; comment}
-
-
-
-let dec ?comment (e : t ) =
-  match e with
-  | {expression_desc = Number (Int ({i; _} as v));_ } -> 
-    {e with expression_desc = Number (Int ({ v with i = Int32.sub i  1l }))} (*comment ?*)
-  | _ -> {comment ; expression_desc = Bin(Minus, e , one_int_literal)}
-    (* bin ?comment Minus e (int 1 ) *)
 
 
 

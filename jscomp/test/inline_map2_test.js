@@ -857,8 +857,6 @@ function bal(l, x, d, r) {
   }
 }
 
-var empty = /* Empty */0;
-
 function is_empty(param) {
   if (param) {
     return /* false */0;
@@ -1517,7 +1515,7 @@ var IntMap = /* module */[
   create,
   singleton,
   bal,
-  empty,
+  /* Empty */0,
   is_empty,
   add,
   find,
@@ -1552,7 +1550,7 @@ var IntMap = /* module */[
 
 var m = List.fold_left(function (acc, param) {
       return add(param[0], param[1], acc);
-    }, empty, /* :: */[
+    }, /* Empty */0, /* :: */[
       /* tuple */[
         10,
         /* "a" */97
@@ -1680,8 +1678,6 @@ function bal$1(l, x, d, r) {
           };
   }
 }
-
-var empty$1 = /* Empty */0;
 
 function is_empty$1(param) {
   if (param) {
@@ -2339,7 +2335,7 @@ var SMap = /* module */[
   create$1,
   singleton$1,
   bal$1,
-  empty$1,
+  /* Empty */0,
   is_empty$1,
   add$1,
   find$1,
@@ -2374,7 +2370,7 @@ var SMap = /* module */[
 
 var s = List.fold_left(function (acc, param) {
       return add$1(param[0], param[1], acc);
-    }, empty$1, /* :: */[
+    }, /* Empty */0, /* :: */[
       /* tuple */[
         "10",
         /* "a" */97
@@ -2427,6 +2423,8 @@ Mt.from_pair_suites("inline_map2_test.ml", /* :: */[
         /* [] */0
       ]
     ]);
+
+var empty = /* Empty */0;
 
 exports.Make   = Make;
 exports.IntMap = IntMap;

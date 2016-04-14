@@ -5683,10 +5683,9 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 78 : 
             var match$4 = parse_literal(str_ind, str_ind, end_ind);
             var fmt_rest$2 = match$4[0];
-            var counter = /* Token_counter */2;
             if (ign_used[0] = /* true */1, ign) {
               var ignored$1 = /* Ignored_scan_get_counter */{
-                0: counter,
+                0: /* Token_counter */2,
                 length: 1,
                 tag: 10
               };
@@ -5704,7 +5703,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             else {
               fmt_result = /* Fmt_EBB */{
                 0: /* Scan_get_counter */{
-                  0: counter,
+                  0: /* Token_counter */2,
                   1: fmt_rest$2,
                   length: 2,
                   tag: 21
@@ -6182,10 +6181,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
           if (str_ind === end_ind || !is_int_base(str.charCodeAt(str_ind))) {
             var match$20 = parse_literal(str_ind, str_ind, end_ind);
             var fmt_rest$10 = match$20[0];
-            var counter$1 = counter_of_char(symb);
+            var counter = counter_of_char(symb);
             if (ign_used[0] = /* true */1, ign) {
               var ignored$7 = /* Ignored_scan_get_counter */{
-                0: counter$1,
+                0: counter,
                 length: 1,
                 tag: 10
               };
@@ -6203,7 +6202,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             else {
               fmt_result = /* Fmt_EBB */{
                 0: /* Scan_get_counter */{
-                  0: counter$1,
+                  0: counter,
                   1: fmt_rest$10,
                   length: 2,
                   tag: 21

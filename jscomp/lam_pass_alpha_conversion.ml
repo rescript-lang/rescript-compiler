@@ -81,17 +81,17 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                    | Some x -> Some (simpl x)
                  end})
     | Lstringswitch (l, sw, d) ->
-      Lstringswitch (simpl  l ,
-                    List.map (fun (i, l) -> i,simpl  l) sw,
-                    begin 
-                      match d with
+      Lam_comb.stringswitch (simpl  l)
+                    (List.map (fun (i, l) -> i,simpl  l) sw)
+                    (match d with
                       | Some d -> Some (simpl d )
-                      | None -> None
-                    end)
+                      | None -> None)
+                    
     | Lstaticraise (i,ls) -> Lstaticraise(i, List.map (simpl ) ls)
     | Lstaticcatch (l1, (i,x), l2) -> Lstaticcatch(simpl  l1, (i,x), simpl  l2)
     | Ltrywith (l1, v, l2) -> Ltrywith(simpl  l1,v, simpl  l2)
-    | Lifthenelse (l1, l2, l3) -> Lifthenelse(simpl  l1, simpl  l2, simpl  l3)
+    | Lifthenelse (l1, l2, l3) -> 
+      Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
     | Lsequence (l1, l2) -> Lsequence(simpl  l1, simpl  l2)
     | Lwhile (l1, l2) -> Lwhile(simpl  l1, simpl l2)
     | Lfor (flag, l1, l2, dir, l3) -> Lfor(flag,simpl  l1, simpl  l2, dir, simpl  l3)

@@ -61,19 +61,19 @@ let simplify_alias
         begin match x with 
         | Null 
           -> 
-          Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil]) ,simpl l3,  simpl l2)
+          Lam_comb.if_ ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil])) (simpl l3)  (simpl l2)
         | Undefined 
           -> 
-          Lifthenelse ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.undefined]) ,simpl l3,  simpl l2)
+          Lam_comb.if_ ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.undefined])) (simpl l3)  (simpl l2)
         | Normal -> 
-          Lifthenelse (l1, simpl l2, simpl l3)
+          Lam_comb.if_ l1 (simpl l2) (simpl l3)
         end
-      | _ -> Lifthenelse (l1, simpl l2, simpl l3)
+      | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
 
-      | exception Not_found -> Lifthenelse (l1, simpl l2, simpl l3)
+      | exception Not_found -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
       end
     | Lifthenelse (l1, l2, l3) -> 
-        Lifthenelse(simpl  l1, simpl  l2, simpl  l3)
+        Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
 
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->

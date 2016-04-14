@@ -415,8 +415,6 @@ function split(x, param) {
   }
 }
 
-var empty = /* Empty */0;
-
 function is_empty(param) {
   if (param) {
     return /* false */0;
@@ -1037,12 +1035,12 @@ function of_list(l) {
     }
   }
   else {
-    return empty;
+    return /* Empty */0;
   }
 }
 
 var ASet = [
-  empty,
+  /* Empty */0,
   is_empty,
   mem,
   add,

@@ -132,9 +132,9 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
               })
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
-      Lstringswitch( l ,
-                     List.map (fun (i, l) -> i,aux  l) sw,
-                     option_map d)
+      Lam_comb.stringswitch l 
+                     (List.map (fun (i, l) -> i,aux  l) sw)
+                     (option_map d)
     | Lstaticraise (i,ls) -> Lstaticraise(i, List.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
@@ -145,7 +145,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lifthenelse(l1,  l2,   l3)
+      Lam_comb.if_ l1  l2   l3
     | Lsequence(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in

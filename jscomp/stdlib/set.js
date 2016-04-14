@@ -276,7 +276,6 @@ function Make(funarg) {
             ];
     }
   };
-  var empty = /* Empty */0;
   var is_empty = function (param) {
     if (param) {
       return /* false */0;
@@ -877,11 +876,11 @@ function Make(funarg) {
       }
     }
     else {
-      return empty;
+      return /* Empty */0;
     }
   };
   return [
-          empty,
+          /* Empty */0,
           is_empty,
           mem,
           add,

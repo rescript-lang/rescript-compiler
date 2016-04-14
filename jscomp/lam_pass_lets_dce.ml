@@ -85,9 +85,7 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
   | Ltrywith(e1, v, e2) ->
     Ltrywith(eliminate_ref id e1, v, eliminate_ref id e2)
   | Lifthenelse(e1, e2, e3) ->
-    Lifthenelse(eliminate_ref id e1,
-                eliminate_ref id e2,
-                eliminate_ref id e3)
+    Lam_comb.if_ (eliminate_ref id e1) (eliminate_ref id e2) (eliminate_ref id e3)
   | Lsequence(e1, e2) ->
     Lsequence(eliminate_ref id e1, eliminate_ref id e2)
   | Lwhile(e1, e2) ->
@@ -164,9 +162,11 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
         | {times = 0; _}, _  -> simplif l2 
         | {times = 1; captured = false }, _ 
         | {times = 1; captured = true }, (Lconst _ | Lvar _)
-        |  _, (Lconst (Const_base (
-              Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
-              | Const_nativeint _ ))
+        |  _, (Lconst 
+                 (Const_base (
+                     Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
+                     | Const_nativeint _ )
+                 | Lambda.Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
               | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
             ) 
           (* Const_int64 is no longer primitive
@@ -237,15 +237,16 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
          {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
                   sw_failaction = new_fail})
     | Lstringswitch (l,sw,d) ->
-      Lstringswitch
-        (simplif l,List.map (fun (s,l) -> s,simplif l) sw,
-         Misc.may_map simplif d)
+      Lam_comb.stringswitch
+        (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
+         (Misc.may_map simplif d)
     | Lstaticraise (i,ls) ->
       Lstaticraise (i, List.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->
       Lstaticcatch (simplif l1, (i,args), simplif l2)
     | Ltrywith(l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
-    | Lifthenelse(l1, l2, l3) -> Lifthenelse(simplif l1, simplif l2, simplif l3)
+    | Lifthenelse(l1, l2, l3) -> 
+      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lwhile(l1, l2) -> Lwhile(simplif l1, simplif l2)
     | Lfor(v, l1, l2, dir, l3) ->
       Lfor(v, simplif l1, simplif l2, dir, simplif l3)
