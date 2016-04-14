@@ -42,9 +42,18 @@ let undefined_recursive_module = 248, "Undefined_recursive_module", -11
 let id = ref 0n
 
 
+(* see  #251
+   {[
+     CAMLprim value caml_set_oo_id (value obj) {
+       Field(obj, 1) = oo_last_id;
+       oo_last_id += 2;
+       return obj;
+     }
+
+   ]}*)
 let caml_set_oo_id (b : exception_block)  = 
-    Obj.set_field (Obj.repr b) 2 (Obj.repr !id);
-    id := Nativeint.add !id  1n;
+    Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
+    id := Nativeint.add !id  1n; 
     b
 
 let get_id () = 

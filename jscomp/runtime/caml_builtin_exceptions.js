@@ -5,7 +5,7 @@
 var id = [0];
 
 function caml_set_oo_id(b) {
-  b[2] = id[0];
+  b[1] = id[0];
   id[0] += 1;
   return b;
 }
