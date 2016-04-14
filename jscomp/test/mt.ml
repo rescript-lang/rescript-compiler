@@ -31,19 +31,19 @@ let from_suites name (suite :  (string * ('a -> unit)) list) =
   describe name (fun _ -> 
     List.iter (fun (name, code) -> it name code) suite)
 
-type _ eq = 
-  | Eq :  'a *'a  -> _ eq
-  | Neq : 'a * 'a -> _ eq
-  | Approx : float * float -> _ eq  
-  | ThrowAny : (unit -> unit) -> _ eq
+type eq = 
+  | Eq :  'a *'a  ->  eq
+  | Neq : 'a * 'a ->  eq
+  | Approx : float * float ->  eq  
+  | ThrowAny : (unit -> unit) ->  eq
   (* TODO: | Exception : exn -> (unit -> unit) -> _ eq  *)
 
-type 'a pair_suites = (string * (unit -> 'a eq)) list
+type  pair_suites = (string * (unit ->  eq)) list
 
 let close_enough x y = 
   abs_float (x -. y) < (* epsilon_float *) 0.0000001
 
-let from_pair_suites name (suites : 'a pair_suites) = 
+let from_pair_suites name (suites :  pair_suites) = 
   describe name (fun _ -> 
       suites |> 
       List.iter (fun (name, code) -> 
