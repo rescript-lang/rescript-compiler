@@ -1,3 +1,10 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
+
 class point x_init =
     object
       val mutable x = x_init
@@ -7,8 +14,8 @@ class point x_init =
 
 let p = new point 7 
 
+let () = eq __LOC__ (p # get_x) 7  
 
-;; Js.log @@ p #get_x  (**  7 *)
 
 class adjusted_point x_init =
     let origin = (x_init / 10) * 10 in
@@ -18,12 +25,13 @@ class adjusted_point x_init =
       method get_offset = x - origin
       method move d = x <- x + d
     end
-
-;; Js.log @@ (new adjusted_point 31) # get_x (* 30 *)
+let () =  eq __LOC__ ((new adjusted_point 31) # get_x) 30 
+(* ;; Js.log @@ (new adjusted_point 31) # get_x (\* 30 *\) *)
 
 class adjusted_point2 x_init =  point ((x_init / 10) * 10)
 
-;; Js.log @@ (new adjusted_point2 31) # get_x (* 30 *)
+let () = eq __LOC__ ( (new adjusted_point2 31) #get_x) 30
+(* ;; Js.log @@ (new adjusted_point2 31) # get_x (\* 30 *\) *)
 
 
 
@@ -38,8 +46,8 @@ class printable_point x_init =
 let p = new printable_point 7
 
 
-
-;; Js.log  p#print (* 7 *)
+let ()= eq __LOC__ (p#print)  7  
+(* ;; Js.log  p#print (\* 7 *\) *)
 
 
 let my_int =
@@ -70,7 +78,8 @@ class printable_point2 x_init =
 
 let p = new printable_point2 31 
 
-;; Js.log v  (* [30, 3]*)
+let () = eq __LOC__ v [|30;3|]
+(* ;; Js.log v  (\* [30, 3]*\) *)
 
 
 (* virtual methods *)
@@ -95,7 +104,8 @@ let v =
   h # move 32;
   h # get_offset
 
-;;Js.log v (* 32 *)
+let () = eq __LOC__ v 32
+(* ;;Js.log v (\* 32 *\) *)
 
 class virtual abstract_point2 =
     object
@@ -115,7 +125,8 @@ let vv =
   h # move 32;
   h # get_offset
 
-;; Js.log vv (* 32 *) 
+let () = eq __LOC__ vv 32 
+(* ;; Js.log vv (\* 32 *\)  *)
 
 
 class restricted_point x_init =
@@ -130,7 +141,8 @@ let p = new restricted_point 0;;
 
 let h = p # bump ; p#get_x 
 
-;; Js.log h  (* 1 *)
+let () = eq __LOC__ h 1 
+(* ;; Js.log h  (\* 1 *\) *)
 
 
 class point_again x =
@@ -145,8 +157,9 @@ let hh =
   p # bump;
   p# bump ; 
   p#get_x 
-    
-;; Js.log hh  (* 8 *)
+
+let () = eq __LOC__ hh 8 
+(* ;; Js.log hh  (\* 8 *\) *)
 
 
 class point_again2 x =
@@ -160,8 +173,9 @@ let hhh =
   p # bump;
   p# bump ; 
   p#get_x 
-    
-;; Js.log hhh  (* 35 *)
+
+let () = eq __LOC__ hhh 35    
+(* ;; Js.log hhh  (\* 35 *\) *)
 
 
 class point_again3 x =
@@ -178,4 +192,6 @@ let hhhh =
   p# bump ; 
   p#get_x 
 
-;; Js.log hhhh (* 305 *)
+let () = eq __LOC__ hhhh 305
+(* ;; Js.log hhhh (\* 305 *\) *)
+;; Mt.from_pair_suites __FILE__ !suites

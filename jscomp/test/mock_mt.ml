@@ -1,12 +1,12 @@
-type + 'a eq = 'a Mt.eq = 
-  | Eq :  'a *'a  -> _ eq
-  | Neq : 'a * 'a -> _ eq
-  | Approx : float * float -> _ eq  
-  | ThrowAny : (unit -> unit) -> _ eq
-type + 'a pair_suites = (string * (unit -> 'a eq)) list
+type  eq = Mt.eq = 
+  | Eq :  'a *'a  ->  eq
+  | Neq : 'a * 'a ->  eq
+  | Approx : float * float ->  eq  
+  | ThrowAny : (unit -> unit) ->  eq
+type  pair_suites = (string * (unit ->  eq)) list
 
 
-let from_pair_suites (name : string) (suites : 'a pair_suites) = 
+let from_pair_suites (name : string) (suites :  pair_suites) = 
   Js.log (name, "testing");
   List.iter (fun (name, code) -> 
               match code () with 

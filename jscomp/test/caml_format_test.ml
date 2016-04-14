@@ -32,7 +32,7 @@ let to_str s = int_of_string s
 let v = Printf.sprintf "%3d" 3333
 external format_int : string -> int -> string = "caml_format_int"
 
-let suites : _ Mt.pair_suites = 
+let suites :  Mt.pair_suites = 
   from_of_string of_string @
   ["isnan_of_string", (fun _ -> 
        Mt.Eq (true,classify_float( float_of_string "nan") = FP_nan))] @

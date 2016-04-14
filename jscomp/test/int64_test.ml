@@ -60,7 +60,7 @@ let shift_right_logical_suites =
   )
 let rec fib n a b = if n = 0 then a else  fib (n-1) b (Int64.add a b);;
 let rec fac n acc = if n = 0 then acc else fac (n-1) (Int64.mul acc (Int64.of_int n));;
-let suites : 'a Mt.pair_suites = Mt.[
+let suites :  Mt.pair_suites = Mt.[
     "add_one", (fun _ -> Eq (v, 2147483648L));
     "add_2", (fun _ -> Eq(4294967294L, Int64.(add a a )));
     "add_3", (fun _ -> Eq(0L, Int64.(add 0L 0L)));
