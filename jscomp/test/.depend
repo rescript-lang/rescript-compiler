@@ -66,6 +66,14 @@ class3_test.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo \
     ../stdlib/array.cmi
 class3_test.cmx : mt.cmx ../stdlib/list.cmx ../lib/js.cmx \
     ../stdlib/array.cmx
+class4_test.cmo : mt.cmi
+class4_test.cmx : mt.cmx
+class5_test.cmo : mt.cmi ../stdlib/list.cmi
+class5_test.cmx : mt.cmx ../stdlib/list.cmx
+class6_test.cmo : mt.cmi
+class6_test.cmx : mt.cmx
+class7_test.cmo : ../stdlib/oo.cmi mt.cmi
+class7_test.cmx : ../stdlib/oo.cmx mt.cmx
 class_test.cmo : mt.cmi
 class_test.cmx : mt.cmx
 class_type_ffi_test.cmo : ../lib/js.cmo
@@ -586,6 +594,14 @@ class3_test.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo \
     ../stdlib/array.cmi
 class3_test.cmj : mt.cmj ../stdlib/list.cmj ../lib/js.cmj \
     ../stdlib/array.cmj
+class4_test.cmo : mt.cmi
+class4_test.cmj : mt.cmj
+class5_test.cmo : mt.cmi ../stdlib/list.cmi
+class5_test.cmj : mt.cmj ../stdlib/list.cmj
+class6_test.cmo : mt.cmi
+class6_test.cmj : mt.cmj
+class7_test.cmo : ../stdlib/oo.cmi mt.cmi
+class7_test.cmj : ../stdlib/oo.cmj mt.cmj
 class_test.cmo : mt.cmi
 class_test.cmj : mt.cmj
 class_type_ffi_test.cmo : ../lib/js.cmo
