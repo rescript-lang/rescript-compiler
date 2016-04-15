@@ -38,16 +38,23 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
               if x = len 
               then 
                 Lambda.Lapply(simpl l1,
-                              List.map simpl ll, {info with apply_status = Full} )
+                              List.map simpl ll,
+                              {info with apply_status = App_ml_full} )
               else if x > len  
               then 
                 let fn = simpl l1 in
                 let args = List.map simpl ll in
-                Lam_util.eta_conversion (x - len) {info with  apply_status = Full} fn args 
+                Lam_util.eta_conversion (x - len) 
+                  {info with  apply_status = App_ml_full}
+                  fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
                 Lapply (
-                  Lapply(simpl l1, List.map simpl first, {info with apply_status = Full}),
+                  Lapply(simpl l1, 
+                         List.map simpl first, 
+                         {
+                           info with apply_status = App_ml_full
+                         }),
                   (List.map simpl rest), info) (* TODO refien *)
             | _ -> Lapply(simpl l1, List.map simpl ll,  info )
           in take args

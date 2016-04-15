@@ -464,15 +464,15 @@ and
 
 
     | Lapply(
-        Lapply(an, args', ({apply_status = NA} as _info1)),
+        Lapply(an, args', ({apply_status = App_na} as _info1)),
         args, 
-        ({apply_status = NA} as _info2))
+        ({apply_status = App_na} as _info2))
       ->    
       (* After inlining we can generate such code, 
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info NA)))
+        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info App_na)))
     (* External function calll *)
     | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
 
@@ -582,8 +582,13 @@ and
 
             Js_output.handle_block_return st should_return lam args_code 
               (E.call ~info:(match fn, info with 
-                   | _, { apply_status = Full} -> {arity = Full ; call_info = Call_ml}
-                   | _,  { apply_status = NA} -> {arity = NA; call_info = Call_ml } ) fn_code args) 
+                   | _, { apply_status = App_ml_full} -> 
+                     {arity = Full ; call_info = Call_ml}
+                   | _, { apply_status = App_js_full} -> 
+                     {arity = Full ; call_info = Call_na}
+                   | _,  { apply_status = App_na} -> 
+                     {arity = NA; call_info = Call_ml }
+                 ) fn_code args) 
         end;
       end
 
