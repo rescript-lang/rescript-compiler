@@ -7,6 +7,7 @@ inline_edge_cases.cmi :
 inline_map_test.cmi :
 map_test.cmi :
 mt.cmi :
+mt_global.cmi : mt.cmi
 test_for_map2.cmi :
 test_is_js.cmi :
 ui_defs.cmi :
@@ -156,10 +157,10 @@ float_of_bits_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
 float_of_bits_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/array.cmx
-float_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
-float_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
-    ../stdlib/array.cmx
+float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
+    mt.cmi ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
+float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
+    mt.cmx ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmo : mt.cmi
@@ -268,6 +269,8 @@ module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmo : ../stdlib/list.cmi mt.cmi
 mt.cmx : ../stdlib/list.cmx mt.cmi
+mt_global.cmo : mt.cmi mt_global.cmi
+mt_global.cmx : mt.cmx mt_global.cmi
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmx : ../stdlib/sys.cmx ../stdlib/lexing.cmx
 obj_magic_test.cmo : ../stdlib/obj.cmi mt.cmi
@@ -688,10 +691,10 @@ float_of_bits_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
 float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
-float_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
-    ../stdlib/array.cmi
-float_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
-    ../stdlib/array.cmj
+float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
+    mt.cmi ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
+float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
+    mt.cmj ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmi
@@ -800,6 +803,8 @@ module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi mt.cmi
 mt.cmj : ../stdlib/list.cmj mt.cmi
+mt_global.cmo : mt.cmi mt_global.cmi
+mt_global.cmj : mt.cmj mt_global.cmi
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmj : ../stdlib/sys.cmj ../stdlib/lexing.cmj
 obj_magic_test.cmo : ../stdlib/obj.cmi mt.cmi
