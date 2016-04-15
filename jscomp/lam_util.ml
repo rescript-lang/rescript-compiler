@@ -384,5 +384,6 @@ let eta_conversion n info fn args =
   end
 
 
+(* FIXME: application location is important for error message *)
 let default_apply_info : Lambda.apply_info = 
-  { apply_status = NA ; apply_loc = Location.none }
+  { apply_status = App_na ; apply_loc = Location.none }
