@@ -17,14 +17,12 @@ function Make(Ord) {
   var create = function (l, v, r) {
     var hl = l ? l[3] : 0;
     var hr = r ? r[3] : 0;
-    return /* Node */{
-            0: l,
-            1: v,
-            2: r,
-            3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-            length: 4,
-            tag: 0
-          };
+    return /* Node */[
+            l,
+            v,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
   };
   var bal = function (l, v, r) {
     var hl = l ? l[3] : 0;
@@ -80,14 +78,12 @@ function Make(Ord) {
       }
     }
     else {
-      return /* Node */{
-              0: l,
-              1: v,
-              2: r,
-              3: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-              length: 4,
-              tag: 0
-            };
+      return /* Node */[
+              l,
+              v,
+              r,
+              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            ];
     }
   };
   var add = function (x, t) {
@@ -109,25 +105,21 @@ function Make(Ord) {
       }
     }
     else {
-      return /* Node */{
-              0: /* Empty */0,
-              1: x,
-              2: /* Empty */0,
-              3: 1,
-              length: 4,
-              tag: 0
-            };
+      return /* Node */[
+              /* Empty */0,
+              x,
+              /* Empty */0,
+              1
+            ];
     }
   };
   var singleton = function (x) {
-    return /* Node */{
-            0: /* Empty */0,
-            1: x,
-            2: /* Empty */0,
-            3: 1,
-            length: 4,
-            tag: 0
-          };
+    return /* Node */[
+            /* Empty */0,
+            x,
+            /* Empty */0,
+            1
+          ];
   };
   var add_min_element = function (v, param) {
     if (param) {
@@ -421,13 +413,11 @@ function Make(Ord) {
       var e = _e;
       var s = _s;
       if (s) {
-        _e = /* More */{
-          0: s[1],
-          1: s[2],
-          2: e,
-          length: 3,
-          tag: 0
-        };
+        _e = /* More */[
+          s[1],
+          s[2],
+          e
+        ];
         _s = s[0];
         continue ;
         
@@ -486,14 +476,12 @@ function Make(Ord) {
           var c = Caml_curry.app2(Ord[0], v1, s2[1]);
           if (c) {
             if (c < 0) {
-              if (subset(/* Node */{
-                      0: l1,
-                      1: v1,
-                      2: /* Empty */0,
-                      3: 0,
-                      length: 4,
-                      tag: 0
-                    }, l2)) {
+              if (subset(/* Node */[
+                      l1,
+                      v1,
+                      /* Empty */0,
+                      0
+                    ], l2)) {
                 _s1 = r1;
                 continue ;
                 
@@ -502,14 +490,12 @@ function Make(Ord) {
                 return /* false */0;
               }
             }
-            else if (subset(/* Node */{
-                    0: /* Empty */0,
-                    1: v1,
-                    2: r1,
-                    3: 0,
-                    length: 4,
-                    tag: 0
-                  }, r2)) {
+            else if (subset(/* Node */[
+                    /* Empty */0,
+                    v1,
+                    r1,
+                    0
+                  ], r2)) {
               _s1 = l1;
               continue ;
               
@@ -723,14 +709,12 @@ function Make(Ord) {
           case 1 : 
               if (l) {
                 return /* tuple */[
-                        /* Node */{
-                          0: /* Empty */0,
-                          1: l[0],
-                          2: /* Empty */0,
-                          3: 1,
-                          length: 4,
-                          tag: 0
-                        },
+                        /* Node */[
+                          /* Empty */0,
+                          l[0],
+                          /* Empty */0,
+                          1
+                        ],
                         l[1]
                       ];
               }
@@ -743,21 +727,17 @@ function Make(Ord) {
                 var match = l[1];
                 if (match) {
                   return /* tuple */[
-                          /* Node */{
-                            0: /* Node */{
-                              0: /* Empty */0,
-                              1: l[0],
-                              2: /* Empty */0,
-                              3: 1,
-                              length: 4,
-                              tag: 0
-                            },
-                            1: match[0],
-                            2: /* Empty */0,
-                            3: 2,
-                            length: 4,
-                            tag: 0
-                          },
+                          /* Node */[
+                            /* Node */[
+                              /* Empty */0,
+                              l[0],
+                              /* Empty */0,
+                              1
+                            ],
+                            match[0],
+                            /* Empty */0,
+                            2
+                          ],
                           match[1]
                         ];
                 }
@@ -776,28 +756,22 @@ function Make(Ord) {
                   var match$2 = match$1[1];
                   if (match$2) {
                     return /* tuple */[
-                            /* Node */{
-                              0: /* Node */{
-                                0: /* Empty */0,
-                                1: l[0],
-                                2: /* Empty */0,
-                                3: 1,
-                                length: 4,
-                                tag: 0
-                              },
-                              1: match$1[0],
-                              2: /* Node */{
-                                0: /* Empty */0,
-                                1: match$2[0],
-                                2: /* Empty */0,
-                                3: 1,
-                                length: 4,
-                                tag: 0
-                              },
-                              3: 2,
-                              length: 4,
-                              tag: 0
-                            },
+                            /* Node */[
+                              /* Node */[
+                                /* Empty */0,
+                                l[0],
+                                /* Empty */0,
+                                1
+                              ],
+                              match$1[0],
+                              /* Node */[
+                                /* Empty */0,
+                                match$2[0],
+                                /* Empty */0,
+                                1
+                              ],
+                              2
+                            ],
                             match$2[1]
                           ];
                   }

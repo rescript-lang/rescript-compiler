@@ -7,8 +7,8 @@ var Caml_curry       = require("../runtime/caml_curry");
 var Format           = require("../stdlib/format");
 
 function err(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                      0: /* String */{
+  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String */{
                         0: /* No_padding */0,
                         1: /* Char_literal */{
                           0: /* " " */32,
@@ -19,26 +19,22 @@ function err(str, f) {
                         length: 2,
                         tag: 2
                       },
-                      1: "%s ",
-                      length: 2,
-                      tag: 0
-                    }, Pervasives.$caret$caret(f, /* Format */{
-                          0: /* Formatting_lit */{
+                      "%s "
+                    ], Pervasives.$caret$caret(f, /* Format */[
+                          /* Formatting_lit */{
                             0: /* Flush_newline */4,
                             1: /* End_of_format */0,
                             length: 2,
                             tag: 17
                           },
-                          1: "@.",
-                          length: 2,
-                          tag: 0
-                        }))), str);
+                          "@."
+                        ]))), str);
 }
 
 function ierr(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String */{
+    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* Char_literal */{
                             0: /* " " */32,
@@ -49,14 +45,12 @@ function ierr(b, str, f) {
                           length: 2,
                           tag: 2
                         },
-                        1: "%s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "%s "
+                      ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String */{
+    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* Char_literal */{
                             0: /* " " */32,
@@ -67,16 +61,14 @@ function ierr(b, str, f) {
                           length: 2,
                           tag: 2
                         },
-                        1: "%s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "%s "
+                      ], f)), str);
   }
 }
 
 function warn(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                      0: /* String_literal */{
+  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String_literal */{
                         0: "WARN: ",
                         1: /* String */{
                           0: /* No_padding */0,
@@ -92,26 +84,22 @@ function warn(str, f) {
                         length: 2,
                         tag: 11
                       },
-                      1: "WARN: %s ",
-                      length: 2,
-                      tag: 0
-                    }, Pervasives.$caret$caret(f, /* Format */{
-                          0: /* Formatting_lit */{
+                      "WARN: %s "
+                    ], Pervasives.$caret$caret(f, /* Format */[
+                          /* Formatting_lit */{
                             0: /* Flush_newline */4,
                             1: /* End_of_format */0,
                             length: 2,
                             tag: 17
                           },
-                          1: "@.",
-                          length: 2,
-                          tag: 0
-                        }))), str);
+                          "@."
+                        ]))), str);
 }
 
 function iwarn(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -127,14 +115,12 @@ function iwarn(b, str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "WARN: %s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "WARN: %s "
+                      ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -150,17 +136,15 @@ function iwarn(b, str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "WARN: %s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "WARN: %s "
+                      ], f)), str);
   }
 }
 
 function dwarn(str, f) {
   if (Lam_current_unit.is_same_file(/* () */0)) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -176,24 +160,20 @@ function dwarn(str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "WARN: %s ",
-                        length: 2,
-                        tag: 0
-                      }, Pervasives.$caret$caret(f, /* Format */{
-                            0: /* Formatting_lit */{
+                        "WARN: %s "
+                      ], Pervasives.$caret$caret(f, /* Format */[
+                            /* Formatting_lit */{
                               0: /* Flush_newline */4,
                               1: /* End_of_format */0,
                               length: 2,
                               tag: 17
                             },
-                            1: "@.",
-                            length: 2,
-                            tag: 0
-                          }))), str);
+                            "@."
+                          ]))), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -209,26 +189,22 @@ function dwarn(str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "WARN: %s ",
-                        length: 2,
-                        tag: 0
-                      }, Pervasives.$caret$caret(f, /* Format */{
-                            0: /* Formatting_lit */{
+                        "WARN: %s "
+                      ], Pervasives.$caret$caret(f, /* Format */[
+                            /* Formatting_lit */{
                               0: /* Flush_newline */4,
                               1: /* End_of_format */0,
                               length: 2,
                               tag: 17
                             },
-                            1: "@.",
-                            length: 2,
-                            tag: 0
-                          }))), str);
+                            "@."
+                          ]))), str);
   }
 }
 
 function info(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                      0: /* String_literal */{
+  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                      /* String_literal */{
                         0: "INFO: ",
                         1: /* String */{
                           0: /* No_padding */0,
@@ -244,16 +220,14 @@ function info(str, f) {
                         length: 2,
                         tag: 11
                       },
-                      1: "INFO: %s ",
-                      length: 2,
-                      tag: 0
-                    }, f)), str);
+                      "INFO: %s "
+                    ], f)), str);
 }
 
 function iinfo(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "INFO: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -269,14 +243,12 @@ function iinfo(b, str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "INFO: %s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "INFO: %s "
+                      ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */{
-                        0: /* String_literal */{
+    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+                        /* String_literal */{
                           0: "INFO: ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -292,10 +264,8 @@ function iinfo(b, str, f) {
                           length: 2,
                           tag: 11
                         },
-                        1: "INFO: %s ",
-                        length: 2,
-                        tag: 0
-                      }, f)), str);
+                        "INFO: %s "
+                      ], f)), str);
   }
 }
 

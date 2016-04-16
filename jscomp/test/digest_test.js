@@ -230,8 +230,8 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           ]
         ], $$Array.to_list($$Array.map(function (i) {
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */{
-                                    0: /* Int */{
+                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                                    /* Int */{
                                       0: /* Int_d */0,
                                       1: /* No_padding */0,
                                       2: /* No_precision */0,
@@ -239,10 +239,8 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                                       length: 4,
                                       tag: 4
                                     },
-                                    1: "%d",
-                                    length: 2,
-                                    tag: 0
-                                  }), i),
+                                    "%d"
+                                  ]), i),
                           function () {
                             return /* Eq */{
                                     0: Digest.to_hex(Digest.string(Caml_string.bytes_to_string(Bytes.make(i, /* "a" */97)))),

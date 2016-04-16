@@ -152,13 +152,11 @@ function resize(indexfun, h) {
         var key = param[0];
         insert_bucket(param[2]);
         var nidx = Caml_curry.app2(indexfun, h, key);
-        ndata[nidx] = /* Cons */{
-          0: key,
-          1: param[1],
-          2: ndata[nidx],
-          length: 3,
-          tag: 0
-        };
+        ndata[nidx] = /* Cons */[
+          key,
+          param[1],
+          ndata[nidx]
+        ];
         return /* () */0;
       }
       else {
@@ -187,13 +185,11 @@ function key_index(h, key) {
 function add(h, key, info) {
   var i = key_index(h, key);
   var bucket_002 = h[/* data */1][i];
-  var bucket = /* Cons */{
-    0: key,
-    1: info,
-    2: bucket_002,
-    length: 3,
-    tag: 0
-  };
+  var bucket = /* Cons */[
+    key,
+    info,
+    bucket_002
+  ];
   h[/* data */1][i] = bucket;
   h[/* size */0] = h[/* size */0] + 1 | 0;
   if (h[/* size */0] > (h[/* data */1].length << 1)) {
@@ -210,13 +206,11 @@ function remove(h, key) {
       var next = param[2];
       var k = param[0];
       if (Caml_obj.caml_compare(k, key)) {
-        return /* Cons */{
-                0: k,
-                1: param[1],
-                2: remove_bucket(next),
-                length: 3,
-                tag: 0
-              };
+        return /* Cons */[
+                k,
+                param[1],
+                remove_bucket(next)
+              ];
       }
       else {
         h[/* size */0] = h[/* size */0] - 1 | 0;
@@ -318,22 +312,18 @@ function replace(h, key, info) {
       var next = param[2];
       var k = param[0];
       if (Caml_obj.caml_compare(k, key)) {
-        return /* Cons */{
-                0: k,
-                1: param[1],
-                2: replace_bucket(next),
-                length: 3,
-                tag: 0
-              };
+        return /* Cons */[
+                k,
+                param[1],
+                replace_bucket(next)
+              ];
       }
       else {
-        return /* Cons */{
-                0: key,
-                1: info,
-                2: next,
-                length: 3,
-                tag: 0
-              };
+        return /* Cons */[
+                key,
+                info,
+                next
+              ];
       }
     }
     else {
@@ -348,13 +338,11 @@ function replace(h, key, info) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      h[/* data */1][i] = /* Cons */{
-        0: key,
-        1: info,
-        2: l,
-        length: 3,
-        tag: 0
-      };
+      h[/* data */1][i] = /* Cons */[
+        key,
+        info,
+        l
+      ];
       h[/* size */0] = h[/* size */0] + 1 | 0;
       if (h[/* size */0] > (h[/* data */1].length << 1)) {
         return resize(key_index, h);
@@ -476,13 +464,11 @@ function MakeSeeded(H) {
   var add = function (h, key, info) {
     var i = key_index(h, key);
     var bucket_002 = h[/* data */1][i];
-    var bucket = /* Cons */{
-      0: key,
-      1: info,
-      2: bucket_002,
-      length: 3,
-      tag: 0
-    };
+    var bucket = /* Cons */[
+      key,
+      info,
+      bucket_002
+    ];
     h[/* data */1][i] = bucket;
     h[/* size */0] = h[/* size */0] + 1 | 0;
     if (h[/* size */0] > (h[/* data */1].length << 1)) {
@@ -502,13 +488,11 @@ function MakeSeeded(H) {
           return next;
         }
         else {
-          return /* Cons */{
-                  0: k,
-                  1: param[1],
-                  2: remove_bucket(next),
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  k,
+                  param[1],
+                  remove_bucket(next)
+                ];
         }
       }
       else {
@@ -599,22 +583,18 @@ function MakeSeeded(H) {
         var next = param[2];
         var k = param[0];
         if (Caml_curry.app2(H[0], k, key)) {
-          return /* Cons */{
-                  0: key,
-                  1: info,
-                  2: next,
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  key,
+                  info,
+                  next
+                ];
         }
         else {
-          return /* Cons */{
-                  0: k,
-                  1: param[1],
-                  2: replace_bucket(next),
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  k,
+                  param[1],
+                  replace_bucket(next)
+                ];
         }
       }
       else {
@@ -629,13 +609,11 @@ function MakeSeeded(H) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        h[/* data */1][i] = /* Cons */{
-          0: key,
-          1: info,
-          2: l,
-          length: 3,
-          tag: 0
-        };
+        h[/* data */1][i] = /* Cons */[
+          key,
+          info,
+          l
+        ];
         h[/* size */0] = h[/* size */0] + 1 | 0;
         if (h[/* size */0] > (h[/* data */1].length << 1)) {
           return resize(key_index, h);
@@ -694,13 +672,11 @@ function Make(H) {
   var add = function (h, key, info) {
     var i = key_index(h, key);
     var bucket_002 = h[/* data */1][i];
-    var bucket = /* Cons */{
-      0: key,
-      1: info,
-      2: bucket_002,
-      length: 3,
-      tag: 0
-    };
+    var bucket = /* Cons */[
+      key,
+      info,
+      bucket_002
+    ];
     h[/* data */1][i] = bucket;
     h[/* size */0] = h[/* size */0] + 1 | 0;
     if (h[/* size */0] > (h[/* data */1].length << 1)) {
@@ -720,13 +696,11 @@ function Make(H) {
           return next;
         }
         else {
-          return /* Cons */{
-                  0: k,
-                  1: param[1],
-                  2: remove_bucket(next),
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  k,
+                  param[1],
+                  remove_bucket(next)
+                ];
         }
       }
       else {
@@ -817,22 +791,18 @@ function Make(H) {
         var next = param[2];
         var k = param[0];
         if (Caml_curry.app2(equal, k, key)) {
-          return /* Cons */{
-                  0: key,
-                  1: info,
-                  2: next,
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  key,
+                  info,
+                  next
+                ];
         }
         else {
-          return /* Cons */{
-                  0: k,
-                  1: param[1],
-                  2: replace_bucket(next),
-                  length: 3,
-                  tag: 0
-                };
+          return /* Cons */[
+                  k,
+                  param[1],
+                  replace_bucket(next)
+                ];
         }
       }
       else {
@@ -847,13 +817,11 @@ function Make(H) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        h[/* data */1][i] = /* Cons */{
-          0: key,
-          1: info,
-          2: l,
-          length: 3,
-          tag: 0
-        };
+        h[/* data */1][i] = /* Cons */[
+          key,
+          info,
+          l
+        ];
         h[/* size */0] = h[/* size */0] + 1 | 0;
         if (h[/* size */0] > (h[/* data */1].length << 1)) {
           return resize(key_index, h);

@@ -7,8 +7,8 @@ var Caml_curry = require("../runtime/caml_curry");
 var Format     = require("../stdlib/format");
 
 function print_pair(fmt, param) {
-  return Caml_curry.app2(Format.fprintf(fmt, /* Format */{
-                  0: /* Char_literal */{
+  return Caml_curry.app2(Format.fprintf(fmt, /* Format */[
+                  /* Char_literal */{
                     0: /* "(" */40,
                     1: /* Int */{
                       0: /* Int_d */0,
@@ -38,10 +38,8 @@ function print_pair(fmt, param) {
                     length: 2,
                     tag: 12
                   },
-                  1: "(%d,%d)",
-                  length: 2,
-                  tag: 0
-                }), param[0], param[1]);
+                  "(%d,%d)"
+                ]), param[0], param[1]);
 }
 
 var suites_000 = /* tuple */[
@@ -49,8 +47,8 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */{
             0: "3232",
-            1: Caml_curry.app2(Printf.sprintf(/* Format */{
-                      0: /* String */{
+            1: Caml_curry.app2(Printf.sprintf(/* Format */[
+                      /* String */{
                         0: /* No_padding */0,
                         1: /* Int */{
                           0: /* Int_d */0,
@@ -63,10 +61,8 @@ var suites_000 = /* tuple */[
                         length: 2,
                         tag: 2
                       },
-                      1: "%s%d",
-                      length: 2,
-                      tag: 0
-                    }), "32", 32),
+                      "%s%d"
+                    ]), "32", 32),
             length: 2,
             tag: 0
           };
@@ -79,17 +75,15 @@ var suites_001 = /* :: */[
     function () {
       return /* Eq */{
               0: "xx",
-              1: Format.asprintf(/* Format */{
-                    0: /* String_literal */{
+              1: Format.asprintf(/* Format */[
+                    /* String_literal */{
                       0: "xx",
                       1: /* End_of_format */0,
                       length: 2,
                       tag: 11
                     },
-                    1: "xx",
-                    length: 2,
-                    tag: 0
-                  }),
+                    "xx"
+                  ]),
               length: 2,
               tag: 0
             };
@@ -101,16 +95,14 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */{
                 0: "(1,2)",
-                1: Caml_curry.app2(Format.asprintf(/* Format */{
-                          0: /* Alpha */{
+                1: Caml_curry.app2(Format.asprintf(/* Format */[
+                          /* Alpha */{
                             0: /* End_of_format */0,
                             length: 1,
                             tag: 15
                           },
-                          1: "%a",
-                          length: 2,
-                          tag: 0
-                        }), print_pair, /* tuple */[
+                          "%a"
+                        ]), print_pair, /* tuple */[
                       1,
                       2
                     ]),
@@ -128,17 +120,15 @@ var suites = /* :: */[
   suites_001
 ];
 
-var v = Format.asprintf(/* Format */{
-      0: /* String_literal */{
+var v = Format.asprintf(/* Format */[
+      /* String_literal */{
         0: "xx",
         1: /* End_of_format */0,
         length: 2,
         tag: 11
       },
-      1: "xx",
-      length: 2,
-      tag: 0
-    });
+      "xx"
+    ]);
 
 Mt.from_pair_suites("printf_test.ml", suites);
 

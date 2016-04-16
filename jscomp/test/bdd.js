@@ -162,14 +162,12 @@ function mkNode(low, v, high) {
       }
       else {
         var n_002 = (nodeC[0] = nodeC[0] + 1 | 0, nodeC[0]);
-        var n$1 = /* Node */{
-          0: low,
-          1: v,
-          2: n_002,
-          3: high,
-          length: 4,
-          tag: 0
-        };
+        var n$1 = /* Node */[
+          low,
+          v,
+          n_002,
+          high
+        ];
         insert(getId(low), getId(high), v, ind, bucket, n$1);
         return n$1;
       }

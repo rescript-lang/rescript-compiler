@@ -13,14 +13,10 @@ var Caml_string             = require("../runtime/caml_string");
 var CamlinternalFormat      = require("./camlinternalFormat");
 
 function add_queue(x, q) {
-  var c = /* Cons */{
-    0: /* record */[
+  var c = /* Cons */[/* record */[
       x,
       /* Nil */0
-    ],
-    length: 1,
-    tag: 0
-  };
+    ]];
   var match = q[/* insert */0];
   if (match) {
     q[/* insert */0] = c;
@@ -316,12 +312,10 @@ function format_pp_token(state, size, param) {
               size > state[/* pp_space_left */8] ? ty : /* Pp_fits */5
             ) : /* Pp_vbox */1;
           state[/* pp_format_stack */1] = /* :: */[
-            /* Format_elem */{
-              0: bl_type,
-              1: offset$1,
-              length: 2,
-              tag: 0
-            },
+            /* Format_elem */[
+              bl_type,
+              offset$1
+            ],
             state[/* pp_format_stack */1]
           ];
           return /* () */0;
@@ -400,12 +394,10 @@ var q_elem = /* record */[
   0
 ];
 
-var scan_stack_bottom_000 = /* Scan_elem */{
-  0: -1,
-  1: q_elem,
-  length: 2,
-  tag: 0
-};
+var scan_stack_bottom_000 = /* Scan_elem */[
+  -1,
+  q_elem
+];
 
 var scan_stack_bottom = /* :: */[
   scan_stack_bottom_000,
@@ -472,12 +464,10 @@ function scan_push(state, b, tok) {
     set_size(state, /* true */1);
   }
   state[/* pp_scan_stack */0] = /* :: */[
-    /* Scan_elem */{
-      0: state[/* pp_right_total */12],
-      1: tok,
-      length: 2,
-      tag: 0
-    },
+    /* Scan_elem */[
+      state[/* pp_right_total */12],
+      tok
+    ],
     state[/* pp_scan_stack */0]
   ];
   return /* () */0;
@@ -762,11 +752,7 @@ function pp_open_tbox(state, _) {
     var elem = /* record */[
       0,
       /* Pp_tbegin */{
-        0: /* Pp_tbox */{
-          0: [/* [] */0],
-          length: 1,
-          tag: 0
-        },
+        0: /* Pp_tbox */[[/* [] */0]],
         length: 1,
         tag: 4
       },
@@ -1087,12 +1073,10 @@ function pp_make_formatter(f, g, h, i) {
     0
   ];
   add_queue(sys_tok, pp_q);
-  var sys_scan_stack_000 = /* Scan_elem */{
-    0: 1,
-    1: sys_tok,
-    length: 2,
-    tag: 0
-  };
+  var sys_scan_stack_000 = /* Scan_elem */[
+    1,
+    sys_tok
+  ];
   var sys_scan_stack = /* :: */[
     sys_scan_stack_000,
     scan_stack_bottom

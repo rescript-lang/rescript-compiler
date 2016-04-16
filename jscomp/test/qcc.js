@@ -446,8 +446,8 @@ function patch(rel, loc, n) {
     var loc$prime = get32(loc);
     var x = rel ? n - (loc + 4 | 0) | 0 : n;
     if (dbg[0]) {
-      Caml_curry.app3(Printf.eprintf(/* Format */{
-                0: /* String_literal */{
+      Caml_curry.app3(Printf.eprintf(/* Format */[
+                /* String_literal */{
                   0: "patching at ",
                   1: /* Int */{
                     0: /* Int_d */0,
@@ -489,10 +489,8 @@ function patch(rel, loc, n) {
                   length: 2,
                   tag: 11
                 },
-                1: "patching at %d to %d (n=%d)\n",
-                length: 2,
-                tag: 0
-              }), loc, x, n);
+                "patching at %d to %d (n=%d)\n"
+              ]), loc, x, n);
     }
     opos[0] = loc;
     le(32, x);
@@ -1122,8 +1120,8 @@ function unary(stk) {
             ];
             unary(stk);
             if (!List.mem_assoc(o, unops)) {
-              var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-                        0: /* String_literal */{
+              var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+                        /* String_literal */{
                           0: "unknown operator ",
                           1: /* String */{
                             0: /* No_padding */0,
@@ -1134,10 +1132,8 @@ function unary(stk) {
                           length: 2,
                           tag: 11
                         },
-                        1: "unknown operator %s",
-                        length: 2,
-                        tag: 0
-                      }), o);
+                        "unknown operator %s"
+                      ]), o);
               throw [
                     Caml_builtin_exceptions.failure,
                     s
@@ -1449,8 +1445,8 @@ function decl(g, _n, _stk) {
       var match = vars(0, stk);
       Caml_curry.app1(next$1, /* () */0);
       if (dbg[0]) {
-        Caml_curry.app1(Printf.eprintf(/* Format */{
-                  0: /* String_literal */{
+        Caml_curry.app1(Printf.eprintf(/* Format */[
+                  /* String_literal */{
                     0: "end of decl (",
                     1: /* Int */{
                       0: /* Int_d */0,
@@ -1468,10 +1464,8 @@ function decl(g, _n, _stk) {
                     length: 2,
                     tag: 11
                   },
-                  1: "end of decl (%d vars)\n",
-                  length: 2,
-                  tag: 0
-                }), n);
+                  "end of decl (%d vars)\n"
+                ]), n);
       }
       _stk = match[1];
       _n = n + match[0] | 0;
@@ -1795,8 +1789,8 @@ function top(_param) {
         patch(/* true */1, retl[0], opos[0]);
         out(51651);
         if (dbg[0]) {
-          Caml_curry.app1(Printf.eprintf(/* Format */{
-                    0: /* String_literal */{
+          Caml_curry.app1(Printf.eprintf(/* Format */[
+                    /* String_literal */{
                       0: "done with function ",
                       1: /* String */{
                         0: /* No_padding */0,
@@ -1812,10 +1806,8 @@ function top(_param) {
                       length: 2,
                       tag: 11
                     },
-                    1: "done with function %s\n",
-                    length: 2,
-                    tag: 0
-                  }), Caml_curry.app1(symstr, f));
+                    "done with function %s\n"
+                  ]), Caml_curry.app1(symstr, f));
         }
         _param = /* () */0;
         continue ;
@@ -2073,8 +2065,8 @@ function main() {
   var ppsym = function (param) {
     switch (param.tag | 0) {
       case 0 : 
-          return Caml_curry.app1(Printf.printf(/* Format */{
-                          0: /* String_literal */{
+          return Caml_curry.app1(Printf.printf(/* Format */[
+                          /* String_literal */{
                             0: "Operator '",
                             1: /* String */{
                               0: /* No_padding */0,
@@ -2090,13 +2082,11 @@ function main() {
                             length: 2,
                             tag: 11
                           },
-                          1: "Operator '%s'\n",
-                          length: 2,
-                          tag: 0
-                        }), param[0]);
+                          "Operator '%s'\n"
+                        ]), param[0]);
       case 1 : 
-          return Caml_curry.app1(Printf.printf(/* Format */{
-                          0: /* String_literal */{
+          return Caml_curry.app1(Printf.printf(/* Format */[
+                          /* String_literal */{
                             0: "Int literal ",
                             1: /* Int */{
                               0: /* Int_d */0,
@@ -2114,13 +2104,11 @@ function main() {
                             length: 2,
                             tag: 11
                           },
-                          1: "Int literal %d\n",
-                          length: 2,
-                          tag: 0
-                        }), param[0]);
+                          "Int literal %d\n"
+                        ]), param[0]);
       case 2 : 
-          return Caml_curry.app1(Printf.printf(/* Format */{
-                          0: /* String_literal */{
+          return Caml_curry.app1(Printf.printf(/* Format */[
+                          /* String_literal */{
                             0: "Str literal ",
                             1: /* Caml_string */{
                               0: /* No_padding */0,
@@ -2136,14 +2124,12 @@ function main() {
                             length: 2,
                             tag: 11
                           },
-                          1: "Str literal %S\n",
-                          length: 2,
-                          tag: 0
-                        }), param[1]);
+                          "Str literal %S\n"
+                        ]), param[1]);
       case 3 : 
           var i = param[0];
-          return Caml_curry.app2(Printf.printf(/* Format */{
-                          0: /* String_literal */{
+          return Caml_curry.app2(Printf.printf(/* Format */[
+                          /* String_literal */{
                             0: "Symbol '",
                             1: /* String */{
                               0: /* No_padding */0,
@@ -2171,10 +2157,8 @@ function main() {
                             length: 2,
                             tag: 11
                           },
-                          1: "Symbol '%s' (%d)\n",
-                          length: 2,
-                          tag: 0
-                        }), Caml_curry.app1(symstr, i), i);
+                          "Symbol '%s' (%d)\n"
+                        ]), Caml_curry.app1(symstr, i), i);
       
     }
   };
@@ -2204,17 +2188,15 @@ function main() {
             
           }
           else if (tok[0] === "EOF!") {
-            return Printf.printf(/* Format */{
-                        0: /* String_literal */{
+            return Printf.printf(/* Format */[
+                        /* String_literal */{
                           0: "End of input stream\n",
                           1: /* End_of_format */0,
                           length: 2,
                           tag: 11
                         },
-                        1: "End of input stream\n",
-                        length: 2,
-                        tag: 0
-                      });
+                        "End of input stream\n"
+                      ]);
           }
           else {
             ppsym(tok);

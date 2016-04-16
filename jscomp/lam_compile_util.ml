@@ -33,18 +33,19 @@ let jsop_of_comp (cmp : Lambda.comparison) : Js_op.binop =
 
 let comment_of_tag_info  (x : Lambda.tag_info) = 
   match x with 
-  | Constructor n -> Some n 
-  | Tuple -> Some "tuple"
-  | Variant x -> Some ("`" ^  x)
-  | Record _ -> Some "record"
+  | Blk_constructor (n, _) -> Some n 
+  | Blk_tuple -> Some "tuple"
+  | Blk_variant x -> Some ("`" ^  x)
+  | Blk_record _ -> Some "record"
 
-  | Array -> Some "array"
-  | Module _ ->  
+  | Blk_array -> Some "array"
+  | Blk_module _ ->  
      (* Turn it on next time to save some noise diff*)
     Some "module"
-  | NA -> None 
+  | Blk_na -> None 
 let comment_of_pointer_info (x :  Lambda.pointer_info)= 
   match x with 
-  | NullConstructor x -> Some x 
-  | NullVariant x -> Some x 
-  | NAPointer -> None
+  | Pt_constructor x -> Some x 
+  | Pt_variant x -> Some x 
+  | Lambda.Pt_module_alias -> None (* FIXME *)
+  | Pt_na -> None

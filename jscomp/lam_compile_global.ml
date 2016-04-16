@@ -37,7 +37,7 @@ let query_lambda id env =
         (* TODO: add module into taginfo*)
         (* let len = List.length sigs in  *)
         (* TODO: could be optimized *)
-        Lambda.Lprim (Pmakeblock(0,NA, Immutable) , 
+        Lambda.Lprim (Pmakeblock(0, Blk_na, Immutable) , 
                       (List.mapi (fun i _ -> 
                            Lambda.Lprim(Pfield (i, Lambda.Fld_na), [Lprim(Pgetglobal id,[])])))
                         sigs))

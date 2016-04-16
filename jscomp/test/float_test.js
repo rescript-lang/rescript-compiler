@@ -120,8 +120,8 @@ function from_pairs(ps) {
                   var b = param[1];
                   var a = param[0];
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */{
-                                    0: /* String_literal */{
+                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                                    /* String_literal */{
                                       0: "pair ",
                                       1: /* Int */{
                                         0: /* Int_d */0,
@@ -134,10 +134,8 @@ function from_pairs(ps) {
                                       length: 2,
                                       tag: 11
                                     },
-                                    1: "pair %d",
-                                    length: 2,
-                                    tag: 0
-                                  }), i),
+                                    "pair %d"
+                                  ]), i),
                           function () {
                             return /* Approx */{
                                     0: a,

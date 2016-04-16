@@ -32,8 +32,8 @@ function from_pairs() {
                       var i32 = param[0];
                       return /* :: */[
                               /* tuple */[
-                                Caml_curry.app1(Printf.sprintf(/* Format */{
-                                          0: /* String_literal */{
+                                Caml_curry.app1(Printf.sprintf(/* Format */[
+                                          /* String_literal */{
                                             0: "int32_float_of_bits ",
                                             1: /* Int */{
                                               0: /* Int_d */0,
@@ -46,10 +46,8 @@ function from_pairs() {
                                             length: 2,
                                             tag: 11
                                           },
-                                          1: "int32_float_of_bits %d",
-                                          length: 2,
-                                          tag: 0
-                                        }), i),
+                                          "int32_float_of_bits %d"
+                                        ]), i),
                                 function () {
                                   return /* Eq */{
                                           0: Caml_float.caml_int32_float_of_bits(i32),
@@ -61,8 +59,8 @@ function from_pairs() {
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  Caml_curry.app1(Printf.sprintf(/* Format */{
-                                            0: /* String_literal */{
+                                  Caml_curry.app1(Printf.sprintf(/* Format */[
+                                            /* String_literal */{
                                               0: "int32_bits_of_float ",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
@@ -75,10 +73,8 @@ function from_pairs() {
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "int32_bits_of_float %d",
-                                            length: 2,
-                                            tag: 0
-                                          }), i),
+                                            "int32_bits_of_float %d"
+                                          ]), i),
                                   function () {
                                     return /* Eq */{
                                             0: Caml_float.caml_int32_bits_of_float(f),

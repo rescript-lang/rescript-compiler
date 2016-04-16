@@ -130,8 +130,8 @@ function add_help(speclist) {
 }
 
 function usage_b(buf, speclist, errmsg) {
-  Caml_curry.app1(Printf.bprintf(buf, /* Format */{
-            0: /* String */{
+  Caml_curry.app1(Printf.bprintf(buf, /* Format */[
+            /* String */{
               0: /* No_padding */0,
               1: /* Char_literal */{
                 0: /* "\n" */10,
@@ -142,10 +142,8 @@ function usage_b(buf, speclist, errmsg) {
               length: 2,
               tag: 2
             },
-            1: "%s\n",
-            length: 2,
-            tag: 0
-          }), errmsg);
+            "%s\n"
+          ]), errmsg);
   return List.iter(function (param) {
               var buf$1 = buf;
               var param$1 = param;
@@ -154,8 +152,8 @@ function usage_b(buf, speclist, errmsg) {
               var key = param$1[0];
               if (doc.length) {
                 if (spec.tag === 11) {
-                  return Caml_curry.app3(Printf.bprintf(buf$1, /* Format */{
-                                  0: /* String_literal */{
+                  return Caml_curry.app3(Printf.bprintf(buf$1, /* Format */[
+                                  /* String_literal */{
                                     0: "  ",
                                     1: /* String */{
                                       0: /* No_padding */0,
@@ -186,14 +184,12 @@ function usage_b(buf, speclist, errmsg) {
                                     length: 2,
                                     tag: 11
                                   },
-                                  1: "  %s %s%s\n",
-                                  length: 2,
-                                  tag: 0
-                                }), key, make_symlist("{", "|", "}", spec[0]), doc);
+                                  "  %s %s%s\n"
+                                ]), key, make_symlist("{", "|", "}", spec[0]), doc);
                 }
                 else {
-                  return Caml_curry.app2(Printf.bprintf(buf$1, /* Format */{
-                                  0: /* String_literal */{
+                  return Caml_curry.app2(Printf.bprintf(buf$1, /* Format */[
+                                  /* String_literal */{
                                     0: "  ",
                                     1: /* String */{
                                       0: /* No_padding */0,
@@ -219,10 +215,8 @@ function usage_b(buf, speclist, errmsg) {
                                     length: 2,
                                     tag: 11
                                   },
-                                  1: "  %s %s\n",
-                                  length: 2,
-                                  tag: 0
-                                }), key, doc);
+                                  "  %s %s\n"
+                                ]), key, doc);
                 }
               }
               else {
@@ -238,17 +232,15 @@ function usage_string(speclist, errmsg) {
 }
 
 function usage(speclist, errmsg) {
-  return Caml_curry.app1(Printf.eprintf(/* Format */{
-                  0: /* String */{
+  return Caml_curry.app1(Printf.eprintf(/* Format */[
+                  /* String */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
                     length: 2,
                     tag: 2
                   },
-                  1: "%s",
-                  length: 2,
-                  tag: 0
-                }), usage_string(speclist, errmsg));
+                  "%s"
+                ]), usage_string(speclist, errmsg));
 }
 
 var current = [0];
@@ -268,8 +260,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
             case "-help" : 
                 break;
             default:
-              Caml_curry.app2(Printf.bprintf(b, /* Format */{
-                        0: /* String */{
+              Caml_curry.app2(Printf.bprintf(b, /* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* String_literal */{
                             0: ": unknown option '",
@@ -290,15 +282,13 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                           length: 2,
                           tag: 2
                         },
-                        1: "%s: unknown option '%s'.\n",
-                        length: 2,
-                        tag: 0
-                      }), progname, s);
+                        "%s: unknown option '%s'.\n"
+                      ]), progname, s);
           }
           break;
       case 1 : 
-          Caml_curry.app4(Printf.bprintf(b, /* Format */{
-                    0: /* String */{
+          Caml_curry.app4(Printf.bprintf(b, /* Format */[
+                    /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
                         0: ": wrong argument '",
@@ -339,14 +329,12 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       length: 2,
                       tag: 2
                     },
-                    1: "%s: wrong argument '%s'; option '%s' expects %s.\n",
-                    length: 2,
-                    tag: 0
-                  }), progname, error[1], error[0], error[2]);
+                    "%s: wrong argument '%s'; option '%s' expects %s.\n"
+                  ]), progname, error[1], error[0], error[2]);
           break;
       case 2 : 
-          Caml_curry.app2(Printf.bprintf(b, /* Format */{
-                    0: /* String */{
+          Caml_curry.app2(Printf.bprintf(b, /* Format */[
+                    /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
                         0: ": option '",
@@ -367,14 +355,12 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       length: 2,
                       tag: 2
                     },
-                    1: "%s: option '%s' needs an argument.\n",
-                    length: 2,
-                    tag: 0
-                  }), progname, error[0]);
+                    "%s: option '%s' needs an argument.\n"
+                  ]), progname, error[0]);
           break;
       case 3 : 
-          Caml_curry.app2(Printf.bprintf(b, /* Format */{
-                    0: /* String */{
+          Caml_curry.app2(Printf.bprintf(b, /* Format */[
+                    /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
                         0: ": ",
@@ -395,10 +381,8 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       length: 2,
                       tag: 2
                     },
-                    1: "%s: %s.\n",
-                    length: 2,
-                    tag: 0
-                  }), progname, error[0]);
+                    "%s: %s.\n"
+                  ]), progname, error[0]);
           break;
       
     }
@@ -790,31 +774,27 @@ function parse(l, f, msg) {
   }
   catch (exn){
     if (exn[0] === Bad) {
-      Caml_curry.app1(Printf.eprintf(/* Format */{
-                0: /* String */{
+      Caml_curry.app1(Printf.eprintf(/* Format */[
+                /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
                   length: 2,
                   tag: 2
                 },
-                1: "%s",
-                length: 2,
-                tag: 0
-              }), exn[1]);
+                "%s"
+              ]), exn[1]);
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
-      Caml_curry.app1(Printf.printf(/* Format */{
-                0: /* String */{
+      Caml_curry.app1(Printf.printf(/* Format */[
+                /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
                   length: 2,
                   tag: 2
                 },
-                1: "%s",
-                length: 2,
-                tag: 0
-              }), exn[1]);
+                "%s"
+              ]), exn[1]);
       return Pervasives.exit(0);
     }
     else {
@@ -829,31 +809,27 @@ function parse_dynamic(l, f, msg) {
   }
   catch (exn){
     if (exn[0] === Bad) {
-      Caml_curry.app1(Printf.eprintf(/* Format */{
-                0: /* String */{
+      Caml_curry.app1(Printf.eprintf(/* Format */[
+                /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
                   length: 2,
                   tag: 2
                 },
-                1: "%s",
-                length: 2,
-                tag: 0
-              }), exn[1]);
+                "%s"
+              ]), exn[1]);
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
-      Caml_curry.app1(Printf.printf(/* Format */{
-                0: /* String */{
+      Caml_curry.app1(Printf.printf(/* Format */[
+                /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
                   length: 2,
                   tag: 2
                 },
-                1: "%s",
-                length: 2,
-                tag: 0
-              }), exn[1]);
+                "%s"
+              ]), exn[1]);
       return Pervasives.exit(0);
     }
     else {

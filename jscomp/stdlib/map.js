@@ -16,26 +16,22 @@ function Make(funarg) {
   var create = function (l, x, d, r) {
     var hl = height(l);
     var hr = height(r);
-    return /* Node */{
-            0: l,
-            1: x,
-            2: d,
-            3: r,
-            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
   };
   var singleton = function (x, d) {
-    return /* Node */{
-            0: /* Empty */0,
-            1: x,
-            2: d,
-            3: /* Empty */0,
-            4: 1,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            /* Empty */0,
+            x,
+            d,
+            /* Empty */0,
+            1
+          ];
   };
   var bal = function (l, x, d, r) {
     var hl = l ? l[4] : 0;
@@ -93,15 +89,13 @@ function Make(funarg) {
       }
     }
     else {
-      return /* Node */{
-              0: l,
-              1: x,
-              2: d,
-              3: r,
-              4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l,
+              x,
+              d,
+              r,
+              hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+            ];
     }
   };
   var is_empty = function (param) {
@@ -128,27 +122,23 @@ function Make(funarg) {
         }
       }
       else {
-        return /* Node */{
-                0: l,
-                1: x,
-                2: data,
-                3: r,
-                4: param[4],
-                length: 5,
-                tag: 0
-              };
+        return /* Node */[
+                l,
+                x,
+                data,
+                r,
+                param[4]
+              ];
       }
     }
     else {
-      return /* Node */{
-              0: /* Empty */0,
-              1: x,
-              2: data,
-              3: /* Empty */0,
-              4: 1,
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              /* Empty */0,
+              x,
+              data,
+              /* Empty */0,
+              1
+            ];
     }
   };
   var find = function (x, _param) {
@@ -306,15 +296,13 @@ function Make(funarg) {
       var l$prime = map(f, param[0]);
       var d$prime = Caml_curry.app1(f, param[2]);
       var r$prime = map(f, param[3]);
-      return /* Node */{
-              0: l$prime,
-              1: param[1],
-              2: d$prime,
-              3: r$prime,
-              4: param[4],
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l$prime,
+              param[1],
+              d$prime,
+              r$prime,
+              param[4]
+            ];
     }
     else {
       return /* Empty */0;
@@ -326,15 +314,13 @@ function Make(funarg) {
       var l$prime = mapi(f, param[0]);
       var d$prime = Caml_curry.app2(f, v, param[2]);
       var r$prime = mapi(f, param[3]);
-      return /* Node */{
-              0: l$prime,
-              1: v,
-              2: d$prime,
-              3: r$prime,
-              4: param[4],
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l$prime,
+              v,
+              d$prime,
+              r$prime,
+              param[4]
+            ];
     }
     else {
       return /* Empty */0;
@@ -592,14 +578,12 @@ function Make(funarg) {
       var e = _e;
       var m = _m;
       if (m) {
-        _e = /* More */{
-          0: m[1],
-          1: m[2],
-          2: m[3],
-          3: e,
-          length: 4,
-          tag: 0
-        };
+        _e = /* More */[
+          m[1],
+          m[2],
+          m[3],
+          e
+        ];
         _m = m[0];
         continue ;
         

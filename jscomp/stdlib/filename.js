@@ -256,8 +256,8 @@ function temp_file_name(temp_dir, prefix, suffix) {
   var rnd = Caml_curry.app1(Random.State[3], tag === 250 ? prng[0] : (
           tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
         )) & 16777215;
-  return concat(temp_dir, Caml_curry.app3(Printf.sprintf(/* Format */{
-                      0: /* String */{
+  return concat(temp_dir, Caml_curry.app3(Printf.sprintf(/* Format */[
+                      /* String */{
                         0: /* No_padding */0,
                         1: /* Int */{
                           0: /* Int_x */6,
@@ -280,10 +280,8 @@ function temp_file_name(temp_dir, prefix, suffix) {
                         length: 2,
                         tag: 2
                       },
-                      1: "%s%06x%s",
-                      length: 2,
-                      tag: 0
-                    }), prefix, rnd, suffix));
+                      "%s%06x%s"
+                    ]), prefix, rnd, suffix));
 }
 
 var current_temp_dir_name = [temp_dir_name$2];

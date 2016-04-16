@@ -220,13 +220,13 @@ type required_modules = (Ident.t * string) list
 
 
 type tag_info = Lambda.tag_info = 
-  | Constructor of string
-  | Tuple
-  | Array
-  | Variant of string 
-  | Record of string array
-  | Module of string list option
-  | NA
+  | Blk_constructor of string * int
+  | Blk_tuple
+  | Blk_array
+  | Blk_variant of string 
+  | Blk_record of string array
+  | Blk_module of string list option
+  | Blk_na
 
 type length_object = 
   | Array 

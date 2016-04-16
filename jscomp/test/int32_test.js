@@ -182,8 +182,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           ]
         ], Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
-                              Caml_curry.app1(Format.asprintf(/* Format */{
-                                        0: /* String_literal */{
+                              Caml_curry.app1(Format.asprintf(/* Format */[
+                                        /* String_literal */{
                                           0: "shift_right_logical_cases ",
                                           1: /* Int */{
                                             0: /* Int_d */0,
@@ -196,10 +196,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                           length: 2,
                                           tag: 11
                                         },
-                                        1: "shift_right_logical_cases %d",
-                                        length: 2,
-                                        tag: 0
-                                      }), i),
+                                        "shift_right_logical_cases %d"
+                                      ]), i),
                               function () {
                                 return /* Eq */{
                                         0: a,
@@ -211,8 +209,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                             ];
                     }, shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                           return /* tuple */[
-                                  Caml_curry.app1(Format.asprintf(/* Format */{
-                                            0: /* String_literal */{
+                                  Caml_curry.app1(Format.asprintf(/* Format */[
+                                            /* String_literal */{
                                               0: "shift_right_cases ",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
@@ -225,10 +223,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "shift_right_cases %d",
-                                            length: 2,
-                                            tag: 0
-                                          }), i),
+                                            "shift_right_cases %d"
+                                          ]), i),
                                   function () {
                                     return /* Eq */{
                                             0: a,
@@ -240,8 +236,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                 ];
                         }, shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i(function (i, a, b) {
                           return /* tuple */[
-                                  Caml_curry.app1(Format.asprintf(/* Format */{
-                                            0: /* String_literal */{
+                                  Caml_curry.app1(Format.asprintf(/* Format */[
+                                            /* String_literal */{
                                               0: "shift_left_cases ",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
@@ -254,10 +250,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "shift_left_cases %d",
-                                            length: 2,
-                                            tag: 0
-                                          }), i),
+                                            "shift_left_cases %d"
+                                          ]), i),
                                   function () {
                                     return /* Eq */{
                                             0: a,

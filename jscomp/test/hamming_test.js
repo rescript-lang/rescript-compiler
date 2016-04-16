@@ -98,8 +98,8 @@ function pr(param) {
   var nh = param[1];
   var nl = param[0];
   if (Caml_int64.compare(nh, n0)) {
-    return Caml_curry.app2(Printf.bprintf(buf, /* Format */{
-                    0: /* Int64 */{
+    return Caml_curry.app2(Printf.bprintf(buf, /* Format */[
+                    /* Int64 */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
                       2: /* No_precision */0,
@@ -124,14 +124,12 @@ function pr(param) {
                       length: 4,
                       tag: 7
                     },
-                    1: "%Ld%018Ld\n",
-                    length: 2,
-                    tag: 0
-                  }), nh, nl);
+                    "%Ld%018Ld\n"
+                  ]), nh, nl);
   }
   else {
-    return Caml_curry.app1(Printf.bprintf(buf, /* Format */{
-                    0: /* Int64 */{
+    return Caml_curry.app1(Printf.bprintf(buf, /* Format */[
+                    /* Int64 */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
                       2: /* No_precision */0,
@@ -144,10 +142,8 @@ function pr(param) {
                       length: 4,
                       tag: 7
                     },
-                    1: "%Ld\n",
-                    length: 2,
-                    tag: 0
-                  }), nl);
+                    "%Ld\n"
+                  ]), nl);
   }
 }
 
@@ -158,12 +154,10 @@ function map(f, l) {
             var match = tag === 250 ? l[0] : (
                 tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
               );
-            return /* Cons */{
-                    0: Caml_curry.app1(f, match[0]),
-                    1: map(f, match[1]),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    Caml_curry.app1(f, match[0]),
+                    map(f, match[1])
+                  ];
           },
           length: 1,
           tag: 246
@@ -188,29 +182,23 @@ function merge(cmp, l1, l2) {
             var c = Caml_curry.app2(cmp, x1, x2);
             if (c) {
               if (c < 0) {
-                return /* Cons */{
-                        0: x1,
-                        1: merge(cmp, ll1, l2),
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Cons */[
+                        x1,
+                        merge(cmp, ll1, l2)
+                      ];
               }
               else {
-                return /* Cons */{
-                        0: x2,
-                        1: merge(cmp, l1, ll2),
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Cons */[
+                        x2,
+                        merge(cmp, l1, ll2)
+                      ];
               }
             }
             else {
-              return /* Cons */{
-                      0: x1,
-                      1: merge(cmp, ll1, ll2),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Cons */[
+                      x1,
+                      merge(cmp, ll1, ll2)
+                    ];
             }
           },
           length: 1,
@@ -264,12 +252,10 @@ var ham5 = {
 
 Caml_obj.caml_update_dummy(hamming, {
       0: function () {
-        return /* Cons */{
-                0: nn1,
-                1: merge(cmp, ham2, merge(cmp, ham3, ham5)),
-                length: 2,
-                tag: 0
-              };
+        return /* Cons */[
+                nn1,
+                merge(cmp, ham2, merge(cmp, ham3, ham5))
+              ];
       },
       length: 1,
       tag: 246

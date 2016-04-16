@@ -63,17 +63,15 @@ function process(x) {
             var arity = [/* None */0];
             var fail = function (l) {
               var error = "invalid indicator" + (indicator + ("in method name " + (x + (":" + Lam_current_unit.get_file(/* () */0)))));
-              Caml_curry.app1(Ext_log.err(l, /* Format */{
-                        0: /* String */{
+              Caml_curry.app1(Ext_log.err(l, /* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* End_of_format */0,
                           length: 2,
                           tag: 2
                         },
-                        1: "%s",
-                        length: 2,
-                        tag: 0
-                      }), error);
+                        "%s"
+                      ]), error);
               throw [
                     Caml_builtin_exceptions.failure,
                     error

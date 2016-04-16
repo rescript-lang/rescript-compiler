@@ -38,13 +38,9 @@ var Break = {
 function catch_break(on) {
   if (on) {
     -6;
-    return /* Signal_handle */{
-            0: function () {
+    return /* Signal_handle */[function () {
               throw Break;
-            },
-            length: 1,
-            tag: 0
-          };
+            }];
   }
   else {
     -6;
