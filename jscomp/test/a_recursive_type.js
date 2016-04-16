@@ -7,17 +7,9 @@ function g(x) {
   return Caml_curry.app1(x[0], x);
 }
 
-var loop = g(/* A */{
-      0: g,
-      length: 1,
-      tag: 0
-    });
+var loop = g(/* A */[g]);
 
-var x = /* A */{
-  0: g,
-  length: 1,
-  tag: 0
-};
+var x = /* A */[g];
 
 var non_terminate = g(x);
 

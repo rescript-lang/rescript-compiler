@@ -4,8 +4,8 @@
 var Printf     = require("../stdlib/printf");
 var Caml_curry = require("../runtime/caml_curry");
 
-Caml_curry.app1(Printf.printf(/* Format */{
-          0: /* Int64 */{
+Caml_curry.app1(Printf.printf(/* Format */[
+          /* Int64 */{
             0: /* Int_d */0,
             1: /* No_padding */0,
             2: /* No_precision */0,
@@ -18,40 +18,34 @@ Caml_curry.app1(Printf.printf(/* Format */{
             length: 4,
             tag: 7
           },
-          1: "%Ld\n",
-          length: 2,
-          tag: 0
-        }), /* int64 */[
+          "%Ld\n"
+        ]), /* int64 */[
       0,
       32
     ]);
 
-Printf.printf(/* Format */{
-      0: /* String_literal */{
+Printf.printf(/* Format */[
+      /* String_literal */{
         0: "heloo!\nhelloxx\n",
         1: /* End_of_format */0,
         length: 2,
         tag: 11
       },
-      1: "heloo!\nhelloxx\n",
-      length: 2,
-      tag: 0
-    });
+      "heloo!\nhelloxx\n"
+    ]);
 
-Printf.printf(/* Format */{
-      0: /* String_literal */{
+Printf.printf(/* Format */[
+      /* String_literal */{
         0: "hello\nhi\n",
         1: /* End_of_format */0,
         length: 2,
         tag: 11
       },
-      1: "hello\nhi\n",
-      length: 2,
-      tag: 0
-    });
+      "hello\nhi\n"
+    ]);
 
-Caml_curry.app2(Printf.printf(/* Format */{
-          0: /* Int */{
+Caml_curry.app2(Printf.printf(/* Format */[
+          /* Int */{
             0: /* Int_d */0,
             1: /* Arg_padding */{
               0: /* Right */1,
@@ -68,23 +62,19 @@ Caml_curry.app2(Printf.printf(/* Format */{
             length: 4,
             tag: 4
           },
-          1: "%*d\n\n",
-          length: 2,
-          tag: 0
-        }), 32, 3);
+          "%*d\n\n"
+        ]), 32, 3);
 
-Caml_curry.app1(Printf.printf(/* Format */{
-          0: /* String */{
+Caml_curry.app1(Printf.printf(/* Format */[
+          /* String */{
             0: /* No_padding */0,
             1: /* End_of_format */0,
             length: 2,
             tag: 2
           },
-          1: "%s",
-          length: 2,
-          tag: 0
-        }), Caml_curry.app2(Printf.sprintf(/* Format */{
-              0: /* Int */{
+          "%s"
+        ]), Caml_curry.app2(Printf.sprintf(/* Format */[
+              /* Int */{
                 0: /* Int_d */0,
                 1: /* Arg_padding */{
                   0: /* Right */1,
@@ -101,9 +91,7 @@ Caml_curry.app1(Printf.printf(/* Format */{
                 length: 4,
                 tag: 4
               },
-              1: "%*d\n",
-              length: 2,
-              tag: 0
-            }), 32, 3));
+              "%*d\n"
+            ]), 32, 3));
 
 /*  Not a pure module */

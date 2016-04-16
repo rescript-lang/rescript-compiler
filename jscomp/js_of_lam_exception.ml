@@ -49,7 +49,7 @@ let make_exception exception_str mutable_flag : J.expression =
         mutable_flag,
         (* TODO: combined with `_001` optimization *)
         E.obj_int_tag_literal (* (Obj.object_tag) *),
-        NA                    
+        Blk_na                    
       );
     comment = None
   }

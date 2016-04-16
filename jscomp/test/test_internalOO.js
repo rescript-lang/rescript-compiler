@@ -53,27 +53,23 @@ function height(param) {
 function create(l, x, d, r) {
   var hl = height(l);
   var hr = height(r);
-  return /* Node */{
-          0: l,
-          1: x,
-          2: d,
-          3: r,
-          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          l,
+          x,
+          d,
+          r,
+          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        ];
 }
 
 function singleton(x, d) {
-  return /* Node */{
-          0: /* Empty */0,
-          1: x,
-          2: d,
-          3: /* Empty */0,
-          4: 1,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          /* Empty */0,
+          x,
+          d,
+          /* Empty */0,
+          1
+        ];
 }
 
 function bal(l, x, d, r) {
@@ -132,15 +128,13 @@ function bal(l, x, d, r) {
     }
   }
   else {
-    return /* Node */{
-            0: l,
-            1: x,
-            2: d,
-            3: r,
-            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
   }
 }
 
@@ -169,27 +163,23 @@ function add(x, data, param) {
       }
     }
     else {
-      return /* Node */{
-              0: l,
-              1: x,
-              2: data,
-              3: r,
-              4: param[4],
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l,
+              x,
+              data,
+              r,
+              param[4]
+            ];
     }
   }
   else {
-    return /* Node */{
-            0: /* Empty */0,
-            1: x,
-            2: data,
-            3: /* Empty */0,
-            4: 1,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            /* Empty */0,
+            x,
+            data,
+            /* Empty */0,
+            1
+          ];
   }
 }
 
@@ -355,15 +345,13 @@ function map(f, param) {
     var l$prime = map(f, param[0]);
     var d$prime = Caml_curry.app1(f, param[2]);
     var r$prime = map(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: param[1],
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            param[1],
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -376,15 +364,13 @@ function mapi(f, param) {
     var l$prime = mapi(f, param[0]);
     var d$prime = Caml_curry.app2(f, v, param[2]);
     var r$prime = mapi(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: v,
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            v,
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -655,14 +641,12 @@ function cons_enum(_m, _e) {
     var e = _e;
     var m = _m;
     if (m) {
-      _e = /* More */{
-        0: m[1],
-        1: m[2],
-        2: m[3],
-        3: e,
-        length: 4,
-        tag: 0
-      };
+      _e = /* More */[
+        m[1],
+        m[2],
+        m[3],
+        e
+      ];
       _m = m[0];
       continue ;
       
@@ -819,27 +803,23 @@ function height$1(param) {
 function create$1(l, x, d, r) {
   var hl = height$1(l);
   var hr = height$1(r);
-  return /* Node */{
-          0: l,
-          1: x,
-          2: d,
-          3: r,
-          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          l,
+          x,
+          d,
+          r,
+          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        ];
 }
 
 function singleton$1(x, d) {
-  return /* Node */{
-          0: /* Empty */0,
-          1: x,
-          2: d,
-          3: /* Empty */0,
-          4: 1,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          /* Empty */0,
+          x,
+          d,
+          /* Empty */0,
+          1
+        ];
 }
 
 function bal$1(l, x, d, r) {
@@ -898,15 +878,13 @@ function bal$1(l, x, d, r) {
     }
   }
   else {
-    return /* Node */{
-            0: l,
-            1: x,
-            2: d,
-            3: r,
-            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
   }
 }
 
@@ -935,27 +913,23 @@ function add$1(x, data, param) {
       }
     }
     else {
-      return /* Node */{
-              0: l,
-              1: x,
-              2: data,
-              3: r,
-              4: param[4],
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l,
+              x,
+              data,
+              r,
+              param[4]
+            ];
     }
   }
   else {
-    return /* Node */{
-            0: /* Empty */0,
-            1: x,
-            2: data,
-            3: /* Empty */0,
-            4: 1,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            /* Empty */0,
+            x,
+            data,
+            /* Empty */0,
+            1
+          ];
   }
 }
 
@@ -1121,15 +1095,13 @@ function map$1(f, param) {
     var l$prime = map$1(f, param[0]);
     var d$prime = Caml_curry.app1(f, param[2]);
     var r$prime = map$1(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: param[1],
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            param[1],
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -1142,15 +1114,13 @@ function mapi$1(f, param) {
     var l$prime = mapi$1(f, param[0]);
     var d$prime = Caml_curry.app2(f, v, param[2]);
     var r$prime = mapi$1(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: v,
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            v,
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -1421,14 +1391,12 @@ function cons_enum$1(_m, _e) {
     var e = _e;
     var m = _m;
     if (m) {
-      _e = /* More */{
-        0: m[1],
-        1: m[2],
-        2: m[3],
-        3: e,
-        length: 4,
-        tag: 0
-      };
+      _e = /* More */[
+        m[1],
+        m[2],
+        m[3],
+        e
+      ];
       _m = m[0];
       continue ;
       
@@ -1585,27 +1553,23 @@ function height$2(param) {
 function create$2(l, x, d, r) {
   var hl = height$2(l);
   var hr = height$2(r);
-  return /* Node */{
-          0: l,
-          1: x,
-          2: d,
-          3: r,
-          4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          l,
+          x,
+          d,
+          r,
+          hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+        ];
 }
 
 function singleton$2(x, d) {
-  return /* Node */{
-          0: /* Empty */0,
-          1: x,
-          2: d,
-          3: /* Empty */0,
-          4: 1,
-          length: 5,
-          tag: 0
-        };
+  return /* Node */[
+          /* Empty */0,
+          x,
+          d,
+          /* Empty */0,
+          1
+        ];
 }
 
 function bal$2(l, x, d, r) {
@@ -1664,15 +1628,13 @@ function bal$2(l, x, d, r) {
     }
   }
   else {
-    return /* Node */{
-            0: l,
-            1: x,
-            2: d,
-            3: r,
-            4: hl >= hr ? hl + 1 | 0 : hr + 1 | 0,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l,
+            x,
+            d,
+            r,
+            hl >= hr ? hl + 1 | 0 : hr + 1 | 0
+          ];
   }
 }
 
@@ -1701,27 +1663,23 @@ function add$2(x, data, param) {
       }
     }
     else {
-      return /* Node */{
-              0: l,
-              1: x,
-              2: data,
-              3: r,
-              4: param[4],
-              length: 5,
-              tag: 0
-            };
+      return /* Node */[
+              l,
+              x,
+              data,
+              r,
+              param[4]
+            ];
     }
   }
   else {
-    return /* Node */{
-            0: /* Empty */0,
-            1: x,
-            2: data,
-            3: /* Empty */0,
-            4: 1,
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            /* Empty */0,
+            x,
+            data,
+            /* Empty */0,
+            1
+          ];
   }
 }
 
@@ -1887,15 +1845,13 @@ function map$2(f, param) {
     var l$prime = map$2(f, param[0]);
     var d$prime = Caml_curry.app1(f, param[2]);
     var r$prime = map$2(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: param[1],
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            param[1],
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -1908,15 +1864,13 @@ function mapi$2(f, param) {
     var l$prime = mapi$2(f, param[0]);
     var d$prime = Caml_curry.app2(f, v, param[2]);
     var r$prime = mapi$2(f, param[3]);
-    return /* Node */{
-            0: l$prime,
-            1: v,
-            2: d$prime,
-            3: r$prime,
-            4: param[4],
-            length: 5,
-            tag: 0
-          };
+    return /* Node */[
+            l$prime,
+            v,
+            d$prime,
+            r$prime,
+            param[4]
+          ];
   }
   else {
     return /* Empty */0;
@@ -2187,14 +2141,12 @@ function cons_enum$2(_m, _e) {
     var e = _e;
     var m = _m;
     if (m) {
-      _e = /* More */{
-        0: m[1],
-        1: m[2],
-        2: m[3],
-        3: e,
-        length: 4,
-        tag: 0
-      };
+      _e = /* More */[
+        m[1],
+        m[2],
+        m[3],
+        e
+      ];
       _m = m[0];
       continue ;
       
@@ -2812,13 +2764,11 @@ function build_path(n, keys, tables) {
   ];
   var r = res;
   for(var i = 0; i<= n; ++i){
-    r = /* Cons */{
-      0: keys[i],
-      1: r,
-      2: /* Empty */0,
-      length: 3,
-      tag: 0
-    };
+    r = /* Cons */[
+      keys[i],
+      r,
+      /* Empty */0
+    ];
   }
   tables[/* data */1] = r;
   return res;
@@ -2842,13 +2792,11 @@ function lookup_keys(i, keys, tables) {
         
       }
       else {
-        var next = /* Cons */{
-          0: key,
-          1: /* Empty */0,
-          2: /* Empty */0,
-          length: 3,
-          tag: 0
-        };
+        var next = /* Cons */[
+          key,
+          /* Empty */0,
+          /* Empty */0
+        ];
         tables$1[/* next */2] = next;
         return build_path(i - 1 | 0, keys, next);
       }

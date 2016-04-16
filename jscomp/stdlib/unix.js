@@ -246,8 +246,8 @@ Printexc.register_printer(function (param) {
           }
         }
         else {
-          msg = Caml_curry.app1(Printf.sprintf(/* Format */{
-                    0: /* String_literal */{
+          msg = Caml_curry.app1(Printf.sprintf(/* Format */[
+                    /* String_literal */{
                       0: "EUNKNOWNERR ",
                       1: /* Int */{
                         0: /* Int_d */0,
@@ -260,13 +260,11 @@ Printexc.register_printer(function (param) {
                       length: 2,
                       tag: 11
                     },
-                    1: "EUNKNOWNERR %d",
-                    length: 2,
-                    tag: 0
-                  }), e[0]);
+                    "EUNKNOWNERR %d"
+                  ]), e[0]);
         }
-        return /* Some */[Caml_curry.app3(Printf.sprintf(/* Format */{
-                          0: /* String_literal */{
+        return /* Some */[Caml_curry.app3(Printf.sprintf(/* Format */[
+                          /* String_literal */{
                             0: "Unix.Unix_error(Unix.",
                             1: /* String */{
                               0: /* No_padding */0,
@@ -302,10 +300,8 @@ Printexc.register_printer(function (param) {
                             length: 2,
                             tag: 11
                           },
-                          1: "Unix.Unix_error(Unix.%s, %S, %S)",
-                          length: 2,
-                          tag: 0
-                        }), msg, param[2], param[3])];
+                          "Unix.Unix_error(Unix.%s, %S, %S)"
+                        ]), msg, param[2], param[3])];
       }
       else {
         return /* None */0;

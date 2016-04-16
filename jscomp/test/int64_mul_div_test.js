@@ -315,8 +315,8 @@ function from_pairs(prefix, pairs) {
                   var a = param[1];
                   var result = param[0];
                   return /* tuple */[
-                          Caml_curry.app2(Printf.sprintf(/* Format */{
-                                    0: /* String */{
+                          Caml_curry.app2(Printf.sprintf(/* Format */[
+                                    /* String */{
                                       0: /* No_padding */0,
                                       1: /* Char_literal */{
                                         0: /* "_" */95,
@@ -334,10 +334,8 @@ function from_pairs(prefix, pairs) {
                                       length: 2,
                                       tag: 2
                                     },
-                                    1: "%s_%d",
-                                    length: 2,
-                                    tag: 0
-                                  }), prefix, i),
+                                    "%s_%d"
+                                  ]), prefix, i),
                           function () {
                             return commutative_mul(result, a, b);
                           }
@@ -1649,8 +1647,8 @@ function from(xs) {
               var b = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */{
-                                0: /* String_literal */{
+                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                                /* String_literal */{
                                   0: "small_divs ",
                                   1: /* Scan_get_counter */{
                                     0: /* Token_counter */2,
@@ -1661,10 +1659,8 @@ function from(xs) {
                                   length: 2,
                                   tag: 11
                                 },
-                                1: "small_divs %L",
-                                length: 2,
-                                tag: 0
-                              }), i),
+                                "small_divs %L"
+                              ]), i),
                       function () {
                         return /* Eq */{
                                 0: /* tuple */[
@@ -1733,8 +1729,8 @@ function from_compare(xs) {
               var b = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */{
-                                0: /* String_literal */{
+                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                                /* String_literal */{
                                   0: "int64_compare ",
                                   1: /* Scan_get_counter */{
                                     0: /* Token_counter */2,
@@ -1745,10 +1741,8 @@ function from_compare(xs) {
                                   length: 2,
                                   tag: 11
                                 },
-                                1: "int64_compare %L",
-                                length: 2,
-                                tag: 0
-                              }), i),
+                                "int64_compare %L"
+                              ]), i),
                       function () {
                         return /* Eq */{
                                 0: c,
@@ -1766,8 +1760,8 @@ function from_to_string(xs) {
               var str_a = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */{
-                                0: /* String_literal */{
+                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                                /* String_literal */{
                                   0: "to_string ",
                                   1: /* Scan_get_counter */{
                                     0: /* Token_counter */2,
@@ -1778,10 +1772,8 @@ function from_to_string(xs) {
                                   length: 2,
                                   tag: 11
                                 },
-                                1: "to_string %L",
-                                length: 2,
-                                tag: 0
-                              }), i),
+                                "to_string %L"
+                              ]), i),
                       function () {
                         return /* Eq */{
                                 0: str_a,
@@ -1798,8 +1790,8 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                       var f = param[1];
                       var i64 = param[0];
                       return /* tuple */[
-                              Caml_curry.app1(Printf.sprintf(/* Format */{
-                                        0: /* String_literal */{
+                              Caml_curry.app1(Printf.sprintf(/* Format */[
+                                        /* String_literal */{
                                           0: "to_float_",
                                           1: /* Int */{
                                             0: /* Int_d */0,
@@ -1812,10 +1804,8 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                           length: 2,
                                           tag: 11
                                         },
-                                        1: "to_float_%d",
-                                        length: 2,
-                                        tag: 0
-                                      }), i),
+                                        "to_float_%d"
+                                      ]), i),
                               function () {
                                 return /* Eq */{
                                         0: Caml_int64.to_float(i64),
@@ -1829,8 +1819,8 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                           var i64 = param[1];
                           var f = param[0];
                           return /* tuple */[
-                                  Caml_curry.app1(Printf.sprintf(/* Format */{
-                                            0: /* String_literal */{
+                                  Caml_curry.app1(Printf.sprintf(/* Format */[
+                                            /* String_literal */{
                                               0: "of_float_",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
@@ -1843,10 +1833,8 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "of_float_%d",
-                                            length: 2,
-                                            tag: 0
-                                          }), i),
+                                            "of_float_%d"
+                                          ]), i),
                                   function () {
                                     return /* Eq */{
                                             0: Caml_int64.of_float(f),

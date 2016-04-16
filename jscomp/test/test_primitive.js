@@ -21,7 +21,7 @@ function a5(prim) {
 
 function a6(prim) {
   return [
-          [
+          /* tuple */[
             "test_primitive.ml",
             32,
             9,

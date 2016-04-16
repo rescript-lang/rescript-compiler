@@ -28,7 +28,7 @@ module E = Js_exp_make
 let make_block mutable_flag (tag_info : Lambda.tag_info) tag args  = 
 
   match mutable_flag, tag_info with
-  | _, Array -> Js_of_lam_array.make_array mutable_flag  Pgenarray args
+  | _, Blk_array -> Js_of_lam_array.make_array mutable_flag  Pgenarray args
   | _ , _ -> E.make_block tag tag_info args mutable_flag
   (* | _, (  Tuple | Variant _ ) -> (\** TODO: check with inline record *\) *)
   (*     E.arr Immutable *)

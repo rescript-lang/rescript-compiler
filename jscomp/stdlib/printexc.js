@@ -13,8 +13,8 @@ var Caml_curry              = require("../runtime/caml_curry");
 
 var printers = [/* [] */0];
 
-var locfmt = /* Format */{
-  0: /* String_literal */{
+var locfmt = /* Format */[
+  /* String_literal */{
     0: 'File "',
     1: /* String */{
       0: /* No_padding */0,
@@ -71,16 +71,14 @@ var locfmt = /* Format */{
     length: 2,
     tag: 11
   },
-  1: 'File "%s", line %d, characters %d-%d: %s',
-  length: 2,
-  tag: 0
-};
+  'File "%s", line %d, characters %d-%d: %s'
+];
 
 function field(x, i) {
   var f = x[i];
   if (f.length === undefined) {
-    return Caml_curry.app1(Printf.sprintf(/* Format */{
-                    0: /* Int */{
+    return Caml_curry.app1(Printf.sprintf(/* Format */[
+                    /* Int */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
                       2: /* No_precision */0,
@@ -88,23 +86,19 @@ function field(x, i) {
                       length: 4,
                       tag: 4
                     },
-                    1: "%d",
-                    length: 2,
-                    tag: 0
-                  }), f);
+                    "%d"
+                  ]), f);
   }
   else if ((f.tag | 0) === Obj.string_tag) {
-    return Caml_curry.app1(Printf.sprintf(/* Format */{
-                    0: /* Caml_string */{
+    return Caml_curry.app1(Printf.sprintf(/* Format */[
+                    /* Caml_string */{
                       0: /* No_padding */0,
                       1: /* End_of_format */0,
                       length: 2,
                       tag: 3
                     },
-                    1: "%S",
-                    length: 2,
-                    tag: 0
-                  }), f);
+                    "%S"
+                  ]), f);
   }
   else if ((f.tag | 0) === Obj.double_tag) {
     return Pervasives.string_of_float(f);
@@ -119,8 +113,8 @@ function other_fields(x, i) {
     return "";
   }
   else {
-    return Caml_curry.app2(Printf.sprintf(/* Format */{
-                    0: /* String_literal */{
+    return Caml_curry.app2(Printf.sprintf(/* Format */[
+                    /* String_literal */{
                       0: ", ",
                       1: /* String */{
                         0: /* No_padding */0,
@@ -136,18 +130,16 @@ function other_fields(x, i) {
                       length: 2,
                       tag: 11
                     },
-                    1: ", %s%s",
-                    length: 2,
-                    tag: 0
-                  }), field(x, i), other_fields(x, i + 1 | 0));
+                    ", %s%s"
+                  ]), field(x, i), other_fields(x, i + 1 | 0));
   }
 }
 
 function fields(x) {
   var n = x.length;
   if (n > 2 || n < 0) {
-    return Caml_curry.app2(Printf.sprintf(/* Format */{
-                    0: /* Char_literal */{
+    return Caml_curry.app2(Printf.sprintf(/* Format */[
+                    /* Char_literal */{
                       0: /* "(" */40,
                       1: /* String */{
                         0: /* No_padding */0,
@@ -168,10 +160,8 @@ function fields(x) {
                       length: 2,
                       tag: 12
                     },
-                    1: "(%s%s)",
-                    length: 2,
-                    tag: 0
-                  }), field(x, 1), other_fields(x, 2));
+                    "(%s%s)"
+                  ]), field(x, 1), other_fields(x, 2));
   }
   else {
     switch (n) {
@@ -179,8 +169,8 @@ function fields(x) {
       case 1 : 
           return "";
       case 2 : 
-          return Caml_curry.app1(Printf.sprintf(/* Format */{
-                          0: /* Char_literal */{
+          return Caml_curry.app1(Printf.sprintf(/* Format */[
+                          /* Char_literal */{
                             0: /* "(" */40,
                             1: /* String */{
                               0: /* No_padding */0,
@@ -196,10 +186,8 @@ function fields(x) {
                             length: 2,
                             tag: 12
                           },
-                          1: "(%s)",
-                          length: 2,
-                          tag: 0
-                        }), field(x, 1));
+                          "(%s)"
+                        ]), field(x, 1));
       
     }
   }
@@ -262,8 +250,8 @@ function print(fct, arg) {
     return Caml_curry.app1(fct, arg);
   }
   catch (x){
-    Caml_curry.app1(Printf.eprintf(/* Format */{
-              0: /* String_literal */{
+    Caml_curry.app1(Printf.eprintf(/* Format */[
+              /* String_literal */{
                 0: "Uncaught exception: ",
                 1: /* String */{
                   0: /* No_padding */0,
@@ -279,10 +267,8 @@ function print(fct, arg) {
                 length: 2,
                 tag: 11
               },
-              1: "Uncaught exception: %s\n",
-              length: 2,
-              tag: 0
-            }), to_string(x));
+              "Uncaught exception: %s\n"
+            ]), to_string(x));
     Caml_io.caml_ml_flush(Pervasives.stderr);
     throw x;
   }
@@ -294,8 +280,8 @@ function $$catch(fct, arg) {
   }
   catch (x){
     Caml_io.caml_ml_flush(Pervasives.stdout);
-    Caml_curry.app1(Printf.eprintf(/* Format */{
-              0: /* String_literal */{
+    Caml_curry.app1(Printf.eprintf(/* Format */[
+              /* String_literal */{
                 0: "Uncaught exception: ",
                 1: /* String */{
                   0: /* No_padding */0,
@@ -311,10 +297,8 @@ function $$catch(fct, arg) {
                 length: 2,
                 tag: 11
               },
-              1: "Uncaught exception: %s\n",
-              length: 2,
-              tag: 0
-            }), to_string(x));
+              "Uncaught exception: %s\n"
+            ]), to_string(x));
     return Pervasives.exit(2);
   }
 }
@@ -355,8 +339,8 @@ function format_backtrace_slot(pos, slot) {
       return /* None */0;
     }
     else {
-      return /* Some */[Caml_curry.app1(Printf.sprintf(/* Format */{
-                        0: /* String */{
+      return /* Some */[Caml_curry.app1(Printf.sprintf(/* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* String_literal */{
                             0: " unknown location",
@@ -367,15 +351,13 @@ function format_backtrace_slot(pos, slot) {
                           length: 2,
                           tag: 2
                         },
-                        1: "%s unknown location",
-                        length: 2,
-                        tag: 0
-                      }), info(/* false */0))];
+                        "%s unknown location"
+                      ]), info(/* false */0))];
     }
   }
   else {
-    return /* Some */[Caml_curry.app5(Printf.sprintf(/* Format */{
-                      0: /* String */{
+    return /* Some */[Caml_curry.app5(Printf.sprintf(/* Format */[
+                      /* String */{
                         0: /* No_padding */0,
                         1: /* String_literal */{
                           0: ' file "',
@@ -427,10 +409,8 @@ function format_backtrace_slot(pos, slot) {
                         length: 2,
                         tag: 2
                       },
-                      1: '%s file "%s", line %d, characters %d-%d',
-                      length: 2,
-                      tag: 0
-                    }), info(slot[0]), slot[1], slot[2], slot[3], slot[4])];
+                      '%s file "%s", line %d, characters %d-%d'
+                    ]), info(slot[0]), slot[1], slot[2], slot[3], slot[4])];
   }
 }
 
@@ -442,8 +422,8 @@ function print_raw_backtrace(outchan, raw_backtrace) {
     for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Caml_curry.app1(Printf.fprintf(outchan$1, /* Format */{
-                  0: /* String */{
+        Caml_curry.app1(Printf.fprintf(outchan$1, /* Format */[
+                  /* String */{
                     0: /* No_padding */0,
                     1: /* Char_literal */{
                       0: /* "\n" */10,
@@ -454,27 +434,23 @@ function print_raw_backtrace(outchan, raw_backtrace) {
                     length: 2,
                     tag: 2
                   },
-                  1: "%s\n",
-                  length: 2,
-                  tag: 0
-                }), match[0]);
+                  "%s\n"
+                ]), match[0]);
       }
       
     }
     return /* () */0;
   }
   else {
-    return Printf.fprintf(outchan$1, /* Format */{
-                0: /* String_literal */{
+    return Printf.fprintf(outchan$1, /* Format */[
+                /* String_literal */{
                   0: "(Program not linked with -g, cannot print stack backtrace)\n",
                   1: /* End_of_format */0,
                   length: 2,
                   tag: 11
                 },
-                1: "(Program not linked with -g, cannot print stack backtrace)\n",
-                length: 2,
-                tag: 0
-              });
+                "(Program not linked with -g, cannot print stack backtrace)\n"
+              ]);
   }
 }
 
@@ -489,8 +465,8 @@ function backtrace_to_string(backtrace) {
     for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Caml_curry.app1(Printf.bprintf(b, /* Format */{
-                  0: /* String */{
+        Caml_curry.app1(Printf.bprintf(b, /* Format */[
+                  /* String */{
                     0: /* No_padding */0,
                     1: /* Char_literal */{
                       0: /* "\n" */10,
@@ -501,10 +477,8 @@ function backtrace_to_string(backtrace) {
                     length: 2,
                     tag: 2
                   },
-                  1: "%s\n",
-                  length: 2,
-                  tag: 0
-                }), match[0]);
+                  "%s\n"
+                ]), match[0]);
       }
       
     }

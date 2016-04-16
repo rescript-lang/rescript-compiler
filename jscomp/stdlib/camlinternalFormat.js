@@ -60,11 +60,7 @@ function pad_of_pad_opt(pad_opt) {
 
 function prec_of_prec_opt(prec_opt) {
   if (prec_opt) {
-    return /* Lit_precision */{
-            0: prec_opt[0],
-            length: 1,
-            tag: 0
-          };
+    return /* Lit_precision */[prec_opt[0]];
   }
   else {
     return /* No_precision */0;
@@ -75,194 +71,130 @@ function param_format_of_ignored_format(ign, fmt) {
   if (typeof ign === "number") {
     switch (ign) {
       case 0 : 
-          return /* Param_format_EBB */{
-                  0: /* Char */{
+          return /* Param_format_EBB */[/* Char */{
                     0: fmt,
                     length: 1,
                     tag: 0
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 1 : 
-          return /* Param_format_EBB */{
-                  0: /* Caml_char */{
+          return /* Param_format_EBB */[/* Caml_char */{
                     0: fmt,
                     length: 1,
                     tag: 1
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 2 : 
-          return /* Param_format_EBB */{
-                  0: /* Bool */{
+          return /* Param_format_EBB */[/* Bool */{
                     0: fmt,
                     length: 1,
                     tag: 9
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 3 : 
-          return /* Param_format_EBB */{
-                  0: /* Reader */{
+          return /* Param_format_EBB */[/* Reader */{
                     0: fmt,
                     length: 1,
                     tag: 19
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 4 : 
-          return /* Param_format_EBB */{
-                  0: /* Scan_next_char */{
+          return /* Param_format_EBB */[/* Scan_next_char */{
                     0: fmt,
                     length: 1,
                     tag: 22
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       
     }
   }
   else {
     switch (ign.tag | 0) {
       case 0 : 
-          return /* Param_format_EBB */{
-                  0: /* String */{
+          return /* Param_format_EBB */[/* String */{
                     0: pad_of_pad_opt(ign[0]),
                     1: fmt,
                     length: 2,
                     tag: 2
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 1 : 
-          return /* Param_format_EBB */{
-                  0: /* Caml_string */{
+          return /* Param_format_EBB */[/* Caml_string */{
                     0: pad_of_pad_opt(ign[0]),
                     1: fmt,
                     length: 2,
                     tag: 3
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 2 : 
-          return /* Param_format_EBB */{
-                  0: /* Int */{
+          return /* Param_format_EBB */[/* Int */{
                     0: ign[0],
                     1: pad_of_pad_opt(ign[1]),
                     2: /* No_precision */0,
                     3: fmt,
                     length: 4,
                     tag: 4
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 3 : 
-          return /* Param_format_EBB */{
-                  0: /* Int32 */{
+          return /* Param_format_EBB */[/* Int32 */{
                     0: ign[0],
                     1: pad_of_pad_opt(ign[1]),
                     2: /* No_precision */0,
                     3: fmt,
                     length: 4,
                     tag: 5
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 4 : 
-          return /* Param_format_EBB */{
-                  0: /* Nativeint */{
+          return /* Param_format_EBB */[/* Nativeint */{
                     0: ign[0],
                     1: pad_of_pad_opt(ign[1]),
                     2: /* No_precision */0,
                     3: fmt,
                     length: 4,
                     tag: 6
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 5 : 
-          return /* Param_format_EBB */{
-                  0: /* Int64 */{
+          return /* Param_format_EBB */[/* Int64 */{
                     0: ign[0],
                     1: pad_of_pad_opt(ign[1]),
                     2: /* No_precision */0,
                     3: fmt,
                     length: 4,
                     tag: 7
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 6 : 
-          return /* Param_format_EBB */{
-                  0: /* Float */{
+          return /* Param_format_EBB */[/* Float */{
                     0: /* Float_f */0,
                     1: pad_of_pad_opt(ign[0]),
                     2: prec_of_prec_opt(ign[1]),
                     3: fmt,
                     length: 4,
                     tag: 8
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 7 : 
-          return /* Param_format_EBB */{
-                  0: /* Format_arg */{
+          return /* Param_format_EBB */[/* Format_arg */{
                     0: ign[0],
                     1: ign[1],
                     2: fmt,
                     length: 3,
                     tag: 13
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 8 : 
-          return /* Param_format_EBB */{
-                  0: /* Format_subst */{
+          return /* Param_format_EBB */[/* Format_subst */{
                     0: ign[0],
                     1: ign[1],
                     2: fmt,
                     length: 3,
                     tag: 14
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 9 : 
-          return /* Param_format_EBB */{
-                  0: /* Scan_char_set */{
+          return /* Param_format_EBB */[/* Scan_char_set */{
                     0: ign[0],
                     1: ign[1],
                     2: fmt,
                     length: 3,
                     tag: 20
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       case 10 : 
-          return /* Param_format_EBB */{
-                  0: /* Scan_get_counter */{
+          return /* Param_format_EBB */[/* Scan_get_counter */{
                     0: ign[0],
                     1: fmt,
                     length: 2,
                     tag: 21
-                  },
-                  length: 1,
-                  tag: 0
-                };
+                  }];
       
     }
   }
@@ -2313,45 +2245,39 @@ var Type_mismatch = {
 
 function type_padding(pad, fmtty) {
   if (typeof pad === "number") {
-    return /* Padding_fmtty_EBB */{
-            0: /* No_padding */0,
-            1: fmtty,
-            length: 2,
-            tag: 0
-          };
+    return /* Padding_fmtty_EBB */[
+            /* No_padding */0,
+            fmtty
+          ];
   }
   else if (pad.tag) {
     if (typeof fmtty === "number") {
       throw Type_mismatch;
     }
     else if (fmtty.tag === 2) {
-      return /* Padding_fmtty_EBB */{
-              0: /* Arg_padding */{
+      return /* Padding_fmtty_EBB */[
+              /* Arg_padding */{
                 0: pad[0],
                 length: 1,
                 tag: 1
               },
-              1: fmtty[0],
-              length: 2,
-              tag: 0
-            };
+              fmtty[0]
+            ];
     }
     else {
       throw Type_mismatch;
     }
   }
   else {
-    return /* Padding_fmtty_EBB */{
-            0: /* Lit_padding */{
+    return /* Padding_fmtty_EBB */[
+            /* Lit_padding */{
               0: pad[0],
               1: pad[1],
               length: 2,
               tag: 0
             },
-            1: fmtty,
-            length: 2,
-            tag: 0
-          };
+            fmtty
+          ];
   }
 }
 
@@ -2364,40 +2290,30 @@ function type_padprec(pad, prec, fmtty) {
         throw Type_mismatch;
       }
       else if (match$1.tag === 2) {
-        return /* Padprec_fmtty_EBB */{
-                0: match[0],
-                1: /* Arg_precision */1,
-                2: match$1[0],
-                length: 3,
-                tag: 0
-              };
+        return /* Padprec_fmtty_EBB */[
+                match[0],
+                /* Arg_precision */1,
+                match$1[0]
+              ];
       }
       else {
         throw Type_mismatch;
       }
     }
     else {
-      return /* Padprec_fmtty_EBB */{
-              0: match[0],
-              1: /* No_precision */0,
-              2: match[1],
-              length: 3,
-              tag: 0
-            };
+      return /* Padprec_fmtty_EBB */[
+              match[0],
+              /* No_precision */0,
+              match[1]
+            ];
     }
   }
   else {
-    return /* Padprec_fmtty_EBB */{
-            0: match[0],
-            1: /* Lit_precision */{
-              0: prec[0],
-              length: 1,
-              tag: 0
-            },
-            2: match[1],
-            length: 3,
-            tag: 0
-          };
+    return /* Padprec_fmtty_EBB */[
+            match[0],
+            /* Lit_precision */[prec[0]],
+            match[1]
+          ];
   }
 }
 
@@ -2413,12 +2329,10 @@ function type_format(fmt, fmtty) {
 
 function type_format_gen(fmt, fmtty) {
   if (typeof fmt === "number") {
-    return /* Fmt_fmtty_EBB */{
-            0: /* End_of_format */0,
-            1: fmtty,
-            length: 2,
-            tag: 0
-          };
+    return /* Fmt_fmtty_EBB */[
+            /* End_of_format */0,
+            fmtty
+          ];
   }
   else {
     switch (fmt.tag | 0) {
@@ -2431,16 +2345,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else {
             var match = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Char */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Char */{
                       0: match[0],
                       length: 1,
                       tag: 0
                     },
-                    1: match[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match[1]
+                  ];
           }
           break;
       case 1 : 
@@ -2452,16 +2364,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else {
             var match$1 = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Caml_char */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Caml_char */{
                       0: match$1[0],
                       length: 1,
                       tag: 1
                     },
-                    1: match$1[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$1[1]
+                  ];
           }
           break;
       case 2 : 
@@ -2472,17 +2382,15 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$3.tag === 1) {
             var match$4 = type_format_gen(fmt[1], match$3[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* String */{
+            return /* Fmt_fmtty_EBB */[
+                    /* String */{
                       0: match$2[0],
                       1: match$4[0],
                       length: 2,
                       tag: 2
                     },
-                    1: match$4[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$4[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2496,17 +2404,15 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$6.tag === 1) {
             var match$7 = type_format_gen(fmt[1], match$6[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Caml_string */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Caml_string */{
                       0: match$5[0],
                       1: match$7[0],
                       length: 2,
                       tag: 3
                     },
-                    1: match$7[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$7[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2520,8 +2426,8 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$9.tag === 2) {
             var match$10 = type_format_gen(fmt[3], match$9[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Int */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Int */{
                       0: fmt[0],
                       1: match$8[0],
                       2: match$8[1],
@@ -2529,10 +2435,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 4,
                       tag: 4
                     },
-                    1: match$10[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$10[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2546,8 +2450,8 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$12.tag === 3) {
             var match$13 = type_format_gen(fmt[3], match$12[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Int32 */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Int32 */{
                       0: fmt[0],
                       1: match$11[0],
                       2: match$11[1],
@@ -2555,10 +2459,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 4,
                       tag: 5
                     },
-                    1: match$13[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$13[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2572,8 +2474,8 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$15.tag === 4) {
             var match$16 = type_format_gen(fmt[3], match$15[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Nativeint */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Nativeint */{
                       0: fmt[0],
                       1: match$14[0],
                       2: match$14[1],
@@ -2581,10 +2483,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 4,
                       tag: 6
                     },
-                    1: match$16[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$16[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2598,8 +2498,8 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$18.tag === 5) {
             var match$19 = type_format_gen(fmt[3], match$18[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Int64 */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Int64 */{
                       0: fmt[0],
                       1: match$17[0],
                       2: match$17[1],
@@ -2607,10 +2507,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 4,
                       tag: 7
                     },
-                    1: match$19[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$19[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2624,8 +2522,8 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (match$21.tag === 6) {
             var match$22 = type_format_gen(fmt[3], match$21[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Float */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Float */{
                       0: fmt[0],
                       1: match$20[0],
                       2: match$20[1],
@@ -2633,10 +2531,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 4,
                       tag: 8
                     },
-                    1: match$22[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$22[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2648,16 +2544,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 7) {
             var match$23 = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Bool */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Bool */{
                       0: match$23[0],
                       length: 1,
                       tag: 9
                     },
-                    1: match$23[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$23[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2665,72 +2559,56 @@ function type_format_gen(fmt, fmtty) {
           break;
       case 10 : 
           var match$24 = type_format_gen(fmt[0], fmtty);
-          return /* Fmt_fmtty_EBB */{
-                  0: /* Flush */{
+          return /* Fmt_fmtty_EBB */[
+                  /* Flush */{
                     0: match$24[0],
                     length: 1,
                     tag: 10
                   },
-                  1: match$24[1],
-                  length: 2,
-                  tag: 0
-                };
+                  match$24[1]
+                ];
       case 11 : 
           var match$25 = type_format_gen(fmt[1], fmtty);
-          return /* Fmt_fmtty_EBB */{
-                  0: /* String_literal */{
+          return /* Fmt_fmtty_EBB */[
+                  /* String_literal */{
                     0: fmt[0],
                     1: match$25[0],
                     length: 2,
                     tag: 11
                   },
-                  1: match$25[1],
-                  length: 2,
-                  tag: 0
-                };
+                  match$25[1]
+                ];
       case 12 : 
           var match$26 = type_format_gen(fmt[1], fmtty);
-          return /* Fmt_fmtty_EBB */{
-                  0: /* Char_literal */{
+          return /* Fmt_fmtty_EBB */[
+                  /* Char_literal */{
                     0: fmt[0],
                     1: match$26[0],
                     length: 2,
                     tag: 12
                   },
-                  1: match$26[1],
-                  length: 2,
-                  tag: 0
-                };
+                  match$26[1]
+                ];
       case 13 : 
           if (typeof fmtty === "number") {
             throw Type_mismatch;
           }
           else if (fmtty.tag === 8) {
             var sub_fmtty$prime = fmtty[0];
-            if (Caml_obj.caml_notequal(/* Fmtty_EBB */{
-                    0: fmt[1],
-                    length: 1,
-                    tag: 0
-                  }, /* Fmtty_EBB */{
-                    0: sub_fmtty$prime,
-                    length: 1,
-                    tag: 0
-                  })) {
+            if (Caml_obj.caml_notequal(/* Fmtty_EBB */[fmt[1]], /* Fmtty_EBB */[sub_fmtty$prime])) {
               throw Type_mismatch;
             }
             var match$27 = type_format_gen(fmt[2], fmtty[1]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Format_arg */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Format_arg */{
                       0: fmt[0],
                       1: sub_fmtty$prime,
                       2: match$27[0],
                       length: 3,
                       tag: 13
                     },
-                    1: match$27[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$27[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2742,30 +2620,20 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 9) {
             var sub_fmtty1 = fmtty[0];
-            if (Caml_obj.caml_notequal(/* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(fmt[1]),
-                    length: 1,
-                    tag: 0
-                  }, /* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(sub_fmtty1),
-                    length: 1,
-                    tag: 0
-                  })) {
+            if (Caml_obj.caml_notequal(/* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(fmt[1])], /* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(sub_fmtty1)])) {
               throw Type_mismatch;
             }
             var match$28 = type_format_gen(fmt[2], CamlinternalFormatBasics.erase_rel(fmtty[2]));
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Format_subst */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Format_subst */{
                       0: fmt[0],
                       1: sub_fmtty1,
                       2: match$28[0],
                       length: 3,
                       tag: 14
                     },
-                    1: match$28[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$28[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2777,16 +2645,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 10) {
             var match$29 = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Alpha */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Alpha */{
                       0: match$29[0],
                       length: 1,
                       tag: 15
                     },
-                    1: match$29[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$29[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2798,16 +2664,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 11) {
             var match$30 = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Theta */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Theta */{
                       0: match$30[0],
                       length: 1,
                       tag: 16
                     },
-                    1: match$30[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$30[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2815,17 +2679,15 @@ function type_format_gen(fmt, fmtty) {
           break;
       case 17 : 
           var match$31 = type_format_gen(fmt[1], fmtty);
-          return /* Fmt_fmtty_EBB */{
-                  0: /* Formatting_lit */{
+          return /* Fmt_fmtty_EBB */[
+                  /* Formatting_lit */{
                     0: fmt[0],
                     1: match$31[0],
                     length: 2,
                     tag: 17
                   },
-                  1: match$31[1],
-                  length: 2,
-                  tag: 0
-                };
+                  match$31[1]
+                ];
       case 18 : 
           var formatting_gen = fmt[0];
           var fmt0 = fmt[1];
@@ -2834,15 +2696,13 @@ function type_format_gen(fmt, fmtty) {
             var match$32 = formatting_gen[0];
             var match$33 = type_format_gen(match$32[0], fmtty0);
             var match$34 = type_format_gen(fmt0, match$33[1]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Formatting_gen */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Formatting_gen */{
                       0: /* Open_box */{
-                        0: /* Format */{
-                          0: match$33[0],
-                          1: match$32[1],
-                          length: 2,
-                          tag: 0
-                        },
+                        0: /* Format */[
+                          match$33[0],
+                          match$32[1]
+                        ],
                         length: 1,
                         tag: 1
                       },
@@ -2850,24 +2710,20 @@ function type_format_gen(fmt, fmtty) {
                       length: 2,
                       tag: 18
                     },
-                    1: match$34[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$34[1]
+                  ];
           }
           else {
             var match$35 = formatting_gen[0];
             var match$36 = type_format_gen(match$35[0], fmtty0);
             var match$37 = type_format_gen(fmt0, match$36[1]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Formatting_gen */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Formatting_gen */{
                       0: /* Open_tag */{
-                        0: /* Format */{
-                          0: match$36[0],
-                          1: match$35[1],
-                          length: 2,
-                          tag: 0
-                        },
+                        0: /* Format */[
+                          match$36[0],
+                          match$35[1]
+                        ],
                         length: 1,
                         tag: 0
                       },
@@ -2875,10 +2731,8 @@ function type_format_gen(fmt, fmtty) {
                       length: 2,
                       tag: 18
                     },
-                    1: match$37[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$37[1]
+                  ];
           }
       case 19 : 
           if (typeof fmtty === "number") {
@@ -2886,16 +2740,14 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 13) {
             var match$38 = type_format_gen(fmt[0], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Reader */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Reader */{
                       0: match$38[0],
                       length: 1,
                       tag: 19
                     },
-                    1: match$38[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$38[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2907,18 +2759,16 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 1) {
             var match$39 = type_format_gen(fmt[2], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Scan_char_set */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Scan_char_set */{
                       0: fmt[0],
                       1: fmt[1],
                       2: match$39[0],
                       length: 3,
                       tag: 20
                     },
-                    1: match$39[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$39[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2930,17 +2780,15 @@ function type_format_gen(fmt, fmtty) {
           }
           else if (fmtty.tag === 2) {
             var match$40 = type_format_gen(fmt[1], fmtty[0]);
-            return /* Fmt_fmtty_EBB */{
-                    0: /* Scan_get_counter */{
+            return /* Fmt_fmtty_EBB */[
+                    /* Scan_get_counter */{
                       0: fmt[0],
                       1: match$40[0],
                       length: 2,
                       tag: 21
                     },
-                    1: match$40[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$40[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -2958,17 +2806,15 @@ function type_format_gen(fmt, fmtty) {
                   }
                   else if (fmtty$1.tag === 14) {
                     var match$41 = type_format_gen(fmt$1, fmtty$1[0]);
-                    return /* Fmt_fmtty_EBB */{
-                            0: /* Ignored_param */{
+                    return /* Fmt_fmtty_EBB */[
+                            /* Ignored_param */{
                               0: /* Ignored_reader */3,
                               1: match$41[0],
                               length: 2,
                               tag: 23
                             },
-                            1: match$41[1],
-                            length: 2,
-                            tag: 0
-                          };
+                            match$41[1]
+                          ];
                   }
                   else {
                     throw Type_mismatch;
@@ -2994,8 +2840,8 @@ function type_format_gen(fmt, fmtty) {
               case 8 : 
                   var match$42 = type_ignored_format_substitution(ign[1], fmt$1, fmtty$1);
                   var match$43 = match$42[1];
-                  return /* Fmt_fmtty_EBB */{
-                          0: /* Ignored_param */{
+                  return /* Fmt_fmtty_EBB */[
+                          /* Ignored_param */{
                             0: /* Ignored_format_subst */{
                               0: ign[0],
                               1: match$42[0],
@@ -3006,10 +2852,8 @@ function type_format_gen(fmt, fmtty) {
                             length: 2,
                             tag: 23
                           },
-                          1: match$43[1],
-                          length: 2,
-                          tag: 0
-                        };
+                          match$43[1]
+                        ];
               case 0 : 
               case 1 : 
               case 2 : 
@@ -3033,27 +2877,23 @@ function type_format_gen(fmt, fmtty) {
 
 function type_ignored_param_one(ign, fmt, fmtty) {
   var match = type_format_gen(fmt, fmtty);
-  return /* Fmt_fmtty_EBB */{
-          0: /* Ignored_param */{
+  return /* Fmt_fmtty_EBB */[
+          /* Ignored_param */{
             0: ign,
             1: match[0],
             length: 2,
             tag: 23
           },
-          1: match[1],
-          length: 2,
-          tag: 0
-        };
+          match[1]
+        ];
 }
 
 function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
   if (typeof sub_fmtty === "number") {
-    return /* Fmtty_fmt_EBB */{
-            0: /* End_of_fmtty */0,
-            1: type_format_gen(fmt, fmtty),
-            length: 2,
-            tag: 0
-          };
+    return /* Fmtty_fmt_EBB */[
+            /* End_of_fmtty */0,
+            type_format_gen(fmt, fmtty)
+          ];
   }
   else {
     switch (sub_fmtty.tag | 0) {
@@ -3066,16 +2906,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else {
             var match = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Char_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Char_ty */{
                       0: match[0],
                       length: 1,
                       tag: 0
                     },
-                    1: match[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match[1]
+                  ];
           }
           break;
       case 1 : 
@@ -3084,16 +2922,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 1) {
             var match$1 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* String_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* String_ty */{
                       0: match$1[0],
                       length: 1,
                       tag: 1
                     },
-                    1: match$1[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$1[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3105,16 +2941,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 2) {
             var match$2 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Int_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Int_ty */{
                       0: match$2[0],
                       length: 1,
                       tag: 2
                     },
-                    1: match$2[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$2[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3126,16 +2960,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 3) {
             var match$3 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Int32_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Int32_ty */{
                       0: match$3[0],
                       length: 1,
                       tag: 3
                     },
-                    1: match$3[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$3[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3147,16 +2979,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 4) {
             var match$4 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Nativeint_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Nativeint_ty */{
                       0: match$4[0],
                       length: 1,
                       tag: 4
                     },
-                    1: match$4[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$4[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3168,16 +2998,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 5) {
             var match$5 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Int64_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Int64_ty */{
                       0: match$5[0],
                       length: 1,
                       tag: 5
                     },
-                    1: match$5[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$5[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3189,16 +3017,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 6) {
             var match$6 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Float_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Float_ty */{
                       0: match$6[0],
                       length: 1,
                       tag: 6
                     },
-                    1: match$6[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$6[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3210,16 +3036,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 7) {
             var match$7 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Bool_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Bool_ty */{
                       0: match$7[0],
                       length: 1,
                       tag: 7
                     },
-                    1: match$7[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$7[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3231,29 +3055,19 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 8) {
             var sub2_fmtty$prime = fmtty[0];
-            if (Caml_obj.caml_notequal(/* Fmtty_EBB */{
-                    0: sub_fmtty[0],
-                    length: 1,
-                    tag: 0
-                  }, /* Fmtty_EBB */{
-                    0: sub2_fmtty$prime,
-                    length: 1,
-                    tag: 0
-                  })) {
+            if (Caml_obj.caml_notequal(/* Fmtty_EBB */[sub_fmtty[0]], /* Fmtty_EBB */[sub2_fmtty$prime])) {
               throw Type_mismatch;
             }
             var match$8 = type_ignored_format_substitution(sub_fmtty[1], fmt, fmtty[1]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Format_arg_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Format_arg_ty */{
                       0: sub2_fmtty$prime,
                       1: match$8[0],
                       length: 2,
                       tag: 8
                     },
-                    1: match$8[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$8[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3266,26 +3080,10 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           else if (fmtty.tag === 9) {
             var sub2_fmtty$prime$1 = fmtty[1];
             var sub1_fmtty$prime = fmtty[0];
-            if (Caml_obj.caml_notequal(/* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(sub_fmtty[0]),
-                    length: 1,
-                    tag: 0
-                  }, /* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(sub1_fmtty$prime),
-                    length: 1,
-                    tag: 0
-                  })) {
+            if (Caml_obj.caml_notequal(/* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(sub_fmtty[0])], /* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(sub1_fmtty$prime)])) {
               throw Type_mismatch;
             }
-            if (Caml_obj.caml_notequal(/* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(sub_fmtty[1]),
-                    length: 1,
-                    tag: 0
-                  }, /* Fmtty_EBB */{
-                    0: CamlinternalFormatBasics.erase_rel(sub2_fmtty$prime$1),
-                    length: 1,
-                    tag: 0
-                  })) {
+            if (Caml_obj.caml_notequal(/* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(sub_fmtty[1])], /* Fmtty_EBB */[CamlinternalFormatBasics.erase_rel(sub2_fmtty$prime$1)])) {
               throw Type_mismatch;
             }
             var sub_fmtty$prime = trans(symm(sub1_fmtty$prime), sub2_fmtty$prime$1);
@@ -3293,18 +3091,16 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
             Caml_curry.app1(match$9[1], /* Refl */0);
             Caml_curry.app1(match$9[3], /* Refl */0);
             var match$10 = type_ignored_format_substitution(CamlinternalFormatBasics.erase_rel(sub_fmtty[2]), fmt, fmtty[2]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Format_subst_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Format_subst_ty */{
                       0: sub1_fmtty$prime,
                       1: sub2_fmtty$prime$1,
                       2: symm(match$10[0]),
                       length: 3,
                       tag: 9
                     },
-                    1: match$10[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$10[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3316,16 +3112,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 10) {
             var match$11 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Alpha_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Alpha_ty */{
                       0: match$11[0],
                       length: 1,
                       tag: 10
                     },
-                    1: match$11[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$11[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3337,16 +3131,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 11) {
             var match$12 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Theta_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Theta_ty */{
                       0: match$12[0],
                       length: 1,
                       tag: 11
                     },
-                    1: match$12[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$12[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3360,16 +3152,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 13) {
             var match$13 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Reader_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Reader_ty */{
                       0: match$13[0],
                       length: 1,
                       tag: 13
                     },
-                    1: match$13[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$13[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -3381,16 +3171,14 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
           }
           else if (fmtty.tag === 14) {
             var match$14 = type_ignored_format_substitution(sub_fmtty[0], fmt, fmtty[0]);
-            return /* Fmtty_fmt_EBB */{
-                    0: /* Ignored_reader_ty */{
+            return /* Fmtty_fmt_EBB */[
+                    /* Ignored_reader_ty */{
                       0: match$14[0],
                       length: 1,
                       tag: 14
                     },
-                    1: match$14[1],
-                    length: 2,
-                    tag: 0
-                  };
+                    match$14[1]
+                  ];
           }
           else {
             throw Type_mismatch;
@@ -4751,8 +4539,8 @@ function open_box_of_string(str) {
   else {
     var len = str.length;
     var invalid_box = function () {
-      return Caml_curry.app1(failwith_message(/* Format */{
-                      0: /* String_literal */{
+      return Caml_curry.app1(failwith_message(/* Format */[
+                      /* String_literal */{
                         0: "invalid box description ",
                         1: /* Caml_string */{
                           0: /* No_padding */0,
@@ -4763,10 +4551,8 @@ function open_box_of_string(str) {
                         length: 2,
                         tag: 11
                       },
-                      1: "invalid box description %S",
-                      length: 2,
-                      tag: 0
-                    }), str);
+                      "invalid box description %S"
+                    ]), str);
     };
     var parse_spaces = function (_i) {
       while(true) {
@@ -4898,70 +4684,54 @@ function open_box_of_string(str) {
 
 function make_padding_fmt_ebb(pad, fmt) {
   if (typeof pad === "number") {
-    return /* Padding_fmt_EBB */{
-            0: /* No_padding */0,
-            1: fmt,
-            length: 2,
-            tag: 0
-          };
+    return /* Padding_fmt_EBB */[
+            /* No_padding */0,
+            fmt
+          ];
   }
   else if (pad.tag) {
-    return /* Padding_fmt_EBB */{
-            0: /* Arg_padding */{
+    return /* Padding_fmt_EBB */[
+            /* Arg_padding */{
               0: pad[0],
               length: 1,
               tag: 1
             },
-            1: fmt,
-            length: 2,
-            tag: 0
-          };
+            fmt
+          ];
   }
   else {
-    return /* Padding_fmt_EBB */{
-            0: /* Lit_padding */{
+    return /* Padding_fmt_EBB */[
+            /* Lit_padding */{
               0: pad[0],
               1: pad[1],
               length: 2,
               tag: 0
             },
-            1: fmt,
-            length: 2,
-            tag: 0
-          };
+            fmt
+          ];
   }
 }
 
 function make_precision_fmt_ebb(prec, fmt) {
   if (typeof prec === "number") {
     if (prec !== 0) {
-      return /* Precision_fmt_EBB */{
-              0: /* Arg_precision */1,
-              1: fmt,
-              length: 2,
-              tag: 0
-            };
+      return /* Precision_fmt_EBB */[
+              /* Arg_precision */1,
+              fmt
+            ];
     }
     else {
-      return /* Precision_fmt_EBB */{
-              0: /* No_precision */0,
-              1: fmt,
-              length: 2,
-              tag: 0
-            };
+      return /* Precision_fmt_EBB */[
+              /* No_precision */0,
+              fmt
+            ];
     }
   }
   else {
-    return /* Precision_fmt_EBB */{
-            0: /* Lit_precision */{
-              0: prec[0],
-              length: 1,
-              tag: 0
-            },
-            1: fmt,
-            length: 2,
-            tag: 0
-          };
+    return /* Precision_fmt_EBB */[
+            /* Lit_precision */[prec[0]],
+            fmt
+          ];
   }
 }
 
@@ -4970,48 +4740,42 @@ function make_padprec_fmt_ebb(pad, prec, fmt) {
   var fmt$prime = match[1];
   var prec$1 = match[0];
   if (typeof pad === "number") {
-    return /* Padprec_fmt_EBB */{
-            0: /* No_padding */0,
-            1: prec$1,
-            2: fmt$prime,
-            length: 3,
-            tag: 0
-          };
+    return /* Padprec_fmt_EBB */[
+            /* No_padding */0,
+            prec$1,
+            fmt$prime
+          ];
   }
   else if (pad.tag) {
-    return /* Padprec_fmt_EBB */{
-            0: /* Arg_padding */{
+    return /* Padprec_fmt_EBB */[
+            /* Arg_padding */{
               0: pad[0],
               length: 1,
               tag: 1
             },
-            1: prec$1,
-            2: fmt$prime,
-            length: 3,
-            tag: 0
-          };
+            prec$1,
+            fmt$prime
+          ];
   }
   else {
-    return /* Padprec_fmt_EBB */{
-            0: /* Lit_padding */{
+    return /* Padprec_fmt_EBB */[
+            /* Lit_padding */{
               0: pad[0],
               1: pad[1],
               length: 2,
               tag: 0
             },
-            1: prec$1,
-            2: fmt$prime,
-            length: 3,
-            tag: 0
-          };
+            prec$1,
+            fmt$prime
+          ];
   }
 }
 
 function fmt_ebb_of_string(legacy_behavior, str) {
   var legacy_behavior$1 = legacy_behavior ? legacy_behavior[0] : /* true */1;
   var invalid_format_message = function (str_ind, msg) {
-    return Caml_curry.app3(failwith_message(/* Format */{
-                    0: /* String_literal */{
+    return Caml_curry.app3(failwith_message(/* Format */[
+                    /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
                         0: /* No_padding */0,
@@ -5044,14 +4808,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       length: 2,
                       tag: 11
                     },
-                    1: "invalid format %S: at character number %d, %s",
-                    length: 2,
-                    tag: 0
-                  }), str, str_ind, msg);
+                    "invalid format %S: at character number %d, %s"
+                  ]), str, str_ind, msg);
   };
   var invalid_format_without = function (str_ind, c, s) {
-    return Caml_curry.app4(failwith_message(/* Format */{
-                    0: /* String_literal */{
+    return Caml_curry.app4(failwith_message(/* Format */[
+                    /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
                         0: /* No_padding */0,
@@ -5093,14 +4855,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       length: 2,
                       tag: 11
                     },
-                    1: "invalid format %S: at character number %d, '%c' without %s",
-                    length: 2,
-                    tag: 0
-                  }), str, str_ind, c, s);
+                    "invalid format %S: at character number %d, '%c' without %s"
+                  ]), str, str_ind, c, s);
   };
   var expected_character = function (str_ind, expected, read) {
-    return Caml_curry.app4(failwith_message(/* Format */{
-                    0: /* String_literal */{
+    return Caml_curry.app4(failwith_message(/* Format */[
+                    /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
                         0: /* No_padding */0,
@@ -5142,10 +4902,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       length: 2,
                       tag: 11
                     },
-                    1: "invalid format %S: at character number %d, %s expected, read %C",
-                    length: 2,
-                    tag: 0
-                  }), str, str_ind, expected, read);
+                    "invalid format %S: at character number %d, %s expected, read %C"
+                  ]), str, str_ind, expected, read);
   };
   var parse_literal = function (lit_start, _str_ind, end_ind) {
     while(true) {
@@ -5196,8 +4954,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     var sharp = [/* false */0];
     var set_flag = function (str_ind, flag) {
       if (flag[0] && !legacy_behavior$1) {
-        Caml_curry.app3(failwith_message(/* Format */{
-                  0: /* String_literal */{
+        Caml_curry.app3(failwith_message(/* Format */[
+                  /* String_literal */{
                     0: "invalid format ",
                     1: /* Caml_string */{
                       0: /* No_padding */0,
@@ -5229,10 +4987,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     length: 2,
                     tag: 11
                   },
-                  1: "invalid format %S: at character number %d, duplicate flag %C",
-                  length: 2,
-                  tag: 0
-                }), str, str_ind, str.charCodeAt(str_ind));
+                  "invalid format %S: at character number %d, duplicate flag %C"
+                ]), str, str_ind, str.charCodeAt(str_ind));
       }
       flag[0] = /* true */1;
       return /* () */0;
@@ -5381,11 +5137,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       var parse_literal = function (minus, str_ind) {
         var match = parse_positive(str_ind, end_ind$1, 0);
-        return parse_after_precision(pct_ind$1, match[0], end_ind$1, minus, plus$1, sharp$1, space$1, ign$1, pad$1, /* Lit_precision */{
-                    0: match[1],
-                    length: 1,
-                    tag: 0
-                  });
+        return parse_after_precision(pct_ind$1, match[0], end_ind$1, minus, plus$1, sharp$1, space$1, ign$1, pad$1, /* Lit_precision */[match[1]]);
       };
       var symb$1 = str.charCodeAt(str_ind$1);
       var exit = 0;
@@ -5427,11 +5179,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       }
       if (exit === 1) {
         if (legacy_behavior$1) {
-          return parse_after_precision(pct_ind$1, str_ind$1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, pad$1, /* Lit_precision */{
-                      0: 0,
-                      length: 1,
-                      tag: 0
-                    });
+          return parse_after_precision(pct_ind$1, str_ind$1, end_ind$1, minus$1, plus$1, sharp$1, space$1, ign$1, pad$1, /* Lit_precision */[0]);
         }
         else {
           return invalid_format_without(str_ind$1 - 1 | 0, /* "." */46, "precision");
@@ -5599,15 +5347,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       switch (symb) {
         case 33 : 
             var match = parse_literal(str_ind, str_ind, end_ind);
-            fmt_result = /* Fmt_EBB */{
-              0: /* Flush */{
+            fmt_result = /* Fmt_EBB */[/* Flush */{
                 0: match[0],
                 length: 1,
                 tag: 10
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
             break;
         case 40 : 
             var sub_end = search_subformat_end(str_ind, end_ind, /* ")" */41);
@@ -5625,30 +5369,22 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 2,
                 tag: 8
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored,
                   1: fmt_rest,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               pad_used = /* true */1;
-              fmt_result = /* Fmt_EBB */{
-                0: /* Format_subst */{
+              fmt_result = /* Fmt_EBB */[/* Format_subst */{
                   0: opt_of_pad(/* "(" */40, pad),
                   1: sub_fmtty,
                   2: fmt_rest,
                   length: 3,
                   tag: 14
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         case 44 : 
@@ -5661,24 +5397,16 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 67 : 
             var match$3 = parse_literal(str_ind, str_ind, end_ind);
             var fmt_rest$1 = match$3[0];
-            fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */{
-                0: /* Ignored_param */{
+            fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */[/* Ignored_param */{
                   0: /* Ignored_caml_char */1,
                   1: fmt_rest$1,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              } : /* Fmt_EBB */{
-                0: /* Caml_char */{
+                }] : /* Fmt_EBB */[/* Caml_char */{
                   0: fmt_rest$1,
                   length: 1,
                   tag: 1
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             break;
         case 78 : 
             var match$4 = parse_literal(str_ind, str_ind, end_ind);
@@ -5689,28 +5417,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 1,
                 tag: 10
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$1,
                   1: fmt_rest$2,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
-              fmt_result = /* Fmt_EBB */{
-                0: /* Scan_get_counter */{
+              fmt_result = /* Fmt_EBB */[/* Scan_get_counter */{
                   0: /* Token_counter */2,
                   1: fmt_rest$2,
                   length: 2,
                   tag: 21
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         case 83 : 
@@ -5725,29 +5445,21 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 1,
                 tag: 1
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$2,
                   1: fmt_rest$3,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               var match$6 = make_padding_fmt_ebb(pad$1, fmt_rest$3);
-              fmt_result = /* Fmt_EBB */{
-                0: /* Caml_string */{
+              fmt_result = /* Fmt_EBB */[/* Caml_string */{
                   0: match$6[0],
                   1: match$6[1],
                   length: 2,
                   tag: 3
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         case 91 : 
@@ -5765,30 +5477,22 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 2,
                 tag: 9
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$3,
                   1: fmt_rest$4,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               pad_used = /* true */1;
-              fmt_result = /* Fmt_EBB */{
-                0: /* Scan_char_set */{
+              fmt_result = /* Fmt_EBB */[/* Scan_char_set */{
                   0: opt_of_pad(/* "[" */91, pad),
                   1: char_set,
                   2: fmt_rest$4,
                   length: 3,
                   tag: 20
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         case 32 : 
@@ -5800,15 +5504,11 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             break;
         case 97 : 
             var match$9 = parse_literal(str_ind, str_ind, end_ind);
-            fmt_result = /* Fmt_EBB */{
-              0: /* Alpha */{
+            fmt_result = /* Fmt_EBB */[/* Alpha */{
                 0: match$9[0],
                 length: 1,
                 tag: 15
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
             break;
         case 66 : 
         case 98 : 
@@ -5817,52 +5517,36 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 99 : 
             var char_format = function (fmt_rest) {
               if (ign_used[0] = /* true */1, ign) {
-                return /* Fmt_EBB */{
-                        0: /* Ignored_param */{
+                return /* Fmt_EBB */[/* Ignored_param */{
                           0: /* Ignored_char */0,
                           1: fmt_rest,
                           length: 2,
                           tag: 23
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
               }
               else {
-                return /* Fmt_EBB */{
-                        0: /* Char */{
+                return /* Fmt_EBB */[/* Char */{
                           0: fmt_rest,
                           length: 1,
                           tag: 0
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
               }
             };
             var scan_format = function (fmt_rest) {
               if (ign_used[0] = /* true */1, ign) {
-                return /* Fmt_EBB */{
-                        0: /* Ignored_param */{
+                return /* Fmt_EBB */[/* Ignored_param */{
                           0: /* Ignored_scan_next_char */4,
                           1: fmt_rest,
                           length: 2,
                           tag: 23
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
               }
               else {
-                return /* Fmt_EBB */{
-                        0: /* Scan_next_char */{
+                return /* Fmt_EBB */[/* Scan_next_char */{
                           0: fmt_rest,
                           length: 1,
                           tag: 22
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
               }
             };
             var match$10 = parse_literal(str_ind, str_ind, end_ind);
@@ -5891,24 +5575,16 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         case 114 : 
             var match$12 = parse_literal(str_ind, str_ind, end_ind);
             var fmt_rest$6 = match$12[0];
-            fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */{
-                0: /* Ignored_param */{
+            fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */[/* Ignored_param */{
                   0: /* Ignored_reader */3,
                   1: fmt_rest$6,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              } : /* Fmt_EBB */{
-                0: /* Reader */{
+                }] : /* Fmt_EBB */[/* Reader */{
                   0: fmt_rest$6,
                   length: 1,
                   tag: 19
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             break;
         case 115 : 
             pad_used = /* true */1;
@@ -5922,42 +5598,30 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 1,
                 tag: 0
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$4,
                   1: fmt_rest$7,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               var match$14 = make_padding_fmt_ebb(pad$2, fmt_rest$7);
-              fmt_result = /* Fmt_EBB */{
-                0: /* String */{
+              fmt_result = /* Fmt_EBB */[/* String */{
                   0: match$14[0],
                   1: match$14[1],
                   length: 2,
                   tag: 2
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         case 116 : 
             var match$15 = parse_literal(str_ind, str_ind, end_ind);
-            fmt_result = /* Fmt_EBB */{
-              0: /* Theta */{
+            fmt_result = /* Fmt_EBB */[/* Theta */{
                 0: match$15[0],
                 length: 1,
                 tag: 16
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
             break;
         case 88 : 
         case 100 : 
@@ -6072,30 +5736,22 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 2,
                 tag: 7
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$5,
                   1: fmt_rest$8,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               pad_used = /* true */1;
-              fmt_result = /* Fmt_EBB */{
-                0: /* Format_arg */{
+              fmt_result = /* Fmt_EBB */[/* Format_arg */{
                   0: opt_of_pad(/* "{" */123, pad),
                   1: sub_fmtty$1,
                   2: fmt_rest$8,
                   length: 3,
                   tag: 13
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             break;
         
@@ -6118,16 +5774,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               length: 2,
               tag: 2
             };
-            fmt_result = /* Fmt_EBB */{
-              0: /* Ignored_param */{
+            fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                 0: ignored$6,
                 1: fmt_rest$9,
                 length: 2,
                 tag: 23
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
           }
           else {
             pad_used = /* true */1;
@@ -6163,18 +5815,14 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 );
             }
             var match$19 = make_padprec_fmt_ebb(pad$3, (prec_used[0] = /* true */1, prec), fmt_rest$9);
-            fmt_result = /* Fmt_EBB */{
-              0: /* Int */{
+            fmt_result = /* Fmt_EBB */[/* Int */{
                 0: iconv,
                 1: match$19[0],
                 2: match$19[1],
                 3: match$19[2],
                 length: 4,
                 tag: 4
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
           }
           break;
       case 8 : 
@@ -6188,28 +5836,20 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 1,
                 tag: 10
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$7,
                   1: fmt_rest$10,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
-              fmt_result = /* Fmt_EBB */{
-                0: /* Scan_get_counter */{
+              fmt_result = /* Fmt_EBB */[/* Scan_get_counter */{
                   0: counter,
                   1: fmt_rest$10,
                   length: 2,
                   tag: 21
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
           }
           else {
@@ -6235,72 +5875,52 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               length: 2,
               tag: 6
             };
-            fmt_result = /* Fmt_EBB */{
-              0: /* Ignored_param */{
+            fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                 0: ignored$8,
                 1: fmt_rest$11,
                 length: 2,
                 tag: 23
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
           }
           else {
             pad_used = /* true */1;
             var match$22 = make_padprec_fmt_ebb(pad, (prec_used[0] = /* true */1, prec), fmt_rest$11);
-            fmt_result = /* Fmt_EBB */{
-              0: /* Float */{
+            fmt_result = /* Fmt_EBB */[/* Float */{
                 0: fconv,
                 1: match$22[0],
                 2: match$22[1],
                 3: match$22[2],
                 length: 4,
                 tag: 8
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
           }
           break;
       case 3 : 
           var match$23 = parse_literal(str_ind, str_ind, end_ind);
           var fmt_rest$12 = match$23[0];
-          fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */{
-              0: /* Ignored_param */{
+          fmt_result = (ign_used[0] = /* true */1, ign) ? /* Fmt_EBB */[/* Ignored_param */{
                 0: /* Ignored_bool */2,
                 1: fmt_rest$12,
                 length: 2,
                 tag: 23
-              },
-              length: 1,
-              tag: 0
-            } : /* Fmt_EBB */{
-              0: /* Bool */{
+              }] : /* Fmt_EBB */[/* Bool */{
                 0: fmt_rest$12,
                 length: 1,
                 tag: 9
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
           break;
       case 4 : 
           var match$24 = parse_literal(str_ind, str_ind, end_ind);
-          fmt_result = /* Fmt_EBB */{
-            0: /* Char_literal */{
+          fmt_result = /* Fmt_EBB */[/* Char_literal */{
               0: symb,
               1: match$24[0],
               length: 2,
               tag: 12
-            },
-            length: 1,
-            tag: 0
-          };
+            }];
           break;
       case 5 : 
-          fmt_result = Caml_curry.app3(failwith_message(/* Format */{
-                    0: /* String_literal */{
+          fmt_result = Caml_curry.app3(failwith_message(/* Format */[
+                    /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
                         0: /* No_padding */0,
@@ -6347,10 +5967,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       length: 2,
                       tag: 11
                     },
-                    1: "invalid format %S: at character number %d, flag %C is only allowed after the '%%', before padding and precision",
-                    length: 2,
-                    tag: 0
-                  }), str, pct_ind, symb);
+                    "invalid format %S: at character number %d, flag %C is only allowed after the '%%', before padding and precision"
+                  ]), str, pct_ind, symb);
           break;
       case 6 : 
           if (symb >= 108) {
@@ -6376,32 +5994,24 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                         length: 2,
                         tag: 3
                       };
-                      fmt_result = /* Fmt_EBB */{
-                        0: /* Ignored_param */{
+                      fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                           0: ignored$9,
                           1: fmt_rest$13,
                           length: 2,
                           tag: 23
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
                     }
                     else {
                       pad_used = /* true */1;
                       var match$26 = make_padprec_fmt_ebb(pad, (prec_used[0] = /* true */1, prec), fmt_rest$13);
-                      fmt_result = /* Fmt_EBB */{
-                        0: /* Int32 */{
+                      fmt_result = /* Fmt_EBB */[/* Int32 */{
                           0: iconv$1,
                           1: match$26[0],
                           2: match$26[1],
                           3: match$26[2],
                           length: 4,
                           tag: 5
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
                     }
                     break;
                 case 1 : 
@@ -6424,32 +6034,24 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                         length: 2,
                         tag: 4
                       };
-                      fmt_result = /* Fmt_EBB */{
-                        0: /* Ignored_param */{
+                      fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                           0: ignored$10,
                           1: fmt_rest$14,
                           length: 2,
                           tag: 23
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
                     }
                     else {
                       pad_used = /* true */1;
                       var match$28 = make_padprec_fmt_ebb(pad, (prec_used[0] = /* true */1, prec), fmt_rest$14);
-                      fmt_result = /* Fmt_EBB */{
-                        0: /* Nativeint */{
+                      fmt_result = /* Fmt_EBB */[/* Nativeint */{
                           0: iconv$2,
                           1: match$28[0],
                           2: match$28[1],
                           3: match$28[2],
                           length: 4,
                           tag: 6
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
                     }
                     break;
                 
@@ -6476,40 +6078,32 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 length: 2,
                 tag: 5
               };
-              fmt_result = /* Fmt_EBB */{
-                0: /* Ignored_param */{
+              fmt_result = /* Fmt_EBB */[/* Ignored_param */{
                   0: ignored$11,
                   1: fmt_rest$15,
                   length: 2,
                   tag: 23
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
             else {
               pad_used = /* true */1;
               var match$30 = make_padprec_fmt_ebb(pad, (prec_used[0] = /* true */1, prec), fmt_rest$15);
-              fmt_result = /* Fmt_EBB */{
-                0: /* Int64 */{
+              fmt_result = /* Fmt_EBB */[/* Int64 */{
                   0: iconv$3,
                   1: match$30[0],
                   2: match$30[1],
                   3: match$30[2],
                   length: 4,
                   tag: 7
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
             }
           }
           break;
       
     }
     if (exit === 1) {
-      fmt_result = Caml_curry.app3(failwith_message(/* Format */{
-                0: /* String_literal */{
+      fmt_result = Caml_curry.app3(failwith_message(/* Format */[
+                /* String_literal */{
                   0: "invalid format ",
                   1: /* Caml_string */{
                     0: /* No_padding */0,
@@ -6551,10 +6145,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   length: 2,
                   tag: 11
                 },
-                1: 'invalid format %S: at character number %d, invalid conversion "%%%c"',
-                length: 2,
-                tag: 0
-              }), str, str_ind - 1 | 0, symb);
+                'invalid format %S: at character number %d, invalid conversion "%%%c"'
+              ]), str, str_ind - 1 | 0, symb);
     }
     if (!legacy_behavior$1) {
       if (!plus_used && plus) {
@@ -6566,26 +6158,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       if (!space_used && space) {
         incompatible_flag(pct_ind, str_ind, symb, "' '");
       }
-      if (!pad_used && Caml_obj.caml_notequal(/* Padding_EBB */{
-              0: pad,
-              length: 1,
-              tag: 0
-            }, /* Padding_EBB */{
-              0: /* No_padding */0,
-              length: 1,
-              tag: 0
-            })) {
+      if (!pad_used && Caml_obj.caml_notequal(/* Padding_EBB */[pad], /* Padding_EBB */[/* No_padding */0])) {
         incompatible_flag(pct_ind, str_ind, symb, "`padding'");
       }
-      if (!prec_used[0] && Caml_obj.caml_notequal(/* Precision_EBB */{
-              0: prec,
-              length: 1,
-              tag: 0
-            }, /* Precision_EBB */{
-              0: /* No_precision */0,
-              length: 1,
-              tag: 0
-            })) {
+      if (!prec_used[0] && Caml_obj.caml_notequal(/* Precision_EBB */[prec], /* Precision_EBB */[/* No_precision */0])) {
         incompatible_flag(pct_ind, str_ind, ign ? /* "_" */95 : symb, "`precision'");
       }
       if (ign && plus) {
@@ -6633,16 +6209,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   };
   var parse_after_at = function (str_ind, end_ind) {
     if (str_ind === end_ind) {
-      return /* Fmt_EBB */{
-              0: /* Char_literal */{
+      return /* Fmt_EBB */[/* Char_literal */{
                 0: /* "@" */64,
                 1: /* End_of_format */0,
                 length: 2,
                 tag: 12
-              },
-              length: 1,
-              tag: 0
-            };
+              }];
     }
     else {
       var c = str.charCodeAt(str_ind);
@@ -6663,16 +6235,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               case 2 : 
                   var beg_ind = str_ind + 1 | 0;
                   var match = parse_literal(beg_ind, beg_ind, end_ind);
-                  return /* Fmt_EBB */{
-                          0: /* Formatting_lit */{
+                  return /* Fmt_EBB */[/* Formatting_lit */{
                             0: /* Close_tag */1,
                             1: match[0],
                             length: 2,
                             tag: 17
-                          },
-                          length: 1,
-                          tag: 0
-                        };
+                          }];
               
             }
           }
@@ -6687,16 +6255,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             case 2 : 
                 var beg_ind$1 = str_ind + 1 | 0;
                 var match$1 = parse_literal(beg_ind$1, beg_ind$1, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* Close_box */0,
                           1: match$1[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             
           }
         }
@@ -6710,8 +6274,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             case 0 : 
                 var beg_ind$2 = str_ind + 1 | 0;
                 var match$2 = parse_literal(beg_ind$2, beg_ind$2, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* Break */{
                             0: "@ ",
                             1: 1,
@@ -6722,44 +6285,32 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                           1: match$2[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             case 5 : 
                 if ((str_ind + 1 | 0) < end_ind && str[str_ind + 1 | 0] === "%") {
                   var beg_ind$3 = str_ind + 2 | 0;
                   var match$3 = parse_literal(beg_ind$3, beg_ind$3, end_ind);
-                  return /* Fmt_EBB */{
-                          0: /* Formatting_lit */{
+                  return /* Fmt_EBB */[/* Formatting_lit */{
                             0: /* Escaped_percent */6,
                             1: match$3[0],
                             length: 2,
                             tag: 17
-                          },
-                          length: 1,
-                          tag: 0
-                        };
+                          }];
                 }
                 else {
                   var match$4 = parse_literal(str_ind, str_ind, end_ind);
-                  return /* Fmt_EBB */{
-                          0: /* Char_literal */{
+                  return /* Fmt_EBB */[/* Char_literal */{
                             0: /* "@" */64,
                             1: match$4[0],
                             length: 2,
                             tag: 12
-                          },
-                          length: 1,
-                          tag: 0
-                        };
+                          }];
                 }
                 break;
             case 12 : 
                 var beg_ind$4 = str_ind + 1 | 0;
                 var match$5 = parse_literal(beg_ind$4, beg_ind$4, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* Break */{
                             0: "@,",
                             1: 0,
@@ -6770,23 +6321,16 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                           1: match$5[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             case 14 : 
                 var beg_ind$5 = str_ind + 1 | 0;
                 var match$6 = parse_literal(beg_ind$5, beg_ind$5, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* Flush_newline */4,
                           1: match$6[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             case 27 : 
                 var str_ind$1 = str_ind + 1 | 0;
                 var end_ind$1 = end_ind;
@@ -6891,16 +6435,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                 }
                 var next_ind = match$7[0];
                 var match$12 = parse_literal(next_ind, next_ind, end_ind$1);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: match$7[1],
                           1: match$12[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             case 28 : 
                 var str_ind$2 = str_ind + 1 | 0;
                 var end_ind$2 = end_ind;
@@ -6957,21 +6497,16 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   var match$16 = match$13[0];
                   var next_ind$1 = match$16[0];
                   var match$17 = parse_literal(next_ind$1, next_ind$1, end_ind$2);
-                  return /* Fmt_EBB */{
-                          0: /* Formatting_lit */{
+                  return /* Fmt_EBB */[/* Formatting_lit */{
                             0: match$16[1],
                             1: match$17[0],
                             length: 2,
                             tag: 17
-                          },
-                          length: 1,
-                          tag: 0
-                        };
+                          }];
                 }
                 else {
                   var match$18 = parse_literal(str_ind$2, str_ind$2, end_ind$2);
-                  return /* Fmt_EBB */{
-                          0: /* Formatting_lit */{
+                  return /* Fmt_EBB */[/* Formatting_lit */{
                             0: /* Scan_indic */{
                               0: /* "<" */60,
                               length: 1,
@@ -6980,10 +6515,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                             1: match$18[0],
                             length: 2,
                             tag: 17
-                          },
-                          length: 1,
-                          tag: 0
-                        };
+                          }];
                 }
             case 1 : 
             case 2 : 
@@ -7015,29 +6547,21 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             case 31 : 
                 var beg_ind$6 = str_ind + 1 | 0;
                 var match$19 = parse_literal(beg_ind$6, beg_ind$6, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* FFlush */2,
                           1: match$19[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             case 32 : 
                 var beg_ind$7 = str_ind + 1 | 0;
                 var match$20 = parse_literal(beg_ind$7, beg_ind$7, end_ind);
-                return /* Fmt_EBB */{
-                        0: /* Formatting_lit */{
+                return /* Fmt_EBB */[/* Formatting_lit */{
                           0: /* Escaped_at */5,
                           1: match$20[0],
                           length: 2,
                           tag: 17
-                        },
-                        length: 1,
-                        tag: 0
-                      };
+                        }];
             
           }
         }
@@ -7048,22 +6572,17 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       else {
         var beg_ind$8 = str_ind + 1 | 0;
         var match$21 = parse_literal(beg_ind$8, beg_ind$8, end_ind);
-        return /* Fmt_EBB */{
-                0: /* Formatting_lit */{
+        return /* Fmt_EBB */[/* Formatting_lit */{
                   0: /* Force_newline */3,
                   1: match$21[0],
                   length: 2,
                   tag: 17
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
       if (exit === 1) {
         var beg_ind$9 = str_ind + 1 | 0;
         var match$22 = parse_literal(beg_ind$9, beg_ind$9, end_ind);
-        return /* Fmt_EBB */{
-                0: /* Formatting_lit */{
+        return /* Fmt_EBB */[/* Formatting_lit */{
                   0: /* Scan_indic */{
                     0: c,
                     length: 1,
@@ -7072,10 +6591,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   1: match$22[0],
                   length: 2,
                   tag: 17
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
       
     }
@@ -7125,12 +6641,10 @@ function fmt_ebb_of_string(legacy_behavior, str) {
         var match$1 = parse_literal(beg_ind, beg_ind, end_ind);
         var match$2 = parse_literal(str_ind, str_ind, ind + 1 | 0);
         var sub_fmt = match$2[0];
-        var sub_format = /* Format */{
-          0: sub_fmt,
-          1: sub_str,
-          length: 2,
-          tag: 0
-        };
+        var sub_format = /* Format */[
+          sub_fmt,
+          sub_str
+        ];
         var formatting = is_open_tag ? /* Open_tag */{
             0: sub_format,
             length: 1,
@@ -7140,27 +6654,21 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               length: 1,
               tag: 1
             });
-        return /* Fmt_EBB */{
-                0: /* Formatting_gen */{
+        return /* Fmt_EBB */[/* Formatting_gen */{
                   0: formatting,
                   1: match$1[0],
                   length: 2,
                   tag: 18
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
         var match$3 = parse_literal(str_ind, str_ind, end_ind);
-        var sub_format$1 = /* Format */{
-          0: /* End_of_format */0,
-          1: "",
-          length: 2,
-          tag: 0
-        };
+        var sub_format$1 = /* Format */[
+          /* End_of_format */0,
+          ""
+        ];
         var formatting$1 = is_open_tag ? /* Open_tag */{
             0: sub_format$1,
             length: 1,
@@ -7170,16 +6678,12 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             length: 1,
             tag: 1
           };
-        return /* Fmt_EBB */{
-                0: /* Formatting_gen */{
+        return /* Fmt_EBB */[/* Formatting_gen */{
                   0: formatting$1,
                   1: match$3[0],
                   length: 2,
                   tag: 18
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
       else {
         throw exn;
@@ -7198,8 +6702,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return /* () */0;
     };
     var fail_single_percent = function (str_ind) {
-      return Caml_curry.app2(failwith_message(/* Format */{
-                      0: /* String_literal */{
+      return Caml_curry.app2(failwith_message(/* Format */[
+                      /* String_literal */{
                         0: "invalid format ",
                         1: /* Caml_string */{
                           0: /* No_padding */0,
@@ -7252,10 +6756,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                         length: 2,
                         tag: 11
                       },
-                      1: "invalid format %S: '%%' alone is not accepted in character sets, use %%%% instead at position %d.",
-                      length: 2,
-                      tag: 0
-                    }), str, str_ind);
+                      "invalid format %S: '%%' alone is not accepted in character sets, use %%%% instead at position %d."
+                    ]), str, str_ind);
     };
     var parse_char_set_start = function (str_ind, end_ind) {
       if (str_ind === end_ind) {
@@ -7435,8 +6937,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       else {
         var new_acc = Caml_primitive.imul(acc, 10) + (c - /* "0" */48 | 0) | 0;
         if (new_acc > Sys.max_string_length) {
-          return Caml_curry.app3(failwith_message(/* Format */{
-                          0: /* String_literal */{
+          return Caml_curry.app3(failwith_message(/* Format */[
+                          /* String_literal */{
                             0: "invalid format ",
                             1: /* Caml_string */{
                               0: /* No_padding */0,
@@ -7471,10 +6973,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                             length: 2,
                             tag: 11
                           },
-                          1: "invalid format %S: integer %d is greater than the limit %d",
-                          length: 2,
-                          tag: 0
-                        }), str, new_acc, Sys.max_string_length);
+                          "invalid format %S: integer %d is greater than the limit %d"
+                        ]), str, new_acc, Sys.max_string_length);
         }
         else {
           _acc = new_acc;
@@ -7536,44 +7036,32 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     var size = str_ind - lit_start | 0;
     if (size !== 0) {
       if (size !== 1) {
-        return /* Fmt_EBB */{
-                0: /* String_literal */{
+        return /* Fmt_EBB */[/* String_literal */{
                   0: $$String.sub(str, lit_start, size),
                   1: fmt,
                   length: 2,
                   tag: 11
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
       else {
-        return /* Fmt_EBB */{
-                0: /* Char_literal */{
+        return /* Fmt_EBB */[/* Char_literal */{
                   0: str.charCodeAt(lit_start),
                   1: fmt,
                   length: 2,
                   tag: 12
-                },
-                length: 1,
-                tag: 0
-              };
+                }];
       }
     }
     else {
-      return /* Fmt_EBB */{
-              0: fmt,
-              length: 1,
-              tag: 0
-            };
+      return /* Fmt_EBB */[fmt];
     }
   };
   var search_subformat_end = function (_str_ind, end_ind, c) {
     while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
-        Caml_curry.app3(failwith_message(/* Format */{
-                  0: /* String_literal */{
+        Caml_curry.app3(failwith_message(/* Format */[
+                  /* String_literal */{
                     0: "invalid format ",
                     1: /* Caml_string */{
                       0: /* No_padding */0,
@@ -7610,10 +7098,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                     length: 2,
                     tag: 11
                   },
-                  1: 'invalid format %S: unclosed sub-format, expected "%%%c" at character number %d',
-                  length: 2,
-                  tag: 0
-                }), str, c, end_ind);
+                  'invalid format %S: unclosed sub-format, expected "%%%c" at character number %d'
+                ]), str, c, end_ind);
       }
       var match = str.charCodeAt(str_ind);
       if (match !== 37) {
@@ -8182,8 +7668,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   };
   var incompatible_flag = function (pct_ind, str_ind, symb, option) {
     var subfmt = $$String.sub(str, pct_ind, str_ind - pct_ind | 0);
-    return Caml_curry.app5(failwith_message(/* Format */{
-                    0: /* String_literal */{
+    return Caml_curry.app5(failwith_message(/* Format */[
+                    /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
                         0: /* No_padding */0,
@@ -8235,10 +7721,8 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                       length: 2,
                       tag: 11
                     },
-                    1: "invalid format %S: at character number %d, %s is incompatible with '%c' in sub-format %S",
-                    length: 2,
-                    tag: 0
-                  }), str, pct_ind, option, symb, subfmt);
+                    "invalid format %S: at character number %d, %s is incompatible with '%c' in sub-format %S"
+                  ]), str, pct_ind, option, symb, subfmt);
   };
   return parse_literal(0, 0, str.length);
 }
@@ -8246,17 +7730,15 @@ function fmt_ebb_of_string(legacy_behavior, str) {
 function format_of_string_fmtty(str, fmtty) {
   var match = fmt_ebb_of_string(/* None */0, str);
   try {
-    return /* Format */{
-            0: type_format(match[0], fmtty),
-            1: str,
-            length: 2,
-            tag: 0
-          };
+    return /* Format */[
+            type_format(match[0], fmtty),
+            str
+          ];
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return Caml_curry.app2(failwith_message(/* Format */{
-                      0: /* String_literal */{
+      return Caml_curry.app2(failwith_message(/* Format */[
+                      /* String_literal */{
                         0: "bad input: format type mismatch between ",
                         1: /* Caml_string */{
                           0: /* No_padding */0,
@@ -8277,10 +7759,8 @@ function format_of_string_fmtty(str, fmtty) {
                         length: 2,
                         tag: 11
                       },
-                      1: "bad input: format type mismatch between %S and %S",
-                      length: 2,
-                      tag: 0
-                    }), str, string_of_fmtty(fmtty));
+                      "bad input: format type mismatch between %S and %S"
+                    ]), str, string_of_fmtty(fmtty));
     }
     else {
       throw exn;
@@ -8291,17 +7771,15 @@ function format_of_string_fmtty(str, fmtty) {
 function format_of_string_format(str, param) {
   var match = fmt_ebb_of_string(/* None */0, str);
   try {
-    return /* Format */{
-            0: type_format(match[0], fmtty_of_fmt(param[0])),
-            1: str,
-            length: 2,
-            tag: 0
-          };
+    return /* Format */[
+            type_format(match[0], fmtty_of_fmt(param[0])),
+            str
+          ];
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return Caml_curry.app2(failwith_message(/* Format */{
-                      0: /* String_literal */{
+      return Caml_curry.app2(failwith_message(/* Format */[
+                      /* String_literal */{
                         0: "bad input: format type mismatch between ",
                         1: /* Caml_string */{
                           0: /* No_padding */0,
@@ -8322,10 +7800,8 @@ function format_of_string_format(str, param) {
                         length: 2,
                         tag: 11
                       },
-                      1: "bad input: format type mismatch between %S and %S",
-                      length: 2,
-                      tag: 0
-                    }), str, param[1]);
+                      "bad input: format type mismatch between %S and %S"
+                    ]), str, param[1]);
     }
     else {
       throw exn;

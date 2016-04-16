@@ -276,8 +276,8 @@ var Scan_failure = {
 };
 
 function bad_input_escape(c) {
-  var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-            0: /* String_literal */{
+  var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+            /* String_literal */{
               0: "illegal escape character ",
               1: /* Caml_char */{
                 0: /* End_of_format */0,
@@ -287,10 +287,8 @@ function bad_input_escape(c) {
               length: 2,
               tag: 11
             },
-            1: "illegal escape character %C",
-            length: 2,
-            tag: 0
-          }), c);
+            "illegal escape character %C"
+          ]), c);
   throw [
         Scan_failure,
         s
@@ -298,8 +296,8 @@ function bad_input_escape(c) {
 }
 
 function bad_token_length(message) {
-  var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-            0: /* String_literal */{
+  var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+            /* String_literal */{
               0: "scanning of ",
               1: /* String */{
                 0: /* No_padding */0,
@@ -315,10 +313,8 @@ function bad_token_length(message) {
               length: 2,
               tag: 11
             },
-            1: "scanning of %s failed: the specified length was too short for token",
-            length: 2,
-            tag: 0
-          }), message);
+            "scanning of %s failed: the specified length was too short for token"
+          ]), message);
   throw [
         Scan_failure,
         s
@@ -326,8 +322,8 @@ function bad_token_length(message) {
 }
 
 function character_mismatch_err(c, ci) {
-  return Caml_curry.app2(Printf.sprintf(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app2(Printf.sprintf(/* Format */[
+                  /* String_literal */{
                     0: "looking for ",
                     1: /* Caml_char */{
                       0: /* String_literal */{
@@ -346,10 +342,8 @@ function character_mismatch_err(c, ci) {
                     length: 2,
                     tag: 11
                   },
-                  1: "looking for %C, found %C",
-                  length: 2,
-                  tag: 0
-                }), c, ci);
+                  "looking for %C, found %C"
+                ]), c, ci);
 }
 
 function check_char(ib, _c) {
@@ -427,8 +421,8 @@ function token_bool(ib) {
     case "true" : 
         return /* true */1;
     default:
-      var s$1 = Caml_curry.app1(Printf.sprintf(/* Format */{
-                0: /* String_literal */{
+      var s$1 = Caml_curry.app1(Printf.sprintf(/* Format */[
+                /* String_literal */{
                   0: "invalid boolean ",
                   1: /* Caml_string */{
                     0: /* No_padding */0,
@@ -439,10 +433,8 @@ function token_bool(ib) {
                   length: 2,
                   tag: 11
                 },
-                1: "invalid boolean %S",
-                length: 2,
-                tag: 0
-              }), s);
+                "invalid boolean %S"
+              ]), s);
       throw [
             Scan_failure,
             s$1
@@ -567,8 +559,8 @@ function scan_decimal_digits_plus(width, ib) {
   if (width) {
     var c = checked_peek_char(ib);
     if (c > 57 || c < 48) {
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-                0: /* String_literal */{
+      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+                /* String_literal */{
                   0: "character ",
                   1: /* Caml_char */{
                     0: /* String_literal */{
@@ -583,10 +575,8 @@ function scan_decimal_digits_plus(width, ib) {
                   length: 2,
                   tag: 11
                 },
-                1: "character %C is not a decimal digit",
-                length: 2,
-                tag: 0
-              }), c);
+                "character %C is not a decimal digit"
+              ]), c);
       throw [
             Scan_failure,
             s
@@ -634,8 +624,8 @@ function scan_digits_plus(basis, digitp, width, ib) {
       };
     }
     else {
-      var s = Caml_curry.app2(Printf.sprintf(/* Format */{
-                0: /* String_literal */{
+      var s = Caml_curry.app2(Printf.sprintf(/* Format */[
+                /* String_literal */{
                   0: "character ",
                   1: /* Caml_char */{
                     0: /* String_literal */{
@@ -660,10 +650,8 @@ function scan_digits_plus(basis, digitp, width, ib) {
                   length: 2,
                   tag: 11
                 },
-                1: "character %C is not a valid %s digit",
-                length: 2,
-                tag: 0
-              }), c, basis);
+                "character %C is not a valid %s digit"
+              ]), c, basis);
       throw [
             Scan_failure,
             s
@@ -1054,8 +1042,8 @@ function char_for_backslash(c) {
 function char_for_decimal_code(c0, c1, c2) {
   var c = (Caml_primitive.imul(100, c0 - /* "0" */48 | 0) + Caml_primitive.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
   if (c < 0 || c > 255) {
-    var s = Caml_curry.app3(Printf.sprintf(/* Format */{
-              0: /* String_literal */{
+    var s = Caml_curry.app3(Printf.sprintf(/* Format */[
+              /* String_literal */{
                 0: "bad character decimal encoding \\",
                 1: /* Char */{
                   0: /* Char */{
@@ -1073,10 +1061,8 @@ function char_for_decimal_code(c0, c1, c2) {
                 length: 2,
                 tag: 11
               },
-              1: "bad character decimal encoding \\%c%c%c",
-              length: 2,
-              tag: 0
-            }), c0, c1, c2);
+              "bad character decimal encoding \\%c%c%c"
+            ]), c0, c1, c2);
     throw [
           Scan_failure,
           s
@@ -1102,8 +1088,8 @@ function hexadecimal_value_of_char(c) {
 function char_for_hexadecimal_code(c1, c2) {
   var c = (hexadecimal_value_of_char(c1) << 4) + hexadecimal_value_of_char(c2) | 0;
   if (c < 0 || c > 255) {
-    var s = Caml_curry.app2(Printf.sprintf(/* Format */{
-              0: /* String_literal */{
+    var s = Caml_curry.app2(Printf.sprintf(/* Format */[
+              /* String_literal */{
                 0: "bad character hexadecimal encoding \\",
                 1: /* Char */{
                   0: /* Char */{
@@ -1117,10 +1103,8 @@ function char_for_hexadecimal_code(c1, c2) {
                 length: 2,
                 tag: 11
               },
-              1: "bad character hexadecimal encoding \\%c%c",
-              length: 2,
-              tag: 0
-            }), c1, c2);
+              "bad character hexadecimal encoding \\%c%c"
+            ]), c1, c2);
     throw [
           Scan_failure,
           s
@@ -1136,8 +1120,8 @@ function check_next_char(message, width, ib) {
     var c = peek_char(ib);
     if (ib[/* eof */0]) {
       var message$1 = message;
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-                0: /* String_literal */{
+      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+                /* String_literal */{
                   0: "scanning of ",
                   1: /* String */{
                     0: /* No_padding */0,
@@ -1153,10 +1137,8 @@ function check_next_char(message, width, ib) {
                   length: 2,
                   tag: 11
                 },
-                1: "scanning of %s failed: premature end of file occurred before end of token",
-                length: 2,
-                tag: 0
-              }), message$1);
+                "scanning of %s failed: premature end of file occurred before end of token"
+              ]), message$1);
       throw [
             Scan_failure,
             s
@@ -1374,8 +1356,8 @@ function scan_bool(ib) {
   var m;
   if (c !== 102) {
     if (c !== 116) {
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */{
-                0: /* String_literal */{
+      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+                /* String_literal */{
                   0: "the character ",
                   1: /* Caml_char */{
                     0: /* String_literal */{
@@ -1390,10 +1372,8 @@ function scan_bool(ib) {
                   length: 2,
                   tag: 11
                 },
-                1: "the character %C cannot start a boolean",
-                length: 2,
-                tag: 0
-              }), c);
+                "the character %C cannot start a boolean"
+              ]), c);
       throw [
             Scan_failure,
             s
@@ -1467,8 +1447,8 @@ function scanf_bad_input(ib, x) {
   }
   if (exit === 1) {
     var i = char_count(ib);
-    var s$1 = Caml_curry.app2(Printf.sprintf(/* Format */{
-              0: /* String_literal */{
+    var s$1 = Caml_curry.app2(Printf.sprintf(/* Format */[
+              /* String_literal */{
                 0: "scanf: bad input at char number ",
                 1: /* Int */{
                   0: /* Int_i */3,
@@ -1491,10 +1471,8 @@ function scanf_bad_input(ib, x) {
                 length: 2,
                 tag: 11
               },
-              1: "scanf: bad input at char number %i: %S",
-              length: 2,
-              tag: 0
-            }), i, s);
+              "scanf: bad input at char number %i: %S"
+            ]), i, s);
     throw [
           Scan_failure,
           s$1
@@ -1577,12 +1555,10 @@ function take_format_readers(k, _fmt) {
             return (function(fmt_rest){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */{
-                            0: reader,
-                            1: readers_rest,
-                            length: 2,
-                            tag: 0
-                          });
+                return Caml_curry.app1(k, /* Cons */[
+                            reader,
+                            readers_rest
+                          ]);
               };
               return take_format_readers(new_k, fmt_rest);
             }
@@ -1614,12 +1590,10 @@ function take_format_readers(k, _fmt) {
                     return (function(k$1,fmt$1){
                     return function (reader) {
                       var new_k = function (readers_rest) {
-                        return Caml_curry.app1(k$1, /* Cons */{
-                                    0: reader,
-                                    1: readers_rest,
-                                    length: 2,
-                                    tag: 0
-                                  });
+                        return Caml_curry.app1(k$1, /* Cons */[
+                                    reader,
+                                    readers_rest
+                                  ]);
                       };
                       return take_format_readers(new_k, fmt$1);
                     }
@@ -1694,12 +1668,10 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
             return (function(fmt_rest){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */{
-                            0: reader,
-                            1: readers_rest,
-                            length: 2,
-                            tag: 0
-                          });
+                return Caml_curry.app1(k, /* Cons */[
+                            reader,
+                            readers_rest
+                          ]);
               };
               return take_fmtty_format_readers(new_k, fmt_rest, fmt);
             }
@@ -1709,12 +1681,10 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
             return (function(fmt_rest$1){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */{
-                            0: reader,
-                            1: readers_rest,
-                            length: 2,
-                            tag: 0
-                          });
+                return Caml_curry.app1(k, /* Cons */[
+                            reader,
+                            readers_rest
+                          ]);
               };
               return take_fmtty_format_readers(new_k, fmt_rest$1, fmt);
             }
@@ -1736,21 +1706,17 @@ function make_scanf(ib, _fmt, readers) {
         case 0 : 
             scan_char(0, ib);
             var c = token_char(ib);
-            return /* Cons */{
-                    0: c,
-                    1: make_scanf(ib, fmt[0], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    c,
+                    make_scanf(ib, fmt[0], readers)
+                  ];
         case 1 : 
             scan_caml_char(0, ib);
             var c$1 = token_char(ib);
-            return /* Cons */{
-                    0: c$1,
-                    1: make_scanf(ib, fmt[0], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    c$1,
+                    make_scanf(ib, fmt[0], readers)
+                  ];
         case 2 : 
             var rest = fmt[1];
             var pad = fmt[0];
@@ -1866,12 +1832,10 @@ function make_scanf(ib, _fmt, readers) {
         case 9 : 
             scan_bool(ib);
             var b = token_bool(ib);
-            return /* Cons */{
-                    0: b,
-                    1: make_scanf(ib, fmt[0], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    b,
+                    make_scanf(ib, fmt[0], readers)
+                  ];
         case 10 : 
             if (end_of_input(ib)) {
               _fmt = fmt[0];
@@ -1914,12 +1878,10 @@ function make_scanf(ib, _fmt, readers) {
                 throw exn;
               }
             }
-            return /* Cons */{
-                    0: fmt$1,
-                    1: make_scanf(ib, fmt[2], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    fmt$1,
+                    make_scanf(ib, fmt[2], readers)
+                  ];
         case 14 : 
             var fmtty = fmt[1];
             scan_caml_string(width_of_pad_opt(fmt[0]), ib);
@@ -1944,17 +1906,13 @@ function make_scanf(ib, _fmt, readers) {
                 throw exn$1;
               }
             }
-            return /* Cons */{
-                    0: /* Format */{
-                      0: match$2[0],
-                      1: s$1,
-                      length: 2,
-                      tag: 0
-                    },
-                    1: make_scanf(ib, CamlinternalFormatBasics.concat_fmt(match$2[1], fmt[2]), readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    /* Format */[
+                      match$2[0],
+                      s$1
+                    ],
+                    make_scanf(ib, CamlinternalFormatBasics.concat_fmt(match$2[1], fmt[2]), readers)
+                  ];
         case 15 : 
             throw [
                   Caml_builtin_exceptions.invalid_argument,
@@ -1991,12 +1949,10 @@ function make_scanf(ib, _fmt, readers) {
             break;
         case 19 : 
             var x = Caml_curry.app1(readers[0], ib);
-            return /* Cons */{
-                    0: x,
-                    1: make_scanf(ib, fmt[0], readers[1]),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    x,
+                    make_scanf(ib, fmt[0], readers[1])
+                  ];
         case 20 : 
             var rest$1 = fmt[2];
             var char_set = fmt[1];
@@ -2018,12 +1974,10 @@ function make_scanf(ib, _fmt, readers) {
                 length: 2,
                 tag: 11
               };
-              return /* Cons */{
-                      0: s$3,
-                      1: make_scanf(ib, str_rest$1, readers),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Cons */[
+                      s$3,
+                      make_scanf(ib, str_rest$1, readers)
+                    ];
             }
             else {
               exit$1 = 1;
@@ -2032,30 +1986,24 @@ function make_scanf(ib, _fmt, readers) {
               var width$1 = width_of_pad_opt(width_opt);
               scan_chars_in_char_set(char_set, /* None */0, width$1, ib);
               var s$4 = token(ib);
-              return /* Cons */{
-                      0: s$4,
-                      1: make_scanf(ib, rest$1, readers),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Cons */[
+                      s$4,
+                      make_scanf(ib, rest$1, readers)
+                    ];
             }
             break;
         case 21 : 
             var count = get_counter(ib, fmt[0]);
-            return /* Cons */{
-                    0: count,
-                    1: make_scanf(ib, fmt[1], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    count,
+                    make_scanf(ib, fmt[1], readers)
+                  ];
         case 22 : 
             var c$6 = checked_peek_char(ib);
-            return /* Cons */{
-                    0: c$6,
-                    1: make_scanf(ib, fmt[0], readers),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Cons */[
+                    c$6,
+                    make_scanf(ib, fmt[0], readers)
+                  ];
         case 23 : 
             var match$7 = CamlinternalFormat.param_format_of_ignored_format(fmt[0], fmt[1]);
             var match$8 = make_scanf(ib, match$7[0], readers);
@@ -2096,23 +2044,19 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       else {
         Caml_curry.app3(scan, Pervasives.max_int, Pervasives.max_int, ib);
         var x = Caml_curry.app1(token, ib);
-        return /* Cons */{
-                0: x,
-                1: make_scanf(ib, fmt, readers),
-                length: 2,
-                tag: 0
-              };
+        return /* Cons */[
+                x,
+                make_scanf(ib, fmt, readers)
+              ];
       }
     }
     else {
       Caml_curry.app3(scan, Pervasives.max_int, prec[0], ib);
       var x$1 = Caml_curry.app1(token, ib);
-      return /* Cons */{
-              0: x$1,
-              1: make_scanf(ib, fmt, readers),
-              length: 2,
-              tag: 0
-            };
+      return /* Cons */[
+              x$1,
+              make_scanf(ib, fmt, readers)
+            ];
     }
   }
   else if (pad.tag) {
@@ -2133,23 +2077,19 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       else {
         Caml_curry.app3(scan, w, Pervasives.max_int, ib);
         var x$2 = Caml_curry.app1(token, ib);
-        return /* Cons */{
-                0: x$2,
-                1: make_scanf(ib, fmt, readers),
-                length: 2,
-                tag: 0
-              };
+        return /* Cons */[
+                x$2,
+                make_scanf(ib, fmt, readers)
+              ];
       }
     }
     else {
       Caml_curry.app3(scan, w, prec[0], ib);
       var x$3 = Caml_curry.app1(token, ib);
-      return /* Cons */{
-              0: x$3,
-              1: make_scanf(ib, fmt, readers),
-              length: 2,
-              tag: 0
-            };
+      return /* Cons */[
+              x$3,
+              make_scanf(ib, fmt, readers)
+            ];
     }
   }
   else {
@@ -2301,8 +2241,8 @@ function format_from_string(s, fmt) {
 }
 
 function unescaped(s) {
-  return Caml_curry.app1(sscanf('"' + (s + '"'), /* Format */{
-                  0: /* Caml_string */{
+  return Caml_curry.app1(sscanf('"' + (s + '"'), /* Format */[
+                  /* Caml_string */{
                     0: /* No_padding */0,
                     1: /* Flush */{
                       0: /* End_of_format */0,
@@ -2312,10 +2252,8 @@ function unescaped(s) {
                     length: 2,
                     tag: 3
                   },
-                  1: "%S%!",
-                  length: 2,
-                  tag: 0
-                }), function (x) {
+                  "%S%!"
+                ]), function (x) {
               return x;
             });
 }

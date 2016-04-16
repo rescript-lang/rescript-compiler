@@ -510,12 +510,10 @@ function string_of_format(param) {
 }
 
 function $caret$caret(param, param$1) {
-  return /* Format */{
-          0: CamlinternalFormatBasics.concat_fmt(param[0], param$1[0]),
-          1: $caret(param[1], $caret("%,", param$1[1])),
-          length: 2,
-          tag: 0
-        };
+  return /* Format */[
+          CamlinternalFormatBasics.concat_fmt(param[0], param$1[0]),
+          $caret(param[1], $caret("%,", param$1[1]))
+        ];
 }
 
 var exit_function = [flush_all];

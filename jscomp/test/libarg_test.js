@@ -23,22 +23,20 @@ function record(fmt) {
 }
 
 function f_unit() {
-  return record(/* Format */{
-              0: /* String_literal */{
+  return record(/* Format */[
+              /* String_literal */{
                 0: "unit()",
                 1: /* End_of_format */0,
                 length: 2,
                 tag: 11
               },
-              1: "unit()",
-              length: 2,
-              tag: 0
-            });
+              "unit()"
+            ]);
 }
 
 function f_bool(b) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "bool(",
                     1: /* Bool */{
                       0: /* Char_literal */{
@@ -53,10 +51,8 @@ function f_bool(b) {
                     length: 2,
                     tag: 11
                   },
-                  1: "bool(%b)",
-                  length: 2,
-                  tag: 0
-                }), b);
+                  "bool(%b)"
+                ]), b);
 }
 
 var r_set = [/* false */0];
@@ -64,8 +60,8 @@ var r_set = [/* false */0];
 var r_clear = [/* true */1];
 
 function f_string(s) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "string(",
                     1: /* String */{
                       0: /* No_padding */0,
@@ -81,17 +77,15 @@ function f_string(s) {
                     length: 2,
                     tag: 11
                   },
-                  1: "string(%s)",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "string(%s)"
+                ]), s);
 }
 
 var r_string = [""];
 
 function f_int(i) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "int(",
                     1: /* Int */{
                       0: /* Int_d */0,
@@ -109,17 +103,15 @@ function f_int(i) {
                     length: 2,
                     tag: 11
                   },
-                  1: "int(%d)",
-                  length: 2,
-                  tag: 0
-                }), i);
+                  "int(%d)"
+                ]), i);
 }
 
 var r_int = [0];
 
 function f_float(f) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "float(",
                     1: /* Float */{
                       0: /* Float_g */9,
@@ -137,17 +129,15 @@ function f_float(f) {
                     length: 2,
                     tag: 11
                   },
-                  1: "float(%g)",
-                  length: 2,
-                  tag: 0
-                }), f);
+                  "float(%g)"
+                ]), f);
 }
 
 var r_float = [0.0];
 
 function f_symbol(s) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "symbol(",
                     1: /* String */{
                       0: /* No_padding */0,
@@ -163,15 +153,13 @@ function f_symbol(s) {
                     length: 2,
                     tag: 11
                   },
-                  1: "symbol(%s)",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "symbol(%s)"
+                ]), s);
 }
 
 function f_rest(s) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "rest(",
                     1: /* String */{
                       0: /* No_padding */0,
@@ -187,15 +175,13 @@ function f_rest(s) {
                     length: 2,
                     tag: 11
                   },
-                  1: "rest(%s)",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "rest(%s)"
+                ]), s);
 }
 
 function f_anon(s) {
-  return Caml_curry.app1(record(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(record(/* Format */[
+                  /* String_literal */{
                     0: "anon(",
                     1: /* String */{
                       0: /* No_padding */0,
@@ -211,10 +197,8 @@ function f_anon(s) {
                     length: 2,
                     tag: 11
                   },
-                  1: "anon(%s)",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "anon(%s)"
+                ]), s);
 }
 
 var spec_000 = /* tuple */[
@@ -458,8 +442,8 @@ var args2 = /* array */[
 ];
 
 function error(s) {
-  return Caml_curry.app1(Printf.printf(/* Format */{
-                  0: /* String_literal */{
+  return Caml_curry.app1(Printf.printf(/* Format */[
+                  /* String_literal */{
                     0: "error (",
                     1: /* String */{
                       0: /* No_padding */0,
@@ -475,10 +459,8 @@ function error(s) {
                     length: 2,
                     tag: 11
                   },
-                  1: "error (%s)\n",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "error (%s)\n"
+                ]), s);
 }
 
 function check(r, v, msg) {
@@ -548,8 +530,8 @@ function test(argv) {
   ];
   if (Caml_obj.caml_notequal(result, reference)) {
     var f = function (x, y) {
-      return Caml_curry.app3(Printf.printf(/* Format */{
-                      0: /* String */{
+      return Caml_curry.app3(Printf.printf(/* Format */[
+                      /* String */{
                         0: /* Lit_padding */{
                           0: /* Right */1,
                           1: 20,
@@ -593,10 +575,8 @@ function test(argv) {
                         length: 2,
                         tag: 2
                       },
-                      1: "%20s %c %-20s\n%!",
-                      length: 2,
-                      tag: 0
-                    }), x, x === y ? /* "=" */61 : /* "#" */35, y);
+                      "%20s %c %-20s\n%!"
+                    ]), x, x === y ? /* "=" */61 : /* "#" */35, y);
     };
     List.iter2(f, result, reference);
   }

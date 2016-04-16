@@ -24,12 +24,10 @@ function sum(n) {
 
 function map(f, param) {
   if (param) {
-    return /* Cons */{
-            0: Caml_curry.app1(f, param[0]),
-            1: map(f, param[1]),
-            length: 2,
-            tag: 0
-          };
+    return /* Cons */[
+            Caml_curry.app1(f, param[0]),
+            map(f, param[1])
+          ];
   }
   else {
     return /* Nil */0;

@@ -3,8 +3,8 @@
 
 
 function f() {
-  return /* Format */{
-          0: /* Int */{
+  return /* Format */[
+          /* Int */{
             0: /* Int_d */0,
             1: /* No_padding */0,
             2: /* No_precision */0,
@@ -17,10 +17,8 @@ function f() {
             length: 4,
             tag: 4
           },
-          1: "%d%s",
-          length: 2,
-          tag: 0
-        };
+          "%d%s"
+        ];
 }
 
 exports.f = f;

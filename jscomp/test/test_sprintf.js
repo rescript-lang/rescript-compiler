@@ -4,8 +4,8 @@
 var Printf     = require("../stdlib/printf");
 var Caml_curry = require("../runtime/caml_curry");
 
-console.error(Caml_curry.app2(Printf.sprintf(/* Format */{
-              0: /* Int */{
+console.error(Caml_curry.app2(Printf.sprintf(/* Format */[
+              /* Int */{
                 0: /* Int_d */0,
                 1: /* No_padding */0,
                 2: /* No_precision */0,
@@ -18,9 +18,7 @@ console.error(Caml_curry.app2(Printf.sprintf(/* Format */{
                 length: 4,
                 tag: 4
               },
-              1: "%d%s",
-              length: 2,
-              tag: 0
-            }), 32, "ss"));
+              "%d%s"
+            ]), 32, "ss"));
 
 /*  Not a pure module */

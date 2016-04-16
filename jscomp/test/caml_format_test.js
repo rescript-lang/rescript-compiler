@@ -96,8 +96,8 @@ function from_of_string() {
                   var b = param[1];
                   var a = param[0];
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */{
-                                    0: /* String_literal */{
+                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                                    /* String_literal */{
                                       0: "of_string ",
                                       1: /* Scan_get_counter */{
                                         0: /* Token_counter */2,
@@ -108,10 +108,8 @@ function from_of_string() {
                                       length: 2,
                                       tag: 11
                                     },
-                                    1: "of_string %L",
-                                    length: 2,
-                                    tag: 0
-                                  }), i),
+                                    "of_string %L"
+                                  ]), i),
                           function () {
                             return /* Eq */{
                                     0: Caml_format.caml_int_of_string(b),
@@ -125,8 +123,8 @@ function from_of_string() {
 }
 
 function u(v) {
-  return Caml_curry.app1(Printf.sprintf(/* Format */{
-                  0: /* Int */{
+  return Caml_curry.app1(Printf.sprintf(/* Format */[
+                  /* Int */{
                     0: /* Int_d */0,
                     1: /* Lit_padding */{
                       0: /* Right */1,
@@ -139,16 +137,14 @@ function u(v) {
                     length: 4,
                     tag: 4
                   },
-                  1: "%33d",
-                  length: 2,
-                  tag: 0
-                }), v);
+                  "%33d"
+                ]), v);
 }
 
 var to_str = Caml_format.caml_int_of_string
 
-var v = Caml_curry.app1(Printf.sprintf(/* Format */{
-          0: /* Int */{
+var v = Caml_curry.app1(Printf.sprintf(/* Format */[
+          /* Int */{
             0: /* Int_d */0,
             1: /* Lit_padding */{
               0: /* Right */1,
@@ -161,10 +157,8 @@ var v = Caml_curry.app1(Printf.sprintf(/* Format */{
             length: 4,
             tag: 4
           },
-          1: "%3d",
-          length: 2,
-          tag: 0
-        }), 3333);
+          "%3d"
+        ]), 3333);
 
 var pairs = Caml_obj.caml_obj_dup(/* array */[
       /* tuple */[
@@ -221,8 +215,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                       var b = param[1];
                       var a = param[0];
                       return /* tuple */[
-                              Caml_curry.app1(Printf.sprintf(/* Format */{
-                                        0: /* String_literal */{
+                              Caml_curry.app1(Printf.sprintf(/* Format */[
+                                        /* String_literal */{
                                           0: "infinity_of_string ",
                                           1: /* Int */{
                                             0: /* Int_d */0,
@@ -235,10 +229,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                                           length: 2,
                                           tag: 11
                                         },
-                                        1: "infinity_of_string %d",
-                                        length: 2,
-                                        tag: 0
-                                      }), i),
+                                        "infinity_of_string %d"
+                                      ]), i),
                               function () {
                                 return /* Eq */{
                                         0: a,
@@ -279,8 +271,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                           var b = param[1];
                           var a = param[0];
                           return /* tuple */[
-                                  Caml_curry.app1(Printf.sprintf(/* Format */{
-                                            0: /* String_literal */{
+                                  Caml_curry.app1(Printf.sprintf(/* Format */[
+                                            /* String_literal */{
                                               0: "normal_float_of_string ",
                                               1: /* Int */{
                                                 0: /* Int_d */0,
@@ -293,10 +285,8 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                                               length: 2,
                                               tag: 11
                                             },
-                                            1: "normal_float_of_string %d",
-                                            length: 2,
-                                            tag: 0
-                                          }), i),
+                                            "normal_float_of_string %d"
+                                          ]), i),
                                   function () {
                                     return /* Eq */{
                                             0: a,
@@ -316,8 +306,8 @@ var formatter_suites_000 = /* tuple */[
   "fmt_concat",
   function () {
     return /* Eq */{
-            0: Caml_curry.app6(Format.asprintf(Pervasives.$caret$caret(/* Format */{
-                          0: /* String */{
+            0: Caml_curry.app6(Format.asprintf(Pervasives.$caret$caret(/* Format */[
+                          /* String */{
                             0: /* No_padding */0,
                             1: /* Char_literal */{
                               0: /* " " */32,
@@ -350,11 +340,9 @@ var formatter_suites_000 = /* tuple */[
                             length: 2,
                             tag: 2
                           },
-                          1: "%s %03d %L",
-                          length: 2,
-                          tag: 0
-                        }, /* Format */{
-                          0: /* Caml_string */{
+                          "%s %03d %L"
+                        ], /* Format */[
+                          /* Caml_string */{
                             0: /* No_padding */0,
                             1: /* Char_literal */{
                               0: /* " " */32,
@@ -387,10 +375,8 @@ var formatter_suites_000 = /* tuple */[
                             length: 2,
                             tag: 3
                           },
-                          1: "%S %03d %L",
-                          length: 2,
-                          tag: 0
-                        })), "32", 33, 33, "a", 33, 3),
+                          "%S %03d %L"
+                        ])), "32", 33, 33, "a", 33, 3),
             1: '32 033 33"a" 033 3',
             length: 2,
             tag: 0
@@ -403,8 +389,8 @@ var formatter_suites_001 = /* :: */[
     "fmt_gen",
     function () {
       return /* Eq */{
-              0: Caml_curry.app8(Format.asprintf(Pervasives.$caret$caret(/* Format */{
-                            0: /* String */{
+              0: Caml_curry.app8(Format.asprintf(Pervasives.$caret$caret(/* Format */[
+                            /* String */{
                               0: /* No_padding */0,
                               1: /* Char_literal */{
                                 0: /* " " */32,
@@ -437,11 +423,9 @@ var formatter_suites_001 = /* :: */[
                               length: 2,
                               tag: 2
                             },
-                            1: "%s %03d %L",
-                            length: 2,
-                            tag: 0
-                          }, /* Format */{
-                            0: /* Caml_string */{
+                            "%s %03d %L"
+                          ], /* Format */[
+                            /* Caml_string */{
                               0: /* No_padding */0,
                               1: /* Char_literal */{
                                 0: /* " " */32,
@@ -483,10 +467,8 @@ var formatter_suites_001 = /* :: */[
                               length: 2,
                               tag: 3
                             },
-                            1: "%S %03d %L %a",
-                            length: 2,
-                            tag: 0
-                          })), "32", 33, 33, "a", 33, 3, function (param, param$1) {
+                            "%S %03d %L %a"
+                          ])), "32", 33, 33, "a", 33, 3, function (param, param$1) {
                     return Format.pp_print_list(/* None */0, Format.pp_print_int, param, param$1);
                   }, /* :: */[
                     1,
@@ -509,8 +491,8 @@ var formatter_suites_001 = /* :: */[
       "long_fmt",
       function () {
         return /* Eq */{
-                0: Caml_curry.app(Format.asprintf(/* Format */{
-                          0: /* Int */{
+                0: Caml_curry.app(Format.asprintf(/* Format */[
+                          /* Int */{
                             0: /* Int_d */0,
                             1: /* No_padding */0,
                             2: /* No_precision */0,
@@ -895,10 +877,8 @@ var formatter_suites_001 = /* :: */[
                             length: 4,
                             tag: 4
                           },
-                          1: "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  ",
-                          length: 2,
-                          tag: 0
-                        }), [
+                          "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  "
+                        ]), [
                       1,
                       2,
                       3,
@@ -945,15 +925,13 @@ var formatter_suites_001 = /* :: */[
         "long_fmt_2",
         function () {
           return /* Eq */{
-                  0: Caml_curry.app(Format.asprintf(/* Format */{
-                            0: /* Formatting_gen */{
+                  0: Caml_curry.app(Format.asprintf(/* Format */[
+                            /* Formatting_gen */{
                               0: /* Open_box */{
-                                0: /* Format */{
-                                  0: /* End_of_format */0,
-                                  1: "",
-                                  length: 2,
-                                  tag: 0
-                                },
+                                0: /* Format */[
+                                  /* End_of_format */0,
+                                  ""
+                                ],
                                 length: 1,
                                 tag: 1
                               },
@@ -1399,10 +1377,8 @@ var formatter_suites_001 = /* :: */[
                               length: 2,
                               tag: 18
                             },
-                            1: "@[%23d %2i %3u %4n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]",
-                            length: 2,
-                            tag: 0
-                          }), [
+                            "@[%23d %2i %3u %4n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]"
+                          ]), [
                         1,
                         2,
                         3,
@@ -1449,8 +1425,8 @@ var formatter_suites_001 = /* :: */[
           "width_1",
           function () {
             return /* Eq */{
-                    0: Caml_curry.app1(Format.asprintf(/* Format */{
-                              0: /* Int */{
+                    0: Caml_curry.app1(Format.asprintf(/* Format */[
+                              /* Int */{
                                 0: /* Int_d */0,
                                 1: /* Lit_padding */{
                                   0: /* Zeros */2,
@@ -1463,10 +1439,8 @@ var formatter_suites_001 = /* :: */[
                                 length: 4,
                                 tag: 4
                               },
-                              1: "%014d",
-                              length: 2,
-                              tag: 0
-                            }), 32),
+                              "%014d"
+                            ]), 32),
                     1: "00000000000032",
                     length: 2,
                     tag: 0
@@ -1478,8 +1452,8 @@ var formatter_suites_001 = /* :: */[
             "width_2",
             function () {
               return /* Eq */{
-                      0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                0: /* Float */{
+                      0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                /* Float */{
                                   0: /* Float_f */0,
                                   1: /* Lit_padding */{
                                     0: /* Right */1,
@@ -1487,19 +1461,13 @@ var formatter_suites_001 = /* :: */[
                                     length: 2,
                                     tag: 0
                                   },
-                                  2: /* Lit_precision */{
-                                    0: 3,
-                                    length: 1,
-                                    tag: 0
-                                  },
+                                  2: /* Lit_precision */[3],
                                   3: /* End_of_format */0,
                                   length: 4,
                                   tag: 8
                                 },
-                                1: "%10.3f",
-                                length: 2,
-                                tag: 0
-                              }), 32333.02),
+                                "%10.3f"
+                              ]), 32333.02),
                       1: " 32333.020",
                       length: 2,
                       tag: 0
@@ -1511,8 +1479,8 @@ var formatter_suites_001 = /* :: */[
               "alternate_1",
               function () {
                 return /* Eq */{
-                        0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                  0: /* Int */{
+                        0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                  /* Int */{
                                     0: /* Int_x */6,
                                     1: /* Lit_padding */{
                                       0: /* Right */1,
@@ -1525,10 +1493,8 @@ var formatter_suites_001 = /* :: */[
                                     length: 4,
                                     tag: 4
                                   },
-                                  1: "%0x",
-                                  length: 2,
-                                  tag: 0
-                                }), 32333),
+                                  "%0x"
+                                ]), 32333),
                         1: "7e4d",
                         length: 2,
                         tag: 0
@@ -1540,8 +1506,8 @@ var formatter_suites_001 = /* :: */[
                 "alternate_2",
                 function () {
                   return /* Eq */{
-                          0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                    0: /* Int */{
+                          0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                    /* Int */{
                                       0: /* Int_Cx */7,
                                       1: /* Lit_padding */{
                                         0: /* Right */1,
@@ -1554,10 +1520,8 @@ var formatter_suites_001 = /* :: */[
                                       length: 4,
                                       tag: 4
                                     },
-                                    1: "%#0x",
-                                    length: 2,
-                                    tag: 0
-                                  }), 32333),
+                                    "%#0x"
+                                  ]), 32333),
                           1: "0x7e4d",
                           length: 2,
                           tag: 0
@@ -1570,8 +1534,8 @@ var formatter_suites_001 = /* :: */[
                   function () {
                     return /* Eq */{
                             0: /* tuple */[
-                              Caml_curry.app1(Format.asprintf(/* Format */{
-                                        0: /* Int */{
+                              Caml_curry.app1(Format.asprintf(/* Format */[
+                                        /* Int */{
                                           0: /* Int_Co */11,
                                           1: /* No_padding */0,
                                           2: /* No_precision */0,
@@ -1579,12 +1543,10 @@ var formatter_suites_001 = /* :: */[
                                           length: 4,
                                           tag: 4
                                         },
-                                        1: "%#o",
-                                        length: 2,
-                                        tag: 0
-                                      }), 32),
-                              Caml_curry.app1(Format.asprintf(/* Format */{
-                                        0: /* Int */{
+                                        "%#o"
+                                      ]), 32),
+                              Caml_curry.app1(Format.asprintf(/* Format */[
+                                        /* Int */{
                                           0: /* Int_o */10,
                                           1: /* No_padding */0,
                                           2: /* No_precision */0,
@@ -1592,10 +1554,8 @@ var formatter_suites_001 = /* :: */[
                                           length: 4,
                                           tag: 4
                                         },
-                                        1: "%o",
-                                        length: 2,
-                                        tag: 0
-                                      }), 32)
+                                        "%o"
+                                      ]), 32)
                             ],
                             1: /* tuple */[
                               "040",
@@ -1623,8 +1583,8 @@ var formatter_suites_001 = /* :: */[
                       "sign_p",
                       function () {
                         return /* Eq */{
-                                0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                          0: /* Int */{
+                                0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                          /* Int */{
                                             0: /* Int_pd */1,
                                             1: /* Lit_padding */{
                                               0: /* Right */1,
@@ -1637,10 +1597,8 @@ var formatter_suites_001 = /* :: */[
                                             length: 4,
                                             tag: 4
                                           },
-                                          1: "%+4d",
-                                          length: 2,
-                                          tag: 0
-                                        }), 32),
+                                          "%+4d"
+                                        ]), 32),
                                 1: " +32",
                                 length: 2,
                                 tag: 0
@@ -1652,8 +1610,8 @@ var formatter_suites_001 = /* :: */[
                         "sign_2p",
                         function () {
                           return /* Eq */{
-                                  0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                            0: /* Int */{
+                                  0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                            /* Int */{
                                               0: /* Int_sd */2,
                                               1: /* Lit_padding */{
                                                 0: /* Right */1,
@@ -1666,10 +1624,8 @@ var formatter_suites_001 = /* :: */[
                                               length: 4,
                                               tag: 4
                                             },
-                                            1: "% 4d",
-                                            length: 2,
-                                            tag: 0
-                                          }), 32),
+                                            "% 4d"
+                                          ]), 32),
                                   1: "  32",
                                   length: 2,
                                   tag: 0
@@ -1681,8 +1637,8 @@ var formatter_suites_001 = /* :: */[
                           "sign_3p",
                           function () {
                             return /* Eq */{
-                                    0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                              0: /* Int32 */{
+                                    0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                              /* Int32 */{
                                                 0: /* Int_u */12,
                                                 1: /* No_padding */0,
                                                 2: /* No_precision */0,
@@ -1690,10 +1646,8 @@ var formatter_suites_001 = /* :: */[
                                                 length: 4,
                                                 tag: 5
                                               },
-                                              1: "%lu",
-                                              length: 2,
-                                              tag: 0
-                                            }), -1),
+                                              "%lu"
+                                            ]), -1),
                                     1: "4294967295",
                                     length: 2,
                                     tag: 0
@@ -1705,8 +1659,8 @@ var formatter_suites_001 = /* :: */[
                             "sign_4p",
                             function () {
                               return /* Eq */{
-                                      0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                0: /* Int32 */{
+                                      0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                /* Int32 */{
                                                   0: /* Int_d */0,
                                                   1: /* No_padding */0,
                                                   2: /* No_precision */0,
@@ -1714,10 +1668,8 @@ var formatter_suites_001 = /* :: */[
                                                   length: 4,
                                                   tag: 5
                                                 },
-                                                1: "%ld",
-                                                length: 2,
-                                                tag: 0
-                                              }), -1),
+                                                "%ld"
+                                              ]), -1),
                                       1: "-1",
                                       length: 2,
                                       tag: 0
@@ -1741,23 +1693,17 @@ var formatter_suites_001 = /* :: */[
                                 "prec_1",
                                 function () {
                                   return /* Eq */{
-                                          0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                    0: /* Int */{
+                                          0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                    /* Int */{
                                                       0: /* Int_d */0,
                                                       1: /* No_padding */0,
-                                                      2: /* Lit_precision */{
-                                                        0: 10,
-                                                        length: 1,
-                                                        tag: 0
-                                                      },
+                                                      2: /* Lit_precision */[10],
                                                       3: /* End_of_format */0,
                                                       length: 4,
                                                       tag: 4
                                                     },
-                                                    1: "%.10d",
-                                                    length: 2,
-                                                    tag: 0
-                                                  }), 32),
+                                                    "%.10d"
+                                                  ]), 32),
                                           1: "0000000032",
                                           length: 2,
                                           tag: 0
@@ -1934,47 +1880,41 @@ var float_data = /* array */[
 ];
 
 function ident(ppf, s) {
-  return Caml_curry.app1(Format.fprintf(ppf, /* Format */{
-                  0: /* String */{
+  return Caml_curry.app1(Format.fprintf(ppf, /* Format */[
+                  /* String */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
                     length: 2,
                     tag: 2
                   },
-                  1: "%s",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "%s"
+                ]), s);
 }
 
 function kwd(ppf, s) {
-  return Caml_curry.app1(Format.fprintf(ppf, /* Format */{
-                  0: /* String */{
+  return Caml_curry.app1(Format.fprintf(ppf, /* Format */[
+                  /* String */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
                     length: 2,
                     tag: 2
                   },
-                  1: "%s",
-                  length: 2,
-                  tag: 0
-                }), s);
+                  "%s"
+                ]), s);
 }
 
 function pr_exp0(ppf, lam) {
   var exit = 0;
   switch (lam.tag | 0) {
     case 1 : 
-        return Caml_curry.app2(Format.fprintf(ppf, /* Format */{
-                        0: /* Alpha */{
+        return Caml_curry.app2(Format.fprintf(ppf, /* Format */[
+                        /* Alpha */{
                           0: /* End_of_format */0,
                           length: 1,
                           tag: 15
                         },
-                        1: "%a",
-                        length: 2,
-                        tag: 0
-                      }), ident, lam[0]);
+                        "%a"
+                      ]), ident, lam[0]);
     case 0 : 
     case 2 : 
         exit = 1;
@@ -1982,20 +1922,18 @@ function pr_exp0(ppf, lam) {
     
   }
   if (exit === 1) {
-    return Caml_curry.app2(Format.fprintf(ppf, /* Format */{
-                    0: /* Formatting_gen */{
+    return Caml_curry.app2(Format.fprintf(ppf, /* Format */[
+                    /* Formatting_gen */{
                       0: /* Open_box */{
-                        0: /* Format */{
-                          0: /* String_literal */{
+                        0: /* Format */[
+                          /* String_literal */{
                             0: "<1>",
                             1: /* End_of_format */0,
                             length: 2,
                             tag: 11
                           },
-                          1: "<1>",
-                          length: 2,
-                          tag: 0
-                        },
+                          "<1>"
+                        ],
                         length: 1,
                         tag: 1
                       },
@@ -2022,29 +1960,25 @@ function pr_exp0(ppf, lam) {
                       length: 2,
                       tag: 18
                     },
-                    1: "@[<1>(%a)@]",
-                    length: 2,
-                    tag: 0
-                  }), pr_lambda, lam);
+                    "@[<1>(%a)@]"
+                  ]), pr_lambda, lam);
   }
   
 }
 
 function pr_app(ppf, e) {
-  return Caml_curry.app2(Format.fprintf(ppf, /* Format */{
-                  0: /* Formatting_gen */{
+  return Caml_curry.app2(Format.fprintf(ppf, /* Format */[
+                  /* Formatting_gen */{
                     0: /* Open_box */{
-                      0: /* Format */{
-                        0: /* String_literal */{
+                      0: /* Format */[
+                        /* String_literal */{
                           0: "<2>",
                           1: /* End_of_format */0,
                           length: 2,
                           tag: 11
                         },
-                        1: "<2>",
-                        length: 2,
-                        tag: 0
-                      },
+                        "<2>"
+                      ],
                       length: 1,
                       tag: 1
                     },
@@ -2061,10 +1995,8 @@ function pr_app(ppf, e) {
                     length: 2,
                     tag: 18
                   },
-                  1: "@[<2>%a@]",
-                  length: 2,
-                  tag: 0
-                }), pr_other_applications, e);
+                  "@[<2>%a@]"
+                ]), pr_other_applications, e);
 }
 
 function pr_other_applications(ppf, f) {
@@ -2073,8 +2005,8 @@ function pr_other_applications(ppf, f) {
     case 1 : 
         return pr_exp0(ppf, f);
     case 2 : 
-        return Caml_curry.app4(Format.fprintf(ppf, /* Format */{
-                        0: /* Alpha */{
+        return Caml_curry.app4(Format.fprintf(ppf, /* Format */[
+                        /* Alpha */{
                           0: /* Formatting_lit */{
                             0: /* Break */{
                               0: "@ ",
@@ -2094,10 +2026,8 @@ function pr_other_applications(ppf, f) {
                           length: 1,
                           tag: 15
                         },
-                        1: "%a@ %a",
-                        length: 2,
-                        tag: 0
-                      }), pr_app, f[0], pr_exp0, f[1]);
+                        "%a@ %a"
+                      ]), pr_app, f[0], pr_exp0, f[1]);
     
   }
 }
@@ -2105,20 +2035,18 @@ function pr_other_applications(ppf, f) {
 function pr_lambda(ppf, e) {
   switch (e.tag | 0) {
     case 0 : 
-        return Caml_curry.app8(Format.fprintf(ppf, /* Format */{
-                        0: /* Formatting_gen */{
+        return Caml_curry.app8(Format.fprintf(ppf, /* Format */[
+                        /* Formatting_gen */{
                           0: /* Open_box */{
-                            0: /* Format */{
-                              0: /* String_literal */{
+                            0: /* Format */[
+                              /* String_literal */{
                                 0: "<1>",
                                 1: /* End_of_format */0,
                                 length: 2,
                                 tag: 11
                               },
-                              1: "<1>",
-                              length: 2,
-                              tag: 0
-                            },
+                              "<1>"
+                            ],
                             length: 1,
                             tag: 1
                           },
@@ -2158,10 +2086,8 @@ function pr_lambda(ppf, e) {
                           length: 2,
                           tag: 18
                         },
-                        1: "@[<1>%a%a%a@ %a@]",
-                        length: 2,
-                        tag: 0
-                      }), kwd, "\\", ident, e[0], kwd, ".", pr_lambda, e[1]);
+                        "@[<1>%a%a%a@ %a@]"
+                      ]), kwd, "\\", ident, e[0], kwd, ".", pr_lambda, e[1]);
     case 1 : 
     case 2 : 
         return pr_app(ppf, e);
@@ -2169,16 +2095,14 @@ function pr_lambda(ppf, e) {
   }
 }
 
-var string_of_lambda = Caml_curry.app1(Format.asprintf(/* Format */{
-          0: /* Alpha */{
+var string_of_lambda = Caml_curry.app1(Format.asprintf(/* Format */[
+          /* Alpha */{
             0: /* End_of_format */0,
             length: 1,
             tag: 15
           },
-          1: "%a",
-          length: 2,
-          tag: 0
-        }), pr_lambda);
+          "%a"
+        ]), pr_lambda);
 
 var Lambda_suites = /* module */[
   ident,
@@ -2272,8 +2196,8 @@ function from_lambda_pairs() {
                   var b = param[1];
                   var a = param[0];
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */{
-                                    0: /* String_literal */{
+                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                                    /* String_literal */{
                                       0: "lambda_print ",
                                       1: /* Int */{
                                         0: /* Int_d */0,
@@ -2286,10 +2210,8 @@ function from_lambda_pairs() {
                                       length: 2,
                                       tag: 11
                                     },
-                                    1: "lambda_print %d",
-                                    length: 2,
-                                    tag: 0
-                                  }), i),
+                                    "lambda_print %d"
+                                  ]), i),
                           function () {
                             return /* Eq */{
                                     0: Caml_curry.app1(string_of_lambda, a),
@@ -2311,8 +2233,8 @@ var ksprintf_suites_000 = /* tuple */[
                 }, fmt);
     };
     return /* Eq */{
-            0: Caml_curry.app2(f(/* Format */{
-                      0: /* String */{
+            0: Caml_curry.app2(f(/* Format */[
+                      /* String */{
                         0: /* No_padding */0,
                         1: /* Char_literal */{
                           0: /* " " */32,
@@ -2333,10 +2255,8 @@ var ksprintf_suites_000 = /* tuple */[
                         length: 2,
                         tag: 2
                       },
-                      1: "%s %s a ",
-                      length: 2,
-                      tag: 0
-                    }), "x", "xx"),
+                      "%s %s a "
+                    ]), "x", "xx"),
             1: "x xx a x xx a ",
             length: 2,
             tag: 0
@@ -2349,8 +2269,8 @@ var ksprintf_suites_001 = /* :: */[
     "sprintf",
     function () {
       return /* Eq */{
-              0: Caml_curry.app2(Format.sprintf(/* Format */{
-                        0: /* String */{
+              0: Caml_curry.app2(Format.sprintf(/* Format */[
+                        /* String */{
                           0: /* No_padding */0,
                           1: /* Char_literal */{
                             0: /* " " */32,
@@ -2366,10 +2286,8 @@ var ksprintf_suites_001 = /* :: */[
                           length: 2,
                           tag: 2
                         },
-                        1: "%s %S",
-                        length: 2,
-                        tag: 0
-                      }), "x", "X"),
+                        "%s %S"
+                      ]), "x", "X"),
               1: 'x "X"',
               length: 2,
               tag: 0
@@ -2388,8 +2306,8 @@ var int64_suites_000 = /* tuple */[
   "i32_simple",
   function () {
     return /* Eq */{
-            0: Caml_curry.app1(Format.asprintf(/* Format */{
-                      0: /* Nativeint */{
+            0: Caml_curry.app1(Format.asprintf(/* Format */[
+                      /* Nativeint */{
                         0: /* Int_x */6,
                         1: /* No_padding */0,
                         2: /* No_precision */0,
@@ -2397,10 +2315,8 @@ var int64_suites_000 = /* tuple */[
                         length: 4,
                         tag: 6
                       },
-                      1: "%nx",
-                      length: 2,
-                      tag: 0
-                    }), 4294967295),
+                      "%nx"
+                    ]), 4294967295),
             1: "ffffffff",
             length: 2,
             tag: 0
@@ -2413,8 +2329,8 @@ var int64_suites_001 = /* :: */[
     "i32_simple1",
     function () {
       return /* Eq */{
-              0: Caml_curry.app1(Format.asprintf(/* Format */{
-                        0: /* Nativeint */{
+              0: Caml_curry.app1(Format.asprintf(/* Format */[
+                        /* Nativeint */{
                           0: /* Int_o */10,
                           1: /* No_padding */0,
                           2: /* No_precision */0,
@@ -2422,10 +2338,8 @@ var int64_suites_001 = /* :: */[
                           length: 4,
                           tag: 6
                         },
-                        1: "%no",
-                        length: 2,
-                        tag: 0
-                      }), 4294967295),
+                        "%no"
+                      ]), 4294967295),
               1: "37777777777",
               length: 2,
               tag: 0
@@ -2437,8 +2351,8 @@ var int64_suites_001 = /* :: */[
       "i64_simple",
       function () {
         return /* Eq */{
-                0: Caml_curry.app1(Format.asprintf(/* Format */{
-                          0: /* Int64 */{
+                0: Caml_curry.app1(Format.asprintf(/* Format */[
+                          /* Int64 */{
                             0: /* Int_d */0,
                             1: /* No_padding */0,
                             2: /* No_precision */0,
@@ -2446,10 +2360,8 @@ var int64_suites_001 = /* :: */[
                             length: 4,
                             tag: 7
                           },
-                          1: "%Ld",
-                          length: 2,
-                          tag: 0
-                        }), /* int64 */[
+                          "%Ld"
+                        ]), /* int64 */[
                       0,
                       3
                     ]),
@@ -2464,8 +2376,8 @@ var int64_suites_001 = /* :: */[
         "i64_simple2",
         function () {
           return /* Eq */{
-                  0: Caml_curry.app1(Format.asprintf(/* Format */{
-                            0: /* Int64 */{
+                  0: Caml_curry.app1(Format.asprintf(/* Format */[
+                            /* Int64 */{
                               0: /* Int_x */6,
                               1: /* No_padding */0,
                               2: /* No_precision */0,
@@ -2473,10 +2385,8 @@ var int64_suites_001 = /* :: */[
                               length: 4,
                               tag: 7
                             },
-                            1: "%Lx",
-                            length: 2,
-                            tag: 0
-                          }), /* int64 */[
+                            "%Lx"
+                          ]), /* int64 */[
                         0,
                         33
                       ]),
@@ -2491,8 +2401,8 @@ var int64_suites_001 = /* :: */[
           "i64_simple3",
           function () {
             return /* Eq */{
-                    0: Caml_curry.app1(Format.asprintf(/* Format */{
-                              0: /* Int64 */{
+                    0: Caml_curry.app1(Format.asprintf(/* Format */[
+                              /* Int64 */{
                                 0: /* Int_i */3,
                                 1: /* No_padding */0,
                                 2: /* No_precision */0,
@@ -2500,10 +2410,8 @@ var int64_suites_001 = /* :: */[
                                 length: 4,
                                 tag: 7
                               },
-                              1: "%Li",
-                              length: 2,
-                              tag: 0
-                            }), /* int64 */[
+                              "%Li"
+                            ]), /* int64 */[
                           0,
                           33
                         ]),
@@ -2518,8 +2426,8 @@ var int64_suites_001 = /* :: */[
             "i64_simple4",
             function () {
               return /* Eq */{
-                      0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                0: /* Int64 */{
+                      0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                /* Int64 */{
                                   0: /* Int_X */8,
                                   1: /* No_padding */0,
                                   2: /* No_precision */0,
@@ -2527,10 +2435,8 @@ var int64_suites_001 = /* :: */[
                                   length: 4,
                                   tag: 7
                                 },
-                                1: "%LX",
-                                length: 2,
-                                tag: 0
-                              }), /* int64 */[
+                                "%LX"
+                              ]), /* int64 */[
                             0,
                             44
                           ]),
@@ -2545,8 +2451,8 @@ var int64_suites_001 = /* :: */[
               "i64_simple5",
               function () {
                 return /* Eq */{
-                        0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                  0: /* Int64 */{
+                        0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                  /* Int64 */{
                                     0: /* Int_x */6,
                                     1: /* No_padding */0,
                                     2: /* No_precision */0,
@@ -2554,10 +2460,8 @@ var int64_suites_001 = /* :: */[
                                     length: 4,
                                     tag: 7
                                   },
-                                  1: "%Lx",
-                                  length: 2,
-                                  tag: 0
-                                }), /* int64 */[
+                                  "%Lx"
+                                ]), /* int64 */[
                               0,
                               44
                             ]),
@@ -2572,8 +2476,8 @@ var int64_suites_001 = /* :: */[
                 "i64_simple6",
                 function () {
                   return /* Eq */{
-                          0: Caml_curry.app2(Format.asprintf(/* Format */{
-                                    0: /* Int64 */{
+                          0: Caml_curry.app2(Format.asprintf(/* Format */[
+                                    /* Int64 */{
                                       0: /* Int_x */6,
                                       1: /* Arg_padding */{
                                         0: /* Right */1,
@@ -2585,10 +2489,8 @@ var int64_suites_001 = /* :: */[
                                       length: 4,
                                       tag: 7
                                     },
-                                    1: "%*Lx",
-                                    length: 2,
-                                    tag: 0
-                                  }), 5, /* int64 */[
+                                    "%*Lx"
+                                  ]), 5, /* int64 */[
                                 0,
                                 44
                               ]),
@@ -2618,8 +2520,8 @@ var int64_suites_001 = /* :: */[
                     "i64_simple8",
                     function () {
                       return /* Eq */{
-                              0: Caml_curry.app2(Format.asprintf(/* Format */{
-                                        0: /* Int64 */{
+                              0: Caml_curry.app2(Format.asprintf(/* Format */[
+                                        /* Int64 */{
                                           0: /* Int_d */0,
                                           1: /* No_padding */0,
                                           2: /* No_precision */0,
@@ -2639,10 +2541,8 @@ var int64_suites_001 = /* :: */[
                                           length: 4,
                                           tag: 7
                                         },
-                                        1: "%Ld%018Ld",
-                                        length: 2,
-                                        tag: 0
-                                      }), /* int64 */[
+                                        "%Ld%018Ld"
+                                      ]), /* int64 */[
                                     0,
                                     3
                                   ], /* int64 */[
@@ -2660,8 +2560,8 @@ var int64_suites_001 = /* :: */[
                       "i64_simple9",
                       function () {
                         return /* Eq */{
-                                0: Caml_curry.app2(Format.asprintf(/* Format */{
-                                          0: /* Int64 */{
+                                0: Caml_curry.app2(Format.asprintf(/* Format */[
+                                          /* Int64 */{
                                             0: /* Int_d */0,
                                             1: /* No_padding */0,
                                             2: /* No_precision */0,
@@ -2681,10 +2581,8 @@ var int64_suites_001 = /* :: */[
                                             length: 4,
                                             tag: 7
                                           },
-                                          1: "%Ld%018Ld",
-                                          length: 2,
-                                          tag: 0
-                                        }), /* int64 */[
+                                          "%Ld%018Ld"
+                                        ]), /* int64 */[
                                       107288,
                                       1548746752
                                     ], /* int64 */[
@@ -2702,8 +2600,8 @@ var int64_suites_001 = /* :: */[
                         "i64_simple10",
                         function () {
                           return /* Eq */{
-                                  0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                            0: /* Int64 */{
+                                  0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                            /* Int64 */{
                                               0: /* Int_x */6,
                                               1: /* No_padding */0,
                                               2: /* No_precision */0,
@@ -2711,10 +2609,8 @@ var int64_suites_001 = /* :: */[
                                               length: 4,
                                               tag: 7
                                             },
-                                            1: "%Lx",
-                                            length: 2,
-                                            tag: 0
-                                          }), Int64.max_int),
+                                            "%Lx"
+                                          ]), Int64.max_int),
                                   1: "7fffffffffffffff",
                                   length: 2,
                                   tag: 0
@@ -2726,8 +2622,8 @@ var int64_suites_001 = /* :: */[
                           "i64_simple15",
                           function () {
                             return /* Eq */{
-                                    0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                              0: /* Int64 */{
+                                    0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                              /* Int64 */{
                                                 0: /* Int_d */0,
                                                 1: /* No_padding */0,
                                                 2: /* No_precision */0,
@@ -2735,10 +2631,8 @@ var int64_suites_001 = /* :: */[
                                                 length: 4,
                                                 tag: 7
                                               },
-                                              1: "%Ld",
-                                              length: 2,
-                                              tag: 0
-                                            }), /* int64 */[
+                                              "%Ld"
+                                            ]), /* int64 */[
                                           -1,
                                           4294967295
                                         ]),
@@ -2753,8 +2647,8 @@ var int64_suites_001 = /* :: */[
                             "i64_simple16",
                             function () {
                               return /* Eq */{
-                                      0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                0: /* Int64 */{
+                                      0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                /* Int64 */{
                                                   0: /* Int_d */0,
                                                   1: /* No_padding */0,
                                                   2: /* No_precision */0,
@@ -2762,10 +2656,8 @@ var int64_suites_001 = /* :: */[
                                                   length: 4,
                                                   tag: 7
                                                 },
-                                                1: "%Ld",
-                                                length: 2,
-                                                tag: 0
-                                              }), /* int64 */[
+                                                "%Ld"
+                                              ]), /* int64 */[
                                             -1,
                                             4294956185
                                           ]),
@@ -2780,8 +2672,8 @@ var int64_suites_001 = /* :: */[
                               "i64_simple14",
                               function () {
                                 return /* Eq */{
-                                        0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                  0: /* Int64 */{
+                                        0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                  /* Int64 */{
                                                     0: /* Int_X */8,
                                                     1: /* No_padding */0,
                                                     2: /* No_precision */0,
@@ -2789,10 +2681,8 @@ var int64_suites_001 = /* :: */[
                                                     length: 4,
                                                     tag: 7
                                                   },
-                                                  1: "%LX",
-                                                  length: 2,
-                                                  tag: 0
-                                                }), /* int64 */[
+                                                  "%LX"
+                                                ]), /* int64 */[
                                               -1,
                                               4294967295
                                             ]),
@@ -2807,8 +2697,8 @@ var int64_suites_001 = /* :: */[
                                 "i64_simple17",
                                 function () {
                                   return /* Eq */{
-                                          0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                    0: /* Int64 */{
+                                          0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                    /* Int64 */{
                                                       0: /* Int_x */6,
                                                       1: /* No_padding */0,
                                                       2: /* No_precision */0,
@@ -2816,10 +2706,8 @@ var int64_suites_001 = /* :: */[
                                                       length: 4,
                                                       tag: 7
                                                     },
-                                                    1: "%Lx",
-                                                    length: 2,
-                                                    tag: 0
-                                                  }), /* int64 */[
+                                                    "%Lx"
+                                                  ]), /* int64 */[
                                                 -1,
                                                 4294967295
                                               ]),
@@ -2834,8 +2722,8 @@ var int64_suites_001 = /* :: */[
                                   "i64_simple11",
                                   function () {
                                     return /* Eq */{
-                                            0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                      0: /* Int64 */{
+                                            0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                      /* Int64 */{
                                                         0: /* Int_X */8,
                                                         1: /* No_padding */0,
                                                         2: /* No_precision */0,
@@ -2843,10 +2731,8 @@ var int64_suites_001 = /* :: */[
                                                         length: 4,
                                                         tag: 7
                                                       },
-                                                      1: "%LX",
-                                                      length: 2,
-                                                      tag: 0
-                                                    }), Int64.max_int),
+                                                      "%LX"
+                                                    ]), Int64.max_int),
                                             1: "7FFFFFFFFFFFFFFF",
                                             length: 2,
                                             tag: 0
@@ -2858,8 +2744,8 @@ var int64_suites_001 = /* :: */[
                                     "i64_simple12",
                                     function () {
                                       return /* Eq */{
-                                              0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                        0: /* Int64 */{
+                                              0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                        /* Int64 */{
                                                           0: /* Int_X */8,
                                                           1: /* No_padding */0,
                                                           2: /* No_precision */0,
@@ -2867,10 +2753,8 @@ var int64_suites_001 = /* :: */[
                                                           length: 4,
                                                           tag: 7
                                                         },
-                                                        1: "%LX",
-                                                        length: 2,
-                                                        tag: 0
-                                                      }), Int64.min_int),
+                                                        "%LX"
+                                                      ]), Int64.min_int),
                                               1: "8000000000000000",
                                               length: 2,
                                               tag: 0
@@ -2882,8 +2766,8 @@ var int64_suites_001 = /* :: */[
                                       "i64_simple17",
                                       function () {
                                         return /* Eq */{
-                                                0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                          0: /* Int64 */{
+                                                0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                          /* Int64 */{
                                                             0: /* Int_u */12,
                                                             1: /* No_padding */0,
                                                             2: /* No_precision */0,
@@ -2891,10 +2775,8 @@ var int64_suites_001 = /* :: */[
                                                             length: 4,
                                                             tag: 7
                                                           },
-                                                          1: "%Lu",
-                                                          length: 2,
-                                                          tag: 0
-                                                        }), /* int64 */[
+                                                          "%Lu"
+                                                        ]), /* int64 */[
                                                       -1,
                                                       4294967295
                                                     ]),
@@ -2909,8 +2791,8 @@ var int64_suites_001 = /* :: */[
                                         "i64_simple21",
                                         function () {
                                           return /* Eq */{
-                                                  0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                            0: /* Int64 */{
+                                                  0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                            /* Int64 */{
                                                               0: /* Int_u */12,
                                                               1: /* No_padding */0,
                                                               2: /* No_precision */0,
@@ -2918,10 +2800,8 @@ var int64_suites_001 = /* :: */[
                                                               length: 4,
                                                               tag: 7
                                                             },
-                                                            1: "%Lu",
-                                                            length: 2,
-                                                            tag: 0
-                                                          }), /* int64 */[
+                                                            "%Lu"
+                                                          ]), /* int64 */[
                                                         -1,
                                                         4294957296
                                                       ]),
@@ -2936,8 +2816,8 @@ var int64_suites_001 = /* :: */[
                                           "i64_simple19",
                                           function () {
                                             return /* Eq */{
-                                                    0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                              0: /* Int64 */{
+                                                    0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                              /* Int64 */{
                                                                 0: /* Int_o */10,
                                                                 1: /* No_padding */0,
                                                                 2: /* No_precision */0,
@@ -2945,10 +2825,8 @@ var int64_suites_001 = /* :: */[
                                                                 length: 4,
                                                                 tag: 7
                                                               },
-                                                              1: "%Lo",
-                                                              length: 2,
-                                                              tag: 0
-                                                            }), Int64.min_int),
+                                                              "%Lo"
+                                                            ]), Int64.min_int),
                                                     1: "1000000000000000000000",
                                                     length: 2,
                                                     tag: 0
@@ -2960,8 +2838,8 @@ var int64_suites_001 = /* :: */[
                                             "i64_simple13",
                                             function () {
                                               return /* Eq */{
-                                                      0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                                0: /* Int64 */{
+                                                      0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                                /* Int64 */{
                                                                   0: /* Int_X */8,
                                                                   1: /* No_padding */0,
                                                                   2: /* No_precision */0,
@@ -2969,10 +2847,8 @@ var int64_suites_001 = /* :: */[
                                                                   length: 4,
                                                                   tag: 7
                                                                 },
-                                                                1: "%LX",
-                                                                length: 2,
-                                                                tag: 0
-                                                              }), Caml_int64.add(Int64.min_int, /* int64 */[
+                                                                "%LX"
+                                                              ]), Caml_int64.add(Int64.min_int, /* int64 */[
                                                                 0,
                                                                 1
                                                               ])),
@@ -2987,8 +2863,8 @@ var int64_suites_001 = /* :: */[
                                               "i64_simple20",
                                               function () {
                                                 return /* Eq */{
-                                                        0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                                  0: /* Int64 */{
+                                                        0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                                  /* Int64 */{
                                                                     0: /* Int_x */6,
                                                                     1: /* Lit_padding */{
                                                                       0: /* Right */1,
@@ -3001,10 +2877,8 @@ var int64_suites_001 = /* :: */[
                                                                     length: 4,
                                                                     tag: 7
                                                                   },
-                                                                  1: "%12Lx",
-                                                                  length: 2,
-                                                                  tag: 0
-                                                                }), /* int64 */[
+                                                                  "%12Lx"
+                                                                ]), /* int64 */[
                                                               0,
                                                               3
                                                             ]),
@@ -3019,8 +2893,8 @@ var int64_suites_001 = /* :: */[
                                                 "i64_simple21",
                                                 function () {
                                                   return /* Eq */{
-                                                          0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                                    0: /* Int64 */{
+                                                          0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                                    /* Int64 */{
                                                                       0: /* Int_X */8,
                                                                       1: /* No_padding */0,
                                                                       2: /* No_precision */0,
@@ -3028,10 +2902,8 @@ var int64_suites_001 = /* :: */[
                                                                       length: 4,
                                                                       tag: 7
                                                                     },
-                                                                    1: "%LX",
-                                                                    length: 2,
-                                                                    tag: 0
-                                                                  }), /* int64 */[
+                                                                    "%LX"
+                                                                  ]), /* int64 */[
                                                                 1859194407,
                                                                 1163551168
                                                               ]),
@@ -3046,8 +2918,8 @@ var int64_suites_001 = /* :: */[
                                                   "missing_neline",
                                                   function () {
                                                     return /* Eq */{
-                                                            0: Caml_curry.app1(Format.asprintf(/* Format */{
-                                                                      0: /* Int64 */{
+                                                            0: Caml_curry.app1(Format.asprintf(/* Format */[
+                                                                      /* Int64 */{
                                                                         0: /* Int_d */0,
                                                                         1: /* No_padding */0,
                                                                         2: /* No_precision */0,
@@ -3060,10 +2932,8 @@ var int64_suites_001 = /* :: */[
                                                                         length: 4,
                                                                         tag: 7
                                                                       },
-                                                                      1: "%Ld\n",
-                                                                      length: 2,
-                                                                      tag: 0
-                                                                    }), /* int64 */[
+                                                                      "%Ld\n"
+                                                                    ]), /* int64 */[
                                                                   0,
                                                                   32
                                                                 ]),
@@ -3079,8 +2949,8 @@ var int64_suites_001 = /* :: */[
                                                     function () {
                                                       var buf = Buffer.create(30);
                                                       return /* Eq */{
-                                                              0: (Caml_curry.app1(Printf.bprintf(buf, /* Format */{
-                                                                          0: /* Int64 */{
+                                                              0: (Caml_curry.app1(Printf.bprintf(buf, /* Format */[
+                                                                          /* Int64 */{
                                                                             0: /* Int_d */0,
                                                                             1: /* No_padding */0,
                                                                             2: /* No_precision */0,
@@ -3093,10 +2963,8 @@ var int64_suites_001 = /* :: */[
                                                                             length: 4,
                                                                             tag: 7
                                                                           },
-                                                                          1: "%Ld\n",
-                                                                          length: 2,
-                                                                          tag: 0
-                                                                        }), /* int64 */[
+                                                                          "%Ld\n"
+                                                                        ]), /* int64 */[
                                                                       0,
                                                                       32
                                                                     ]), Buffer.contents(buf)),
@@ -3209,8 +3077,8 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                   var f = param[1];
                                   var fmt = param[0];
                                   return /* tuple */[
-                                          Caml_curry.app1(Printf.sprintf(/* Format */{
-                                                    0: /* String_literal */{
+                                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                                                    /* String_literal */{
                                                       0: "float_format ",
                                                       1: /* Int */{
                                                         0: /* Int_d */0,
@@ -3223,10 +3091,8 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                                       length: 2,
                                                       tag: 11
                                                     },
-                                                    1: "float_format %d",
-                                                    length: 2,
-                                                    tag: 0
-                                                  }), i),
+                                                    "float_format %d"
+                                                  ]), i),
                                           function () {
                                             return /* Eq */{
                                                     0: Caml_format.caml_format_float(fmt, f),
@@ -3240,8 +3106,8 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                       var b = param[1];
                                       var a = param[0];
                                       return /* tuple */[
-                                              Caml_curry.app1(Printf.sprintf(/* Format */{
-                                                        0: /* String_literal */{
+                                              Caml_curry.app1(Printf.sprintf(/* Format */[
+                                                        /* String_literal */{
                                                           0: "int64_of_string ",
                                                           1: /* Int */{
                                                             0: /* Int_d */0,
@@ -3259,10 +3125,8 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                                           length: 2,
                                                           tag: 11
                                                         },
-                                                        1: "int64_of_string %d ",
-                                                        length: 2,
-                                                        tag: 0
-                                                      }), i),
+                                                        "int64_of_string %d "
+                                                      ]), i),
                                               function () {
                                                 return /* Eq */{
                                                         0: Caml_format.caml_int64_of_string(b),

@@ -857,8 +857,8 @@ var suites_16 = List.map(function (param) {
       var b = param[1];
       var a = param[0];
       return /* tuple */[
-              Caml_curry.app1(Printf.sprintf(/* Format */{
-                        0: /* String_literal */{
+              Caml_curry.app1(Printf.sprintf(/* Format */[
+                        /* String_literal */{
                           0: "swap16 ",
                           1: /* Int */{
                             0: /* Int_d */0,
@@ -871,10 +871,8 @@ var suites_16 = List.map(function (param) {
                           length: 2,
                           tag: 11
                         },
-                        1: "swap16 %d",
-                        length: 2,
-                        tag: 0
-                      }), a),
+                        "swap16 %d"
+                      ]), a),
               function () {
                 return /* Eq */{
                         0: Caml_primitive.caml_bswap16(a),
@@ -890,8 +888,8 @@ var suites_32 = List.map(function (param) {
       var b = param[1];
       var a = param[0];
       return /* tuple */[
-              Caml_curry.app1(Printf.sprintf(/* Format */{
-                        0: /* String_literal */{
+              Caml_curry.app1(Printf.sprintf(/* Format */[
+                        /* String_literal */{
                           0: "swap32 ",
                           1: /* Int */{
                             0: /* Int_d */0,
@@ -904,10 +902,8 @@ var suites_32 = List.map(function (param) {
                           length: 2,
                           tag: 11
                         },
-                        1: "swap32 %d",
-                        length: 2,
-                        tag: 0
-                      }), a),
+                        "swap32 %d"
+                      ]), a),
               function () {
                 return /* Eq */{
                         0: Caml_primitive.caml_int32_bswap(a),
@@ -923,8 +919,8 @@ var suites_64 = List.map(function (param) {
       var b = param[1];
       var a = param[0];
       return /* tuple */[
-              Caml_curry.app1(Printf.sprintf(/* Format */{
-                        0: /* String_literal */{
+              Caml_curry.app1(Printf.sprintf(/* Format */[
+                        /* String_literal */{
                           0: "swap64 ",
                           1: /* Int */{
                             0: /* Int_d */0,
@@ -937,10 +933,8 @@ var suites_64 = List.map(function (param) {
                           length: 2,
                           tag: 11
                         },
-                        1: "swap64 %d",
-                        length: 2,
-                        tag: 0
-                      }), a[1] | 0),
+                        "swap64 %d"
+                      ]), a[1] | 0),
               function () {
                 return /* Eq */{
                         0: Caml_int64.swap(a),
@@ -952,8 +946,8 @@ var suites_64 = List.map(function (param) {
             ];
     }, $$Array.to_list(tests_64));
 
-var d16_000 = /* Format */{
-  0: /* Int */{
+var d16_000 = /* Format */[
+  /* Int */{
     0: /* Int_x */6,
     1: /* No_padding */0,
     2: /* No_precision */0,
@@ -961,10 +955,8 @@ var d16_000 = /* Format */{
     length: 4,
     tag: 4
   },
-  1: "%x",
-  length: 2,
-  tag: 0
-};
+  "%x"
+];
 
 var d16_001 = Caml_primitive.caml_bswap16
 
@@ -985,8 +977,8 @@ var d16 = /* tuple */[
   d16_002
 ];
 
-var d32_000 = /* Format */{
-  0: /* Int32 */{
+var d32_000 = /* Format */[
+  /* Int32 */{
     0: /* Int_x */6,
     1: /* No_padding */0,
     2: /* No_precision */0,
@@ -994,10 +986,8 @@ var d32_000 = /* Format */{
     length: 4,
     tag: 5
   },
-  1: "%lx",
-  length: 2,
-  tag: 0
-};
+  "%lx"
+];
 
 var d32_001 = Caml_primitive.caml_int32_bswap
 
@@ -1025,8 +1015,8 @@ function f(s, param) {
                   var b = param[1];
                   var a = param[0];
                   return /* tuple */[
-                          Caml_curry.app2(Format.asprintf(/* Format */{
-                                    0: /* String */{
+                          Caml_curry.app2(Format.asprintf(/* Format */[
+                                    /* String */{
                                       0: /* No_padding */0,
                                       1: /* Char_literal */{
                                         0: /* " " */32,
@@ -1044,10 +1034,8 @@ function f(s, param) {
                                       length: 2,
                                       tag: 2
                                     },
-                                    1: "%s %i",
-                                    length: 2,
-                                    tag: 0
-                                  }), s, i),
+                                    "%s %i"
+                                  ]), s, i),
                           function () {
                             return /* Eq */{
                                     0: Caml_curry.app1(Format.asprintf(x), Caml_curry.app1(swap, a)),
