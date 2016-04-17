@@ -8,7 +8,7 @@ let list_suites = Mt.[
    Eq (5 , List.length [0;1;2;3;4]) (* This is tuple haha*)
             )    ;
   "long_length", (fun _ -> 
-    let v = 100000 in
+    let v = 30_000 in
     Eq (v ,
       (List.length 
          (Array.to_list (Array.init v (fun _ -> 0))))
