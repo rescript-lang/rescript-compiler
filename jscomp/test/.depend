@@ -300,8 +300,10 @@ qcc.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/array.cmx
 queue_test.cmo : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
 queue_test.cmx : ../stdlib/queue.cmx mt.cmx ../stdlib/array.cmx
-random_test.cmo : ../stdlib/random.cmi
-random_test.cmx : ../stdlib/random.cmx
+random_test.cmo : ../stdlib/random.cmi ../stdlib/printf.cmi mt_global.cmi \
+    mt.cmi ../stdlib/int64.cmi ../stdlib/array.cmi
+random_test.cmx : ../stdlib/random.cmx ../stdlib/printf.cmx mt_global.cmx \
+    mt.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
 rec_module_test.cmo : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
 rec_module_test.cmx : ../stdlib/set.cmx ../stdlib/pervasives.cmx mt.cmx
 rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi
@@ -836,8 +838,10 @@ qcc.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/array.cmj
 queue_test.cmo : ../stdlib/queue.cmi mt.cmi ../stdlib/array.cmi
 queue_test.cmj : ../stdlib/queue.cmj mt.cmj ../stdlib/array.cmj
-random_test.cmo : ../stdlib/random.cmi
-random_test.cmj : ../stdlib/random.cmj
+random_test.cmo : ../stdlib/random.cmi ../stdlib/printf.cmi mt_global.cmi \
+    mt.cmi ../stdlib/int64.cmi ../stdlib/array.cmi
+random_test.cmj : ../stdlib/random.cmj ../stdlib/printf.cmj mt_global.cmj \
+    mt.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
 rec_module_test.cmo : ../stdlib/set.cmi ../stdlib/pervasives.cmi mt.cmi
 rec_module_test.cmj : ../stdlib/set.cmj ../stdlib/pervasives.cmj mt.cmj
 rec_value_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/lazy.cmi

@@ -59,8 +59,8 @@ var list_suites_001 = /* :: */[
       "long_length",
       function () {
         return /* Eq */{
-                0: 100000,
-                1: List.length($$Array.to_list($$Array.init(100000, function () {
+                0: 30000,
+                1: List.length($$Array.to_list($$Array.init(30000, function () {
                               return 0;
                             }))),
                 length: 2,
