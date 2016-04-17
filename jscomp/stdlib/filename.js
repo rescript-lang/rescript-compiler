@@ -145,12 +145,7 @@ try {
   temp_dir_name = Caml_sys.caml_sys_getenv("TMPDIR");
 }
 catch (exn){
-  if (exn === Caml_builtin_exceptions.not_found) {
-    temp_dir_name = "/tmp";
-  }
-  else {
-    throw exn;
-  }
+  temp_dir_name = "/tmp";
 }
 
 function quote(param) {
@@ -185,12 +180,7 @@ try {
   temp_dir_name$1 = Caml_sys.caml_sys_getenv("TEMP");
 }
 catch (exn$1){
-  if (exn$1 === Caml_builtin_exceptions.not_found) {
-    temp_dir_name$1 = ".";
-  }
-  else {
-    throw exn$1;
-  }
+  temp_dir_name$1 = ".";
 }
 
 var temp_dir_name$2 = temp_dir_name;

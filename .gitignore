@@ -59,3 +59,4 @@ boot
 coverage
 *.log
 ./jscomp/output
+*.g.js

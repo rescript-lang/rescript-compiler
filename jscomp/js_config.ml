@@ -26,6 +26,8 @@ type env =
 
 let default_env = ref NodeJS 
 
+let ext = ref ".js"
+let get_ext () = !ext 
 let get_env () = !default_env
 
 let set_env env = default_env := env 
@@ -38,10 +40,16 @@ let cmd_set_module str =
     if Ext_string.starts_with str "goog" then
       let len = String.length str in
       if  len = 4  then
-        default_env := Goog (Some "")
+            begin 
+              default_env := Goog (Some "");
+              ext := ".g.js"
+            end
       else
       if str.[4] = ':' && len > 5 then 
-        default_env := Goog (Some (Ext_string.tail_from str 5  ))
+        begin 
+          default_env := Goog (Some (Ext_string.tail_from str 5  ));
+          ext := ".g.js";
+        end
       else 
         raise (Arg.Bad (Printf.sprintf "invalid module system %s" str))
     else

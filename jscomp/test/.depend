@@ -3,6 +3,7 @@ abstract_type.cmi :
 ari_regress_test.cmi :
 array_test.cmi :
 const_block_test.cmi :
+demo_int_map.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 map_test.cmi :
@@ -109,6 +110,8 @@ debugger_test.cmo : ../lib/js.cmo
 debugger_test.cmx : ../lib/js.cmx
 demo.cmo :
 demo.cmx :
+demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
+demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmx :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
@@ -643,6 +646,8 @@ debugger_test.cmo : ../lib/js.cmo
 debugger_test.cmj : ../lib/js.cmj
 demo.cmo :
 demo.cmj :
+demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
+demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
 demo_page.cmj :
 digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \

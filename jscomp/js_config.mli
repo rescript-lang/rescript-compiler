@@ -24,6 +24,8 @@ type env =
   | Goog of string option
 
 val get_env : unit -> env
+val get_ext : unit -> string
+
 val get_goog_package_name : unit -> string option
 val set_env : env -> unit
 val cmd_set_module : string -> unit  

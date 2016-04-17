@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Bytes                   = require("./bytes");
 var Caml_obj                = require("../runtime/caml_obj");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
@@ -33,21 +33,11 @@ try {
   params = Caml_sys.caml_sys_getenv("OCAMLRUNPARAM");
 }
 catch (exn){
-  if (exn === Caml_builtin_exceptions.not_found) {
-    try {
-      params = Caml_sys.caml_sys_getenv("CAMLRUNPARAM");
-    }
-    catch (exn$1){
-      if (exn$1 === Caml_builtin_exceptions.not_found) {
-        params = "";
-      }
-      else {
-        throw exn$1;
-      }
-    }
+  try {
+    params = Caml_sys.caml_sys_getenv("CAMLRUNPARAM");
   }
-  else {
-    throw exn;
+  catch (exn$1){
+    params = "";
   }
 }
 
