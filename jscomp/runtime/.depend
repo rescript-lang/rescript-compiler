@@ -1,7 +1,6 @@
 caml_array.cmi :
 caml_bigarray.cmi :
 caml_builtin_exceptions.cmi :
-caml_exceptions.cmi :
 caml_float.cmi :
 caml_format.cmi :
 caml_int64.cmi :
@@ -22,8 +21,6 @@ caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
 caml_builtin_exceptions.cmx : caml_builtin_exceptions.cmi
 caml_curry.cmo : js.cmo caml_oo.cmi
 caml_curry.cmx : js.cmx caml_oo.cmx
-caml_exceptions.cmo : caml_exceptions.cmi
-caml_exceptions.cmx : caml_exceptions.cmi
 caml_float.cmo : typed_array.cmo js.cmo caml_float.cmi
 caml_float.cmx : typed_array.cmx js.cmx caml_float.cmi
 caml_format.cmo : js.cmo caml_utils.cmi caml_format.cmi
@@ -50,12 +47,12 @@ caml_sys.cmo : js.cmo caml_sys.cmi
 caml_sys.cmx : js.cmx caml_sys.cmi
 caml_utils.cmo : caml_utils.cmi
 caml_utils.cmx : caml_utils.cmi
+fn.cmo :
+fn.cmx :
 js.cmo :
 js.cmx :
 js_error.cmo :
 js_error.cmx :
-js_fn.cmo :
-js_fn.cmx :
 typed_array.cmo :
 typed_array.cmx :
 caml_array.cmo : js.cmo caml_array.cmi
@@ -66,8 +63,6 @@ caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
 caml_builtin_exceptions.cmj : caml_builtin_exceptions.cmi
 caml_curry.cmo : js.cmo caml_oo.cmi
 caml_curry.cmj : js.cmj caml_oo.cmj
-caml_exceptions.cmo : caml_exceptions.cmi
-caml_exceptions.cmj : caml_exceptions.cmi
 caml_float.cmo : typed_array.cmo js.cmo caml_float.cmi
 caml_float.cmj : typed_array.cmj js.cmj caml_float.cmi
 caml_format.cmo : js.cmo caml_utils.cmi caml_format.cmi
@@ -94,11 +89,11 @@ caml_sys.cmo : js.cmo caml_sys.cmi
 caml_sys.cmj : js.cmj caml_sys.cmi
 caml_utils.cmo : caml_utils.cmi
 caml_utils.cmj : caml_utils.cmi
+fn.cmo :
+fn.cmj :
 js.cmo :
 js.cmj :
 js_error.cmo :
 js_error.cmj :
-js_fn.cmo :
-js_fn.cmj :
 typed_array.cmo :
 typed_array.cmj :

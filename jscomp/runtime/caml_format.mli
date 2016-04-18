@@ -18,15 +18,8 @@
 
 (* Author: Hongbo Zhang  *)
 
-val parse_digit : char -> int 
 
-val caml_invalid_argument : string -> 'a
 
-val repeat : int -> string -> string 
-
-val caml_failwith : string -> 'a 
-
-type fmt
 
 val caml_format_float : string -> float -> string
 

@@ -5,18 +5,12 @@ var Caml_int64              = require("./caml_int64");
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_primitive          = require("./caml_primitive");
 var Caml_utils              = require("./caml_utils");
+var Caml_curry              = require("./caml_curry");
 var Caml_string             = require("./caml_string");
 
 function caml_failwith(s) {
   throw [
         Caml_builtin_exceptions.failure,
-        s
-      ];
-}
-
-function caml_invalid_argument(s) {
-  throw [
-        Caml_builtin_exceptions.invalid_argument,
         s
       ];
 }
@@ -800,20 +794,8 @@ function caml_format_float(fmt, x) {
   return finish_formatting(f, s);
 }
 
-var caml_float_of_string = (
-
-/**
- * external float_of_string : string -> float = "caml_float_of_string"
- * pervasives.ml
- * Semantics is slightly different from javascript :
- * console.assert(caml_float_of_string('infinity')===Infinity)
- * console.assert(caml_float_of_string('Infinity')===Infinity
- *
- * parseFloat('Infinity') === Infinity
- * parseFloat('infinity') === Nan
- * */
-function (s) {
-    //s = caml_bytes_of_string (s);
+var float_of_string = (
+  function (s, caml_failwith) {
     var res = +s;
     if ((s.length > 0) && (res === res))
         return res;
@@ -839,7 +821,9 @@ function (s) {
 
 );
 
-var repeat = Caml_utils.repeat;
+function caml_float_of_string(s) {
+  return Caml_curry.app2(float_of_string, s, caml_failwith);
+}
 
 var caml_nativeint_format = caml_format_int;
 
@@ -849,10 +833,6 @@ var caml_int32_of_string = caml_int_of_string;
 
 var caml_nativeint_of_string = caml_int_of_string;
 
-exports.parse_digit              = parse_digit;
-exports.caml_invalid_argument    = caml_invalid_argument;
-exports.repeat                   = repeat;
-exports.caml_failwith            = caml_failwith;
 exports.caml_format_float        = caml_format_float;
 exports.caml_format_int          = caml_format_int;
 exports.caml_nativeint_format    = caml_nativeint_format;
@@ -863,4 +843,4 @@ exports.caml_int_of_string       = caml_int_of_string;
 exports.caml_int32_of_string     = caml_int32_of_string;
 exports.caml_int64_of_string     = caml_int64_of_string;
 exports.caml_nativeint_of_string = caml_nativeint_of_string;
-/* caml_float_of_string Not a pure module */
+/* float_of_string Not a pure module */

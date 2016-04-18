@@ -14,7 +14,27 @@ function $$test(x,y){
 }
 |}]
 
+
+let regression3 : float -> float -> float = [%bs.raw "Math.max"] 
+
+let regression4 : float -> (float -> float) -> float = [%bs.raw "Math.max"] 
+let g a 
+
+  = 
+let regression  = ([%bs.raw{|function(x,y){
+   return ""
+}|}]  : float -> (string -> 'a) -> string) in 
+
+  let regression2 : float -> float -> float = [%bs.raw "Math.max"] in 
+  ignore @@ regression a failwith;
+  ignore @@ regression2  3. 2.;
+  ignore @@ regression3 3. 2.;
+  ignore @@ regression4 3. (fun x-> x)
+
+
 let max2 : float -> float -> float = [%bs.raw "Math.max"]
+
+let umax a b = max2 a b 
 let u = max2 3.
 
 let max3 = ([%bs.raw "Math.max"] :  float -> float -> float)
