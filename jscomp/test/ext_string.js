@@ -301,18 +301,40 @@ function digits_of_str(s, offset, x) {
   };
 }
 
-exports.split_by      = split_by;
-exports.split         = split;
-exports.starts_with   = starts_with;
-exports.ends_with     = ends_with;
-exports.escaped       = escaped;
-exports.for_all       = for_all;
-exports.is_empty      = is_empty;
-exports.repeat        = repeat;
-exports.equal         = equal;
-exports._is_sub       = _is_sub;
-exports.find          = find;
-exports.rfind         = rfind;
-exports.tail_from     = tail_from;
-exports.digits_of_str = digits_of_str;
+function starts_with_and_number(s, offset, beg) {
+  var beg_len = beg.length;
+  var s_len = s.length;
+  var finish_delim = offset + beg_len | 0;
+  if (finish_delim > s_len) {
+    return -1;
+  }
+  else {
+    var i = offset;
+    while(i < finish_delim && s[i] === beg[i - offset | 0]) {
+      i = i + 1 | 0;
+    };
+    if (i === finish_delim) {
+      return digits_of_str(s, finish_delim, 2);
+    }
+    else {
+      return -1;
+    }
+  }
+}
+
+exports.split_by               = split_by;
+exports.split                  = split;
+exports.starts_with            = starts_with;
+exports.ends_with              = ends_with;
+exports.escaped                = escaped;
+exports.for_all                = for_all;
+exports.is_empty               = is_empty;
+exports.repeat                 = repeat;
+exports.equal                  = equal;
+exports._is_sub                = _is_sub;
+exports.find                   = find;
+exports.rfind                  = rfind;
+exports.tail_from              = tail_from;
+exports.digits_of_str          = digits_of_str;
+exports.starts_with_and_number = starts_with_and_number;
 /* No side effect */

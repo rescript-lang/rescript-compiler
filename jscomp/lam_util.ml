@@ -1,3 +1,4 @@
+
 (* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
@@ -313,9 +314,14 @@ let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
   { apply_loc = loc; apply_status }
 
 
-let lam_true : Lambda.lambda = Lconst (Const_pointer ( 1, Pt_constructor "true")) 
+let lam_true : Lambda.lambda =
+  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
 
-let lam_false : Lambda.lambda = Lconst (Const_pointer( 0, Pt_constructor "false"))
+let lam_false : Lambda.lambda =
+  Lconst (Const_pointer( 0, Pt_constructor "false"))
+
+let lam_unit : Lambda.lambda = 
+  Lconst (Const_pointer( 0, Pt_constructor "()"))
 
 let is_function (lam : Lambda.lambda) = 
   match lam with 

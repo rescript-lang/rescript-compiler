@@ -42,9 +42,15 @@ var hh = /* array */[
       return parseInt(prim);
     });
 
+function u() {
+  return Caml_curry.app1(function () {
+              return 3;
+            }, /* () */0);
+}
+
 Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* tuple */[
-        'File "ffi_arity_test.ml", line 21, characters 4-11',
+        'File "ffi_arity_test.ml", line 23, characters 4-11',
         function () {
           return /* Eq */{
                   0: v,
@@ -60,7 +66,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       ],
       /* :: */[
         /* tuple */[
-          'File "ffi_arity_test.ml", line 22, characters 4-11',
+          'File "ffi_arity_test.ml", line 24, characters 4-11',
           function () {
             return /* Eq */{
                     0: vv,
@@ -76,7 +82,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
         ],
         /* :: */[
           /* tuple */[
-            'File "ffi_arity_test.ml", line 23, characters 4-11',
+            'File "ffi_arity_test.ml", line 25, characters 4-11',
             function () {
               return /* Eq */{
                       0: hh,
@@ -92,7 +98,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
           ],
           /* :: */[
             /* tuple */[
-              'File "ffi_arity_test.ml", line 24, characters 4-11',
+              'File "ffi_arity_test.ml", line 26, characters 4-11',
               function () {
                 return /* Eq */{
                         0: /* int array */[
@@ -118,7 +124,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
             ],
             /* :: */[
               /* tuple */[
-                'File "ffi_arity_test.ml", line 29, characters 4-11',
+                'File "ffi_arity_test.ml", line 31, characters 4-11',
                 function () {
                   return /* Eq */{
                           0: /* int array */[
@@ -154,4 +160,5 @@ exports.f  = f;
 exports.v  = v;
 exports.vv = vv;
 exports.hh = hh;
+exports.u  = u;
 /* v Not a pure module */

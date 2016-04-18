@@ -679,91 +679,123 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim (Pccall {prim_name = 
-                       (
-                         "js_fn_mk_00" 
-                       | "js_fn_mk_01"
-                       | "js_fn_mk_02"
-                       | "js_fn_mk_03"
-                       | "js_fn_mk_04"
-                       | "js_fn_mk_05"
-                       | "js_fn_mk_06"
-                       | "js_fn_mk_07"
-                       | "js_fn_mk_08"
-                       | "js_fn_mk_09"
-                         as name )
-                    }, [fn])
-      -> 
-      let arity = Ext_string.digits_of_str ~offset:9 (* String.length "js_fn_mk_" *) name 2   in
-      begin match fn with
-      | Lambda.Lfunction(kind,args, body) 
-        ->
-        let len =  List.length args in 
-        if len = arity then
-          compile_lambda cxt fn 
-        else if len > arity then 
-          let first, rest  = Ext_list.take arity args  in 
-          compile_lambda cxt (Lambda.Lfunction (kind, first, Lambda.Lfunction (kind, rest, body)))
-        else 
-          compile_lambda cxt (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
-          (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
-          (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
-          (* Lambda.Lfunction (kind, extra_args @ args , body ) *)
-      (*TODO: can be optimized ?
-        {[\ x y -> (\u -> body x) x y]}
-        {[\u x -> body x]}        
-        rewrite rules 
-        {[
-          \x -> body 
-                --
-                \y (\x -> body ) y 
-        ]}
-        {[\ x y -> (\a b c -> g a b c) x y]}
-        {[ \a b -> \c -> g a b c ]}
-      *)
-      | _ -> 
-        compile_lambda cxt (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
-      end
     (* TODO: 
        check the arity of fn before wrapping it 
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
-    | Lprim (Pccall{prim_name = "js_debugger"; _}, 
-             _) 
-      -> 
-      (* [%bs.debugger] guarantees that the expression does not matter 
+
+    | Lprim (prim, args_lambda)  ->
+      let cont args_code exp = 
+        Js_output.handle_block_return st should_return lam args_code exp  in 
+      begin match prim with 
+      | Pccall {prim_name = "js_debugger"; _} 
+        -> 
+        (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer
          *)
-      Js_output.handle_block_return st should_return lam  [S.debugger] E.unit 
-    | Lprim (prim, args_lambda)  ->
-      begin
+        cont [S.debugger] E.unit 
+      | Pccall {prim_name = name}
+        when Ext_string.starts_with name "js_fn_"
+      -> 
+        let arity, kind  = 
+          let mk =  Ext_string.starts_with_and_number name ~offset:6 "mk_" in 
+          if mk < 0 then 
+            let run = Ext_string.starts_with_and_number name ~offset:6 "run_" in 
+            run , `Run
+          else mk, `Mk
+        in 
+        
+        (* 1. prevent eta-conversion
+           by using [App_js_full]
+           2. invariant: `external` declaration will guarantee
+           the function application is saturated
+           3. we need a location for Pccall in the call site
+        *)
+
+        if kind = `Run then 
+          match args_lambda with 
+          | fn :: rest -> 
+            compile_lambda cxt @@ 
+            Lambda.Lapply (fn, rest , 
+                           {apply_loc = Location.none;
+                            apply_status = App_js_full})
+          | _ -> assert false 
+        else 
+        begin match args_lambda with 
+          | [fn] -> 
+            if arity = 0 then 
+              (* 
+                Invariant: mk0 : (unit -> 'a0) -> 'a0 t 
+                TODO: this case should be optimized, 
+                we need check where we handle [arity=0] 
+                as a special case -- 
+                if we do an optimization before compiling
+                into lambda
+             *)
+              compile_lambda cxt 
+                  (Lfunction (Lambda.Curried, [], 
+                              Lambda.Lapply(fn, 
+                                            [Lam_util.lam_unit],
+                                            Lam_util.default_apply_info 
+                                           )))
+            else 
+              begin match fn with
+                | Lambda.Lfunction(kind,args, body) 
+                  ->
+                  let len =  List.length args in 
+                  if len = arity then
+                    compile_lambda cxt fn 
+                  else if len > arity then 
+                    let first, rest  = Ext_list.take arity args  in 
+                    compile_lambda cxt 
+                      (Lambda.Lfunction 
+                         (kind, first, Lambda.Lfunction (kind, rest, body)))
+                  else 
+                    compile_lambda cxt 
+                      (Lam_util.eta_conversion arity Lam_util.default_apply_info  
+                         fn  [] )
+                (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
+                (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
+                (* Lambda.Lfunction (kind, extra_args @ args , body ) *)
+                (*TODO: can be optimized ?
+                  {[\ x y -> (\u -> body x) x y]}
+                  {[\u x -> body x]}        
+                  rewrite rules 
+                  {[
+                    \x -> body 
+                          --
+                          \y (\x -> body ) y 
+                  ]}
+                  {[\ x y -> (\a b c -> g a b c) x y]}
+                  {[ \a b -> \c -> g a b c ]}
+                *)
+                | _ -> 
+                  compile_lambda cxt 
+                    (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+              end
+          | _ -> assert false 
+        end
+      | _ -> 
         let args_block, args_expr =
-          args_lambda 
-          |> List.map (fun (x : Lambda.lambda) ->
+          Ext_list.split_map (fun (x : Lambda.lambda) ->
               match compile_lambda {cxt with st = NeedValue; should_return = False} x 
               with 
               | {block = a; value = Some b} -> a,b
-              | _ -> assert false )
-          |> List.split 
+              | _ -> assert false ) args_lambda 
+            
         in
         let args_code  = List.concat args_block in
         let exp  =  (* TODO: all can be done in [compile_primitive] *)
           Lam_compile_primitive.translate cxt prim args_expr in
-        Js_output.handle_block_return st should_return lam args_code exp 
+        cont  args_code exp 
       end
     | Lsequence (l1,l2) ->
       let output_l1 = 
         compile_lambda {cxt with st = EffectCall; should_return =  False} l1 in
       let output_l2 = 
         compile_lambda cxt l2  in
-      let result = output_l1 ++ output_l2  in
-      (* let () = *)
-      (*   Ext_log.dwarn __LOC__ *)
-      (*     "@ @[l1:%a@ js-l1(%d):%s@ l2:@ %a@ js-l2(%d):%s@ js-l:@ %s@]" *)
-      (*     Printlambda.lambda l1 (List.length output_l1.block) (Js_output.to_string output_l1) *)
-      (*     Printlambda.lambda l2 (List.length output_l2.block) (Js_output.to_string output_l2) *)
-      (*     (Js_output.to_string result ) in  *)
-      result      
+       output_l1 ++ output_l2
+
 
     (* begin
        match cxt.st, cxt.should_return with  *)

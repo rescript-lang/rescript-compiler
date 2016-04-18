@@ -61,6 +61,7 @@ val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
 
 val lam_true : Lambda.lambda
 val lam_false : Lambda.lambda
+val lam_unit : Lambda.lambda 
 
 val not_function : Lambda.lambda -> bool 
 val is_function : Lambda.lambda -> bool 
