@@ -2,7 +2,6 @@ caml_curry
 caml_array
 caml_string
 caml_oo
-caml_exceptions
 caml_obj
 caml_int64
 caml_builtin_exceptions
@@ -19,5 +18,5 @@ caml_md5
 
 typed_array
 js
-js_fn
+fn
 js_error

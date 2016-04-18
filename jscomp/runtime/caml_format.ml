@@ -558,20 +558,22 @@ let caml_format_float fmt x =
     end;
   finish_formatting f !s
 
-let caml_float_of_string : string -> float = [%bs.raw {|
 
-/**
- * external float_of_string : string -> float = "caml_float_of_string"
- * pervasives.ml
- * Semantics is slightly different from javascript :
- * console.assert(caml_float_of_string('infinity')===Infinity)
- * console.assert(caml_float_of_string('Infinity')===Infinity
- *
- * parseFloat('Infinity') === Infinity
- * parseFloat('infinity') === Nan
- * */
-function (s) {
-    //s = caml_bytes_of_string (s);
+(**
+ external float_of_string : string -> float = "caml_float_of_string"
+ pervasives.ml
+ Semantics is slightly different from javascript :
+ console.assert(caml_float_of_string('infinity')===Infinity)
+ console.assert(caml_float_of_string('Infinity')===Infinity
+
+ parseFloat('Infinity') === Infinity
+ parseFloat('infinity') === Nan
+
+ FIXME: arity of float_of_string is not inferred correctly
+*)
+
+let float_of_string : string -> (string -> 'a) ->  float = [%bs.raw {|
+  function (s, caml_failwith) {
     var res = +s;
     if ((s.length > 0) && (res === res))
         return res;
@@ -598,7 +600,7 @@ function (s) {
 |}
 ]
 
-
+let caml_float_of_string s = float_of_string s caml_failwith
 
 let caml_nativeint_format = caml_format_int
 let caml_int32_format = caml_format_int
