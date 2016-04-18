@@ -128,6 +128,8 @@ equal_test.cmo :
 equal_test.cmx :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmx : mt.cmx ../stdlib/list.cmx
+event_ffi.cmo : ../lib/js_fn.cmo ../lib/js.cmo
+event_ffi.cmx : ../lib/js_fn.cmx ../lib/js.cmx
 exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmx : mt.cmx
 ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
@@ -666,6 +668,8 @@ equal_test.cmo :
 equal_test.cmj :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
+event_ffi.cmo : ../lib/js_fn.cmo ../lib/js.cmo
+event_ffi.cmj : ../lib/js_fn.cmj ../lib/js.cmj
 exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmj : mt.cmj
 ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi

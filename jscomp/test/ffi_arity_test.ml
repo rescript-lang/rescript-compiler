@@ -17,6 +17,8 @@ let vv  = mapi [|1;2;3 |] (Js_fn.mk2 (+))
 
 let hh = map [|"1";"2";"3"|] (Js_fn.mk1 parseInt)
 
+let u = Js_fn.mk0 (fun _ -> 3)
+
 ;; Mt.from_pair_suites __FILE__ Mt.[
     __LOC__, (fun _ -> Eq(v, [|0; 1;  4 |] ));
     __LOC__, (fun _ -> Eq(vv, [|1;3;5|]));

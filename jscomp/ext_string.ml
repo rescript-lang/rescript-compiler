@@ -46,11 +46,14 @@ let starts_with s beg =
   let s_len = String.length s in
    beg_len <=  s_len &&
   (let i = ref 0 in
-    while !i <  beg_len && s.[!i] = beg.[!i] do 
+    while !i <  beg_len 
+          && String.unsafe_get s !i =
+             String.unsafe_get beg !i do 
       incr i 
     done;
     !i = beg_len
   )
+
 
 (* TODO: optimization *)
 let ends_with s beg = 
@@ -164,3 +167,30 @@ let digits_of_str s ~offset x =
 
 
 
+(*
+   {[
+     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
+     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
+     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
+     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
+     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
+     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
+   ]}
+*)
+let starts_with_and_number s ~offset beg =
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  let finish_delim = offset + beg_len in 
+
+   if finish_delim >  s_len  then -1 
+   else 
+     let i = ref offset  in
+      while !i <  finish_delim
+            && String.unsafe_get s !i =
+               String.unsafe_get beg (!i - offset) do 
+        incr i 
+      done;
+      if !i = finish_delim then 
+        digits_of_str ~offset:finish_delim s 2 
+      else 
+        -1 
