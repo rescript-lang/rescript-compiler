@@ -245,8 +245,14 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js
   match flag, arg  with 
   |  let_kind, _  -> 
     compile_lambda {cxt with st = Declare (let_kind, id); should_return = False } arg 
-
-and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lambda.lambda)   = 
+(** 
+    The second return values are values which need to be wrapped using 
+   [caml_update_dummy] 
+*)
+and compile_recursive_let 
+    (cxt : Lam_compile_defs.cxt)
+    (id : Ident.t)
+    (arg : Lambda.lambda)   : Js_output.t * Ident.t list = 
   match arg with 
   |  Lfunction (kind, params, body)  -> 
     (* Invariant:  jmp_table can not across function boundary,
@@ -296,7 +302,25 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
         else            (* TODO:  save computation of length several times *)
           E.fun_ params (Js_output.to_block output )
       ), [] 
-  | (Lprim(Pmakeblock _ , _) )  -> 
+  | Lprim (Pmakeblock (0, _, _) , ls)
+    when List.for_all (function  | Lambda.Lvar _  -> true | _ -> false) ls 
+    ->
+    (* capture cases like for {!Queue}
+       {[let rec cell = { content = x; next = cell} ]}
+    *)
+    Js_output.of_block (
+      S.define ~kind:Variable id (E.arr Mutable []) :: 
+      (List.mapi (fun i x -> 
+          match x with  
+          | Lambda.Lvar lid
+            -> S.exp 
+                 (Js_array.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
+          | _ -> assert false
+         ) ls)
+    ), []
+
+  | Lprim(Pmakeblock _ , _)   -> 
+    (* FIXME: also should fill tag *)
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,
        however it would affect scope issues, we have to declare it first 
@@ -308,8 +332,12 @@ and compile_recursive_let (cxt : Lam_compile_defs.cxt) (id : Ident.t) (arg : Lam
         (* TODO: check recursive value .. 
             could be improved for simple cases
         *)
-        Js_output.of_block  (
-          b  @ [S.exp(E.runtime_call Js_config.obj_runtime "caml_update_dummy" [ E.var id;  v])]),
+        Js_output.of_block  
+          (
+            b  @ 
+            [S.exp
+               (E.runtime_call Js_config.obj_runtime "caml_update_dummy" 
+                  [ E.var id;  v])]),
         [id]
       (* S.define ~kind:Variable id (E.arr Mutable [])::  *)
       | _ -> assert false 

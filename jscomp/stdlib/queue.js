@@ -39,13 +39,9 @@ function add(x, q) {
     return /* () */0;
   }
   else {
-    var cell$1 = {
-      
-    };
-    Caml_obj.caml_update_dummy(cell$1, /* record */[
-          x,
-          cell$1
-        ]);
+    var cell$1 = [];
+    cell$1[0] = x;
+    cell$1[1] = cell$1;
     q[/* length */0] = 1;
     q[/* tail */1] = cell$1;
     return /* () */0;
