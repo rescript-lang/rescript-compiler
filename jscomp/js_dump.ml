@@ -1592,8 +1592,10 @@ let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) =
     P.string f L.strict_directive; 
     P.newline f ;    
     ignore (match Js_config.get_env () with 
+     | AmdJS -> 
+       amd_program f program
      | Browser ->
-        (node_program f program)
+        node_program f program
      | NodeJS -> 
        begin match Sys.getenv "OCAML_AMD_MODULE" with 
          | exception Not_found -> 

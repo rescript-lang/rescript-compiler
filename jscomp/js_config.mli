@@ -21,6 +21,7 @@
 type env = 
   | Browser
   | NodeJS
+  | AmdJS
   | Goog of string option
 
 val get_env : unit -> env

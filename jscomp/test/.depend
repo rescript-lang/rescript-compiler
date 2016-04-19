@@ -284,6 +284,8 @@ obj_test.cmo : mt.cmi
 obj_test.cmx : mt.cmx
 of_string_test.cmo : mt.cmi
 of_string_test.cmx : mt.cmx
+pq_test.cmo :
+pq_test.cmx :
 pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmx : mt.cmx
 primitive_reg_test.cmo :
@@ -824,6 +826,8 @@ obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
 of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
+pq_test.cmo :
+pq_test.cmj :
 pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmj : mt.cmj
 primitive_reg_test.cmo :

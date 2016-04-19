@@ -53,6 +53,7 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
         "./runtime/" ^ Filename.chop_extension target
       else
         "./stdlib/" ^ Filename.chop_extension target 
+    | AmdJS
     | NodeJS -> 
       if Ext_string.starts_with id.name "Caml_" then 
         let path = 

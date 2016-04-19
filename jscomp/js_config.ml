@@ -22,6 +22,7 @@
 type env = 
   | Browser
   | NodeJS
+  | AmdJS
   | Goog of string option
 
 let default_env = ref NodeJS 
@@ -35,6 +36,8 @@ let cmd_set_module str =
   match str with 
   | "commonjs" -> default_env := NodeJS
   | "amdjs" -> 
+    default_env := AmdJS
+  | "browser-internal" -> (* used internal *)
     default_env := Browser
   | _ -> 
     if Ext_string.starts_with str "goog" then
@@ -58,7 +61,9 @@ let cmd_set_module str =
 let get_goog_package_name () = 
   match !default_env with 
   | Goog x -> x 
-  | Browser | NodeJS -> None
+  | Browser
+  | AmdJS
+  | NodeJS -> None
 
 let default_gen_tds = ref false
      
