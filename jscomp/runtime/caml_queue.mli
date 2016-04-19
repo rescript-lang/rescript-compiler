@@ -18,50 +18,12 @@
 
 (* Author: Hongbo Zhang  *)
 
-type env = 
-  | Browser
-  | NodeJS
-  | AmdJS
-  | Goog of string option
+type 'a t 
 
-val get_env : unit -> env
-val get_ext : unit -> string
+val create : unit -> 'a t
 
-val get_goog_package_name : unit -> string option
-val set_env : env -> unit
-val cmd_set_module : string -> unit  
-val default_gen_tds : bool ref
-val runtime_set : String_set.t
-val stdlib_set : String_set.t
+val push : 'a -> 'a t -> unit
 
-val prim : string 
+val unsafe_pop : 'a t -> 'a 
 
-val builtin_exceptions : string
-
-val io : string
-
-val oo : string
-
-val sys : string
-
-val lexer : string 
-val parser : string
-val obj_runtime : string
-
-val array : string
-
-val format : string
-
-val string : string 
-
-val float : string 
-
-val curry : string 
-
-val internalMod : string
-
-val bigarray : string
-val unix : string
-val int64 : string
-val md5 : string
-val hash : string
+val is_empty : 'a t -> bool 

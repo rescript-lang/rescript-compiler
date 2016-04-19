@@ -163,7 +163,7 @@ let format = "Caml_format"
 let string = "Caml_string"
 
 let float = "Caml_float"
-
+let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Caml_curry"
 let internalMod = "Caml_internalMod"
