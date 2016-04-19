@@ -24,7 +24,7 @@ function final_mix(h) {
   h$1 = Caml_primitive.imul(h$1, 2246822507);
   h$1 = h$1 ^ (h$1 >>> 13);
   h$1 = Caml_primitive.imul(h$1, 3266489909);
-  return (h$1 ^ (h$1 >>> 16)) & 1073741823;
+  return h$1 ^ (h$1 >>> 16);
 }
 
 function caml_hash_mix_string(h, s) {
@@ -83,7 +83,7 @@ function caml_hash(count, _, seed, obj) {
                   Caml_builtin_exceptions.assert_failure,
                   [
                     "caml_hash.ml",
-                    125,
+                    124,
                     8
                   ]
                 ];

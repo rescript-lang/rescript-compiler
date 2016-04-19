@@ -46,9 +46,8 @@ let final_mix h =
   h := !h *~ 0x85ebca6bn ;
   h := !h ^ (!h >>> 13);
   h := !h *~ 0xc2b2ae35n ;
-  (* !h ^ (!h >>> 16)  *)
-
-  Nativeint.logand  (!h ^ (!h >>> 16)) 0x3FFFFFFFn
+  !h ^ (!h >>> 16)
+  (* Nativeint.logand  (!h ^ (!h >>> 16)) 0x3FFFFFFFn *)
 
 let caml_hash_mix_string h  s = 
   let len = String.length s in

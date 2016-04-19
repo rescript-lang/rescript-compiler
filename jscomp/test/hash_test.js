@@ -77,7 +77,7 @@ var param$2 = Hashtbl.hash("x") & 1073741823;
 
 Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 26, characters 5-12', param$2, 780510073);
 
-var param$3 = Hashtbl.hash("xy");
+var param$3 = Hashtbl.hash("xy") & 1073741823;
 
 Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 29, characters 5-12', param$3, 194127723);
 

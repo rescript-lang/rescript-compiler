@@ -26,7 +26,7 @@ let () =
   eq __LOC__ (Hashtbl.hash "x" |> normalize) 780510073
 
 let () =
-  eq __LOC__ (Hashtbl.hash "xy") 194127723
+  eq __LOC__ (Hashtbl.hash "xy" |> normalize) 194127723
 
 let () = 
   Mt.from_pair_suites __FILE__ !suites
