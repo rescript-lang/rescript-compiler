@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 
 val caml_sys_getcwd : unit -> string 
-val caml_hash : int -> int -> int -> 'a -> int
+
 
 val caml_bswap16 : nativeint -> nativeint
 val caml_int32_bswap : nativeint -> nativeint

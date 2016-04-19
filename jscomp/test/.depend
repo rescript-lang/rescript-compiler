@@ -186,6 +186,10 @@ hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
     ../stdlib/int64.cmi ../stdlib/buffer.cmi
 hamming_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/lazy.cmx \
     ../stdlib/int64.cmx ../stdlib/buffer.cmx
+hash_test.cmo : ../stdlib/string.cmi mt_global.cmi mt.cmi \
+    ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
+hash_test.cmx : ../stdlib/string.cmx mt_global.cmx mt.cmx \
+    ../stdlib/hashtbl.cmx ../stdlib/char.cmx ../stdlib/array.cmx
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
@@ -728,6 +732,10 @@ hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
     ../stdlib/int64.cmi ../stdlib/buffer.cmi
 hamming_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/lazy.cmj \
     ../stdlib/int64.cmj ../stdlib/buffer.cmj
+hash_test.cmo : ../stdlib/string.cmi mt_global.cmi mt.cmi \
+    ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
+hash_test.cmj : ../stdlib/string.cmj mt_global.cmj mt.cmj \
+    ../stdlib/hashtbl.cmj ../stdlib/char.cmj ../stdlib/array.cmj
 hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
 hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \

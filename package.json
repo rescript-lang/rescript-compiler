@@ -13,7 +13,7 @@
   },
   "scripts": {
       "test": 
-      "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js'  -R spec",
+      "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js' ",
       "wtest": 
       "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js'  -R spec -w",
       "cover" : 

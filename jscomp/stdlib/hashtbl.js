@@ -13,18 +13,19 @@ var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
 var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
+var Caml_hash               = require("../runtime/caml_hash");
 var Random                  = require("./random");
 
 function hash(x) {
-  return Caml_primitive.caml_hash(10, 100, 0, x);
+  return Caml_hash.caml_hash(10, 100, 0, x);
 }
 
 function hash_param(n1, n2, x) {
-  return Caml_primitive.caml_hash(n1, n2, 0, x);
+  return Caml_hash.caml_hash(n1, n2, 0, x);
 }
 
 function seeded_hash(seed, x) {
-  return Caml_primitive.caml_hash(10, 100, seed, x);
+  return Caml_hash.caml_hash(10, 100, seed, x);
 }
 
 var params;
@@ -165,7 +166,7 @@ function resize(indexfun, h) {
 
 function key_index(h, key) {
   if (h.length >= 3) {
-    return Caml_primitive.caml_hash(10, 100, h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
+    return Caml_hash.caml_hash(10, 100, h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
   }
   else {
     return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[/* data */1].length;
@@ -865,7 +866,7 @@ function Make(H) {
         ];
 }
 
-var seeded_hash_param = Caml_primitive.caml_hash
+var seeded_hash_param = Caml_hash.caml_hash
 
 exports.create            = create;
 exports.clear             = clear;
