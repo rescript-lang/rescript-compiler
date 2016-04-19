@@ -53,8 +53,6 @@ js.cmo :
 js.cmx :
 js_error.cmo :
 js_error.cmx :
-queue.cmo :
-queue.cmx :
 typed_array.cmo :
 typed_array.cmx :
 caml_array.cmo : js.cmo caml_array.cmi
@@ -97,7 +95,5 @@ js.cmo :
 js.cmj :
 js_error.cmo :
 js_error.cmj :
-queue.cmo :
-queue.cmj :
 typed_array.cmo :
 typed_array.cmj :
