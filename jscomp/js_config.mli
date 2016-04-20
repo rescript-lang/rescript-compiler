@@ -65,3 +65,4 @@ val unix : string
 val int64 : string
 val md5 : string
 val hash : string
+val weak : string
