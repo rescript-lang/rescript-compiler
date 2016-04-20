@@ -10,6 +10,7 @@ caml_utils
 caml_sys
 caml_io
 caml_float
+caml_block
 caml_lexer
 caml_parser
 caml_primitive
