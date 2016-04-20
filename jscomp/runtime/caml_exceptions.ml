@@ -14,21 +14,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+
+(* Author: Hongbo Zhang *)
+
+(** 
+   Could be exported for better inlining
+   It's common that we have 
+   {[ a = caml_set_oo_id([248,"string",0]) ]}
+   This can be inlined as 
+   {[ a = caml_set_oo_id([248,"tag", caml_oo_last_id++]) ]}
 *)
 
-(* Author: Hongbo Zhang  *)
+let id = ref 0n
 
 
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
+(* see  #251
+   {[
+     CAMLprim value caml_set_oo_id (value obj) {
+       Field(obj, 1) = oo_last_id;
+       oo_last_id += 2;
+       return obj;
+     }
 
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
+   ]}*)
+let caml_set_oo_id (b : Caml_builtin_exceptions.exception_block)  = 
+    Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
+    id := Nativeint.add !id  1n; 
+    b
 
-let create = "create" (* {!Caml_exceptions.create}*)
+let get_id () = 
+  id := Nativeint.add !id 1n; !id
+
+let create (str : string) : Caml_builtin_exceptions.exception_block = 
+  let v = ( str, get_id ()) in 
+  Obj.set_tag (Obj.repr v) 248 (* Obj.object_tag*);
+  v 

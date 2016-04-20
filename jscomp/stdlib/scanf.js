@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
 var Bytes                    = require("./bytes");
 var Pervasives               = require("./pervasives");
+var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Printf                   = require("./printf");
 var Caml_primitive           = require("../runtime/caml_primitive");
@@ -268,12 +269,7 @@ function close_in(ib) {
   }
 }
 
-var Scan_failure = {
-  0: "Scanf.Scan_failure",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Scan_failure = Caml_exceptions.create("Scanf.Scan_failure");
 
 function bad_input_escape(c) {
   var s = Caml_curry.app1(Printf.sprintf(/* Format */[

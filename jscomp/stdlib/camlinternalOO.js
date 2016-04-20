@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Obj                     = require("./obj");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Caml_oo                 = require("../runtime/caml_oo");
 var Sys                     = require("./sys");
 var Caml_primitive          = require("../runtime/caml_primitive");
@@ -14,7 +15,7 @@ var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
 function copy(o) {
-  return Caml_builtin_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
+  return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
 }
 
 var params = /* record */[
@@ -878,7 +879,7 @@ function create_object(table) {
     tag: Obj.object_tag
   };
   obj[0] = table[/* methods */1];
-  return Caml_builtin_exceptions.caml_set_oo_id(obj);
+  return Caml_exceptions.caml_set_oo_id(obj);
 }
 
 function create_object_opt(obj_0, table) {
@@ -891,7 +892,7 @@ function create_object_opt(obj_0, table) {
       tag: Obj.object_tag
     };
     obj[0] = table[/* methods */1];
-    return Caml_builtin_exceptions.caml_set_oo_id(obj);
+    return Caml_exceptions.caml_set_oo_id(obj);
   }
 }
 

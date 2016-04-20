@@ -1,4 +1,4 @@
-type exception_block = int * string * int 
+type exception_block =  string * nativeint
 val out_of_memory : exception_block              
 val sys_error  : exception_block                                
 val failure : exception_block                                  
@@ -12,6 +12,5 @@ val sys_blocked_io : exception_block
 val assert_failure : exception_block                          
 val undefined_recursive_module : exception_block              
 
-val caml_set_oo_id : exception_block -> exception_block
-val get_id : unit -> nativeint
+
  

@@ -14,21 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
 
-let js_array_ctor = "Array"
-let js_type_number = "number"
-let js_type_string = "string"
-let js_type_object = "object" 
-let js_undefined = "undefined"
-let js_prop_length = "length"
+val caml_set_oo_id :
+  Caml_builtin_exceptions.exception_block -> Caml_builtin_exceptions.exception_block
 
-let prim = "prim"
-let param = "param"
-let partial_arg = "partial_arg"
-let tmp = "tmp"
+val get_id : unit -> nativeint
 
-let create = "create" (* {!Caml_exceptions.create}*)
+val create : string -> Caml_builtin_exceptions.exception_block

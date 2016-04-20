@@ -7,6 +7,7 @@ var Caml_obj                 = require("../runtime/caml_obj");
 var Caml_io                  = require("../runtime/caml_io");
 var Caml_float               = require("../runtime/caml_float");
 var Pervasives               = require("./pervasives");
+var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Char                     = require("./char");
 var Sys                      = require("./sys");
@@ -2236,12 +2237,7 @@ function fmtty_of_precision_fmtty(prec, fmtty) {
   }
 }
 
-var Type_mismatch = {
-  0: "CamlinternalFormat.Type_mismatch",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Type_mismatch = Caml_exceptions.create("CamlinternalFormat.Type_mismatch");
 
 function type_padding(pad, fmtty) {
   if (typeof pad === "number") {

@@ -1,16 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj                = require("../runtime/caml_obj");
-var Caml_curry              = require("../runtime/caml_curry");
+var Caml_obj        = require("../runtime/caml_obj");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_curry      = require("../runtime/caml_curry");
 
-var Empty = {
-  0: "Queue.Empty",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Empty = Caml_exceptions.create("Queue.Empty");
 
 function create() {
   return /* record */[

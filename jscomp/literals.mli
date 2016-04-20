@@ -31,3 +31,5 @@ val prim : string
 
 (**temporary varaible used in {!Js_ast_util} *)
 val tmp : string 
+
+val create : string 

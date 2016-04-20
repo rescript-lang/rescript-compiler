@@ -132,6 +132,8 @@ event_ffi.cmo : ../lib/js.cmo ../lib/fn.cmo
 event_ffi.cmx : ../lib/js.cmx ../lib/fn.cmx
 exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmx : mt.cmx
+exception_value_test.cmo :
+exception_value_test.cmx :
 ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmo : ../stdlib/bytes.cmi
@@ -682,6 +684,8 @@ event_ffi.cmo : ../lib/js.cmo ../lib/fn.cmo
 event_ffi.cmj : ../lib/js.cmj ../lib/fn.cmj
 exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmj : mt.cmj
+exception_value_test.cmo :
+exception_value_test.cmj :
 ext_array.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi

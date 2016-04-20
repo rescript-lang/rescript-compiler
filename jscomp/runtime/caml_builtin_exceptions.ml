@@ -18,43 +18,23 @@
 
 (* Author: Hongbo Zhang  *)
 
-type exception_block = int * string * int 
-let out_of_memory = 248, "Out_of_memory", 0
-let sys_error = 248, "Sys_error", -1
-let failure = 248, "Failure", -2
-let invalid_argument = 248, "Invalid_argument", -3
-let end_of_file = 248, "End_of_file",-4
-let division_by_zero = 248, "Division_by_zero", -5
-let not_found = 248, "Not_found", -6
-let match_failure = 248, "Match_failure", -7
-let stack_overflow = 248, "Stack_overflow",-8
-let sys_blocked_io = 248, "Sys_blocked_io", -9
-let assert_failure = 248, "Assert_failure", -10
-let undefined_recursive_module = 248, "Undefined_recursive_module", -11
+type exception_block = string * nativeint 
 
 
+let out_of_memory =  "Out_of_memory", 0n
+let sys_error = "Sys_error", -1n
+let failure =  "Failure", -2n
+let invalid_argument =  "Invalid_argument", -3n
+let end_of_file = "End_of_file",-4n
+let division_by_zero =  "Division_by_zero", -5n
+let not_found = "Not_found", -6n
+let match_failure =  "Match_failure", -7n
+let stack_overflow =  "Stack_overflow",-8n
+let sys_blocked_io =  "Sys_blocked_io", -9n
+let assert_failure =  "Assert_failure", -10n
+let undefined_recursive_module =  "Undefined_recursive_module", -11n
 
-(* Exported for better inlining *)
-(* It's common that we have <code> a = caml_set_oo_id([248,"string",0])</code> *)
-(* This can be inlined as <code> a = caml_set_oo_id([248,"tag", caml_oo_last_id++])</code> *)
- (* @type {number} *)
-
-let id = ref 0n
-
-
-(* see  #251
-   {[
-     CAMLprim value caml_set_oo_id (value obj) {
-       Field(obj, 1) = oo_last_id;
-       oo_last_id += 2;
-       return obj;
-     }
-
-   ]}*)
-let caml_set_oo_id (b : exception_block)  = 
-    Obj.set_field (Obj.repr b) 1 (Obj.repr !id);
-    id := Nativeint.add !id  1n; 
-    b
-
-let get_id () = 
-  id := Nativeint.add !id 1n; !id
+(* TODO: 
+   1. is it necessary to tag [248] here
+   2. is it okay to remove the negative value
+*)
