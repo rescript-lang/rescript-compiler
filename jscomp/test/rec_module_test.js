@@ -26,7 +26,7 @@ function even(n) {
       return /* false */0;
     }
     else {
-      return Caml_curry.app1(B[0], n - 1 | 0);
+      return Caml_curry.app1(B[/* odd */0], n - 1 | 0);
     }
   }
   else {
@@ -41,7 +41,7 @@ function odd(n) {
     return /* true */1;
   }
   else if (n) {
-    return Caml_curry.app1(A[0], n - 1 | 0);
+    return Caml_curry.app1(A[/* even */0], n - 1 | 0);
   }
   else {
     return /* false */0;
@@ -74,7 +74,7 @@ function even$1(n) {
       return /* false */0;
     }
     else {
-      return Caml_curry.app1(BB[0], n - 1 | 0);
+      return Caml_curry.app1(BB[/* odd */0], n - 1 | 0);
     }
   }
   else {
@@ -83,7 +83,7 @@ function even$1(n) {
 }
 
 function x() {
-  return Caml_curry.app1(BB[1], /* () */0) + 3 | 0;
+  return Caml_curry.app1(BB[/* y */1], /* () */0) + 3 | 0;
 }
 
 CamlinternalMod.update_mod([[
@@ -99,7 +99,7 @@ function odd$1(n) {
     return /* true */1;
   }
   else if (n) {
-    return Caml_curry.app1(AA[0], n - 1 | 0);
+    return Caml_curry.app1(AA[/* even */0], n - 1 | 0);
   }
   else {
     return /* false */0;
@@ -220,7 +220,7 @@ function add(x, t) {
     var r = t[2];
     var v = t[1];
     var l = t[0];
-    var c = Caml_curry.app2(AAA[0], x, v);
+    var c = Caml_curry.app2(AAA[/* compare */0], x, v);
     if (c) {
       if (c < 0) {
         return bal(add(x, l), v, r);
@@ -371,7 +371,7 @@ function split(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_curry.app2(AAA[0], x, v);
+    var c = Caml_curry.app2(AAA[/* compare */0], x, v);
     if (c) {
       if (c < 0) {
         var match = split(x, l);
@@ -420,7 +420,7 @@ function mem(x, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var c = Caml_curry.app2(AAA[0], x, param[1]);
+      var c = Caml_curry.app2(AAA[/* compare */0], x, param[1]);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -441,7 +441,7 @@ function remove(x, param) {
     var r = param[2];
     var v = param[1];
     var l = param[0];
-    var c = Caml_curry.app2(AAA[0], x, v);
+    var c = Caml_curry.app2(AAA[/* compare */0], x, v);
     if (c) {
       if (c < 0) {
         return bal(remove(x, l), v, r);
@@ -580,7 +580,7 @@ function compare(s1, s2) {
     var e1 = _e1;
     if (e1) {
       if (e2) {
-        var c = Caml_curry.app2(AAA[0], e1[0], e2[0]);
+        var c = Caml_curry.app2(AAA[/* compare */0], e1[0], e2[0]);
         if (c !== 0) {
           return c;
         }
@@ -619,7 +619,7 @@ function subset(_s1, _s2) {
         var r1 = s1[2];
         var v1 = s1[1];
         var l1 = s1[0];
-        var c = Caml_curry.app2(AAA[0], v1, s2[1]);
+        var c = Caml_curry.app2(AAA[/* compare */0], v1, s2[1]);
         if (c) {
           if (c < 0) {
             if (subset(/* Node */[
@@ -834,7 +834,7 @@ function find(x, _param) {
     var param = _param;
     if (param) {
       var v = param[1];
-      var c = Caml_curry.app2(AAA[0], x, v);
+      var c = Caml_curry.app2(AAA[/* compare */0], x, v);
       if (c) {
         _param = c < 0 ? param[0] : param[2];
         continue ;
@@ -865,7 +865,7 @@ function of_list(l) {
           var x3 = match$2[0];
           if (match$3) {
             if (match$3[1]) {
-              var l$1 = List.sort_uniq(AAA[0], l);
+              var l$1 = List.sort_uniq(AAA[/* compare */0], l);
               var sub = function (n, l) {
                 var exit = 0;
                 if (n > 3 || n < 0) {
@@ -1072,10 +1072,10 @@ var suites_000 = /* tuple */[
               /* false */0
             ],
             1: /* tuple */[
-              Caml_curry.app1(A[0], 2),
-              Caml_curry.app1(AA[0], 4),
-              Caml_curry.app1(B[0], 2),
-              Caml_curry.app1(BB[0], 4)
+              Caml_curry.app1(A[/* even */0], 2),
+              Caml_curry.app1(AA[/* even */0], 4),
+              Caml_curry.app1(B[/* odd */0], 2),
+              Caml_curry.app1(BB[/* odd */0], 4)
             ],
             length: 2,
             tag: 0
@@ -1088,7 +1088,7 @@ var suites_001 = /* :: */[
     "test2",
     function () {
       return /* Eq */{
-              0: Caml_curry.app1(BB[1], /* () */0),
+              0: Caml_curry.app1(BB[/* y */1], /* () */0),
               1: 32,
               length: 2,
               tag: 0
@@ -1100,7 +1100,7 @@ var suites_001 = /* :: */[
       "test3",
       function () {
         return /* Eq */{
-                0: Caml_curry.app1(AA[1], /* () */0),
+                0: Caml_curry.app1(AA[/* x */1], /* () */0),
                 1: 35,
                 length: 2,
                 tag: 0
@@ -1113,7 +1113,7 @@ var suites_001 = /* :: */[
         function () {
           return /* Eq */{
                   0: /* true */1,
-                  1: Caml_curry.app1(A[0], 2),
+                  1: Caml_curry.app1(A[/* even */0], 2),
                   length: 2,
                   tag: 0
                 };
@@ -1125,7 +1125,7 @@ var suites_001 = /* :: */[
           function () {
             return /* Eq */{
                     0: /* true */1,
-                    1: Caml_curry.app1(AA[0], 4),
+                    1: Caml_curry.app1(AA[/* even */0], 4),
                     length: 2,
                     tag: 0
                   };
@@ -1137,7 +1137,7 @@ var suites_001 = /* :: */[
             function () {
               return /* Eq */{
                       0: /* false */0,
-                      1: Caml_curry.app1(B[0], 2),
+                      1: Caml_curry.app1(B[/* odd */0], 2),
                       length: 2,
                       tag: 0
                     };

@@ -9,12 +9,12 @@ var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
 function f(H) {
-  var tbl = Caml_curry.app1(H[0], 17);
-  Caml_curry.app3(H[4], tbl, 1, /* "1" */49);
-  Caml_curry.app3(H[4], tbl, 2, /* "2" */50);
+  var tbl = Caml_curry.app1(H[/* create */0], 17);
+  Caml_curry.app3(H[/* add */4], tbl, 1, /* "1" */49);
+  Caml_curry.app3(H[/* add */4], tbl, 2, /* "2" */50);
   return List.sort(function (param, param$1) {
               return Caml_obj.caml_int_compare(param[0], param$1[0]);
-            }, Caml_curry.app3(H[11], function (k, v, acc) {
+            }, Caml_curry.app3(H[/* fold */11], function (k, v, acc) {
                   return /* :: */[
                           /* tuple */[
                             k,
@@ -27,14 +27,14 @@ function f(H) {
 
 function g(H) {
   return function (count) {
-    var tbl = Caml_curry.app1(H[0], 17);
+    var tbl = Caml_curry.app1(H[/* create */0], 17);
     for(var i = 0; i<= count; ++i){
-      Caml_curry.app3(H[8], tbl, (i << 1), "" + i);
+      Caml_curry.app3(H[/* replace */8], tbl, (i << 1), "" + i);
     }
     for(var i$1 = 0; i$1<= count; ++i$1){
-      Caml_curry.app3(H[8], tbl, (i$1 << 1), "" + i$1);
+      Caml_curry.app3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
     }
-    var v = Caml_curry.app3(H[11], function (k, v, acc) {
+    var v = Caml_curry.app3(H[/* fold */11], function (k, v, acc) {
           return /* :: */[
                   /* tuple */[
                     k,

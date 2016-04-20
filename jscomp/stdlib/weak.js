@@ -292,11 +292,11 @@ function Make(H) {
     };
   };
   var add = function (t, d) {
-    var h = Caml_curry.app1(H[1], d);
+    var h = Caml_curry.app1(H[/* hash */1], d);
     return add_aux(t, Caml_weak.caml_weak_set, /* Some */[d], h, get_index(t, h));
   };
   var find_or = function (t, d, ifnotfound) {
-    var h = Caml_curry.app1(H[1], d);
+    var h = Caml_curry.app1(H[/* hash */1], d);
     var index = get_index(t, h);
     var bucket = t[/* table */0][index];
     var hashes = t[/* hashes */1][index];
@@ -310,7 +310,7 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_weak.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[0], match[0], d)) {
+          if (Caml_curry.app2(H[/* equal */0], match[0], d)) {
             var match$1 = Caml_weak.caml_weak_get(bucket, i);
             if (match$1) {
               return match$1[0];
@@ -352,7 +352,7 @@ function Make(H) {
               });
   };
   var find_shadow = function (t, d, iffound, ifnotfound) {
-    var h = Caml_curry.app1(H[1], d);
+    var h = Caml_curry.app1(H[/* hash */1], d);
     var index = get_index(t, h);
     var bucket = t[/* table */0][index];
     var hashes = t[/* hashes */1][index];
@@ -366,7 +366,7 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_weak.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[0], match[0], d)) {
+          if (Caml_curry.app2(H[/* equal */0], match[0], d)) {
             return Caml_curry.app2(iffound, bucket, i);
           }
           else {
@@ -399,7 +399,7 @@ function Make(H) {
               }, /* false */0);
   };
   var find_all = function (t, d) {
-    var h = Caml_curry.app1(H[1], d);
+    var h = Caml_curry.app1(H[/* hash */1], d);
     var index = get_index(t, h);
     var bucket = t[/* table */0][index];
     var hashes = t[/* hashes */1][index];
@@ -415,7 +415,7 @@ function Make(H) {
       else if (h === hashes[i]) {
         var match = Caml_weak.caml_weak_get_copy(bucket, i);
         if (match) {
-          if (Caml_curry.app2(H[0], match[0], d)) {
+          if (Caml_curry.app2(H[/* equal */0], match[0], d)) {
             var match$1 = Caml_weak.caml_weak_get(bucket, i);
             if (match$1) {
               _accu = /* :: */[

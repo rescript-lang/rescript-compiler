@@ -6,7 +6,7 @@ var Bigarray       = require("../stdlib/bigarray");
 var Caml_primitive = require("../runtime/caml_primitive");
 var Caml_curry     = require("../runtime/caml_curry");
 
-var v = Caml_curry.app3(Bigarray.Array1[0], /* Int32 */6, /* C_layout */0, 20);
+var v = Caml_curry.app3(Bigarray.Array1[/* create */0], /* Int32 */6, /* C_layout */0, 20);
 
 function sum(v) {
   var result = 0;
@@ -16,7 +16,7 @@ function sum(v) {
   return /* () */0;
 }
 
-var vv = Caml_curry.app3(Bigarray.Array1[0], /* Int32 */6, /* Fortran_layout */1, 30);
+var vv = Caml_curry.app3(Bigarray.Array1[/* create */0], /* Int32 */6, /* Fortran_layout */1, 30);
 
 function init(v) {
   for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i<= i_finish; ++i){
