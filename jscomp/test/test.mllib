@@ -136,6 +136,7 @@ stack_test
 test_stack
 complex_while_loop
 hashtbl_test
+int_hashtbl_test
 cont_int_fold_test
 test_incomplete
 test_ramification

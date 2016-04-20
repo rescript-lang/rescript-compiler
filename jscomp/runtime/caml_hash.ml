@@ -108,7 +108,8 @@ let caml_hash count _limit seed obj =
       let obj = Caml_queue.unsafe_pop queue in 
       if Js.typeof obj = "number" then
         begin 
-          hash := mix !hash (Nativeint.of_float (Obj.magic obj));
+          let u = Nativeint.of_float (Obj.magic obj) in
+          hash := mix !hash (u +~ u +~ 1n) ;
           decr num ;
         end
       else if Js.typeof obj = "string" then 
@@ -125,13 +126,23 @@ let caml_hash count _limit seed obj =
       else if Js.typeof obj = "function" then
         () 
       else 
-        let tag = Obj.tag obj in 
-        hash := mix !hash (Nativeint.of_int tag) ;
-        let block = 
-          let v = Obj.size obj - 1 in if v <  !num then v else !num in 
-        for i = 0 to block do
-          Caml_queue.push (Obj.field obj i ) queue
-        done 
+        let size = Js.Caml_obj.size_of_any obj in 
+        match Js.from_def size with (* FIXME: generated code is buggy *)
+        | None -> ()
+        | Some size -> 
+          let obj_tag = Obj.tag obj in
+          let tag = (size lsl 10) lor obj_tag in 
+          if tag = 248 (* Obj.object_tag*) then 
+            hash := mix !hash (Nativeint.of_int (Oo.id (Obj.magic obj)))
+          else 
+            begin 
+              hash := mix !hash (Nativeint.of_int tag) ;
+              let block = 
+                let v = size - 1 in if v <  !num then v else !num in 
+              for i = 0 to block do
+                Caml_queue.push (Obj.field obj i ) queue
+              done 
+            end
     done;
     final_mix !hash 
     

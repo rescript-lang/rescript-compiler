@@ -218,6 +218,10 @@ int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
 int64_test.cmx : ../stdlib/pervasives.cmx ../stdlib/nativeint.cmx mt.cmx \
     ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
     ../stdlib/format.cmx ext_array.cmx ../stdlib/array.cmx
+int_hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
+    ../stdlib/array.cmi
+int_hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
+    ../stdlib/array.cmx
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmx : ../stdlib/map.cmx
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
@@ -764,6 +768,10 @@ int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
 int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
     ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/format.cmj ext_array.cmj ../stdlib/array.cmj
+int_hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
+    ../stdlib/array.cmi
+int_hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
+    ../stdlib/array.cmj
 int_map.cmo : ../stdlib/map.cmi
 int_map.cmj : ../stdlib/map.cmj
 int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \

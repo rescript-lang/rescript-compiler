@@ -58,3 +58,23 @@ let from_pair_suites name (suites :  pair_suites) =
             )
         ) 
     ) 
+(*
+Note that [require] is a file local value, 
+we need type [require]
+
+let is_top : unit -> Js.boolean = [%bs.raw{|
+function (_){
+console.log('hi');
+if (typeof require === "undefined"){
+  return false
+} else {
+  console.log("hey",require.main.filename);
+  return require.main === module;
+}
+}
+|}]
+
+let from_pair_suites_non_top name suites =
+    if not @@ Js.to_bool @@ is_top () then 
+      from_pair_suites name suites
+*)

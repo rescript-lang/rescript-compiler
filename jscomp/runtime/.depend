@@ -15,7 +15,6 @@ caml_queue.cmi :
 caml_string.cmi :
 caml_sys.cmi :
 caml_utils.cmi :
-caml_weak.cmi :
 caml_array.cmo : js.cmo caml_array.cmi
 caml_array.cmx : js.cmx caml_array.cmi
 caml_bigarray.cmo : caml_bigarray.cmi
@@ -54,8 +53,6 @@ caml_sys.cmo : js.cmo caml_sys.cmi
 caml_sys.cmx : js.cmx caml_sys.cmi
 caml_utils.cmo : caml_utils.cmi
 caml_utils.cmx : caml_utils.cmi
-caml_weak.cmo : caml_array.cmi caml_weak.cmi
-caml_weak.cmx : caml_array.cmx caml_weak.cmi
 fn.cmo :
 fn.cmx :
 js.cmo :
@@ -102,8 +99,6 @@ caml_sys.cmo : js.cmo caml_sys.cmi
 caml_sys.cmj : js.cmj caml_sys.cmi
 caml_utils.cmo : caml_utils.cmi
 caml_utils.cmj : caml_utils.cmi
-caml_weak.cmo : caml_array.cmi caml_weak.cmi
-caml_weak.cmj : caml_array.cmj caml_weak.cmi
 fn.cmo :
 fn.cmj :
 js.cmo :

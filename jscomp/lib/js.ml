@@ -33,6 +33,10 @@ external anything_to_string : 'a -> string = "js_anything_to_string"
 external anything_to_number : 'a -> float = "js_anything_to_number"
 
 
+type any = Obj.t 
+
+external erase : 'a -> any = "%identity" 
+external cast : any -> 'a = "%identity" 
 
 type + 'a opt
 
@@ -141,6 +145,8 @@ module Caml_obj = struct
   external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
   external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
   external is_instance_array : Obj.t -> bool = "js_is_instance_array" (* use Array.isArray instead*)
+  external size_of_any : Obj.t -> 'a def = "length" [@@bs.get]
+  external tag_of_any : Obj.t -> 'a def = "tag" [@@bs.get]
 end
 
 module Caml_int64 = struct
@@ -148,3 +154,4 @@ module Caml_int64 = struct
   external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
   external to_hex : int64 -> string = "js_int64_to_hex"    
 end  
+

@@ -63,23 +63,86 @@ function normalize(x) {
   return x & 1073741823;
 }
 
-var param = $$Array.map(function (x) {
-      return Hashtbl.hash(x) & 1073741823;
-    }, test_strings);
+function caml_hash(x) {
+  return Hashtbl.hash(x) & 1073741823;
+}
 
-Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 17, characters 5-12', param, test_strings_hash_results);
+var param = $$Array.map(caml_hash, test_strings);
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 18, characters 5-12', param, test_strings_hash_results);
 
 var param$1 = Hashtbl.hash(0) & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 23, characters 5-12', param$1, 129913994);
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 24, characters 5-12', param$1, 129913994);
 
 var param$2 = Hashtbl.hash("x") & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 26, characters 5-12', param$2, 780510073);
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 27, characters 5-12', param$2, 780510073);
 
 var param$3 = Hashtbl.hash("xy") & 1073741823;
 
-Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 29, characters 5-12', param$3, 194127723);
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 30, characters 5-12', param$3, 194127723);
+
+var param$4 = Hashtbl.hash(/* A */65) & 1073741823;
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 33, characters 5-12', param$4, 381663642);
+
+var param$5 = Hashtbl.hash(/* `A */[
+      65,
+      3
+    ]) & 1073741823;
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 34, characters 5-12', param$5, 294279345);
+
+var param$6 = Hashtbl.hash(/* :: */[
+      /* `A */[
+        65,
+        3
+      ],
+      /* :: */[
+        /* `B */[
+          66,
+          2
+        ],
+        /* :: */[
+          /* `C */[
+            67,
+            3
+          ],
+          /* [] */0
+        ]
+      ]
+    ]) & 1073741823;
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 35, characters 5-12', param$6, 1017654909);
+
+var param$7 = Hashtbl.hash(/* :: */[
+      /* tuple */[
+        /* `A */[
+          65,
+          "3"
+        ],
+        /* `B */[
+          66,
+          "2"
+        ]
+      ],
+      /* :: */[
+        /* tuple */[
+          /* `C */[
+            67,
+            "3"
+          ],
+          /* `D */[
+            68,
+            "4"
+          ]
+        ],
+        /* [] */0
+      ]
+    ]) & 1073741823;
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 36, characters 5-12', param$7, 81986873);
 
 Mt.from_pair_suites("hash_test.ml", suites[0]);
 
@@ -89,4 +152,5 @@ exports.eq                        = eq;
 exports.test_strings              = test_strings;
 exports.test_strings_hash_results = test_strings_hash_results;
 exports.normalize                 = normalize;
+exports.caml_hash                 = caml_hash;
 /* test_strings Not a pure module */
