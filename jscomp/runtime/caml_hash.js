@@ -69,7 +69,8 @@ function caml_hash(count, _, seed, obj) {
     while(queue[/* length */0] !== 0 && num > 0) {
       var obj$1 = Caml_queue.unsafe_pop(queue);
       if (typeof obj$1 === "number") {
-        hash = mix(hash, obj$1 | 0);
+        var u$1 = obj$1 | 0;
+        hash = mix(hash, (u$1 + u$1 | 0) + 1 | 0);
         num = num - 1 | 0;
       }
       else if (typeof obj$1 === "string") {
@@ -83,19 +84,29 @@ function caml_hash(count, _, seed, obj) {
                   Caml_builtin_exceptions.assert_failure,
                   [
                     "caml_hash.ml",
-                    124,
+                    125,
                     8
                   ]
                 ];
           }
           else if (typeof obj$1 !== "function") {
-            var tag = obj$1.tag | 0;
-            hash = mix(hash, tag);
-            var v = obj$1.length - 1 | 0;
-            var block = v < num ? v : num;
-            for(var i = 0; i<= block; ++i){
-              Caml_queue.push(obj$1[i], queue);
+            var size = obj$1.length;
+            if (size) {
+              var obj_tag = obj$1.tag | 0;
+              var tag = (size << 10) | obj_tag;
+              if (tag === 248) {
+                hash = mix(hash, obj$1[1]);
+              }
+              else {
+                hash = mix(hash, tag);
+                var v = size - 1 | 0;
+                var block = v < num ? v : num;
+                for(var i = 0; i<= block; ++i){
+                  Caml_queue.push(obj$1[i], queue);
+                }
+              }
             }
+            
           }
           
         }

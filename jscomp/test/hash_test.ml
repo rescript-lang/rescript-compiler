@@ -13,9 +13,10 @@ let test_strings_hash_results =
     178511779; 585018975; 544388424; 1043872806; 831138595|]
 
 let normalize x = x land 0x3FFFFFFF
+let caml_hash x = Hashtbl.hash x |> normalize
 let () = 
   eq __LOC__ 
-    (test_strings |> Array.map (fun x -> normalize (Hashtbl.hash x)   ))
+    (test_strings |> Array.map caml_hash)
     test_strings_hash_results
 
 
@@ -28,5 +29,12 @@ let () =
 let () =
   eq __LOC__ (Hashtbl.hash "xy" |> normalize) 194127723
 
-let () = 
+let () =
+  eq __LOC__ (caml_hash `A) 381663642;
+  eq __LOC__ (caml_hash (`A 3)) 294279345;
+  eq __LOC__ (caml_hash [`A 3; `B 2 ; `C 3 ]) 1017654909;
+  eq __LOC__ (caml_hash [`A "3", `B "2" ; `C "3", `D "4"]) (81986873)  
+
+
+let () =
   Mt.from_pair_suites __FILE__ !suites
