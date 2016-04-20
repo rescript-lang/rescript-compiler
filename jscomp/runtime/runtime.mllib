@@ -17,6 +17,7 @@ caml_bigarray
 caml_md5
 caml_queue
 caml_hash
+caml_weak
 typed_array
 js
 fn

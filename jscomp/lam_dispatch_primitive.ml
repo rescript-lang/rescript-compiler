@@ -793,7 +793,13 @@ let query (prim : Lam_compile_env.primitive_description)
     -> E.runtime_call Js_config.md5 prim.prim_name args
   | "caml_hash"
     -> E.runtime_call Js_config.hash prim.prim_name args
-
+  | "caml_weak_set"
+  | "caml_weak_create"
+  | "caml_weak_get"
+  | "caml_weak_check"
+  | "caml_weak_blit"
+  | "caml_weak_get_copy"
+    -> E.runtime_call Js_config.weak prim.prim_name args
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"
@@ -804,12 +810,6 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_md5_chan"
 
   | "caml_hash_univ_param"
-  | "caml_weak_set"
-  | "caml_weak_create"
-  | "caml_weak_get"
-  | "caml_weak_check"
-  | "caml_weak_blit"
-  | "caml_weak_get_copy"
   | "caml_sys_close"
 
   | "caml_sys_open"
