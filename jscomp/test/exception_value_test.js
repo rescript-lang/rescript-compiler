@@ -8,21 +8,24 @@ function f() {
 }
 
 function assert_f(x) {
-  if (x > 3) {
-    return 0;
-  }
-  else {
+  if (x <= 3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
           [
             "exception_value_test.ml",
-            7,
-            2
+            9,
+            12
           ]
         ];
   }
+  return 3;
+}
+
+function hh() {
+  throw Caml_builtin_exceptions.not_found;
 }
 
 exports.f        = f;
 exports.assert_f = assert_f;
+exports.hh       = hh;
 /* No side effect */

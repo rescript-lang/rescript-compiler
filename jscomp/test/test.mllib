@@ -248,3 +248,4 @@ mt_global
 event_ffi
 
 hash_test
+exception_value_test

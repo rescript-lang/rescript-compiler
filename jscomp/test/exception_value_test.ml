@@ -6,5 +6,11 @@ let f () =
 
 
 let assert_f x = 
-  assert (x > 3)
+  let ()  = assert (x > 3) in 
+  3 
+
+
+let hh () = 
+  let v = raise Not_found in 
+  v + 3 
  (* TODO: comment for line column number *)
