@@ -235,7 +235,7 @@ function chop_extension(name) {
 
 var prng = {
   0: function () {
-    return Caml_curry.app1(Random.State[1], /* () */0);
+    return Caml_curry.app1(Random.State[/* make_self_init */1], /* () */0);
   },
   length: 1,
   tag: 246
@@ -243,7 +243,7 @@ var prng = {
 
 function temp_file_name(temp_dir, prefix, suffix) {
   var tag = prng.tag | 0;
-  var rnd = Caml_curry.app1(Random.State[3], tag === 250 ? prng[0] : (
+  var rnd = Caml_curry.app1(Random.State[/* bits */3], tag === 250 ? prng[0] : (
           tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
         )) & 16777215;
   return concat(temp_dir, Caml_curry.app3(Printf.sprintf(/* Format */[

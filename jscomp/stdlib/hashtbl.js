@@ -53,7 +53,7 @@ function randomize() {
 
 var prng = {
   0: function () {
-    return Caml_curry.app1(Random.State[1], /* () */0);
+    return Caml_curry.app1(Random.State[/* make_self_init */1], /* () */0);
   },
   length: 1,
   tag: 246
@@ -82,7 +82,7 @@ function create($staropt$star, initial_size) {
   var seed;
   if (random) {
     var tag = prng.tag | 0;
-    seed = Caml_curry.app1(Random.State[3], tag === 250 ? prng[0] : (
+    seed = Caml_curry.app1(Random.State[/* bits */3], tag === 250 ? prng[0] : (
             tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
           ));
   }
@@ -450,7 +450,7 @@ function stats(h) {
 
 function MakeSeeded(H) {
   var key_index = function (h, key) {
-    return Caml_curry.app2(H[1], h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
+    return Caml_curry.app2(H[/* hash */1], h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);
@@ -474,7 +474,7 @@ function MakeSeeded(H) {
       if (param) {
         var next = param[2];
         var k = param[0];
-        if (Caml_curry.app2(H[0], k, key)) {
+        if (Caml_curry.app2(H[/* equal */0], k, key)) {
           h[/* size */0] = h[/* size */0] - 1 | 0;
           return next;
         }
@@ -498,16 +498,16 @@ function MakeSeeded(H) {
     var match = h[/* data */1][key_index(h, key)];
     if (match) {
       var rest1 = match[2];
-      if (Caml_curry.app2(H[0], key, match[0])) {
+      if (Caml_curry.app2(H[/* equal */0], key, match[0])) {
         return match[1];
       }
       else if (rest1) {
         var rest2 = rest1[2];
-        if (Caml_curry.app2(H[0], key, rest1[0])) {
+        if (Caml_curry.app2(H[/* equal */0], key, rest1[0])) {
           return rest1[1];
         }
         else if (rest2) {
-          if (Caml_curry.app2(H[0], key, rest2[0])) {
+          if (Caml_curry.app2(H[/* equal */0], key, rest2[0])) {
             return rest2[1];
           }
           else {
@@ -516,7 +516,7 @@ function MakeSeeded(H) {
             while(true) {
               var param = _param;
               if (param) {
-                if (Caml_curry.app2(H[0], key$1, param[0])) {
+                if (Caml_curry.app2(H[/* equal */0], key$1, param[0])) {
                   return param[1];
                 }
                 else {
@@ -549,7 +549,7 @@ function MakeSeeded(H) {
         var param = _param;
         if (param) {
           var rest = param[2];
-          if (Caml_curry.app2(H[0], param[0], key)) {
+          if (Caml_curry.app2(H[/* equal */0], param[0], key)) {
             return /* :: */[
                     param[1],
                     find_in_bucket(rest)
@@ -573,7 +573,7 @@ function MakeSeeded(H) {
       if (param) {
         var next = param[2];
         var k = param[0];
-        if (Caml_curry.app2(H[0], k, key)) {
+        if (Caml_curry.app2(H[/* equal */0], k, key)) {
           return /* Cons */[
                   key,
                   info,
@@ -623,7 +623,7 @@ function MakeSeeded(H) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app2(H[0], param[0], key)) {
+        if (Caml_curry.app2(H[/* equal */0], param[0], key)) {
           return /* true */1;
         }
         else {
@@ -656,9 +656,9 @@ function MakeSeeded(H) {
 }
 
 function Make(H) {
-  var equal = H[0];
+  var equal = H[/* equal */0];
   var key_index = function (h, key) {
-    return Caml_curry.app1(H[1], key) & (h[/* data */1].length - 1 | 0);
+    return Caml_curry.app1(H[/* hash */1], key) & (h[/* data */1].length - 1 | 0);
   };
   var add = function (h, key, info) {
     var i = key_index(h, key);

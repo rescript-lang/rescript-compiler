@@ -91,7 +91,7 @@ function Make(Ord) {
       var r = t[2];
       var v = t[1];
       var l = t[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(add(x, l), v, r);
@@ -246,7 +246,7 @@ function Make(Ord) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           var match = split(x, l);
@@ -293,7 +293,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(Ord[0], x, param[1]);
+        var c = Caml_curry.app2(Ord[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[2];
           continue ;
@@ -313,7 +313,7 @@ function Make(Ord) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(remove(x, l), v, r);
@@ -433,7 +433,7 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Caml_curry.app2(Ord[0], e1[0], e2[0]);
+          var c = Caml_curry.app2(Ord[/* compare */0], e1[0], e2[0]);
           if (c !== 0) {
             return c;
           }
@@ -473,7 +473,7 @@ function Make(Ord) {
           var r1 = s1[2];
           var v1 = s1[1];
           var l1 = s1[0];
-          var c = Caml_curry.app2(Ord[0], v1, s2[1]);
+          var c = Caml_curry.app2(Ord[/* compare */0], v1, s2[1]);
           if (c) {
             if (c < 0) {
               if (subset(/* Node */[
@@ -678,7 +678,7 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         var v = param[1];
-        var c = Caml_curry.app2(Ord[0], x, v);
+        var c = Caml_curry.app2(Ord[/* compare */0], x, v);
         if (c) {
           _param = c < 0 ? param[0] : param[2];
           continue ;
@@ -831,7 +831,7 @@ function Make(Ord) {
             var x3 = match$2[0];
             if (match$3) {
               if (match$3[1]) {
-                return of_sorted_list(List.sort_uniq(Ord[0], l));
+                return of_sorted_list(List.sort_uniq(Ord[/* compare */0], l));
               }
               else {
                 return add(match$3[0], add(x3, add(x2, add(x1, singleton(x0)))));

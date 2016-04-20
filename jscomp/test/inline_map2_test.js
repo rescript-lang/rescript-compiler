@@ -116,7 +116,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(add(x, data, l), v, d, r);
@@ -149,7 +149,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(Ord[0], x, param[1]);
+        var c = Caml_curry.app2(Ord[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[3];
           continue ;
@@ -168,7 +168,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(Ord[0], x, param[1]);
+        var c = Caml_curry.app2(Ord[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[3];
           continue ;
@@ -250,7 +250,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(remove(x, l), v, d, r);
@@ -456,7 +456,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[0], x, v);
+      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           var match = split(x, l);
@@ -605,7 +605,7 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Caml_curry.app2(Ord[0], e1[0], e2[0]);
+          var c = Caml_curry.app2(Ord[/* compare */0], e1[0], e2[0]);
           if (c !== 0) {
             return c;
           }
@@ -642,7 +642,7 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          if (Caml_curry.app2(Ord[0], e1[0], e2[0])) {
+          if (Caml_curry.app2(Ord[/* compare */0], e1[0], e2[0])) {
             return /* false */0;
           }
           else if (Caml_curry.app2(cmp, e1[1], e2[1])) {
