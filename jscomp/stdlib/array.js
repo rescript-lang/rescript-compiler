@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Caml_array              = require("../runtime/caml_array");
 var Caml_curry              = require("../runtime/caml_curry");
 
@@ -218,12 +219,7 @@ function fold_right(f, a, x) {
   return r;
 }
 
-var Bottom = {
-  0: "Array.Bottom",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Bottom = Caml_exceptions.create("Array.Bottom");
 
 function sort(cmp, a) {
   var maxson = function (l, i) {

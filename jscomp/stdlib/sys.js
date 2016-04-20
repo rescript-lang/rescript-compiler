@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
 var is_js = /* true */1;
 
@@ -28,12 +28,7 @@ function set_signal(sig_num, sig_beh) {
   return sig_beh;
 }
 
-var Break = {
-  0: "Sys.Break",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Break = Caml_exceptions.create("Sys.Break");
 
 function catch_break(on) {
   if (on) {

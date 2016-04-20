@@ -2,30 +2,16 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
 
-var Str = {
-  0: "Extensible_variant_test.Str",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Str = Caml_exceptions.create("Extensible_variant_test.Str");
 
-var Int = {
-  0: "Extensible_variant_test.N.Int",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Int = Caml_exceptions.create("Extensible_variant_test.N.Int");
 
 var N = /* module */[Int];
 
-var Int$1 = {
-  0: "Extensible_variant_test.Int",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Int$1 = Caml_exceptions.create("Extensible_variant_test.Int");
 
 function to_int(x) {
   if (x[0] === Str) {

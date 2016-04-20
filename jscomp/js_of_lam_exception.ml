@@ -39,20 +39,15 @@ let match_exception_def (args : J.expression list) =
       None
   | _ -> None
 
-(* Sync up with [caml_set_oo_id] *)
+(* Sync up with [caml_set_oo_id] 
+   Note if we inline {!Caml_exceptions.create}, 
+   it seems can be useful for optimizations in theory, 
+   in practice, it never happen, since the pattern match 
+   never dig into it internally, so maybe {!Obj.set_tag} 
+   is not necessary at all
+*)
 let make_exception exception_str mutable_flag : J.expression = 
-  { expression_desc = 
-      Caml_block (
-        [exception_str ;
-         E.runtime_call Js_config.builtin_exceptions "get_id" []
-         ],  
-        mutable_flag,
-        (* TODO: combined with `_001` optimization *)
-        E.obj_int_tag_literal (* (Obj.object_tag) *),
-        Blk_na                    
-      );
-    comment = None
-  }
+  E.runtime_call Js_config.exceptions Literals.create [exception_str]
 
 
 
@@ -70,5 +65,5 @@ let caml_set_oo_id args =
          If we can guarantee this code path is never hit, we can do 
          a better job for encoding of exception and extension?
       *)
-      E.runtime_call Js_config.builtin_exceptions "caml_set_oo_id" args 
+      E.runtime_call Js_config.exceptions "caml_set_oo_id" args 
     end

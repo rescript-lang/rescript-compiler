@@ -1,11 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj                = require("../runtime/caml_obj");
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Mt                      = require("./mt");
-var CamlinternalOO          = require("../stdlib/camlinternalOO");
-var Caml_curry              = require("../runtime/caml_curry");
+var Caml_obj        = require("../runtime/caml_obj");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Mt              = require("./mt");
+var CamlinternalOO  = require("../stdlib/camlinternalOO");
+var Caml_curry      = require("../runtime/caml_curry");
 
 var shared = [
   "leq",
@@ -91,7 +91,7 @@ function money2_init($$class) {
   var obj_init = inh[0];
   var repr = inh[1];
   CamlinternalOO.set_method($$class, times, function (self$neg3, k) {
-        var copy = Caml_builtin_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
+        var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
         copy[repr] = k * self$neg3[repr];
         return copy;
       });

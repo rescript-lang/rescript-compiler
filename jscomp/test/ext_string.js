@@ -3,6 +3,7 @@
 
 var Bytes                   = require("../stdlib/bytes");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var Ext_bytes               = require("./ext_bytes");
 var $$String                = require("../stdlib/string");
@@ -214,12 +215,7 @@ function find($staropt$star, sub, s) {
   var start = $staropt$star ? $staropt$star[0] : 0;
   var n = sub.length;
   var i = start;
-  var Exit = {
-    0: "Exit",
-    1: Caml_builtin_exceptions.get_id(),
-    length: 2,
-    tag: 248
-  };
+  var Exit = Caml_exceptions.create("Exit");
   try {
     while((i + n | 0) <= s.length) {
       if (_is_sub(sub, 0, s, i, n)) {
@@ -242,12 +238,7 @@ function find($staropt$star, sub, s) {
 function rfind(sub, s) {
   var n = sub.length;
   var i = s.length - n | 0;
-  var Exit = {
-    0: "Exit",
-    1: Caml_builtin_exceptions.get_id(),
-    length: 2,
-    tag: 248
-  };
+  var Exit = Caml_exceptions.create("Exit");
   try {
     while(i >= 0) {
       if (_is_sub(sub, 0, s, i, n)) {

@@ -1,9 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Bytes                   = require("./bytes");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Caml_format             = require("../runtime/caml_format");
 var Sys                     = require("./sys");
@@ -14,26 +15,11 @@ var $$String                = require("./string");
 var List                    = require("./list");
 var Caml_string             = require("../runtime/caml_string");
 
-var Bad = {
-  0: "Arg.Bad",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Bad = Caml_exceptions.create("Arg.Bad");
 
-var Help = {
-  0: "Arg.Help",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Help = Caml_exceptions.create("Arg.Help");
 
-var Stop = {
-  0: "Arg.Stop",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Stop = Caml_exceptions.create("Arg.Stop");
 
 function assoc3(x, _l) {
   while(true) {

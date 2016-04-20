@@ -1,10 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Bytes                   = require("./bytes");
 var Caml_io                 = require("../runtime/caml_io");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Buffer                  = require("./buffer");
 var Caml_curry              = require("../runtime/caml_curry");
@@ -30,12 +31,7 @@ function add_queue(x, q) {
   }
 }
 
-var Empty_queue = {
-  0: "Format.Empty_queue",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Empty_queue = Caml_exceptions.create("Format.Empty_queue");
 
 function peek_queue(param) {
   var match = param[/* body */1];

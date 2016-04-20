@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions  = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                 = require("../runtime/caml_obj");
 var Caml_io                  = require("../runtime/caml_io");
+var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("../stdlib/camlinternalFormatBasics");
@@ -24,12 +25,7 @@ function invalid_arg(s) {
       ];
 }
 
-var Exit = {
-  0: "Test_per.Exit",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Exit = Caml_exceptions.create("Test_per.Exit");
 
 function min(x, y) {
   if (Caml_obj.caml_lessequal(x, y)) {

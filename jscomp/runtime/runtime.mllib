@@ -5,6 +5,7 @@ caml_oo
 caml_obj
 caml_int64
 caml_builtin_exceptions
+caml_exceptions
 caml_utils
 caml_sys
 caml_io

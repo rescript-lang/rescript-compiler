@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_io                 = require("../runtime/caml_io");
 var Caml_sys                = require("../runtime/caml_sys");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Hashtbl                 = require("./hashtbl");
 var Caml_format             = require("../runtime/caml_format");
@@ -18,12 +19,7 @@ var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
-var Unix_error = {
-  0: "Unix.Unix_error",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Unix_error = Caml_exceptions.create("Unix.Unix_error");
 
 Callback.register_exception("Unix.Unix_error", [
       Unix_error,

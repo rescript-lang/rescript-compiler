@@ -3,6 +3,7 @@
 
 var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
 var CamlinternalOO          = require("../stdlib/camlinternalOO");
 var Caml_curry              = require("../runtime/caml_curry");
@@ -203,7 +204,7 @@ function functional_point_init($$class) {
         },
         move,
         function (self$neg6, d) {
-          var copy = Caml_builtin_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg6));
+          var copy = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg6));
           copy[x] = self$neg6[x] + d | 0;
           return copy;
         }

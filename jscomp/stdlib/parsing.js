@@ -1,27 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj                = require("../runtime/caml_obj");
-var Caml_parser             = require("../runtime/caml_parser");
-var Lexing                  = require("./lexing");
-var Caml_array              = require("../runtime/caml_array");
-var $$Array                 = require("./array");
-var Caml_curry              = require("../runtime/caml_curry");
+var Caml_obj        = require("../runtime/caml_obj");
+var Caml_parser     = require("../runtime/caml_parser");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Lexing          = require("./lexing");
+var Caml_array      = require("../runtime/caml_array");
+var $$Array         = require("./array");
+var Caml_curry      = require("../runtime/caml_curry");
 
-var YYexit = {
-  0: "Parsing.YYexit",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var YYexit = Caml_exceptions.create("Parsing.YYexit");
 
-var Parse_error = {
-  0: "Parsing.Parse_error",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Parse_error = Caml_exceptions.create("Parsing.Parse_error");
 
 var env = /* record */[
   Caml_array.caml_make_vect(100, 0),

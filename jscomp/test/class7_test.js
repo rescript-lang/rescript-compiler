@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_obj                = require("../runtime/caml_obj");
-var Mt                      = require("./mt");
-var CamlinternalOO          = require("../stdlib/camlinternalOO");
-var Caml_curry              = require("../runtime/caml_curry");
-var Oo                      = require("../stdlib/oo");
+var Caml_obj        = require("../runtime/caml_obj");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Mt              = require("./mt");
+var CamlinternalOO  = require("../stdlib/camlinternalOO");
+var Caml_curry      = require("../runtime/caml_curry");
+var Oo              = require("../stdlib/oo");
 
 var shared = ["copy"];
 
@@ -134,7 +134,7 @@ function backup_init($$class) {
   CamlinternalOO.set_methods($$class, /* array */[
         save,
         function (self$neg3) {
-          var copy$1 = Caml_builtin_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
+          var copy$1 = Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg3));
           self$neg3[copy] = /* Some */[(copy$1[copy] = /* None */0, copy$1)];
           return /* () */0;
         },
@@ -257,7 +257,7 @@ function backup2_init($$class) {
   CamlinternalOO.set_methods($$class, /* array */[
         save,
         function (self$neg5) {
-          self$neg5[copy] = /* Some */[Caml_builtin_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg5))];
+          self$neg5[copy] = /* Some */[Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(self$neg5))];
           return /* () */0;
         },
         restore,

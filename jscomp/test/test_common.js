@@ -1,21 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
-var U = {
-  0: "Test_common.U",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var U = Caml_exceptions.create("Test_common.U");
 
-var H = {
-  0: "Test_common.H",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var H = Caml_exceptions.create("Test_common.H");
 
 exports.U = U;
 exports.H = H;

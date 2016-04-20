@@ -2,13 +2,9 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 
-var Scan_failure = {
-  0: "Test_static_catch_ident.Scan_failure",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Scan_failure = Caml_exceptions.create("Test_static_catch_ident.Scan_failure");
 
 function scanf_bad_input(_, x) {
   var exit = 0;

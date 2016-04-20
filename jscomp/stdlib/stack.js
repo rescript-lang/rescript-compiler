@@ -1,15 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var List                    = require("./list");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var List            = require("./list");
 
-var Empty = {
-  0: "Stack.Empty",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Empty = Caml_exceptions.create("Stack.Empty");
 
 function create() {
   return /* record */[/* [] */0];

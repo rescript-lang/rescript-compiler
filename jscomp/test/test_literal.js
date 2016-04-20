@@ -1,14 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
-var Custom_inline = {
-  0: "Test_literal.Custom_inline",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Custom_inline = Caml_exceptions.create("Test_literal.Custom_inline");
 
 var v = [
   Custom_inline,

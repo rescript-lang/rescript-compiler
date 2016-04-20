@@ -37,7 +37,7 @@ val stdlib_set : String_set.t
 val prim : string 
 
 val builtin_exceptions : string
-
+val exceptions : string
 val io : string
 
 val oo : string

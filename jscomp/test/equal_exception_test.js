@@ -3,6 +3,7 @@
 
 var Bytes                   = require("../stdlib/bytes");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
 
 var v = "gso";
@@ -70,12 +71,7 @@ function is_exception() {
 }
 
 function is_normal_exception() {
-  var A = {
-    0: "A",
-    1: Caml_builtin_exceptions.get_id(),
-    length: 2,
-    tag: 248
-  };
+  var A = Caml_exceptions.create("A");
   var v = [
     A,
     3
@@ -99,12 +95,7 @@ function is_normal_exception() {
 }
 
 function is_arbitrary_exception() {
-  var A = {
-    0: "A",
-    1: Caml_builtin_exceptions.get_id(),
-    length: 2,
-    tag: 248
-  };
+  var A = Caml_exceptions.create("A");
   try {
     throw A;
   }

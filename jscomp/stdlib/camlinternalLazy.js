@@ -1,16 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Obj                     = require("./obj");
-var Caml_curry              = require("../runtime/caml_curry");
+var Obj             = require("./obj");
+var Caml_exceptions = require("../runtime/caml_exceptions");
+var Caml_curry      = require("../runtime/caml_curry");
 
-var Undefined = {
-  0: "CamlinternalLazy.Undefined",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Undefined = Caml_exceptions.create("CamlinternalLazy.Undefined");
 
 function raise_undefined() {
   throw Undefined;

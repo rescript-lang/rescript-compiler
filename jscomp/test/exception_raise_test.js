@@ -2,44 +2,20 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
 var Caml_curry              = require("../runtime/caml_curry");
 
-var Local = {
-  0: "Exception_raise_test.Local",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Local = Caml_exceptions.create("Exception_raise_test.Local");
 
-var B = {
-  0: "Exception_raise_test.B",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var B = Caml_exceptions.create("Exception_raise_test.B");
 
-var C = {
-  0: "Exception_raise_test.C",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var C = Caml_exceptions.create("Exception_raise_test.C");
 
-var D = {
-  0: "Exception_raise_test.D",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var D = Caml_exceptions.create("Exception_raise_test.D");
 
 function appf(g, x) {
-  var A = {
-    0: "A",
-    1: Caml_builtin_exceptions.get_id(),
-    length: 2,
-    tag: 248
-  };
+  var A = Caml_exceptions.create("A");
   try {
     return Caml_curry.app1(g, x);
   }
@@ -93,12 +69,7 @@ function appf(g, x) {
   }
 }
 
-var A = {
-  0: "Exception_raise_test.A",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var A = Caml_exceptions.create("Exception_raise_test.A");
 
 var f;
 

@@ -1,14 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
-var A = {
-  0: "Local_exception_test.A",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var A = Caml_exceptions.create("Local_exception_test.A");
 
 var v = [
   A,
@@ -16,31 +11,16 @@ var v = [
   /* true */1
 ];
 
-var B = {
-  0: "Local_exception_test.B",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var B = Caml_exceptions.create("Local_exception_test.B");
 
-var D = {
-  0: "Local_exception_test.D",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var D = Caml_exceptions.create("Local_exception_test.D");
 
 var d = [
   D,
   3
 ];
 
-var A$1 = {
-  0: "Local_exception_test.A",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var A$1 = Caml_exceptions.create("Local_exception_test.A");
 
 var x = [
   A$1,

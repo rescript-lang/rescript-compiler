@@ -1,31 +1,17 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
+var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("../stdlib/pervasives");
 var Caml_curry              = require("../runtime/caml_curry");
 
-var Bad = {
-  0: "Test_seq.Bad",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Bad = Caml_exceptions.create("Test_seq.Bad");
 
-var Help = {
-  0: "Test_seq.Help",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Help = Caml_exceptions.create("Test_seq.Help");
 
-var Stop = {
-  0: "Test_seq.Stop",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Stop = Caml_exceptions.create("Test_seq.Stop");
 
 function assoc3(x, _l) {
   while(true) {

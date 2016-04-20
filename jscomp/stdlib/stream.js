@@ -3,23 +3,14 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("./list");
 
-var Failure = {
-  0: "Stream.Failure",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Failure = Caml_exceptions.create("Stream.Failure");
 
-var $$Error = {
-  0: "Stream.Error",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var $$Error = Caml_exceptions.create("Stream.Error");
 
 function fill_buff(b) {
   b[/* len */2] = Pervasives.input(b[/* ic */0], b[/* buff */1], 0, b[/* buff */1].length);

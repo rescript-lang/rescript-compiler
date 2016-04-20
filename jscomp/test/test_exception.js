@@ -2,14 +2,10 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Test_common             = require("./test_common");
 
-var Local = {
-  0: "Test_exception.Local",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Local = Caml_exceptions.create("Test_exception.Local");
 
 function f() {
   throw [

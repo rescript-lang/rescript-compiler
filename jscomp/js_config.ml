@@ -146,7 +146,7 @@ let runtime_set = String_set.of_list [
 let prim = "Caml_primitive" 
 
 let builtin_exceptions = "Caml_builtin_exceptions"
-
+let exceptions = "Caml_exceptions"
 
 let io = "Caml_io"
 

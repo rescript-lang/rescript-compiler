@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Caml_exceptions = require("../runtime/caml_exceptions");
 
 function insert(queue, prio, elt) {
   if (queue) {
@@ -36,12 +36,7 @@ function insert(queue, prio, elt) {
   }
 }
 
-var Queue_is_empty = {
-  0: "Pq_test.PrioQueue.Queue_is_empty",
-  1: Caml_builtin_exceptions.get_id(),
-  length: 2,
-  tag: 248
-};
+var Queue_is_empty = Caml_exceptions.create("Pq_test.PrioQueue.Queue_is_empty");
 
 function remove_top(param) {
   if (param) {
