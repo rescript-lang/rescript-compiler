@@ -18,4 +18,4 @@
 
 (* Author: Hongbo Zhang  *)
 
-val dump : J.program -> J.program 
+val dump : string  -> J.program -> J.program 

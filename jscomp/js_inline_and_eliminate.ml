@@ -32,11 +32,19 @@ module S = Js_stmt_make
 module E = Js_exp_make
 
 
+(** Update ident info use cases, it is a non pure function, 
+    it will annotate [program] with some meta data
+    TODO: Ident Hashtbl could be improved, 
+    since in this case it can not be global?  
+
+ *)
 let count_collects () = 
   object (self)
     inherit Js_fold.fold as super
+    (* collect used status*)
     val stats : (Ident.t , int ref ) Hashtbl.t = Hashtbl.create 83
-    val defined_idents = Hashtbl.create 83
+    (* collect all def sites *)
+    val defined_idents : (Ident.t, J.variable_declaration) Hashtbl.t = Hashtbl.create 83
 
     val mutable export_set  : Ident_set.t = Ident_set.empty
     val mutable name : string = ""
@@ -52,7 +60,6 @@ let count_collects () =
     method! variable_declaration 
         ({ident; value ; property  ; ident_info }  as v)
       =  
-      begin
         Hashtbl.add defined_idents ident v; 
         match value with 
         | None
@@ -60,28 +67,25 @@ let count_collects () =
           self
         | Some x
           -> self#expression x 
-      end
     method! ident id = self#add_use id; self
     method get_stats = 
       Hashtbl.iter (fun ident (v : J.variable_declaration) -> 
           if Ident_set.mem ident export_set then 
             Js_op_util.update_used_stats v.ident_info Exported
           else 
-          begin match Hashtbl.find stats ident with 
-            | exception Not_found -> 
-              let pure = 
-                match v.value  with 
-                | None -> false  (* can not happen *)
-                | Some x -> Js_analyzer.no_side_effect_expression x  in
-              Js_op_util.update_used_stats v.ident_info (if pure then Dead_pure else Dead_non_pure)
-            | num -> 
-              if !num = 1 then 
-                let pure = 
-                  match v.value  with 
-                  | None -> false  (* can not happen *)
-                  | Some x -> Js_analyzer.no_side_effect_expression x  in
-                Js_op_util.update_used_stats v.ident_info (if pure then Once_pure else Used) 
-          end
+            let pure = 
+              match v.value  with 
+              | None -> false  (* can not happen *)
+              | Some x -> Js_analyzer.no_side_effect_expression x  
+            in
+            match Hashtbl.find stats ident with 
+              | exception Not_found -> 
+                Js_op_util.update_used_stats v.ident_info 
+                  (if pure then Dead_pure else Dead_non_pure)
+              | num -> 
+                if !num = 1 then 
+                  Js_op_util.update_used_stats v.ident_info 
+                    (if pure then Once_pure else Used) 
         ) defined_idents; defined_idents
   end
 
@@ -98,9 +102,11 @@ let get_stats program
     case is substituted
     we already have this? in [defined_idents]
 *)
-(* There is a side effect when traversing dead code, since 
+
+(** There is a side effect when traversing dead code, since 
    we assume that substitue a node would mark a node as dead node,
-   so if we traverse a dead node, this would get a wrong result.
+  
+    so if we traverse a dead node, this would get a wrong result.
    it does happen in such scenario
    {[
      let generic_basename is_dir_sep current_dir_name name =
@@ -128,15 +134,29 @@ let subst name export_set stats  =
     method! statement st = 
       match st with 
       | {statement_desc =
-           Variable ({value = _ ;
-                      ident_info = {used_stats = Dead_pure}
-                     }) ; comment = _}
+           Variable 
+             {value = _ ;
+              ident_info = {used_stats = Dead_pure}
+             } 
+        ; comment = _}
         ->
         S.block []
-      | {statement_desc = Variable { ident_info = {used_stats = Dead_non_pure} ; value = Some v  ; _ } 
+      | {statement_desc = 
+           Variable { ident_info = {used_stats = Dead_non_pure} ;
+                      value = Some v  ; _ } 
         ; _}
         -> S.exp v
       | _ -> super#statement st 
+    method! variable_declaration 
+        ({ident; value ; property  ; ident_info }  as v)
+      =  
+      (* TODO: replacement is a bit shaky, the problem is the lambda we stored is
+         not consistent after we did some subsititution, and the dead code removal
+         does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
+      *)
+      let v = super # variable_declaration v in
+      Hashtbl.add stats ident v; (* see #278 before changes *)
+      v
     method! block bs = 
       match bs with
       | ({statement_desc = 
@@ -158,8 +178,11 @@ let subst name export_set stats  =
           end
 
       | {statement_desc = 
-           Return {return_value = {expression_desc = Call({expression_desc = Var (Id id)},args,_info)}} } as st 
-        :: rest 
+           Return {return_value = 
+                     {expression_desc = 
+                        Call({expression_desc = Var (Id id)},args,_info)}} }
+        as st 
+           :: rest 
         -> 
         begin match Hashtbl.find stats id with 
           | exception Not_found 
@@ -172,17 +195,19 @@ let subst name export_set stats  =
             } as v
             when Ext_list.same_length params args 
             -> 
-            begin
-              (* Ext_log.iwarn false __LOC__ "%s is dead ----- \n" id.name ; *)
-              Js_op_util.update_used_stats v.ident_info Dead_pure;
-              let block  = 
-                List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
-                  params args  ( self#block block) in
-              (* Mark a function as dead means it will never be scanned, 
-                 here we inline the function
-              *)
-              block @ self#block rest
-            end
+            (* Ext_log.dwarn  __LOC__ "%s is dead \n %s " id.name  *)
+            (*   (Js_dump.string_of_block [st]); *)
+            Js_op_util.update_used_stats v.ident_info Dead_pure;
+            let block  = 
+              List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
+                params args  ( self#block block) (* see #278 before changes*)
+                                
+            in
+            (* Mark a function as dead means it will never be scanned, 
+               here we inline the function
+            *)
+            block @ self#block rest
+
           | _ ->
             self#statement st :: self#block rest
         end
@@ -190,7 +215,8 @@ let subst name export_set stats  =
         ->
         self#statement x :: self#block xs
       | [] 
-        -> []
+        -> 
+        []
 
   end
 

@@ -360,14 +360,16 @@ let compile  ~filename non_export env _sigs lam   =
               body 
           in
           js 
-          |> _j
+          |> _j "initial"
           |> Js_pass_flatten.program
-          |> _j
+          |> _j "flattern"
           |> Js_inline_and_eliminate.inline_and_shake
-
+          |> _j "inline_and_shake"
           |> Js_pass_flatten_and_mark_dead.program
+          |> _j "flatten_and_mark_dead"
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
           |> Js_shake.shake_program
+          |> _j "shake"
           |> ( fun (js:  J.program) -> 
             let external_module_ids = 
               Lam_compile_env.get_requried_modules  

@@ -1306,7 +1306,14 @@ function scan_caml_string(width, ib) {
               return find_stop(scan_backslash_char(width$1, ib));
             }
             else {
-              return skip_newline(ignore_char(width$1, ib));
+              var width$2 = ignore_char(width$1, ib);
+              var match$1 = check_next_char("a String", width$2, ib);
+              if (match$1 !== 10) {
+                return find_stop(store_char(width$2, ib, /* "\r" */13));
+              }
+              else {
+                return skip_spaces(ignore_char(width$2, ib));
+              }
             }
           }
           else {

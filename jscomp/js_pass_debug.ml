@@ -20,7 +20,7 @@
 
 let log_counter = ref 0 
 
-let dump  (prog : J.program) = 
+let dump name (prog : J.program) = 
   begin
     let () = 
       if Js_config.get_env () <> Browser 
@@ -31,7 +31,7 @@ let dump  (prog : J.program) =
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
             (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_file()) ^
-             (Printf.sprintf ".%02d.jsx" !log_counter)
+             (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in
     prog    
