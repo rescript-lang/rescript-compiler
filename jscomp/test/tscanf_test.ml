@@ -21,7 +21,7 @@ let test_id = ref 0
 let eq f (a,b) = Mt_global.collect_eq test_id suites f a b 
 
 open Testing;;
-let test b = eq "" (b, true)
+let test loc b = eq loc (b, true)
 
 
 open Scanf;;
@@ -39,7 +39,7 @@ let test0 () =
   (sscanf "\n\t 6" " %d" id)
 ;;
 
-test (test0 () = 21)
+test __LOC__ (test0 () = 21)
 ;;
 
 (* Testing integer scanning %i and %d. *)
@@ -51,7 +51,7 @@ let test1 () =
   sscanf " 2a " " %da" id
 ;;
 
-test (test1 () = 5)
+test __LOC__ (test1 () = 5)
 ;;
 
 let test2 () =
@@ -60,7 +60,7 @@ let test2 () =
   sscanf " 2a " " %1da" id
 ;;
 
-test (test2 () = 259)
+test __LOC__ (test2 () = 259)
 ;;
 
 let test3 () =
@@ -70,7 +70,7 @@ let test3 () =
   sscanf " 2a " " %1da" id
 ;;
 
-test (test3 () = -214)
+test __LOC__ (test3 () = -214)
 ;;
 
 (* Testing float scanning. *)
@@ -107,7 +107,7 @@ let test4 () =
   bscanf (Scanning.from_string "-000.113")
     "%15f" (fun b0 -> b0 = -0.113)
 ;;
-test (test4 ())
+test __LOC__ (test4 ())
 ;;
 
 (* e style. *)
@@ -130,7 +130,7 @@ let test5 () =
      b1 = 1.0 && b2 = 1.1 && b3 = 0.0 && b4 = 0.13)
 ;;
 
-test (test5 ())
+test __LOC__ (test5 ())
 ;;
 
 (* Testing boolean scanning. *)
@@ -147,7 +147,7 @@ let test6 () =
          (fun b1 b2 -> (b1, b2) = (true, false))
 ;;
 
-test (test6 ())
+test __LOC__ (test6 ())
 ;;
 
 (* Testing char scanning. *)
@@ -165,7 +165,7 @@ let test7 () =
        c1 = 'a' && c2 = '\000' && c3 = 'b')
 ;;
 
-test (test7 ())
+test __LOC__ (test7 ())
 ;;
 
 let verify_read c =
@@ -180,7 +180,7 @@ let verify_scan_Chars () =
 
 let test8 () = verify_scan_Chars () = ();;
 
-test (test8 ())
+test __LOC__ (test8 ())
 ;;
 
 (* Testing string scanning. *)
@@ -227,7 +227,7 @@ let test9 () =
                   "\ "
 ;;
 
-test (test9 ())
+test __LOC__ (test9 ())
 ;;
 
 let test10 () =
@@ -251,7 +251,7 @@ let test10 () =
   true
 ;;
 
-test (test10 ())
+test __LOC__ (test10 ())
 ;;
 
 (* %[] style *)
@@ -290,7 +290,7 @@ let test110 () =
 
 let test111 () = sscanf "" "%[^\n]@\n" (fun x -> x = "");;
 
-test (test11 () && test110 () && test111 ())
+test __LOC__ (test11 () && test110 () && test111 ())
 ;;
 
 (* Scanning lists. *)
@@ -308,7 +308,7 @@ let f ib =
 
 let test12 () = f (ib ()) = [1; 2; 3; 4];;
 
-test (test12 ())
+test __LOC__ (test12 ())
 ;;
 
 (* A general list scanner that always fails to succeed. *)
@@ -321,7 +321,7 @@ let g ib = bscanf ib "[ " (); List.rev (scan_elems ib []);;
 
 let test13 () = g (ib ()) = [1; 2; 3; 4];;
 
-test (test13 ())
+test __LOC__ (test13 ())
 ;;
 
 (* A general int list scanner. *)
@@ -334,7 +334,7 @@ let rec scan_int_list ib =
 
 let test14 () = scan_int_list (ib ()) = [1; 2; 3; 4];;
 
-test (test14 ())
+test __LOC__ (test14 ())
 ;;
 
 (* A general list scanner that always succeeds. *)
@@ -354,7 +354,7 @@ let rec scan_int_list ib =
 let test15 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1; 2; 3; 4];;
 
-test (test15 ())
+test __LOC__ (test15 ())
 ;;
 
 let rec scan_elems ib accu =
@@ -380,7 +380,7 @@ let test16 () =
   (* Should fail but succeeds! *)
   scan_int_list (Scanning.from_string "[1;2;3;4") = List.rev [1;2;3;4];;
 
-test (test16 ())
+test __LOC__ (test16 ())
 ;;
 
 let rec scan_elems ib accu =
@@ -403,7 +403,7 @@ let test17 () =
   (* Should fail but succeeds! *)
   scan_int_list (Scanning.from_string "[1;2;3;4 5]") = [1;2;3;4];;
 
-test (test17 ())
+test __LOC__ (test17 ())
 ;;
 
 let rec scan_elems ib accu =
@@ -443,7 +443,7 @@ let test18 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1;2;3;4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4; ]") = [1;2;3;4];;
 
-test (test18 ())
+test __LOC__ (test18 ())
 ;;
 
 (* Those properly fail *)
@@ -503,7 +503,7 @@ let test22 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1;2;3;4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4;]") = [1;2;3;4];;
 
-test (test22 ())
+test __LOC__ (test22 ())
 ;;
 
 (* Should work but does not with this version of scan_int_list!
@@ -559,7 +559,7 @@ let test23 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1;2;3;4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4;]") = [1;2;3;4];;
 
-test (test23 ())
+test __LOC__ (test23 ())
 ;;
 
 let test24 () =
@@ -606,7 +606,7 @@ let test28 () =
     (Scanning.from_string "[\"Le\";\"langage\";\"Objective\";\"Caml\"; ]") =
     ["Le"; "langage"; "Objective"; "Caml"];;
 
-test (test28 ())
+test __LOC__ (test28 ())
 ;;
 
 (* The general HO list scanner with continuations. *)
@@ -636,7 +636,7 @@ let test29 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1;2;3;4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4;]") = [1;2;3;4];;
 
-test (test29 ())
+test __LOC__ (test29 ())
 ;;
 
 let scan_string_elem ib f ek = kscanf ib ek " %S %1[;]" f;;
@@ -653,7 +653,7 @@ let test30 () =
     (Scanning.from_string "[\"1\"; \"2\"; \"3\"; \"4\";]") =
     ["1"; "2"; "3"; "4"];;
 
-test (test30 ())
+test __LOC__ (test30 ())
 ;;
 
 (* A generic polymorphic item scanner, *)
@@ -711,7 +711,7 @@ let test31 () =
   scan_int_list (Scanning.from_string "[1;2;3;4]") = [1;2;3;4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4;]") = [1;2;3;4];;
 
-test (test31 ())
+test __LOC__ (test31 ())
 ;;
 
 let test32 () =
@@ -725,7 +725,7 @@ let test32 () =
     (Scanning.from_string "[\"1\"; \"2\"; \"3\"; \"4\";]") =
     ["1"; "2"; "3"; "4"];;
 
-test (test32 ())
+test __LOC__ (test32 ())
 ;;
 
 (* Using [kscanf] only.
@@ -770,7 +770,7 @@ let test33 () =
   scan_int_list (Scanning.from_string "[ 1; 2; 3; 4 ]") = [1; 2; 3; 4] &&
   scan_int_list (Scanning.from_string "[1;2;3;4;]") = [1; 2; 3; 4];;
 
-test (test33 ())
+test __LOC__ (test33 ())
 ;;
 
 let test34 () =
@@ -784,7 +784,7 @@ let test34 () =
     (Scanning.from_string "[\"1\"; \"2\"; \"3\"; \"4\";]") =
     ["1"; "2"; "3"; "4"];;
 
-test (test34 ())
+test __LOC__ (test34 ())
 ;;
 
 (* Using kscanf only.
@@ -937,7 +937,7 @@ let test35 () =
   sscanf " " "%N%s%N" (fun x s y -> x, s, y) = (0, "", 1)
 ;;
 
-test (test340 () && test35 ())
+test __LOC__ (test340 () && test35 ())
 ;;
 
 (* The prefered reader functionnals. *)
@@ -992,7 +992,7 @@ let test36 () =
   sscanf " " "%n%s%n" (fun x s y -> x, s, y) = (0, "", 0)
 ;;
 
-test (test36 ())
+test __LOC__ (test36 ())
 ;;
 
 (* Weird tests to empty strings or formats. *)
@@ -1002,7 +1002,7 @@ let test37 () =
   sscanf "123" "" (fun x -> x) 1 = 1
 ;;
 
-test (test37 ())
+test __LOC__ (test37 ())
 ;;
 
 (* Testing end of input condition. *)
@@ -1017,7 +1017,7 @@ let test38 () =
   sscanf "" " %!%!" true
 ;;
 
-test (test38 ())
+test __LOC__ (test38 ())
 ;;
 
 (* Weird tests on empty buffers. *)
@@ -1033,7 +1033,7 @@ let test39 () =
   is_empty_buff ib
 ;;
 
-test (test39 ())
+test __LOC__ (test39 ())
 ;;
 
 (* Testing ranges. *)
@@ -1043,7 +1043,7 @@ let test40 () =
  bscanf ib "%[^ab]%s%!" (fun s1 s2 -> s1 = "c" && s2 = "ba")
 ;;
 
-test (test40 ())
+test __LOC__ (test40 ())
 ;;
 
 let test41 () =
@@ -1052,7 +1052,7 @@ let test41 () =
  bscanf ib "%[^abc]%[cba]%!" (fun s1 s2 -> s1 = "" && s2 = "cba")
 ;;
 
-test (test41 ())
+test __LOC__ (test41 ())
 ;;
 
 let test42 () =
@@ -1064,7 +1064,7 @@ let test42 () =
  bscanf ib "%s@\t" (fun s -> s = "defcbaaghi")
 ;;
 
-test (test42 ())
+test __LOC__ (test42 ())
 ;;
 
 (* Testing end of file condition (bug found). *)
@@ -1087,7 +1087,7 @@ let test45 () =
    s1 = "12" && s2 = "2" && s3 = "")
 ;;
 
-test (test45 ())
+test __LOC__ (test45 ())
 ;;
 
 (* Testing printing of meta formats. *)
@@ -1101,9 +1101,9 @@ let test46, test47 =
        1 "spells one %s" "in english")
 ;;
 
-test (test46 () = "1 spells one, in english.")
+test __LOC__ (test46 () = "1 spells one, in english.")
 ;;
-test (test47 () = "1 %s, in english.")
+test __LOC__ (test47 () = "1 %s, in english.")
 ;;
 
 (* Testing scanning of meta formats. *)
@@ -1154,7 +1154,7 @@ let test48 () =
   j "with \" : %4x %_s %s\" : 987654321 yens" = (39030, "yens")
 ;;
 
-test (test48 ())
+test __LOC__ (test48 ())
 ;;
 
 (* Testing stoppers after ranges. *)
@@ -1173,7 +1173,7 @@ let test49 () =
   sscanf "-asb" "-%[a]@s%s" (fun s t -> s = "a" && t = "b")
 ;;
 
-test (test49 ())
+test __LOC__ (test49 ())
 ;;
 
 (* Testing buffers defined via functions
@@ -1225,7 +1225,7 @@ let go () =
 
 let test50 () = go () = 100;;
 
-test (test50 ())
+test __LOC__ (test50 ())
 ;;
 
 (* Simple tests may also fail!
@@ -1245,7 +1245,7 @@ let test51 () =
    s1 = "Hello " && s2 = "")
 ;;
 
-test (test51 ())
+test __LOC__ (test51 ())
 ;;
 
 (* Tests that indeed the [%s@c] format works properly.
@@ -1283,7 +1283,7 @@ sscanf "Hello \n" "%s%s%_1[ ]\n" (fun s1 s2 ->
    s1 = "Hello" && s2 = "foo]")
 ;;
 
-test (test52 ())
+test __LOC__ (test52 ())
 ;;
 
 (* Reading native, int32 and int64 numbers. *)
@@ -1298,7 +1298,7 @@ let test53 () =
  sscanf "124" "%Ld" (fun i -> Int64.pred i = 123L)
 ;;
 
-test (test53 ())
+test __LOC__ (test53 ())
 ;;
 
 
@@ -1313,7 +1313,7 @@ let test56 () =
    g "-20 degrees Celsius" = (-20, 3)
 ;;
 
-test (test56 ())
+test __LOC__ (test56 ())
 ;;
 
 (* The contents of the tscanf testbed case file. *)
@@ -1354,7 +1354,7 @@ let test57 () =
     (fun i f s -> i = 12 && f = "%i" && s = "89")
 ;;
 
-test (test57 ())
+test __LOC__ (test57 ())
 ;;
 
 let test58 () =
@@ -1364,16 +1364,16 @@ let test58 () =
   && sscanf "string1@%string2" "%[a-z0-9]%@%%%s" (^) = "string1string2"
 ;;
 
-test (test58 ())
+test __LOC__ (test58 ())
 ;;
 
 (* skip test number "59" which is commented below *)
-let () = test (true);;
+let () = test __LOC__ (true);;
 (*
 let test59 () =
 ;;
 
-test (test59 ())
+test __LOC__ (test59 ())
 ;;
 *)
 
@@ -1411,7 +1411,7 @@ let test60 () =
   sscanf "abc" "%1s%s" (fun s1 s2 -> s1 = "a" && s2 = "bc")
 ;;
 
-test (test60 ());;
+test __LOC__ (test60 ());;
 
 let () =
   Mt.from_pair_suites __FILE__ !suites;;

@@ -155,7 +155,7 @@ let subst name export_set stats  =
          does rely on this (otherwise, when you do beta-reduction you have to regenerate names)
       *)
       let v = super # variable_declaration v in
-      Hashtbl.add stats ident v;
+      Hashtbl.add stats ident v; (* see #278 before changes *)
       v
     method! block bs = 
       match bs with
@@ -200,7 +200,9 @@ let subst name export_set stats  =
             Js_op_util.update_used_stats v.ident_info Dead_pure;
             let block  = 
               List.fold_right2 (fun param arg acc ->  S.define ~kind:Variable param arg :: acc)
-                params args  ( self#block block) in
+                params args  ( self#block block) (* see #278 before changes*)
+                                
+            in
             (* Mark a function as dead means it will never be scanned, 
                here we inline the function
             *)

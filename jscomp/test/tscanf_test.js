@@ -26,8 +26,8 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-function test(b) {
-  return eq("", /* tuple */[
+function test(loc, b) {
+  return eq(loc, /* tuple */[
               b,
               /* true */1
             ]);
@@ -91,7 +91,7 @@ function test0() {
                 ]), id) | 0;
 }
 
-test(+(test0(/* () */0) === 21));
+test('File "tscanf_test.ml", line 42, characters 5-12', +(test0(/* () */0) === 21));
 
 function test1() {
   return (((Caml_curry.app1(Scanf.sscanf("1", /* Format */[
@@ -172,7 +172,7 @@ function test1() {
                 ]), id) | 0;
 }
 
-test(+(test1(/* () */0) === 5));
+test('File "tscanf_test.ml", line 54, characters 5-12', +(test1(/* () */0) === 5));
 
 function test2() {
   return (Caml_curry.app1(Scanf.sscanf("123", /* Format */[
@@ -228,7 +228,7 @@ function test2() {
                 ]), id) | 0;
 }
 
-test(+(test2(/* () */0) === 259));
+test('File "tscanf_test.ml", line 63, characters 5-12', +(test2(/* () */0) === 259));
 
 function test3() {
   return ((Caml_curry.app1(Scanf.sscanf("0xff", /* Format */[
@@ -304,7 +304,7 @@ function test3() {
                 ]), id) | 0;
 }
 
-test(+(test3(/* () */0) === -214));
+test('File "tscanf_test.ml", line 73, characters 5-12', +(test3(/* () */0) === -214));
 
 function test4() {
   if (Caml_curry.app1(Scanf.bscanf(Caml_curry.app1(Scanf.Scanning[/* from_string */6], "1"), /* Format */[
@@ -544,7 +544,7 @@ function test4() {
   }
 }
 
-test(test4(/* () */0));
+test('File "tscanf_test.ml", line 110, characters 5-12', test4(/* () */0));
 
 function test5() {
   if (Caml_curry.app1(Scanf.bscanf(Caml_curry.app1(Scanf.Scanning[/* from_string */6], "1e1"), /* Format */[
@@ -692,7 +692,7 @@ function test5() {
   }
 }
 
-test(test5(/* () */0));
+test('File "tscanf_test.ml", line 133, characters 5-12', test5(/* () */0));
 
 function test6() {
   if (Caml_curry.app1(Scanf.bscanf(Caml_curry.app1(Scanf.Scanning[/* from_string */6], "truetrue"), /* Format */[
@@ -803,7 +803,7 @@ function test6() {
   }
 }
 
-test(test6(/* () */0));
+test('File "tscanf_test.ml", line 150, characters 5-12', test6(/* () */0));
 
 function test7() {
   if (Caml_curry.app1(Scanf.bscanf(Caml_curry.app1(Scanf.Scanning[/* from_string */6], "'a' '\n' '\t' '\0' ' '"), /* Format */[
@@ -896,7 +896,7 @@ function test7() {
   }
 }
 
-test(test7(/* () */0));
+test('File "tscanf_test.ml", line 168, characters 5-12', test7(/* () */0));
 
 function verify_read(c) {
   var s = Caml_curry.app1(Printf.sprintf(/* Format */[
@@ -941,7 +941,7 @@ function test8() {
   return +(verify_scan_Chars(/* () */0) === /* () */0);
 }
 
-test(+(verify_scan_Chars(/* () */0) === /* () */0));
+test('File "tscanf_test.ml", line 183, characters 5-12', +(verify_scan_Chars(/* () */0) === /* () */0));
 
 function unit(fmt, s) {
   var ib = Caml_curry.app1(Scanf.Scanning[/* from_string */6], Caml_curry.app1(Printf.sprintf(/* Format */[
@@ -1045,7 +1045,7 @@ function test9() {
   }
 }
 
-test(test9(/* () */0));
+test('File "tscanf_test.ml", line 230, characters 5-12', test9(/* () */0));
 
 function test10() {
   var unit = function (s) {
@@ -1129,7 +1129,7 @@ function test10() {
   }
 }
 
-test(test10(/* () */0));
+test('File "tscanf_test.ml", line 254, characters 5-12', test10(/* () */0));
 
 function test11() {
   if (Caml_curry.app1(Scanf.sscanf("Pierre\tWeis\t70", /* Format */[
@@ -1573,7 +1573,7 @@ function test111() {
             });
 }
 
-test(+(test11(/* () */0) && test110(/* () */0) && test111(/* () */0)));
+test('File "tscanf_test.ml", line 293, characters 5-12', +(test11(/* () */0) && test110(/* () */0) && test111(/* () */0)));
 
 function ib() {
   return Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[1;2;3;4; ]");
@@ -1717,7 +1717,7 @@ function test12() {
             ]);
 }
 
-test(test12(/* () */0));
+test('File "tscanf_test.ml", line 311, characters 5-12', test12(/* () */0));
 
 function scan_elems(ib, accu) {
   try {
@@ -1782,7 +1782,7 @@ function test13() {
             ]);
 }
 
-test(test13(/* () */0));
+test('File "tscanf_test.ml", line 324, characters 5-12', test13(/* () */0));
 
 function scan_int_list(ib) {
   Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
@@ -1823,7 +1823,7 @@ function test14() {
             ]);
 }
 
-test(test14(/* () */0));
+test('File "tscanf_test.ml", line 337, characters 5-12', test14(/* () */0));
 
 function scan_elems$1(ib, accu) {
   return Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
@@ -1903,7 +1903,7 @@ function test15() {
             ]);
 }
 
-test(test15(/* () */0));
+test('File "tscanf_test.ml", line 357, characters 5-12', test15(/* () */0));
 
 function scan_elems$2(ib, accu) {
   try {
@@ -2043,7 +2043,7 @@ function test16() {
   }
 }
 
-test(test16(/* () */0));
+test('File "tscanf_test.ml", line 383, characters 5-12', test16(/* () */0));
 
 function scan_elems$3(ib, accu) {
   return Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
@@ -2146,7 +2146,7 @@ function test17() {
   }
 }
 
-test(test17(/* () */0));
+test('File "tscanf_test.ml", line 406, characters 5-12', test17(/* () */0));
 
 function scan_elems$4(ib, accu) {
   return Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
@@ -2354,7 +2354,7 @@ function test18() {
   }
 }
 
-test(test18(/* () */0));
+test('File "tscanf_test.ml", line 446, characters 5-12', test18(/* () */0));
 
 function test19() {
   return Testing.failure_test(scan_int_list$3, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[1;2;3;4 5]"), "scan_rest");
@@ -2502,7 +2502,7 @@ function test22() {
   }
 }
 
-test(test22(/* () */0));
+test('File "tscanf_test.ml", line 506, characters 5-12', test22(/* () */0));
 
 function scan_elems$5(ib, scan_elem, accu) {
   try {
@@ -2622,7 +2622,7 @@ function test23() {
   }
 }
 
-test(test23(/* () */0));
+test('File "tscanf_test.ml", line 562, characters 5-12', test23(/* () */0));
 
 function test24() {
   return Testing.scan_failure_test(scan_int_list$5, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[1;2;3;4 5]"));
@@ -2774,7 +2774,7 @@ function test28() {
   }
 }
 
-test(test28(/* () */0));
+test('File "tscanf_test.ml", line 609, characters 5-12', test28(/* () */0));
 
 function scan_elems$6(ib, scan_elem, accu) {
   return Caml_curry.app3(scan_elem, ib, function (i, s) {
@@ -2882,7 +2882,7 @@ function test29() {
   }
 }
 
-test(test29(/* () */0));
+test('File "tscanf_test.ml", line 639, characters 5-12', test29(/* () */0));
 
 function scan_string_elem$1(ib, f, ek) {
   return Caml_curry.app1(Scanf.kscanf(ib, ek, /* Format */[
@@ -2948,7 +2948,7 @@ function test30() {
   }
 }
 
-test(test30(/* () */0));
+test('File "tscanf_test.ml", line 656, characters 5-12', test30(/* () */0));
 
 function scan_elem(fmt, ib, f, ek) {
   return Caml_curry.app1(Scanf.kscanf(ib, ek, fmt), f);
@@ -3096,7 +3096,7 @@ function test31() {
   }
 }
 
-test(test31(/* () */0));
+test('File "tscanf_test.ml", line 714, characters 5-12', test31(/* () */0));
 
 function test32() {
   if (Caml_curry.app1(scan_string_list, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[]")) === /* [] */0 && Caml_curry.app1(scan_string_list, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[ ]")) === /* [] */0 && Caml_obj.caml_equal(Caml_curry.app1(scan_string_list, Caml_curry.app1(Scanf.Scanning[/* from_string */6], '[ "1" ]')), /* :: */[
@@ -3134,7 +3134,7 @@ function test32() {
   }
 }
 
-test(test32(/* () */0));
+test('File "tscanf_test.ml", line 728, characters 5-12', test32(/* () */0));
 
 function scan_elems$8(ib, scan_elem_fmt, accu) {
   return Caml_curry.app1(Scanf.kscanf(ib, function (_, _$1) {
@@ -3263,7 +3263,7 @@ function test33() {
   }
 }
 
-test(test33(/* () */0));
+test('File "tscanf_test.ml", line 773, characters 5-12', test33(/* () */0));
 
 function test34() {
   if (Caml_curry.app1(scan_string_list$1, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[]")) === /* [] */0 && Caml_curry.app1(scan_string_list$1, Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[ ]")) === /* [] */0 && Caml_obj.caml_equal(Caml_curry.app1(scan_string_list$1, Caml_curry.app1(Scanf.Scanning[/* from_string */6], '[ "1" ]')), /* :: */[
@@ -3301,7 +3301,7 @@ function test34() {
   }
 }
 
-test(test34(/* () */0));
+test('File "tscanf_test.ml", line 787, characters 5-12', test34(/* () */0));
 
 function scan_elems$9(scan_elem, accu, ib) {
   return Caml_curry.app2(Scanf.kscanf(ib, function (_, _$1) {
@@ -3579,7 +3579,7 @@ function test35() {
   }
 }
 
-test(+(test340(/* () */0) && test35(/* () */0)));
+test('File "tscanf_test.ml", line 940, characters 5-12', +(test340(/* () */0) && test35(/* () */0)));
 
 function read_elems(read_elem, accu, ib) {
   return Caml_curry.app2(Scanf.kscanf(ib, function (_, _$1) {
@@ -3737,7 +3737,7 @@ function test36() {
   }
 }
 
-test(test36(/* () */0));
+test('File "tscanf_test.ml", line 995, characters 5-12', test36(/* () */0));
 
 function test37() {
   if (Caml_curry.app1(Scanf.sscanf("", /* Format */[
@@ -3761,7 +3761,7 @@ function test37() {
   }
 }
 
-test(test37(/* () */0));
+test('File "tscanf_test.ml", line 1005, characters 5-12', test37(/* () */0));
 
 function test38() {
   if (Caml_curry.app1(Scanf.sscanf("a", /* Format */[
@@ -3871,7 +3871,7 @@ function test38() {
   }
 }
 
-test(test38(/* () */0));
+test('File "tscanf_test.ml", line 1020, characters 5-12', test38(/* () */0));
 
 function test39() {
   var is_empty_buff = function (ib) {
@@ -3891,7 +3891,7 @@ function test39() {
   }
 }
 
-test(test39(/* () */0));
+test('File "tscanf_test.ml", line 1036, characters 5-12', test39(/* () */0));
 
 function test40() {
   var ib = Caml_curry.app1(Scanf.Scanning[/* from_string */6], "cba");
@@ -3923,7 +3923,7 @@ function test40() {
             });
 }
 
-test(test40(/* () */0));
+test('File "tscanf_test.ml", line 1046, characters 5-12', test40(/* () */0));
 
 function test41() {
   var ib = Caml_curry.app1(Scanf.Scanning[/* from_string */6], "cba");
@@ -3956,7 +3956,7 @@ function test41() {
             });
 }
 
-test(test41(/* () */0));
+test('File "tscanf_test.ml", line 1055, characters 5-12', test41(/* () */0));
 
 function test42() {
   var s = "defcbaaghi";
@@ -4020,7 +4020,7 @@ function test42() {
   }
 }
 
-test(test42(/* () */0));
+test('File "tscanf_test.ml", line 1067, characters 5-12', test42(/* () */0));
 
 var ib$1 = Caml_curry.app1(Scanf.Scanning[/* from_string */6], "");
 
@@ -4111,7 +4111,7 @@ function test45() {
             });
 }
 
-test(test45(/* () */0));
+test('File "tscanf_test.ml", line 1090, characters 5-12', test45(/* () */0));
 
 function match_000$1() {
   return Caml_curry.app3(Printf.sprintf(/* Format */[
@@ -4221,9 +4221,9 @@ var test47 = match_001$1;
 
 var test46 = match_000$1;
 
-test(+(Caml_curry.app1(test46, /* () */0) === "1 spells one, in english."));
+test('File "tscanf_test.ml", line 1104, characters 5-12', +(Caml_curry.app1(test46, /* () */0) === "1 spells one, in english."));
 
-test(+(Caml_curry.app1(test47, /* () */0) === "1 %s, in english."));
+test('File "tscanf_test.ml", line 1106, characters 5-12', +(Caml_curry.app1(test47, /* () */0) === "1 %s, in english."));
 
 function test48() {
   var test_meta_read = function (s, fmt, efmt) {
@@ -4524,7 +4524,7 @@ function test48() {
   }
 }
 
-test(test48(/* () */0));
+test('File "tscanf_test.ml", line 1157, characters 5-12', test48(/* () */0));
 
 function test49() {
   if (Caml_curry.app1(Scanf.sscanf("as", /* Format */[
@@ -4761,7 +4761,7 @@ function test49() {
   }
 }
 
-test(test49(/* () */0));
+test('File "tscanf_test.ml", line 1176, characters 5-12', test49(/* () */0));
 
 function next_char(ob, _) {
   var s = Buffer.contents(ob);
@@ -4883,7 +4883,7 @@ function test50() {
   return +(go(/* () */0) === 100);
 }
 
-test(+(go(/* () */0) === 100));
+test('File "tscanf_test.ml", line 1228, characters 5-12', +(go(/* () */0) === 100));
 
 function test51() {
   if (Caml_curry.app1(Scanf.sscanf("Hello", /* Format */[
@@ -5024,7 +5024,7 @@ function test51() {
   }
 }
 
-test(test51(/* () */0));
+test('File "tscanf_test.ml", line 1248, characters 5-12', test51(/* () */0));
 
 function test52() {
   if (Caml_curry.app1(Scanf.sscanf("Hello\n", /* Format */[
@@ -5370,7 +5370,7 @@ function test52() {
   }
 }
 
-test(test52(/* () */0));
+test('File "tscanf_test.ml", line 1286, characters 5-12', test52(/* () */0));
 
 function test53() {
   if (Caml_curry.app1(Scanf.sscanf("123", /* Format */[
@@ -5456,7 +5456,7 @@ function test53() {
   }
 }
 
-test(test53(/* () */0));
+test('File "tscanf_test.ml", line 1301, characters 5-12', test53(/* () */0));
 
 function test56() {
   var g = function (s) {
@@ -5499,7 +5499,7 @@ function test56() {
   }
 }
 
-test(test56(/* () */0));
+test('File "tscanf_test.ml", line 1316, characters 5-12', test56(/* () */0));
 
 function test57() {
   var test_format_scan = function (s, fmt, efmt) {
@@ -5799,7 +5799,7 @@ function test57() {
   }
 }
 
-test(test57(/* () */0));
+test('File "tscanf_test.ml", line 1357, characters 5-12', test57(/* () */0));
 
 function test58() {
   if (Caml_curry.app1(Scanf.sscanf("string1%string2", /* Format */[
@@ -5889,9 +5889,9 @@ function test58() {
   }
 }
 
-test(test58(/* () */0));
+test('File "tscanf_test.ml", line 1367, characters 5-12', test58(/* () */0));
 
-test(/* true */1);
+test('File "tscanf_test.ml", line 1371, characters 14-21', /* true */1);
 
 function test60() {
   if (Caml_curry.app1(Scanf.sscanf("abc", /* Format */[
@@ -5969,7 +5969,7 @@ function test60() {
   }
 }
 
-test(test60(/* () */0));
+test('File "tscanf_test.ml", line 1414, characters 5-12', test60(/* () */0));
 
 Mt.from_pair_suites("tscanf_test.ml", suites[0]);
 

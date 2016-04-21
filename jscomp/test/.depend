@@ -342,8 +342,8 @@ scanf_reference_error_regression_test.cmo : ../stdlib/scanf.cmi \
 scanf_reference_error_regression_test.cmx : ../stdlib/scanf.cmx \
     ../stdlib/printf.cmx mt_global.cmx mt.cmx ../stdlib/list.cmx \
     scanf_reference_error_regression_test.cmi
-scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi ../lib/js.cmo
-scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx ../lib/js.cmx
+scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
+scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmx : ../stdlib/nativeint.cmx
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
@@ -920,8 +920,8 @@ scanf_reference_error_regression_test.cmo : ../stdlib/scanf.cmi \
 scanf_reference_error_regression_test.cmj : ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj mt_global.cmj mt.cmj ../stdlib/list.cmj \
     scanf_reference_error_regression_test.cmi
-scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi ../lib/js.cmo
-scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj ../lib/js.cmj
+scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi
+scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
