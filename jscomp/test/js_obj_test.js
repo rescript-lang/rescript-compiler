@@ -2,15 +2,15 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 
 function f(u) {
   if (u.tag === 248) {
-    return Caml_curry.js2(5740587, 1, u, 32);
+    return Curry.js2(5740587, 1, u, 32);
   }
   else {
-    return Caml_curry.app1(u.say.bind(u), 32);
+    return Curry._1(u.say.bind(u), 32);
   }
 }
 
@@ -37,7 +37,7 @@ var suites_000 = /* tuple */[
     }
     return /* Eq */{
             0: 33,
-            1: f(Caml_curry.app1(class_tables[0], 0)),
+            1: f(Curry._1(class_tables[0], 0)),
             length: 2,
             tag: 0
           };

@@ -1,20 +1,20 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj   = require("../runtime/caml_obj");
-var Hashtbl    = require("../stdlib/hashtbl");
-var Mt         = require("./mt");
-var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Caml_obj = require("../runtime/caml_obj");
+var Hashtbl  = require("../stdlib/hashtbl");
+var Mt       = require("./mt");
+var Curry    = require("../runtime/curry");
+var $$Array  = require("../stdlib/array");
+var List     = require("../stdlib/list");
 
 function f(H) {
-  var tbl = Caml_curry.app1(H[/* create */0], 17);
-  Caml_curry.app3(H[/* add */4], tbl, 1, /* "1" */49);
-  Caml_curry.app3(H[/* add */4], tbl, 2, /* "2" */50);
+  var tbl = Curry._1(H[/* create */0], 17);
+  Curry._3(H[/* add */4], tbl, 1, /* "1" */49);
+  Curry._3(H[/* add */4], tbl, 2, /* "2" */50);
   return List.sort(function (param, param$1) {
               return Caml_obj.caml_int_compare(param[0], param$1[0]);
-            }, Caml_curry.app3(H[/* fold */11], function (k, v, acc) {
+            }, Curry._3(H[/* fold */11], function (k, v, acc) {
                   return /* :: */[
                           /* tuple */[
                             k,
@@ -27,14 +27,14 @@ function f(H) {
 
 function g(H) {
   return function (count) {
-    var tbl = Caml_curry.app1(H[/* create */0], 17);
+    var tbl = Curry._1(H[/* create */0], 17);
     for(var i = 0; i<= count; ++i){
-      Caml_curry.app3(H[/* replace */8], tbl, (i << 1), "" + i);
+      Curry._3(H[/* replace */8], tbl, (i << 1), "" + i);
     }
     for(var i$1 = 0; i$1<= count; ++i$1){
-      Caml_curry.app3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
+      Curry._3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
     }
-    var v = Caml_curry.app3(H[/* fold */11], function (k, v, acc) {
+    var v = Curry._3(H[/* fold */11], function (k, v, acc) {
           return /* :: */[
                   /* tuple */[
                     k,

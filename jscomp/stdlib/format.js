@@ -7,8 +7,8 @@ var Bytes                   = require("./bytes");
 var Caml_io                 = require("../runtime/caml_io");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
+var Curry                   = require("../runtime/curry");
 var Buffer                  = require("./buffer");
-var Caml_curry              = require("../runtime/caml_curry");
 var $$String                = require("./string");
 var Caml_string             = require("../runtime/caml_string");
 var CamlinternalFormat      = require("./camlinternalFormat");
@@ -75,22 +75,22 @@ function pp_clear_queue(state) {
 }
 
 function pp_output_string(state, s) {
-  return Caml_curry.app3(state[/* pp_out_string */16], s, 0, s.length);
+  return Curry._3(state[/* pp_out_string */16], s, 0, s.length);
 }
 
 function break_new_line(state, offset, width) {
-  Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
+  Curry._1(state[/* pp_out_newline */18], /* () */0);
   state[/* pp_is_new_line */10] = /* true */1;
   var indent = (state[/* pp_margin */5] - width | 0) + offset | 0;
   var real_indent = Pervasives.min(state[/* pp_max_indent */7], indent);
   state[/* pp_current_indent */9] = real_indent;
   state[/* pp_space_left */8] = state[/* pp_margin */5] - state[/* pp_current_indent */9] | 0;
-  return Caml_curry.app1(state[/* pp_out_spaces */19], state[/* pp_current_indent */9]);
+  return Curry._1(state[/* pp_out_spaces */19], state[/* pp_current_indent */9]);
 }
 
 function break_same_line(state, width) {
   state[/* pp_space_left */8] = state[/* pp_space_left */8] - width | 0;
-  return Caml_curry.app1(state[/* pp_out_spaces */19], width);
+  return Curry._1(state[/* pp_out_spaces */19], width);
 }
 
 function pp_force_break_line(state) {
@@ -107,7 +107,7 @@ function pp_force_break_line(state) {
     }
   }
   else {
-    return Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
+    return Curry._1(state[/* pp_out_newline */18], /* () */0);
   }
 }
 
@@ -172,7 +172,7 @@ function format_pp_token(state, size, param) {
             return break_new_line(state, 0, match$3[0][1]);
           }
           else {
-            return Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
+            return Curry._1(state[/* pp_out_newline */18], /* () */0);
           }
       case 4 : 
           if (state[/* pp_current_indent */9] !== (state[/* pp_margin */5] - state[/* pp_space_left */8] | 0)) {
@@ -189,7 +189,7 @@ function format_pp_token(state, size, param) {
       case 5 : 
           var match$5 = state[/* pp_mark_stack */4];
           if (match$5) {
-            var marker = Caml_curry.app1(state[/* pp_mark_close_tag */23], match$5[0]);
+            var marker = Curry._1(state[/* pp_mark_close_tag */23], match$5[0]);
             pp_output_string(state, marker);
             state[/* pp_mark_stack */4] = match$5[1];
             return /* () */0;
@@ -323,7 +323,7 @@ function format_pp_token(state, size, param) {
           return /* () */0;
       case 5 : 
           var tag_name = param[0];
-          var marker$1 = Caml_curry.app1(state[/* pp_mark_open_tag */22], tag_name);
+          var marker$1 = Curry._1(state[/* pp_mark_open_tag */22], tag_name);
           pp_output_string(state, marker$1);
           state[/* pp_mark_stack */4] = /* :: */[
             tag_name,
@@ -520,7 +520,7 @@ function pp_open_tag(state, tag_name) {
       tag_name,
       state[/* pp_tag_stack */3]
     ];
-    Caml_curry.app1(state[/* pp_print_open_tag */24], tag_name);
+    Curry._1(state[/* pp_print_open_tag */24], tag_name);
   }
   if (state[/* pp_mark_tags */21]) {
     return pp_enqueue(state, /* record */[
@@ -549,7 +549,7 @@ function pp_close_tag(state, _) {
   if (state[/* pp_print_tags */20]) {
     var match = state[/* pp_tag_stack */3];
     if (match) {
-      Caml_curry.app1(state[/* pp_print_close_tag */25], match[0]);
+      Curry._1(state[/* pp_print_close_tag */25], match[0]);
       state[/* pp_tag_stack */3] = match[1];
       return /* () */0;
     }
@@ -623,7 +623,7 @@ function pp_flush_queue(state, b) {
   state[/* pp_right_total */12] = 1000000010;
   advance_left(state);
   if (b) {
-    Caml_curry.app1(state[/* pp_out_newline */18], /* () */0);
+    Curry._1(state[/* pp_out_newline */18], /* () */0);
   }
   return pp_rinit(state);
 }
@@ -681,12 +681,12 @@ function pp_open_box(state, indent) {
 
 function pp_print_newline(state, _) {
   pp_flush_queue(state, /* true */1);
-  return Caml_curry.app1(state[/* pp_out_flush */17], /* () */0);
+  return Curry._1(state[/* pp_out_flush */17], /* () */0);
 }
 
 function pp_print_flush(state, _) {
   pp_flush_queue(state, /* false */0);
-  return Caml_curry.app1(state[/* pp_out_flush */17], /* () */0);
+  return Curry._1(state[/* pp_out_flush */17], /* () */0);
 }
 
 function pp_force_newline(state, _) {
@@ -828,15 +828,15 @@ function pp_print_list(_$staropt$star, pp_v, ppf, _param) {
       var vs = param[1];
       var v = param[0];
       if (vs) {
-        Caml_curry.app2(pp_v, ppf, v);
-        Caml_curry.app2(pp_sep, ppf, /* () */0);
+        Curry._2(pp_v, ppf, v);
+        Curry._2(pp_sep, ppf, /* () */0);
         _param = vs;
         _$staropt$star = /* Some */[pp_sep];
         continue ;
         
       }
       else {
-        return Caml_curry.app2(pp_v, ppf, v);
+        return Curry._2(pp_v, ppf, v);
       }
     }
     else {
@@ -996,7 +996,7 @@ function pp_get_all_formatter_output_functions(state, _) {
 }
 
 function display_newline(state, _) {
-  return Caml_curry.app3(state[/* pp_out_string */16], "\n", 0, 1);
+  return Curry._3(state[/* pp_out_string */16], "\n", 0, 1);
 }
 
 var blank_line = Caml_string.bytes_to_string(Bytes.make(80, /* " " */32));
@@ -1006,10 +1006,10 @@ function display_blanks(state, _n) {
     var n = _n;
     if (n > 0) {
       if (n <= 80) {
-        return Caml_curry.app3(state[/* pp_out_string */16], blank_line, 0, n);
+        return Curry._3(state[/* pp_out_string */16], blank_line, 0, n);
       }
       else {
-        Caml_curry.app3(state[/* pp_out_string */16], blank_line, 0, 80);
+        Curry._3(state[/* pp_out_string */16], blank_line, 0, 80);
         _n = n - 80 | 0;
         continue ;
         
@@ -1363,7 +1363,7 @@ function set_tags(param) {
 function compute_tag(output, tag_acc) {
   var buf = Buffer.create(16);
   var ppf = formatter_of_buffer(buf);
-  Caml_curry.app2(output, ppf, tag_acc);
+  Curry._2(output, ppf, tag_acc);
   pp_print_flush(ppf, /* () */0);
   var len = buf[/* position */1];
   if (len < 2) {
@@ -1554,7 +1554,7 @@ function output_acc(ppf, acc) {
           break;
       case 6 : 
           output_acc(ppf, acc[0]);
-          return Caml_curry.app1(acc[1], ppf);
+          return Curry._1(acc[1], ppf);
       case 7 : 
           output_acc(ppf, acc[0]);
           return pp_print_flush(ppf, /* () */0);
@@ -1738,7 +1738,7 @@ function strput_acc(ppf, acc) {
             }
             else if (match$6.tag === 1) {
               strput_acc(ppf, p$7[0]);
-              return pp_print_as_size(ppf, match$6[1], Caml_curry.app1(acc[1], /* () */0));
+              return pp_print_as_size(ppf, match$6[1], Curry._1(acc[1], /* () */0));
             }
             else {
               exit$5 = 3;
@@ -1746,7 +1746,7 @@ function strput_acc(ppf, acc) {
           }
           if (exit$5 === 3) {
             strput_acc(ppf, p$7);
-            return pp_print_string(ppf, Caml_curry.app1(acc[1], /* () */0));
+            return pp_print_string(ppf, Curry._1(acc[1], /* () */0));
           }
           break;
       case 7 : 
@@ -1775,13 +1775,13 @@ function strput_acc(ppf, acc) {
 function kfprintf(k, o, param) {
   return CamlinternalFormat.make_printf(function (o, acc) {
               output_acc(o, acc);
-              return Caml_curry.app1(k, o);
+              return Curry._1(k, o);
             }, o, /* End_of_acc */0, param[0]);
 }
 
 function ikfprintf(k, x, param) {
   return CamlinternalFormat.make_printf(function (_, _$1) {
-              return Caml_curry.app1(k, x);
+              return Curry._1(k, x);
             }, x, /* End_of_acc */0, param[0]);
 }
 
@@ -1810,7 +1810,7 @@ function ksprintf(k, param) {
   var ppf = formatter_of_buffer(b);
   var k$prime = function (_, acc) {
     strput_acc(ppf, acc);
-    return Caml_curry.app1(k, flush_buf_formatter(b, ppf));
+    return Curry._1(k, flush_buf_formatter(b, ppf));
   };
   return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[0]);
 }

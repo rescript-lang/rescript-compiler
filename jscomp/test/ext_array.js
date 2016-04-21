@@ -2,9 +2,9 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Curry                   = require("../runtime/curry");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("../stdlib/array");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 function reverse_in_place(a) {
@@ -62,7 +62,7 @@ function filter(f, a) {
     }
     else {
       var v = a[i];
-      if (Caml_curry.app1(f, v)) {
+      if (Curry._1(f, v)) {
         _i = i + 1 | 0;
         _acc = /* :: */[
           v,
@@ -92,7 +92,7 @@ function filter_map(f, a) {
     }
     else {
       var v = a[i];
-      var match = Caml_curry.app1(f, v);
+      var match = Curry._1(f, v);
       _i = i + 1 | 0;
       if (match) {
         _acc = /* :: */[
@@ -134,7 +134,7 @@ function map2i(f, a, b) {
   }
   else {
     return $$Array.mapi(function (i, a) {
-                return Caml_curry.app3(f, i, a, b[i]);
+                return Curry._3(f, i, a, b[i]);
               }, a);
   }
 }

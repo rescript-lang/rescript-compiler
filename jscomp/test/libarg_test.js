@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_obj   = require("../runtime/caml_obj");
-var Mt         = require("./mt");
-var Arg        = require("../stdlib/arg");
-var Printf     = require("../stdlib/printf");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Caml_obj = require("../runtime/caml_obj");
+var Mt       = require("./mt");
+var Arg      = require("../stdlib/arg");
+var Printf   = require("../stdlib/printf");
+var Curry    = require("../runtime/curry");
+var List     = require("../stdlib/list");
 
 var current = [0];
 
@@ -35,7 +35,7 @@ function f_unit() {
 }
 
 function f_bool(b) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "bool(",
                     1: /* Bool */{
@@ -60,7 +60,7 @@ var r_set = [/* false */0];
 var r_clear = [/* true */1];
 
 function f_string(s) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "string(",
                     1: /* String */{
@@ -84,7 +84,7 @@ function f_string(s) {
 var r_string = [""];
 
 function f_int(i) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "int(",
                     1: /* Int */{
@@ -110,7 +110,7 @@ function f_int(i) {
 var r_int = [0];
 
 function f_float(f) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "float(",
                     1: /* Float */{
@@ -136,7 +136,7 @@ function f_float(f) {
 var r_float = [0.0];
 
 function f_symbol(s) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "symbol(",
                     1: /* String */{
@@ -158,7 +158,7 @@ function f_symbol(s) {
 }
 
 function f_rest(s) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "rest(",
                     1: /* String */{
@@ -180,7 +180,7 @@ function f_rest(s) {
 }
 
 function f_anon(s) {
-  return Caml_curry.app1(record(/* Format */[
+  return Curry._1(record(/* Format */[
                   /* String_literal */{
                     0: "anon(",
                     1: /* String */{
@@ -442,7 +442,7 @@ var args2 = /* array */[
 ];
 
 function error(s) {
-  return Caml_curry.app1(Printf.printf(/* Format */[
+  return Curry._1(Printf.printf(/* Format */[
                   /* String_literal */{
                     0: "error (",
                     1: /* String */{
@@ -530,7 +530,7 @@ function test(argv) {
   ];
   if (Caml_obj.caml_notequal(result, reference)) {
     var f = function (x, y) {
-      return Caml_curry.app3(Printf.printf(/* Format */[
+      return Curry._3(Printf.printf(/* Format */[
                       /* String */{
                         0: /* Lit_padding */{
                           0: /* Right */1,

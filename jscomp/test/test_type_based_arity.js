@@ -1,72 +1,72 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
+var Curry = require("../runtime/curry");
 
 function f0(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f1(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 var X = /* module */[];
 
 function f2(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f3(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f4(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f5(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f6(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f7(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 var X0 = /* module */[];
 
 function f8(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f9(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f10(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f11(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f12(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f13(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 var X2 = /* module */[f13];
 
 function f14(h, g, x) {
-  return Caml_curry.app2(h, g, x);
+  return Curry._2(h, g, x);
 }
 
 exports.f0  = f0;

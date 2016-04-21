@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Mt_global  = require("./mt_global");
-var Scanf      = require("../stdlib/scanf");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt        = require("./mt");
+var Mt_global = require("./mt_global");
+var Curry     = require("../runtime/curry");
+var Scanf     = require("../stdlib/scanf");
 
 var suites = [/* [] */0];
 
@@ -15,7 +15,7 @@ function eq(f, param) {
 }
 
 eq('File "scanf_test.ml", line 6, characters 5-12', /* tuple */[
-      Caml_curry.app1(Scanf.sscanf("32 31", /* Format */[
+      Curry._1(Scanf.sscanf("32 31", /* Format */[
                 /* Int */{
                   0: /* Int_d */0,
                   1: /* No_padding */0,

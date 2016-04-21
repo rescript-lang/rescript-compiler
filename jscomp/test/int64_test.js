@@ -6,9 +6,9 @@ var Caml_obj   = require("../runtime/caml_obj");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 var Int32      = require("../stdlib/int32");
+var Curry      = require("../runtime/curry");
 var Int64      = require("../stdlib/int64");
 var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
 var Ext_array  = require("./ext_array");
 var Format     = require("../stdlib/format");
 
@@ -2359,7 +2359,7 @@ var suites = Pervasives.$at(/* :: */[
       ]
     ], Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                   return /* tuple */[
-                          Caml_curry.app1(Format.asprintf(/* Format */[
+                          Curry._1(Format.asprintf(/* Format */[
                                     /* String_literal */{
                                       0: "shift_left_cases ",
                                       1: /* Int */{
@@ -2386,7 +2386,7 @@ var suites = Pervasives.$at(/* :: */[
                         ];
                 }, shift_left_tests_000, shift_left_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
-                              Caml_curry.app1(Format.asprintf(/* Format */[
+                              Curry._1(Format.asprintf(/* Format */[
                                         /* String_literal */{
                                           0: "shift_right_cases ",
                                           1: /* Int */{
@@ -2413,7 +2413,7 @@ var suites = Pervasives.$at(/* :: */[
                             ];
                     }, shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
-                              Caml_curry.app1(Format.asprintf(/* Format */[
+                              Curry._1(Format.asprintf(/* Format */[
                                         /* String_literal */{
                                           0: "shift_right_logical_cases ",
                                           1: /* Int */{

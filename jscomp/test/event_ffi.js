@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Curry          = require("../runtime/curry");
 var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_curry     = require("../runtime/caml_curry");
 
 function h0(x) {
   return x();
 }
 
 function h00(x) {
-  return Caml_curry.app1(x(), /* () */0);
+  return Curry._1(x(), /* () */0);
 }
 
 function h1(x) {
@@ -33,7 +33,7 @@ function h33(x) {
 }
 
 function h34(x) {
-  return Caml_curry.app1(x(1, 2, 3), 4);
+  return Curry._1(x(1, 2, 3), 4);
 }
 
 function ocaml_run(param, param$1) {
@@ -44,7 +44,7 @@ function ocaml_run(param, param$1) {
 }
 
 function a0() {
-  return Caml_curry.app1(function () {
+  return Curry._1(function () {
               console.log("hi");
               return /* () */0;
             }, /* () */0);
@@ -63,7 +63,7 @@ function a3(x, y, z) {
 }
 
 function a4(param, param$1, param$2, param$3) {
-  return Caml_curry.app4(function (x, y, z) {
+  return Curry._4(function (x, y, z) {
               var u = (Caml_primitive.imul(x, x) + Caml_primitive.imul(y, y) | 0) + Caml_primitive.imul(z, z) | 0;
               return function (d) {
                 return u + d | 0;

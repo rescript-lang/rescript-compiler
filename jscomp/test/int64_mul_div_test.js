@@ -6,9 +6,9 @@ var Caml_obj    = require("../runtime/caml_obj");
 var Pervasives  = require("../stdlib/pervasives");
 var Caml_format = require("../runtime/caml_format");
 var Mt          = require("./mt");
+var Curry       = require("../runtime/curry");
 var Printf      = require("../stdlib/printf");
 var $$Array     = require("../stdlib/array");
-var Caml_curry  = require("../runtime/caml_curry");
 var List        = require("../stdlib/list");
 
 function commutative_mul(result, a, b) {
@@ -315,7 +315,7 @@ function from_pairs(prefix, pairs) {
                   var a = param[1];
                   var result = param[0];
                   return /* tuple */[
-                          Caml_curry.app2(Printf.sprintf(/* Format */[
+                          Curry._2(Printf.sprintf(/* Format */[
                                     /* String */{
                                       0: /* No_padding */0,
                                       1: /* Char_literal */{
@@ -1647,7 +1647,7 @@ function from(xs) {
               var b = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                      Curry._1(Printf.sprintf(/* Format */[
                                 /* String_literal */{
                                   0: "small_divs ",
                                   1: /* Scan_get_counter */{
@@ -1729,7 +1729,7 @@ function from_compare(xs) {
               var b = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                      Curry._1(Printf.sprintf(/* Format */[
                                 /* String_literal */{
                                   0: "int64_compare ",
                                   1: /* Scan_get_counter */{
@@ -1760,7 +1760,7 @@ function from_to_string(xs) {
               var str_a = param[1];
               var a = param[0];
               return /* tuple */[
-                      Caml_curry.app1(Printf.sprintf(/* Format */[
+                      Curry._1(Printf.sprintf(/* Format */[
                                 /* String_literal */{
                                   0: "to_string ",
                                   1: /* Scan_get_counter */{
@@ -1790,7 +1790,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                       var f = param[1];
                       var i64 = param[0];
                       return /* tuple */[
-                              Caml_curry.app1(Printf.sprintf(/* Format */[
+                              Curry._1(Printf.sprintf(/* Format */[
                                         /* String_literal */{
                                           0: "to_float_",
                                           1: /* Int */{
@@ -1819,7 +1819,7 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                           var i64 = param[1];
                           var f = param[0];
                           return /* tuple */[
-                                  Caml_curry.app1(Printf.sprintf(/* Format */[
+                                  Curry._1(Printf.sprintf(/* Format */[
                                             /* String_literal */{
                                               0: "of_float_",
                                               1: /* Int */{

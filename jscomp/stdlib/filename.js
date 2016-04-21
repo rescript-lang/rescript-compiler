@@ -5,11 +5,11 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var Buffer                  = require("./buffer");
 var $$String                = require("./string");
-var Caml_curry              = require("../runtime/caml_curry");
 var Random                  = require("./random");
 
 function generic_basename(is_dir_sep, current_dir_name, name) {
@@ -23,7 +23,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
-      else if (Caml_curry.app2(is_dir_sep, name, n)) {
+      else if (Curry._2(is_dir_sep, name, n)) {
         _n = n - 1 | 0;
         continue ;
         
@@ -36,7 +36,7 @@ function generic_basename(is_dir_sep, current_dir_name, name) {
           if (n$1 < 0) {
             return $$String.sub(name, 0, p);
           }
-          else if (Caml_curry.app2(is_dir_sep, name, n$1)) {
+          else if (Curry._2(is_dir_sep, name, n$1)) {
             return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
           }
           else {
@@ -61,7 +61,7 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
       if (n < 0) {
         return $$String.sub(name, 0, 1);
       }
-      else if (Caml_curry.app2(is_dir_sep, name, n)) {
+      else if (Curry._2(is_dir_sep, name, n)) {
         _n = n - 1 | 0;
         continue ;
         
@@ -73,14 +73,14 @@ function generic_dirname(is_dir_sep, current_dir_name, name) {
           if (n$1 < 0) {
             return current_dir_name;
           }
-          else if (Caml_curry.app2(is_dir_sep, name, n$1)) {
+          else if (Curry._2(is_dir_sep, name, n$1)) {
             var _n$2 = n$1;
             while(true) {
               var n$2 = _n$2;
               if (n$2 < 0) {
                 return $$String.sub(name, 0, 1);
               }
-              else if (Caml_curry.app2(is_dir_sep, name, n$2)) {
+              else if (Curry._2(is_dir_sep, name, n$2)) {
                 _n$2 = n$2 - 1 | 0;
                 continue ;
                 
@@ -191,7 +191,7 @@ var dir_sep = "/";
 
 function concat(dirname, filename) {
   var l = dirname.length;
-  if (l === 0 || Caml_curry.app2(is_dir_sep$1, dirname, l - 1 | 0)) {
+  if (l === 0 || Curry._2(is_dir_sep$1, dirname, l - 1 | 0)) {
     return dirname + filename;
   }
   else {
@@ -216,7 +216,7 @@ function chop_extension(name) {
   var _i = name.length - 1 | 0;
   while(true) {
     var i = _i;
-    if (i < 0 || Caml_curry.app2(is_dir_sep$1, name, i)) {
+    if (i < 0 || Curry._2(is_dir_sep$1, name, i)) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
             "Filename.chop_extension"
@@ -235,7 +235,7 @@ function chop_extension(name) {
 
 var prng = {
   0: function () {
-    return Caml_curry.app1(Random.State[/* make_self_init */1], /* () */0);
+    return Curry._1(Random.State[/* make_self_init */1], /* () */0);
   },
   length: 1,
   tag: 246
@@ -243,10 +243,10 @@ var prng = {
 
 function temp_file_name(temp_dir, prefix, suffix) {
   var tag = prng.tag | 0;
-  var rnd = Caml_curry.app1(Random.State[/* bits */3], tag === 250 ? prng[0] : (
+  var rnd = Curry._1(Random.State[/* bits */3], tag === 250 ? prng[0] : (
           tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
         )) & 16777215;
-  return concat(temp_dir, Caml_curry.app3(Printf.sprintf(/* Format */[
+  return concat(temp_dir, Curry._3(Printf.sprintf(/* Format */[
                       /* String */{
                         0: /* No_padding */0,
                         1: /* Int */{

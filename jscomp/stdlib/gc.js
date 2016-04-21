@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Sys        = require("./sys");
-var Printf     = require("./printf");
-var Caml_curry = require("../runtime/caml_curry");
+var Sys    = require("./sys");
+var Curry  = require("../runtime/curry");
+var Printf = require("./printf");
 
 function print_stat(c) {
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "minor_words: ",
               1: /* Float */{
@@ -27,7 +27,7 @@ function print_stat(c) {
             },
             "minor_words: %.0f\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "promoted_words: ",
               1: /* Float */{
@@ -48,7 +48,7 @@ function print_stat(c) {
             },
             "promoted_words: %.0f\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "major_words: ",
               1: /* Float */{
@@ -69,7 +69,7 @@ function print_stat(c) {
             },
             "major_words: %.0f\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "minor_collections: ",
               1: /* Int */{
@@ -90,7 +90,7 @@ function print_stat(c) {
             },
             "minor_collections: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "major_collections: ",
               1: /* Int */{
@@ -111,7 +111,7 @@ function print_stat(c) {
             },
             "major_collections: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "heap_words: ",
               1: /* Int */{
@@ -132,7 +132,7 @@ function print_stat(c) {
             },
             "heap_words: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "heap_chunks: ",
               1: /* Int */{
@@ -153,7 +153,7 @@ function print_stat(c) {
             },
             "heap_chunks: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "top_heap_words: ",
               1: /* Int */{
@@ -174,7 +174,7 @@ function print_stat(c) {
             },
             "top_heap_words: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "live_words: ",
               1: /* Int */{
@@ -195,7 +195,7 @@ function print_stat(c) {
             },
             "live_words: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "live_blocks: ",
               1: /* Int */{
@@ -216,7 +216,7 @@ function print_stat(c) {
             },
             "live_blocks: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "free_words: ",
               1: /* Int */{
@@ -237,7 +237,7 @@ function print_stat(c) {
             },
             "free_words: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "free_blocks: ",
               1: /* Int */{
@@ -258,7 +258,7 @@ function print_stat(c) {
             },
             "free_blocks: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "largest_free: ",
               1: /* Int */{
@@ -279,7 +279,7 @@ function print_stat(c) {
             },
             "largest_free: %d\n"
           ]), 0);
-  Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "fragments: ",
               1: /* Int */{
@@ -300,7 +300,7 @@ function print_stat(c) {
             },
             "fragments: %d\n"
           ]), 0);
-  return Caml_curry.app1(Printf.fprintf(c, /* Format */[
+  return Curry._1(Printf.fprintf(c, /* Format */[
                   /* String_literal */{
                     0: "compactions: ",
                     1: /* Int */{

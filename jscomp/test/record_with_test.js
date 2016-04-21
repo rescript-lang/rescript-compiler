@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt    = require("./mt");
+var Curry = require("../runtime/curry");
 
 var v = /* record */[
   /* None */0,
@@ -19,7 +19,7 @@ var newrecord = v.slice();
 newrecord[/* imports */1] = 0;
 
 function f(g, h) {
-  var newrecord = Caml_curry.app1(g, h).slice();
+  var newrecord = Curry._1(g, h).slice();
   newrecord[/* imports */1] = 0;
   return newrecord;
 }

@@ -3,9 +3,9 @@
 
 var Caml_int64              = require("./caml_int64");
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Curry                   = require("./curry");
 var Caml_primitive          = require("./caml_primitive");
 var Caml_utils              = require("./caml_utils");
-var Caml_curry              = require("./caml_curry");
 var Caml_string             = require("./caml_string");
 
 function caml_failwith(s) {
@@ -822,7 +822,7 @@ var float_of_string = (
 );
 
 function caml_float_of_string(s) {
-  return Caml_curry.app2(float_of_string, s, caml_failwith);
+  return Curry._2(float_of_string, s, caml_failwith);
 }
 
 var caml_nativeint_format = caml_format_int;

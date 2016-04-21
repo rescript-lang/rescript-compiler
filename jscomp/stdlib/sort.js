@@ -2,14 +2,14 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 
 function merge(order, l1, l2) {
   if (l1) {
     var h1 = l1[0];
     if (l2) {
       var h2 = l2[0];
-      if (Caml_curry.app2(order, h1, h2)) {
+      if (Curry._2(order, h1, h2)) {
         return /* :: */[
                 h1,
                 merge(order, l1[1], l2)
@@ -39,7 +39,7 @@ function list(order, l) {
       if (match) {
         var e2 = match[0];
         return /* :: */[
-                Caml_curry.app2(order, e, e2) ? /* :: */[
+                Curry._2(order, e, e2) ? /* :: */[
                     e,
                     /* :: */[
                       e2,
@@ -119,12 +119,12 @@ function array(cmp, arr) {
       var lo = _lo;
       if ((hi - lo | 0) >= 6) {
         var mid = ((lo + hi | 0) >>> 1);
-        if (Caml_curry.app2(cmp, arr[mid], arr[lo])) {
+        if (Curry._2(cmp, arr[mid], arr[lo])) {
           swap(arr, mid, lo);
         }
-        if (Caml_curry.app2(cmp, arr[hi], arr[mid])) {
+        if (Curry._2(cmp, arr[hi], arr[mid])) {
           swap(arr, mid, hi);
-          if (Caml_curry.app2(cmp, arr[mid], arr[lo])) {
+          if (Curry._2(cmp, arr[mid], arr[lo])) {
             swap(arr, mid, lo);
           }
           
@@ -132,17 +132,17 @@ function array(cmp, arr) {
         var pivot = arr[mid];
         var i = lo + 1 | 0;
         var j = hi - 1 | 0;
-        if (!Caml_curry.app2(cmp, pivot, arr[hi]) || !Caml_curry.app2(cmp, arr[lo], pivot)) {
+        if (!Curry._2(cmp, pivot, arr[hi]) || !Curry._2(cmp, arr[lo], pivot)) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
                 "Sort.array"
               ];
         }
         while(i < j) {
-          while(!Caml_curry.app2(cmp, pivot, arr[i])) {
+          while(!Curry._2(cmp, pivot, arr[i])) {
             i = i + 1 | 0;
           };
-          while(!Caml_curry.app2(cmp, arr[j], pivot)) {
+          while(!Curry._2(cmp, arr[j], pivot)) {
             j = j - 1 | 0;
           };
           if (i < j) {
@@ -172,10 +172,10 @@ function array(cmp, arr) {
   qsort(0, arr.length - 1 | 0);
   for(var i = 1 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
     var val_i = arr[i];
-    if (!Caml_curry.app2(cmp, arr[i - 1 | 0], val_i)) {
+    if (!Curry._2(cmp, arr[i - 1 | 0], val_i)) {
       arr[i] = arr[i - 1 | 0];
       var j = i - 1 | 0;
-      while(j >= 1 && !Caml_curry.app2(cmp, arr[j - 1 | 0], val_i)) {
+      while(j >= 1 && !Curry._2(cmp, arr[j - 1 | 0], val_i)) {
         arr[j] = arr[j - 1 | 0];
         j = j - 1 | 0;
       };

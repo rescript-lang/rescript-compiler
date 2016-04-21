@@ -11,11 +11,11 @@ var Caml_format             = require("../runtime/caml_format");
 var Callback                = require("./callback");
 var Caml_unix               = require("../runtime/caml_unix");
 var Sys                     = require("./sys");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var $$Array                 = require("./array");
 var Printexc                = require("./printexc");
-var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
@@ -242,7 +242,7 @@ Printexc.register_printer(function (param) {
           }
         }
         else {
-          msg = Caml_curry.app1(Printf.sprintf(/* Format */[
+          msg = Curry._1(Printf.sprintf(/* Format */[
                     /* String_literal */{
                       0: "EUNKNOWNERR ",
                       1: /* Int */{
@@ -259,7 +259,7 @@ Printexc.register_printer(function (param) {
                     "EUNKNOWNERR %d"
                   ]), e[0]);
         }
-        return /* Some */[Caml_curry.app3(Printf.sprintf(/* Format */[
+        return /* Some */[Curry._3(Printf.sprintf(/* Format */[
                           /* String_literal */{
                             0: "Unix.Unix_error(Unix.",
                             1: /* String */{
@@ -306,7 +306,7 @@ Printexc.register_printer(function (param) {
 
 function handle_unix_error(f, arg) {
   try {
-    return Caml_curry.app1(f, arg);
+    return Curry._1(f, arg);
   }
   catch (exn){
     if (exn[0] === Unix_error) {
@@ -500,39 +500,39 @@ var SO_005 = Caml_unix.unix_getsockopt
 var SO_006 = Caml_unix.unix_setsockopt
 
 function getsockopt(fd, opt) {
-  return Caml_curry.app3(SO_005, 0, fd, opt);
+  return Curry._3(SO_005, 0, fd, opt);
 }
 
 function setsockopt(fd, opt, v) {
-  return Caml_curry.app4(SO_006, 0, fd, opt, v);
+  return Curry._4(SO_006, 0, fd, opt, v);
 }
 
 function getsockopt_int(fd, opt) {
-  return Caml_curry.app3(SO_005, 1, fd, opt);
+  return Curry._3(SO_005, 1, fd, opt);
 }
 
 function setsockopt_int(fd, opt, v) {
-  return Caml_curry.app4(SO_006, 1, fd, opt, v);
+  return Curry._4(SO_006, 1, fd, opt, v);
 }
 
 function getsockopt_optint(fd, opt) {
-  return Caml_curry.app3(SO_005, 2, fd, opt);
+  return Curry._3(SO_005, 2, fd, opt);
 }
 
 function setsockopt_optint(fd, opt, v) {
-  return Caml_curry.app4(SO_006, 2, fd, opt, v);
+  return Curry._4(SO_006, 2, fd, opt, v);
 }
 
 function getsockopt_float(fd, opt) {
-  return Caml_curry.app3(SO_005, 3, fd, opt);
+  return Curry._3(SO_005, 3, fd, opt);
 }
 
 function setsockopt_float(fd, opt, v) {
-  return Caml_curry.app4(SO_006, 3, fd, opt, v);
+  return Curry._4(SO_006, 3, fd, opt, v);
 }
 
 function getsockopt_error(fd) {
-  return Caml_curry.app3(SO_005, 4, fd, /* SO_ERROR */0);
+  return Curry._3(SO_005, 4, fd, /* SO_ERROR */0);
 }
 
 function getaddrinfo(node, service, opts) {
@@ -1286,7 +1286,7 @@ function establish_server(server_fun, sockaddr) {
       try_set_close_on_exec(s);
       var inchan = Caml_io.caml_ml_open_descriptor_in(s);
       var outchan = Caml_io.caml_ml_open_descriptor_out(s);
-      Caml_curry.app2(server_fun, inchan, outchan);
+      Curry._2(server_fun, inchan, outchan);
       Pervasives.exit(0);
     }
   };

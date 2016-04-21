@@ -55,7 +55,8 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
         "./stdlib/" ^ Filename.chop_extension target 
     | AmdJS
     | NodeJS -> 
-      if Ext_string.starts_with id.name "Caml_" then 
+      let filename = String.uncapitalize id.name in
+      if String_set.mem filename Js_config.runtime_set  then 
         let path = 
           (* For the runtime, only [JS] files are needed, and 
              unlike the stdlib, [bsc] have some pre-built knowledge 
@@ -69,7 +70,7 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
               "runtime"
           | f ->  f  in
         Ext_filename.node_relative_path !Location.input_name
-          (Filename.concat path (String.uncapitalize id.name))        
+          (Filename.concat path filename)        
       else 
         begin match Config_util.find file with   
           (* for some primitive files, no cmj support *)

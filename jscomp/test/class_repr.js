@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 var Oo             = require("../stdlib/oo");
 
 function x_init($$class) {
@@ -16,7 +16,7 @@ function x_init($$class) {
 
 var x = CamlinternalOO.make_class(0, x_init);
 
-var v = Caml_curry.app2(x[0], 0, 3);
+var v = Curry._2(x[0], 0, 3);
 
 var u = Oo.copy(v);
 

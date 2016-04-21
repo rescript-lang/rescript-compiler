@@ -93,7 +93,8 @@ module L = struct
   let strict_directive = "'use strict';"
   let true_ = "true"
   let false_ = "false"
-  let curry = "app" (* curry arbitrary args *)
+  let app = Literals.app (* curry arbitrary args *)
+  let app_array = Literals.app_array
   let tag = "tag"
   let bind = "bind"
   let math = "Math"
@@ -487,12 +488,13 @@ and
             let len = List.length el in
             if 1 <= len && len <= 8 then  
               begin
-                P.string f (Printf.sprintf "app%d" len);
+                P.string f L.app;
+                P.string f (Printf.sprintf "%d" len);
                 P.paren_group f 1 (fun _ -> arguments cxt f (e::el))
               end
             else 
               begin 
-                P.string f  L.curry;                
+                P.string f  L.app_array;                
                 P.paren_group f 1 (fun _ -> arguments cxt f [ e ; E.arr Mutable el])
               end)
     in

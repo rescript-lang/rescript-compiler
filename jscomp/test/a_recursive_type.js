@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
+var Curry = require("../runtime/curry");
 
 function g(x) {
-  return Caml_curry.app1(x[0], x);
+  return Curry._1(x[0], x);
 }
 
 var loop = g(/* A */[g]);

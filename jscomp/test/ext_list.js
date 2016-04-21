@@ -2,8 +2,8 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Curry                   = require("../runtime/curry");
 var $$Array                 = require("../stdlib/array");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 function filter_map(f, _xs) {
@@ -11,7 +11,7 @@ function filter_map(f, _xs) {
     var xs = _xs;
     if (xs) {
       var ys = xs[1];
-      var match = Caml_curry.app1(f, xs[0]);
+      var match = Curry._1(f, xs[0]);
       if (match) {
         return /* :: */[
                 match[0],
@@ -61,7 +61,7 @@ function filter_mapi(f, xs) {
       var i = _i;
       if (xs) {
         var ys = xs[1];
-        var match = Caml_curry.app2(f, i, xs[0]);
+        var match = Curry._2(f, i, xs[0]);
         if (match) {
           return /* :: */[
                   match[0],
@@ -91,7 +91,7 @@ function filter_map2(f, _xs, _ys) {
       if (ys) {
         var vs = ys[1];
         var us = xs[1];
-        var match = Caml_curry.app2(f, xs[0], ys[0]);
+        var match = Curry._2(f, xs[0], ys[0]);
         if (match) {
           return /* :: */[
                   match[0],
@@ -134,7 +134,7 @@ function filter_map2i(f, xs, ys) {
         if (ys) {
           var vs = ys[1];
           var us = xs[1];
-          var match = Caml_curry.app3(f, i, xs[0], ys[0]);
+          var match = Curry._3(f, i, xs[0], ys[0]);
           if (match) {
             return /* :: */[
                     match[0],
@@ -176,7 +176,7 @@ function rev_map_append(f, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       _l2 = /* :: */[
-        Caml_curry.app1(f, l1[0]),
+        Curry._1(f, l1[0]),
         l2
       ];
       _l1 = l1[1];
@@ -201,7 +201,7 @@ function flat_map2(f, lx, ly) {
       if (ly$1) {
         _ly = ly$1[1];
         _lx = lx$1[1];
-        _acc = List.rev_append(Caml_curry.app2(f, lx$1[0], ly$1[0]), acc);
+        _acc = List.rev_append(Curry._2(f, lx$1[0], ly$1[0]), acc);
         continue ;
         
       }
@@ -232,7 +232,7 @@ function flat_map(f, lx) {
     var acc = _acc;
     if (lx$1) {
       _lx = lx$1[1];
-      _acc = List.rev_append(Caml_curry.app1(f, lx$1[0]), acc);
+      _acc = List.rev_append(Curry._1(f, lx$1[0]), acc);
       continue ;
       
     }
@@ -256,7 +256,7 @@ function map2_last(f, l1, l2) {
       }
       else {
         return /* :: */[
-                Caml_curry.app3(f, /* true */1, u, l2[0]),
+                Curry._3(f, /* true */1, u, l2[0]),
                 /* [] */0
               ];
       }
@@ -269,7 +269,7 @@ function map2_last(f, l1, l2) {
     }
     if (exit === 1) {
       if (l2) {
-        var r = Caml_curry.app3(f, /* false */0, u, l2[0]);
+        var r = Curry._3(f, /* false */0, u, l2[0]);
         return /* :: */[
                 r,
                 map2_last(f, l1$1, l2[1])
@@ -300,7 +300,7 @@ function map_last(f, l1) {
     var l1$1 = l1[1];
     var u = l1[0];
     if (l1$1) {
-      var r = Caml_curry.app2(f, /* false */0, u);
+      var r = Curry._2(f, /* false */0, u);
       return /* :: */[
               r,
               map_last(f, l1$1)
@@ -308,7 +308,7 @@ function map_last(f, l1) {
     }
     else {
       return /* :: */[
-              Caml_curry.app2(f, /* true */1, u),
+              Curry._2(f, /* true */1, u),
               /* [] */0
             ];
     }
@@ -405,7 +405,7 @@ function aux(cmp, x, xss) {
   if (xss) {
     var ys = xss[1];
     var y = xss[0];
-    if (Caml_curry.app2(cmp, x, List.hd(y))) {
+    if (Curry._2(cmp, x, List.hd(y))) {
       return /* :: */[
               /* :: */[
                 x,
@@ -471,7 +471,7 @@ function for_all_ret(p, _param) {
     var param = _param;
     if (param) {
       var a = param[0];
-      if (Caml_curry.app1(p, a)) {
+      if (Curry._1(p, a)) {
         _param = param[1];
         continue ;
         
@@ -490,7 +490,7 @@ function for_all_opt(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var v = Caml_curry.app1(p, param[0]);
+      var v = Curry._1(p, param[0]);
       if (v) {
         return v;
       }
@@ -508,7 +508,7 @@ function for_all_opt(p, _param) {
 
 function fold(f, l, init) {
   return List.fold_left(function (_, i) {
-              return Caml_curry.app2(f, i, init);
+              return Curry._2(f, i, init);
             }, init, l);
 }
 
@@ -521,7 +521,7 @@ function rev_map_acc(acc, f, l) {
     if (param) {
       _param = param[1];
       _accu = /* :: */[
-        Caml_curry.app1(f, param[0]),
+        Curry._1(f, param[0]),
         accu
       ];
       continue ;
@@ -536,7 +536,7 @@ function rev_map_acc(acc, f, l) {
 function rev_iter(f, xs) {
   if (xs) {
     rev_iter(f, xs[1]);
-    return Caml_curry.app1(f, xs[0]);
+    return Curry._1(f, xs[0]);
   }
   else {
     return /* () */0;
@@ -549,7 +549,7 @@ function for_all2_no_exn(p, _l1, _l2) {
     var l1 = _l1;
     if (l1) {
       if (l2) {
-        if (Caml_curry.app2(p, l1[0], l2[0])) {
+        if (Curry._2(p, l1[0], l2[0])) {
           _l2 = l2[1];
           _l1 = l1[1];
           continue ;
@@ -577,7 +577,7 @@ function find_no_exn(p, _param) {
     var param = _param;
     if (param) {
       var x = param[0];
-      if (Caml_curry.app1(p, x)) {
+      if (Curry._1(p, x)) {
         return /* Some */[x];
       }
       else {
@@ -596,7 +596,7 @@ function find_opt(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      var v = Caml_curry.app1(p, param[0]);
+      var v = Curry._1(p, param[0]);
       if (v) {
         return v;
       }
@@ -621,7 +621,7 @@ function split_map(f, xs) {
     var cs = _cs;
     var bs = _bs;
     if (xs$1) {
-      var match = Caml_curry.app1(f, xs$1[0]);
+      var match = Curry._1(f, xs$1[0]);
       _xs = xs$1[1];
       _cs = /* :: */[
         match[1],

@@ -3,8 +3,8 @@
 
 var Caml_obj       = require("../runtime/caml_obj");
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 
 var shared = [
   "move",
@@ -63,7 +63,7 @@ function restricted_point_init($$class) {
         },
         bump,
         function (self$neg1) {
-          return Caml_curry.app2(self$neg1[0][move], self$neg1, 1);
+          return Curry._2(self$neg1[0][move], self$neg1, 1);
         }
       ]);
   return function (_, self, x_init) {
@@ -79,7 +79,7 @@ function restricted_point$prime_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, 1);
   var obj_init = inh[0];
   return function (_, self, x) {
-    return Caml_curry.app2(obj_init, self, x);
+    return Curry._2(obj_init, self, x);
   };
 }
 
@@ -89,7 +89,7 @@ function restricted_point2$prime_init($$class) {
   var inh = CamlinternalOO.inherits($$class, 0, 0, shared$2, restricted_point, 1);
   var obj_init = inh[0];
   return function (_, self, x) {
-    return Caml_curry.app2(obj_init, self, x);
+    return Curry._2(obj_init, self, x);
   };
 }
 
@@ -115,7 +115,7 @@ Caml_obj.caml_update_dummy(abstract_point, [
         var get_x = ids[1];
         var get_offset = ids[2];
         CamlinternalOO.set_method($$class, get_offset, function (self$neg5) {
-              return Caml_curry.app1(self$neg5[0][get_x], self$neg5) - self$neg5[x_init] | 0;
+              return Curry._1(self$neg5[0][get_x], self$neg5) - self$neg5[x_init] | 0;
             });
         return function (_, self, x_init$1) {
           var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -147,7 +147,7 @@ function point_init($$class) {
       ]);
   return function (_, self, x_init) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x_init);
+    Curry._2(obj_init, self$1, x_init);
     self$1[x] = x_init;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -174,7 +174,7 @@ function colored_point_init($$class) {
       });
   return function (_, self, x, c$1) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     self$1[c] = c$1;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -187,19 +187,19 @@ var colored_point = CamlinternalOO.make_class([
       "get_x"
     ], colored_point_init);
 
-var p$prime = Caml_curry.app3(colored_point[0], 0, 5, "red");
+var p$prime = Curry._3(colored_point[0], 0, 5, "red");
 
 eq('File "class4_test.ml", line 67, characters 5-12', /* tuple */[
       5,
       "red"
     ], /* tuple */[
-      p$prime.tag === 248 ? Caml_curry.js1(291546447, 1, p$prime) : p$prime.get_x,
-      p$prime.tag === 248 ? Caml_curry.js1(-899911325, 2, p$prime) : p$prime.color
+      p$prime.tag === 248 ? Curry.js1(291546447, 1, p$prime) : p$prime.get_x,
+      p$prime.tag === 248 ? Curry.js1(-899911325, 2, p$prime) : p$prime.color
     ]);
 
 function get_succ_x(p) {
   return (
-          p.tag === 248 ? Caml_curry.js1(291546447, 3, p) : p.get_x
+          p.tag === 248 ? Curry.js1(291546447, 3, p) : p.get_x
         ) + 1 | 0;
 }
 
@@ -207,7 +207,7 @@ eq('File "class4_test.ml", line 71, characters 12-19', 6, get_succ_x(p$prime));
 
 function set_x(p) {
   if (p.tag === 248) {
-    return Caml_curry.js1(-97543333, 4, p);
+    return Curry.js1(-97543333, 4, p);
   }
   else {
     return p.set_x;
@@ -215,7 +215,7 @@ function set_x(p) {
 }
 
 function incr(p) {
-  return Caml_curry.app1(set_x(p), get_succ_x(p));
+  return Curry._1(set_x(p), get_succ_x(p));
 }
 
 Mt.from_pair_suites("class4_test.ml", suites[0]);

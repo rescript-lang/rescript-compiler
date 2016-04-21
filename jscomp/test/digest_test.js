@@ -5,9 +5,9 @@ var Bytes       = require("../stdlib/bytes");
 var Pervasives  = require("../stdlib/pervasives");
 var Mt          = require("./mt");
 var Digest      = require("../stdlib/digest");
+var Curry       = require("../runtime/curry");
 var Printf      = require("../stdlib/printf");
 var $$Array     = require("../stdlib/array");
-var Caml_curry  = require("../runtime/caml_curry");
 var Caml_string = require("../runtime/caml_string");
 var Ext_array   = require("./ext_array");
 
@@ -230,7 +230,7 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           ]
         ], $$Array.to_list($$Array.map(function (i) {
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                          Curry._1(Printf.sprintf(/* Format */[
                                     /* Int */{
                                       0: /* Int_d */0,
                                       1: /* No_padding */0,

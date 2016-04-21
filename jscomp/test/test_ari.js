@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var VV         = require("VV");
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
-var U          = require("U");
+var Curry = require("../runtime/curry");
+var VV    = require("VV");
+var List  = require("../stdlib/list");
+var U     = require("U");
 
 function f(x) {
   return function (param) {
@@ -17,7 +17,7 @@ function f1(x, y) {
 }
 
 function f3(g, x) {
-  return Caml_curry.app1(g, x);
+  return Curry._1(g, x);
 }
 
 function f2(param) {

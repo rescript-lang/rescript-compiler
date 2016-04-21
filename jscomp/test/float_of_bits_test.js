@@ -5,9 +5,9 @@ var Caml_int64 = require("../runtime/caml_int64");
 var Caml_float = require("../runtime/caml_float");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
 var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
 var List       = require("../stdlib/list");
 
 var one_float = /* int64 */[
@@ -32,7 +32,7 @@ function from_pairs() {
                       var i32 = param[0];
                       return /* :: */[
                               /* tuple */[
-                                Caml_curry.app1(Printf.sprintf(/* Format */[
+                                Curry._1(Printf.sprintf(/* Format */[
                                           /* String_literal */{
                                             0: "int32_float_of_bits ",
                                             1: /* Int */{
@@ -59,7 +59,7 @@ function from_pairs() {
                               ],
                               /* :: */[
                                 /* tuple */[
-                                  Caml_curry.app1(Printf.sprintf(/* Format */[
+                                  Curry._1(Printf.sprintf(/* Format */[
                                             /* String_literal */{
                                               0: "int32_bits_of_float ",
                                               1: /* Int */{

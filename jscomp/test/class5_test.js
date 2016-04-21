@@ -3,8 +3,8 @@
 
 var Pervasives     = require("../stdlib/pervasives");
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 var List           = require("../stdlib/list");
 
 var shared = [
@@ -64,7 +64,7 @@ function printable_point_init($$class) {
         },
         print,
         function (self$neg1) {
-          return "" + Caml_curry.app1(self$neg1[0][get_x], self$neg1);
+          return "" + Curry._1(self$neg1[0][get_x], self$neg1);
         }
       ]);
   return function (_, self, x_init) {
@@ -99,12 +99,12 @@ function printable_colored_point_init($$class) {
   var obj_init = inh[0];
   var print$1 = inh[4];
   CamlinternalOO.set_method($$class, print, function (self$neg2) {
-        return "(" + (Caml_curry.app1(print$1, self$neg2) + (", " + (Caml_curry.app1(self$neg2[0][color], self$neg2) + ")")));
+        return "(" + (Curry._1(print$1, self$neg2) + (", " + (Curry._1(self$neg2[0][color], self$neg2) + ")")));
       });
   return function (_, self, y, c$1) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[c] = c$1;
-    Caml_curry.app2(obj_init, self$1, y);
+    Curry._2(obj_init, self$1, y);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -116,9 +116,9 @@ var printable_colored_point = CamlinternalOO.make_class([
       "get_x"
     ], printable_colored_point_init);
 
-var p = Caml_curry.app3(printable_colored_point[0], 0, 17, "red");
+var p = Curry._3(printable_colored_point[0], 0, 17, "red");
 
-eq('File "class5_test.ml", line 32, characters 12-19', p.tag === 248 ? Caml_curry.js1(-930392019, 1, p) : p.print, "(17, red)");
+eq('File "class5_test.ml", line 32, characters 12-19', p.tag === 248 ? Curry.js1(-930392019, 1, p) : p.print, "(17, red)");
 
 function ref_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, [
@@ -151,16 +151,16 @@ var ref = CamlinternalOO.make_class([
       "set"
     ], ref_init);
 
-var r = Caml_curry.app2(ref[0], 0, 1);
+var r = Curry._2(ref[0], 0, 1);
 
 if (r.tag === 248) {
-  Caml_curry.js2(5741474, 2, r, 2);
+  Curry.js2(5741474, 2, r, 2);
 }
 else {
-  Caml_curry.app1(r.set.bind(r), 2);
+  Curry._1(r.set.bind(r), 2);
 }
 
-var v = r.tag === 248 ? Caml_curry.js1(5144726, 3, r) : r.get;
+var v = r.tag === 248 ? Curry.js1(5144726, 3, r) : r.get;
 
 eq('File "class5_test.ml", line 43, characters 12-19', v, 2);
 
@@ -188,7 +188,7 @@ function intlist_init($$class) {
 
 var intlist = CamlinternalOO.make_class(shared$2, intlist_init);
 
-var l = Caml_curry.app2(intlist[0], 0, /* :: */[
+var l = Curry._2(intlist[0], 0, /* :: */[
       1,
       /* :: */[
         2,
@@ -199,9 +199,9 @@ var l = Caml_curry.app2(intlist[0], 0, /* :: */[
       ]
     ]);
 
-eq('File "class5_test.ml", line 54, characters 5-12', 6, l.tag === 248 ? Caml_curry.js3(-1010803711, 4, l, function (x, y) {
+eq('File "class5_test.ml", line 54, characters 5-12', 6, l.tag === 248 ? Curry.js3(-1010803711, 4, l, function (x, y) {
             return x + y | 0;
-          }, 0) : Caml_curry.app2(l.fold.bind(l), function (x, y) {
+          }, 0) : Curry._2(l.fold.bind(l), function (x, y) {
             return x + y | 0;
           }, 0));
 
@@ -229,7 +229,7 @@ function intlist2_init($$class) {
 
 var intlist2 = CamlinternalOO.make_class(shared$2, intlist2_init);
 
-var l$1 = Caml_curry.app2(intlist2[0], 0, /* :: */[
+var l$1 = Curry._2(intlist2[0], 0, /* :: */[
       1,
       /* :: */[
         2,
@@ -244,14 +244,14 @@ eq('File "class5_test.ml", line 67, characters 5-12', /* tuple */[
       6,
       "1 2 3 "
     ], /* tuple */[
-      l$1.tag === 248 ? Caml_curry.js3(-1010803711, 5, l$1, function (x, y) {
+      l$1.tag === 248 ? Curry.js3(-1010803711, 5, l$1, function (x, y) {
               return x + y | 0;
-            }, 0) : Caml_curry.app2(l$1.fold.bind(l$1), function (x, y) {
+            }, 0) : Curry._2(l$1.fold.bind(l$1), function (x, y) {
               return x + y | 0;
             }, 0),
-      l$1.tag === 248 ? Caml_curry.js3(-1010803711, 6, l$1, function (s, x) {
+      l$1.tag === 248 ? Curry.js3(-1010803711, 6, l$1, function (s, x) {
               return s + (x + " ");
-            }, "") : Caml_curry.app2(l$1.fold.bind(l$1), function (s, x) {
+            }, "") : Curry._2(l$1.fold.bind(l$1), function (s, x) {
               return s + (x + " ");
             }, "")
     ]);
@@ -291,12 +291,12 @@ function distance_point_init($$class) {
   var x = inh[1];
   CamlinternalOO.set_method($$class, distance, function (self$neg7, other) {
         return Pervasives.abs((
-                    other.tag === 248 ? Caml_curry.js1(291546447, 7, other) : other.get_x
+                    other.tag === 248 ? Curry.js1(291546447, 7, other) : other.get_x
                   ) - self$neg7[x] | 0);
       });
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -307,11 +307,11 @@ var distance_point = CamlinternalOO.make_class([
       "get_x"
     ], distance_point_init);
 
-var p$1 = Caml_curry.app2(distance_point[0], 0, 3);
+var p$1 = Curry._2(distance_point[0], 0, 3);
 
-var match_000 = p$1.tag === 248 ? Caml_curry.js2(-335965387, 8, p$1, Caml_curry.app2(point[0], 0, 8)) : Caml_curry.app1(p$1.distance.bind(p$1), Caml_curry.app2(point[0], 0, 8));
+var match_000 = p$1.tag === 248 ? Curry.js2(-335965387, 8, p$1, Curry._2(point[0], 0, 8)) : Curry._1(p$1.distance.bind(p$1), Curry._2(point[0], 0, 8));
 
-var match_001 = p$1.tag === 248 ? Caml_curry.js2(-335965387, 9, p$1, Caml_curry.app3(printable_colored_point[0], 0, 1, "blue")) : Caml_curry.app1(p$1.distance.bind(p$1), Caml_curry.app3(printable_colored_point[0], 0, 1, "blue"));
+var match_001 = p$1.tag === 248 ? Curry.js2(-335965387, 9, p$1, Curry._3(printable_colored_point[0], 0, 1, "blue")) : Curry._1(p$1.distance.bind(p$1), Curry._3(printable_colored_point[0], 0, 1, "blue"));
 
 var b = match_001;
 

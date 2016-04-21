@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Runtime    = require("@runtime");
-var UI         = require("@ui");
-var Caml_curry = require("../runtime/caml_curry");
-var BUI        = require("@blp/ui");
+var Runtime = require("@runtime");
+var Curry   = require("../runtime/curry");
+var UI      = require("@ui");
+var BUI     = require("@blp/ui");
 
 var data = /* array */[
   /* record */[
@@ -22,10 +22,10 @@ var data = /* array */[
 ];
 
 function ui_layout(compile, lookup, appContext) {
-  var init = Caml_curry.app1(compile, "bid  - ask");
+  var init = Curry._1(compile, "bid  - ask");
   var computeFunction = [function (env) {
-      return Caml_curry.app1(init, function (key) {
-                  return Caml_curry.app2(lookup, env, key);
+      return Curry._1(init, function (key) {
+                  return Curry._2(lookup, env, key);
                 });
     }];
   var hw1 = new BUI.HostedWindow();
@@ -43,8 +43,8 @@ function ui_layout(compile, lookup, appContext) {
   stackPanel.minHeight = 10000;
   stackPanel.minWidth = 4000;
   stackPanel.addChild(grid);
-  Caml_curry.app1(stackPanel.addChild.bind(stackPanel), inputCode);
-  Caml_curry.app1(stackPanel.addChild.bind(stackPanel), button);
+  Curry._1(stackPanel.addChild.bind(stackPanel), inputCode);
+  Curry._1(stackPanel.addChild.bind(stackPanel), button);
   var u = {
     "width": 200
   };
@@ -81,12 +81,12 @@ function ui_layout(compile, lookup, appContext) {
   inputCode.minHeight = 100;
   button.text = "update formula";
   button.minHeight = 20;
-  Caml_curry.app2(button.on.bind(button), "click", function () {
+  Curry._2(button.on.bind(button), "click", function () {
         try {
-          var hot_function = Caml_curry.app1(compile, inputCode.text);
+          var hot_function = Curry._1(compile, inputCode.text);
           computeFunction[0] = function (env) {
-            return Caml_curry.app1(hot_function, function (key) {
-                        return Caml_curry.app2(lookup, env, key);
+            return Curry._1(hot_function, function (key) {
+                        return Curry._2(lookup, env, key);
                       });
           };
           return /* () */0;
@@ -100,7 +100,7 @@ function ui_layout(compile, lookup, appContext) {
                     var price = param[/* price */1];
                     var bid = price + 20 * Math.random();
                     var ask = price + 20 * Math.random();
-                    var result = Caml_curry.app1(computeFunction[0], {
+                    var result = Curry._1(computeFunction[0], {
                           "bid": bid,
                           "ask": ask
                         });

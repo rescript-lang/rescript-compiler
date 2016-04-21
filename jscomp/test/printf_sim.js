@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Printf     = require("../stdlib/printf");
-var Caml_curry = require("../runtime/caml_curry");
+var Curry  = require("../runtime/curry");
+var Printf = require("../stdlib/printf");
 
-Caml_curry.app1(Printf.printf(/* Format */[
+Curry._1(Printf.printf(/* Format */[
           /* Int64 */{
             0: /* Int_d */0,
             1: /* No_padding */0,
@@ -44,7 +44,7 @@ Printf.printf(/* Format */[
       "hello\nhi\n"
     ]);
 
-Caml_curry.app2(Printf.printf(/* Format */[
+Curry._2(Printf.printf(/* Format */[
           /* Int */{
             0: /* Int_d */0,
             1: /* Arg_padding */{
@@ -65,7 +65,7 @@ Caml_curry.app2(Printf.printf(/* Format */[
           "%*d\n\n"
         ]), 32, 3);
 
-Caml_curry.app1(Printf.printf(/* Format */[
+Curry._1(Printf.printf(/* Format */[
           /* String */{
             0: /* No_padding */0,
             1: /* End_of_format */0,
@@ -73,7 +73,7 @@ Caml_curry.app1(Printf.printf(/* Format */[
             tag: 2
           },
           "%s"
-        ]), Caml_curry.app2(Printf.sprintf(/* Format */[
+        ]), Curry._2(Printf.sprintf(/* Format */[
               /* Int */{
                 0: /* Int_d */0,
                 1: /* Arg_padding */{

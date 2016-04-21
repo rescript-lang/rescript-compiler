@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt    = require("./mt");
+var Curry = require("../runtime/curry");
 
 var v = [3];
 
@@ -10,7 +10,7 @@ function f(h) {
   v[0] = v[0] + 1 | 0;
   var partial_arg = 3;
   return function (param) {
-    return Caml_curry.app2(h, partial_arg, param);
+    return Curry._2(h, partial_arg, param);
   };
 }
 
@@ -30,7 +30,7 @@ function f$1(h) {
   v$1[0] = v$1[0] + 1 | 0;
   var partial_arg = 3;
   return function (param) {
-    return Caml_curry.app2(h, partial_arg, param);
+    return Curry._2(h, partial_arg, param);
   };
 }
 
@@ -47,7 +47,7 @@ var b = v$1[0];
 var v$2 = [3];
 
 function f$2(h) {
-  return Caml_curry.app2(h, 2, (v$2[0] = v$2[0] + 1 | 0, 3));
+  return Curry._2(h, 2, (v$2[0] = v$2[0] + 1 | 0, 3));
 }
 
 f$2(function (prim, prim$1) {
@@ -66,7 +66,7 @@ function f$3(h, _) {
   v$3[0] = v$3[0] + 1 | 0;
   var partial_arg = 9;
   return function (param) {
-    return Caml_curry.app2(h, partial_arg, param);
+    return Curry._2(h, partial_arg, param);
   };
 }
 

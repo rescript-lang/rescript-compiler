@@ -5,9 +5,9 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Arith_syntax            = require("./arith_syntax");
 var Mt                      = require("./mt");
 var Lexing                  = require("../stdlib/lexing");
+var Curry                   = require("../runtime/curry");
 var Number_lexer            = require("./number_lexer");
 var Arith_lexer             = require("./arith_lexer");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 var Arith_parser            = require("./arith_parser");
 
@@ -16,7 +16,7 @@ function get_tokens(lex, str) {
   var _acc = /* [] */0;
   while(true) {
     var acc = _acc;
-    var v = Caml_curry.app1(lex, buf);
+    var v = Curry._1(lex, buf);
     if (v === /* EOF */7) {
       return List.rev(acc);
     }

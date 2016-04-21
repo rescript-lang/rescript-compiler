@@ -4,8 +4,8 @@
 var Caml_obj        = require("../runtime/caml_obj");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Mt              = require("./mt");
+var Curry           = require("../runtime/curry");
 var CamlinternalOO  = require("../stdlib/camlinternalOO");
-var Caml_curry      = require("../runtime/caml_curry");
 var Oo              = require("../stdlib/oo");
 
 var shared = ["copy"];
@@ -79,23 +79,23 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$2, point_init);
 
-var p = Caml_curry.app2(point[0], 0, 55);
+var p = Curry._2(point[0], 0, 55);
 
 var q = Oo.copy(p);
 
 if (q.tag === 248) {
-  Caml_curry.js2(-933174511, 1, q, 7);
+  Curry.js2(-933174511, 1, q, 7);
 }
 else {
-  Caml_curry.app1(q.move.bind(q), 7);
+  Curry._1(q.move.bind(q), 7);
 }
 
 eq('File "class7_test.ml", line 22, characters 5-12', /* tuple */[
       55,
       62
     ], /* tuple */[
-      p.tag === 248 ? Caml_curry.js1(291546447, 2, p) : p.get_x,
-      q.tag === 248 ? Caml_curry.js1(291546447, 3, q) : q.get_x
+      p.tag === 248 ? Curry.js1(291546447, 2, p) : p.get_x,
+      q.tag === 248 ? Curry.js1(291546447, 3, q) : q.get_x
     ]);
 
 function ref_init($$class) {
@@ -168,8 +168,8 @@ function backup_ref_init($$class) {
   var obj_init$1 = inh$1[0];
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
-    Caml_curry.app1(obj_init$1, self$1);
+    Curry._2(obj_init, self$1, x);
+    Curry._1(obj_init$1, self$1);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -187,12 +187,12 @@ function get(_p, _n) {
     var p = _p;
     if (n) {
       _n = n - 1 | 0;
-      _p = p.tag === 248 ? Caml_curry.js1(-357537970, 7, p) : p.restore;
+      _p = p.tag === 248 ? Curry.js1(-357537970, 7, p) : p.restore;
       continue ;
       
     }
     else if (p.tag === 248) {
-      return Caml_curry.js1(5144726, 6, p);
+      return Curry.js1(5144726, 6, p);
     }
     else {
       return p.get;
@@ -200,34 +200,34 @@ function get(_p, _n) {
   };
 }
 
-var p$1 = Caml_curry.app2(backup_ref[0], 0, 0);
+var p$1 = Curry._2(backup_ref[0], 0, 0);
 
 if (p$1.tag === 248) {
-  Caml_curry.js1(-867333315, 8, p$1);
+  Curry.js1(-867333315, 8, p$1);
 }
 else {
   p$1.save;
 }
 
 if (p$1.tag === 248) {
-  Caml_curry.js2(5741474, 9, p$1, 1);
+  Curry.js2(5741474, 9, p$1, 1);
 }
 else {
-  Caml_curry.app1(p$1.set.bind(p$1), 1);
+  Curry._1(p$1.set.bind(p$1), 1);
 }
 
 if (p$1.tag === 248) {
-  Caml_curry.js1(-867333315, 10, p$1);
+  Curry.js1(-867333315, 10, p$1);
 }
 else {
   p$1.save;
 }
 
 if (p$1.tag === 248) {
-  Caml_curry.js2(5741474, 11, p$1, 2);
+  Curry.js2(5741474, 11, p$1, 2);
 }
 else {
-  Caml_curry.app1(p$1.set.bind(p$1), 2);
+  Curry._1(p$1.set.bind(p$1), 2);
 }
 
 eq('File "class7_test.ml", line 47, characters 5-12', /* array */[
@@ -300,8 +300,8 @@ function backup_ref2_init($$class) {
   var obj_init$1 = inh$1[0];
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
-    Caml_curry.app1(obj_init$1, self$1);
+    Curry._2(obj_init, self$1, x);
+    Curry._1(obj_init$1, self$1);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -314,34 +314,34 @@ var backup_ref2 = CamlinternalOO.make_class([
       "set"
     ], backup_ref2_init);
 
-var p$2 = Caml_curry.app2(backup_ref2[0], 0, 0);
+var p$2 = Curry._2(backup_ref2[0], 0, 0);
 
 if (p$2.tag === 248) {
-  Caml_curry.js1(-867333315, 12, p$2);
+  Curry.js1(-867333315, 12, p$2);
 }
 else {
   p$2.save;
 }
 
 if (p$2.tag === 248) {
-  Caml_curry.js2(5741474, 13, p$2, 1);
+  Curry.js2(5741474, 13, p$2, 1);
 }
 else {
-  Caml_curry.app1(p$2.set.bind(p$2), 1);
+  Curry._1(p$2.set.bind(p$2), 1);
 }
 
 if (p$2.tag === 248) {
-  Caml_curry.js1(-867333315, 14, p$2);
+  Curry.js1(-867333315, 14, p$2);
 }
 else {
   p$2.save;
 }
 
 if (p$2.tag === 248) {
-  Caml_curry.js2(5741474, 15, p$2, 2);
+  Curry.js2(5741474, 15, p$2, 2);
 }
 else {
-  Caml_curry.app1(p$2.set.bind(p$2), 2);
+  Curry._1(p$2.set.bind(p$2), 2);
 }
 
 eq('File "class7_test.ml", line 63, characters 5-12', /* array */[

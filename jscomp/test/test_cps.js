@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Curry      = require("../runtime/curry");
 var Caml_array = require("../runtime/caml_array");
-var Caml_curry = require("../runtime/caml_curry");
 
 function f(_n, _acc) {
   while(true) {
@@ -12,7 +12,7 @@ function f(_n, _acc) {
       _acc = (function(n,acc){
       return function () {
         console.log("" + n);
-        return Caml_curry.app1(acc, /* () */0);
+        return Curry._1(acc, /* () */0);
       }
       }(n,acc));
       _n = n - 1 | 0;
@@ -20,7 +20,7 @@ function f(_n, _acc) {
       
     }
     else {
-      return Caml_curry.app1(acc, /* () */0);
+      return Curry._1(acc, /* () */0);
     }
   };
 }

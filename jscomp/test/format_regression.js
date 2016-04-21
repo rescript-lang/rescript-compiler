@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 
 function peek_queue() {
   throw [
@@ -58,7 +58,7 @@ function advance_loop(state) {
     }
     else {
       take_queue(state[/* pp_queue */3]);
-      Caml_curry.app1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
+      Curry._1(format_pp_token(state, size$1 < 0 ? 1000000010 : size$1), match[/* token */1]);
       state[/* pp_left_total */1] = match[/* length */2] + state[/* pp_left_total */1] | 0;
       continue ;
       

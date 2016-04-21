@@ -3,8 +3,8 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
+var Curry                   = require("../runtime/curry");
 var Caml_array              = require("../runtime/caml_array");
-var Caml_curry              = require("../runtime/caml_curry");
 
 function init(l, f) {
   if (l) {
@@ -15,9 +15,9 @@ function init(l, f) {
           ];
     }
     else {
-      var res = Caml_array.caml_make_vect(l, Caml_curry.app1(f, 0));
+      var res = Caml_array.caml_make_vect(l, Curry._1(f, 0));
       for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
-        res[i] = Caml_curry.app1(f, i);
+        res[i] = Curry._1(f, i);
       }
       return res;
     }
@@ -101,7 +101,7 @@ function blit(a1, ofs1, a2, ofs2, len) {
 
 function iter(f, a) {
   for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
-    Caml_curry.app1(f, a[i]);
+    Curry._1(f, a[i]);
   }
   return /* () */0;
 }
@@ -109,9 +109,9 @@ function iter(f, a) {
 function map(f, a) {
   var l = a.length;
   if (l) {
-    var r = Caml_array.caml_make_vect(l, Caml_curry.app1(f, a[0]));
+    var r = Caml_array.caml_make_vect(l, Curry._1(f, a[0]));
     for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
-      r[i] = Caml_curry.app1(f, a[i]);
+      r[i] = Curry._1(f, a[i]);
     }
     return r;
   }
@@ -122,7 +122,7 @@ function map(f, a) {
 
 function iteri(f, a) {
   for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
-    Caml_curry.app2(f, i, a[i]);
+    Curry._2(f, i, a[i]);
   }
   return /* () */0;
 }
@@ -130,9 +130,9 @@ function iteri(f, a) {
 function mapi(f, a) {
   var l = a.length;
   if (l) {
-    var r = Caml_array.caml_make_vect(l, Caml_curry.app2(f, 0, a[0]));
+    var r = Caml_array.caml_make_vect(l, Curry._2(f, 0, a[0]));
     for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
-      r[i] = Caml_curry.app2(f, i, a[i]);
+      r[i] = Curry._2(f, i, a[i]);
     }
     return r;
   }
@@ -206,7 +206,7 @@ function of_list(l) {
 function fold_left(f, x, a) {
   var r = x;
   for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
-    r = Caml_curry.app2(f, r, a[i]);
+    r = Curry._2(f, r, a[i]);
   }
   return r;
 }
@@ -214,7 +214,7 @@ function fold_left(f, x, a) {
 function fold_right(f, a, x) {
   var r = x;
   for(var i = a.length - 1 | 0; i>= 0; --i){
-    r = Caml_curry.app2(f, a[i], r);
+    r = Curry._2(f, a[i], r);
   }
   return r;
 }
@@ -226,15 +226,15 @@ function sort(cmp, a) {
     var i31 = ((i + i | 0) + i | 0) + 1 | 0;
     var x = i31;
     if ((i31 + 2 | 0) < l) {
-      if (Caml_curry.app2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
+      if (Curry._2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
         x = i31 + 1 | 0;
       }
-      if (Caml_curry.app2(cmp, a[x], a[i31 + 2 | 0]) < 0) {
+      if (Curry._2(cmp, a[x], a[i31 + 2 | 0]) < 0) {
         x = i31 + 2 | 0;
       }
       return x;
     }
-    else if ((i31 + 1 | 0) < l && Caml_curry.app2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
+    else if ((i31 + 1 | 0) < l && Curry._2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
       return i31 + 1 | 0;
     }
     else if (i31 < l) {
@@ -255,7 +255,7 @@ function sort(cmp, a) {
       while(true) {
         var i$1 = _i;
         var j = maxson(l$1, i$1);
-        if (Caml_curry.app2(cmp, a[j], e$1) > 0) {
+        if (Curry._2(cmp, a[j], e$1) > 0) {
           a[i$1] = a[j];
           _i = j;
           continue ;
@@ -313,7 +313,7 @@ function sort(cmp, a) {
               ]
             ];
       }
-      if (Caml_curry.app2(cmp, a[father], e) < 0) {
+      if (Curry._2(cmp, a[father], e) < 0) {
         a[i] = a[father];
         if (father > 0) {
           _i = father;
@@ -366,7 +366,7 @@ function stable_sort(cmp, a) {
       var i2 = _i2;
       var s1 = _s1;
       var i1 = _i1;
-      if (Caml_curry.app2(cmp, s1, s2) <= 0) {
+      if (Curry._2(cmp, s1, s2) <= 0) {
         dst[d] = s1;
         var i1$1 = i1 + 1 | 0;
         if (i1$1 < src1r) {
@@ -400,7 +400,7 @@ function stable_sort(cmp, a) {
     for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
       var e = a[srcofs + i | 0];
       var j = (dstofs + i | 0) - 1 | 0;
-      while(j >= dstofs && Caml_curry.app2(cmp, dst[j], e) > 0) {
+      while(j >= dstofs && Curry._2(cmp, dst[j], e) > 0) {
         dst[j + 1 | 0] = dst[j];
         j = j - 1 | 0;
       };

@@ -6,7 +6,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Pervasives              = require("./pervasives");
 var Caml_lexer              = require("../runtime/caml_lexer");
 var Sys                     = require("./sys");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var Caml_string             = require("../runtime/caml_string");
 
 function engine(tbl, state, buf) {
@@ -53,7 +53,7 @@ function from_function(f) {
             var read_fun = f;
             var aux_buffer = partial_arg;
             var lexbuf = param;
-            var read = Caml_curry.app2(read_fun, aux_buffer, aux_buffer.length);
+            var read = Curry._2(read_fun, aux_buffer, aux_buffer.length);
             var n = read > 0 ? read : (lexbuf[/* lex_eof_reached */8] = /* true */1, 0);
             if ((lexbuf[/* lex_buffer_len */2] + n | 0) > lexbuf[/* lex_buffer */1].length) {
               if (((lexbuf[/* lex_buffer_len */2] - lexbuf[/* lex_start_pos */4] | 0) + n | 0) <= lexbuf[/* lex_buffer */1].length) {

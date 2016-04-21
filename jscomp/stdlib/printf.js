@@ -2,27 +2,27 @@
 'use strict';
 
 var Pervasives         = require("./pervasives");
+var Curry              = require("../runtime/curry");
 var Buffer             = require("./buffer");
-var Caml_curry         = require("../runtime/caml_curry");
 var CamlinternalFormat = require("./camlinternalFormat");
 
 function kfprintf(k, o, param) {
   return CamlinternalFormat.make_printf(function (o, acc) {
               CamlinternalFormat.output_acc(o, acc);
-              return Caml_curry.app1(k, o);
+              return Curry._1(k, o);
             }, o, /* End_of_acc */0, param[0]);
 }
 
 function kbprintf(k, b, param) {
   return CamlinternalFormat.make_printf(function (b, acc) {
               CamlinternalFormat.bufput_acc(b, acc);
-              return Caml_curry.app1(k, b);
+              return Curry._1(k, b);
             }, b, /* End_of_acc */0, param[0]);
 }
 
 function ikfprintf(k, oc, param) {
   return CamlinternalFormat.make_printf(function (oc, _) {
-              return Caml_curry.app1(k, oc);
+              return Curry._1(k, oc);
             }, oc, /* End_of_acc */0, param[0]);
 }
 
@@ -56,7 +56,7 @@ function ksprintf(k, param) {
   var k$prime = function (_, acc) {
     var buf = Buffer.create(64);
     CamlinternalFormat.strput_acc(buf, acc);
-    return Caml_curry.app1(k, Buffer.contents(buf));
+    return Curry._1(k, Buffer.contents(buf));
   };
   return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[0]);
 }

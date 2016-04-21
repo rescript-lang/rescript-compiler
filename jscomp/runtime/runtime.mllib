@@ -1,4 +1,4 @@
-caml_curry
+
 caml_array
 caml_string
 caml_oo
@@ -23,3 +23,5 @@ typed_array
 js
 fn
 js_error
+caml_curry
+curry

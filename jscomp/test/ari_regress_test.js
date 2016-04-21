@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt    = require("./mt");
+var Curry = require("../runtime/curry");
 
 var g = 7;
 
@@ -49,7 +49,7 @@ var suites_001 = /* :: */[
     function () {
       return /* Eq */{
               0: 14,
-              1: (Caml_curry.app1(v, 1), Caml_curry.app1(v, 1)),
+              1: (Curry._1(v, 1), Curry._1(v, 1)),
               length: 2,
               tag: 0
             };

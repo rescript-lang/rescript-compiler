@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
+var Curry = require("../runtime/curry");
 
 function sum_float_array(arr) {
   var v = 0;
@@ -22,7 +22,7 @@ function sum_int_array(arr) {
 function sum_poly(zero, add, arr) {
   var v = zero;
   for(var i = 0 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
-    v = Caml_curry.app2(add, v, arr[i]);
+    v = Curry._2(add, v, arr[i]);
   }
   return v;
 }

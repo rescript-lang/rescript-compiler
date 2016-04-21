@@ -11,11 +11,11 @@ var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Char                     = require("./char");
 var Sys                      = require("./sys");
+var Curry                    = require("../runtime/curry");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
 var $$String                 = require("./string");
-var Caml_curry               = require("../runtime/caml_curry");
 var Caml_string              = require("../runtime/caml_string");
 
 function create_char_set() {
@@ -1035,11 +1035,11 @@ function fmtty_rel_det(param) {
           var fa = match[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa, /* Refl */0);
+                    Curry._1(fa, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af, /* Refl */0);
+                    Curry._1(af, /* Refl */0);
                     return /* Refl */0;
                   },
                   match[2],
@@ -1051,11 +1051,11 @@ function fmtty_rel_det(param) {
           var fa$1 = match$1[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$1, /* Refl */0);
+                    Curry._1(fa$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$1, /* Refl */0);
+                    Curry._1(af$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$1[2],
@@ -1067,11 +1067,11 @@ function fmtty_rel_det(param) {
           var fa$2 = match$2[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$2, /* Refl */0);
+                    Curry._1(fa$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$2, /* Refl */0);
+                    Curry._1(af$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$2[2],
@@ -1083,11 +1083,11 @@ function fmtty_rel_det(param) {
           var fa$3 = match$3[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$3, /* Refl */0);
+                    Curry._1(fa$3, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$3, /* Refl */0);
+                    Curry._1(af$3, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$3[2],
@@ -1099,11 +1099,11 @@ function fmtty_rel_det(param) {
           var fa$4 = match$4[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$4, /* Refl */0);
+                    Curry._1(fa$4, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$4, /* Refl */0);
+                    Curry._1(af$4, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$4[2],
@@ -1115,11 +1115,11 @@ function fmtty_rel_det(param) {
           var fa$5 = match$5[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$5, /* Refl */0);
+                    Curry._1(fa$5, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$5, /* Refl */0);
+                    Curry._1(af$5, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$5[2],
@@ -1131,11 +1131,11 @@ function fmtty_rel_det(param) {
           var fa$6 = match$6[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$6, /* Refl */0);
+                    Curry._1(fa$6, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$6, /* Refl */0);
+                    Curry._1(af$6, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$6[2],
@@ -1147,11 +1147,11 @@ function fmtty_rel_det(param) {
           var fa$7 = match$7[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$7, /* Refl */0);
+                    Curry._1(fa$7, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$7, /* Refl */0);
+                    Curry._1(af$7, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$7[2],
@@ -1163,11 +1163,11 @@ function fmtty_rel_det(param) {
           var fa$8 = match$8[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$8, /* Refl */0);
+                    Curry._1(fa$8, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$8, /* Refl */0);
+                    Curry._1(af$8, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$8[2],
@@ -1187,23 +1187,23 @@ function fmtty_rel_det(param) {
           var ag = match$10[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$9, /* Refl */0);
-                    Caml_curry.app1(ag, /* Refl */0);
+                    Curry._1(fa$9, /* Refl */0);
+                    Curry._1(ag, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(ga, /* Refl */0);
-                    Caml_curry.app1(af$9, /* Refl */0);
+                    Curry._1(ga, /* Refl */0);
+                    Curry._1(af$9, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(ed, /* Refl */0);
-                    Caml_curry.app1(dj, /* Refl */0);
+                    Curry._1(ed, /* Refl */0);
+                    Curry._1(dj, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(jd, /* Refl */0);
-                    Caml_curry.app1(de, /* Refl */0);
+                    Curry._1(jd, /* Refl */0);
+                    Curry._1(de, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1213,11 +1213,11 @@ function fmtty_rel_det(param) {
           var fa$10 = match$11[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$10, /* Refl */0);
+                    Curry._1(fa$10, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$10, /* Refl */0);
+                    Curry._1(af$10, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$11[2],
@@ -1229,11 +1229,11 @@ function fmtty_rel_det(param) {
           var fa$11 = match$12[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$11, /* Refl */0);
+                    Curry._1(fa$11, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$11, /* Refl */0);
+                    Curry._1(af$11, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$12[2],
@@ -1245,11 +1245,11 @@ function fmtty_rel_det(param) {
           var fa$12 = match$13[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$12, /* Refl */0);
+                    Curry._1(fa$12, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$12, /* Refl */0);
+                    Curry._1(af$12, /* Refl */0);
                     return /* Refl */0;
                   },
                   match$13[2],
@@ -1263,19 +1263,19 @@ function fmtty_rel_det(param) {
           var fa$13 = match$14[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$13, /* Refl */0);
+                    Curry._1(fa$13, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$13, /* Refl */0);
+                    Curry._1(af$13, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(ed$1, /* Refl */0);
+                    Curry._1(ed$1, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(de$1, /* Refl */0);
+                    Curry._1(de$1, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1287,19 +1287,19 @@ function fmtty_rel_det(param) {
           var fa$14 = match$15[0];
           return /* tuple */[
                   function () {
-                    Caml_curry.app1(fa$14, /* Refl */0);
+                    Curry._1(fa$14, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(af$14, /* Refl */0);
+                    Curry._1(af$14, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(ed$2, /* Refl */0);
+                    Curry._1(ed$2, /* Refl */0);
                     return /* Refl */0;
                   },
                   function () {
-                    Caml_curry.app1(de$2, /* Refl */0);
+                    Curry._1(de$2, /* Refl */0);
                     return /* Refl */0;
                   }
                 ];
@@ -1725,8 +1725,8 @@ function trans(ty1, ty2) {
               case 9 : 
                   var ty = trans(symm(ty1[1]), ty2[0]);
                   var match = fmtty_rel_det(ty);
-                  Caml_curry.app1(match[1], /* Refl */0);
-                  Caml_curry.app1(match[3], /* Refl */0);
+                  Curry._1(match[1], /* Refl */0);
+                  Curry._1(match[3], /* Refl */0);
                   return /* Format_subst_ty */{
                           0: ty1[0],
                           1: ty2[1],
@@ -3084,8 +3084,8 @@ function type_ignored_format_substitution(sub_fmtty, fmt, fmtty) {
             }
             var sub_fmtty$prime = trans(symm(sub1_fmtty$prime), sub2_fmtty$prime$1);
             var match$9 = fmtty_rel_det(sub_fmtty$prime);
-            Caml_curry.app1(match$9[1], /* Refl */0);
-            Caml_curry.app1(match$9[3], /* Refl */0);
+            Curry._1(match$9[1], /* Refl */0);
+            Curry._1(match$9[3], /* Refl */0);
             var match$10 = type_ignored_format_substitution(CamlinternalFormatBasics.erase_rel(sub_fmtty[2]), fmt, fmtty[2]);
             return /* Fmtty_fmt_EBB */[
                     /* Format_subst_ty */{
@@ -3603,7 +3603,7 @@ function make_printf(_k, o, _acc, _fmt) {
     var acc = _acc;
     var k = _k;
     if (typeof fmt === "number") {
-      return Caml_curry.app2(k, o, acc);
+      return Curry._2(k, o, acc);
     }
     else {
       switch (fmt.tag | 0) {
@@ -3859,7 +3859,7 @@ function make_printf(_k, o, _acc, _fmt) {
               return make_printf(k, o, /* Acc_delay */{
                           0: acc,
                           1: function (o) {
-                            return Caml_curry.app2(f, o, x);
+                            return Curry._2(f, o, x);
                           },
                           length: 2,
                           tag: 6
@@ -4027,7 +4027,7 @@ function make_printf(_k, o, _acc, _fmt) {
               }
             }
         case 24 : 
-            return make_custom(k, o, acc, fmt[2], fmt[0], Caml_curry.app1(fmt[1], /* () */0));
+            return make_custom(k, o, acc, fmt[2], fmt[0], Curry._1(fmt[1], /* () */0));
         
       }
     }
@@ -4141,7 +4141,7 @@ function make_invalid_arg(k, o, acc, fmt) {
 function make_string_padding(k, o, acc, fmt, pad, trans) {
   if (typeof pad === "number") {
     return function (x) {
-      var new_acc_001 = Caml_curry.app1(trans, x);
+      var new_acc_001 = Curry._1(trans, x);
       var new_acc = /* Acc_data_string */{
         0: acc,
         1: new_acc_001,
@@ -4154,7 +4154,7 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
   else if (pad.tag) {
     var padty = pad[0];
     return function (w, x) {
-      var new_acc_001 = fix_padding(padty, w, Caml_curry.app1(trans, x));
+      var new_acc_001 = fix_padding(padty, w, Curry._1(trans, x));
       var new_acc = /* Acc_data_string */{
         0: acc,
         1: new_acc_001,
@@ -4168,7 +4168,7 @@ function make_string_padding(k, o, acc, fmt, pad, trans) {
     var width = pad[1];
     var padty$1 = pad[0];
     return function (x) {
-      var new_acc_001 = fix_padding(padty$1, width, Caml_curry.app1(trans, x));
+      var new_acc_001 = fix_padding(padty$1, width, Curry._1(trans, x));
       var new_acc = /* Acc_data_string */{
         0: acc,
         1: new_acc_001,
@@ -4185,7 +4185,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (p, x) {
-          var str = fix_int_precision(p, Caml_curry.app2(trans, iconv, x));
+          var str = fix_int_precision(p, Curry._2(trans, iconv, x));
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4196,7 +4196,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (x) {
-          var str = Caml_curry.app2(trans, iconv, x);
+          var str = Curry._2(trans, iconv, x);
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4209,7 +4209,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p = prec[0];
       return function (x) {
-        var str = fix_int_precision(p, Caml_curry.app2(trans, iconv, x));
+        var str = fix_int_precision(p, Curry._2(trans, iconv, x));
         return make_printf(k, o, /* Acc_data_string */{
                     0: acc,
                     1: str,
@@ -4224,7 +4224,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (w, p, x) {
-          var str = fix_padding(padty, w, fix_int_precision(p, Caml_curry.app2(trans, iconv, x)));
+          var str = fix_padding(padty, w, fix_int_precision(p, Curry._2(trans, iconv, x)));
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4235,7 +4235,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (w, x) {
-          var str = fix_padding(padty, w, Caml_curry.app2(trans, iconv, x));
+          var str = fix_padding(padty, w, Curry._2(trans, iconv, x));
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4248,7 +4248,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p$1 = prec[0];
       return function (w, x) {
-        var str = fix_padding(padty, w, fix_int_precision(p$1, Caml_curry.app2(trans, iconv, x)));
+        var str = fix_padding(padty, w, fix_int_precision(p$1, Curry._2(trans, iconv, x)));
         return make_printf(k, o, /* Acc_data_string */{
                     0: acc,
                     1: str,
@@ -4264,7 +4264,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     if (typeof prec === "number") {
       if (prec !== 0) {
         return function (p, x) {
-          var str = fix_padding(padty$1, w, fix_int_precision(p, Caml_curry.app2(trans, iconv, x)));
+          var str = fix_padding(padty$1, w, fix_int_precision(p, Curry._2(trans, iconv, x)));
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4275,7 +4275,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
       }
       else {
         return function (x) {
-          var str = fix_padding(padty$1, w, Caml_curry.app2(trans, iconv, x));
+          var str = fix_padding(padty$1, w, Curry._2(trans, iconv, x));
           return make_printf(k, o, /* Acc_data_string */{
                       0: acc,
                       1: str,
@@ -4288,7 +4288,7 @@ function make_int_padding_precision(k, o, acc, fmt, pad, prec, trans, iconv) {
     else {
       var p$2 = prec[0];
       return function (x) {
-        var str = fix_padding(padty$1, w, fix_int_precision(p$2, Caml_curry.app2(trans, iconv, x)));
+        var str = fix_padding(padty$1, w, fix_int_precision(p$2, Curry._2(trans, iconv, x)));
         return make_printf(k, o, /* Acc_data_string */{
                     0: acc,
                     1: str,
@@ -4304,7 +4304,7 @@ function make_custom(k, o, acc, rest, arity, f) {
   if (arity) {
     var arity$1 = arity[0];
     return function (x) {
-      return make_custom(k, o, acc, rest, arity$1, Caml_curry.app1(f, x));
+      return make_custom(k, o, acc, rest, arity$1, Curry._1(f, x));
     };
   }
   else {
@@ -4357,7 +4357,7 @@ function output_acc(o, _acc) {
             break;
         case 6 : 
             output_acc(o, acc[0]);
-            return Caml_curry.app1(acc[1], o);
+            return Curry._1(acc[1], o);
         case 7 : 
             output_acc(o, acc[0]);
             return Caml_io.caml_ml_flush(o);
@@ -4422,7 +4422,7 @@ function bufput_acc(b, _acc) {
             break;
         case 6 : 
             bufput_acc(b, acc[0]);
-            return Caml_curry.app1(acc[1], b);
+            return Curry._1(acc[1], b);
         case 7 : 
             _acc = acc[0];
             continue ;
@@ -4487,7 +4487,7 @@ function strput_acc(b, _acc) {
             break;
         case 6 : 
             strput_acc(b, acc[0]);
-            return Buffer.add_string(b, Caml_curry.app1(acc[1], /* () */0));
+            return Buffer.add_string(b, Curry._1(acc[1], /* () */0));
         case 7 : 
             _acc = acc[0];
             continue ;
@@ -4535,7 +4535,7 @@ function open_box_of_string(str) {
   else {
     var len = str.length;
     var invalid_box = function () {
-      return Caml_curry.app1(failwith_message(/* Format */[
+      return Curry._1(failwith_message(/* Format */[
                       /* String_literal */{
                         0: "invalid box description ",
                         1: /* Caml_string */{
@@ -4770,7 +4770,7 @@ function make_padprec_fmt_ebb(pad, prec, fmt) {
 function fmt_ebb_of_string(legacy_behavior, str) {
   var legacy_behavior$1 = legacy_behavior ? legacy_behavior[0] : /* true */1;
   var invalid_format_message = function (str_ind, msg) {
-    return Caml_curry.app3(failwith_message(/* Format */[
+    return Curry._3(failwith_message(/* Format */[
                     /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
@@ -4808,7 +4808,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   ]), str, str_ind, msg);
   };
   var invalid_format_without = function (str_ind, c, s) {
-    return Caml_curry.app4(failwith_message(/* Format */[
+    return Curry._4(failwith_message(/* Format */[
                     /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
@@ -4855,7 +4855,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
                   ]), str, str_ind, c, s);
   };
   var expected_character = function (str_ind, expected, read) {
-    return Caml_curry.app4(failwith_message(/* Format */[
+    return Curry._4(failwith_message(/* Format */[
                     /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
@@ -4950,7 +4950,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     var sharp = [/* false */0];
     var set_flag = function (str_ind, flag) {
       if (flag[0] && !legacy_behavior$1) {
-        Caml_curry.app3(failwith_message(/* Format */[
+        Curry._3(failwith_message(/* Format */[
                   /* String_literal */{
                     0: "invalid format ",
                     1: /* Caml_string */{
@@ -5915,7 +5915,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
             }];
           break;
       case 5 : 
-          fmt_result = Caml_curry.app3(failwith_message(/* Format */[
+          fmt_result = Curry._3(failwith_message(/* Format */[
                     /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
@@ -6098,7 +6098,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       
     }
     if (exit === 1) {
-      fmt_result = Caml_curry.app3(failwith_message(/* Format */[
+      fmt_result = Curry._3(failwith_message(/* Format */[
                 /* String_literal */{
                   0: "invalid format ",
                   1: /* Caml_string */{
@@ -6698,7 +6698,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       return /* () */0;
     };
     var fail_single_percent = function (str_ind) {
-      return Caml_curry.app2(failwith_message(/* Format */[
+      return Curry._2(failwith_message(/* Format */[
                       /* String_literal */{
                         0: "invalid format ",
                         1: /* Caml_string */{
@@ -6933,7 +6933,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
       else {
         var new_acc = Caml_primitive.imul(acc, 10) + (c - /* "0" */48 | 0) | 0;
         if (new_acc > Sys.max_string_length) {
-          return Caml_curry.app3(failwith_message(/* Format */[
+          return Curry._3(failwith_message(/* Format */[
                           /* String_literal */{
                             0: "invalid format ",
                             1: /* Caml_string */{
@@ -7056,7 +7056,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     while(true) {
       var str_ind = _str_ind;
       if (str_ind === end_ind) {
-        Caml_curry.app3(failwith_message(/* Format */[
+        Curry._3(failwith_message(/* Format */[
                   /* String_literal */{
                     0: "invalid format ",
                     1: /* Caml_string */{
@@ -7664,7 +7664,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
   };
   var incompatible_flag = function (pct_ind, str_ind, symb, option) {
     var subfmt = $$String.sub(str, pct_ind, str_ind - pct_ind | 0);
-    return Caml_curry.app5(failwith_message(/* Format */[
+    return Curry._5(failwith_message(/* Format */[
                     /* String_literal */{
                       0: "invalid format ",
                       1: /* Caml_string */{
@@ -7733,7 +7733,7 @@ function format_of_string_fmtty(str, fmtty) {
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return Caml_curry.app2(failwith_message(/* Format */[
+      return Curry._2(failwith_message(/* Format */[
                       /* String_literal */{
                         0: "bad input: format type mismatch between ",
                         1: /* Caml_string */{
@@ -7774,7 +7774,7 @@ function format_of_string_format(str, param) {
   }
   catch (exn){
     if (exn === Type_mismatch) {
-      return Caml_curry.app2(failwith_message(/* Format */[
+      return Curry._2(failwith_message(/* Format */[
                       /* String_literal */{
                         0: "bad input: format type mismatch between ",
                         1: /* Caml_string */{

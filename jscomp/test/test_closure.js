@@ -2,9 +2,9 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Curry                   = require("../runtime/curry");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("../stdlib/array");
-var Caml_curry              = require("../runtime/caml_curry");
 
 var v = [0];
 
@@ -26,7 +26,7 @@ function f() {
 var u = f(/* () */0);
 
 $$Array.iter(function (x) {
-      return Caml_curry.app1(x, /* () */0);
+      return Curry._1(x, /* () */0);
     }, u);
 
 if (v[0] !== 45) {

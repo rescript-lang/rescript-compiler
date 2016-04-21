@@ -4,9 +4,9 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Mt                      = require("./mt");
 var Mt_global               = require("./mt_global");
+var Curry                   = require("../runtime/curry");
 var Scanf                   = require("../stdlib/scanf");
 var Printf                  = require("../stdlib/printf");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 var suites = [/* [] */0];
@@ -18,7 +18,7 @@ function eq(f, param) {
 }
 
 function scan_rest(ib, accu) {
-  return Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
+  return Curry._1(Scanf.bscanf(ib, /* Format */[
                   /* Scan_char_set */{
                     0: /* None */0,
                     1: "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -34,7 +34,7 @@ function scan_rest(ib, accu) {
               else {
                 var ib$1 = ib;
                 var accu$1 = accu;
-                return Caml_curry.app1(Scanf.bscanf(ib$1, /* Format */[
+                return Curry._1(Scanf.bscanf(ib$1, /* Format */[
                                 /* Char_literal */{
                                   0: /* " " */32,
                                   1: /* Int */{
@@ -60,7 +60,7 @@ function scan_rest(ib, accu) {
                               i,
                               accu$1
                             ];
-                            return Caml_curry.app1(Scanf.bscanf(ib$2, /* Format */[
+                            return Curry._1(Scanf.bscanf(ib$2, /* Format */[
                                             /* Scan_char_set */{
                                               0: /* Some */[1],
                                               1: "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -97,7 +97,7 @@ function scan_rest(ib, accu) {
 }
 
 function scan_int_list(ib) {
-  Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
+  Curry._1(Scanf.bscanf(ib, /* Format */[
             /* String_literal */{
               0: " [ ",
               1: /* End_of_format */0,
@@ -110,7 +110,7 @@ function scan_int_list(ib) {
 }
 
 eq('File "scanf_reference_error_regression_test.ml", line 36, characters 5-12', /* tuple */[
-      scan_int_list(Caml_curry.app1(Scanf.Scanning[/* from_string */6], "[]")),
+      scan_int_list(Curry._1(Scanf.Scanning[/* from_string */6], "[]")),
       /* [] */0
     ]);
 

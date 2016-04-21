@@ -32,3 +32,10 @@ let partial_arg = "partial_arg"
 let tmp = "tmp"
 
 let create = "create" (* {!Caml_exceptions.create}*)
+
+let app = "_"
+let app_array = "app" (* arguments are an array*)
+
+let runtime = "runtime" (* runtime directory *)
+
+let stdlib = "stdlib"

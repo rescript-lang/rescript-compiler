@@ -2,8 +2,8 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_curry     = require("../runtime/caml_curry");
 
 function f(v) {
   if (v % 2) {
@@ -23,7 +23,7 @@ var v = /* int array */[
     2,
     3
   ].map(function (param, param$1) {
-      return Caml_curry.app2(f, param, param$1);
+      return Curry._2(f, param, param$1);
     });
 
 var vv = /* int array */[
@@ -43,7 +43,7 @@ var hh = /* array */[
     });
 
 function u() {
-  return Caml_curry.app1(function () {
+  return Curry._1(function () {
               return 3;
             }, /* () */0);
 }
@@ -110,7 +110,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
                                   return x + y | 0;
                                 };
                               }).map(function (y) {
-                              return Caml_primitive.imul(Caml_curry.app1(y, 0), Caml_curry.app1(y, 1));
+                              return Caml_primitive.imul(Curry._1(y, 0), Curry._1(y, 1));
                             }),
                         1: /* int array */[
                           2,
@@ -132,7 +132,7 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
                               2,
                               3
                             ].map(function (param, param$1) {
-                                return Caml_curry.app2(function (x) {
+                                return Curry._2(function (x) {
                                             var y = Caml_primitive.imul(x, x);
                                             return function (i) {
                                               return y + i | 0;

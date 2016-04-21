@@ -102,52 +102,58 @@ let curry1 o x arity =
   | 7 -> apply7 (Obj.magic o) x 
   | _ -> (fun a -> app o [|x; a |]))
 
-let app1 o x = 
+
+
+(** in practice we can unify 
+    {[_1, _2, _3 ]} into a single function 
+    {[_]}, however, it might slow down a bit 
+*)
+let _1 o x = 
   let len = function_length o in
   if len = 1 || len = 0 then apply1 o x 
   else Obj.magic (curry1 o x len )
 
   
-let app2 o x y = 
+let _2 o x y = 
   let len = function_length o in 
   if len = 2 then apply2 o  x y
   else Obj.magic (app o [|x; y|])
 
 
 
-let app3 o a0 a1 a2 =  
+let _3 o a0 a1 a2 =  
   let len = function_length o in 
   if len = 3 then apply3 o a0 a1 a2 
   else 
     Obj.magic (app o [|a0;a1;a2|])
 
 
-let app4 o a0 a1 a2 a3 =  
+let _4 o a0 a1 a2 a3 =  
   let len = function_length o in 
   if len = 4 then apply4 o a0 a1 a2 a3
   else 
     Obj.magic (app o [|a0;a1;a2; a3 |])
 
-let app5 o a0 a1 a2 a3 a4 =  
+let _5 o a0 a1 a2 a3 a4 =  
   let len = function_length o in 
   if len = 5 then apply5 o a0 a1 a2 a3 a4
   else 
     Obj.magic (app o [|a0;a1;a2; a3; a4 |])
 
 
-let app6 o a0 a1 a2 a3 a4 a5  =  
+let _6 o a0 a1 a2 a3 a4 a5  =  
   let len = function_length o in 
   if len = 6 then apply6 o a0 a1 a2 a3 a4 a5
   else 
     Obj.magic (app o [|a0;a1;a2; a3; a4; a5 |])
 
-let app7 o a0 a1 a2 a3 a4 a5 a6 =  
+let _7 o a0 a1 a2 a3 a4 a5 a6 =  
   let len = function_length o in 
   if len = 7 then apply7 o a0 a1 a2 a3 a4 a5 a6 
   else 
     Obj.magic (app o [|a0;a1;a2; a3; a4; a5; a6 |])
 
-let app8 o a0 a1 a2 a3 a4 a5 a6 a7  =  
+let _8 o a0 a1 a2 a3 a4 a5 a6 a7  =  
   let len = function_length o in 
   if len = 8 then apply8 o a0 a1 a2 a3 a4 a5 a6 a7 
   else 
@@ -164,43 +170,43 @@ let js label cacheid obj args =
 let js1   label cacheid obj = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app1 meth obj 
+  _1 meth obj 
 
 let js2   label cacheid obj a1 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app2 meth obj a1 
+  _2 meth obj a1 
 
 let js3  label cacheid obj  a1 a2 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app3 meth obj a1 a2
+  _3 meth obj a1 a2
 
 let js4  label cacheid obj a1 a2 a3 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app4 meth obj a1 a2 a3 
+  _4 meth obj a1 a2 a3 
 
 
 let js5  label cacheid obj a1 a2 a3 a4 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app5 meth obj a1 a2 a3 a4
+  _5 meth obj a1 a2 a3 a4
 
 let js6  label cacheid obj a1 a2 a3 a4 a5 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app6 meth obj a1 a2 a3 a4 a5
+  _6 meth obj a1 a2 a3 a4 a5
 
 let js7  label cacheid obj a1 a2 a3 a4 a5 a6= 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app7 meth obj a1 a2 a3 a4 a5 a6
+  _7 meth obj a1 a2 a3 a4 a5 a6
 
 let js8  label cacheid obj a1 a2 a3 a4 a5 a6 a7 = 
   let meth = 
     (Obj.magic Caml_oo.caml_get_public_method obj label cacheid) in
-  app8 meth obj a1 a2 a3 a4 a5 a6 a7 
+  _8 meth obj a1 a2 a3 a4 a5 a6 a7 
 
 
 

@@ -4,7 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Mt                      = require("./mt");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var List                    = require("../stdlib/list");
 var Caml_string             = require("../runtime/caml_string");
 
@@ -116,7 +116,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(add(x, data, l), v, d, r);
@@ -149,7 +149,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(Ord[/* compare */0], x, param[1]);
+        var c = Curry._2(Ord[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[3];
           continue ;
@@ -168,7 +168,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(Ord[/* compare */0], x, param[1]);
+        var c = Curry._2(Ord[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[3];
           continue ;
@@ -250,7 +250,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(remove(x, l), v, d, r);
@@ -285,7 +285,7 @@ function Make(Ord) {
       var param = _param;
       if (param) {
         iter(f, param[0]);
-        Caml_curry.app2(f, param[1], param[2]);
+        Curry._2(f, param[1], param[2]);
         _param = param[3];
         continue ;
         
@@ -298,7 +298,7 @@ function Make(Ord) {
   var map = function (f, param) {
     if (param) {
       var l$prime = map(f, param[0]);
-      var d$prime = Caml_curry.app1(f, param[2]);
+      var d$prime = Curry._1(f, param[2]);
       var r$prime = map(f, param[3]);
       return /* Node */[
               l$prime,
@@ -316,7 +316,7 @@ function Make(Ord) {
     if (param) {
       var v = param[1];
       var l$prime = mapi(f, param[0]);
-      var d$prime = Caml_curry.app2(f, v, param[2]);
+      var d$prime = Curry._2(f, v, param[2]);
       var r$prime = mapi(f, param[3]);
       return /* Node */[
               l$prime,
@@ -335,7 +335,7 @@ function Make(Ord) {
       var accu = _accu;
       var m = _m;
       if (m) {
-        _accu = Caml_curry.app3(f, m[1], m[2], fold(f, m[0], accu));
+        _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
         _m = m[3];
         continue ;
         
@@ -349,7 +349,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app2(p, param[1], param[2])) {
+        if (Curry._2(p, param[1], param[2])) {
           if (for_all(p, param[0])) {
             _param = param[3];
             continue ;
@@ -372,7 +372,7 @@ function Make(Ord) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app2(p, param[1], param[2])) {
+        if (Curry._2(p, param[1], param[2])) {
           return /* true */1;
         }
         else if (exists(p, param[0])) {
@@ -456,7 +456,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(Ord[/* compare */0], x, v);
+      var c = Curry._2(Ord[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           var match = split(x, l);
@@ -497,7 +497,7 @@ function Make(Ord) {
       var v1 = s1[1];
       if (s1[4] >= height(s2)) {
         var match = split(v1, s2);
-        return concat_or_join(merge(f, s1[0], match[0]), v1, Caml_curry.app3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
+        return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
       }
       else {
         exit = 1;
@@ -513,7 +513,7 @@ function Make(Ord) {
       if (s2) {
         var v2 = s2[1];
         var match$1 = split(v2, s1);
-        return concat_or_join(merge(f, match$1[0], s2[0]), v2, Caml_curry.app3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
+        return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
       }
       else {
         throw [
@@ -533,7 +533,7 @@ function Make(Ord) {
       var d = param[2];
       var v = param[1];
       var l$prime = filter(p, param[0]);
-      var pvd = Caml_curry.app2(p, v, d);
+      var pvd = Curry._2(p, v, d);
       var r$prime = filter(p, param[3]);
       if (pvd) {
         return join(l$prime, v, d, r$prime);
@@ -553,7 +553,7 @@ function Make(Ord) {
       var match = partition(p, param[0]);
       var lf = match[1];
       var lt = match[0];
-      var pvd = Caml_curry.app2(p, v, d);
+      var pvd = Curry._2(p, v, d);
       var match$1 = partition(p, param[3]);
       var rf = match$1[1];
       var rt = match$1[0];
@@ -605,12 +605,12 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Caml_curry.app2(Ord[/* compare */0], e1[0], e2[0]);
+          var c = Curry._2(Ord[/* compare */0], e1[0], e2[0]);
           if (c !== 0) {
             return c;
           }
           else {
-            var c$1 = Caml_curry.app2(cmp, e1[1], e2[1]);
+            var c$1 = Curry._2(cmp, e1[1], e2[1]);
             if (c$1 !== 0) {
               return c$1;
             }
@@ -642,10 +642,10 @@ function Make(Ord) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          if (Caml_curry.app2(Ord[/* compare */0], e1[0], e2[0])) {
+          if (Curry._2(Ord[/* compare */0], e1[0], e2[0])) {
             return /* false */0;
           }
-          else if (Caml_curry.app2(cmp, e1[1], e2[1])) {
+          else if (Curry._2(cmp, e1[1], e2[1])) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
@@ -1036,7 +1036,7 @@ function iter(f, _param) {
     var param = _param;
     if (param) {
       iter(f, param[0]);
-      Caml_curry.app2(f, param[1], param[2]);
+      Curry._2(f, param[1], param[2]);
       _param = param[3];
       continue ;
       
@@ -1050,7 +1050,7 @@ function iter(f, _param) {
 function map(f, param) {
   if (param) {
     var l$prime = map(f, param[0]);
-    var d$prime = Caml_curry.app1(f, param[2]);
+    var d$prime = Curry._1(f, param[2]);
     var r$prime = map(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1069,7 +1069,7 @@ function mapi(f, param) {
   if (param) {
     var v = param[1];
     var l$prime = mapi(f, param[0]);
-    var d$prime = Caml_curry.app2(f, v, param[2]);
+    var d$prime = Curry._2(f, v, param[2]);
     var r$prime = mapi(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1089,7 +1089,7 @@ function fold(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = Caml_curry.app3(f, m[1], m[2], fold(f, m[0], accu));
+      _accu = Curry._3(f, m[1], m[2], fold(f, m[0], accu));
       _m = m[3];
       continue ;
       
@@ -1104,7 +1104,7 @@ function for_all(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app2(p, param[1], param[2])) {
+      if (Curry._2(p, param[1], param[2])) {
         if (for_all(p, param[0])) {
           _param = param[3];
           continue ;
@@ -1128,7 +1128,7 @@ function exists(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app2(p, param[1], param[2])) {
+      if (Curry._2(p, param[1], param[2])) {
         return /* true */1;
       }
       else if (exists(p, param[0])) {
@@ -1265,7 +1265,7 @@ function merge(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height(s2)) {
       var match = split(v1, s2);
-      return concat_or_join(merge(f, s1[0], match[0]), v1, Caml_curry.app3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
+      return concat_or_join(merge(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge(f, s1[3], match[2]));
     }
     else {
       exit = 1;
@@ -1281,7 +1281,7 @@ function merge(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split(v2, s1);
-      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Caml_curry.app3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
+      return concat_or_join(merge(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge(f, match$1[2], s2[3]));
     }
     else {
       throw [
@@ -1302,7 +1302,7 @@ function filter(p, param) {
     var d = param[2];
     var v = param[1];
     var l$prime = filter(p, param[0]);
-    var pvd = Caml_curry.app2(p, v, d);
+    var pvd = Curry._2(p, v, d);
     var r$prime = filter(p, param[3]);
     if (pvd) {
       return join(l$prime, v, d, r$prime);
@@ -1323,7 +1323,7 @@ function partition(p, param) {
     var match = partition(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pvd = Caml_curry.app2(p, v, d);
+    var pvd = Curry._2(p, v, d);
     var match$1 = partition(p, param[3]);
     var rf = match$1[1];
     var rt = match$1[0];
@@ -1382,7 +1382,7 @@ function compare(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = Caml_curry.app2(cmp, e1[1], e2[1]);
+          var c$1 = Curry._2(cmp, e1[1], e2[1]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -1416,7 +1416,7 @@ function equal(cmp, m1, m2) {
     if (e1) {
       if (e2) {
         if (e1[0] === e2[0]) {
-          if (Caml_curry.app2(cmp, e1[1], e2[1])) {
+          if (Curry._2(cmp, e1[1], e2[1])) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;
@@ -1842,7 +1842,7 @@ function iter$1(f, _param) {
     var param = _param;
     if (param) {
       iter$1(f, param[0]);
-      Caml_curry.app2(f, param[1], param[2]);
+      Curry._2(f, param[1], param[2]);
       _param = param[3];
       continue ;
       
@@ -1856,7 +1856,7 @@ function iter$1(f, _param) {
 function map$1(f, param) {
   if (param) {
     var l$prime = map$1(f, param[0]);
-    var d$prime = Caml_curry.app1(f, param[2]);
+    var d$prime = Curry._1(f, param[2]);
     var r$prime = map$1(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1875,7 +1875,7 @@ function mapi$1(f, param) {
   if (param) {
     var v = param[1];
     var l$prime = mapi$1(f, param[0]);
-    var d$prime = Caml_curry.app2(f, v, param[2]);
+    var d$prime = Curry._2(f, v, param[2]);
     var r$prime = mapi$1(f, param[3]);
     return /* Node */[
             l$prime,
@@ -1895,7 +1895,7 @@ function fold$1(f, _m, _accu) {
     var accu = _accu;
     var m = _m;
     if (m) {
-      _accu = Caml_curry.app3(f, m[1], m[2], fold$1(f, m[0], accu));
+      _accu = Curry._3(f, m[1], m[2], fold$1(f, m[0], accu));
       _m = m[3];
       continue ;
       
@@ -1910,7 +1910,7 @@ function for_all$1(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app2(p, param[1], param[2])) {
+      if (Curry._2(p, param[1], param[2])) {
         if (for_all$1(p, param[0])) {
           _param = param[3];
           continue ;
@@ -1934,7 +1934,7 @@ function exists$1(p, _param) {
   while(true) {
     var param = _param;
     if (param) {
-      if (Caml_curry.app2(p, param[1], param[2])) {
+      if (Curry._2(p, param[1], param[2])) {
         return /* true */1;
       }
       else if (exists$1(p, param[0])) {
@@ -2071,7 +2071,7 @@ function merge$1(f, s1, s2) {
     var v1 = s1[1];
     if (s1[4] >= height$1(s2)) {
       var match = split$1(v1, s2);
-      return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Caml_curry.app3(f, v1, /* Some */[s1[2]], match[1]), merge$1(f, s1[3], match[2]));
+      return concat_or_join$1(merge$1(f, s1[0], match[0]), v1, Curry._3(f, v1, /* Some */[s1[2]], match[1]), merge$1(f, s1[3], match[2]));
     }
     else {
       exit = 1;
@@ -2087,7 +2087,7 @@ function merge$1(f, s1, s2) {
     if (s2) {
       var v2 = s2[1];
       var match$1 = split$1(v2, s1);
-      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Caml_curry.app3(f, v2, match$1[1], /* Some */[s2[2]]), merge$1(f, match$1[2], s2[3]));
+      return concat_or_join$1(merge$1(f, match$1[0], s2[0]), v2, Curry._3(f, v2, match$1[1], /* Some */[s2[2]]), merge$1(f, match$1[2], s2[3]));
     }
     else {
       throw [
@@ -2108,7 +2108,7 @@ function filter$1(p, param) {
     var d = param[2];
     var v = param[1];
     var l$prime = filter$1(p, param[0]);
-    var pvd = Caml_curry.app2(p, v, d);
+    var pvd = Curry._2(p, v, d);
     var r$prime = filter$1(p, param[3]);
     if (pvd) {
       return join$1(l$prime, v, d, r$prime);
@@ -2129,7 +2129,7 @@ function partition$1(p, param) {
     var match = partition$1(p, param[0]);
     var lf = match[1];
     var lt = match[0];
-    var pvd = Caml_curry.app2(p, v, d);
+    var pvd = Curry._2(p, v, d);
     var match$1 = partition$1(p, param[3]);
     var rf = match$1[1];
     var rt = match$1[0];
@@ -2188,7 +2188,7 @@ function compare$1(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = Caml_curry.app2(cmp, e1[1], e2[1]);
+          var c$1 = Curry._2(cmp, e1[1], e2[1]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -2224,7 +2224,7 @@ function equal$1(cmp, m1, m2) {
         if (Caml_string.caml_string_compare(e1[0], e2[0])) {
           return /* false */0;
         }
-        else if (Caml_curry.app2(cmp, e1[1], e2[1])) {
+        else if (Curry._2(cmp, e1[1], e2[1])) {
           _e2 = cons_enum$1(e2[2], e2[3]);
           _e1 = cons_enum$1(e1[2], e1[3]);
           continue ;

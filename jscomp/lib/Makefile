@@ -5,6 +5,8 @@ CAMLC=../bin/bsc
 SOURCE_LIST := $(shell cat lib.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
+
+INCLUDES := -I ../runtime
 # COMPFLAGS += -js-module goog:buckle.js
 
 $(RUNTIME): $(CAMLC)

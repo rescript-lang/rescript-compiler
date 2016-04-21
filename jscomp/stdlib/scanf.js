@@ -6,11 +6,11 @@ var Bytes                    = require("./bytes");
 var Pervasives               = require("./pervasives");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
+var Curry                    = require("../runtime/curry");
 var Printf                   = require("./printf");
 var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
-var Caml_curry               = require("../runtime/caml_curry");
 var $$String                 = require("./string");
 var Caml_string              = require("../runtime/caml_string");
 var List                     = require("./list");
@@ -18,7 +18,7 @@ var CamlinternalFormat       = require("./camlinternalFormat");
 
 function next_char(ib) {
   try {
-    var c = Caml_curry.app1(ib[/* get_next_char */6], /* () */0);
+    var c = Curry._1(ib[/* get_next_char */6], /* () */0);
     ib[/* current_char */1] = c;
     ib[/* current_char_is_valid */2] = /* true */1;
     ib[/* char_count */3] = ib[/* char_count */3] + 1 | 0;
@@ -180,7 +180,7 @@ function from_ic(scan_close_ic, iname, ic) {
       }
       else {
         eof[0] = /* true */1;
-        return Caml_curry.app1(scan_close_ic, ic);
+        return Curry._1(scan_close_ic, ic);
       }
     }
   };
@@ -272,7 +272,7 @@ function close_in(ib) {
 var Scan_failure = Caml_exceptions.create("Scanf.Scan_failure");
 
 function bad_input_escape(c) {
-  var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+  var s = Curry._1(Printf.sprintf(/* Format */[
             /* String_literal */{
               0: "illegal escape character ",
               1: /* Caml_char */{
@@ -292,7 +292,7 @@ function bad_input_escape(c) {
 }
 
 function bad_token_length(message) {
-  var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+  var s = Curry._1(Printf.sprintf(/* Format */[
             /* String_literal */{
               0: "scanning of ",
               1: /* String */{
@@ -318,7 +318,7 @@ function bad_token_length(message) {
 }
 
 function character_mismatch_err(c, ci) {
-  return Caml_curry.app2(Printf.sprintf(/* Format */[
+  return Curry._2(Printf.sprintf(/* Format */[
                   /* String_literal */{
                     0: "looking for ",
                     1: /* Caml_char */{
@@ -417,7 +417,7 @@ function token_bool(ib) {
     case "true" : 
         return /* true */1;
     default:
-      var s$1 = Caml_curry.app1(Printf.sprintf(/* Format */[
+      var s$1 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "invalid boolean ",
                   1: /* Caml_string */{
@@ -555,7 +555,7 @@ function scan_decimal_digits_plus(width, ib) {
   if (width) {
     var c = checked_peek_char(ib);
     if (c > 57 || c < 48) {
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+      var s = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "character ",
                   1: /* Caml_char */{
@@ -591,7 +591,7 @@ function scan_decimal_digits_plus(width, ib) {
 function scan_digits_plus(basis, digitp, width, ib) {
   if (width) {
     var c = checked_peek_char(ib);
-    if (Caml_curry.app1(digitp, c)) {
+    if (Curry._1(digitp, c)) {
       var _width = store_char(width, ib, c);
       while(true) {
         var width$1 = _width;
@@ -600,7 +600,7 @@ function scan_digits_plus(basis, digitp, width, ib) {
           if (ib[/* eof */0]) {
             return width$1;
           }
-          else if (Caml_curry.app1(digitp, c$1)) {
+          else if (Curry._1(digitp, c$1)) {
             _width = store_char(width$1, ib, c$1);
             continue ;
             
@@ -620,7 +620,7 @@ function scan_digits_plus(basis, digitp, width, ib) {
       };
     }
     else {
-      var s = Caml_curry.app2(Printf.sprintf(/* Format */[
+      var s = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "character ",
                   1: /* Caml_char */{
@@ -1038,7 +1038,7 @@ function char_for_backslash(c) {
 function char_for_decimal_code(c0, c1, c2) {
   var c = (Caml_primitive.imul(100, c0 - /* "0" */48 | 0) + Caml_primitive.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
   if (c < 0 || c > 255) {
-    var s = Caml_curry.app3(Printf.sprintf(/* Format */[
+    var s = Curry._3(Printf.sprintf(/* Format */[
               /* String_literal */{
                 0: "bad character decimal encoding \\",
                 1: /* Char */{
@@ -1084,7 +1084,7 @@ function hexadecimal_value_of_char(c) {
 function char_for_hexadecimal_code(c1, c2) {
   var c = (hexadecimal_value_of_char(c1) << 4) + hexadecimal_value_of_char(c2) | 0;
   if (c < 0 || c > 255) {
-    var s = Caml_curry.app2(Printf.sprintf(/* Format */[
+    var s = Curry._2(Printf.sprintf(/* Format */[
               /* String_literal */{
                 0: "bad character hexadecimal encoding \\",
                 1: /* Char */{
@@ -1116,7 +1116,7 @@ function check_next_char(message, width, ib) {
     var c = peek_char(ib);
     if (ib[/* eof */0]) {
       var message$1 = message;
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+      var s = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "scanning of ",
                   1: /* String */{
@@ -1359,7 +1359,7 @@ function scan_bool(ib) {
   var m;
   if (c !== 102) {
     if (c !== 116) {
-      var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+      var s = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "the character ",
                   1: /* Caml_char */{
@@ -1450,7 +1450,7 @@ function scanf_bad_input(ib, x) {
   }
   if (exit === 1) {
     var i = char_count(ib);
-    var s$1 = Caml_curry.app2(Printf.sprintf(/* Format */[
+    var s$1 = Curry._2(Printf.sprintf(/* Format */[
               /* String_literal */{
                 0: "scanf: bad input at char number ",
                 1: /* Int */{
@@ -1527,7 +1527,7 @@ function take_format_readers(k, _fmt) {
   while(true) {
     var fmt = _fmt;
     if (typeof fmt === "number") {
-      return Caml_curry.app1(k, /* Nil */0);
+      return Curry._1(k, /* Nil */0);
     }
     else {
       switch (fmt.tag | 0) {
@@ -1558,7 +1558,7 @@ function take_format_readers(k, _fmt) {
             return (function(fmt_rest){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */[
+                return Curry._1(k, /* Cons */[
                             reader,
                             readers_rest
                           ]);
@@ -1593,7 +1593,7 @@ function take_format_readers(k, _fmt) {
                     return (function(k$1,fmt$1){
                     return function (reader) {
                       var new_k = function (readers_rest) {
-                        return Caml_curry.app1(k$1, /* Cons */[
+                        return Curry._1(k$1, /* Cons */[
                                     reader,
                                     readers_rest
                                   ]);
@@ -1671,7 +1671,7 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
             return (function(fmt_rest){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */[
+                return Curry._1(k, /* Cons */[
                             reader,
                             readers_rest
                           ]);
@@ -1684,7 +1684,7 @@ function take_fmtty_format_readers(k, _fmtty, fmt) {
             return (function(fmt_rest$1){
             return function (reader) {
               var new_k = function (readers_rest) {
-                return Caml_curry.app1(k, /* Cons */[
+                return Curry._1(k, /* Cons */[
                             reader,
                             readers_rest
                           ]);
@@ -1951,7 +1951,7 @@ function make_scanf(ib, _fmt, readers) {
             }
             break;
         case 19 : 
-            var x = Caml_curry.app1(readers[0], ib);
+            var x = Curry._1(readers[0], ib);
             return /* Cons */[
                     x,
                     make_scanf(ib, fmt[0], readers[1])
@@ -2045,8 +2045,8 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
             ];
       }
       else {
-        Caml_curry.app3(scan, Pervasives.max_int, Pervasives.max_int, ib);
-        var x = Caml_curry.app1(token, ib);
+        Curry._3(scan, Pervasives.max_int, Pervasives.max_int, ib);
+        var x = Curry._1(token, ib);
         return /* Cons */[
                 x,
                 make_scanf(ib, fmt, readers)
@@ -2054,8 +2054,8 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       }
     }
     else {
-      Caml_curry.app3(scan, Pervasives.max_int, prec[0], ib);
-      var x$1 = Caml_curry.app1(token, ib);
+      Curry._3(scan, Pervasives.max_int, prec[0], ib);
+      var x$1 = Curry._1(token, ib);
       return /* Cons */[
               x$1,
               make_scanf(ib, fmt, readers)
@@ -2078,8 +2078,8 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
             ];
       }
       else {
-        Caml_curry.app3(scan, w, Pervasives.max_int, ib);
-        var x$2 = Caml_curry.app1(token, ib);
+        Curry._3(scan, w, Pervasives.max_int, ib);
+        var x$2 = Curry._1(token, ib);
         return /* Cons */[
                 x$2,
                 make_scanf(ib, fmt, readers)
@@ -2087,8 +2087,8 @@ function pad_prec_scanf(ib, fmt, readers, pad, prec, scan, token) {
       }
     }
     else {
-      Caml_curry.app3(scan, w, prec[0], ib);
-      var x$3 = Caml_curry.app1(token, ib);
+      Curry._3(scan, w, prec[0], ib);
+      var x$3 = Curry._1(token, ib);
       return /* Cons */[
               x$3,
               make_scanf(ib, fmt, readers)
@@ -2150,7 +2150,7 @@ function kscanf(ib, ef, param) {
       }
     }
     if (match.tag) {
-      return Caml_curry.app2(ef, ib, match[0]);
+      return Curry._2(ef, ib, match[0]);
     }
     else {
       var _f = f;
@@ -2160,7 +2160,7 @@ function kscanf(ib, ef, param) {
         var f$1 = _f;
         if (args) {
           _args = args[1];
-          _f = Caml_curry.app1(f$1, args[0]);
+          _f = Curry._1(f$1, args[0]);
           continue ;
           
         }
@@ -2215,7 +2215,7 @@ function bscanf_format(ib, format, f) {
       throw exn;
     }
   }
-  return Caml_curry.app1(f, $js);
+  return Curry._1(f, $js);
 }
 
 function sscanf_format(s, format, f) {
@@ -2244,7 +2244,7 @@ function format_from_string(s, fmt) {
 }
 
 function unescaped(s) {
-  return Caml_curry.app1(sscanf('"' + (s + '"'), /* Format */[
+  return Curry._1(sscanf('"' + (s + '"'), /* Format */[
                   /* Caml_string */{
                     0: /* No_padding */0,
                     1: /* Flush */{
