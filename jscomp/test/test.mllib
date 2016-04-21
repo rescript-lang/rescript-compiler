@@ -249,3 +249,5 @@ event_ffi
 
 hash_test
 exception_value_test
+
+sprintf_reg_test
