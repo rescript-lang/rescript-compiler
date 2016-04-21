@@ -2,8 +2,8 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
+var Curry                   = require("../runtime/curry");
 var Assert                  = require("assert");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 function from_suites(name, suite) {
@@ -25,7 +25,7 @@ function from_pair_suites(name, suites) {
         return List.iter(function (param) {
                     var code = param[1];
                     it(param[0], function () {
-                          var match = Caml_curry.app1(code, /* () */0);
+                          var match = Curry._1(code, /* () */0);
                           switch (match.tag | 0) {
                             case 0 : 
                                 Assert.deepEqual(match[0], match[1]);

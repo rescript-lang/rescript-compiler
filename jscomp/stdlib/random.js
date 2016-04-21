@@ -8,10 +8,10 @@ var Pervasives              = require("./pervasives");
 var Nativeint               = require("./nativeint");
 var Int32                   = require("./int32");
 var Digest                  = require("./digest");
+var Curry                   = require("../runtime/curry");
 var Int64                   = require("./int64");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
-var Caml_curry              = require("../runtime/caml_curry");
 
 function new_state() {
   return /* record */[
@@ -254,7 +254,7 @@ function int32$1(bound) {
 }
 
 function nativeint$1(bound) {
-  return Caml_curry.app2(nativeint, $$default, bound);
+  return Curry._2(nativeint, $$default, bound);
 }
 
 function int64$1(bound) {

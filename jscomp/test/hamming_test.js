@@ -6,9 +6,9 @@ var Caml_obj         = require("../runtime/caml_obj");
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 var Caml_format      = require("../runtime/caml_format");
 var Mt               = require("./mt");
+var Curry            = require("../runtime/curry");
 var Printf           = require("../stdlib/printf");
 var Buffer           = require("../stdlib/buffer");
-var Caml_curry       = require("../runtime/caml_curry");
 
 var n0 = /* int64 */[
   0,
@@ -98,7 +98,7 @@ function pr(param) {
   var nh = param[1];
   var nl = param[0];
   if (Caml_int64.compare(nh, n0)) {
-    return Caml_curry.app2(Printf.bprintf(buf, /* Format */[
+    return Curry._2(Printf.bprintf(buf, /* Format */[
                     /* Int64 */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
@@ -128,7 +128,7 @@ function pr(param) {
                   ]), nh, nl);
   }
   else {
-    return Caml_curry.app1(Printf.bprintf(buf, /* Format */[
+    return Curry._1(Printf.bprintf(buf, /* Format */[
                     /* Int64 */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
@@ -155,7 +155,7 @@ function map(f, l) {
                 tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
               );
             return /* Cons */[
-                    Caml_curry.app1(f, match[0]),
+                    Curry._1(f, match[0]),
                     map(f, match[1])
                   ];
           },
@@ -179,7 +179,7 @@ function merge(cmp, l1, l2) {
             var x2 = match$1[0];
             var ll1 = match[1];
             var x1 = match[0];
-            var c = Caml_curry.app2(cmp, x1, x2);
+            var c = Curry._2(cmp, x1, x2);
             if (c) {
               if (c < 0) {
                 return /* Cons */[
@@ -218,7 +218,7 @@ function iter_interval(f, _l, _param) {
           tag === 246 ? CamlinternalLazy.force_lazy_block(l) : l
         );
       if (start <= 0) {
-        Caml_curry.app1(f, match[0]);
+        Curry._1(f, match[0]);
       }
       _param = /* tuple */[
         start - 1 | 0,

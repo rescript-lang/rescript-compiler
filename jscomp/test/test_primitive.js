@@ -3,7 +3,7 @@
 
 var CamlinternalLazy = require("../stdlib/camlinternalLazy");
 var Pervasives       = require("../stdlib/pervasives");
-var Caml_curry       = require("../runtime/caml_curry");
+var Curry            = require("../runtime/curry");
 
 function a4(prim) {
   return [
@@ -55,7 +55,7 @@ function u(b) {
 }
 
 function f2(h, b, _) {
-  return Caml_curry.app1(h, b ? 32 : 7);
+  return Curry._1(h, b ? 32 : 7);
 }
 
 v[1] = 3.0;

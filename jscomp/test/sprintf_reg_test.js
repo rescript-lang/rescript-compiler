@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Mt_global  = require("./mt_global");
-var Printf     = require("../stdlib/printf");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt        = require("./mt");
+var Mt_global = require("./mt_global");
+var Curry     = require("../runtime/curry");
+var Printf    = require("../stdlib/printf");
 
 var suites = [/* [] */0];
 
@@ -14,7 +14,7 @@ function eq(f, param) {
   return Mt_global.collect_eq(test_id, suites, f, param[0], param[1]);
 }
 
-var s = Caml_curry.app1(Printf.sprintf(/* Format */[
+var s = Curry._1(Printf.sprintf(/* Format */[
           /* Format_arg */{
             0: /* None */0,
             1: /* String_ty */{
@@ -52,7 +52,7 @@ eq('File "sprintf_reg_test.ml", line 8, characters 5-12', /* tuple */[
       "%s."
     ]);
 
-var s$1 = Caml_curry.app2(Printf.sprintf(/* Format */[
+var s$1 = Curry._2(Printf.sprintf(/* Format */[
           /* Int */{
             0: /* Int_i */3,
             1: /* No_padding */0,

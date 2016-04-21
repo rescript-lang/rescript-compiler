@@ -2,9 +2,9 @@
 'use strict';
 
 var Mt         = require("./mt");
+var Curry      = require("../runtime/curry");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
 
 function test() {
   var v = [0];
@@ -16,7 +16,7 @@ function test() {
         _acc = (function(n,acc){
         return function () {
           v[0] = v[0] + n | 0;
-          return Caml_curry.app1(acc, /* () */0);
+          return Curry._1(acc, /* () */0);
         }
         }(n,acc));
         _n = n - 1 | 0;
@@ -24,7 +24,7 @@ function test() {
         
       }
       else {
-        return Caml_curry.app1(acc, /* () */0);
+        return Curry._1(acc, /* () */0);
       }
     };
   };
@@ -47,7 +47,7 @@ function test_closure() {
     }(i));
   }
   $$Array.iter(function (i) {
-        v[0] = v[0] + Caml_curry.app1(i, 0) | 0;
+        v[0] = v[0] + Curry._1(i, 0) | 0;
         return /* () */0;
       }, arr);
   return v[0];
@@ -67,7 +67,7 @@ function test_closure2() {
     }(j));
   }
   $$Array.iter(function (i) {
-        v[0] = v[0] + Caml_curry.app1(i, 0) | 0;
+        v[0] = v[0] + Curry._1(i, 0) | 0;
         return /* () */0;
       }, arr);
   return v[0];

@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Curry          = require("../runtime/curry");
 var Caml_primitive = require("../runtime/caml_primitive");
 var $$Array        = require("../stdlib/array");
-var Caml_curry     = require("../runtime/caml_curry");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i<= i_finish; ++i){
@@ -34,7 +34,7 @@ function for_3(x) {
     }(j));
   }
   $$Array.iter(function (x) {
-        return Caml_curry.app1(x, /* () */0);
+        return Curry._1(x, /* () */0);
       }, arr);
   return v[0];
 }
@@ -55,7 +55,7 @@ function for_4(x) {
     }(k));
   }
   $$Array.iter(function (x) {
-        return Caml_curry.app1(x, /* () */0);
+        return Curry._1(x, /* () */0);
       }, arr);
   return v[0];
 }
@@ -75,7 +75,7 @@ function for_5(x, u) {
     }(k));
   }
   $$Array.iter(function (x) {
-        return Caml_curry.app1(x, /* () */0);
+        return Curry._1(x, /* () */0);
       }, arr);
   return v[0];
 }
@@ -106,7 +106,7 @@ function for_6(x, u) {
     }(v2));
   }
   $$Array.iter(function (x) {
-        return Caml_curry.app1(x, /* () */0);
+        return Curry._1(x, /* () */0);
       }, arr);
   return v[0];
 }

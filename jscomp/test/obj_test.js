@@ -2,8 +2,8 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 
 var shared = [
   "hi",
@@ -30,7 +30,7 @@ CamlinternalOO.set_methods($$class, /* array */[
       },
       hello,
       function (self$neg1, z) {
-        return Caml_curry.app3(self$neg1[0][hi], self$neg1, 10, z);
+        return Curry._3(self$neg1[0][hi], self$neg1, 10, z);
       }
     ]);
 
@@ -151,7 +151,7 @@ CamlinternalOO.set_methods($$class$5, /* array */[
       },
       hi$2,
       function (self$neg6, x) {
-        return Caml_curry.app3(self$neg6[0][add$1], self$neg6, x, 32);
+        return Curry._3(self$neg6[0][add$1], self$neg6, x, 32);
       }
     ]);
 
@@ -168,8 +168,8 @@ var suites_000 = /* tuple */[
               32
             ],
             1: /* int array */[
-              v.tag === 248 ? Caml_curry.js1(120, 1, v) : v.x,
-              v.tag === 248 ? Caml_curry.js1(121, 2, v) : v.y
+              v.tag === 248 ? Curry.js1(120, 1, v) : v.x,
+              v.tag === 248 ? Curry.js1(121, 2, v) : v.y
             ],
             length: 2,
             tag: 0
@@ -187,8 +187,8 @@ var suites_001 = /* :: */[
                 32
               ],
               1: /* int array */[
-                v.tag === 248 ? Caml_curry.js1(120, 3, v) : v.x,
-                v.tag === 248 ? Caml_curry.js1(121, 4, v) : v.y
+                v.tag === 248 ? Curry.js1(120, 3, v) : v.x,
+                v.tag === 248 ? Curry.js1(121, 4, v) : v.y
               ],
               length: 2,
               tag: 0
@@ -201,7 +201,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */{
                 0: 13,
-                1: vv.tag === 248 ? Caml_curry.js2(616641298, 5, vv, 3) : Caml_curry.app1(vv.hello.bind(vv), 3),
+                1: vv.tag === 248 ? Curry.js2(616641298, 5, vv, 3) : Curry._1(vv.hello.bind(vv), 3),
                 length: 2,
                 tag: 0
               };
@@ -213,7 +213,7 @@ var suites_001 = /* :: */[
         function () {
           return /* Eq */{
                   0: "uu",
-                  1: uu.tag === 248 ? Caml_curry.js1(23515, 6, uu) : uu.id,
+                  1: uu.tag === 248 ? Curry.js1(23515, 6, uu) : uu.id,
                   length: 2,
                   tag: 0
                 };
@@ -224,7 +224,7 @@ var suites_001 = /* :: */[
           "uu_add",
           function () {
             return /* Eq */{
-                    0: uuu.tag === 248 ? Caml_curry.js3(4846113, 7, uuu, 1, 20) : Caml_curry.app2(uuu.add.bind(uuu), 1, 20),
+                    0: uuu.tag === 248 ? Curry.js3(4846113, 7, uuu, 1, 20) : Curry._2(uuu.add.bind(uuu), 1, 20),
                     1: 21,
                     length: 2,
                     tag: 0
@@ -236,7 +236,7 @@ var suites_001 = /* :: */[
             "v_add",
             function () {
               return /* Eq */{
-                      0: vvvv.tag === 248 ? Caml_curry.js3(4846113, 8, vvvv, 3, 7) : Caml_curry.app2(vvvv.add.bind(vvvv), 3, 7),
+                      0: vvvv.tag === 248 ? Curry.js3(4846113, 8, vvvv, 3, 7) : Curry._2(vvvv.add.bind(vvvv), 3, 7),
                       1: 10,
                       length: 2,
                       tag: 0
@@ -248,7 +248,7 @@ var suites_001 = /* :: */[
               "u_id1",
               function () {
                 return /* Eq */{
-                        0: u.tag === 248 ? Caml_curry.js1(5243894, 9, u) : u.id1,
+                        0: u.tag === 248 ? Curry.js1(5243894, 9, u) : u.id1,
                         1: 3,
                         length: 2,
                         tag: 0
@@ -260,7 +260,7 @@ var suites_001 = /* :: */[
                 "u_id2",
                 function () {
                   return /* Eq */{
-                          0: u.tag === 248 ? Caml_curry.js1(5243895, 10, u) : u.id2,
+                          0: u.tag === 248 ? Curry.js1(5243895, 10, u) : u.id2,
                           1: 4,
                           length: 2,
                           tag: 0
@@ -272,7 +272,7 @@ var suites_001 = /* :: */[
                   "u hi",
                   function () {
                     return /* Eq */{
-                            0: u.tag === 248 ? Caml_curry.js3(23297, 11, u, 1, 2) : Caml_curry.app2(u.hi.bind(u), 1, 2),
+                            0: u.tag === 248 ? Curry.js3(23297, 11, u, 1, 2) : Curry._2(u.hi.bind(u), 1, 2),
                             1: 3,
                             length: 2,
                             tag: 0
@@ -284,7 +284,7 @@ var suites_001 = /* :: */[
                     "u hello",
                     function () {
                       return /* Eq */{
-                              0: u.tag === 248 ? Caml_curry.js2(616641298, 12, u, 32) : Caml_curry.app1(u.hello.bind(u), 32),
+                              0: u.tag === 248 ? Curry.js2(616641298, 12, u, 32) : Curry._1(u.hello.bind(u), 32),
                               1: 32,
                               length: 2,
                               tag: 0
@@ -296,7 +296,7 @@ var suites_001 = /* :: */[
                       "v hi",
                       function () {
                         return /* Eq */{
-                                0: vvvv.tag === 248 ? Caml_curry.js2(23297, 13, vvvv, 31) : Caml_curry.app1(vvvv.hi.bind(vvvv), 31),
+                                0: vvvv.tag === 248 ? Curry.js2(23297, 13, vvvv, 31) : Curry._1(vvvv.hi.bind(vvvv), 31),
                                 1: 63,
                                 length: 2,
                                 tag: 0
@@ -308,7 +308,7 @@ var suites_001 = /* :: */[
                         "uuu add",
                         function () {
                           return /* Eq */{
-                                  0: uuu.tag === 248 ? Caml_curry.js3(4846113, 14, uuu, 3, 4) : Caml_curry.app2(uuu.add.bind(uuu), 3, 4),
+                                  0: uuu.tag === 248 ? Curry.js3(4846113, 14, uuu, 3, 4) : Curry._2(uuu.add.bind(uuu), 3, 4),
                                   1: 7,
                                   length: 2,
                                   tag: 0
@@ -320,7 +320,7 @@ var suites_001 = /* :: */[
                           "v x",
                           function () {
                             return /* Eq */{
-                                    0: v.tag === 248 ? Caml_curry.js1(120, 15, v) : v.x,
+                                    0: v.tag === 248 ? Curry.js1(120, 15, v) : v.x,
                                     1: 3,
                                     length: 2,
                                     tag: 0

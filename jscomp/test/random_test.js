@@ -3,10 +3,10 @@
 
 var Mt         = require("./mt");
 var Mt_global  = require("./mt_global");
+var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
 var Int64      = require("../stdlib/int64");
 var Caml_array = require("../runtime/caml_array");
-var Caml_curry = require("../runtime/caml_curry");
 var Random     = require("../stdlib/random");
 
 var id = [0];
@@ -77,7 +77,7 @@ var xx = Random.$$float(3.0);
 
 var xxx = Random.int32(103);
 
-Caml_curry.app5(Printf.printf(/* Format */[
+Curry._5(Printf.printf(/* Format */[
           /* Int64 */{
             0: /* Int_d */0,
             1: /* No_padding */0,

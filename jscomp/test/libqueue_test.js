@@ -4,7 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Queue                   = require("../stdlib/queue");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var List                    = require("../stdlib/list");
 
 function to_list(q) {
@@ -37,7 +37,7 @@ var Q = /* module */[
 
 function does_raise(f, q) {
   try {
-    Caml_curry.app1(f, q);
+    Curry._1(f, q);
     return /* false */0;
   }
   catch (exn){

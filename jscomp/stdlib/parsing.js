@@ -5,9 +5,9 @@ var Caml_obj        = require("../runtime/caml_obj");
 var Caml_parser     = require("../runtime/caml_parser");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Lexing          = require("./lexing");
+var Curry           = require("../runtime/curry");
 var Caml_array      = require("../runtime/caml_array");
 var $$Array         = require("./array");
-var Caml_curry      = require("../runtime/caml_curry");
 
 var YYexit = Caml_exceptions.create("Parsing.YYexit");
 
@@ -81,7 +81,7 @@ function yyparse(tables, start, lexer, lexbuf) {
       var match = Caml_parser.caml_parse_engine(tables, env, cmd, arg);
       switch (match) {
         case 0 : 
-            var t = Caml_curry.app1(lexer, lexbuf);
+            var t = Curry._1(lexer, lexbuf);
             env[/* symb_start */8] = lexbuf[/* lex_start_p */10];
             env[/* symb_end */9] = lexbuf[/* lex_curr_p */11];
             _arg = t;
@@ -104,7 +104,7 @@ function yyparse(tables, start, lexer, lexbuf) {
             try {
               match$1 = /* tuple */[
                 /* Semantic_action_computed */4,
-                Caml_curry.app1(tables[/* actions */0][env[/* rule_number */12]], env)
+                Curry._1(tables[/* actions */0][env[/* rule_number */12]], env)
               ];
             }
             catch (exn){
@@ -122,7 +122,7 @@ function yyparse(tables, start, lexer, lexbuf) {
             _cmd = match$1[0];
             continue ;
             case 5 : 
-            Caml_curry.app1(tables[/* error_function */13], "syntax error");
+            Curry._1(tables[/* error_function */13], "syntax error");
             _arg = /* () */0;
             _cmd = /* Error_detected */5;
             continue ;
@@ -211,7 +211,7 @@ function rhs_end(n) {
 }
 
 function is_current_lookahead(tok) {
-  return Caml_curry.app1(current_lookahead_fun[0], tok);
+  return Curry._1(current_lookahead_fun[0], tok);
 }
 
 function parse_error() {

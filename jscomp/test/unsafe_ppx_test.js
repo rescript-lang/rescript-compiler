@@ -3,7 +3,7 @@
 
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
-var Caml_curry = require("../runtime/caml_curry");
+var Curry      = require("../runtime/curry");
 var Ffi_js     = require("./ffi_js");
 
 var x = ("\x01\x02\x03");
@@ -27,8 +27,8 @@ function g(a) {
    return ""
 });
   var regression2 = (Math.max);
-  Caml_curry.app2(regression, a, Pervasives.failwith);
-  Caml_curry.app2(regression2, 3, 2);
+  Curry._2(regression, a, Pervasives.failwith);
+  Curry._2(regression2, 3, 2);
   regression3(3, 2);
   return regression4(3, function (x) {
               return x;

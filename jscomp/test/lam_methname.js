@@ -5,10 +5,10 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Caml_format             = require("../runtime/caml_format");
 var Ext_string              = require("./ext_string");
+var Curry                   = require("../runtime/curry");
 var Ext_log                 = require("./ext_log");
 var Lam_current_unit        = require("./lam_current_unit");
 var $$String                = require("../stdlib/string");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 
 function process(x) {
@@ -63,7 +63,7 @@ function process(x) {
             var arity = [/* None */0];
             var fail = function (l) {
               var error = "invalid indicator" + (indicator + ("in method name " + (x + (":" + Lam_current_unit.get_file(/* () */0)))));
-              Caml_curry.app1(Ext_log.err(l, /* Format */[
+              Curry._1(Ext_log.err(l, /* Format */[
                         /* String */{
                           0: /* No_padding */0,
                           1: /* End_of_format */0,

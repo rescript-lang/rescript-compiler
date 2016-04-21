@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
-var List       = require("../stdlib/list");
+var Curry = require("../runtime/curry");
+var List  = require("../stdlib/list");
 
 function from_pair_suites(name, suites) {
   console.log(/* tuple */[
@@ -11,7 +11,7 @@ function from_pair_suites(name, suites) {
       ]);
   return List.iter(function (param) {
               var name = param[0];
-              var match = Caml_curry.app1(param[1], /* () */0);
+              var match = Curry._1(param[1], /* () */0);
               switch (match.tag | 0) {
                 case 0 : 
                     console.log(/* tuple */[

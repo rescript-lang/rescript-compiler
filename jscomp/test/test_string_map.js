@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var Caml_string             = require("../runtime/caml_string");
 
 function height(param) {
@@ -150,7 +150,7 @@ function find(x, _param) {
 
 function timing(label, f) {
   console.time(label);
-  Caml_curry.app1(f, /* () */0);
+  Curry._1(f, /* () */0);
   console.timeEnd(label);
   return /* () */0;
 }

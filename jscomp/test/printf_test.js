@@ -1,13 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Printf     = require("../stdlib/printf");
-var Caml_curry = require("../runtime/caml_curry");
-var Format     = require("../stdlib/format");
+var Mt     = require("./mt");
+var Curry  = require("../runtime/curry");
+var Printf = require("../stdlib/printf");
+var Format = require("../stdlib/format");
 
 function print_pair(fmt, param) {
-  return Caml_curry.app2(Format.fprintf(fmt, /* Format */[
+  return Curry._2(Format.fprintf(fmt, /* Format */[
                   /* Char_literal */{
                     0: /* "(" */40,
                     1: /* Int */{
@@ -47,7 +47,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */{
             0: "3232",
-            1: Caml_curry.app2(Printf.sprintf(/* Format */[
+            1: Curry._2(Printf.sprintf(/* Format */[
                       /* String */{
                         0: /* No_padding */0,
                         1: /* Int */{
@@ -95,7 +95,7 @@ var suites_001 = /* :: */[
       function () {
         return /* Eq */{
                 0: "(1,2)",
-                1: Caml_curry.app2(Format.asprintf(/* Format */[
+                1: Curry._2(Format.asprintf(/* Format */[
                           /* Alpha */{
                             0: /* End_of_format */0,
                             length: 1,

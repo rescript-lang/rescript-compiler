@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt         = require("./mt");
-var Caml_curry = require("../runtime/caml_curry");
+var Mt    = require("./mt");
+var Curry = require("../runtime/curry");
 
 function f(h, _) {
   var u = 3;
   console.log(u);
   return function (x, y) {
-    return Caml_curry.app2(h, x, y);
+    return Curry._2(h, x, y);
   };
 }
 

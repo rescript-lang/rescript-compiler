@@ -5,8 +5,8 @@ var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
+var Curry                   = require("../runtime/curry");
 var CamlinternalOO          = require("../stdlib/camlinternalOO");
-var Caml_curry              = require("../runtime/caml_curry");
 
 var shared = [
   "move",
@@ -79,7 +79,7 @@ function colored_point_init($$class) {
       });
   return function (_, self, x, c$1) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     self$1[c] = c$1;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -95,9 +95,9 @@ function colored_point_to_point(cp) {
   return cp;
 }
 
-var p = Caml_curry.app2(point[0], 0, 3);
+var p = Curry._2(point[0], 0, 3);
 
-var q = Caml_curry.app3(colored_point[0], 0, 4, "blue");
+var q = Curry._3(colored_point[0], 0, 4, "blue");
 
 function lookup_obj(obj, _param) {
   while(true) {
@@ -152,7 +152,7 @@ function d_init($$class) {
       ]);
   return function (_, self) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app1(obj_init, self$1);
+    Curry._1(obj_init, self$1);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -167,7 +167,7 @@ var env_init = d_init(table);
 
 CamlinternalOO.init_class(table);
 
-var d_000 = Caml_curry.app1(env_init, 0);
+var d_000 = Curry._1(env_init, 0);
 
 var d = [
   d_000,
@@ -218,18 +218,18 @@ function functional_point_init($$class) {
 
 var functional_point = CamlinternalOO.make_class(shared, functional_point_init);
 
-var p$1 = Caml_curry.app2(functional_point[0], 0, 7);
+var p$1 = Curry._2(functional_point[0], 0, 7);
 
-var tmp = p$1.tag === 248 ? Caml_curry.js2(-933174511, 2, p$1, 3) : Caml_curry.app1(p$1.move.bind(p$1), 3);
+var tmp = p$1.tag === 248 ? Curry.js2(-933174511, 2, p$1, 3) : Curry._1(p$1.move.bind(p$1), 3);
 
 eq('File "class6_test.ml", line 60, characters 5-12', /* tuple */[
       7,
       10,
       7
     ], /* tuple */[
-      p$1.tag === 248 ? Caml_curry.js1(291546447, 1, p$1) : p$1.get_x,
-      tmp.tag === 248 ? Caml_curry.js1(291546447, 3, tmp) : tmp.get_x,
-      p$1.tag === 248 ? Caml_curry.js1(291546447, 4, p$1) : p$1.get_x
+      p$1.tag === 248 ? Curry.js1(291546447, 1, p$1) : p$1.get_x,
+      tmp.tag === 248 ? Curry.js1(291546447, 3, tmp) : tmp.get_x,
+      p$1.tag === 248 ? Curry.js1(291546447, 4, p$1) : p$1.get_x
     ]);
 
 function bad_functional_point_init($$class) {
@@ -244,7 +244,7 @@ function bad_functional_point_init($$class) {
         },
         move,
         function (self$neg7, d) {
-          return Caml_curry.app2(bad_functional_point[0], 0, self$neg7[x] + d | 0);
+          return Curry._2(bad_functional_point[0], 0, self$neg7[x] + d | 0);
         }
       ]);
   return function (_, self, y) {
@@ -260,7 +260,7 @@ var env_init$1 = bad_functional_point_init(table$1);
 
 CamlinternalOO.init_class(table$1);
 
-var bad_functional_point_000 = Caml_curry.app1(env_init$1, 0);
+var bad_functional_point_000 = Curry._1(env_init$1, 0);
 
 var bad_functional_point = [
   bad_functional_point_000,
@@ -269,18 +269,18 @@ var bad_functional_point = [
   0
 ];
 
-var p$2 = Caml_curry.app2(bad_functional_point_000, 0, 7);
+var p$2 = Curry._2(bad_functional_point_000, 0, 7);
 
-var tmp$1 = p$2.tag === 248 ? Caml_curry.js2(-933174511, 6, p$2, 3) : Caml_curry.app1(p$2.move.bind(p$2), 3);
+var tmp$1 = p$2.tag === 248 ? Curry.js2(-933174511, 6, p$2, 3) : Curry._1(p$2.move.bind(p$2), 3);
 
 eq('File "class6_test.ml", line 74, characters 5-12', /* tuple */[
       7,
       10,
       7
     ], /* tuple */[
-      p$2.tag === 248 ? Caml_curry.js1(291546447, 5, p$2) : p$2.get_x,
-      tmp$1.tag === 248 ? Caml_curry.js1(291546447, 7, tmp$1) : tmp$1.get_x,
-      p$2.tag === 248 ? Caml_curry.js1(291546447, 8, p$2) : p$2.get_x
+      p$2.tag === 248 ? Curry.js1(291546447, 5, p$2) : p$2.get_x,
+      tmp$1.tag === 248 ? Curry.js1(291546447, 7, tmp$1) : tmp$1.get_x,
+      p$2.tag === 248 ? Curry.js1(291546447, 8, p$2) : p$2.get_x
     ]);
 
 Mt.from_pair_suites("class6_test.ml", suites[0]);

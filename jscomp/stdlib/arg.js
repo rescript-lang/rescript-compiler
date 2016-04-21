@@ -8,9 +8,9 @@ var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Caml_format             = require("../runtime/caml_format");
 var Sys                     = require("./sys");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var Buffer                  = require("./buffer");
-var Caml_curry              = require("../runtime/caml_curry");
 var $$String                = require("./string");
 var List                    = require("./list");
 var Caml_string             = require("../runtime/caml_string");
@@ -116,7 +116,7 @@ function add_help(speclist) {
 }
 
 function usage_b(buf, speclist, errmsg) {
-  Caml_curry.app1(Printf.bprintf(buf, /* Format */[
+  Curry._1(Printf.bprintf(buf, /* Format */[
             /* String */{
               0: /* No_padding */0,
               1: /* Char_literal */{
@@ -138,7 +138,7 @@ function usage_b(buf, speclist, errmsg) {
               var key = param$1[0];
               if (doc.length) {
                 if (spec.tag === 11) {
-                  return Caml_curry.app3(Printf.bprintf(buf$1, /* Format */[
+                  return Curry._3(Printf.bprintf(buf$1, /* Format */[
                                   /* String_literal */{
                                     0: "  ",
                                     1: /* String */{
@@ -174,7 +174,7 @@ function usage_b(buf, speclist, errmsg) {
                                 ]), key, make_symlist("{", "|", "}", spec[0]), doc);
                 }
                 else {
-                  return Caml_curry.app2(Printf.bprintf(buf$1, /* Format */[
+                  return Curry._2(Printf.bprintf(buf$1, /* Format */[
                                   /* String_literal */{
                                     0: "  ",
                                     1: /* String */{
@@ -218,7 +218,7 @@ function usage_string(speclist, errmsg) {
 }
 
 function usage(speclist, errmsg) {
-  return Caml_curry.app1(Printf.eprintf(/* Format */[
+  return Curry._1(Printf.eprintf(/* Format */[
                   /* String */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
@@ -246,7 +246,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
             case "-help" : 
                 break;
             default:
-              Caml_curry.app2(Printf.bprintf(b, /* Format */[
+              Curry._2(Printf.bprintf(b, /* Format */[
                         /* String */{
                           0: /* No_padding */0,
                           1: /* String_literal */{
@@ -273,7 +273,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
           }
           break;
       case 1 : 
-          Caml_curry.app4(Printf.bprintf(b, /* Format */[
+          Curry._4(Printf.bprintf(b, /* Format */[
                     /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
@@ -319,7 +319,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   ]), progname, error[1], error[0], error[2]);
           break;
       case 2 : 
-          Caml_curry.app2(Printf.bprintf(b, /* Format */[
+          Curry._2(Printf.bprintf(b, /* Format */[
                     /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
@@ -345,7 +345,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   ]), progname, error[0]);
           break;
       case 3 : 
-          Caml_curry.app2(Printf.bprintf(b, /* Format */[
+          Curry._2(Printf.bprintf(b, /* Format */[
                     /* String */{
                       0: /* No_padding */0,
                       1: /* String_literal */{
@@ -419,12 +419,12 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
         return function (param) {
           switch (param.tag | 0) {
             case 0 : 
-                return Caml_curry.app1(param[0], /* () */0);
+                return Curry._1(param[0], /* () */0);
             case 1 : 
                 if ((current$1[0] + 1 | 0) < l) {
                   var arg = argv[current$1[0] + 1 | 0];
                   try {
-                    Caml_curry.app1(param[0], Pervasives.bool_of_string(arg));
+                    Curry._1(param[0], Pervasives.bool_of_string(arg));
                   }
                   catch (exn){
                     if (exn[0] === Caml_builtin_exceptions.invalid_argument) {
@@ -469,7 +469,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 return /* () */0;
             case 4 : 
                 if ((current$1[0] + 1 | 0) < l) {
-                  Caml_curry.app1(param[0], argv[current$1[0] + 1 | 0]);
+                  Curry._1(param[0], argv[current$1[0] + 1 | 0]);
                   return current$1[0] = current$1[0] + 1 | 0;
                 }
                 else {
@@ -503,7 +503,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 if ((current$1[0] + 1 | 0) < l) {
                   var arg$1 = argv[current$1[0] + 1 | 0];
                   try {
-                    Caml_curry.app1(param[0], Caml_format.caml_int_of_string(arg$1));
+                    Curry._1(param[0], Caml_format.caml_int_of_string(arg$1));
                   }
                   catch (exn$1){
                     if (exn$1[0] === Caml_builtin_exceptions.failure) {
@@ -585,7 +585,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 if ((current$1[0] + 1 | 0) < l) {
                   var arg$3 = argv[current$1[0] + 1 | 0];
                   try {
-                    Caml_curry.app1(param[0], Caml_format.caml_float_of_string(arg$3));
+                    Curry._1(param[0], Caml_format.caml_float_of_string(arg$3));
                   }
                   catch (exn$3){
                     if (exn$3[0] === Caml_builtin_exceptions.failure) {
@@ -670,7 +670,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 if ((current$1[0] + 1 | 0) < l) {
                   var arg$5 = argv[current$1[0] + 1 | 0];
                   if (List.mem(arg$5, symb)) {
-                    Caml_curry.app1(param[1], argv[current$1[0] + 1 | 0]);
+                    Curry._1(param[1], argv[current$1[0] + 1 | 0]);
                     return current$1[0] = current$1[0] + 1 | 0;
                   }
                   else {
@@ -700,7 +700,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
             case 12 : 
                 var f = param[0];
                 while(current$1[0] < (l - 1 | 0)) {
-                  Caml_curry.app1(f, argv[current$1[0] + 1 | 0]);
+                  Curry._1(f, argv[current$1[0] + 1 | 0]);
                   current$1[0] = current$1[0] + 1 | 0;
                 };
                 return /* () */0;
@@ -729,7 +729,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
     }
     else {
       try {
-        Caml_curry.app1(anonfun, s);
+        Curry._1(anonfun, s);
       }
       catch (exn$2){
         if (exn$2[0] === Bad) {
@@ -760,7 +760,7 @@ function parse(l, f, msg) {
   }
   catch (exn){
     if (exn[0] === Bad) {
-      Caml_curry.app1(Printf.eprintf(/* Format */[
+      Curry._1(Printf.eprintf(/* Format */[
                 /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
@@ -772,7 +772,7 @@ function parse(l, f, msg) {
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
-      Caml_curry.app1(Printf.printf(/* Format */[
+      Curry._1(Printf.printf(/* Format */[
                 /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
@@ -795,7 +795,7 @@ function parse_dynamic(l, f, msg) {
   }
   catch (exn){
     if (exn[0] === Bad) {
-      Caml_curry.app1(Printf.eprintf(/* Format */[
+      Curry._1(Printf.eprintf(/* Format */[
                 /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,
@@ -807,7 +807,7 @@ function parse_dynamic(l, f, msg) {
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
-      Caml_curry.app1(Printf.printf(/* Format */[
+      Curry._1(Printf.printf(/* Format */[
                 /* String */{
                   0: /* No_padding */0,
                   1: /* End_of_format */0,

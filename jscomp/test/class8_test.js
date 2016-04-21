@@ -4,8 +4,8 @@
 var Caml_obj        = require("../runtime/caml_obj");
 var Caml_exceptions = require("../runtime/caml_exceptions");
 var Mt              = require("./mt");
+var Curry           = require("../runtime/curry");
 var CamlinternalOO  = require("../stdlib/camlinternalOO");
-var Caml_curry      = require("../runtime/caml_curry");
 
 var shared = [
   "leq",
@@ -71,13 +71,13 @@ function money_init($$class) {
         leq,
         function (self$neg2, p) {
           return +(self$neg2[repr] <= (
-                    p.tag === 248 ? Caml_curry.js1(834174833, 1, p) : p.value
+                    p.tag === 248 ? Curry.js1(834174833, 1, p) : p.value
                   ));
         }
       ]);
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app1(obj_init, self$1);
+    Curry._1(obj_init, self$1);
     self$1[repr] = x;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -97,7 +97,7 @@ function money2_init($$class) {
       });
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
@@ -109,7 +109,7 @@ var money2 = CamlinternalOO.make_class([
     ], money2_init);
 
 function min(x, y) {
-  if (x.tag === 248 ? Caml_curry.js2(5393368, 2, x, y) : Caml_curry.app1(x.leq.bind(x), y)) {
+  if (x.tag === 248 ? Curry.js2(5393368, 2, x, y) : Curry._1(x.leq.bind(x), y)) {
     return x;
   }
   else {
@@ -117,13 +117,13 @@ function min(x, y) {
   }
 }
 
-var tmp = min(Caml_curry.app2(money[0], 0, 1.0), Caml_curry.app2(money[0], 0, 3.0));
+var tmp = min(Curry._2(money[0], 0, 1.0), Curry._2(money[0], 0, 3.0));
 
-eq('File "class8_test.ml", line 34, characters 5-12', 1, tmp.tag === 248 ? Caml_curry.js1(834174833, 3, tmp) : tmp.value);
+eq('File "class8_test.ml", line 34, characters 5-12', 1, tmp.tag === 248 ? Curry.js1(834174833, 3, tmp) : tmp.value);
 
-var tmp$1 = min(Caml_curry.app2(money2[0], 0, 5.0), Caml_curry.app2(money2[0], 0, 3));
+var tmp$1 = min(Curry._2(money2[0], 0, 5.0), Curry._2(money2[0], 0, 3));
 
-eq('File "class8_test.ml", line 39, characters 5-12', 3, tmp$1.tag === 248 ? Caml_curry.js1(834174833, 4, tmp$1) : tmp$1.value);
+eq('File "class8_test.ml", line 39, characters 5-12', 3, tmp$1.tag === 248 ? Curry.js1(834174833, 4, tmp$1) : tmp$1.value);
 
 Mt.from_pair_suites("class8_test.ml", suites[0]);
 

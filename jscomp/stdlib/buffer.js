@@ -5,8 +5,8 @@ var Bytes                   = require("./bytes");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Pervasives              = require("./pervasives");
 var Sys                     = require("./sys");
+var Curry                   = require("../runtime/curry");
 var $$String                = require("./string");
-var Caml_curry              = require("../runtime/caml_curry");
 var Caml_string             = require("../runtime/caml_string");
 
 function create(n) {
@@ -356,7 +356,7 @@ function add_substitute(b, f, s) {
       else {
         var j = i + 1 | 0;
         var match = find_ident(s, j, lim);
-        add_string(b, Caml_curry.app1(f, match[0]));
+        add_string(b, Curry._1(f, match[0]));
         _i = match[1];
         _previous = /* " " */32;
         continue ;

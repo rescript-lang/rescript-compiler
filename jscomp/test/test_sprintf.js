@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Printf     = require("../stdlib/printf");
-var Caml_curry = require("../runtime/caml_curry");
+var Curry  = require("../runtime/curry");
+var Printf = require("../stdlib/printf");
 
-console.error(Caml_curry.app2(Printf.sprintf(/* Format */[
+console.error(Curry._2(Printf.sprintf(/* Format */[
               /* Int */{
                 0: /* Int_d */0,
                 1: /* No_padding */0,

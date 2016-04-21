@@ -5,7 +5,7 @@ var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("../stdlib/pervasives");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 
 var Bad = Caml_exceptions.create("Test_seq.Bad");
 
@@ -50,7 +50,7 @@ function v(speclist) {
 }
 
 function f(g, speclist) {
-  return Caml_curry.app1(g, assoc3("-help", speclist));
+  return Curry._1(g, assoc3("-help", speclist));
 }
 
 function add_help(speclist) {

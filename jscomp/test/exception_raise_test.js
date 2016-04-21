@@ -4,7 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
 
@@ -17,7 +17,7 @@ var D = Caml_exceptions.create("Exception_raise_test.D");
 function appf(g, x) {
   var A = Caml_exceptions.create("A");
   try {
-    return Caml_curry.app1(g, x);
+    return Curry._1(g, x);
   }
   catch (exn){
     var exit = 0;

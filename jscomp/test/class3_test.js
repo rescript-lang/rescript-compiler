@@ -4,9 +4,9 @@
 var Caml_obj       = require("../runtime/caml_obj");
 var Pervasives     = require("../stdlib/pervasives");
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var Caml_primitive = require("../runtime/caml_primitive");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 var List           = require("../stdlib/list");
 
 var shared = [
@@ -108,9 +108,9 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared$1, point_init);
 
-var p = Caml_curry.app2(point[0], 0, 7);
+var p = Curry._2(point[0], 0, 7);
 
-eq('File "class3_test.ml", line 17, characters 12-19', p.tag === 248 ? Caml_curry.js1(291546447, 1, p) : p.get_x, 7);
+eq('File "class3_test.ml", line 17, characters 12-19', p.tag === 248 ? Curry.js1(291546447, 1, p) : p.get_x, 7);
 
 function adjusted_point_init($$class) {
   var origin = CamlinternalOO.new_variable($$class, "");
@@ -145,12 +145,12 @@ function adjusted_point_init($$class) {
 
 var adjusted_point = CamlinternalOO.make_class(shared$4, adjusted_point_init);
 
-var tmp = Caml_curry.app2(adjusted_point[0], 0, 31);
+var tmp = Curry._2(adjusted_point[0], 0, 31);
 
-eq('File "class3_test.ml", line 28, characters 13-20', tmp.tag === 248 ? Caml_curry.js1(291546447, 2, tmp) : tmp.get_x, 30);
+eq('File "class3_test.ml", line 28, characters 13-20', tmp.tag === 248 ? Curry.js1(291546447, 2, tmp) : tmp.get_x, 30);
 
 function new_init(obj_init, self, x_init) {
-  return Caml_curry.app2(obj_init, self, Caml_primitive.imul(x_init / 10 | 0, 10));
+  return Curry._2(obj_init, self, Caml_primitive.imul(x_init / 10 | 0, 10));
 }
 
 var partial_arg = point[0];
@@ -160,9 +160,9 @@ function adjusted_point2_000(param, param$1) {
 }
 
 function adjusted_point2_001(table) {
-  var env_init = Caml_curry.app1(point[1], table);
+  var env_init = Curry._1(point[1], table);
   return function (envs) {
-    var partial_arg = Caml_curry.app1(env_init, envs);
+    var partial_arg = Curry._1(env_init, envs);
     return function (param, param$1) {
       return new_init(partial_arg, param, param$1);
     };
@@ -180,9 +180,9 @@ var adjusted_point2 = [
   adjusted_point2_003
 ];
 
-var tmp$1 = Caml_curry.app2(adjusted_point2_000, 0, 31);
+var tmp$1 = Curry._2(adjusted_point2_000, 0, 31);
 
-eq('File "class3_test.ml", line 33, characters 12-19', tmp$1.tag === 248 ? Caml_curry.js1(291546447, 3, tmp$1) : tmp$1.get_x, 30);
+eq('File "class3_test.ml", line 33, characters 12-19', tmp$1.tag === 248 ? Curry.js1(291546447, 3, tmp$1) : tmp$1.get_x, 30);
 
 function printable_point_init($$class) {
   var ids = CamlinternalOO.new_methods_variables($$class, shared$8, shared$5);
@@ -202,7 +202,7 @@ function printable_point_init($$class) {
         },
         print,
         function (self$neg4) {
-          return Caml_curry.app1(self$neg4[0][get_x], self$neg4);
+          return Curry._1(self$neg4[0][get_x], self$neg4);
         }
       ]);
   return function (_, self, x_init) {
@@ -214,9 +214,9 @@ function printable_point_init($$class) {
 
 var printable_point = CamlinternalOO.make_class(shared$6, printable_point_init);
 
-var p$1 = Caml_curry.app2(printable_point[0], 0, 7);
+var p$1 = Curry._2(printable_point[0], 0, 7);
 
-eq('File "class3_test.ml", line 49, characters 11-18', p$1.tag === 248 ? Caml_curry.js1(-930392019, 4, p$1) : p$1.print, 7);
+eq('File "class3_test.ml", line 49, characters 11-18', p$1.tag === 248 ? Curry.js1(-930392019, 4, p$1) : p$1.print, 7);
 
 var ints = [/* [] */0];
 
@@ -254,20 +254,20 @@ CamlinternalOO.init_class($$class);
 var my_int = CamlinternalOO.create_object_opt(0, $$class);
 
 if (my_int.tag === 248) {
-  Caml_curry.js1(-794843549, 5, my_int);
+  Curry.js1(-794843549, 5, my_int);
 }
 else {
   my_int.register;
 }
 
 if (my_int.tag === 248) {
-  Caml_curry.js1(-794843549, 6, my_int);
+  Curry.js1(-794843549, 6, my_int);
 }
 else {
   my_int.register;
 }
 
-console.log(my_int.tag === 248 ? Caml_curry.js1(5393365, 7, my_int) : my_int.len);
+console.log(my_int.tag === 248 ? Curry.js1(5393365, 7, my_int) : my_int.len);
 
 var v = /* int array */[
   0,
@@ -292,7 +292,7 @@ function printable_point2_init($$class) {
         },
         print,
         function (self$neg6) {
-          return Pervasives.print_int(Caml_curry.app1(self$neg6[0][get_x], self$neg6));
+          return Pervasives.print_int(Curry._1(self$neg6[0][get_x], self$neg6));
         }
       ]);
   CamlinternalOO.add_initializer($$class, function (self$neg6) {
@@ -310,7 +310,7 @@ function printable_point2_init($$class) {
 
 var printable_point2 = CamlinternalOO.make_class(shared$6, printable_point2_init);
 
-Caml_curry.app2(printable_point2[0], 0, 31);
+Curry._2(printable_point2[0], 0, 31);
 
 eq('File "class3_test.ml", line 81, characters 12-19', v, /* int array */[
       30,
@@ -329,7 +329,7 @@ Caml_obj.caml_update_dummy(abstract_point, [
         var get_x = ids[1];
         var get_offset = ids[2];
         CamlinternalOO.set_method($$class, get_offset, function (self$neg7) {
-              return Caml_curry.app1(self$neg7[0][get_x], self$neg7) - self$neg7[x_init] | 0;
+              return Curry._1(self$neg7[0][get_x], self$neg7) - self$neg7[x_init] | 0;
             });
         return function (_, self, x_init$1) {
           var self$1 = CamlinternalOO.create_object_opt(self, $$class);
@@ -361,7 +361,7 @@ function vpoint_init($$class) {
       ]);
   return function (_, self, x_init) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x_init);
+    Curry._2(obj_init, self$1, x_init);
     self$1[x] = x_init;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -369,16 +369,16 @@ function vpoint_init($$class) {
 
 var vpoint = CamlinternalOO.make_class(shared$4, vpoint_init);
 
-var h = Caml_curry.app2(vpoint[0], 0, 3);
+var h = Curry._2(vpoint[0], 0, 3);
 
 if (h.tag === 248) {
-  Caml_curry.js2(-933174511, 8, h, 32);
+  Curry.js2(-933174511, 8, h, 32);
 }
 else {
-  Caml_curry.app1(h.move.bind(h), 32);
+  Curry._1(h.move.bind(h), 32);
 }
 
-var v$1 = h.tag === 248 ? Caml_curry.js1(-792262820, 9, h) : h.get_offset;
+var v$1 = h.tag === 248 ? Curry.js1(-792262820, 9, h) : h.get_offset;
 
 eq('File "class3_test.ml", line 107, characters 12-19', v$1, 32);
 
@@ -416,7 +416,7 @@ function point2_init($$class) {
   return function (_, self, x_init$1) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[x_init] = x_init$1;
-    Caml_curry.app1(obj_init, self$1);
+    Curry._1(obj_init, self$1);
     self$1[x] = x_init$1;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
@@ -427,16 +427,16 @@ var point2 = CamlinternalOO.make_class([
       "get_offset"
     ], point2_init);
 
-var h$1 = Caml_curry.app2(point2[0], 0, 3);
+var h$1 = Curry._2(point2[0], 0, 3);
 
 if (h$1.tag === 248) {
-  Caml_curry.js2(-933174511, 10, h$1, 32);
+  Curry.js2(-933174511, 10, h$1, 32);
 }
 else {
-  Caml_curry.app1(h$1.move.bind(h$1), 32);
+  Curry._1(h$1.move.bind(h$1), 32);
 }
 
-var vv = h$1.tag === 248 ? Caml_curry.js1(-792262820, 11, h$1) : h$1.get_offset;
+var vv = h$1.tag === 248 ? Curry.js1(-792262820, 11, h$1) : h$1.get_offset;
 
 eq('File "class3_test.ml", line 128, characters 12-19', vv, 32);
 
@@ -462,7 +462,7 @@ function restricted_point_init($$class) {
         },
         bump,
         function (self$neg11) {
-          return Caml_curry.app2(self$neg11[0][move], self$neg11, 1);
+          return Curry._2(self$neg11[0][move], self$neg11, 1);
         }
       ]);
   return function (_, self, x_init) {
@@ -477,16 +477,16 @@ var restricted_point = CamlinternalOO.make_class([
       "get_x"
     ], restricted_point_init);
 
-var p$2 = Caml_curry.app2(restricted_point[0], 0, 0);
+var p$2 = Curry._2(restricted_point[0], 0, 0);
 
 if (p$2.tag === 248) {
-  Caml_curry.js1(-1054863370, 12, p$2);
+  Curry.js1(-1054863370, 12, p$2);
 }
 else {
   p$2.bump;
 }
 
-var h$2 = p$2.tag === 248 ? Caml_curry.js1(291546447, 13, p$2) : p$2.get_x;
+var h$2 = p$2.tag === 248 ? Curry.js1(291546447, 13, p$2) : p$2.get_x;
 
 eq('File "class3_test.ml", line 144, characters 12-19', h$2, 1);
 
@@ -496,37 +496,37 @@ function point_again_init($$class) {
   var obj_init = inh[0];
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
 
 var point_again = CamlinternalOO.make_class(shared$9, point_again_init);
 
-var p$3 = Caml_curry.app2(point_again[0], 0, 3);
+var p$3 = Curry._2(point_again[0], 0, 3);
 
 if (p$3.tag === 248) {
-  Caml_curry.js2(-933174511, 14, p$3, 3);
+  Curry.js2(-933174511, 14, p$3, 3);
 }
 else {
-  Caml_curry.app1(p$3.move.bind(p$3), 3);
+  Curry._1(p$3.move.bind(p$3), 3);
 }
 
 if (p$3.tag === 248) {
-  Caml_curry.js1(-1054863370, 15, p$3);
-}
-else {
-  p$3.bump;
-}
-
-if (p$3.tag === 248) {
-  Caml_curry.js1(-1054863370, 16, p$3);
+  Curry.js1(-1054863370, 15, p$3);
 }
 else {
   p$3.bump;
 }
 
-var hh = p$3.tag === 248 ? Caml_curry.js1(291546447, 17, p$3) : p$3.get_x;
+if (p$3.tag === 248) {
+  Curry.js1(-1054863370, 16, p$3);
+}
+else {
+  p$3.bump;
+}
+
+var hh = p$3.tag === 248 ? Curry.js1(291546447, 17, p$3) : p$3.get_x;
 
 eq('File "class3_test.ml", line 161, characters 12-19', hh, 8);
 
@@ -535,37 +535,37 @@ function point_again2_init($$class) {
   var obj_init = inh[0];
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
 
 var point_again2 = CamlinternalOO.make_class(shared$9, point_again2_init);
 
-var p$4 = Caml_curry.app2(point_again2[0], 0, 3);
+var p$4 = Curry._2(point_again2[0], 0, 3);
 
 if (p$4.tag === 248) {
-  Caml_curry.js2(-933174511, 18, p$4, 30);
+  Curry.js2(-933174511, 18, p$4, 30);
 }
 else {
-  Caml_curry.app1(p$4.move.bind(p$4), 30);
+  Curry._1(p$4.move.bind(p$4), 30);
 }
 
 if (p$4.tag === 248) {
-  Caml_curry.js1(-1054863370, 19, p$4);
-}
-else {
-  p$4.bump;
-}
-
-if (p$4.tag === 248) {
-  Caml_curry.js1(-1054863370, 20, p$4);
+  Curry.js1(-1054863370, 19, p$4);
 }
 else {
   p$4.bump;
 }
 
-var hhh = p$4.tag === 248 ? Caml_curry.js1(291546447, 21, p$4) : p$4.get_x;
+if (p$4.tag === 248) {
+  Curry.js1(-1054863370, 20, p$4);
+}
+else {
+  p$4.bump;
+}
+
+var hhh = p$4.tag === 248 ? Curry.js1(291546447, 21, p$4) : p$4.get_x;
 
 eq('File "class3_test.ml", line 177, characters 12-19', hhh, 35);
 
@@ -575,41 +575,41 @@ function point_again3_init($$class) {
   var obj_init = inh[0];
   var move$1 = inh[4];
   CamlinternalOO.set_method($$class, move, function (self$neg14) {
-        return Caml_curry.app1(move$1, self$neg14);
+        return Curry._1(move$1, self$neg14);
       });
   return function (_, self, x) {
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
-    Caml_curry.app2(obj_init, self$1, x);
+    Curry._2(obj_init, self$1, x);
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);
   };
 }
 
 var point_again3 = CamlinternalOO.make_class(shared$9, point_again3_init);
 
-var p$5 = Caml_curry.app2(point_again3[0], 0, 3);
+var p$5 = Curry._2(point_again3[0], 0, 3);
 
 if (p$5.tag === 248) {
-  Caml_curry.js2(-933174511, 22, p$5, 300);
+  Curry.js2(-933174511, 22, p$5, 300);
 }
 else {
-  Caml_curry.app1(p$5.move.bind(p$5), 300);
+  Curry._1(p$5.move.bind(p$5), 300);
 }
 
 if (p$5.tag === 248) {
-  Caml_curry.js1(-1054863370, 23, p$5);
-}
-else {
-  p$5.bump;
-}
-
-if (p$5.tag === 248) {
-  Caml_curry.js1(-1054863370, 24, p$5);
+  Curry.js1(-1054863370, 23, p$5);
 }
 else {
   p$5.bump;
 }
 
-var hhhh = p$5.tag === 248 ? Caml_curry.js1(291546447, 25, p$5) : p$5.get_x;
+if (p$5.tag === 248) {
+  Curry.js1(-1054863370, 24, p$5);
+}
+else {
+  p$5.bump;
+}
+
+var hhhh = p$5.tag === 248 ? Curry.js1(291546447, 25, p$5) : p$5.get_x;
 
 eq('File "class3_test.ml", line 195, characters 12-19', hhhh, 305);
 

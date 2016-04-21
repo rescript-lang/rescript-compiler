@@ -5,11 +5,11 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_io                 = require("../runtime/caml_io");
 var Obj                     = require("./obj");
 var Pervasives              = require("./pervasives");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var $$Array                 = require("./array");
 var Buffer                  = require("./buffer");
-var Caml_curry              = require("../runtime/caml_curry");
 
 var printers = [/* [] */0];
 
@@ -77,7 +77,7 @@ var locfmt = /* Format */[
 function field(x, i) {
   var f = x[i];
   if (f.length === undefined) {
-    return Caml_curry.app1(Printf.sprintf(/* Format */[
+    return Curry._1(Printf.sprintf(/* Format */[
                     /* Int */{
                       0: /* Int_d */0,
                       1: /* No_padding */0,
@@ -90,7 +90,7 @@ function field(x, i) {
                   ]), f);
   }
   else if ((f.tag | 0) === Obj.string_tag) {
-    return Caml_curry.app1(Printf.sprintf(/* Format */[
+    return Curry._1(Printf.sprintf(/* Format */[
                     /* Caml_string */{
                       0: /* No_padding */0,
                       1: /* End_of_format */0,
@@ -113,7 +113,7 @@ function other_fields(x, i) {
     return "";
   }
   else {
-    return Caml_curry.app2(Printf.sprintf(/* Format */[
+    return Curry._2(Printf.sprintf(/* Format */[
                     /* String_literal */{
                       0: ", ",
                       1: /* String */{
@@ -138,7 +138,7 @@ function other_fields(x, i) {
 function fields(x) {
   var n = x.length;
   if (n > 2 || n < 0) {
-    return Caml_curry.app2(Printf.sprintf(/* Format */[
+    return Curry._2(Printf.sprintf(/* Format */[
                     /* Char_literal */{
                       0: /* "(" */40,
                       1: /* String */{
@@ -169,7 +169,7 @@ function fields(x) {
       case 1 : 
           return "";
       case 2 : 
-          return Caml_curry.app1(Printf.sprintf(/* Format */[
+          return Curry._1(Printf.sprintf(/* Format */[
                           /* Char_literal */{
                             0: /* "(" */40,
                             1: /* String */{
@@ -200,7 +200,7 @@ function to_string(x) {
     if (param) {
       var match;
       try {
-        match = Caml_curry.app1(param[0], x);
+        match = Curry._1(param[0], x);
       }
       catch (exn){
         match = /* None */0;
@@ -223,17 +223,17 @@ function to_string(x) {
     else if (x[0] === Caml_builtin_exceptions.match_failure) {
       var match$1 = x[1];
       var $$char = match$1[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5 | 0, "Pattern matching failed");
+      return Curry._5(Printf.sprintf(locfmt), match$1[0], match$1[1], $$char, $$char + 5 | 0, "Pattern matching failed");
     }
     else if (x[0] === Caml_builtin_exceptions.assert_failure) {
       var match$2 = x[1];
       var $$char$1 = match$2[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6 | 0, "Assertion failed");
+      return Curry._5(Printf.sprintf(locfmt), match$2[0], match$2[1], $$char$1, $$char$1 + 6 | 0, "Assertion failed");
     }
     else if (x[0] === Caml_builtin_exceptions.undefined_recursive_module) {
       var match$3 = x[1];
       var $$char$2 = match$3[2];
-      return Caml_curry.app5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6 | 0, "Undefined recursive module");
+      return Curry._5(Printf.sprintf(locfmt), match$3[0], match$3[1], $$char$2, $$char$2 + 6 | 0, "Undefined recursive module");
     }
     else if ((x.tag | 0) !== 0) {
       return x[0];
@@ -247,10 +247,10 @@ function to_string(x) {
 
 function print(fct, arg) {
   try {
-    return Caml_curry.app1(fct, arg);
+    return Curry._1(fct, arg);
   }
   catch (x){
-    Caml_curry.app1(Printf.eprintf(/* Format */[
+    Curry._1(Printf.eprintf(/* Format */[
               /* String_literal */{
                 0: "Uncaught exception: ",
                 1: /* String */{
@@ -276,11 +276,11 @@ function print(fct, arg) {
 
 function $$catch(fct, arg) {
   try {
-    return Caml_curry.app1(fct, arg);
+    return Curry._1(fct, arg);
   }
   catch (x){
     Caml_io.caml_ml_flush(Pervasives.stdout);
-    Caml_curry.app1(Printf.eprintf(/* Format */[
+    Curry._1(Printf.eprintf(/* Format */[
               /* String_literal */{
                 0: "Uncaught exception: ",
                 1: /* String */{
@@ -339,7 +339,7 @@ function format_backtrace_slot(pos, slot) {
       return /* None */0;
     }
     else {
-      return /* Some */[Caml_curry.app1(Printf.sprintf(/* Format */[
+      return /* Some */[Curry._1(Printf.sprintf(/* Format */[
                         /* String */{
                           0: /* No_padding */0,
                           1: /* String_literal */{
@@ -356,7 +356,7 @@ function format_backtrace_slot(pos, slot) {
     }
   }
   else {
-    return /* Some */[Caml_curry.app5(Printf.sprintf(/* Format */[
+    return /* Some */[Curry._5(Printf.sprintf(/* Format */[
                       /* String */{
                         0: /* No_padding */0,
                         1: /* String_literal */{
@@ -422,7 +422,7 @@ function print_raw_backtrace(outchan, raw_backtrace) {
     for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Caml_curry.app1(Printf.fprintf(outchan$1, /* Format */[
+        Curry._1(Printf.fprintf(outchan$1, /* Format */[
                   /* String */{
                     0: /* No_padding */0,
                     1: /* Char_literal */{
@@ -465,7 +465,7 @@ function backtrace_to_string(backtrace) {
     for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
-        Caml_curry.app1(Printf.bprintf(b, /* Format */[
+        Curry._1(Printf.bprintf(b, /* Format */[
                   /* String */{
                     0: /* No_padding */0,
                     1: /* Char_literal */{

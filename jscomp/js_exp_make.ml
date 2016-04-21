@@ -778,10 +778,10 @@ let public_method_call meth_name obj label cache args =
         *)
       else if len <=8 then 
         let len_str = string_of_int len in
-        runtime_call Js_config.curry ("app"^len_str) 
+        runtime_call Js_config.curry (Literals.app ^len_str) 
           (fn ::  args)
       else 
-        runtime_call Js_config.curry "app"           
+        runtime_call Js_config.curry Literals.app_array           
           [fn  ; arr NA args ]            
     )
 

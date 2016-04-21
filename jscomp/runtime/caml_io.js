@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
-var Caml_curry              = require("./caml_curry");
+var Curry                   = require("./curry");
 
 var stdin = undefined;
 
@@ -55,7 +55,7 @@ function caml_ml_open_descriptor_out() {
 
 function caml_ml_flush(oc) {
   if (oc[/* buffer */0] !== "") {
-    Caml_curry.app2(oc[/* output */1], oc, oc[/* buffer */0]);
+    Curry._2(oc[/* output */1], oc, oc[/* buffer */0]);
     oc[/* buffer */0] = "";
     return /* () */0;
   }

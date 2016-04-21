@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_curry = require("../runtime/caml_curry");
+var Curry = require("../runtime/curry");
 
 function f(param) {
   if (typeof param === "number") {
@@ -33,7 +33,7 @@ function bind(x, f) {
   }
   else {
     return /* Left */{
-            0: Caml_curry.app1(f, x[0]),
+            0: Curry._1(f, x[0]),
             length: 1,
             tag: 0
           };

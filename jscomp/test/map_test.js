@@ -4,7 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Mt                      = require("./mt");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("../stdlib/list");
 
@@ -165,7 +165,7 @@ function compare(cmp, m1, m2) {
           return c;
         }
         else {
-          var c$1 = Caml_curry.app2(cmp, e1[1], e2[1]);
+          var c$1 = Curry._2(cmp, e1[1], e2[1]);
           if (c$1 !== 0) {
             return c$1;
           }
@@ -199,7 +199,7 @@ function equal(cmp, m1, m2) {
     if (e1) {
       if (e2) {
         if (e1[0] === e2[0]) {
-          if (Caml_curry.app2(cmp, e1[1], e2[1])) {
+          if (Curry._2(cmp, e1[1], e2[1])) {
             _e2 = cons_enum(e2[2], e2[3]);
             _e1 = cons_enum(e1[2], e1[3]);
             continue ;

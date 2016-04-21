@@ -4,7 +4,7 @@
 var Bytes       = require("../stdlib/bytes");
 var Mt          = require("./mt");
 var Lexing      = require("../stdlib/lexing");
-var Caml_curry  = require("../runtime/caml_curry");
+var Curry       = require("../runtime/curry");
 var Caml_string = require("../runtime/caml_string");
 
 var __ocaml_lex_tables = /* record */[
@@ -30,7 +30,7 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
     var __ocaml_lex_state = ___ocaml_lex_state;
     var __ocaml_lex_state$1 = Lexing.engine(__ocaml_lex_tables, __ocaml_lex_state, lexbuf);
     if (__ocaml_lex_state$1 > 2 || __ocaml_lex_state$1 < 0) {
-      Caml_curry.app1(lexbuf[/* refill_buff */0], lexbuf);
+      Curry._1(lexbuf[/* refill_buff */0], lexbuf);
       ___ocaml_lex_state = __ocaml_lex_state$1;
       continue ;
       

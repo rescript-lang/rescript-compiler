@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var React      = require("@");
-var React      = require("react");
-var Caml_curry = require("../runtime/caml_curry");
-var ReactDom   = require("react-dom");
+var React    = require("@");
+var Curry    = require("../runtime/curry");
+var React    = require("react");
+var ReactDom = require("react-dom");
 
-Caml_curry.app1(console.log.bind(console), "hey");
+Curry._1(console.log.bind(console), "hey");
 
-Caml_curry.app1(doc.getElementById.bind(doc), "haha");
+Curry._1(doc.getElementById.bind(doc), "haha");
 
 var v = (console.log(32), /* () */0);
 

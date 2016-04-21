@@ -2,12 +2,12 @@
 'use strict';
 
 var Pervasives       = require("../stdlib/pervasives");
+var Curry            = require("../runtime/curry");
 var Lam_current_unit = require("./lam_current_unit");
-var Caml_curry       = require("../runtime/caml_curry");
 var Format           = require("../stdlib/format");
 
 function err(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                       /* String */{
                         0: /* No_padding */0,
                         1: /* Char_literal */{
@@ -33,7 +33,7 @@ function err(str, f) {
 
 function ierr(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String */{
                           0: /* No_padding */0,
                           1: /* Char_literal */{
@@ -49,7 +49,7 @@ function ierr(b, str, f) {
                       ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String */{
                           0: /* No_padding */0,
                           1: /* Char_literal */{
@@ -67,7 +67,7 @@ function ierr(b, str, f) {
 }
 
 function warn(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                       /* String_literal */{
                         0: "WARN: ",
                         1: /* String */{
@@ -98,7 +98,7 @@ function warn(str, f) {
 
 function iwarn(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
@@ -119,7 +119,7 @@ function iwarn(b, str, f) {
                       ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
@@ -143,7 +143,7 @@ function iwarn(b, str, f) {
 
 function dwarn(str, f) {
   if (Lam_current_unit.is_same_file(/* () */0)) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
@@ -172,7 +172,7 @@ function dwarn(str, f) {
                           ]))), str);
   }
   else {
-    return Caml_curry.app1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "WARN: ",
                           1: /* String */{
@@ -203,7 +203,7 @@ function dwarn(str, f) {
 }
 
 function info(str, f) {
-  return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+  return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                       /* String_literal */{
                         0: "INFO: ",
                         1: /* String */{
@@ -226,7 +226,7 @@ function info(str, f) {
 
 function iinfo(b, str, f) {
   if (b) {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "INFO: ",
                           1: /* String */{
@@ -247,7 +247,7 @@ function iinfo(b, str, f) {
                       ], f)), str);
   }
   else {
-    return Caml_curry.app1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
+    return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
                         /* String_literal */{
                           0: "INFO: ",
                           1: /* String */{

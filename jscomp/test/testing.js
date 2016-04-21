@@ -5,9 +5,9 @@ var Caml_io                 = require("../runtime/caml_io");
 var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Pervasives              = require("../stdlib/pervasives");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("../stdlib/printf");
 var Scanf                   = require("../stdlib/scanf");
-var Caml_curry              = require("../runtime/caml_curry");
 
 var all_tests_ok = [/* true */1];
 
@@ -35,7 +35,7 @@ function print_test_number() {
 
 function print_failure_test_fail() {
   all_tests_ok[0] = /* false */0;
-  return Pervasives.print_string(Caml_curry.app1(Printf.sprintf(/* Format */[
+  return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */{
                         0: "\n********* Failure Test number ",
                         1: /* Int */{
@@ -60,7 +60,7 @@ function print_failure_test_fail() {
 
 function print_failure_test_succeed() {
   all_tests_ok[0] = /* false */0;
-  return Pervasives.print_string(Caml_curry.app1(Printf.sprintf(/* Format */[
+  return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                       /* String_literal */{
                         0: "\n********* Failure Test number ",
                         1: /* Int */{
@@ -91,7 +91,7 @@ function test(b) {
   }
   else {
     all_tests_ok[0] = /* false */0;
-    return Pervasives.print_string(Caml_curry.app1(Printf.sprintf(/* Format */[
+    return Pervasives.print_string(Curry._1(Printf.sprintf(/* Format */[
                         /* String_literal */{
                           0: "\n********* Test number ",
                           1: /* Int */{
@@ -119,12 +119,12 @@ function test_raises_exc_p(pred, f, x) {
   test_num[0] = test_num[0] + 1 | 0;
   print_test_number(/* () */0);
   try {
-    Caml_curry.app1(f, x);
+    Curry._1(f, x);
     print_failure_test_succeed(/* () */0);
     return /* false */0;
   }
   catch (x$1){
-    if (Caml_curry.app1(pred, x$1)) {
+    if (Curry._1(pred, x$1)) {
       return /* true */1;
     }
     else {

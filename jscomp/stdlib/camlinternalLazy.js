@@ -3,7 +3,7 @@
 
 var Obj             = require("./obj");
 var Caml_exceptions = require("../runtime/caml_exceptions");
-var Caml_curry      = require("../runtime/caml_curry");
+var Curry           = require("../runtime/curry");
 
 var Undefined = Caml_exceptions.create("CamlinternalLazy.Undefined");
 
@@ -15,7 +15,7 @@ function force_lazy_block(blk) {
   var closure = blk[0];
   blk[0] = raise_undefined;
   try {
-    var result = Caml_curry.app1(closure, /* () */0);
+    var result = Curry._1(closure, /* () */0);
     blk[0] = result;
     blk.tag = Obj.forward_tag;
     return result;
@@ -31,7 +31,7 @@ function force_lazy_block(blk) {
 function force_val_lazy_block(blk) {
   var closure = blk[0];
   blk[0] = raise_undefined;
-  var result = Caml_curry.app1(closure, /* () */0);
+  var result = Curry._1(closure, /* () */0);
   blk[0] = result;
   blk.tag = Obj.forward_tag;
   return result;

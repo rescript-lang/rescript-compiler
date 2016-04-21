@@ -5,7 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var List                    = require("./list");
 
 var Failure = Caml_exceptions.create("Stream.Failure");
@@ -98,7 +98,7 @@ function get_data(count, _d) {
               }
             }
             else {
-              var match$3 = Caml_curry.app1(g[/* func */1], count);
+              var match$3 = Curry._1(g[/* func */1], count);
               if (match$3) {
                 return /* Scons */{
                         0: match$3[0],
@@ -194,7 +194,7 @@ function peek(s) {
               return match$1[0];
             }
             else {
-              var x = Caml_curry.app1(g[/* func */1], s[/* count */0]);
+              var x = Curry._1(g[/* func */1], s[/* count */0]);
               g[/* curr */0] = /* Some */[x];
               return x;
             }
@@ -337,7 +337,7 @@ function iter(f, strm) {
     var match = peek(strm);
     if (match) {
       junk(strm);
-      Caml_curry.app1(f, match[0]);
+      Curry._1(f, match[0]);
       _param = /* () */0;
       continue ;
       
@@ -463,7 +463,7 @@ function lapp(f, s) {
             0: {
               0: function () {
                 return /* Sapp */{
-                        0: Caml_curry.app1(f, /* () */0)[/* data */1],
+                        0: Curry._1(f, /* () */0)[/* data */1],
                         1: s[/* data */1],
                         length: 2,
                         tag: 1
@@ -485,7 +485,7 @@ function lcons(f, s) {
             0: {
               0: function () {
                 return /* Scons */{
-                        0: Caml_curry.app1(f, /* () */0),
+                        0: Curry._1(f, /* () */0),
                         1: s[/* data */1],
                         length: 2,
                         tag: 0
@@ -507,7 +507,7 @@ function lsing(f) {
             0: {
               0: function () {
                 return /* Scons */{
-                        0: Caml_curry.app1(f, /* () */0),
+                        0: Curry._1(f, /* () */0),
                         1: /* Sempty */0,
                         length: 2,
                         tag: 0
@@ -528,7 +528,7 @@ function slazy(f) {
           /* Slazy */{
             0: {
               0: function () {
-                return Caml_curry.app1(f, /* () */0)[/* data */1];
+                return Curry._1(f, /* () */0)[/* data */1];
               },
               length: 1,
               tag: 246
@@ -556,7 +556,7 @@ function dump_data(f, param) {
     switch (param.tag | 0) {
       case 0 : 
           Pervasives.print_string("Scons (");
-          Caml_curry.app1(f, param[0]);
+          Curry._1(f, param[0]);
           Pervasives.print_string(", ");
           dump_data(f, param[1]);
           return Pervasives.print_string(")");

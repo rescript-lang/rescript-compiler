@@ -2,8 +2,8 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
-var Caml_curry     = require("../runtime/caml_curry");
 
 var shared = [
   "move",
@@ -37,18 +37,18 @@ function point_init($$class) {
 
 var point = CamlinternalOO.make_class(shared, point_init);
 
-var p = Caml_curry.app1(point[0], 0);
+var p = Curry._1(point[0], 0);
 
-var zero = p.tag === 248 ? Caml_curry.js1(291546447, 1, p) : p.get_x;
+var zero = p.tag === 248 ? Curry.js1(291546447, 1, p) : p.get_x;
 
 if (p.tag === 248) {
-  Caml_curry.js2(-933174511, 2, p, 3);
+  Curry.js2(-933174511, 2, p, 3);
 }
 else {
-  Caml_curry.app1(p.move.bind(p), 3);
+  Curry._1(p.move.bind(p), 3);
 }
 
-var three = p.tag === 248 ? Caml_curry.js1(291546447, 3, p) : p.get_x;
+var three = p.tag === 248 ? Curry.js1(291546447, 3, p) : p.get_x;
 
 var x0 = [0];
 
@@ -78,13 +78,13 @@ function point2_init($$class) {
 
 var point2 = CamlinternalOO.make_class(shared, point2_init);
 
-var tmp = Caml_curry.app1(point2[0], 0);
+var tmp = Curry._1(point2[0], 0);
 
-var one = tmp.tag === 248 ? Caml_curry.js1(291546447, 4, tmp) : tmp.get_x;
+var one = tmp.tag === 248 ? Curry.js1(291546447, 4, tmp) : tmp.get_x;
 
-var tmp$1 = Caml_curry.app1(point2[0], 0);
+var tmp$1 = Curry._1(point2[0], 0);
 
-var two = tmp$1.tag === 248 ? Caml_curry.js1(291546447, 5, tmp$1) : tmp$1.get_x;
+var two = tmp$1.tag === 248 ? Curry.js1(291546447, 5, tmp$1) : tmp$1.get_x;
 
 Mt.from_pair_suites("class_test.ml", /* :: */[
       /* tuple */[

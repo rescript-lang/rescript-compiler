@@ -5,9 +5,9 @@ var Caml_float = require("../runtime/caml_float");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 var Mt_global  = require("./mt_global");
+var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
 var $$Array    = require("../stdlib/array");
-var Caml_curry = require("../runtime/caml_curry");
 
 var match_000 = [0];
 
@@ -120,7 +120,7 @@ function from_pairs(ps) {
                   var b = param[1];
                   var a = param[0];
                   return /* tuple */[
-                          Caml_curry.app1(Printf.sprintf(/* Format */[
+                          Curry._1(Printf.sprintf(/* Format */[
                                     /* String_literal */{
                                       0: "pair ",
                                       1: /* Int */{

@@ -7,11 +7,11 @@ var Bytes                   = require("../stdlib/bytes");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("../stdlib/pervasives");
 var Digest                  = require("../stdlib/digest");
+var Curry                   = require("../runtime/curry");
 var Printf                  = require("../stdlib/printf");
 var Scanf                   = require("../stdlib/scanf");
 var Caml_primitive          = require("../runtime/caml_primitive");
 var Buffer                  = require("../stdlib/buffer");
-var Caml_curry              = require("../runtime/caml_curry");
 var List                    = require("../stdlib/list");
 var Caml_string             = require("../runtime/caml_string");
 
@@ -27,7 +27,7 @@ var tscanf_data_file_lines = /* :: */[
 
 function create_tscanf_data(ob, lines) {
   var add_line = function (param) {
-    Buffer.add_string(ob, Caml_curry.app1(Printf.sprintf(/* Format */[
+    Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
                   /* Caml_string */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
@@ -37,7 +37,7 @@ function create_tscanf_data(ob, lines) {
                   "%S"
                 ]), param[0]));
     Buffer.add_string(ob, " -> ");
-    Buffer.add_string(ob, Caml_curry.app1(Printf.sprintf(/* Format */[
+    Buffer.add_string(ob, Curry._1(Printf.sprintf(/* Format */[
                   /* Caml_string */{
                     0: /* No_padding */0,
                     1: /* End_of_format */0,
@@ -61,11 +61,11 @@ function write_tscanf_data_file(fname, lines) {
 }
 
 function get_lines(fname) {
-  var ib = Caml_curry.app1(Scanf.Scanning[/* from_file */4], fname);
+  var ib = Curry._1(Scanf.Scanning[/* from_file */4], fname);
   var l = [/* [] */0];
   try {
-    while(!Caml_curry.app1(Scanf.Scanning[/* end_of_input */9], ib)) {
-      Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
+    while(!Curry._1(Scanf.Scanning[/* end_of_input */9], ib)) {
+      Curry._1(Scanf.bscanf(ib, /* Format */[
                 /* Char_literal */{
                   0: /* " " */32,
                   1: /* Caml_string */{
@@ -108,7 +108,7 @@ function get_lines(fname) {
   }
   catch (exn){
     if (exn[0] === Scanf.Scan_failure) {
-      var s = Caml_curry.app2(Printf.sprintf(/* Format */[
+      var s = Curry._2(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "in file ",
                   1: /* String */{
@@ -138,7 +138,7 @@ function get_lines(fname) {
           ];
     }
     else if (exn === Caml_builtin_exceptions.end_of_file) {
-      var s$1 = Caml_curry.app1(Printf.sprintf(/* Format */[
+      var s$1 = Curry._1(Printf.sprintf(/* Format */[
                 /* String_literal */{
                   0: "in file ",
                   1: /* String */{
@@ -170,7 +170,7 @@ function get_lines(fname) {
 
 function add_digest_ib(ob, ib) {
   var scan_line = function (ib, f) {
-    return Caml_curry.app1(Scanf.bscanf(ib, /* Format */[
+    return Curry._1(Scanf.bscanf(ib, /* Format */[
                     /* Scan_char_set */{
                       0: /* None */0,
                       1: "\xff\xdb\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff",
@@ -210,7 +210,7 @@ function add_digest_ib(ob, ib) {
 }
 
 function digest_file(fname) {
-  var ib = Caml_curry.app1(Scanf.Scanning[/* from_file */4], fname);
+  var ib = Curry._1(Scanf.Scanning[/* from_file */4], fname);
   var ob = Buffer.create(42);
   add_digest_ib(ob, ib);
   return Buffer.contents(ob);
@@ -225,7 +225,7 @@ function test55() {
   create_tscanf_data(ob, tscanf_data_file_lines);
   var s = Buffer.contents(ob);
   ob[/* position */1] = 0;
-  var ib = Caml_curry.app1(Scanf.Scanning[/* from_string */6], s);
+  var ib = Curry._1(Scanf.Scanning[/* from_string */6], s);
   add_digest_ib(ob, ib);
   var tscanf_data_file_lines_digest = Buffer.contents(ob);
   return +(digest_file(tscanf_data_file) === tscanf_data_file_lines_digest);

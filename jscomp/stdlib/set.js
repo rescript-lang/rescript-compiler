@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_curry              = require("../runtime/caml_curry");
+var Curry                   = require("../runtime/curry");
 var List                    = require("./list");
 
 function Make(funarg) {
@@ -91,7 +91,7 @@ function Make(funarg) {
       var r = t[2];
       var v = t[1];
       var l = t[0];
-      var c = Caml_curry.app2(funarg[/* compare */0], x, v);
+      var c = Curry._2(funarg[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(add(x, l), v, r);
@@ -233,7 +233,7 @@ function Make(funarg) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(funarg[/* compare */0], x, v);
+      var c = Curry._2(funarg[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           var match = split(x, l);
@@ -280,7 +280,7 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        var c = Caml_curry.app2(funarg[/* compare */0], x, param[1]);
+        var c = Curry._2(funarg[/* compare */0], x, param[1]);
         if (c) {
           _param = c < 0 ? param[0] : param[2];
           continue ;
@@ -300,7 +300,7 @@ function Make(funarg) {
       var r = param[2];
       var v = param[1];
       var l = param[0];
-      var c = Caml_curry.app2(funarg[/* compare */0], x, v);
+      var c = Curry._2(funarg[/* compare */0], x, v);
       if (c) {
         if (c < 0) {
           return bal(remove(x, l), v, r);
@@ -434,7 +434,7 @@ function Make(funarg) {
       var e1 = _e1;
       if (e1) {
         if (e2) {
-          var c = Caml_curry.app2(funarg[/* compare */0], e1[0], e2[0]);
+          var c = Curry._2(funarg[/* compare */0], e1[0], e2[0]);
           if (c !== 0) {
             return c;
           }
@@ -471,7 +471,7 @@ function Make(funarg) {
           var r1 = s1[2];
           var v1 = s1[1];
           var l1 = s1[0];
-          var c = Caml_curry.app2(funarg[/* compare */0], v1, s2[1]);
+          var c = Curry._2(funarg[/* compare */0], v1, s2[1]);
           if (c) {
             if (c < 0) {
               if (subset(/* Node */[
@@ -526,7 +526,7 @@ function Make(funarg) {
       var param = _param;
       if (param) {
         iter(f, param[0]);
-        Caml_curry.app1(f, param[1]);
+        Curry._1(f, param[1]);
         _param = param[2];
         continue ;
         
@@ -541,7 +541,7 @@ function Make(funarg) {
       var accu = _accu;
       var s = _s;
       if (s) {
-        _accu = Caml_curry.app2(f, s[1], fold(f, s[0], accu));
+        _accu = Curry._2(f, s[1], fold(f, s[0], accu));
         _s = s[2];
         continue ;
         
@@ -555,7 +555,7 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app1(p, param[1])) {
+        if (Curry._1(p, param[1])) {
           if (for_all(p, param[0])) {
             _param = param[2];
             continue ;
@@ -578,7 +578,7 @@ function Make(funarg) {
     while(true) {
       var param = _param;
       if (param) {
-        if (Caml_curry.app1(p, param[1])) {
+        if (Curry._1(p, param[1])) {
           return /* true */1;
         }
         else if (exists(p, param[0])) {
@@ -599,7 +599,7 @@ function Make(funarg) {
     if (param) {
       var v = param[1];
       var l$prime = filter(p, param[0]);
-      var pv = Caml_curry.app1(p, v);
+      var pv = Curry._1(p, v);
       var r$prime = filter(p, param[2]);
       if (pv) {
         return join(l$prime, v, r$prime);
@@ -618,7 +618,7 @@ function Make(funarg) {
       var match = partition(p, param[0]);
       var lf = match[1];
       var lt = match[0];
-      var pv = Caml_curry.app1(p, v);
+      var pv = Curry._1(p, v);
       var match$1 = partition(p, param[2]);
       var rf = match$1[1];
       var rt = match$1[0];
@@ -676,7 +676,7 @@ function Make(funarg) {
       var param = _param;
       if (param) {
         var v = param[1];
-        var c = Caml_curry.app2(funarg[/* compare */0], x, v);
+        var c = Curry._2(funarg[/* compare */0], x, v);
         if (c) {
           _param = c < 0 ? param[0] : param[2];
           continue ;
