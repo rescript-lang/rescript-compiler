@@ -73,6 +73,7 @@ external sub : 'a array -> int -> int -> 'a array = "caml_array_sub"
 
 let rec app f args = 
   let arity = function_length f in
+  let arity = if arity = 0 then 1 else arity in (* TOOD: optimize later *) 
   let len = Array.length args in
   let d = arity - len in 
   if d = 0 then 

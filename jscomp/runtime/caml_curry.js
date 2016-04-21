@@ -9,12 +9,13 @@ function app(_f, _args) {
     var args = _args;
     var f = _f;
     var arity = f.length;
+    var arity$1 = arity ? arity : 1;
     var len = args.length;
-    var d = arity - len | 0;
+    var d = arity$1 - len | 0;
     if (d) {
       if (d < 0) {
-        _args = Caml_array.caml_array_sub(args, arity, -d);
-        _f = f.apply(null, Caml_array.caml_array_sub(args, 0, arity));
+        _args = Caml_array.caml_array_sub(args, arity$1, -d);
+        _f = f.apply(null, Caml_array.caml_array_sub(args, 0, arity$1));
         continue ;
         
       }
