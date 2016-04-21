@@ -250,4 +250,13 @@ event_ffi
 hash_test
 exception_value_test
 
+
 sprintf_reg_test
+
+scanf_test
+testing
+tscanf_test
+scanf_reference_error_regression_test
+
+sprintf_reg_test
+scanf_io

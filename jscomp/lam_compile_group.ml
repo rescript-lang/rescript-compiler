@@ -360,14 +360,16 @@ let compile  ~filename non_export env _sigs lam   =
               body 
           in
           js 
-          |> _j
+          |> _j "initial"
           |> Js_pass_flatten.program
-          |> _j
+          |> _j "flattern"
           |> Js_inline_and_eliminate.inline_and_shake
-
+          |> _j "inline_and_shake"
           |> Js_pass_flatten_and_mark_dead.program
+          |> _j "flatten_and_mark_dead"
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
           |> Js_shake.shake_program
+          |> _j "shake"
           |> ( fun (js:  J.program) -> 
             let external_module_ids = 
               Lam_compile_env.get_requried_modules  
@@ -404,7 +406,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.iset_debug_file "caml_int64.ml";
+    Lam_current_unit.set_debug_file "scanf_reference_error_regression_test.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  Js_config.get_ext())
       (fun chan -> Js_dump.dump_deps_program (compile ~filename false env sigs lam) chan)

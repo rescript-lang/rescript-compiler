@@ -9,8 +9,10 @@ inline_map_test.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
+scanf_reference_error_regression_test.cmi :
 test_for_map2.cmi :
 test_is_js.cmi :
+testing.cmi :
 ui_defs.cmi :
 a.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
@@ -328,6 +330,20 @@ regression_print.cmo :
 regression_print.cmx :
 runtime_encoding_test.cmo :
 runtime_encoding_test.cmx :
+scanf_io.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi ../stdlib/list.cmi ../stdlib/digest.cmi \
+    ../stdlib/buffer.cmi
+scanf_io.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
+    ../stdlib/printf.cmx ../stdlib/list.cmx ../stdlib/digest.cmx \
+    ../stdlib/buffer.cmx
+scanf_reference_error_regression_test.cmo : ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi mt_global.cmi mt.cmi ../stdlib/list.cmi \
+    scanf_reference_error_regression_test.cmi
+scanf_reference_error_regression_test.cmx : ../stdlib/scanf.cmx \
+    ../stdlib/printf.cmx mt_global.cmx mt.cmx ../stdlib/list.cmx \
+    scanf_reference_error_regression_test.cmi
+scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi ../lib/js.cmo
+scanf_test.cmx : ../stdlib/scanf.cmx mt_global.cmx mt.cmx ../lib/js.cmx
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmx : ../stdlib/nativeint.cmx
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
@@ -554,12 +570,22 @@ test_while_side_effect.cmo :
 test_while_side_effect.cmx :
 test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmx : ../lib/js.cmx
+testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
+testing.cmx : ../stdlib/scanf.cmx ../stdlib/printf.cmx testing.cmi
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
     ../stdlib/pervasives.cmx ../stdlib/map.cmx ../stdlib/list.cmx
 to_string_test.cmo : mt.cmi
 to_string_test.cmx : mt.cmx
+tscanf_test.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi ../stdlib/nativeint.cmi mt_global.cmi mt.cmi \
+    ../stdlib/list.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/buffer.cmi
+tscanf_test.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
+    ../stdlib/printf.cmx ../stdlib/nativeint.cmx mt_global.cmx mt.cmx \
+    ../stdlib/list.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
+    ../stdlib/buffer.cmx
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
 unitest_string.cmo :
@@ -882,6 +908,20 @@ regression_print.cmo :
 regression_print.cmj :
 runtime_encoding_test.cmo :
 runtime_encoding_test.cmj :
+scanf_io.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi ../stdlib/list.cmi ../stdlib/digest.cmi \
+    ../stdlib/buffer.cmi
+scanf_io.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
+    ../stdlib/printf.cmj ../stdlib/list.cmj ../stdlib/digest.cmj \
+    ../stdlib/buffer.cmj
+scanf_reference_error_regression_test.cmo : ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi mt_global.cmi mt.cmi ../stdlib/list.cmi \
+    scanf_reference_error_regression_test.cmi
+scanf_reference_error_regression_test.cmj : ../stdlib/scanf.cmj \
+    ../stdlib/printf.cmj mt_global.cmj mt.cmj ../stdlib/list.cmj \
+    scanf_reference_error_regression_test.cmi
+scanf_test.cmo : ../stdlib/scanf.cmi mt_global.cmi mt.cmi ../lib/js.cmo
+scanf_test.cmj : ../stdlib/scanf.cmj mt_global.cmj mt.cmj ../lib/js.cmj
 shift_test.cmo : ../stdlib/nativeint.cmi
 shift_test.cmj : ../stdlib/nativeint.cmj
 simple_lexer_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/lexing.cmi
@@ -1108,12 +1148,22 @@ test_while_side_effect.cmo :
 test_while_side_effect.cmj :
 test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmj : ../lib/js.cmj
+testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
+testing.cmj : ../stdlib/scanf.cmj ../stdlib/printf.cmj testing.cmi
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
     ../stdlib/pervasives.cmj ../stdlib/map.cmj ../stdlib/list.cmj
 to_string_test.cmo : mt.cmi
 to_string_test.cmj : mt.cmj
+tscanf_test.cmo : testing.cmi ../stdlib/string.cmi ../stdlib/scanf.cmi \
+    ../stdlib/printf.cmi ../stdlib/nativeint.cmi mt_global.cmi mt.cmi \
+    ../stdlib/list.cmi ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../stdlib/buffer.cmi
+tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
+    ../stdlib/printf.cmj ../stdlib/nativeint.cmj mt_global.cmj mt.cmj \
+    ../stdlib/list.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
+    ../stdlib/buffer.cmj
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
 unitest_string.cmo :
