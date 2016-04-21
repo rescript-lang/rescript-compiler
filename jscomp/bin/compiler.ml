@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/20-16:48"]
+[@@@ocaml.doc "04/21-17:26"]
 include
   struct
     module Literals :
@@ -18,6 +18,10 @@ include
         val tmp : string[@@ocaml.doc
                           "temporary varaible used in {!Js_ast_util} "]
         val create : string
+        val app : string
+        val app_array : string
+        val runtime : string
+        val stdlib : string
       end =
       struct
         let js_array_ctor = "Array"
@@ -31,6 +35,10 @@ include
         let partial_arg = "partial_arg"
         let tmp = "tmp"
         let create = "create"
+        let app = "_"
+        let app_array = "app"
+        let runtime = "runtime"
+        let stdlib = "stdlib"
       end 
     module Js_op =
       struct
@@ -1790,23 +1798,6 @@ include
             "parsing";
             "format";
             "pervasives"]
-        let runtime_set =
-          String_set.of_list
-            ["caml_array";
-            "caml_float";
-            "caml_obj";
-            "caml_bigarray";
-            "caml_format";
-            "caml_oo";
-            "caml_int64";
-            "caml_primitive";
-            "caml_utils";
-            "caml_builtin_exceptions";
-            "caml_exceptions";
-            "caml_curry";
-            "caml_lexer";
-            "caml_parser";
-            "caml_string"]
         let prim = "Caml_primitive"
         let builtin_exceptions = "Caml_builtin_exceptions"
         let exceptions = "Caml_exceptions"
@@ -1821,13 +1812,39 @@ include
         let float = "Caml_float"
         let hash = "Caml_hash"
         let oo = "Caml_oo"
-        let curry = "Caml_curry"
+        let curry = "Curry"
         let internalMod = "Caml_internalMod"
         let bigarray = "Caml_bigarray"
         let unix = "Caml_unix"
         let int64 = "Caml_int64"
         let md5 = "Caml_md5"
         let weak = "Caml_weak"
+        let runtime_set =
+          [prim;
+          builtin_exceptions;
+          exceptions;
+          io;
+          sys;
+          lexer;
+          parser;
+          obj_runtime;
+          array;
+          format;
+          string;
+          float;
+          hash;
+          oo;
+          curry;
+          internalMod;
+          bigarray;
+          unix;
+          int64;
+          md5;
+          weak] |>
+            (List.fold_left
+               (fun acc  ->
+                  fun x  -> String_set.add (String.uncapitalize x) acc)
+               String_set.empty)
       end 
     module Ext_ident :
       sig
@@ -3972,8 +3989,11 @@ include
                if len <= 8
                then
                  (let len_str = string_of_int len in
-                  runtime_call Js_config.curry ("app" ^ len_str) (fn :: args))
-               else runtime_call Js_config.curry "app" [fn; arr NA args])
+                  runtime_call Js_config.curry (Literals.app ^ len_str) (fn
+                    :: args))
+               else
+                 runtime_call Js_config.curry Literals.app_array
+                   [fn; arr NA args])
         let set_tag ?comment  e tag =
           (seq { expression_desc = (Caml_block_set_tag (e, tag)); comment }
              unit : t)
@@ -4888,7 +4908,8 @@ include
             let strict_directive = "'use strict';"
             let true_ = "true"
             let false_ = "false"
-            let curry = "app"
+            let app = Literals.app
+            let app_array = Literals.app_array
             let tag = "tag"
             let bind = "bind"
             let math = "Math"
@@ -5143,11 +5164,12 @@ include
                            (let len = List.length el in
                             if (1 <= len) && (len <= 8)
                             then
-                              (P.string f (Printf.sprintf "app%d" len);
+                              (P.string f L.app;
+                               P.string f (Printf.sprintf "%d" len);
                                P.paren_group f 1
                                  (fun _  -> arguments cxt f (e :: el)))
                             else
-                              (P.string f L.curry;
+                              (P.string f L.app_array;
                                P.paren_group f 1
                                  (fun _  ->
                                     arguments cxt f [e; E.arr Mutable el]))))) in
@@ -6467,10 +6489,6 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\000\250\000\000\000%\000\000\000\172\000\000\000\151\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@@")));
-            ("caml_curry.cmj",
-              (lazy
-                 (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\005_\000\000\001\193\000\000\005\136\000\000\005j\176\208\208\208\208@#app\160\176@\160\160B\144\160\176\001\003\252!f@\160\176\001\003\253$args@@@@@@A$app1\160\176@\160\160B\144\160\176\001\004\b!o@\160\176\001\004\t!x@@@@@\208@$app2\160\176@\160\160C\144\160\176\001\004\012!o@\160\176\001\004\r!x@\160\176\001\004\014!y@@@@@@AB$app3\160\176@\160\160D\144\160\176\001\004\017!o@\160\176\001\004\018\"a0@\160\176\001\004\019\"a1@\160\176\001\004\020\"a2@@@@@\208\208@$app4\160\176@\160\160E\144\160\176\001\004\023!o@\160\176\001\004\024\"a0@\160\176\001\004\025\"a1@\160\176\001\004\026\"a2@\160\176\001\004\027\"a3@@@@@@A$app5\160\176@\160\160F\144\160\176\001\004\030!o@\160\176\001\004\031\"a0@\160\176\001\004 \"a1@\160\176\001\004!\"a2@\160\176\001\004\"\"a3@\160\176\001\004#\"a4@@@@@\208@$app6\160\176@\160\160G\144\160\176\001\004&!o@\160\176\001\004'\"a0@\160\176\001\004(\"a1@\160\176\001\004)\"a2@\160\176\001\004*\"a3@\160\176\001\004+\"a4@\160\176\001\004,\"a5@@@@@@ABC$app7\160\176@\160\160H\144\160\176\001\004/!o@\160\176\001\0040\"a0@\160\176\001\0041\"a1@\160\176\001\0042\"a2@\160\176\001\0043\"a3@\160\176\001\0044\"a4@\160\176\001\0045\"a5@\160\176\001\0046\"a6@@@@@\208\208\208@$app8\160\176@\160\160I\144\160\176\001\0049!o@\160\176\001\004:\"a0@\160\176\001\004;\"a1@\160\176\001\004<\"a2@\160\176\001\004=\"a3@\160\176\001\004>\"a4@\160\176\001\004?\"a5@\160\176\001\004@\"a6@\160\176\001\004A\"a7@@@@@@A&curry1\160\176@\160\160C\144\160\176\001\004\003!o@\160\176\001\004\004!x@\160\176\001\004\005%arity@@@@@\208@\"js\160\176@\160\160D\144\160\176\001\004D%label@\160\176\001\004E'cacheid@\160\176\001\004F#obj@\160\176\001\004G$args@@@@@@AB#js1\160\176@\160\160C\144\160\176\001\004J%label@\160\176\001\004K'cacheid@\160\176\001\004L#obj@@@@@\208\208\208@#js2\160\176@\160\160D\144\160\176\001\004O%label@\160\176\001\004P'cacheid@\160\176\001\004Q#obj@\160\176\001\004R\"a1@@@@@@A#js3\160\176@\160\160E\144\160\176\001\004U%label@\160\176\001\004V'cacheid@\160\176\001\004W#obj@\160\176\001\004X\"a1@\160\176\001\004Y\"a2@@@@@\208@#js4\160\176@\160\160F\144\160\176\001\004\\%label@\160\176\001\004]'cacheid@\160\176\001\004^#obj@\160\176\001\004_\"a1@\160\176\001\004`\"a2@\160\176\001\004a\"a3@@@@@@AB#js5\160\176@\160\160G\144\160\176\001\004d%label@\160\176\001\004e'cacheid@\160\176\001\004f#obj@\160\176\001\004g\"a1@\160\176\001\004h\"a2@\160\176\001\004i\"a3@\160\176\001\004j\"a4@@@@@\208@#js6\160\176@\160\160H\144\160\176\001\004m%label@\160\176\001\004n'cacheid@\160\176\001\004o#obj@\160\176\001\004p\"a1@\160\176\001\004q\"a2@\160\176\001\004r\"a3@\160\176\001\004s\"a4@\160\176\001\004t\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004w%label@\160\176\001\004x'cacheid@\160\176\001\004y#obj@\160\176\001\004z\"a1@\160\176\001\004{\"a2@\160\176\001\004|\"a3@\160\176\001\004}\"a4@\160\176\001\004~\"a5@\160\176\001\004\127\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\130%label@\160\176\001\004\131'cacheid@\160\176\001\004\132#obj@\160\176\001\004\133\"a1@\160\176\001\004\134\"a2@\160\176\001\004\135\"a3@\160\176\001\004\136\"a4@\160\176\001\004\137\"a5@\160\176\001\004\138\"a6@\160\176\001\004\139\"a7@@@@@@ABCDEF@@")));
             ("caml_exceptions.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6535,6 +6553,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\000i\000\000\000#\000\000\000s\000\000\000o\176\208@&i32div\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@\208@&i32mod\160\176A\160\160B\144\160\176\001\003\247!x@\160\176\001\003\248!y@@@@@\208@&repeat\160\176@\160\160B@@@@@ABC\144&repeat@")));
+            ("curry.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\005O\000\000\001\193\000\000\005\128\000\000\005j\176\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B\"_3\160\176@\160\160D\144\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208@\"_4\160\176@\160\160E\144\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A\"_5\160\176@\160\160F\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@BC\"_6\160\176@\160\160G\144\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208\208@\"_7\160\176@\160\160H\144\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB#app\160\176@\160\160B\144\160\176\001\003\252!f@\160\176\001\003\253$args@@@@@\208\208@&curry1\160\176@\160\160C\144\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@A\"js\160\176@\160\160D\144\160\176\001\004E%label@\160\176\001\004F'cacheid@\160\176\001\004G#obj@\160\176\001\004H$args@@@@@\208@#js1\160\176@\160\160C\144\160\176\001\004K%label@\160\176\001\004L'cacheid@\160\176\001\004M#obj@@@@@@ABC#js2\160\176@\160\160D\144\160\176\001\004P%label@\160\176\001\004Q'cacheid@\160\176\001\004R#obj@\160\176\001\004S\"a1@@@@@\208\208@#js3\160\176@\160\160E\144\160\176\001\004V%label@\160\176\001\004W'cacheid@\160\176\001\004X#obj@\160\176\001\004Y\"a1@\160\176\001\004Z\"a2@@@@@@A#js4\160\176@\160\160F\144\160\176\001\004]%label@\160\176\001\004^'cacheid@\160\176\001\004_#obj@\160\176\001\004`\"a1@\160\176\001\004a\"a2@\160\176\001\004b\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004e%label@\160\176\001\004f'cacheid@\160\176\001\004g#obj@\160\176\001\004h\"a1@\160\176\001\004i\"a2@\160\176\001\004j\"a3@\160\176\001\004k\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004n%label@\160\176\001\004o'cacheid@\160\176\001\004p#obj@\160\176\001\004q\"a1@\160\176\001\004r\"a2@\160\176\001\004s\"a3@\160\176\001\004t\"a4@\160\176\001\004u\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004x%label@\160\176\001\004y'cacheid@\160\176\001\004z#obj@\160\176\001\004{\"a1@\160\176\001\004|\"a2@\160\176\001\004}\"a3@\160\176\001\004~\"a4@\160\176\001\004\127\"a5@\160\176\001\004\128\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\131%label@\160\176\001\004\132'cacheid@\160\176\001\004\133#obj@\160\176\001\004\134\"a1@\160\176\001\004\135\"a2@\160\176\001\004\136\"a3@\160\176\001\004\137\"a4@\160\176\001\004\138\"a5@\160\176\001\004\139\"a6@\160\176\001\004\140\"a7@@@@@@ABCDEF@@")));
             ("fn.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -11415,7 +11437,8 @@ include
                     then "./runtime/" ^ (Filename.chop_extension target)
                     else "./stdlib/" ^ (Filename.chop_extension target)
                 | AmdJS |NodeJS  ->
-                    if Ext_string.starts_with id.name "Caml_"
+                    let filename = String.uncapitalize id.name in
+                    if String_set.mem filename Js_config.runtime_set
                     then
                       let path =
                         match Sys.getenv "OCAML_JS_RUNTIME_PATH" with
@@ -11426,7 +11449,7 @@ include
                               "runtime"
                         | f -> f in
                       Ext_filename.node_relative_path (!Location.input_name)
-                        (Filename.concat path (String.uncapitalize id.name))
+                        (Filename.concat path filename)
                     else
                       (match Config_util.find file with
                        | exception Not_found  ->
@@ -12132,10 +12155,11 @@ include
           end
         let program (x : J.program) = flatten_map#program x
       end 
-    module Js_pass_debug : sig val dump : J.program -> J.program end =
+    module Js_pass_debug :
+      sig val dump : string -> J.program -> J.program end =
       struct
         let log_counter = ref 0
-        let dump (prog : J.program) =
+        let dump name (prog : J.program) =
           let () =
             if
               ((Js_config.get_env ()) <> Browser) &&
@@ -12145,7 +12169,7 @@ include
                Ext_pervasives.with_file_as_chan
                  ((Ext_filename.chop_extension ~loc:__LOC__
                      (Lam_current_unit.get_file ()))
-                    ^ (Printf.sprintf ".%02d.jsx" (!log_counter)))
+                    ^ (Printf.sprintf ".%02d.%s.jsx" (!log_counter) name))
                  (fun chan  -> Js_dump.dump_program prog chan)) in
           prog
       end 
@@ -12161,7 +12185,8 @@ include
           object (self)
             inherit  Js_fold.fold as super
             val stats = (Hashtbl.create 83 : (Ident.t,int ref) Hashtbl.t)
-            val defined_idents = Hashtbl.create 83
+            val defined_idents =
+              (Hashtbl.create 83 : (Ident.t,J.variable_declaration) Hashtbl.t)
             val mutable export_set = (Ident_set.empty : Ident_set.t)
             val mutable name = ("" : string)
             method add_use id =
@@ -12182,28 +12207,23 @@ include
                      if Ident_set.mem ident export_set
                      then Js_op_util.update_used_stats v.ident_info Exported
                      else
-                       (match Hashtbl.find stats ident with
+                       (let pure =
+                          match v.value with
+                          | None  -> false
+                          | Some x -> Js_analyzer.no_side_effect_expression x in
+                        match Hashtbl.find stats ident with
                         | exception Not_found  ->
-                            let pure =
-                              match v.value with
-                              | None  -> false
-                              | Some x ->
-                                  Js_analyzer.no_side_effect_expression x in
                             Js_op_util.update_used_stats v.ident_info
                               (if pure then Dead_pure else Dead_non_pure)
                         | num ->
                             if (!num) = 1
                             then
-                              let pure =
-                                match v.value with
-                                | None  -> false
-                                | Some x ->
-                                    Js_analyzer.no_side_effect_expression x in
                               Js_op_util.update_used_stats v.ident_info
                                 (if pure then Once_pure else Used)))
                 defined_idents;
               defined_idents
-          end
+          end[@@ocaml.doc
+               " Update ident info use cases, it is a non pure function, \n    it will annotate [program] with some meta data\n    TODO: Ident Hashtbl could be improved, \n    since in this case it can not be global?  \n\n "]
         let get_stats program =
           ((count_collects ())#program program)#get_stats
         let subst name export_set stats =
@@ -12221,6 +12241,10 @@ include
                       value = Some v;_};_}
                   -> S.exp v
               | _ -> super#statement st
+            method! variable_declaration
+              ({ ident; value; property; ident_info } as v) =
+              let v = super#variable_declaration v in
+              Hashtbl.add stats ident v; v
             method! block bs =
               match bs with
               | ({
@@ -12273,7 +12297,8 @@ include
                    | _ -> (self#statement st) :: (self#block rest))
               | x::xs -> (self#statement x) :: (self#block xs)
               | [] -> []
-          end
+          end[@@ocaml.doc
+               " There is a side effect when traversing dead code, since \n   we assume that substitue a node would mark a node as dead node,\n  \n    so if we traverse a dead node, this would get a wrong result.\n   it does happen in such scenario\n   {[\n     let generic_basename is_dir_sep current_dir_name name =\n       let rec find_end n =\n         if n < 0 then String.sub name 0 1\n         else if is_dir_sep name n then find_end (n - 1)\n         else find_beg n (n + 1)\n       and find_beg n p =\n         if n < 0 then String.sub name 0 p\n         else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)\n         else find_beg (n - 1) p\n       in\n       if name = \"\"\n       then current_dir_name\n       else find_end (String.length name - 1)\n   ]}\n   [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, \n   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded \n   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, \n   while it is still called \n"]
         type inline_state =
           | False
           | Inline_ignore of bool
@@ -12656,12 +12681,18 @@ include
                      let js =
                        Js_program_loader.make_program filename meta.exports
                          body in
-                     (((((((js |> _j) |> Js_pass_flatten.program) |> _j) |>
-                           Js_inline_and_eliminate.inline_and_shake)
-                          |> Js_pass_flatten_and_mark_dead.program)
-                         |>
-                         (fun js  -> ignore @@ (Js_pass_scope.program js); js))
-                        |> Js_shake.shake_program)
+                     ((((((((((js |> (_j "initial")) |>
+                                Js_pass_flatten.program)
+                               |> (_j "flattern"))
+                              |> Js_inline_and_eliminate.inline_and_shake)
+                             |> (_j "inline_and_shake"))
+                            |> Js_pass_flatten_and_mark_dead.program)
+                           |> (_j "flatten_and_mark_dead"))
+                          |>
+                          (fun js  ->
+                             ignore @@ (Js_pass_scope.program js); js))
+                         |> Js_shake.shake_program)
+                        |> (_j "shake"))
                        |>
                        ((fun (js : J.program)  ->
                            let external_module_ids =
