@@ -1,7 +1,7 @@
 
 class type ['k,'v] arrayLike = 
   object 
-    method index__r : 'k -> 'v Js.opt
+    method index__r : 'k -> 'v Js.Null.t
     method index__w : 'k -> 'v -> unit
     method index__r_unsafe : 'k -> 'v 
     method length__r : int 

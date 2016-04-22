@@ -18,25 +18,25 @@
 
 (* Author: Hongbo Zhang  *)
 
-type 'a t = 'a Js.def array
+type 'a t = 'a Js.Def.t array
 
 let caml_weak_create n =
   Js.Array.new_uninitialized n 
 
 let caml_weak_set xs i v = 
   match v with 
-  | Some x -> xs.(i) <- Js.to_def x 
+  | Some x -> xs.(i) <- Js.Def.return x 
   | None -> ()
 
 let caml_weak_get  xs i = 
-  Js.from_def xs.(i) 
+  Js.Def.to_opt xs.(i) 
 
 let caml_weak_get_copy  xs i = 
-  match Js.from_def xs.(i) with 
+  match Js.Def.to_opt xs.(i) with 
   | None -> None 
   | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
 
 let caml_weak_check xs i = 
-  not @@ Js.is_undef xs.(i)
+  not @@ Js.Def.test xs.(i)
 
 let caml_weak_blit = Caml_array.caml_array_blit
