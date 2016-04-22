@@ -4,8 +4,8 @@
 var Bytes                   = require("../stdlib/bytes");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
+var Caml_int32              = require("../runtime/caml_int32");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Ext_bytes               = require("./ext_bytes");
 var $$String                = require("../stdlib/string");
 var Caml_string             = require("../runtime/caml_string");
@@ -177,9 +177,9 @@ function is_empty(s) {
 
 function repeat(n, s) {
   var len = s.length;
-  var res = Caml_string.caml_create_string(Caml_primitive.imul(n, len));
+  var res = Caml_string.caml_create_string(Caml_int32.imul(n, len));
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
-    $$String.blit(s, 0, res, Caml_primitive.imul(i, len), len);
+    $$String.blit(s, 0, res, Caml_int32.imul(i, len), len);
   }
   return Bytes.to_string(res);
 }
@@ -284,7 +284,7 @@ function digits_of_str(s, offset, x) {
       return acc;
     }
     else {
-      _acc = (Caml_primitive.imul(10, acc) + s$1.charCodeAt(offset + i | 0) | 0) - 48 | 0;
+      _acc = (Caml_int32.imul(10, acc) + s$1.charCodeAt(offset + i | 0) | 0) - 48 | 0;
       _i = i + 1 | 0;
       continue ;
       

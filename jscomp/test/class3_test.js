@@ -4,8 +4,8 @@
 var Caml_obj       = require("../runtime/caml_obj");
 var Pervasives     = require("../stdlib/pervasives");
 var Mt             = require("./mt");
+var Caml_int32     = require("../runtime/caml_int32");
 var Curry          = require("../runtime/curry");
-var Caml_primitive = require("../runtime/caml_primitive");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 var List           = require("../stdlib/list");
 
@@ -135,7 +135,7 @@ function adjusted_point_init($$class) {
         }
       ]);
   return function (_, self, x_init) {
-    var origin$1 = Caml_primitive.imul(x_init / 10 | 0, 10);
+    var origin$1 = Caml_int32.imul(x_init / 10 | 0, 10);
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[origin] = origin$1;
     self$1[x] = origin$1;
@@ -150,7 +150,7 @@ var tmp = Curry._2(adjusted_point[0], 0, 31);
 eq('File "class3_test.ml", line 28, characters 13-20', tmp.tag === 248 ? Curry.js1(291546447, 2, tmp) : tmp.get_x, 30);
 
 function new_init(obj_init, self, x_init) {
-  return Curry._2(obj_init, self, Caml_primitive.imul(x_init / 10 | 0, 10));
+  return Curry._2(obj_init, self, Caml_int32.imul(x_init / 10 | 0, 10));
 }
 
 var partial_arg = point[0];
@@ -301,7 +301,7 @@ function printable_point2_init($$class) {
         return /* () */0;
       });
   return function (_, self, x_init) {
-    var origin = Caml_primitive.imul(x_init / 10 | 0, 10);
+    var origin = Caml_int32.imul(x_init / 10 | 0, 10);
     var self$1 = CamlinternalOO.create_object_opt(self, $$class);
     self$1[x] = origin;
     return CamlinternalOO.run_initializers_opt(self, self$1, $$class);

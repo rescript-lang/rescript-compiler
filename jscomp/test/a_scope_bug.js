@@ -1,12 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_int32 = require("../runtime/caml_int32");
 
 function odd(_z) {
   while(true) {
     var z = _z;
-    var even = Caml_primitive.imul(z, z);
+    var even = Caml_int32.imul(z, z);
     var a = (even + 4 | 0) + even | 0;
     console.log("" + a);
     _z = 32;

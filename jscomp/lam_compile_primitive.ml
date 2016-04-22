@@ -622,17 +622,17 @@ let translate
       ("caml_ba_dim_" ^ string_of_int i) args       
   | Pbswap16 
     -> 
-    E.runtime_call Js_config.prim "caml_bswap16" args
+    E.runtime_call Js_config.int32 "caml_bswap16" args
   | Pbbswap Lambda.Pnativeint
   | Pbbswap Lambda.Pint32
     -> 
-    E.runtime_call Js_config.prim "caml_int32_bswap" args
+    E.runtime_call Js_config.int32 "caml_int32_bswap" args
   | Pbbswap Lambda.Pint64
     -> Js_long.swap args 
   | Pstring_load_16 unsafe
-    -> E.runtime_call Js_config.prim "caml_string_get16" args
+    -> E.runtime_call Js_config.string "caml_string_get16" args
   | Pstring_load_32 unsafe
-    -> E.runtime_call Js_config.prim "caml_string_get32" args
+    -> E.runtime_call Js_config.string "caml_string_get32" args
   | Pstring_load_64 unsafe
     -> Js_long.get64 args
 

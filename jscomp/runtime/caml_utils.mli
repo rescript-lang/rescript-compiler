@@ -19,8 +19,5 @@
 (* Author: Hongbo Zhang  *)
 
 
-val i32div : nativeint -> nativeint -> nativeint
-
-val i32mod : nativeint -> nativeint -> nativeint
 
 val repeat : int -> string -> string

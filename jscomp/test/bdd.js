@@ -2,7 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_primitive          = require("../runtime/caml_primitive");
+var Caml_int32              = require("../runtime/caml_int32");
 var Caml_array              = require("../runtime/caml_array");
 
 function $$eval(_bdd, vars) {
@@ -368,7 +368,7 @@ function hwb(n) {
 var seed = [0];
 
 function random() {
-  seed[0] = Caml_primitive.imul(seed[0], 25173) + 17431 | 0;
+  seed[0] = Caml_int32.imul(seed[0], 25173) + 17431 | 0;
   return +((seed[0] & 1) > 0);
 }
 

@@ -122,47 +122,52 @@ let stdlib_set = String_set.of_list [
 ]
 
 
-let prim               = "Caml_primitive" 
+let prim = "Caml_primitive" 
 let builtin_exceptions = "Caml_builtin_exceptions"
-let exceptions         = "Caml_exceptions"
-let io                 = "Caml_io"
-let sys                = "Caml_sys"
-let lexer              = "Caml_lexer"
-let parser             = "Caml_parser"
-let obj_runtime        = "Caml_obj"
-let array              = "Caml_array"
-let format             = "Caml_format"
-let string             = "Caml_string"
-let float              = "Caml_float"
-let hash               = "Caml_hash"
-let oo                 = "Caml_oo"
-let curry              = "Curry"
-let bigarray           = "Caml_bigarray"
-let unix               = "Caml_unix"
-let int64              = "Caml_int64"
-let md5                = "Caml_md5"
-let weak               = "Caml_weak"
-
+let exceptions = "Caml_exceptions"
+let io = "Caml_io"
+let sys = "Caml_sys"
+let lexer = "Caml_lexer"
+let parser = "Caml_parser"
+let obj_runtime = "Caml_obj"
+let array = "Caml_array"
+let format = "Caml_format"
+let string = "Caml_string"
+let float = "Caml_float"
+let hash = "Caml_hash"
+let oo = "Caml_oo"
+let curry = "Curry"
+let bigarray = "Caml_bigarray"
+let unix = "Caml_unix"
+let int64 = "Caml_int64"
+let md5 = "Caml_md5"
+let weak = "Caml_weak"
+let backtrace = "Caml_backtrace"
+let gc = "Caml_gc"
+let int32 = "Caml_int32"
 let runtime_set = 
   [
-  prim;               
-  builtin_exceptions ;
-  exceptions ; 
-  io ;
-  sys ;
-  lexer ;
-  parser ;
-  obj_runtime ;
-  array ;
-  format ;
-  string ;
-  float ;
-  hash ;
-  oo ;
-  curry ;
-  bigarray ;
-  unix ;
-  int64 ;
-  md5 ;
-  weak ] |> 
+    int32;
+    gc ;
+    backtrace; 
+    prim;               
+    builtin_exceptions ;
+    exceptions ; 
+    io ;
+    sys ;
+    lexer ;
+    parser ;
+    obj_runtime ;
+    array ;
+    format ;
+    string ;
+    float ;
+    hash ;
+    oo ;
+    curry ;
+    bigarray ;
+    unix ;
+    int64 ;
+    md5 ;
+    weak ] |> 
   List.fold_left (fun acc x -> String_set.add (String.uncapitalize x) acc ) String_set.empty

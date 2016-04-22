@@ -34,6 +34,9 @@ val default_gen_tds : bool ref
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 
+val int32 : string
+val gc : string 
+val backtrace : string
 val prim : string 
 val builtin_exceptions : string
 val exceptions : string

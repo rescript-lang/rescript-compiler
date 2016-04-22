@@ -16,16 +16,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
-val caml_raise_not_found : unit -> 'a
-
-val caml_sys_getenv : string -> string
-
-val caml_sys_time : unit -> float 
-
-val  caml_sys_random_seed : unit -> nativeint array
-
-val caml_sys_system_command : unit -> int
-
-val caml_sys_getcwd : unit -> string 
+val create : int -> Obj.t -> Obj.t

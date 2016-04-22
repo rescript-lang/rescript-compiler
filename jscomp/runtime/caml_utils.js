@@ -1,7 +1,6 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
 var repeat = ( (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
                                                   function(count , self) {
@@ -29,25 +28,5 @@ var repeat = ( (String.prototype.repeat && function (count,self){return self.rep
     }
 );
 
-function i32div(x, y) {
-  if (y === 0) {
-    throw Caml_builtin_exceptions.division_by_zero;
-  }
-  else {
-    return x / y | 0;
-  }
-}
-
-function i32mod(x, y) {
-  if (y === 0) {
-    throw Caml_builtin_exceptions.division_by_zero;
-  }
-  else {
-    return x % y;
-  }
-}
-
-exports.i32div = i32div;
-exports.i32mod = i32mod;
 exports.repeat = repeat;
 /* repeat Not a pure module */

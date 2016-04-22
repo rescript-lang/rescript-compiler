@@ -1063,9 +1063,9 @@ let int32_mul ?comment
     if i >= 0 then 
       int32_lsl e (small_int i)
     else 
-      runtime_call ?comment Js_config.prim "imul" [e1;e2]
+      runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
   | _ -> 
-    runtime_call ?comment Js_config.prim "imul" [e1;e2]
+    runtime_call ?comment Js_config.int32 Literals.imul [e1;e2]
 
 let unchecked_int32_mul ?comment e1 e2 : J.expression = 
   { comment ; 

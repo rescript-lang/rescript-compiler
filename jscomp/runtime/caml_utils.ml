@@ -48,15 +48,6 @@ let repeat : int -> string -> string = [%bs.raw{| (String.prototype.repeat && fu
     }
 |} ]
 
-let i32div (x:nativeint) (y:nativeint) = 
-  if y = 0n  then
-    raise Division_by_zero
-  else Nativeint.div x y
-
-let i32mod (x : nativeint) (y:nativeint) = 
-  if y = 0n then
-    raise Division_by_zero
-  else Nativeint.rem x  y
 
 
 (*we need an attribute like this to prevent it get inlined *)

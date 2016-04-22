@@ -39,3 +39,5 @@ let app_array = "app" (* arguments are an array*)
 let runtime = "runtime" (* runtime directory *)
 
 let stdlib = "stdlib"
+
+let imul = "imul" (* signed int32 mul *)

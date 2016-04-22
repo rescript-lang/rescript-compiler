@@ -16,16 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
-val caml_raise_not_found : unit -> 'a
-
-val caml_sys_getenv : string -> string
-
-val caml_sys_time : unit -> float 
-
-val  caml_sys_random_seed : unit -> nativeint array
-
-val caml_sys_system_command : unit -> int
-
-val caml_sys_getcwd : unit -> string 
+val caml_gc_stat : unit -> Gc.stat
+val caml_gc_quick_stat : unit -> Gc.stat
+val caml_gc_counters : unit -> float * float * float
+val caml_gc_get : unit -> Gc.control
+val caml_gc_set : Gc.control -> unit
+val caml_gc_minor : unit -> unit
+val caml_gc_major_slice : int -> int
+val caml_gc_major : unit -> unit
+val caml_gc_full_major : unit -> unit
+val caml_gc_compaction : unit -> unit
+val caml_final_register : ('a -> unit) -> 'a -> unit
+val caml_final_release : unit -> unit

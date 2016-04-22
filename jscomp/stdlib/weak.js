@@ -4,9 +4,9 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
+var Caml_int32              = require("../runtime/caml_int32");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
 var Caml_weak               = require("../runtime/caml_weak");
@@ -159,7 +159,7 @@ function Make(H) {
               }, t[/* table */0], 0);
   };
   var next_sz = function (n) {
-    return Pervasives.min((Caml_primitive.imul(3, n) / 2 | 0) + 3 | 0, Sys.max_array_length);
+    return Pervasives.min((Caml_int32.imul(3, n) / 2 | 0) + 3 | 0, Sys.max_array_length);
   };
   var prev_sz = function (n) {
     return (((n - 3 | 0) << 1) + 2 | 0) / 3 | 0;
@@ -225,7 +225,7 @@ function Make(H) {
     while(true) {
       var i = _i;
       if (i >= sz) {
-        var newsz = Pervasives.min((Caml_primitive.imul(3, sz) / 2 | 0) + 3 | 0, Sys.max_array_length - 1 | 0);
+        var newsz = Pervasives.min((Caml_int32.imul(3, sz) / 2 | 0) + 3 | 0, Sys.max_array_length - 1 | 0);
         if (newsz <= sz) {
           throw [
                 Caml_builtin_exceptions.failure,

@@ -1,16 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_int64     = require("../runtime/caml_int64");
-var Caml_obj       = require("../runtime/caml_obj");
-var Pervasives     = require("../stdlib/pervasives");
-var Mt             = require("./mt");
-var Curry          = require("../runtime/curry");
-var Printf         = require("../stdlib/printf");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array        = require("../stdlib/array");
-var List           = require("../stdlib/list");
-var Format         = require("../stdlib/format");
+var Caml_int64 = require("../runtime/caml_int64");
+var Caml_obj   = require("../runtime/caml_obj");
+var Pervasives = require("../stdlib/pervasives");
+var Mt         = require("./mt");
+var Caml_int32 = require("../runtime/caml_int32");
+var Curry      = require("../runtime/curry");
+var Printf     = require("../stdlib/printf");
+var $$Array    = require("../stdlib/array");
+var List       = require("../stdlib/list");
+var Format     = require("../stdlib/format");
 
 var tests_16 = Caml_obj.caml_obj_dup(/* array */[
       /* tuple */[
@@ -875,7 +875,7 @@ var suites_16 = List.map(function (param) {
                       ]), a),
               function () {
                 return /* Eq */{
-                        0: Caml_primitive.caml_bswap16(a),
+                        0: Caml_int32.caml_bswap16(a),
                         1: b,
                         length: 2,
                         tag: 0
@@ -906,7 +906,7 @@ var suites_32 = List.map(function (param) {
                       ]), a),
               function () {
                 return /* Eq */{
-                        0: Caml_primitive.caml_int32_bswap(a),
+                        0: Caml_int32.caml_int32_bswap(a),
                         1: b,
                         length: 2,
                         tag: 0
@@ -958,7 +958,7 @@ var d16_000 = /* Format */[
   "%x"
 ];
 
-var d16_001 = Caml_primitive.caml_bswap16
+var d16_001 = Caml_int32.caml_bswap16
 
 var d16_002 = /* array */[
   /* tuple */[
@@ -989,7 +989,7 @@ var d32_000 = /* Format */[
   "%lx"
 ];
 
-var d32_001 = Caml_primitive.caml_int32_bswap
+var d32_001 = Caml_int32.caml_int32_bswap
 
 var d32_002 = /* array */[
   /* tuple */[

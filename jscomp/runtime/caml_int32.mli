@@ -16,16 +16,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
-val caml_raise_not_found : unit -> 'a
+val idiv : nativeint -> nativeint -> nativeint
 
-val caml_sys_getenv : string -> string
+val imod : nativeint -> nativeint -> nativeint
 
-val caml_sys_time : unit -> float 
+val caml_bswap16 : nativeint -> nativeint
 
-val  caml_sys_random_seed : unit -> nativeint array
+val caml_int32_bswap : nativeint -> nativeint
 
-val caml_sys_system_command : unit -> int
+val caml_nativeint_bswap : nativeint -> nativeint
 
-val caml_sys_getcwd : unit -> string 
+val imul :int32 -> int32 -> int32
+

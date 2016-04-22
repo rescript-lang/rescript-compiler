@@ -3,10 +3,10 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Filename                = require("../stdlib/filename");
+var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("../stdlib/pervasives");
 var Ext_string              = require("./ext_string");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var $$String                = require("../stdlib/string");
 var List                    = require("../stdlib/list");
 
@@ -17,7 +17,7 @@ var node_parent = "..";
 var node_current = ".";
 
 function absolute_path(s) {
-  var s$1 = Curry._1(Filename.is_relative, s) ? Filename.concat(Caml_primitive.caml_sys_getcwd(/* () */0), s) : s;
+  var s$1 = Curry._1(Filename.is_relative, s) ? Filename.concat(Caml_sys.caml_sys_getcwd(/* () */0), s) : s;
   var aux = function (_s) {
     while(true) {
       var s = _s;

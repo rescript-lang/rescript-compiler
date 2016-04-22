@@ -32,4 +32,7 @@ val caml_create_string : int -> bytes
 val caml_fill_string : bytes -> int -> int -> char -> unit
 val caml_blit_string : string -> int -> bytes -> int -> int -> unit
 val caml_blit_bytes : bytes -> int -> bytes -> int -> int -> unit
-val string_of_char : char -> string 
+val caml_string_get16 : string -> int -> int
+val caml_string_get32 : string -> int -> int
+val js_string_of_char : char -> string 
+

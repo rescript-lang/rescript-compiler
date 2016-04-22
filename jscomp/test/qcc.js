@@ -6,6 +6,7 @@ var Caml_io                 = require("../runtime/caml_io");
 var Bytes                   = require("../stdlib/bytes");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("../stdlib/pervasives");
+var Caml_int32              = require("../runtime/caml_int32");
 var Char                    = require("../stdlib/char");
 var Sys                     = require("../stdlib/sys");
 var Curry                   = require("../runtime/curry");
@@ -243,7 +244,7 @@ function next() {
                     };
             }
             else {
-              _n = (Caml_primitive.imul(10, n) + Curry._1(getch, /* () */0) | 0) - 48 | 0;
+              _n = (Caml_int32.imul(10, n) + Curry._1(getch, /* () */0) | 0) - 48 | 0;
               continue ;
               
             }

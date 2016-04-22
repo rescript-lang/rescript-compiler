@@ -5,9 +5,9 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_io                 = require("../runtime/caml_io");
 var Obj                     = require("./obj");
 var Pervasives              = require("./pervasives");
+var Caml_backtrace          = require("../runtime/caml_backtrace");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var $$Array                 = require("./array");
 var Buffer                  = require("./buffer");
 
@@ -305,7 +305,7 @@ function $$catch(fct, arg) {
 
 function convert_raw_backtrace(rbckt) {
   try {
-    return /* Some */[$$Array.map(Caml_primitive.caml_convert_raw_backtrace_slot, rbckt)];
+    return /* Some */[$$Array.map(Caml_backtrace.caml_convert_raw_backtrace_slot, rbckt)];
   }
   catch (exn){
     if (exn[0] === Caml_builtin_exceptions.failure) {
@@ -621,7 +621,7 @@ var Slot = [
   format_backtrace_slot
 ];
 
-var convert_raw_backtrace_slot = Caml_primitive.caml_convert_raw_backtrace_slot
+var convert_raw_backtrace_slot = Caml_backtrace.caml_convert_raw_backtrace_slot
 
 exports.to_string                      = to_string;
 exports.print                          = print;

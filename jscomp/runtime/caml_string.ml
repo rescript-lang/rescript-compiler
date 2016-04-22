@@ -19,7 +19,7 @@
 (* Author: Hongbo Zhang  *)
 
 
-let string_of_char = Js.String.of_char
+let js_string_of_char = Js.String.of_char
 let add = Js.String.append 
 
 let caml_string_get s i= 
@@ -143,3 +143,11 @@ let caml_is_printable c =
   code > 31 && code < 127
 
 
+let caml_string_get16 s i = 
+  Char.code s.[i] + Char.code s.[i+1] lsl 8  
+
+let caml_string_get32 s i = 
+  Char.code s.[i] + 
+  Char.code s.[i+1] lsl 8  + 
+  Char.code s.[i+2] lsl 16 + 
+  Char.code s.[i+3] lsl 24
