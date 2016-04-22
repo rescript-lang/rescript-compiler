@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"],
-  function(Pervasives,Caml_exceptions,Caml_primitive){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "../runtime/curry"],
+  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Curry){
     'use strict';
     function length(l) {
       var _len = 0;
@@ -10,8 +10,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var param = _param;
         var len = _len;
         if (param) {
-          _param = param[2];
-          _len = len + 1;
+          _param = param[1];
+          _len = len + 1 | 0;
+          continue ;
+          
         }
         else {
           return len;
@@ -21,25 +23,34 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function hd(param) {
       if (param) {
-        return param[1];
+        return param[0];
       }
       else {
-        return Pervasives.failwith("hd");
+        throw [
+              Caml_builtin_exceptions.failure,
+              "hd"
+            ];
       }
     }
     
     function tl(param) {
       if (param) {
-        return param[2];
+        return param[1];
       }
       else {
-        return Pervasives.failwith("tl");
+        throw [
+              Caml_builtin_exceptions.failure,
+              "tl"
+            ];
       }
     }
     
     function nth(l, n) {
       if (n < 0) {
-        return Pervasives.invalid_arg("List.nth");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.nth"
+            ];
       }
       else {
         var _l = l;
@@ -49,15 +60,20 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           var l$1 = _l;
           if (l$1) {
             if (n$1) {
-              _n = n$1 - 1;
-              _l = l$1[2];
+              _n = n$1 - 1 | 0;
+              _l = l$1[1];
+              continue ;
+              
             }
             else {
-              return l$1[1];
+              return l$1[0];
             }
           }
           else {
-            return Pervasives.failwith("nth");
+            throw [
+                  Caml_builtin_exceptions.failure,
+                  "nth"
+                ];
           }
         };
       }
@@ -68,12 +84,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var l2 = _l2;
         var l1 = _l1;
         if (l1) {
-          _l2 = [
-            /* :: */0,
-            l1[1],
+          _l2 = /* :: */[
+            l1[0],
             l2
           ];
-          _l1 = l1[2];
+          _l1 = l1[1];
+          continue ;
+          
         }
         else {
           return l2;
@@ -87,7 +104,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function flatten(param) {
       if (param) {
-        return Pervasives.$at(param[1], flatten(param[2]));
+        return Pervasives.$at(param[0], flatten(param[1]));
       }
       else {
         return /* [] */0;
@@ -96,11 +113,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function map(f, param) {
       if (param) {
-        var r = f(param[1]);
-        return [
-                /* :: */0,
+        var r = Curry._1(f, param[0]);
+        return /* :: */[
                 r,
-                map(f, param[2])
+                map(f, param[1])
               ];
       }
       else {
@@ -110,11 +126,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function mapi(i, f, param) {
       if (param) {
-        var r = f(i, param[1]);
-        return [
-                /* :: */0,
+        var r = Curry._2(f, i, param[0]);
+        return /* :: */[
                 r,
-                mapi(i + 1, f, param[2])
+                mapi(i + 1 | 0, f, param[1])
               ];
       }
       else {
@@ -133,12 +148,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var param = _param;
         var accu = _accu;
         if (param) {
-          _param = param[2];
-          _accu = [
-            /* :: */0,
-            f(param[1]),
+          _param = param[1];
+          _accu = /* :: */[
+            Curry._1(f, param[0]),
             accu
           ];
+          continue ;
+          
         }
         else {
           return accu;
@@ -150,8 +166,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          f(param[1]);
-          _param = param[2];
+          Curry._1(f, param[0]);
+          _param = param[1];
+          continue ;
+          
         }
         else {
           return /* () */0;
@@ -167,9 +185,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var param = _param;
         var i = _i;
         if (param) {
-          f$1(i, param[1]);
-          _param = param[2];
-          _i = i + 1;
+          Curry._2(f$1, i, param[0]);
+          _param = param[1];
+          _i = i + 1 | 0;
+          continue ;
+          
         }
         else {
           return /* () */0;
@@ -182,8 +202,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var l = _l;
         var accu = _accu;
         if (l) {
-          _l = l[2];
-          _accu = f(accu, l[1]);
+          _l = l[1];
+          _accu = Curry._2(f, accu, l[0]);
+          continue ;
+          
         }
         else {
           return accu;
@@ -193,7 +215,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function fold_right(f, l, accu) {
       if (l) {
-        return f(l[1], fold_right(f, l[2], accu));
+        return Curry._2(f, l[0], fold_right(f, l[1], accu));
       }
       else {
         return accu;
@@ -203,19 +225,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     function map2(f, l1, l2) {
       if (l1) {
         if (l2) {
-          var r = f(l1[1], l2[1]);
-          return [
-                  /* :: */0,
+          var r = Curry._2(f, l1[0], l2[0]);
+          return /* :: */[
                   r,
-                  map2(f, l1[2], l2[2])
+                  map2(f, l1[1], l2[1])
                 ];
         }
         else {
-          return Pervasives.invalid_arg("List.map2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.map2"
+              ];
         }
       }
       else if (l2) {
-        return Pervasives.invalid_arg("List.map2");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.map2"
+            ];
       }
       else {
         return /* [] */0;
@@ -232,20 +259,27 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var accu = _accu;
         if (l1$1) {
           if (l2$1) {
-            _l2 = l2$1[2];
-            _l1 = l1$1[2];
-            _accu = [
-              /* :: */0,
-              f(l1$1[1], l2$1[1]),
+            _l2 = l2$1[1];
+            _l1 = l1$1[1];
+            _accu = /* :: */[
+              Curry._2(f, l1$1[0], l2$1[0]),
               accu
             ];
+            continue ;
+            
           }
           else {
-            return Pervasives.invalid_arg("List.rev_map2");
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "List.rev_map2"
+                ];
           }
         }
         else if (l2$1) {
-          return Pervasives.invalid_arg("List.rev_map2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.rev_map2"
+              ];
         }
         else {
           return accu;
@@ -259,16 +293,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var l1 = _l1;
         if (l1) {
           if (l2) {
-            f(l1[1], l2[1]);
-            _l2 = l2[2];
-            _l1 = l1[2];
+            Curry._2(f, l1[0], l2[0]);
+            _l2 = l2[1];
+            _l1 = l1[1];
+            continue ;
+            
           }
           else {
-            return Pervasives.invalid_arg("List.iter2");
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "List.iter2"
+                ];
           }
         }
         else if (l2) {
-          return Pervasives.invalid_arg("List.iter2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.iter2"
+              ];
         }
         else {
           return /* () */0;
@@ -283,16 +325,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var accu = _accu;
         if (l1) {
           if (l2) {
-            _l2 = l2[2];
-            _l1 = l1[2];
-            _accu = f(accu, l1[1], l2[1]);
+            _l2 = l2[1];
+            _l1 = l1[1];
+            _accu = Curry._3(f, accu, l1[0], l2[0]);
+            continue ;
+            
           }
           else {
-            return Pervasives.invalid_arg("List.fold_left2");
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "List.fold_left2"
+                ];
           }
         }
         else if (l2) {
-          return Pervasives.invalid_arg("List.fold_left2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.fold_left2"
+              ];
         }
         else {
           return accu;
@@ -303,14 +353,20 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     function fold_right2(f, l1, l2, accu) {
       if (l1) {
         if (l2) {
-          return f(l1[1], l2[1], fold_right2(f, l1[2], l2[2], accu));
+          return Curry._3(f, l1[0], l2[0], fold_right2(f, l1[1], l2[1], accu));
         }
         else {
-          return Pervasives.invalid_arg("List.fold_right2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.fold_right2"
+              ];
         }
       }
       else if (l2) {
-        return Pervasives.invalid_arg("List.fold_right2");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.fold_right2"
+            ];
       }
       else {
         return accu;
@@ -321,8 +377,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (p(param[1])) {
-            _param = param[2];
+          if (Curry._1(p, param[0])) {
+            _param = param[1];
+            continue ;
+            
           }
           else {
             return /* false */0;
@@ -338,11 +396,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (p(param[1])) {
+          if (Curry._1(p, param[0])) {
             return /* true */1;
           }
           else {
-            _param = param[2];
+            _param = param[1];
+            continue ;
+            
           }
         }
         else {
@@ -357,20 +417,28 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var l1 = _l1;
         if (l1) {
           if (l2) {
-            if (p(l1[1], l2[1])) {
-              _l2 = l2[2];
-              _l1 = l1[2];
+            if (Curry._2(p, l1[0], l2[0])) {
+              _l2 = l2[1];
+              _l1 = l1[1];
+              continue ;
+              
             }
             else {
               return /* false */0;
             }
           }
           else {
-            return Pervasives.invalid_arg("List.for_all2");
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "List.for_all2"
+                ];
           }
         }
         else if (l2) {
-          return Pervasives.invalid_arg("List.for_all2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.for_all2"
+              ];
         }
         else {
           return /* true */1;
@@ -384,20 +452,28 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var l1 = _l1;
         if (l1) {
           if (l2) {
-            if (p(l1[1], l2[1])) {
+            if (Curry._2(p, l1[0], l2[0])) {
               return /* true */1;
             }
             else {
-              _l2 = l2[2];
-              _l1 = l1[2];
+              _l2 = l2[1];
+              _l1 = l1[1];
+              continue ;
+              
             }
           }
           else {
-            return Pervasives.invalid_arg("List.exists2");
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "List.exists2"
+                ];
           }
         }
         else if (l2) {
-          return Pervasives.invalid_arg("List.exists2");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.exists2"
+              ];
         }
         else {
           return /* false */0;
@@ -409,8 +485,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (Caml_primitive.caml_compare(param[1], x)) {
-            _param = param[2];
+          if (Caml_obj.caml_compare(param[0], x)) {
+            _param = param[1];
+            continue ;
+            
           }
           else {
             return /* true */1;
@@ -426,11 +504,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (param[1] === x) {
+          if (param[0] === x) {
             return /* true */1;
           }
           else {
-            _param = param[2];
+            _param = param[1];
+            continue ;
+            
           }
         }
         else {
@@ -443,16 +523,18 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          var match = param[1];
-          if (Caml_primitive.caml_compare(match[1], x)) {
-            _param = param[2];
+          var match = param[0];
+          if (Caml_obj.caml_compare(match[0], x)) {
+            _param = param[1];
+            continue ;
+            
           }
           else {
-            return match[2];
+            return match[1];
           }
         }
         else {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
       };
     }
@@ -461,16 +543,18 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          var match = param[1];
-          if (match[1] === x) {
-            return match[2];
+          var match = param[0];
+          if (match[0] === x) {
+            return match[1];
           }
           else {
-            _param = param[2];
+            _param = param[1];
+            continue ;
+            
           }
         }
         else {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
       };
     }
@@ -479,8 +563,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (Caml_primitive.caml_compare(param[1][1], x)) {
-            _param = param[2];
+          if (Caml_obj.caml_compare(param[0][0], x)) {
+            _param = param[1];
+            continue ;
+            
           }
           else {
             return /* true */1;
@@ -496,11 +582,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          if (param[1][1] === x) {
+          if (param[0][0] === x) {
             return /* true */1;
           }
           else {
-            _param = param[2];
+            _param = param[1];
+            continue ;
+            
           }
         }
         else {
@@ -511,11 +599,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function remove_assoc(x, param) {
       if (param) {
-        var l = param[2];
-        var pair = param[1];
-        if (Caml_primitive.caml_compare(pair[1], x)) {
-          return [
-                  /* :: */0,
+        var l = param[1];
+        var pair = param[0];
+        if (Caml_obj.caml_compare(pair[0], x)) {
+          return /* :: */[
                   pair,
                   remove_assoc(x, l)
                 ];
@@ -531,14 +618,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function remove_assq(x, param) {
       if (param) {
-        var l = param[2];
-        var pair = param[1];
-        if (pair[1] === x) {
+        var l = param[1];
+        var pair = param[0];
+        if (pair[0] === x) {
           return l;
         }
         else {
-          return [
-                  /* :: */0,
+          return /* :: */[
                   pair,
                   remove_assq(x, l)
                 ];
@@ -553,16 +639,18 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
       while(true) {
         var param = _param;
         if (param) {
-          var x = param[1];
-          if (p(x)) {
+          var x = param[0];
+          if (Curry._1(p, x)) {
             return x;
           }
           else {
-            _param = param[2];
+            _param = param[1];
+            continue ;
+            
           }
         }
         else {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
       };
     }
@@ -575,18 +663,21 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           var param$1 = _param;
           var accu = _accu;
           if (param$1) {
-            var l = param$1[2];
-            var x = param$1[1];
-            if (p(x)) {
+            var l = param$1[1];
+            var x = param$1[0];
+            if (Curry._1(p, x)) {
               _param = l;
-              _accu = [
-                /* :: */0,
+              _accu = /* :: */[
                 x,
                 accu
               ];
+              continue ;
+              
             }
             else {
               _param = l;
+              continue ;
+              
             }
           }
           else {
@@ -605,28 +696,29 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var no = _no;
         var yes = _yes;
         if (param) {
-          var l$1 = param[2];
-          var x = param[1];
-          if (p(x)) {
+          var l$1 = param[1];
+          var x = param[0];
+          if (Curry._1(p, x)) {
             _param = l$1;
-            _yes = [
-              /* :: */0,
+            _yes = /* :: */[
               x,
               yes
             ];
+            continue ;
+            
           }
           else {
             _param = l$1;
-            _no = [
-              /* :: */0,
+            _no = /* :: */[
               x,
               no
             ];
+            continue ;
+            
           }
         }
         else {
-          return [
-                  /* tuple */0,
+          return /* tuple */[
                   rev_append(yes, /* [] */0),
                   rev_append(no, /* [] */0)
                 ];
@@ -636,25 +728,21 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     
     function split(param) {
       if (param) {
-        var match = param[1];
-        var match$1 = split(param[2]);
-        return [
-                /* tuple */0,
-                [
-                  /* :: */0,
+        var match = param[0];
+        var match$1 = split(param[1]);
+        return /* tuple */[
+                /* :: */[
+                  match[0],
+                  match$1[0]
+                ],
+                /* :: */[
                   match[1],
                   match$1[1]
-                ],
-                [
-                  /* :: */0,
-                  match[2],
-                  match$1[2]
                 ]
               ];
       }
       else {
-        return [
-                /* tuple */0,
+        return /* tuple */[
                 /* [] */0,
                 /* [] */0
               ];
@@ -664,22 +752,26 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     function combine(l1, l2) {
       if (l1) {
         if (l2) {
-          return [
-                  /* :: */0,
-                  [
-                    /* tuple */0,
-                    l1[1],
-                    l2[1]
+          return /* :: */[
+                  /* tuple */[
+                    l1[0],
+                    l2[0]
                   ],
-                  combine(l1[2], l2[2])
+                  combine(l1[1], l2[1])
                 ];
         }
         else {
-          return Pervasives.invalid_arg("List.combine");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "List.combine"
+              ];
         }
       }
       else if (l2) {
-        return Pervasives.invalid_arg("List.combine");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "List.combine"
+            ];
       }
       else {
         return /* [] */0;
@@ -689,20 +781,18 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     function merge(cmp, l1, l2) {
       if (l1) {
         if (l2) {
-          var h2 = l2[1];
-          var h1 = l1[1];
-          if (cmp(h1, h2) <= 0) {
-            return [
-                    /* :: */0,
+          var h2 = l2[0];
+          var h1 = l1[0];
+          if (Curry._2(cmp, h1, h2) <= 0) {
+            return /* :: */[
                     h1,
-                    merge(cmp, l1[2], l2)
+                    merge(cmp, l1[1], l2)
                   ];
           }
           else {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     h2,
-                    merge(cmp, l1, l2[2])
+                    merge(cmp, l1, l2[1])
                   ];
           }
         }
@@ -721,15 +811,15 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         var k = _k;
         if (k) {
           if (l) {
-            _l = l[2];
-            _k = k - 1;
+            _l = l[1];
+            _k = k - 1 | 0;
+            continue ;
+            
           }
           else {
             throw [
-                  0,
-                  Caml_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
-                    0,
                     "list.ml",
                     223,
                     11
@@ -751,38 +841,32 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             exit = 1;
           }
           else if (l) {
-            var match = l[2];
+            var match = l[1];
             if (match) {
-              var match$1 = match[2];
+              var match$1 = match[1];
               if (match$1) {
-                var x3 = match$1[1];
-                var x2 = match[1];
-                var x1 = l[1];
-                if (cmp(x1, x2) <= 0) {
-                  if (cmp(x2, x3) <= 0) {
-                    return [
-                            /* :: */0,
+                var x3 = match$1[0];
+                var x2 = match[0];
+                var x1 = l[0];
+                if (Curry._2(cmp, x1, x2) <= 0) {
+                  if (Curry._2(cmp, x2, x3) <= 0) {
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
                             ]
                           ];
                   }
-                  else if (cmp(x1, x3) <= 0) {
-                    return [
-                            /* :: */0,
+                  else if (Curry._2(cmp, x1, x3) <= 0) {
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x3,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -790,14 +874,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           ];
                   }
                   else {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x3,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -805,30 +886,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           ];
                   }
                 }
-                else if (cmp(x1, x3) <= 0) {
-                  return [
-                          /* :: */0,
+                else if (Curry._2(cmp, x1, x3) <= 0) {
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x3,
                               /* [] */0
                             ]
                           ]
                         ];
                 }
-                else if (cmp(x2, x3) <= 0) {
-                  return [
-                          /* :: */0,
+                else if (Curry._2(cmp, x2, x3) <= 0) {
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
                               /* [] */0
                             ]
@@ -836,14 +911,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                         ];
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
                               /* [] */0
                             ]
@@ -864,27 +936,23 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           }
         }
         else if (l) {
-          var match$2 = l[2];
+          var match$2 = l[1];
           if (match$2) {
-            var x2$1 = match$2[1];
-            var x1$1 = l[1];
-            if (cmp(x1$1, x2$1) <= 0) {
-              return [
-                      /* :: */0,
+            var x2$1 = match$2[0];
+            var x1$1 = l[0];
+            if (Curry._2(cmp, x1$1, x2$1) <= 0) {
+              return /* :: */[
                       x1$1,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x2$1,
                         /* [] */0
                       ]
                     ];
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2$1,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x1$1,
                         /* [] */0
                       ]
@@ -900,7 +968,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         }
         if (exit === 1) {
           var n1 = (n >> 1);
-          var n2 = n - n1;
+          var n2 = n - n1 | 0;
           var l2 = chop(n1, l);
           var s1 = rev_sort(n1, l);
           var s2 = rev_sort(n2, l2);
@@ -913,23 +981,25 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             var l1 = _l1;
             if (l1) {
               if (l2$1) {
-                var h2 = l2$1[1];
-                var h1 = l1[1];
-                if (cmp(h1, h2) > 0) {
-                  _accu = [
-                    /* :: */0,
+                var h2 = l2$1[0];
+                var h1 = l1[0];
+                if (Curry._2(cmp, h1, h2) > 0) {
+                  _accu = /* :: */[
                     h1,
                     accu
                   ];
-                  _l1 = l1[2];
+                  _l1 = l1[1];
+                  continue ;
+                  
                 }
                 else {
-                  _accu = [
-                    /* :: */0,
+                  _accu = /* :: */[
                     h2,
                     accu
                   ];
-                  _l2 = l2$1[2];
+                  _l2 = l2$1[1];
+                  continue ;
+                  
                 }
               }
               else {
@@ -950,38 +1020,32 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             exit = 1;
           }
           else if (l) {
-            var match = l[2];
+            var match = l[1];
             if (match) {
-              var match$1 = match[2];
+              var match$1 = match[1];
               if (match$1) {
-                var x3 = match$1[1];
-                var x2 = match[1];
-                var x1 = l[1];
-                if (cmp(x1, x2) > 0) {
-                  if (cmp(x2, x3) > 0) {
-                    return [
-                            /* :: */0,
+                var x3 = match$1[0];
+                var x2 = match[0];
+                var x1 = l[0];
+                if (Curry._2(cmp, x1, x2) > 0) {
+                  if (Curry._2(cmp, x2, x3) > 0) {
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
                             ]
                           ];
                   }
-                  else if (cmp(x1, x3) > 0) {
-                    return [
-                            /* :: */0,
+                  else if (Curry._2(cmp, x1, x3) > 0) {
+                    return /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x3,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -989,14 +1053,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           ];
                   }
                   else {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x3,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1004,30 +1065,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           ];
                   }
                 }
-                else if (cmp(x1, x3) > 0) {
-                  return [
-                          /* :: */0,
+                else if (Curry._2(cmp, x1, x3) > 0) {
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x1,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x3,
                               /* [] */0
                             ]
                           ]
                         ];
                 }
-                else if (cmp(x2, x3) > 0) {
-                  return [
-                          /* :: */0,
+                else if (Curry._2(cmp, x2, x3) > 0) {
+                  return /* :: */[
                           x2,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x3,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
                               /* [] */0
                             ]
@@ -1035,14 +1090,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                         ];
                 }
                 else {
-                  return [
-                          /* :: */0,
+                  return /* :: */[
                           x3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             x2,
-                            [
-                              /* :: */0,
+                            /* :: */[
                               x1,
                               /* [] */0
                             ]
@@ -1063,27 +1115,23 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           }
         }
         else if (l) {
-          var match$2 = l[2];
+          var match$2 = l[1];
           if (match$2) {
-            var x2$1 = match$2[1];
-            var x1$1 = l[1];
-            if (cmp(x1$1, x2$1) > 0) {
-              return [
-                      /* :: */0,
+            var x2$1 = match$2[0];
+            var x1$1 = l[0];
+            if (Curry._2(cmp, x1$1, x2$1) > 0) {
+              return /* :: */[
                       x1$1,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x2$1,
                         /* [] */0
                       ]
                     ];
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x2$1,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         x1$1,
                         /* [] */0
                       ]
@@ -1099,7 +1147,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         }
         if (exit === 1) {
           var n1 = (n >> 1);
-          var n2 = n - n1;
+          var n2 = n - n1 | 0;
           var l2 = chop(n1, l);
           var s1 = sort(n1, l);
           var s2 = sort(n2, l2);
@@ -1112,23 +1160,25 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             var l1 = _l1;
             if (l1) {
               if (l2$1) {
-                var h2 = l2$1[1];
-                var h1 = l1[1];
-                if (cmp(h1, h2) <= 0) {
-                  _accu = [
-                    /* :: */0,
+                var h2 = l2$1[0];
+                var h1 = l1[0];
+                if (Curry._2(cmp, h1, h2) <= 0) {
+                  _accu = /* :: */[
                     h1,
                     accu
                   ];
-                  _l1 = l1[2];
+                  _l1 = l1[1];
+                  continue ;
+                  
                 }
                 else {
-                  _accu = [
-                    /* :: */0,
+                  _accu = /* :: */[
                     h2,
                     accu
                   ];
-                  _l2 = l2$1[2];
+                  _l2 = l2$1[1];
+                  continue ;
+                  
                 }
               }
               else {
@@ -1159,27 +1209,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             exit = 1;
           }
           else if (l) {
-            var match = l[2];
+            var match = l[1];
             if (match) {
-              var match$1 = match[2];
+              var match$1 = match[1];
               if (match$1) {
-                var x3 = match$1[1];
-                var x2 = match[1];
-                var x1 = l[1];
-                var c = cmp(x1, x2);
+                var x3 = match$1[0];
+                var x2 = match[0];
+                var x1 = l[0];
+                var c = Curry._2(cmp, x1, x2);
                 if (c) {
                   if (c < 0) {
-                    var c$1 = cmp(x2, x3);
+                    var c$1 = Curry._2(cmp, x2, x3);
                     if (c$1) {
                       if (c$1 < 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x1,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x3,
                                     /* [] */0
                                   ]
@@ -1187,17 +1234,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                               ];
                       }
                       else {
-                        var c$2 = cmp(x1, x3);
+                        var c$2 = Curry._2(cmp, x1, x3);
                         if (c$2) {
                           if (c$2 < 0) {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x1,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x3,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x2,
                                         /* [] */0
                                       ]
@@ -1205,14 +1249,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                                   ];
                           }
                           else {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x3,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x1,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x2,
                                         /* [] */0
                                       ]
@@ -1221,11 +1262,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           }
                         }
                         else {
-                          return [
-                                  /* :: */0,
+                          return /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1234,11 +1273,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1246,17 +1283,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                     }
                   }
                   else {
-                    var c$3 = cmp(x1, x3);
+                    var c$3 = Curry._2(cmp, x1, x3);
                     if (c$3) {
                       if (c$3 < 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x2,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x3,
                                     /* [] */0
                                   ]
@@ -1264,17 +1298,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                               ];
                       }
                       else {
-                        var c$4 = cmp(x2, x3);
+                        var c$4 = Curry._2(cmp, x2, x3);
                         if (c$4) {
                           if (c$4 < 0) {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x2,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x3,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x1,
                                         /* [] */0
                                       ]
@@ -1282,14 +1313,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                                   ];
                           }
                           else {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x3,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x2,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x1,
                                         /* [] */0
                                       ]
@@ -1298,11 +1326,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           }
                         }
                         else {
-                          return [
-                                  /* :: */0,
+                          return /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1311,11 +1337,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x1,
                                 /* [] */0
                               ]
@@ -1324,25 +1348,21 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                   }
                 }
                 else {
-                  var c$5 = cmp(x2, x3);
+                  var c$5 = Curry._2(cmp, x2, x3);
                   if (c$5) {
                     if (c$5 < 0) {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
                             ];
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x3,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1350,8 +1370,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                     }
                   }
                   else {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x2,
                             /* [] */0
                           ];
@@ -1371,29 +1390,25 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           }
         }
         else if (l) {
-          var match$2 = l[2];
+          var match$2 = l[1];
           if (match$2) {
-            var x2$1 = match$2[1];
-            var x1$1 = l[1];
-            var c$6 = cmp(x1$1, x2$1);
+            var x2$1 = match$2[0];
+            var x1$1 = l[0];
+            var c$6 = Curry._2(cmp, x1$1, x2$1);
             if (c$6) {
               if (c$6 < 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1$1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x2$1,
                           /* [] */0
                         ]
                       ];
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x2$1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1$1,
                           /* [] */0
                         ]
@@ -1401,8 +1416,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
               }
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x1$1,
                       /* [] */0
                     ];
@@ -1417,7 +1431,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         }
         if (exit === 1) {
           var n1 = (n >> 1);
-          var n2 = n - n1;
+          var n2 = n - n1 | 0;
           var l2 = chop(n1, l);
           var s1 = rev_sort(n1, l);
           var s2 = rev_sort(n2, l2);
@@ -1430,37 +1444,40 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             var l1 = _l1;
             if (l1) {
               if (l2$1) {
-                var t2 = l2$1[2];
-                var h2 = l2$1[1];
-                var t1 = l1[2];
-                var h1 = l1[1];
-                var c$7 = cmp(h1, h2);
+                var t2 = l2$1[1];
+                var h2 = l2$1[0];
+                var t1 = l1[1];
+                var h1 = l1[0];
+                var c$7 = Curry._2(cmp, h1, h2);
                 if (c$7) {
                   if (c$7 > 0) {
-                    _accu = [
-                      /* :: */0,
+                    _accu = /* :: */[
                       h1,
                       accu
                     ];
                     _l1 = t1;
+                    continue ;
+                    
                   }
                   else {
-                    _accu = [
-                      /* :: */0,
+                    _accu = /* :: */[
                       h2,
                       accu
                     ];
                     _l2 = t2;
+                    continue ;
+                    
                   }
                 }
                 else {
-                  _accu = [
-                    /* :: */0,
+                  _accu = /* :: */[
                     h1,
                     accu
                   ];
                   _l2 = t2;
                   _l1 = t1;
+                  continue ;
+                  
                 }
               }
               else {
@@ -1481,27 +1498,24 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             exit = 1;
           }
           else if (l) {
-            var match = l[2];
+            var match = l[1];
             if (match) {
-              var match$1 = match[2];
+              var match$1 = match[1];
               if (match$1) {
-                var x3 = match$1[1];
-                var x2 = match[1];
-                var x1 = l[1];
-                var c = cmp(x1, x2);
+                var x3 = match$1[0];
+                var x2 = match[0];
+                var x1 = l[0];
+                var c = Curry._2(cmp, x1, x2);
                 if (c) {
                   if (c > 0) {
-                    var c$1 = cmp(x2, x3);
+                    var c$1 = Curry._2(cmp, x2, x3);
                     if (c$1) {
                       if (c$1 > 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x1,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x3,
                                     /* [] */0
                                   ]
@@ -1509,17 +1523,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                               ];
                       }
                       else {
-                        var c$2 = cmp(x1, x3);
+                        var c$2 = Curry._2(cmp, x1, x3);
                         if (c$2) {
                           if (c$2 > 0) {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x1,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x3,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x2,
                                         /* [] */0
                                       ]
@@ -1527,14 +1538,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                                   ];
                           }
                           else {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x3,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x1,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x2,
                                         /* [] */0
                                       ]
@@ -1543,11 +1551,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           }
                         }
                         else {
-                          return [
-                                  /* :: */0,
+                          return /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x2,
                                     /* [] */0
                                   ]
@@ -1556,11 +1562,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x1,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1568,17 +1572,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                     }
                   }
                   else {
-                    var c$3 = cmp(x1, x3);
+                    var c$3 = Curry._2(cmp, x1, x3);
                     if (c$3) {
                       if (c$3 > 0) {
-                        return [
-                                /* :: */0,
+                        return /* :: */[
                                 x2,
-                                [
-                                  /* :: */0,
+                                /* :: */[
                                   x1,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x3,
                                     /* [] */0
                                   ]
@@ -1586,17 +1587,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                               ];
                       }
                       else {
-                        var c$4 = cmp(x2, x3);
+                        var c$4 = Curry._2(cmp, x2, x3);
                         if (c$4) {
                           if (c$4 > 0) {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x2,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x3,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x1,
                                         /* [] */0
                                       ]
@@ -1604,14 +1602,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                                   ];
                           }
                           else {
-                            return [
-                                    /* :: */0,
+                            return /* :: */[
                                     x3,
-                                    [
-                                      /* :: */0,
+                                    /* :: */[
                                       x2,
-                                      [
-                                        /* :: */0,
+                                      /* :: */[
                                         x1,
                                         /* [] */0
                                       ]
@@ -1620,11 +1615,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                           }
                         }
                         else {
-                          return [
-                                  /* :: */0,
+                          return /* :: */[
                                   x2,
-                                  [
-                                    /* :: */0,
+                                  /* :: */[
                                     x1,
                                     /* [] */0
                                   ]
@@ -1633,11 +1626,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                       }
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x1,
                                 /* [] */0
                               ]
@@ -1646,25 +1637,21 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                   }
                 }
                 else {
-                  var c$5 = cmp(x2, x3);
+                  var c$5 = Curry._2(cmp, x2, x3);
                   if (c$5) {
                     if (c$5 > 0) {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x2,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x3,
                                 /* [] */0
                               ]
                             ];
                     }
                     else {
-                      return [
-                              /* :: */0,
+                      return /* :: */[
                               x3,
-                              [
-                                /* :: */0,
+                              /* :: */[
                                 x2,
                                 /* [] */0
                               ]
@@ -1672,8 +1659,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
                     }
                   }
                   else {
-                    return [
-                            /* :: */0,
+                    return /* :: */[
                             x2,
                             /* [] */0
                           ];
@@ -1693,29 +1679,25 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
           }
         }
         else if (l) {
-          var match$2 = l[2];
+          var match$2 = l[1];
           if (match$2) {
-            var x2$1 = match$2[1];
-            var x1$1 = l[1];
-            var c$6 = cmp(x1$1, x2$1);
+            var x2$1 = match$2[0];
+            var x1$1 = l[0];
+            var c$6 = Curry._2(cmp, x1$1, x2$1);
             if (c$6) {
               if (c$6 > 0) {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x1$1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x2$1,
                           /* [] */0
                         ]
                       ];
               }
               else {
-                return [
-                        /* :: */0,
+                return /* :: */[
                         x2$1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           x1$1,
                           /* [] */0
                         ]
@@ -1723,8 +1705,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
               }
             }
             else {
-              return [
-                      /* :: */0,
+              return /* :: */[
                       x1$1,
                       /* [] */0
                     ];
@@ -1739,7 +1720,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
         }
         if (exit === 1) {
           var n1 = (n >> 1);
-          var n2 = n - n1;
+          var n2 = n - n1 | 0;
           var l2 = chop(n1, l);
           var s1 = sort(n1, l);
           var s2 = sort(n2, l2);
@@ -1752,37 +1733,40 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
             var l1 = _l1;
             if (l1) {
               if (l2$1) {
-                var t2 = l2$1[2];
-                var h2 = l2$1[1];
-                var t1 = l1[2];
-                var h1 = l1[1];
-                var c$7 = cmp(h1, h2);
+                var t2 = l2$1[1];
+                var h2 = l2$1[0];
+                var t1 = l1[1];
+                var h1 = l1[0];
+                var c$7 = Curry._2(cmp, h1, h2);
                 if (c$7) {
                   if (c$7 < 0) {
-                    _accu = [
-                      /* :: */0,
+                    _accu = /* :: */[
                       h1,
                       accu
                     ];
                     _l1 = t1;
+                    continue ;
+                    
                   }
                   else {
-                    _accu = [
-                      /* :: */0,
+                    _accu = /* :: */[
                       h2,
                       accu
                     ];
                     _l2 = t2;
+                    continue ;
+                    
                   }
                 }
                 else {
-                  _accu = [
-                    /* :: */0,
+                  _accu = /* :: */[
                     h1,
                     accu
                   ];
                   _l2 = t2;
                   _l1 = t1;
+                  continue ;
+                  
                 }
               }
               else {
@@ -1814,51 +1798,51 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_primitive"]
     var sort = stable_sort;
     
     var fast_sort = stable_sort;
-    return {
-      length : length, 
-      hd : hd, 
-      tl : tl, 
-      nth : nth, 
-      rev : rev, 
-      append : append, 
-      rev_append : rev_append, 
-      concat : concat, 
-      flatten : flatten, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi$1, 
-      rev_map : rev_map, 
-      fold_left : fold_left, 
-      fold_right : fold_right, 
-      iter2 : iter2, 
-      map2 : map2, 
-      rev_map2 : rev_map2, 
-      fold_left2 : fold_left2, 
-      fold_right2 : fold_right2, 
-      for_all : for_all, 
-      exists : exists, 
-      for_all2 : for_all2, 
-      exists2 : exists2, 
-      mem : mem, 
-      memq : memq, 
-      find : find, 
-      filter : filter, 
-      find_all : find_all, 
-      partition : partition, 
-      assoc : assoc, 
-      assq : assq, 
-      mem_assoc : mem_assoc, 
-      mem_assq : mem_assq, 
-      remove_assoc : remove_assoc, 
-      remove_assq : remove_assq, 
-      split : split, 
-      combine : combine, 
-      sort : sort, 
-      stable_sort : stable_sort, 
-      fast_sort : fast_sort, 
-      sort_uniq : sort_uniq, 
-      merge : merge
-    }
+    
+    exports.length       = length;
+    exports.hd           = hd;
+    exports.tl           = tl;
+    exports.nth          = nth;
+    exports.rev          = rev;
+    exports.append       = append;
+    exports.rev_append   = rev_append;
+    exports.concat       = concat;
+    exports.flatten      = flatten;
+    exports.iter         = iter;
+    exports.iteri        = iteri;
+    exports.map          = map;
+    exports.mapi         = mapi$1;
+    exports.rev_map      = rev_map;
+    exports.fold_left    = fold_left;
+    exports.fold_right   = fold_right;
+    exports.iter2        = iter2;
+    exports.map2         = map2;
+    exports.rev_map2     = rev_map2;
+    exports.fold_left2   = fold_left2;
+    exports.fold_right2  = fold_right2;
+    exports.for_all      = for_all;
+    exports.exists       = exists;
+    exports.for_all2     = for_all2;
+    exports.exists2      = exists2;
+    exports.mem          = mem;
+    exports.memq         = memq;
+    exports.find         = find;
+    exports.filter       = filter;
+    exports.find_all     = find_all;
+    exports.partition    = partition;
+    exports.assoc        = assoc;
+    exports.assq         = assq;
+    exports.mem_assoc    = mem_assoc;
+    exports.mem_assq     = mem_assq;
+    exports.remove_assoc = remove_assoc;
+    exports.remove_assq  = remove_assq;
+    exports.split        = split;
+    exports.combine      = combine;
+    exports.sort         = sort;
+    exports.stable_sort  = stable_sort;
+    exports.fast_sort    = fast_sort;
+    exports.sort_uniq    = sort_uniq;
+    exports.merge        = merge;
+    
   })
 /* No side effect */

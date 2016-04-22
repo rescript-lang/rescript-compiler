@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./array"],
-  function($$Array){
+define(["exports", "./array"],
+  function(exports, $$Array){
     'use strict';
     var init = $$Array.init;
     
@@ -42,27 +42,27 @@ define(["./array"],
     var stable_sort = $$Array.stable_sort;
     
     var fast_sort = $$Array.fast_sort;
-    return {
-      init : init, 
-      make_matrix : make_matrix, 
-      create_matrix : create_matrix, 
-      append : append, 
-      concat : concat, 
-      sub : sub, 
-      copy : copy, 
-      fill : fill, 
-      blit : blit, 
-      to_list : to_list, 
-      of_list : of_list, 
-      iter : iter, 
-      map : map, 
-      iteri : iteri, 
-      mapi : mapi, 
-      fold_left : fold_left, 
-      fold_right : fold_right, 
-      sort : sort, 
-      stable_sort : stable_sort, 
-      fast_sort : fast_sort
-    }
+    
+    exports.init          = init;
+    exports.make_matrix   = make_matrix;
+    exports.create_matrix = create_matrix;
+    exports.append        = append;
+    exports.concat        = concat;
+    exports.sub           = sub;
+    exports.copy          = copy;
+    exports.fill          = fill;
+    exports.blit          = blit;
+    exports.to_list       = to_list;
+    exports.of_list       = of_list;
+    exports.iter          = iter;
+    exports.map           = map;
+    exports.iteri         = iteri;
+    exports.mapi          = mapi;
+    exports.fold_left     = fold_left;
+    exports.fold_right    = fold_right;
+    exports.sort          = sort;
+    exports.stable_sort   = stable_sort;
+    exports.fast_sort     = fast_sort;
+    
   })
 /* No side effect */

@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_primitive","../runtime/caml_string","./list"],
-  function(Pervasives,Caml_exceptions,Char,Caml_primitive,Caml_string,List){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "./char", "../runtime/curry", "../runtime/caml_primitive", "../runtime/caml_string", "./list"],
+  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Char, Curry, Caml_primitive, Caml_string, List){
     'use strict';
     function make(n, c) {
       var s = Caml_string.caml_create_string(n);
@@ -11,8 +11,8 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     
     function init(n, f) {
       var s = Caml_string.caml_create_string(n);
-      for(var i = 0 ,i_finish = n - 1; i<= i_finish; ++i){
-        s[i] = f(i);
+      for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
+        s[i] = Curry._1(f, i);
       }
       return s;
     }
@@ -35,8 +35,11 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function sub(s, ofs, len) {
-      if (ofs < 0 || len < 0 || ofs > s.length - len) {
-        return Pervasives.invalid_arg("String.sub / Bytes.sub");
+      if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.sub / Bytes.sub"
+            ];
       }
       else {
         var r = Caml_string.caml_create_string(len);
@@ -50,20 +53,18 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function extend(s, left, right) {
-      var len = s.length + left + right;
+      var len = (s.length + left | 0) + right | 0;
       var r = Caml_string.caml_create_string(len);
-      var match = left < 0 ? [
-          /* tuple */0,
+      var match = left < 0 ? /* tuple */[
           -left,
           0
-        ] : [
-          /* tuple */0,
+        ] : /* tuple */[
           0,
           left
         ];
-      var dstoff = match[2];
-      var srcoff = match[1];
-      var cpylen = Pervasives.min(s.length - srcoff, len - dstoff);
+      var dstoff = match[1];
+      var srcoff = match[0];
+      var cpylen = Pervasives.min(s.length - srcoff | 0, len - dstoff | 0);
       if (cpylen > 0) {
         Caml_string.caml_blit_bytes(s, srcoff, r, dstoff, cpylen);
       }
@@ -71,8 +72,11 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function fill(s, ofs, len, c) {
-      if (ofs < 0 || len < 0 || ofs > s.length - len) {
-        return Pervasives.invalid_arg("String.fill / Bytes.fill");
+      if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.fill / Bytes.fill"
+            ];
       }
       else {
         return Caml_string.caml_fill_string(s, ofs, len, c);
@@ -80,8 +84,11 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function blit(s1, ofs1, s2, ofs2, len) {
-      if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
-        return Pervasives.invalid_arg("Bytes.blit");
+      if (len < 0 || ofs1 < 0 || ofs1 > (s1.length - len | 0) || ofs2 < 0 || ofs2 > (s2.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Bytes.blit"
+            ];
       }
       else {
         return Caml_string.caml_blit_bytes(s1, ofs1, s2, ofs2, len);
@@ -89,8 +96,11 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function blit_string(s1, ofs1, s2, ofs2, len) {
-      if (len < 0 || ofs1 < 0 || ofs1 > s1.length - len || ofs2 < 0 || ofs2 > s2.length - len) {
-        return Pervasives.invalid_arg("String.blit / Bytes.blit_string");
+      if (len < 0 || ofs1 < 0 || ofs1 > (s1.length - len | 0) || ofs2 < 0 || ofs2 > (s2.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.blit / Bytes.blit_string"
+            ];
       }
       else {
         return Caml_string.caml_blit_string(s1, ofs1, s2, ofs2, len);
@@ -98,48 +108,39 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function iter(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-        f(a[i]);
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        Curry._1(f, a[i]);
       }
       return /* () */0;
     }
     
     function iteri(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-        f(i, a[i]);
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        Curry._2(f, i, a[i]);
       }
       return /* () */0;
     }
     
     function concat(sep, l) {
       if (l) {
-        var hd = l[1];
-        var num = [
-          0,
-          0
-        ];
-        var len = [
-          0,
-          0
-        ];
+        var hd = l[0];
+        var num = [0];
+        var len = [0];
         List.iter(function (s) {
-              ++ num[1];
-              len[1] += s.length;
+              num[0] = num[0] + 1 | 0;
+              len[0] = len[0] + s.length | 0;
               return /* () */0;
             }, l);
-        var r = Caml_string.caml_create_string(len[1] + sep.length * (num[1] - 1));
+        var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
-        var pos = [
-          0,
-          hd.length
-        ];
+        var pos = [hd.length];
         List.iter(function (s) {
-              Caml_string.caml_blit_bytes(sep, 0, r, pos[1], sep.length);
-              pos[1] += sep.length;
-              Caml_string.caml_blit_bytes(s, 0, r, pos[1], s.length);
-              pos[1] += s.length;
+              Caml_string.caml_blit_bytes(sep, 0, r, pos[0], sep.length);
+              pos[0] = pos[0] + sep.length | 0;
+              Caml_string.caml_blit_bytes(s, 0, r, pos[0], s.length);
+              pos[0] = pos[0] + s.length | 0;
               return /* () */0;
-            }, l[2]);
+            }, l[1]);
         return r;
       }
       else {
@@ -152,7 +153,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     }
     
     function is_space(param) {
-      var switcher = param - 9;
+      var switcher = param - 9 | 0;
       if (switcher > 4 || switcher < 0) {
         if (switcher !== 23) {
           return /* false */0;
@@ -173,14 +174,14 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       var len = s.length;
       var i = 0;
       while(i < len && is_space(s[i])) {
-        ++ i;
+        i = i + 1 | 0;
       };
-      var j = len - 1;
+      var j = len - 1 | 0;
       while(j >= i && is_space(s[j])) {
-        -- j;
+        j = j - 1 | 0;
       };
       if (j >= i) {
-        return sub(s, i, j - i + 1);
+        return sub(s, i, (j - i | 0) + 1 | 0);
       }
       else {
         return empty;
@@ -189,7 +190,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     
     function escaped(s) {
       var n = 0;
-      for(var i = 0 ,i_finish = s.length - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
         var c = s[i];
         var $js;
         var exit = 0;
@@ -218,7 +219,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
         if (exit === 1) {
           $js = Caml_string.caml_is_printable(c) ? 1 : 4;
         }
-        n += $js;
+        n = n + $js | 0;
       }
       if (n === s.length) {
         return copy(s);
@@ -226,29 +227,29 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       else {
         var s$prime = Caml_string.caml_create_string(n);
         n = 0;
-        for(var i$1 = 0 ,i_finish$1 = s.length - 1; i$1<= i_finish$1; ++i$1){
+        for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1<= i_finish$1; ++i$1){
           var c$1 = s[i$1];
           var exit$1 = 0;
-          var switcher = c$1 - 34;
+          var switcher = c$1 - 34 | 0;
           if (switcher > 58 || switcher < 0) {
             if (switcher >= -20) {
               exit$1 = 1;
             }
             else {
-              switch (switcher + 34) {
+              switch (switcher + 34 | 0) {
                 case 8 : 
                     s$prime[n] = /* "\\" */92;
-                    ++ n;
+                    n = n + 1 | 0;
                     s$prime[n] = /* "b" */98;
                     break;
                 case 9 : 
                     s$prime[n] = /* "\\" */92;
-                    ++ n;
+                    n = n + 1 | 0;
                     s$prime[n] = /* "t" */116;
                     break;
                 case 10 : 
                     s$prime[n] = /* "\\" */92;
-                    ++ n;
+                    n = n + 1 | 0;
                     s$prime[n] = /* "n" */110;
                     break;
                 case 0 : 
@@ -265,7 +266,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
                     break;
                 case 13 : 
                     s$prime[n] = /* "\\" */92;
-                    ++ n;
+                    n = n + 1 | 0;
                     s$prime[n] = /* "r" */114;
                     break;
                 
@@ -274,7 +275,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
           }
           else if (switcher > 57 || switcher < 1) {
             s$prime[n] = /* "\\" */92;
-            ++ n;
+            n = n + 1 | 0;
             s$prime[n] = c$1;
           }
           else {
@@ -286,15 +287,15 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
             }
             else {
               s$prime[n] = /* "\\" */92;
-              ++ n;
-              s$prime[n] = 48 + (c$1 / 100 | 0);
-              ++ n;
-              s$prime[n] = 48 + (c$1 / 10 | 0) % 10;
-              ++ n;
-              s$prime[n] = 48 + c$1 % 10;
+              n = n + 1 | 0;
+              s$prime[n] = 48 + (c$1 / 100 | 0) | 0;
+              n = n + 1 | 0;
+              s$prime[n] = 48 + (c$1 / 10 | 0) % 10 | 0;
+              n = n + 1 | 0;
+              s$prime[n] = 48 + c$1 % 10 | 0;
             }
           }
-          ++ n;
+          n = n + 1 | 0;
         }
         return s$prime;
       }
@@ -304,8 +305,8 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       var l = s.length;
       if (l) {
         var r = Caml_string.caml_create_string(l);
-        for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
-          r[i] = f(s[i]);
+        for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+          r[i] = Curry._1(f, s[i]);
         }
         return r;
       }
@@ -318,8 +319,8 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       var l = s.length;
       if (l) {
         var r = Caml_string.caml_create_string(l);
-        for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
-          r[i] = f(i, s[i]);
+        for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+          r[i] = Curry._2(f, i, s[i]);
         }
         return r;
       }
@@ -339,7 +340,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     function apply1(f, s) {
       if (s.length) {
         var r = copy(s);
-        r[0] = f(s[0]);
+        r[0] = Curry._1(f, s[0]);
         return r;
       }
       else {
@@ -359,13 +360,15 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       while(true) {
         var i = _i;
         if (i >= lim) {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
         else if (s[i] === c) {
           return i;
         }
         else {
-          _i = i + 1;
+          _i = i + 1 | 0;
+          continue ;
+          
         }
       };
     }
@@ -377,7 +380,10 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     function index_from(s, i, c) {
       var l = s.length;
       if (i < 0 || i > l) {
-        return Pervasives.invalid_arg("String.index_from / Bytes.index_from");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.index_from / Bytes.index_from"
+            ];
       }
       else {
         return index_rec(s, l, i, c);
@@ -388,24 +394,29 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       while(true) {
         var i = _i;
         if (i < 0) {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
         else if (s[i] === c) {
           return i;
         }
         else {
-          _i = i - 1;
+          _i = i - 1 | 0;
+          continue ;
+          
         }
       };
     }
     
     function rindex(s, c) {
-      return rindex_rec(s, s.length - 1, c);
+      return rindex_rec(s, s.length - 1 | 0, c);
     }
     
     function rindex_from(s, i, c) {
       if (i < -1 || i >= s.length) {
-        return Pervasives.invalid_arg("String.rindex_from / Bytes.rindex_from");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.rindex_from / Bytes.rindex_from"
+            ];
       }
       else {
         return rindex_rec(s, i, c);
@@ -415,7 +426,10 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     function contains_from(s, i, c) {
       var l = s.length;
       if (i < 0 || i > l) {
-        return Pervasives.invalid_arg("String.contains_from / Bytes.contains_from");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.contains_from / Bytes.contains_from"
+            ];
       }
       else {
         try {
@@ -423,7 +437,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
           return /* true */1;
         }
         catch (exn){
-          if (exn === Caml_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.not_found) {
             return /* false */0;
           }
           else {
@@ -439,7 +453,10 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
     
     function rcontains_from(s, i, c) {
       if (i < 0 || i >= s.length) {
-        return Pervasives.invalid_arg("String.rcontains_from / Bytes.rcontains_from");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "String.rcontains_from / Bytes.rcontains_from"
+            ];
       }
       else {
         try {
@@ -447,7 +464,7 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
           return /* true */1;
         }
         catch (exn){
-          if (exn === Caml_exceptions.Not_found) {
+          if (exn === Caml_builtin_exceptions.not_found) {
             return /* false */0;
           }
           else {
@@ -457,52 +474,46 @@ define(["./pervasives","../runtime/caml_exceptions","./char","../runtime/caml_pr
       }
     }
     
-    function compare(x, y) {
-      return Caml_primitive.caml_compare(x, y);
-    }
+    var compare = Caml_obj.caml_compare
     
-    function unsafe_to_string(prim) {
-      return Caml_string.bytes_to_string(prim);
-    }
+    var unsafe_to_string = Caml_string.bytes_to_string
     
-    function unsafe_of_string(prim) {
-      return Caml_string.bytes_of_string(prim);
-    }
-    return {
-      make : make, 
-      init : init, 
-      empty : empty, 
-      copy : copy, 
-      of_string : of_string, 
-      to_string : to_string, 
-      sub : sub, 
-      sub_string : sub_string, 
-      extend : extend, 
-      fill : fill, 
-      blit : blit, 
-      blit_string : blit_string, 
-      concat : concat, 
-      cat : cat, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi, 
-      trim : trim, 
-      escaped : escaped, 
-      index : index, 
-      rindex : rindex, 
-      index_from : index_from, 
-      rindex_from : rindex_from, 
-      contains : contains, 
-      contains_from : contains_from, 
-      rcontains_from : rcontains_from, 
-      uppercase : uppercase, 
-      lowercase : lowercase, 
-      capitalize : capitalize, 
-      uncapitalize : uncapitalize, 
-      compare : compare, 
-      unsafe_to_string : unsafe_to_string, 
-      unsafe_of_string : unsafe_of_string
-    }
+    var unsafe_of_string = Caml_string.bytes_of_string
+    
+    exports.make             = make;
+    exports.init             = init;
+    exports.empty            = empty;
+    exports.copy             = copy;
+    exports.of_string        = of_string;
+    exports.to_string        = to_string;
+    exports.sub              = sub;
+    exports.sub_string       = sub_string;
+    exports.extend           = extend;
+    exports.fill             = fill;
+    exports.blit             = blit;
+    exports.blit_string      = blit_string;
+    exports.concat           = concat;
+    exports.cat              = cat;
+    exports.iter             = iter;
+    exports.iteri            = iteri;
+    exports.map              = map;
+    exports.mapi             = mapi;
+    exports.trim             = trim;
+    exports.escaped          = escaped;
+    exports.index            = index;
+    exports.rindex           = rindex;
+    exports.index_from       = index_from;
+    exports.rindex_from      = rindex_from;
+    exports.contains         = contains;
+    exports.contains_from    = contains_from;
+    exports.rcontains_from   = rcontains_from;
+    exports.uppercase        = uppercase;
+    exports.lowercase        = lowercase;
+    exports.capitalize       = capitalize;
+    exports.uncapitalize     = uncapitalize;
+    exports.compare          = compare;
+    exports.unsafe_to_string = unsafe_to_string;
+    exports.unsafe_of_string = unsafe_of_string;
+    
   })
 /* No side effect */

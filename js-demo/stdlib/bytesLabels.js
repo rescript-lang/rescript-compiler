@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./bytes"],
-  function(Bytes){
+define(["exports", "./bytes"],
+  function(exports, Bytes){
     'use strict';
     var make = Bytes.make;
     
@@ -64,38 +64,38 @@ define(["./bytes"],
     var unsafe_to_string = Bytes.unsafe_to_string;
     
     var unsafe_of_string = Bytes.unsafe_of_string;
-    return {
-      make : make, 
-      init : init, 
-      empty : empty, 
-      copy : copy, 
-      of_string : of_string, 
-      to_string : to_string, 
-      sub : sub, 
-      sub_string : sub_string, 
-      fill : fill, 
-      blit : blit, 
-      concat : concat, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi, 
-      trim : trim, 
-      escaped : escaped, 
-      index : index, 
-      rindex : rindex, 
-      index_from : index_from, 
-      rindex_from : rindex_from, 
-      contains : contains, 
-      contains_from : contains_from, 
-      rcontains_from : rcontains_from, 
-      uppercase : uppercase, 
-      lowercase : lowercase, 
-      capitalize : capitalize, 
-      uncapitalize : uncapitalize, 
-      compare : compare, 
-      unsafe_to_string : unsafe_to_string, 
-      unsafe_of_string : unsafe_of_string
-    }
+    
+    exports.make             = make;
+    exports.init             = init;
+    exports.empty            = empty;
+    exports.copy             = copy;
+    exports.of_string        = of_string;
+    exports.to_string        = to_string;
+    exports.sub              = sub;
+    exports.sub_string       = sub_string;
+    exports.fill             = fill;
+    exports.blit             = blit;
+    exports.concat           = concat;
+    exports.iter             = iter;
+    exports.iteri            = iteri;
+    exports.map              = map;
+    exports.mapi             = mapi;
+    exports.trim             = trim;
+    exports.escaped          = escaped;
+    exports.index            = index;
+    exports.rindex           = rindex;
+    exports.index_from       = index_from;
+    exports.rindex_from      = rindex_from;
+    exports.contains         = contains;
+    exports.contains_from    = contains_from;
+    exports.rcontains_from   = rcontains_from;
+    exports.uppercase        = uppercase;
+    exports.lowercase        = lowercase;
+    exports.capitalize       = capitalize;
+    exports.uncapitalize     = uncapitalize;
+    exports.compare          = compare;
+    exports.unsafe_to_string = unsafe_to_string;
+    exports.unsafe_of_string = unsafe_of_string;
+    
   })
 /* No side effect */

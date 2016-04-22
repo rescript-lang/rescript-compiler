@@ -1,11 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./pervasives","../runtime/caml_string"],
-  function(Pervasives,Caml_string){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_string"],
+  function(exports, Caml_builtin_exceptions, Caml_string){
     'use strict';
     function chr(n) {
       if (n < 0 || n > 255) {
-        return Pervasives.invalid_arg("Char.chr");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Char.chr"
+            ];
       }
       else {
         return n;
@@ -54,15 +57,15 @@ define(["./pervasives","../runtime/caml_string"],
       }
       if (exit === 1) {
         if (Caml_string.caml_is_printable(c)) {
-          return Caml_string.caml_string_of_char_array(/* array */[c]);
+          return Caml_string.caml_string_of_char_array(/* int array */[c]);
         }
         else {
           var n = c;
-          return Caml_string.caml_string_of_char_array(/* array */[
+          return Caml_string.caml_string_of_char_array(/* int array */[
                       /* "\\" */92,
-                      48 + (n / 100 | 0),
-                      48 + (n / 10 | 0) % 10,
-                      48 + n % 10
+                      48 + (n / 100 | 0) | 0,
+                      48 + (n / 10 | 0) % 10 | 0,
+                      48 + n % 10 | 0
                     ]);
         }
       }
@@ -71,7 +74,7 @@ define(["./pervasives","../runtime/caml_string"],
     
     function lowercase(c) {
       if (c >= /* "A" */65 && c <= /* "Z" */90 || c >= /* "\192" */192 && c <= /* "\214" */214 || c >= /* "\216" */216 && c <= /* "\222" */222) {
-        return c + 32;
+        return c + 32 | 0;
       }
       else {
         return c;
@@ -80,7 +83,7 @@ define(["./pervasives","../runtime/caml_string"],
     
     function uppercase(c) {
       if (c >= /* "a" */97 && c <= /* "z" */122 || c >= /* "\224" */224 && c <= /* "\246" */246 || c >= /* "\248" */248 && c <= /* "\254" */254) {
-        return c - 32;
+        return c - 32 | 0;
       }
       else {
         return c;
@@ -88,14 +91,14 @@ define(["./pervasives","../runtime/caml_string"],
     }
     
     function compare(c1, c2) {
-      return c1 - c2;
+      return c1 - c2 | 0;
     }
-    return {
-      chr : chr, 
-      escaped : escaped, 
-      lowercase : lowercase, 
-      uppercase : uppercase, 
-      compare : compare
-    }
+    
+    exports.chr       = chr;
+    exports.escaped   = escaped;
+    exports.lowercase = lowercase;
+    exports.uppercase = uppercase;
+    exports.compare   = compare;
+    
   })
 /* No side effect */

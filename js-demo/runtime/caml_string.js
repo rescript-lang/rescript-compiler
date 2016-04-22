@@ -1,8 +1,12 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./caml_exceptions"],
-  function(Caml_exceptions){
+define(["exports", "./caml_builtin_exceptions"],
+  function(exports, Caml_builtin_exceptions){
     'use strict';
+    function string_of_char(prim) {
+      return String.fromCharCode(prim);
+    }
+    
     function add(prim, prim$1) {
       return prim + prim$1;
     }
@@ -10,8 +14,7 @@ define(["./caml_exceptions"],
     function caml_string_get(s, i) {
       if (i >= s.length || i < 0) {
         throw [
-              0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "index out of bounds"
             ];
       }
@@ -23,8 +26,7 @@ define(["./caml_exceptions"],
     function caml_create_string(len) {
       if (len < 0) {
         throw [
-              0,
-              Caml_exceptions.Invalid_argument,
+              Caml_builtin_exceptions.invalid_argument,
               "String.create"
             ];
       }
@@ -47,7 +49,7 @@ define(["./caml_exceptions"],
     
     function caml_fill_string(s, i, l, c) {
       if (l > 0) {
-        for(var k = i ,k_finish = l + i - 1; k<= k_finish; ++k){
+        for(var k = i ,k_finish = (l + i | 0) - 1 | 0; k<= k_finish; ++k){
           s[k] = c;
         }
         return /* () */0;
@@ -59,19 +61,19 @@ define(["./caml_exceptions"],
     
     function caml_blit_string(s1, i1, s2, i2, len) {
       if (len > 0) {
-        var off1 = s1.length - i1;
+        var off1 = s1.length - i1 | 0;
         if (len <= off1) {
-          for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-            s2[i2 + i] = s1.charCodeAt(i1 + i);
+          for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+            s2[i2 + i | 0] = s1.charCodeAt(i1 + i | 0);
           }
           return /* () */0;
         }
         else {
-          for(var i$1 = 0 ,i_finish$1 = off1 - 1; i$1<= i_finish$1; ++i$1){
-            s2[i2 + i$1] = s1.charCodeAt(i1 + i$1);
+          for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1<= i_finish$1; ++i$1){
+            s2[i2 + i$1 | 0] = s1.charCodeAt(i1 + i$1 | 0);
           }
-          for(var i$2 = off1 ,i_finish$2 = len - 1; i$2<= i_finish$2; ++i$2){
-            s2[i2 + i$2] = /* "\000" */0;
+          for(var i$2 = off1 ,i_finish$2 = len - 1 | 0; i$2<= i_finish$2; ++i$2){
+            s2[i2 + i$2 | 0] = /* "\000" */0;
           }
           return /* () */0;
         }
@@ -83,19 +85,19 @@ define(["./caml_exceptions"],
     
     function caml_blit_bytes(s1, i1, s2, i2, len) {
       if (len > 0) {
-        var off1 = s1.length - i1;
+        var off1 = s1.length - i1 | 0;
         if (len <= off1) {
-          for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-            s2[i2 + i] = s1[i1 + i];
+          for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+            s2[i2 + i | 0] = s1[i1 + i | 0];
           }
           return /* () */0;
         }
         else {
-          for(var i$1 = 0 ,i_finish$1 = off1 - 1; i$1<= i_finish$1; ++i$1){
-            s2[i2 + i$1] = s1[i1 + i$1];
+          for(var i$1 = 0 ,i_finish$1 = off1 - 1 | 0; i$1<= i_finish$1; ++i$1){
+            s2[i2 + i$1 | 0] = s1[i1 + i$1 | 0];
           }
-          for(var i$2 = off1 ,i_finish$2 = len - 1; i$2<= i_finish$2; ++i$2){
-            s2[i2 + i$2] = /* "\000" */0;
+          for(var i$2 = off1 ,i_finish$2 = len - 1 | 0; i$2<= i_finish$2; ++i$2){
+            s2[i2 + i$2 | 0] = /* "\000" */0;
           }
           return /* () */0;
         }
@@ -108,7 +110,7 @@ define(["./caml_exceptions"],
     function bytes_of_string(s) {
       var len = s.length;
       var res = new Array(len);
-      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
         res[i] = s.charCodeAt(i);
       }
       return res;
@@ -120,19 +122,18 @@ define(["./caml_exceptions"],
       var len = a.length;
       var s = "";
       var s_len = len;
-      var seg = 1024;
-      if (i === 0 && len <= 4 * seg && len === bytes.length) {
+      if (i === 0 && len <= 4096 && len === bytes.length) {
         return String.fromCharCode.apply(null,bytes);
       }
       else {
         var offset = 0;
         while(s_len > 0) {
-          var next = s_len < 1024 ? s_len : seg;
+          var next = s_len < 1024 ? s_len : 1024;
           var tmp_bytes = new Array(next);
           caml_blit_bytes(bytes, offset, tmp_bytes, 0, next);
           s = s + String.fromCharCode.apply(null,tmp_bytes);
-          s_len -= next;
-          offset += next;
+          s_len = s_len - next | 0;
+          offset = offset + next | 0;
         };
         return s;
       }
@@ -141,7 +142,7 @@ define(["./caml_exceptions"],
     function caml_string_of_char_array(chars) {
       var len = chars.length;
       var bytes = new Array(len);
-      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
         bytes[i] = chars[i];
       }
       return bytes_to_string(bytes);
@@ -156,18 +157,19 @@ define(["./caml_exceptions"],
         return /* false */0;
       }
     }
-    return {
-      add : add, 
-      bytes_of_string : bytes_of_string, 
-      bytes_to_string : bytes_to_string, 
-      caml_is_printable : caml_is_printable, 
-      caml_string_of_char_array : caml_string_of_char_array, 
-      caml_string_get : caml_string_get, 
-      caml_string_compare : caml_string_compare, 
-      caml_create_string : caml_create_string, 
-      caml_fill_string : caml_fill_string, 
-      caml_blit_string : caml_blit_string, 
-      caml_blit_bytes : caml_blit_bytes
-    }
+    
+    exports.add                       = add;
+    exports.bytes_of_string           = bytes_of_string;
+    exports.bytes_to_string           = bytes_to_string;
+    exports.caml_is_printable         = caml_is_printable;
+    exports.caml_string_of_char_array = caml_string_of_char_array;
+    exports.caml_string_get           = caml_string_get;
+    exports.caml_string_compare       = caml_string_compare;
+    exports.caml_create_string        = caml_create_string;
+    exports.caml_fill_string          = caml_fill_string;
+    exports.caml_blit_string          = caml_blit_string;
+    exports.caml_blit_bytes           = caml_blit_bytes;
+    exports.string_of_char            = string_of_char;
+    
   })
 /* No side effect */

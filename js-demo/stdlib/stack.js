@@ -1,47 +1,36 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_exceptions","./list"],
-  function(Caml_exceptions,List){
+define(["exports", "../runtime/caml_exceptions", "./list"],
+  function(exports, Caml_exceptions, List){
     'use strict';
-    var Empty = [
-      248,
-      "Stack.Empty",
-      ++ Caml_exceptions.caml_oo_last_id
-    ];
+    var Empty = Caml_exceptions.create("Stack.Empty");
     
     function create() {
-      return [
-              /* record */0,
-              /* [] */0
-            ];
+      return /* record */[/* [] */0];
     }
     
     function clear(s) {
-      s[1] = /* [] */0;
+      s[/* c */0] = /* [] */0;
       return /* () */0;
     }
     
     function copy(s) {
-      return [
-              /* record */0,
-              s[1]
-            ];
+      return /* record */[s[/* c */0]];
     }
     
     function push(x, s) {
-      s[1] = [
-        /* :: */0,
+      s[/* c */0] = /* :: */[
         x,
-        s[1]
+        s[/* c */0]
       ];
       return /* () */0;
     }
     
     function pop(s) {
-      var match = s[1];
+      var match = s[/* c */0];
       if (match) {
-        s[1] = match[2];
-        return match[1];
+        s[/* c */0] = match[1];
+        return match[0];
       }
       else {
         throw Empty;
@@ -49,9 +38,9 @@ define(["../runtime/caml_exceptions","./list"],
     }
     
     function top(s) {
-      var match = s[1];
+      var match = s[/* c */0];
       if (match) {
-        return match[1];
+        return match[0];
       }
       else {
         throw Empty;
@@ -59,27 +48,27 @@ define(["../runtime/caml_exceptions","./list"],
     }
     
     function is_empty(s) {
-      return +(s[1] === /* [] */0);
+      return +(s[/* c */0] === /* [] */0);
     }
     
     function length(s) {
-      return List.length(s[1]);
+      return List.length(s[/* c */0]);
     }
     
     function iter(f, s) {
-      return List.iter(f, s[1]);
+      return List.iter(f, s[/* c */0]);
     }
-    return {
-      Empty : Empty, 
-      create : create, 
-      push : push, 
-      pop : pop, 
-      top : top, 
-      clear : clear, 
-      copy : copy, 
-      is_empty : is_empty, 
-      length : length, 
-      iter : iter
-    }
+    
+    exports.Empty    = Empty;
+    exports.create   = create;
+    exports.push     = push;
+    exports.pop      = pop;
+    exports.top      = top;
+    exports.clear    = clear;
+    exports.copy     = copy;
+    exports.is_empty = is_empty;
+    exports.length   = length;
+    exports.iter     = iter;
+    
   })
 /* No side effect */

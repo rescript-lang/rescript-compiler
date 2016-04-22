@@ -1,14 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string","../runtime/caml_string"],
-  function(Bytes,Pervasives,Caml_exceptions,Sys,$$String,Caml_string){
+define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./pervasives", "./sys", "../runtime/curry", "./string", "../runtime/caml_string"],
+  function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Sys, Curry, $$String, Caml_string){
     'use strict';
     function create(n) {
       var n$1 = n < 1 ? 1 : n;
       var n$2 = n$1 > Sys.max_string_length ? Sys.max_string_length : n$1;
       var s = Caml_string.caml_create_string(n$2);
-      return [
-              /* record */0,
+      return /* record */[
               s,
               0,
               n$2,
@@ -17,147 +16,163 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
     }
     
     function contents(b) {
-      return Bytes.sub_string(b[1], 0, b[2]);
+      return Bytes.sub_string(b[/* buffer */0], 0, b[/* position */1]);
     }
     
     function to_bytes(b) {
-      return Bytes.sub(b[1], 0, b[2]);
+      return Bytes.sub(b[/* buffer */0], 0, b[/* position */1]);
     }
     
     function sub(b, ofs, len) {
-      if (ofs < 0 || len < 0 || ofs > b[2] - len) {
-        return Pervasives.invalid_arg("Buffer.sub");
+      if (ofs < 0 || len < 0 || ofs > (b[/* position */1] - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Buffer.sub"
+            ];
       }
       else {
-        return Bytes.sub_string(b[1], ofs, len);
+        return Bytes.sub_string(b[/* buffer */0], ofs, len);
       }
     }
     
     function blit(src, srcoff, dst, dstoff, len) {
-      if (len < 0 || srcoff < 0 || srcoff > src[2] - len || dstoff < 0 || dstoff > dst.length - len) {
-        return Pervasives.invalid_arg("Buffer.blit");
+      if (len < 0 || srcoff < 0 || srcoff > (src[/* position */1] - len | 0) || dstoff < 0 || dstoff > (dst.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Buffer.blit"
+            ];
       }
       else {
-        return Bytes.blit(src[1], srcoff, dst, dstoff, len);
+        return Bytes.blit(src[/* buffer */0], srcoff, dst, dstoff, len);
       }
     }
     
     function nth(b, ofs) {
-      if (ofs < 0 || ofs >= b[2]) {
-        return Pervasives.invalid_arg("Buffer.nth");
+      if (ofs < 0 || ofs >= b[/* position */1]) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Buffer.nth"
+            ];
       }
       else {
-        return b[1][ofs];
+        return b[/* buffer */0][ofs];
       }
     }
     
     function length(b) {
-      return b[2];
+      return b[/* position */1];
     }
     
     function clear(b) {
-      b[2] = 0;
+      b[/* position */1] = 0;
       return /* () */0;
     }
     
     function reset(b) {
-      b[2] = 0;
-      b[1] = b[4];
-      b[3] = b[1].length;
+      b[/* position */1] = 0;
+      b[/* buffer */0] = b[/* initial_buffer */3];
+      b[/* length */2] = b[/* buffer */0].length;
       return /* () */0;
     }
     
     function resize(b, more) {
-      var len = b[3];
+      var len = b[/* length */2];
       var new_len = len;
-      while(b[2] + more > new_len) {
-        new_len = 2 * new_len;
+      while((b[/* position */1] + more | 0) > new_len) {
+        new_len = (new_len << 1);
       };
       if (new_len > Sys.max_string_length) {
-        if (b[2] + more <= Sys.max_string_length) {
+        if ((b[/* position */1] + more | 0) <= Sys.max_string_length) {
           new_len = Sys.max_string_length;
         }
         else {
-          Pervasives.failwith("Buffer.add: cannot grow buffer");
+          throw [
+                Caml_builtin_exceptions.failure,
+                "Buffer.add: cannot grow buffer"
+              ];
         }
       }
       var new_buffer = Caml_string.caml_create_string(new_len);
-      Bytes.blit(b[1], 0, new_buffer, 0, b[2]);
-      b[1] = new_buffer;
-      b[3] = new_len;
+      Bytes.blit(b[/* buffer */0], 0, new_buffer, 0, b[/* position */1]);
+      b[/* buffer */0] = new_buffer;
+      b[/* length */2] = new_len;
       return /* () */0;
     }
     
     function add_char(b, c) {
-      var pos = b[2];
-      if (pos >= b[3]) {
+      var pos = b[/* position */1];
+      if (pos >= b[/* length */2]) {
         resize(b, 1);
       }
-      b[1][pos] = c;
-      b[2] = pos + 1;
+      b[/* buffer */0][pos] = c;
+      b[/* position */1] = pos + 1 | 0;
       return /* () */0;
     }
     
     function add_substring(b, s, offset, len) {
-      if (offset < 0 || len < 0 || offset + len > s.length) {
-        Pervasives.invalid_arg("Buffer.add_substring/add_subbytes");
+      if (offset < 0 || len < 0 || (offset + len | 0) > s.length) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Buffer.add_substring/add_subbytes"
+            ];
       }
-      var new_position = b[2] + len;
-      if (new_position > b[3]) {
+      var new_position = b[/* position */1] + len | 0;
+      if (new_position > b[/* length */2]) {
         resize(b, len);
       }
-      Bytes.blit_string(s, offset, b[1], b[2], len);
-      b[2] = new_position;
+      Bytes.blit_string(s, offset, b[/* buffer */0], b[/* position */1], len);
+      b[/* position */1] = new_position;
       return /* () */0;
     }
     
     function add_subbytes(b, s, offset, len) {
-      return add_substring(b, Bytes.unsafe_to_string(s), offset, len);
+      return add_substring(b, Caml_string.bytes_to_string(s), offset, len);
     }
     
     function add_string(b, s) {
       var len = s.length;
-      var new_position = b[2] + len;
-      if (new_position > b[3]) {
+      var new_position = b[/* position */1] + len | 0;
+      if (new_position > b[/* length */2]) {
         resize(b, len);
       }
-      Bytes.blit_string(s, 0, b[1], b[2], len);
-      b[2] = new_position;
+      Bytes.blit_string(s, 0, b[/* buffer */0], b[/* position */1], len);
+      b[/* position */1] = new_position;
       return /* () */0;
     }
     
     function add_bytes(b, s) {
-      return add_string(b, Bytes.unsafe_to_string(s));
+      return add_string(b, Caml_string.bytes_to_string(s));
     }
     
     function add_buffer(b, bs) {
-      return add_subbytes(b, bs[1], 0, bs[2]);
+      return add_subbytes(b, bs[/* buffer */0], 0, bs[/* position */1]);
     }
     
     function add_channel(b, ic, len) {
       if (len < 0 || len > Sys.max_string_length) {
-        Pervasives.invalid_arg("Buffer.add_channel");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Buffer.add_channel"
+            ];
       }
-      if (b[2] + len > b[3]) {
+      if ((b[/* position */1] + len | 0) > b[/* length */2]) {
         resize(b, len);
       }
-      Pervasives.really_input(ic, b[1], b[2], len);
-      b[2] += len;
+      Pervasives.really_input(ic, b[/* buffer */0], b[/* position */1], len);
+      b[/* position */1] = b[/* position */1] + len | 0;
       return /* () */0;
     }
     
     function output_buffer(oc, b) {
-      return Pervasives.output(oc, b[1], 0, b[2]);
+      return Pervasives.output(oc, b[/* buffer */0], 0, b[/* position */1]);
     }
     
     function closing(param) {
       if (param !== 40) {
         if (param !== 123) {
           throw [
-                0,
-                Caml_exceptions.Assert_failure,
+                Caml_builtin_exceptions.assert_failure,
                 [
-                  0,
                   "buffer.ml",
                   115,
                   9
@@ -181,23 +196,29 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
         var i = _i;
         var k$1 = _k;
         if (i >= lim) {
-          throw Caml_exceptions.Not_found;
+          throw Caml_builtin_exceptions.not_found;
         }
         else if (s.charCodeAt(i) === opening) {
-          _i = i + 1;
-          _k = k$1 + 1;
+          _i = i + 1 | 0;
+          _k = k$1 + 1 | 0;
+          continue ;
+          
         }
         else if (s.charCodeAt(i) === closing) {
           if (k$1) {
-            _i = i + 1;
-            _k = k$1 - 1;
+            _i = i + 1 | 0;
+            _k = k$1 - 1 | 0;
+            continue ;
+            
           }
           else {
             return i;
           }
         }
         else {
-          _i = i + 1;
+          _i = i + 1 | 0;
+          continue ;
+          
         }
       };
     }
@@ -244,7 +265,9 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
             return i;
           }
           if (exit === 1) {
-            _i = i + 1;
+            _i = i + 1 | 0;
+            continue ;
+            
           }
           
         }
@@ -253,17 +276,16 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
     
     function find_ident(s, start, lim) {
       if (start >= lim) {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
       else {
         var c = s.charCodeAt(start);
         var exit = 0;
         if (c !== 40) {
           if (c !== 123) {
-            var stop = advance_to_non_alpha(s, start + 1);
-            return [
-                    /* tuple */0,
-                    $$String.sub(s, start, stop - start),
+            var stop = advance_to_non_alpha(s, start + 1 | 0);
+            return /* tuple */[
+                    $$String.sub(s, start, stop - start | 0),
                     stop
                   ];
           }
@@ -275,12 +297,11 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
           exit = 1;
         }
         if (exit === 1) {
-          var new_start = start + 1;
+          var new_start = start + 1 | 0;
           var stop$1 = advance_to_closing(c, closing(c), 0, s, new_start);
-          return [
-                  /* tuple */0,
-                  $$String.sub(s, new_start, stop$1 - start - 1),
-                  stop$1 + 1
+          return /* tuple */[
+                  $$String.sub(s, new_start, (stop$1 - start | 0) - 1 | 0),
+                  stop$1 + 1 | 0
                 ];
         }
         
@@ -300,30 +321,40 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
             if (previous === /* "\\" */92) {
               add_char(b, /* "\\" */92);
               add_char(b, current);
-              _i = i + 1;
+              _i = i + 1 | 0;
               _previous = /* " " */32;
+              continue ;
+              
             }
             else if (current !== 92) {
               add_char(b, current);
-              _i = i + 1;
+              _i = i + 1 | 0;
               _previous = current;
+              continue ;
+              
             }
             else {
-              _i = i + 1;
+              _i = i + 1 | 0;
               _previous = current;
+              continue ;
+              
             }
           }
           else if (previous === /* "\\" */92) {
             add_char(b, current);
-            _i = i + 1;
+            _i = i + 1 | 0;
             _previous = /* " " */32;
+            continue ;
+            
           }
           else {
-            var j = i + 1;
+            var j = i + 1 | 0;
             var match = find_ident(s, j, lim);
-            add_string(b, f(match[1]));
-            _i = match[2];
+            add_string(b, Curry._1(f, match[0]));
+            _i = match[1];
             _previous = /* " " */32;
+            continue ;
+            
           }
         }
         else if (previous === /* "\\" */92) {
@@ -334,25 +365,25 @@ define(["./bytes","./pervasives","../runtime/caml_exceptions","./sys","./string"
         }
       };
     }
-    return {
-      create : create, 
-      contents : contents, 
-      to_bytes : to_bytes, 
-      sub : sub, 
-      blit : blit, 
-      nth : nth, 
-      length : length, 
-      clear : clear, 
-      reset : reset, 
-      add_char : add_char, 
-      add_string : add_string, 
-      add_bytes : add_bytes, 
-      add_substring : add_substring, 
-      add_subbytes : add_subbytes, 
-      add_substitute : add_substitute, 
-      add_buffer : add_buffer, 
-      add_channel : add_channel, 
-      output_buffer : output_buffer
-    }
+    
+    exports.create         = create;
+    exports.contents       = contents;
+    exports.to_bytes       = to_bytes;
+    exports.sub            = sub;
+    exports.blit           = blit;
+    exports.nth            = nth;
+    exports.length         = length;
+    exports.clear          = clear;
+    exports.reset          = reset;
+    exports.add_char       = add_char;
+    exports.add_string     = add_string;
+    exports.add_bytes      = add_bytes;
+    exports.add_substring  = add_substring;
+    exports.add_subbytes   = add_subbytes;
+    exports.add_substitute = add_substitute;
+    exports.add_buffer     = add_buffer;
+    exports.add_channel    = add_channel;
+    exports.output_buffer  = output_buffer;
+    
   })
 /* No side effect */

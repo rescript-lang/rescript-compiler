@@ -1,11 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_exceptions","../runtime/caml_primitive"],
-  function(Caml_exceptions,Caml_primitive){
+define(["exports", "../runtime/caml_exceptions"],
+  function(exports, Caml_exceptions){
     'use strict';
     var is_js = /* true */1;
     
-    var match_002 = [];
+    var match_001 = /* array */[];
     
     var big_endian = /* false */0;
     
@@ -21,38 +21,29 @@ define(["../runtime/caml_exceptions","../runtime/caml_primitive"],
     
     var max_string_length = 4294967295;
     
-    var interactive = [
-      0,
-      /* false */0
-    ];
+    var interactive = [/* false */0];
     
     function set_signal(sig_num, sig_beh) {
-      return Caml_primitive.caml_install_signal_handler(sig_num, sig_beh);
+      ;
+      return sig_beh;
     }
     
-    var sigint = -6;
-    
-    var Break = [
-      248,
-      "Sys.Break",
-      ++ Caml_exceptions.caml_oo_last_id
-    ];
+    var Break = Caml_exceptions.create("Sys.Break");
     
     function catch_break(on) {
       if (on) {
-        return Caml_primitive.caml_install_signal_handler(sigint, [
-                    /* Signal_handle */0,
-                    function () {
-                      throw Break;
-                    }
-                  ]);
+        -6;
+        return /* Signal_handle */[function () {
+                  throw Break;
+                }];
       }
       else {
-        return Caml_primitive.caml_install_signal_handler(sigint, /* Signal_default */0);
+        -6;
+        return /* Signal_default */0;
       }
     }
     
-    var argv = match_002;
+    var argv = match_001;
     
     var executable_name = "cmd";
     
@@ -67,6 +58,8 @@ define(["../runtime/caml_exceptions","../runtime/caml_primitive"],
     var sighup = -4;
     
     var sigill = -5;
+    
+    var sigint = -6;
     
     var sigkill = -7;
     
@@ -99,44 +92,44 @@ define(["../runtime/caml_exceptions","../runtime/caml_primitive"],
     var sigprof = -21;
     
     var ocaml_version = "4.02.3+dev1-2015-07-10";
-    return {
-      argv : argv, 
-      executable_name : executable_name, 
-      interactive : interactive, 
-      os_type : os_type, 
-      unix : unix, 
-      win32 : win32, 
-      cygwin : cygwin, 
-      word_size : word_size, 
-      big_endian : big_endian, 
-      is_js : is_js, 
-      max_string_length : max_string_length, 
-      max_array_length : max_array_length, 
-      set_signal : set_signal, 
-      sigabrt : sigabrt, 
-      sigalrm : sigalrm, 
-      sigfpe : sigfpe, 
-      sighup : sighup, 
-      sigill : sigill, 
-      sigint : sigint, 
-      sigkill : sigkill, 
-      sigpipe : sigpipe, 
-      sigquit : sigquit, 
-      sigsegv : sigsegv, 
-      sigterm : sigterm, 
-      sigusr1 : sigusr1, 
-      sigusr2 : sigusr2, 
-      sigchld : sigchld, 
-      sigcont : sigcont, 
-      sigstop : sigstop, 
-      sigtstp : sigtstp, 
-      sigttin : sigttin, 
-      sigttou : sigttou, 
-      sigvtalrm : sigvtalrm, 
-      sigprof : sigprof, 
-      Break : Break, 
-      catch_break : catch_break, 
-      ocaml_version : ocaml_version
-    }
+    
+    exports.argv              = argv;
+    exports.executable_name   = executable_name;
+    exports.interactive       = interactive;
+    exports.os_type           = os_type;
+    exports.unix              = unix;
+    exports.win32             = win32;
+    exports.cygwin            = cygwin;
+    exports.word_size         = word_size;
+    exports.big_endian        = big_endian;
+    exports.is_js             = is_js;
+    exports.max_string_length = max_string_length;
+    exports.max_array_length  = max_array_length;
+    exports.set_signal        = set_signal;
+    exports.sigabrt           = sigabrt;
+    exports.sigalrm           = sigalrm;
+    exports.sigfpe            = sigfpe;
+    exports.sighup            = sighup;
+    exports.sigill            = sigill;
+    exports.sigint            = sigint;
+    exports.sigkill           = sigkill;
+    exports.sigpipe           = sigpipe;
+    exports.sigquit           = sigquit;
+    exports.sigsegv           = sigsegv;
+    exports.sigterm           = sigterm;
+    exports.sigusr1           = sigusr1;
+    exports.sigusr2           = sigusr2;
+    exports.sigchld           = sigchld;
+    exports.sigcont           = sigcont;
+    exports.sigstop           = sigstop;
+    exports.sigtstp           = sigtstp;
+    exports.sigttin           = sigttin;
+    exports.sigttou           = sigttou;
+    exports.sigvtalrm         = sigvtalrm;
+    exports.sigprof           = sigprof;
+    exports.Break             = Break;
+    exports.catch_break       = catch_break;
+    exports.ocaml_version     = ocaml_version;
+    
   })
 /* No side effect */

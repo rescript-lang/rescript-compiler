@@ -1,58 +1,83 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_primitive"],
-  function(Caml_primitive){
+define(["exports", "../runtime/caml_int64", "../runtime/caml_format"],
+  function(exports, Caml_int64, Caml_format){
     'use strict';
     function succ(n) {
-      return n + 1;
+      return Caml_int64.add(n, /* int64 */[
+                  0,
+                  1
+                ]);
     }
     
     function pred(n) {
-      return n - 1;
+      return Caml_int64.sub(n, /* int64 */[
+                  0,
+                  1
+                ]);
     }
     
     function abs(n) {
-      if (n >= 0) {
+      if (Caml_int64.ge(n, /* int64 */[
+              0,
+              0
+            ])) {
         return n;
       }
       else {
-        return -n;
+        return Caml_int64.neg(n);
       }
     }
     
     function lognot(n) {
-      return n ^ -1;
+      return /* int64 */[
+              n[0] ^ -1,
+              ((n[1] ^ 4294967295) >>> 0)
+            ];
     }
     
     function to_string(n) {
-      return Caml_primitive.caml_int64_format("%d", n);
+      return Caml_format.caml_int64_format("%d", n);
     }
     
-    function compare(x, y) {
-      return Caml_primitive.caml_int64_compare(x, y);
-    }
+    var compare = Caml_int64.compare
     
-    var zero = 0;
+    var zero = /* int64 */[
+      0,
+      0
+    ];
     
-    var one = 1;
+    var one = /* int64 */[
+      0,
+      1
+    ];
     
-    var minus_one = -1;
+    var minus_one = /* int64 */[
+      -1,
+      4294967295
+    ];
     
-    var max_int = 9223372036854775807;
+    var max_int = /* int64 */[
+      2147483647,
+      4294967295
+    ];
     
-    var min_int = -9223372036854775808;
-    return {
-      zero : zero, 
-      one : one, 
-      minus_one : minus_one, 
-      succ : succ, 
-      pred : pred, 
-      abs : abs, 
-      max_int : max_int, 
-      min_int : min_int, 
-      lognot : lognot, 
-      to_string : to_string, 
-      compare : compare
-    }
+    var min_int = /* int64 */[
+      -2147483648,
+      0
+    ];
+    
+    exports.zero      = zero;
+    exports.one       = one;
+    exports.minus_one = minus_one;
+    exports.succ      = succ;
+    exports.pred      = pred;
+    exports.abs       = abs;
+    exports.max_int   = max_int;
+    exports.min_int   = min_int;
+    exports.lognot    = lognot;
+    exports.to_string = to_string;
+    exports.compare   = compare;
+    
   })
 /* No side effect */

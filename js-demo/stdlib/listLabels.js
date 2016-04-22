@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./list"],
-  function(List){
+define(["exports", "./list"],
+  function(exports, List){
     'use strict';
     var length = List.length;
     
@@ -88,50 +88,50 @@ define(["./list"],
     var fast_sort = List.fast_sort;
     
     var merge = List.merge;
-    return {
-      length : length, 
-      hd : hd, 
-      tl : tl, 
-      nth : nth, 
-      rev : rev, 
-      append : append, 
-      rev_append : rev_append, 
-      concat : concat, 
-      flatten : flatten, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi, 
-      rev_map : rev_map, 
-      fold_left : fold_left, 
-      fold_right : fold_right, 
-      iter2 : iter2, 
-      map2 : map2, 
-      rev_map2 : rev_map2, 
-      fold_left2 : fold_left2, 
-      fold_right2 : fold_right2, 
-      for_all : for_all, 
-      exists : exists, 
-      for_all2 : for_all2, 
-      exists2 : exists2, 
-      mem : mem, 
-      memq : memq, 
-      find : find, 
-      filter : filter, 
-      find_all : find_all, 
-      partition : partition, 
-      assoc : assoc, 
-      assq : assq, 
-      mem_assoc : mem_assoc, 
-      mem_assq : mem_assq, 
-      remove_assoc : remove_assoc, 
-      remove_assq : remove_assq, 
-      split : split, 
-      combine : combine, 
-      sort : sort, 
-      stable_sort : stable_sort, 
-      fast_sort : fast_sort, 
-      merge : merge
-    }
+    
+    exports.length       = length;
+    exports.hd           = hd;
+    exports.tl           = tl;
+    exports.nth          = nth;
+    exports.rev          = rev;
+    exports.append       = append;
+    exports.rev_append   = rev_append;
+    exports.concat       = concat;
+    exports.flatten      = flatten;
+    exports.iter         = iter;
+    exports.iteri        = iteri;
+    exports.map          = map;
+    exports.mapi         = mapi;
+    exports.rev_map      = rev_map;
+    exports.fold_left    = fold_left;
+    exports.fold_right   = fold_right;
+    exports.iter2        = iter2;
+    exports.map2         = map2;
+    exports.rev_map2     = rev_map2;
+    exports.fold_left2   = fold_left2;
+    exports.fold_right2  = fold_right2;
+    exports.for_all      = for_all;
+    exports.exists       = exists;
+    exports.for_all2     = for_all2;
+    exports.exists2      = exists2;
+    exports.mem          = mem;
+    exports.memq         = memq;
+    exports.find         = find;
+    exports.filter       = filter;
+    exports.find_all     = find_all;
+    exports.partition    = partition;
+    exports.assoc        = assoc;
+    exports.assq         = assq;
+    exports.mem_assoc    = mem_assoc;
+    exports.mem_assq     = mem_assq;
+    exports.remove_assoc = remove_assoc;
+    exports.remove_assq  = remove_assq;
+    exports.split        = split;
+    exports.combine      = combine;
+    exports.sort         = sort;
+    exports.stable_sort  = stable_sort;
+    exports.fast_sort    = fast_sort;
+    exports.merge        = merge;
+    
   })
 /* No side effect */

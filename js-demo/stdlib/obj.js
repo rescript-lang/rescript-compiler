@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives","./marshal","../runtime/caml_primitive"],
-  function(Caml_obj_runtime,Caml_exceptions,Pervasives,Marshal,Caml_primitive){
+define(["exports", "../runtime/caml_builtin_exceptions", "./marshal", "../runtime/caml_primitive"],
+  function(exports, Caml_builtin_exceptions, Marshal, Caml_primitive){
     'use strict';
     function double_field(x, i) {
       return x[i];
@@ -17,33 +17,26 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
     }
     
     function unmarshal(str, pos) {
-      return [
-              /* tuple */0,
+      return /* tuple */[
               Marshal.from_bytes(str, pos),
-              pos + Marshal.total_size(str, pos)
+              pos + Marshal.total_size(str, pos) | 0
             ];
     }
     
-    var object_tag = 248;
-    
-    var string_tag = 252;
-    
-    var custom_tag = 255;
-    
     function extension_slot(x) {
-      var slot = Caml_obj_runtime.caml_obj_is_block(x) && Caml_obj_runtime.caml_obj_tag(x) !== object_tag && x.length >= 1 ? x[0] : x;
+      var slot = x.length && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
       var name;
-      if (Caml_obj_runtime.caml_obj_is_block(slot) && Caml_obj_runtime.caml_obj_tag(slot) === object_tag) {
+      if (slot.length && slot.tag === 248) {
         name = slot[0];
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
-      if (Caml_obj_runtime.caml_obj_tag(name) === string_tag) {
+      if (name.tag === 252) {
         return slot;
       }
       else {
-        throw Caml_exceptions.Not_found;
+        throw Caml_builtin_exceptions.not_found;
       }
     }
     
@@ -53,8 +46,11 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
         return slot[0];
       }
       catch (exn){
-        if (exn === Caml_exceptions.Not_found) {
-          return Pervasives.invalid_arg("Obj.extension_name");
+        if (exn === Caml_builtin_exceptions.not_found) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Obj.extension_name"
+              ];
         }
         else {
           throw exn;
@@ -68,8 +64,11 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
         return slot[1];
       }
       catch (exn){
-        if (exn === Caml_exceptions.Not_found) {
-          return Pervasives.invalid_arg("Obj.extension_id");
+        if (exn === Caml_builtin_exceptions.not_found) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Obj.extension_id"
+              ];
         }
         else {
           throw exn;
@@ -82,8 +81,11 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
         return extension_slot(x);
       }
       catch (exn){
-        if (exn === Caml_exceptions.Not_found) {
-          return Pervasives.invalid_arg("Obj.extension_slot");
+        if (exn === Caml_builtin_exceptions.not_found) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Obj.extension_slot"
+              ];
         }
         else {
           throw exn;
@@ -99,6 +101,8 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
     
     var closure_tag = 247;
     
+    var object_tag = 248;
+    
     var infix_tag = 249;
     
     var forward_tag = 250;
@@ -107,42 +111,46 @@ define(["../runtime/caml_obj_runtime","../runtime/caml_exceptions","./pervasives
     
     var abstract_tag = 251;
     
+    var string_tag = 252;
+    
     var double_tag = 253;
     
     var double_array_tag = 254;
     
-    var final_tag = custom_tag;
+    var custom_tag = 255;
+    
+    var final_tag = 255;
     
     var int_tag = 1000;
     
     var out_of_heap_tag = 1001;
     
     var unaligned_tag = 1002;
-    return {
-      double_field : double_field, 
-      set_double_field : set_double_field, 
-      first_non_constant_constructor_tag : first_non_constant_constructor_tag, 
-      last_non_constant_constructor_tag : last_non_constant_constructor_tag, 
-      lazy_tag : lazy_tag, 
-      closure_tag : closure_tag, 
-      object_tag : object_tag, 
-      infix_tag : infix_tag, 
-      forward_tag : forward_tag, 
-      no_scan_tag : no_scan_tag, 
-      abstract_tag : abstract_tag, 
-      string_tag : string_tag, 
-      double_tag : double_tag, 
-      double_array_tag : double_array_tag, 
-      custom_tag : custom_tag, 
-      final_tag : final_tag, 
-      int_tag : int_tag, 
-      out_of_heap_tag : out_of_heap_tag, 
-      unaligned_tag : unaligned_tag, 
-      extension_name : extension_name, 
-      extension_id : extension_id, 
-      extension_slot : extension_slot$1, 
-      marshal : marshal, 
-      unmarshal : unmarshal
-    }
+    
+    exports.double_field                       = double_field;
+    exports.set_double_field                   = set_double_field;
+    exports.first_non_constant_constructor_tag = first_non_constant_constructor_tag;
+    exports.last_non_constant_constructor_tag  = last_non_constant_constructor_tag;
+    exports.lazy_tag                           = lazy_tag;
+    exports.closure_tag                        = closure_tag;
+    exports.object_tag                         = object_tag;
+    exports.infix_tag                          = infix_tag;
+    exports.forward_tag                        = forward_tag;
+    exports.no_scan_tag                        = no_scan_tag;
+    exports.abstract_tag                       = abstract_tag;
+    exports.string_tag                         = string_tag;
+    exports.double_tag                         = double_tag;
+    exports.double_array_tag                   = double_array_tag;
+    exports.custom_tag                         = custom_tag;
+    exports.final_tag                          = final_tag;
+    exports.int_tag                            = int_tag;
+    exports.out_of_heap_tag                    = out_of_heap_tag;
+    exports.unaligned_tag                      = unaligned_tag;
+    exports.extension_name                     = extension_name;
+    exports.extension_id                       = extension_id;
+    exports.extension_slot                     = extension_slot$1;
+    exports.marshal                            = marshal;
+    exports.unmarshal                          = unmarshal;
+    
   })
 /* No side effect */

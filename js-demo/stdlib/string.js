@@ -1,58 +1,45 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./bytes","./list","../runtime/caml_string"],
-  function(Bytes,List,Caml_string){
+define(["exports", "./bytes", "../runtime/caml_primitive", "../runtime/caml_string", "./list"],
+  function(exports, Bytes, Caml_primitive, Caml_string, List){
     'use strict';
-    var bts = Bytes.unsafe_to_string;
-    
-    var bos = Bytes.unsafe_of_string;
-    
     function make(n, c) {
-      return bts(Bytes.make(n, c));
+      return Caml_string.bytes_to_string(Bytes.make(n, c));
     }
     
     function init(n, f) {
-      return bts(Bytes.init(n, f));
+      return Caml_string.bytes_to_string(Bytes.init(n, f));
     }
     
     function copy(s) {
-      return bts(Bytes.copy(bos(s)));
+      return Caml_string.bytes_to_string(Bytes.copy(Caml_string.bytes_of_string(s)));
     }
     
     function sub(s, ofs, len) {
-      return bts(Bytes.sub(bos(s), ofs, len));
+      return Caml_string.bytes_to_string(Bytes.sub(Caml_string.bytes_of_string(s), ofs, len));
     }
     
     function concat(sep, l) {
       if (l) {
-        var hd = l[1];
-        var num = [
-          0,
-          0
-        ];
-        var len = [
-          0,
-          0
-        ];
+        var hd = l[0];
+        var num = [0];
+        var len = [0];
         List.iter(function (s) {
-              ++ num[1];
-              len[1] += s.length;
+              num[0] = num[0] + 1 | 0;
+              len[0] = len[0] + s.length | 0;
               return /* () */0;
             }, l);
-        var r = Caml_string.caml_create_string(len[1] + sep.length * (num[1] - 1));
+        var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
-        var pos = [
-          0,
-          hd.length
-        ];
+        var pos = [hd.length];
         List.iter(function (s) {
-              Caml_string.caml_blit_string(sep, 0, r, pos[1], sep.length);
-              pos[1] += sep.length;
-              Caml_string.caml_blit_string(s, 0, r, pos[1], s.length);
-              pos[1] += s.length;
+              Caml_string.caml_blit_string(sep, 0, r, pos[0], sep.length);
+              pos[0] = pos[0] + sep.length | 0;
+              Caml_string.caml_blit_string(s, 0, r, pos[0], s.length);
+              pos[0] = pos[0] + s.length | 0;
               return /* () */0;
-            }, l[2]);
-        return Bytes.unsafe_to_string(r);
+            }, l[1]);
+        return Caml_string.bytes_to_string(r);
       }
       else {
         return "";
@@ -60,23 +47,23 @@ define(["./bytes","./list","../runtime/caml_string"],
     }
     
     function iter(f, s) {
-      return Bytes.iter(f, bos(s));
+      return Bytes.iter(f, Caml_string.bytes_of_string(s));
     }
     
     function iteri(f, s) {
-      return Bytes.iteri(f, bos(s));
+      return Bytes.iteri(f, Caml_string.bytes_of_string(s));
     }
     
     function map(f, s) {
-      return bts(Bytes.map(f, bos(s)));
+      return Caml_string.bytes_to_string(Bytes.map(f, Caml_string.bytes_of_string(s)));
     }
     
     function mapi(f, s) {
-      return bts(Bytes.mapi(f, bos(s)));
+      return Caml_string.bytes_to_string(Bytes.mapi(f, Caml_string.bytes_of_string(s)));
     }
     
     function is_space(param) {
-      var switcher = param - 9;
+      var switcher = param - 9 | 0;
       if (switcher > 4 || switcher < 0) {
         if (switcher !== 23) {
           return /* false */0;
@@ -94,11 +81,11 @@ define(["./bytes","./list","../runtime/caml_string"],
     }
     
     function trim(s) {
-      if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1)))) {
+      if (s === "" || !(is_space(s.charCodeAt(0)) || is_space(s.charCodeAt(s.length - 1 | 0)))) {
         return s;
       }
       else {
-        return bts(Bytes.trim(bos(s)));
+        return Caml_string.bytes_to_string(Bytes.trim(Caml_string.bytes_of_string(s)));
       }
     }
     
@@ -141,7 +128,9 @@ define(["./bytes","./list","../runtime/caml_string"],
             }
             if (exit === 1) {
               if (Caml_string.caml_is_printable(c)) {
-                _i = i + 1;
+                _i = i + 1 | 0;
+                continue ;
+                
               }
               else {
                 return /* true */1;
@@ -152,7 +141,7 @@ define(["./bytes","./list","../runtime/caml_string"],
         };
       };
       if (needs_escape(0)) {
-        return bts(Bytes.escaped(bos(s)));
+        return Caml_string.bytes_to_string(Bytes.escaped(Caml_string.bytes_of_string(s)));
       }
       else {
         return s;
@@ -160,82 +149,80 @@ define(["./bytes","./list","../runtime/caml_string"],
     }
     
     function index(s, c) {
-      return Bytes.index(bos(s), c);
+      return Bytes.index(Caml_string.bytes_of_string(s), c);
     }
     
     function rindex(s, c) {
-      return Bytes.rindex(bos(s), c);
+      return Bytes.rindex(Caml_string.bytes_of_string(s), c);
     }
     
     function index_from(s, i, c) {
-      return Bytes.index_from(bos(s), i, c);
+      return Bytes.index_from(Caml_string.bytes_of_string(s), i, c);
     }
     
     function rindex_from(s, i, c) {
-      return Bytes.rindex_from(bos(s), i, c);
+      return Bytes.rindex_from(Caml_string.bytes_of_string(s), i, c);
     }
     
     function contains(s, c) {
-      return Bytes.contains(bos(s), c);
+      return Bytes.contains(Caml_string.bytes_of_string(s), c);
     }
     
     function contains_from(s, i, c) {
-      return Bytes.contains_from(bos(s), i, c);
+      return Bytes.contains_from(Caml_string.bytes_of_string(s), i, c);
     }
     
     function rcontains_from(s, i, c) {
-      return Bytes.rcontains_from(bos(s), i, c);
+      return Bytes.rcontains_from(Caml_string.bytes_of_string(s), i, c);
     }
     
     function uppercase(s) {
-      return bts(Bytes.uppercase(bos(s)));
+      return Caml_string.bytes_to_string(Bytes.uppercase(Caml_string.bytes_of_string(s)));
     }
     
     function lowercase(s) {
-      return bts(Bytes.lowercase(bos(s)));
+      return Caml_string.bytes_to_string(Bytes.lowercase(Caml_string.bytes_of_string(s)));
     }
     
     function capitalize(s) {
-      return bts(Bytes.capitalize(bos(s)));
+      return Caml_string.bytes_to_string(Bytes.capitalize(Caml_string.bytes_of_string(s)));
     }
     
     function uncapitalize(s) {
-      return bts(Bytes.uncapitalize(bos(s)));
+      return Caml_string.bytes_to_string(Bytes.uncapitalize(Caml_string.bytes_of_string(s)));
     }
     
-    function compare(x, y) {
-      return Caml_string.caml_string_compare(x, y);
-    }
+    var compare = Caml_string.caml_string_compare
     
     var fill = Bytes.fill;
     
     var blit = Bytes.blit_string;
-    return {
-      make : make, 
-      init : init, 
-      copy : copy, 
-      sub : sub, 
-      fill : fill, 
-      blit : blit, 
-      concat : concat, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi, 
-      trim : trim, 
-      escaped : escaped, 
-      index : index, 
-      rindex : rindex, 
-      index_from : index_from, 
-      rindex_from : rindex_from, 
-      contains : contains, 
-      contains_from : contains_from, 
-      rcontains_from : rcontains_from, 
-      uppercase : uppercase, 
-      lowercase : lowercase, 
-      capitalize : capitalize, 
-      uncapitalize : uncapitalize, 
-      compare : compare
-    }
+    
+    exports.make           = make;
+    exports.init           = init;
+    exports.copy           = copy;
+    exports.sub            = sub;
+    exports.fill           = fill;
+    exports.blit           = blit;
+    exports.concat         = concat;
+    exports.iter           = iter;
+    exports.iteri          = iteri;
+    exports.map            = map;
+    exports.mapi           = mapi;
+    exports.trim           = trim;
+    exports.escaped        = escaped;
+    exports.index          = index;
+    exports.rindex         = rindex;
+    exports.index_from     = index_from;
+    exports.rindex_from    = rindex_from;
+    exports.contains       = contains;
+    exports.contains_from  = contains_from;
+    exports.rcontains_from = rcontains_from;
+    exports.uppercase      = uppercase;
+    exports.lowercase      = lowercase;
+    exports.capitalize     = capitalize;
+    exports.uncapitalize   = uncapitalize;
+    exports.compare        = compare;
+    
   })
 /* No side effect */

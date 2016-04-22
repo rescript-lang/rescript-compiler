@@ -1,35 +1,39 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys","../runtime/caml_exceptions","./pervasives","./printf","../runtime/caml_primitive","./buffer","./string","./random"],
-  function(Caml_obj_runtime,CamlinternalLazy,Caml_sys,Caml_exceptions,Pervasives,Printf,Caml_primitive,Buffer,$$String,Random){
+define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/curry", "./printf", "../runtime/caml_primitive", "./buffer", "./string", "./random"],
+  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Curry, Printf, Caml_primitive, Buffer, $$String, Random){
     'use strict';
     function generic_basename(is_dir_sep, current_dir_name, name) {
       if (name === "") {
         return current_dir_name;
       }
       else {
-        var _n = name.length - 1;
+        var _n = name.length - 1 | 0;
         while(true) {
           var n = _n;
           if (n < 0) {
             return $$String.sub(name, 0, 1);
           }
-          else if (is_dir_sep(name, n)) {
-            _n = n - 1;
+          else if (Curry._2(is_dir_sep, name, n)) {
+            _n = n - 1 | 0;
+            continue ;
+            
           }
           else {
             var _n$1 = n;
-            var p = n + 1;
+            var p = n + 1 | 0;
             while(true) {
               var n$1 = _n$1;
               if (n$1 < 0) {
                 return $$String.sub(name, 0, p);
               }
-              else if (is_dir_sep(name, n$1)) {
-                return $$String.sub(name, n$1 + 1, p - n$1 - 1);
+              else if (Curry._2(is_dir_sep, name, n$1)) {
+                return $$String.sub(name, n$1 + 1 | 0, (p - n$1 | 0) - 1 | 0);
               }
               else {
-                _n$1 = n$1 - 1;
+                _n$1 = n$1 - 1 | 0;
+                continue ;
+                
               }
             };
           }
@@ -42,14 +46,16 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
         return current_dir_name;
       }
       else {
-        var _n = name.length - 1;
+        var _n = name.length - 1 | 0;
         while(true) {
           var n = _n;
           if (n < 0) {
             return $$String.sub(name, 0, 1);
           }
-          else if (is_dir_sep(name, n)) {
-            _n = n - 1;
+          else if (Curry._2(is_dir_sep, name, n)) {
+            _n = n - 1 | 0;
+            continue ;
+            
           }
           else {
             var _n$1 = n;
@@ -58,23 +64,27 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
               if (n$1 < 0) {
                 return current_dir_name;
               }
-              else if (is_dir_sep(name, n$1)) {
+              else if (Curry._2(is_dir_sep, name, n$1)) {
                 var _n$2 = n$1;
                 while(true) {
                   var n$2 = _n$2;
                   if (n$2 < 0) {
                     return $$String.sub(name, 0, 1);
                   }
-                  else if (is_dir_sep(name, n$2)) {
-                    _n$2 = n$2 - 1;
+                  else if (Curry._2(is_dir_sep, name, n$2)) {
+                    _n$2 = n$2 - 1 | 0;
+                    continue ;
+                    
                   }
                   else {
-                    return $$String.sub(name, 0, n$2 + 1);
+                    return $$String.sub(name, 0, n$2 + 1 | 0);
                   }
                 };
               }
               else {
-                _n$1 = n$1 - 1;
+                _n$1 = n$1 - 1 | 0;
+                continue ;
+                
               }
             };
           }
@@ -113,7 +123,7 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     
     function check_suffix(name, suff) {
       if (name.length >= suff.length) {
-        return +($$String.sub(name, name.length - suff.length, suff.length) === suff);
+        return +($$String.sub(name, name.length - suff.length | 0, suff.length) === suff);
       }
       else {
         return /* false */0;
@@ -126,21 +136,16 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
       temp_dir_name = Caml_sys.caml_sys_getenv("TMPDIR");
     }
     catch (exn){
-      if (exn === Caml_exceptions.Not_found) {
-        temp_dir_name = "/tmp";
-      }
-      else {
-        throw exn;
-      }
+      temp_dir_name = "/tmp";
     }
     
     function quote(param) {
       var quotequote = "'\\''";
       var s = param;
       var l = s.length;
-      var b = Buffer.create(l + 20);
+      var b = Buffer.create(l + 20 | 0);
       Buffer.add_char(b, /* "'" */39);
-      for(var i = 0 ,i_finish = l - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
         if (s[i] === "'") {
           Buffer.add_string(b, quotequote);
         }
@@ -166,12 +171,7 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
       temp_dir_name$1 = Caml_sys.caml_sys_getenv("TEMP");
     }
     catch (exn$1){
-      if (exn$1 === Caml_exceptions.Not_found) {
-        temp_dir_name$1 = ".";
-      }
-      else {
-        throw exn$1;
-      }
+      temp_dir_name$1 = ".";
     }
     
     var temp_dir_name$2 = temp_dir_name;
@@ -182,7 +182,7 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     
     function concat(dirname, filename) {
       var l = dirname.length;
-      if (l === 0 || is_dir_sep$1(dirname, l - 1)) {
+      if (l === 0 || Curry._2(is_dir_sep$1, dirname, l - 1 | 0)) {
         return dirname + filename;
       }
       else {
@@ -191,9 +191,12 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     }
     
     function chop_suffix(name, suff) {
-      var n = name.length - suff.length;
+      var n = name.length - suff.length | 0;
       if (n < 0) {
-        return Pervasives.invalid_arg("Filename.chop_suffix");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Filename.chop_suffix"
+            ];
       }
       else {
         return $$String.sub(name, 0, n);
@@ -201,87 +204,90 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     }
     
     function chop_extension(name) {
-      var _i = name.length - 1;
+      var _i = name.length - 1 | 0;
       while(true) {
         var i = _i;
-        if (i < 0 || is_dir_sep$1(name, i)) {
-          return Pervasives.invalid_arg("Filename.chop_extension");
+        if (i < 0 || Curry._2(is_dir_sep$1, name, i)) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Filename.chop_extension"
+              ];
         }
         else if (name[i] === ".") {
           return $$String.sub(name, 0, i);
         }
         else {
-          _i = i - 1;
+          _i = i - 1 | 0;
+          continue ;
+          
         }
       };
     }
     
-    var prng = [
-      246,
-      function () {
-        return Random.State[2](/* () */0);
-      }
-    ];
+    var prng = {
+      0: function () {
+        return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+      },
+      length: 1,
+      tag: 246
+    };
     
     function temp_file_name(temp_dir, prefix, suffix) {
-      var tag = Caml_obj_runtime.caml_obj_tag(prng);
-      var rnd = Random.State[4](tag === 250 ? prng[1] : (
+      var tag = prng.tag | 0;
+      var rnd = Curry._1(Random.State[/* bits */3], tag === 250 ? prng[0] : (
               tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
             )) & 16777215;
-      return concat(temp_dir, Printf.sprintf([
-                        /* Format */0,
-                        [
-                          /* String */2,
-                          /* No_padding */0,
-                          [
-                            /* Int */4,
-                            /* Int_x */6,
-                            [
-                              /* Lit_padding */0,
-                              /* Zeros */2,
-                              6
-                            ],
-                            /* No_precision */0,
-                            [
-                              /* String */2,
-                              /* No_padding */0,
-                              /* End_of_format */0
-                            ]
-                          ]
-                        ],
-                        "%s%06x%s"
-                      ])(prefix, rnd, suffix));
+      return concat(temp_dir, Curry._3(Printf.sprintf(/* Format */[
+                          /* String */{
+                            0: /* No_padding */0,
+                            1: /* Int */{
+                              0: /* Int_x */6,
+                              1: /* Lit_padding */{
+                                0: /* Zeros */2,
+                                1: 6,
+                                length: 2,
+                                tag: 0
+                              },
+                              2: /* No_precision */0,
+                              3: /* String */{
+                                0: /* No_padding */0,
+                                1: /* End_of_format */0,
+                                length: 2,
+                                tag: 2
+                              },
+                              length: 4,
+                              tag: 4
+                            },
+                            length: 2,
+                            tag: 2
+                          },
+                          "%s%06x%s"
+                        ]), prefix, rnd, suffix));
     }
     
-    var current_temp_dir_name = [
-      0,
-      temp_dir_name$2
-    ];
+    var current_temp_dir_name = [temp_dir_name$2];
     
     function set_temp_dir_name(s) {
-      current_temp_dir_name[1] = s;
+      current_temp_dir_name[0] = s;
       return /* () */0;
     }
     
     function get_temp_dir_name() {
-      return current_temp_dir_name[1];
+      return current_temp_dir_name[0];
     }
     
     function temp_file($staropt$star, prefix, suffix) {
-      var temp_dir = $staropt$star ? $staropt$star[1] : current_temp_dir_name[1];
+      var temp_dir = $staropt$star ? $staropt$star[0] : current_temp_dir_name[0];
       var _counter = 0;
       while(true) {
         var counter = _counter;
         var name = temp_file_name(temp_dir, prefix, suffix);
         try {
-          Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, [
-                    /* :: */0,
+          Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, /* :: */[
                     /* Open_wronly */1,
-                    [
-                      /* :: */0,
+                    /* :: */[
                       /* Open_creat */3,
-                      [
-                        /* :: */0,
+                      /* :: */[
                         /* Open_excl */5,
                         /* [] */0
                       ]
@@ -290,12 +296,14 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
           return name;
         }
         catch (e){
-          if (e[1] === Caml_exceptions.Sys_error) {
+          if (e[0] === Caml_builtin_exceptions.sys_error) {
             if (counter >= 1000) {
               throw e;
             }
             else {
-              _counter = counter + 1;
+              _counter = counter + 1 | 0;
+              continue ;
+              
             }
           }
           else {
@@ -306,28 +314,23 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     }
     
     function open_temp_file($staropt$star, $staropt$star$1, prefix, suffix) {
-      var mode = $staropt$star ? $staropt$star[1] : [
-          /* :: */0,
+      var mode = $staropt$star ? $staropt$star[0] : /* :: */[
           /* Open_text */7,
           /* [] */0
         ];
-      var temp_dir = $staropt$star$1 ? $staropt$star$1[1] : current_temp_dir_name[1];
+      var temp_dir = $staropt$star$1 ? $staropt$star$1[0] : current_temp_dir_name[0];
       var _counter = 0;
       while(true) {
         var counter = _counter;
         var name = temp_file_name(temp_dir, prefix, suffix);
         try {
-          return [
-                  /* tuple */0,
+          return /* tuple */[
                   name,
-                  Pervasives.open_out_gen([
-                        /* :: */0,
+                  Pervasives.open_out_gen(/* :: */[
                         /* Open_wronly */1,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           /* Open_creat */3,
-                          [
-                            /* :: */0,
+                          /* :: */[
                             /* Open_excl */5,
                             mode
                           ]
@@ -336,12 +339,14 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
                 ];
         }
         catch (e){
-          if (e[1] === Caml_exceptions.Sys_error) {
+          if (e[0] === Caml_builtin_exceptions.sys_error) {
             if (counter >= 1000) {
               throw e;
             }
             else {
-              _counter = counter + 1;
+              _counter = counter + 1 | 0;
+              continue ;
+              
             }
           }
           else {
@@ -366,24 +371,24 @@ define(["../runtime/caml_obj_runtime","./camlinternalLazy","../runtime/caml_sys"
     var dirname$1 = dirname;
     
     var quote$1 = quote;
-    return {
-      current_dir_name : current_dir_name$1, 
-      parent_dir_name : parent_dir_name, 
-      dir_sep : dir_sep, 
-      concat : concat, 
-      is_relative : is_relative$1, 
-      is_implicit : is_implicit$1, 
-      check_suffix : check_suffix$1, 
-      chop_suffix : chop_suffix, 
-      chop_extension : chop_extension, 
-      basename : basename$1, 
-      dirname : dirname$1, 
-      temp_file : temp_file, 
-      open_temp_file : open_temp_file, 
-      get_temp_dir_name : get_temp_dir_name, 
-      set_temp_dir_name : set_temp_dir_name, 
-      temp_dir_name : temp_dir_name$2, 
-      quote : quote$1
-    }
+    
+    exports.current_dir_name  = current_dir_name$1;
+    exports.parent_dir_name   = parent_dir_name;
+    exports.dir_sep           = dir_sep;
+    exports.concat            = concat;
+    exports.is_relative       = is_relative$1;
+    exports.is_implicit       = is_implicit$1;
+    exports.check_suffix      = check_suffix$1;
+    exports.chop_suffix       = chop_suffix;
+    exports.chop_extension    = chop_extension;
+    exports.basename          = basename$1;
+    exports.dirname           = dirname$1;
+    exports.temp_file         = temp_file;
+    exports.open_temp_file    = open_temp_file;
+    exports.get_temp_dir_name = get_temp_dir_name;
+    exports.set_temp_dir_name = set_temp_dir_name;
+    exports.temp_dir_name     = temp_dir_name$2;
+    exports.quote             = quote$1;
+    
   })
 /* match Not a pure module */

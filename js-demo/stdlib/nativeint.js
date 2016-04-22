@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_format","./sys","../runtime/caml_primitive"],
-  function(Caml_format,Sys,Caml_primitive){
+define(["exports", "../runtime/caml_obj", "../runtime/caml_format", "./sys"],
+  function(exports, Caml_obj, Caml_format, Sys){
     'use strict';
     function succ(n) {
       return n + 1;
@@ -20,8 +20,6 @@ define(["../runtime/caml_format","./sys","../runtime/caml_primitive"],
       }
     }
     
-    var size = Sys.word_size;
-    
     var min_int = -9007199254740991;
     
     var max_int = 9007199254740991;
@@ -34,28 +32,28 @@ define(["../runtime/caml_format","./sys","../runtime/caml_primitive"],
       return Caml_format.caml_nativeint_format("%d", n);
     }
     
-    function compare(x, y) {
-      return Caml_primitive.caml_nativeint_compare(x, y);
-    }
+    var compare = Caml_obj.caml_nativeint_compare
     
     var zero = 0;
     
     var one = 1;
     
     var minus_one = -1;
-    return {
-      zero : zero, 
-      one : one, 
-      minus_one : minus_one, 
-      succ : succ, 
-      pred : pred, 
-      abs : abs, 
-      size : size, 
-      max_int : max_int, 
-      min_int : min_int, 
-      lognot : lognot, 
-      to_string : to_string, 
-      compare : compare
-    }
+    
+    var size = Sys.word_size;
+    
+    exports.zero      = zero;
+    exports.one       = one;
+    exports.minus_one = minus_one;
+    exports.succ      = succ;
+    exports.pred      = pred;
+    exports.abs       = abs;
+    exports.size      = size;
+    exports.max_int   = max_int;
+    exports.min_int   = min_int;
+    exports.lognot    = lognot;
+    exports.to_string = to_string;
+    exports.compare   = compare;
+    
   })
 /* No side effect */

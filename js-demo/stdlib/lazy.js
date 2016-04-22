@@ -1,18 +1,22 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_obj_runtime","./obj","./camlinternalLazy"],
-  function(Caml_obj_runtime,Obj,CamlinternalLazy){
+define(["exports", "../runtime/caml_obj", "./obj", "./camlinternalLazy"],
+  function(exports, Caml_obj, Obj, CamlinternalLazy){
     'use strict';
     function from_fun(f) {
-      var x = Caml_obj_runtime.caml_obj_block(Obj.lazy_tag, 1);
+      var x = {
+        0: 0,
+        length: 1,
+        tag: Obj.lazy_tag
+      };
       x[0] = f;
       return x;
     }
     
     function from_val(v) {
-      var t = Caml_obj_runtime.caml_obj_tag(v);
+      var t = v.tag | 0;
       if (t === Obj.forward_tag || t === Obj.lazy_tag || t === Obj.double_tag) {
-        return Caml_obj_runtime.caml_lazy_make_forward(v);
+        return Caml_obj.caml_lazy_make_forward(v);
       }
       else {
         return v;
@@ -20,7 +24,7 @@ define(["../runtime/caml_obj_runtime","./obj","./camlinternalLazy"],
     }
     
     function is_val(l) {
-      return +(Caml_obj_runtime.caml_obj_tag(l) !== Obj.lazy_tag);
+      return +((l.tag | 0) !== Obj.lazy_tag);
     }
     
     var Undefined = CamlinternalLazy.Undefined;
@@ -32,15 +36,15 @@ define(["../runtime/caml_obj_runtime","./obj","./camlinternalLazy"],
     var lazy_from_val = from_val;
     
     var lazy_is_val = is_val;
-    return {
-      Undefined : Undefined, 
-      force_val : force_val, 
-      from_fun : from_fun, 
-      from_val : from_val, 
-      is_val : is_val, 
-      lazy_from_fun : lazy_from_fun, 
-      lazy_from_val : lazy_from_val, 
-      lazy_is_val : lazy_is_val
-    }
+    
+    exports.Undefined     = Undefined;
+    exports.force_val     = force_val;
+    exports.from_fun      = from_fun;
+    exports.from_val      = from_val;
+    exports.is_val        = is_val;
+    exports.lazy_from_fun = lazy_from_fun;
+    exports.lazy_from_val = lazy_from_val;
+    exports.lazy_is_val   = lazy_is_val;
+    
   })
 /* No side effect */

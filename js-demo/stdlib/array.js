@@ -1,17 +1,20 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
-  function(Pervasives,Caml_exceptions,Caml_array){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_exceptions", "../runtime/curry", "../runtime/caml_array"],
+  function(exports, Caml_builtin_exceptions, Caml_exceptions, Curry, Caml_array){
     'use strict';
     function init(l, f) {
       if (l) {
         if (l < 0) {
-          return Pervasives.invalid_arg("Array.init");
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Array.init"
+              ];
         }
         else {
-          var res = Caml_array.caml_make_vect(l, f(0));
-          for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-            res[i] = f(i);
+          var res = Caml_array.caml_make_vect(l, Curry._1(f, 0));
+          for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+            res[i] = Curry._1(f, i);
           }
           return res;
         }
@@ -23,7 +26,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     
     function make_matrix(sx, sy, init) {
       var res = Caml_array.caml_make_vect(sx, /* array */[]);
-      for(var x = 0 ,x_finish = sx - 1; x<= x_finish; ++x){
+      for(var x = 0 ,x_finish = sx - 1 | 0; x<= x_finish; ++x){
         res[x] = Caml_array.caml_make_vect(sy, init);
       }
       return res;
@@ -55,8 +58,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function sub(a, ofs, len) {
-      if (len < 0 || ofs > a.length - len) {
-        return Pervasives.invalid_arg("Array.sub");
+      if (len < 0 || ofs > (a.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Array.sub"
+            ];
       }
       else {
         return Caml_array.caml_array_sub(a, ofs, len);
@@ -64,11 +70,14 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function fill(a, ofs, len, v) {
-      if (ofs < 0 || len < 0 || ofs > a.length - len) {
-        return Pervasives.invalid_arg("Array.fill");
+      if (ofs < 0 || len < 0 || ofs > (a.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Array.fill"
+            ];
       }
       else {
-        for(var i = ofs ,i_finish = ofs + len - 1; i<= i_finish; ++i){
+        for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i<= i_finish; ++i){
           a[i] = v;
         }
         return /* () */0;
@@ -76,8 +85,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function blit(a1, ofs1, a2, ofs2, len) {
-      if (len < 0 || ofs1 < 0 || ofs1 > a1.length - len || ofs2 < 0 || ofs2 > a2.length - len) {
-        return Pervasives.invalid_arg("Array.blit");
+      if (len < 0 || ofs1 < 0 || ofs1 > (a1.length - len | 0) || ofs2 < 0 || ofs2 > (a2.length - len | 0)) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Array.blit"
+            ];
       }
       else {
         return Caml_array.caml_array_blit(a1, ofs1, a2, ofs2, len);
@@ -85,8 +97,8 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function iter(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-        f(a[i]);
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        Curry._1(f, a[i]);
       }
       return /* () */0;
     }
@@ -94,9 +106,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     function map(f, a) {
       var l = a.length;
       if (l) {
-        var r = Caml_array.caml_make_vect(l, f(a[0]));
-        for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-          r[i] = f(a[i]);
+        var r = Caml_array.caml_make_vect(l, Curry._1(f, a[0]));
+        for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+          r[i] = Curry._1(f, a[i]);
         }
         return r;
       }
@@ -106,8 +118,8 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function iteri(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-        f(i, a[i]);
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        Curry._2(f, i, a[i]);
       }
       return /* () */0;
     }
@@ -115,9 +127,9 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     function mapi(f, a) {
       var l = a.length;
       if (l) {
-        var r = Caml_array.caml_make_vect(l, f(0, a[0]));
-        for(var i = 1 ,i_finish = l - 1; i<= i_finish; ++i){
-          r[i] = f(i, a[i]);
+        var r = Caml_array.caml_make_vect(l, Curry._2(f, 0, a[0]));
+        for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+          r[i] = Curry._2(f, i, a[i]);
         }
         return r;
       }
@@ -127,7 +139,7 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     }
     
     function to_list(a) {
-      var _i = a.length - 1;
+      var _i = a.length - 1 | 0;
       var _res = /* [] */0;
       while(true) {
         var res = _res;
@@ -136,12 +148,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
           return res;
         }
         else {
-          _res = [
-            /* :: */0,
+          _res = /* :: */[
             a[i],
             res
           ];
-          _i = i - 1;
+          _i = i - 1 | 0;
+          continue ;
+          
         }
       };
     }
@@ -151,8 +164,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
         var param = _param;
         var accu = _accu;
         if (param) {
-          _param = param[2];
-          _accu = accu + 1;
+          _param = param[1];
+          _accu = accu + 1 | 0;
+          continue ;
+          
         }
         else {
           return accu;
@@ -162,16 +177,18 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     
     function of_list(l) {
       if (l) {
-        var a = Caml_array.caml_make_vect(list_length(0, l), l[1]);
+        var a = Caml_array.caml_make_vect(list_length(0, l), l[0]);
         var _i = 1;
-        var _param = l[2];
+        var _param = l[1];
         while(true) {
           var param = _param;
           var i = _i;
           if (param) {
-            a[i] = param[1];
-            _param = param[2];
-            _i = i + 1;
+            a[i] = param[0];
+            _param = param[1];
+            _i = i + 1 | 0;
+            continue ;
+            
           }
           else {
             return a;
@@ -185,48 +202,43 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     
     function fold_left(f, x, a) {
       var r = x;
-      for(var i = 0 ,i_finish = a.length - 1; i<= i_finish; ++i){
-        r = f(r, a[i]);
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        r = Curry._2(f, r, a[i]);
       }
       return r;
     }
     
     function fold_right(f, a, x) {
       var r = x;
-      for(var i = a.length - 1; i>= 0; --i){
-        r = f(a[i], r);
+      for(var i = a.length - 1 | 0; i>= 0; --i){
+        r = Curry._2(f, a[i], r);
       }
       return r;
     }
     
-    var Bottom = [
-      248,
-      "Array.Bottom",
-      ++ Caml_exceptions.caml_oo_last_id
-    ];
+    var Bottom = Caml_exceptions.create("Array.Bottom");
     
     function sort(cmp, a) {
       var maxson = function (l, i) {
-        var i31 = i + i + i + 1;
+        var i31 = ((i + i | 0) + i | 0) + 1 | 0;
         var x = i31;
-        if (i31 + 2 < l) {
-          if (cmp(a[i31], a[i31 + 1]) < 0) {
-            x = i31 + 1;
+        if ((i31 + 2 | 0) < l) {
+          if (Curry._2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
+            x = i31 + 1 | 0;
           }
-          if (cmp(a[x], a[i31 + 2]) < 0) {
-            x = i31 + 2;
+          if (Curry._2(cmp, a[x], a[i31 + 2 | 0]) < 0) {
+            x = i31 + 2 | 0;
           }
           return x;
         }
-        else if (i31 + 1 < l && cmp(a[i31], a[i31 + 1]) < 0) {
-          return i31 + 1;
+        else if ((i31 + 1 | 0) < l && Curry._2(cmp, a[i31], a[i31 + 1 | 0]) < 0) {
+          return i31 + 1 | 0;
         }
         else if (i31 < l) {
           return i31;
         }
         else {
           throw [
-                0,
                 Bottom,
                 i
               ];
@@ -240,9 +252,11 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
           while(true) {
             var i$1 = _i;
             var j = maxson(l$1, i$1);
-            if (cmp(a[j], e$1) > 0) {
+            if (Curry._2(cmp, a[j], e$1) > 0) {
               a[i$1] = a[j];
               _i = j;
+              continue ;
+              
             }
             else {
               a[i$1] = e$1;
@@ -251,8 +265,8 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
           };
         }
         catch (exn){
-          if (exn[1] === Bottom) {
-            a[exn[2]] = e;
+          if (exn[0] === Bottom) {
+            a[exn[1]] = e;
             return /* () */0;
           }
           else {
@@ -269,11 +283,13 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
             var j = maxson(l$1, i$1);
             a[i$1] = a[j];
             _i = j;
+            continue ;
+            
           };
         }
         catch (exn){
-          if (exn[1] === Bottom) {
-            return exn[2];
+          if (exn[0] === Bottom) {
+            return exn[1];
           }
           else {
             throw exn;
@@ -283,23 +299,23 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
       var trickleup = function (_i, e) {
         while(true) {
           var i = _i;
-          var father = (i - 1) / 3 | 0;
+          var father = (i - 1 | 0) / 3 | 0;
           if (i === father) {
             throw [
-                  0,
-                  Caml_exceptions.Assert_failure,
+                  Caml_builtin_exceptions.assert_failure,
                   [
-                    0,
                     "array.ml",
                     168,
                     4
                   ]
                 ];
           }
-          if (cmp(a[father], e) < 0) {
+          if (Curry._2(cmp, a[father], e) < 0) {
             a[i] = a[father];
             if (father > 0) {
               _i = father;
+              continue ;
+              
             }
             else {
               a[0] = e;
@@ -313,10 +329,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
         };
       };
       var l = a.length;
-      for(var i = ((l + 1) / 3 | 0) - 1; i>= 0; --i){
+      for(var i = ((l + 1 | 0) / 3 | 0) - 1 | 0; i>= 0; --i){
         trickle(l, i, a[i]);
       }
-      for(var i$1 = l - 1; i$1>= 2; --i$1){
+      for(var i$1 = l - 1 | 0; i$1>= 2; --i$1){
         var e = a[i$1];
         a[i$1] = a[0];
         trickleup(bubble(i$1, 0), e);
@@ -332,12 +348,10 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
       }
     }
     
-    var cutoff = 5;
-    
     function stable_sort(cmp, a) {
       var merge = function (src1ofs, src1len, src2, src2ofs, src2len, dst, dstofs) {
-        var src1r = src1ofs + src1len;
-        var src2r = src2ofs + src2len;
+        var src1r = src1ofs + src1len | 0;
+        var src2r = src2ofs + src2len | 0;
         var _i1 = src1ofs;
         var _s1 = a[src1ofs];
         var _i2 = src2ofs;
@@ -349,63 +363,67 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
           var i2 = _i2;
           var s1 = _s1;
           var i1 = _i1;
-          if (cmp(s1, s2) <= 0) {
+          if (Curry._2(cmp, s1, s2) <= 0) {
             dst[d] = s1;
-            var i1$1 = i1 + 1;
+            var i1$1 = i1 + 1 | 0;
             if (i1$1 < src1r) {
-              _d = d + 1;
+              _d = d + 1 | 0;
               _s1 = a[i1$1];
               _i1 = i1$1;
+              continue ;
+              
             }
             else {
-              return blit(src2, i2, dst, d + 1, src2r - i2);
+              return blit(src2, i2, dst, d + 1 | 0, src2r - i2 | 0);
             }
           }
           else {
             dst[d] = s2;
-            var i2$1 = i2 + 1;
+            var i2$1 = i2 + 1 | 0;
             if (i2$1 < src2r) {
-              _d = d + 1;
+              _d = d + 1 | 0;
               _s2 = src2[i2$1];
               _i2 = i2$1;
+              continue ;
+              
             }
             else {
-              return blit(a, i1, dst, d + 1, src1r - i1);
+              return blit(a, i1, dst, d + 1 | 0, src1r - i1 | 0);
             }
           }
         };
       };
       var isortto = function (srcofs, dst, dstofs, len) {
-        for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
-          var e = a[srcofs + i];
-          var j = dstofs + i - 1;
-          while(j >= dstofs && cmp(dst[j], e) > 0) {
-            dst[j + 1] = dst[j];
-            -- j;
+        for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+          var e = a[srcofs + i | 0];
+          var j = (dstofs + i | 0) - 1 | 0;
+          while(j >= dstofs && Curry._2(cmp, dst[j], e) > 0) {
+            dst[j + 1 | 0] = dst[j];
+            j = j - 1 | 0;
           };
-          dst[j + 1] = e;
+          dst[j + 1 | 0] = e;
         }
         return /* () */0;
       };
       var sortto = function (srcofs, dst, dstofs, len) {
-        if (len <= cutoff) {
+        if (len <= 5) {
           return isortto(srcofs, dst, dstofs, len);
         }
         else {
           var l1 = len / 2 | 0;
-          var l2 = len - l1;
-          sortto(srcofs + l1, dst, dstofs + l1, l2);
-          sortto(srcofs, a, srcofs + l2, l1);
-          return merge(srcofs + l2, l1, dst, dstofs + l1, l2, dst, dstofs);
+          var l2 = len - l1 | 0;
+          sortto(srcofs + l1 | 0, dst, dstofs + l1 | 0, l2);
+          sortto(srcofs, a, srcofs + l2 | 0, l1);
+          return merge(srcofs + l2 | 0, l1, dst, dstofs + l1 | 0, l2, dst, dstofs);
         }
       };
       var l = a.length;
-      if (l <= cutoff) {
+      if (l <= 5) {
         return isortto(0, a, 0, l);
       }
       else {
         var l1 = l / 2 | 0;
-        var l2 = l - l1;
+        var l2 = l - l1 | 0;
         var t = Caml_array.caml_make_vect(l2, a[0]);
         sortto(l1, t, 0, l2);
         sortto(0, a, l2, l1);
@@ -415,32 +433,30 @@ define(["./pervasives","../runtime/caml_exceptions","../runtime/caml_array"],
     
     var create_matrix = make_matrix;
     
-    function concat(prim) {
-      return Caml_array.caml_array_concat(prim);
-    }
+    var concat = Caml_array.caml_array_concat
     
     var fast_sort = stable_sort;
-    return {
-      init : init, 
-      make_matrix : make_matrix, 
-      create_matrix : create_matrix, 
-      append : append, 
-      concat : concat, 
-      sub : sub, 
-      copy : copy, 
-      fill : fill, 
-      blit : blit, 
-      to_list : to_list, 
-      of_list : of_list, 
-      iter : iter, 
-      map : map, 
-      iteri : iteri, 
-      mapi : mapi, 
-      fold_left : fold_left, 
-      fold_right : fold_right, 
-      sort : sort, 
-      stable_sort : stable_sort, 
-      fast_sort : fast_sort
-    }
+    
+    exports.init          = init;
+    exports.make_matrix   = make_matrix;
+    exports.create_matrix = create_matrix;
+    exports.append        = append;
+    exports.concat        = concat;
+    exports.sub           = sub;
+    exports.copy          = copy;
+    exports.fill          = fill;
+    exports.blit          = blit;
+    exports.to_list       = to_list;
+    exports.of_list       = of_list;
+    exports.iter          = iter;
+    exports.map           = map;
+    exports.iteri         = iteri;
+    exports.mapi          = mapi;
+    exports.fold_left     = fold_left;
+    exports.fold_right    = fold_right;
+    exports.sort          = sort;
+    exports.stable_sort   = stable_sort;
+    exports.fast_sort     = fast_sort;
+    
   })
 /* No side effect */

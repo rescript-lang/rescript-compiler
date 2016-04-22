@@ -1,25 +1,23 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_exceptions"],
-  function(Caml_exceptions){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/curry"],
+  function(exports, Caml_builtin_exceptions, Curry){
     'use strict';
     function merge(order, l1, l2) {
       if (l1) {
-        var h1 = l1[1];
+        var h1 = l1[0];
         if (l2) {
-          var h2 = l2[1];
-          if (order(h1, h2)) {
-            return [
-                    /* :: */0,
+          var h2 = l2[0];
+          if (Curry._2(order, h1, h2)) {
+            return /* :: */[
                     h1,
-                    merge(order, l1[2], l2)
+                    merge(order, l1[1], l2)
                   ];
           }
           else {
-            return [
-                    /* :: */0,
+            return /* :: */[
                     h2,
-                    merge(order, l1, l2[2])
+                    merge(order, l1, l2[1])
                   ];
           }
         }
@@ -35,37 +33,30 @@ define(["../runtime/caml_exceptions"],
     function list(order, l) {
       var initlist = function (param) {
         if (param) {
-          var match = param[2];
-          var e = param[1];
+          var match = param[1];
+          var e = param[0];
           if (match) {
-            var e2 = match[1];
-            return [
-                    /* :: */0,
-                    order(e, e2) ? [
-                        /* :: */0,
+            var e2 = match[0];
+            return /* :: */[
+                    Curry._2(order, e, e2) ? /* :: */[
                         e,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           e2,
                           /* [] */0
                         ]
-                      ] : [
-                        /* :: */0,
+                      ] : /* :: */[
                         e2,
-                        [
-                          /* :: */0,
+                        /* :: */[
                           e,
                           /* [] */0
                         ]
                       ],
-                    initlist(match[2])
+                    initlist(match[1])
                   ];
           }
           else {
-            return [
-                    /* :: */0,
-                    [
-                      /* :: */0,
+            return /* :: */[
+                    /* :: */[
                       e,
                       /* [] */0
                     ],
@@ -79,12 +70,11 @@ define(["../runtime/caml_exceptions"],
       };
       var merge2 = function (x) {
         if (x) {
-          var match = x[2];
+          var match = x[1];
           if (match) {
-            return [
-                    /* :: */0,
-                    merge(order, x[1], match[1]),
-                    merge2(match[2])
+            return /* :: */[
+                    merge(order, x[0], match[0]),
+                    merge2(match[1])
                   ];
           }
           else {
@@ -99,11 +89,13 @@ define(["../runtime/caml_exceptions"],
       while(true) {
         var llist = _llist;
         if (llist) {
-          if (llist[2]) {
+          if (llist[1]) {
             _llist = merge2(llist);
+            continue ;
+            
           }
           else {
-            return llist[1];
+            return llist[0];
           }
         }
         else {
@@ -124,48 +116,51 @@ define(["../runtime/caml_exceptions"],
         while(true) {
           var hi = _hi;
           var lo = _lo;
-          if (hi - lo >= 6) {
-            var mid = (lo + hi >>> 1);
-            if (cmp(arr[mid], arr[lo])) {
+          if ((hi - lo | 0) >= 6) {
+            var mid = ((lo + hi | 0) >>> 1);
+            if (Curry._2(cmp, arr[mid], arr[lo])) {
               swap(arr, mid, lo);
             }
-            if (cmp(arr[hi], arr[mid])) {
+            if (Curry._2(cmp, arr[hi], arr[mid])) {
               swap(arr, mid, hi);
-              if (cmp(arr[mid], arr[lo])) {
+              if (Curry._2(cmp, arr[mid], arr[lo])) {
                 swap(arr, mid, lo);
               }
               
             }
             var pivot = arr[mid];
-            var i = lo + 1;
-            var j = hi - 1;
-            if (!cmp(pivot, arr[hi]) || !cmp(arr[lo], pivot)) {
+            var i = lo + 1 | 0;
+            var j = hi - 1 | 0;
+            if (!Curry._2(cmp, pivot, arr[hi]) || !Curry._2(cmp, arr[lo], pivot)) {
               throw [
-                    0,
-                    Caml_exceptions.Invalid_argument,
+                    Caml_builtin_exceptions.invalid_argument,
                     "Sort.array"
                   ];
             }
             while(i < j) {
-              while(!cmp(pivot, arr[i])) {
-                ++ i;
+              while(!Curry._2(cmp, pivot, arr[i])) {
+                i = i + 1 | 0;
               };
-              while(!cmp(arr[j], pivot)) {
-                -- j;
+              while(!Curry._2(cmp, arr[j], pivot)) {
+                j = j - 1 | 0;
               };
               if (i < j) {
                 swap(arr, i, j);
               }
-              ++ i;
-              -- j;
+              i = i + 1 | 0;
+              j = j - 1 | 0;
             };
-            if (j - lo <= hi - i) {
+            if ((j - lo | 0) <= (hi - i | 0)) {
               qsort(lo, j);
               _lo = i;
+              continue ;
+              
             }
             else {
               qsort(i, hi);
               _hi = j;
+              continue ;
+              
             }
           }
           else {
@@ -173,15 +168,15 @@ define(["../runtime/caml_exceptions"],
           }
         };
       };
-      qsort(0, arr.length - 1);
-      for(var i = 1 ,i_finish = arr.length - 1; i<= i_finish; ++i){
+      qsort(0, arr.length - 1 | 0);
+      for(var i = 1 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
         var val_i = arr[i];
-        if (!cmp(arr[i - 1], val_i)) {
-          arr[i] = arr[i - 1];
-          var j = i - 1;
-          while(j >= 1 && !cmp(arr[j - 1], val_i)) {
-            arr[j] = arr[j - 1];
-            -- j;
+        if (!Curry._2(cmp, arr[i - 1 | 0], val_i)) {
+          arr[i] = arr[i - 1 | 0];
+          var j = i - 1 | 0;
+          while(j >= 1 && !Curry._2(cmp, arr[j - 1 | 0], val_i)) {
+            arr[j] = arr[j - 1 | 0];
+            j = j - 1 | 0;
           };
           arr[j] = val_i;
         }
@@ -189,10 +184,10 @@ define(["../runtime/caml_exceptions"],
       }
       return /* () */0;
     }
-    return {
-      list : list, 
-      array : array, 
-      merge : merge
-    }
+    
+    exports.list  = list;
+    exports.array = array;
+    exports.merge = merge;
+    
   })
 /* No side effect */

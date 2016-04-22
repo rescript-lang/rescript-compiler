@@ -1,15 +1,15 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./caml_exceptions","./caml_array"],
-  function(Caml_exceptions,Caml_array){
+define(["exports", "./caml_builtin_exceptions", "./caml_array"],
+  function(exports, Caml_builtin_exceptions, Caml_array){
     'use strict';
     var caml_methods_cache = Caml_array.caml_make_vect(1000, 0);
     
     function caml_get_public_method(obj, tag, cacheid) {
-      var meths = obj[1];
+      var meths = obj[0];
       var offs = caml_methods_cache[cacheid];
       if (meths[offs] === tag) {
-        return meths[offs - 1];
+        return meths[offs - 1 | 0];
       }
       else {
         var aux = function (_i) {
@@ -17,10 +17,8 @@ define(["./caml_exceptions","./caml_array"],
             var i = _i;
             if (i < 3) {
               throw [
-                    0,
-                    Caml_exceptions.Assert_failure,
+                    Caml_builtin_exceptions.assert_failure,
                     [
-                      0,
                       "caml_oo.ml",
                       43,
                       20
@@ -32,15 +30,17 @@ define(["./caml_exceptions","./caml_array"],
               return i;
             }
             else {
-              _i = i - 2;
+              _i = i - 2 | 0;
+              continue ;
+              
             }
           };
         };
-        return meths[aux(meths[0] * 2 + 1) - 1];
+        return meths[aux((meths[0] << 1) + 1 | 0) - 1 | 0];
       }
     }
-    return {
-      caml_get_public_method : caml_get_public_method
-    }
+    
+    exports.caml_get_public_method = caml_get_public_method;
+    
   })
 /* No side effect */

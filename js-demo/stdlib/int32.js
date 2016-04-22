@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_format","../runtime/caml_primitive"],
-  function(Caml_format,Caml_primitive){
+define(["exports", "../runtime/caml_obj", "../runtime/caml_format"],
+  function(exports, Caml_obj, Caml_format){
     'use strict';
     function succ(n) {
-      return n + 1;
+      return n + 1 | 0;
     }
     
     function pred(n) {
-      return n - 1;
+      return n - 1 | 0;
     }
     
     function abs(n) {
@@ -16,7 +16,7 @@ define(["../runtime/caml_format","../runtime/caml_primitive"],
         return n;
       }
       else {
-        return -n;
+        return -n | 0;
       }
     }
     
@@ -28,9 +28,7 @@ define(["../runtime/caml_format","../runtime/caml_primitive"],
       return Caml_format.caml_int32_format("%d", n);
     }
     
-    function compare(x, y) {
-      return Caml_primitive.caml_int32_compare(x, y);
-    }
+    var compare = Caml_obj.caml_int32_compare
     
     var zero = 0;
     
@@ -41,18 +39,18 @@ define(["../runtime/caml_format","../runtime/caml_primitive"],
     var max_int = 2147483647;
     
     var min_int = -2147483648;
-    return {
-      zero : zero, 
-      one : one, 
-      minus_one : minus_one, 
-      succ : succ, 
-      pred : pred, 
-      abs : abs, 
-      max_int : max_int, 
-      min_int : min_int, 
-      lognot : lognot, 
-      to_string : to_string, 
-      compare : compare
-    }
+    
+    exports.zero      = zero;
+    exports.one       = one;
+    exports.minus_one = minus_one;
+    exports.succ      = succ;
+    exports.pred      = pred;
+    exports.abs       = abs;
+    exports.max_int   = max_int;
+    exports.min_int   = min_int;
+    exports.lognot    = lognot;
+    exports.to_string = to_string;
+    exports.compare   = compare;
+    
   })
 /* No side effect */

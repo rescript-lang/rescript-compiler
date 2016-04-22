@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./string"],
-  function($$String){
+define(["exports", "./string"],
+  function(exports, $$String){
     'use strict';
     var make = $$String.make;
     
@@ -52,32 +52,32 @@ define(["./string"],
     var uncapitalize = $$String.uncapitalize;
     
     var compare = $$String.compare;
-    return {
-      make : make, 
-      init : init, 
-      copy : copy, 
-      sub : sub, 
-      fill : fill, 
-      blit : blit, 
-      concat : concat, 
-      iter : iter, 
-      iteri : iteri, 
-      map : map, 
-      mapi : mapi, 
-      trim : trim, 
-      escaped : escaped, 
-      index : index, 
-      rindex : rindex, 
-      index_from : index_from, 
-      rindex_from : rindex_from, 
-      contains : contains, 
-      contains_from : contains_from, 
-      rcontains_from : rcontains_from, 
-      uppercase : uppercase, 
-      lowercase : lowercase, 
-      capitalize : capitalize, 
-      uncapitalize : uncapitalize, 
-      compare : compare
-    }
+    
+    exports.make           = make;
+    exports.init           = init;
+    exports.copy           = copy;
+    exports.sub            = sub;
+    exports.fill           = fill;
+    exports.blit           = blit;
+    exports.concat         = concat;
+    exports.iter           = iter;
+    exports.iteri          = iteri;
+    exports.map            = map;
+    exports.mapi           = mapi;
+    exports.trim           = trim;
+    exports.escaped        = escaped;
+    exports.index          = index;
+    exports.rindex         = rindex;
+    exports.index_from     = index_from;
+    exports.rindex_from    = rindex_from;
+    exports.contains       = contains;
+    exports.contains_from  = contains_from;
+    exports.rcontains_from = rcontains_from;
+    exports.uppercase      = uppercase;
+    exports.lowercase      = lowercase;
+    exports.capitalize     = capitalize;
+    exports.uncapitalize   = uncapitalize;
+    exports.compare        = compare;
+    
   })
 /* No side effect */

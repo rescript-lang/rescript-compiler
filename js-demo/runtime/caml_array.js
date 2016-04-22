@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define([],
-  function(){
+define(["exports"],
+  function(exports){
     'use strict';
     function caml_array_sub(x, offset, len) {
       var result = new Array(len);
@@ -9,8 +9,8 @@ define([],
       var i = offset;
       while(j < len) {
         result[j] = x[i];
-        ++ j;
-        ++ i;
+        j = j + 1 | 0;
+        i = i + 1 | 0;
       };
       return result;
     }
@@ -20,8 +20,10 @@ define([],
         var l = _l;
         var acc = _acc;
         if (l) {
-          _l = l[2];
-          _acc = l[1].length + acc;
+          _l = l[1];
+          _acc = l[0].length + acc | 0;
+          continue ;
+          
         }
         else {
           return acc;
@@ -34,17 +36,19 @@ define([],
         var l = _l;
         var i = _i;
         if (l) {
-          var x = l[1];
+          var x = l[0];
           var l$1 = x.length;
           var k = i;
           var j = 0;
           while(j < l$1) {
             arr[k] = x[j];
-            ++ k;
-            ++ j;
+            k = k + 1 | 0;
+            j = j + 1 | 0;
           };
-          _l = l[2];
+          _l = l[1];
           _i = k;
+          continue ;
+          
         }
         else {
           return /* () */0;
@@ -61,7 +65,7 @@ define([],
     
     function caml_make_vect(len, init) {
       var b = new Array(len);
-      for(var i = 0 ,i_finish = len - 1; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
         b[i] = init;
       }
       return b;
@@ -69,23 +73,23 @@ define([],
     
     function caml_array_blit(a1, i1, a2, i2, len) {
       if (i2 <= i1) {
-        for(var j = 0 ,j_finish = len - 1; j<= j_finish; ++j){
-          a2[j + i2] = a1[j + i1];
+        for(var j = 0 ,j_finish = len - 1 | 0; j<= j_finish; ++j){
+          a2[j + i2 | 0] = a1[j + i1 | 0];
         }
         return /* () */0;
       }
       else {
-        for(var j$1 = len - 1; j$1>= 0; --j$1){
-          a2[j$1 + i2] = a1[j$1 + i1];
+        for(var j$1 = len - 1 | 0; j$1>= 0; --j$1){
+          a2[j$1 + i2 | 0] = a1[j$1 + i1 | 0];
         }
         return /* () */0;
       }
     }
-    return {
-      caml_array_sub : caml_array_sub, 
-      caml_array_concat : caml_array_concat, 
-      caml_make_vect : caml_make_vect, 
-      caml_array_blit : caml_array_blit
-    }
+    
+    exports.caml_array_sub    = caml_array_sub;
+    exports.caml_array_concat = caml_array_concat;
+    exports.caml_make_vect    = caml_make_vect;
+    exports.caml_array_blit   = caml_array_blit;
+    
   })
 /* No side effect */

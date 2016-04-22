@@ -1,19 +1,18 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest","./int64","../runtime/caml_array","./array"],
-  function(Caml_sys,Pervasives,Nativeint,Int32,Digest,Int64,Caml_array,$$Array){
+define(["exports", "../runtime/caml_int64", "../runtime/caml_builtin_exceptions", "../runtime/caml_sys", "./pervasives", "./nativeint", "./int32", "./digest", "../runtime/curry", "./int64", "../runtime/caml_array", "./array"],
+  function(exports, Caml_int64, Caml_builtin_exceptions, Caml_sys, Pervasives, Nativeint, Int32, Digest, Curry, Int64, Caml_array, $$Array){
     'use strict';
     function new_state() {
-      return [
-              /* record */0,
+      return /* record */[
               Caml_array.caml_make_vect(55, 0),
               0
             ];
     }
     
     function assign(st1, st2) {
-      $$Array.blit(st2[1], 0, st1[1], 0, 55);
-      st1[2] = st2[2];
+      $$Array.blit(st2[/* st */0], 0, st1[/* st */0], 0, 55);
+      st1[/* idx */1] = st2[/* idx */1];
       return /* () */0;
     }
     
@@ -22,21 +21,21 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
         return Digest.string(accu + x);
       };
       var extract = function (d) {
-        return d.charCodeAt(0) + (d.charCodeAt(1) << 8) + (d.charCodeAt(2) << 16) + (d.charCodeAt(3) << 24);
+        return ((d.charCodeAt(0) + (d.charCodeAt(1) << 8) | 0) + (d.charCodeAt(2) << 16) | 0) + (d.charCodeAt(3) << 24) | 0;
       };
-      var seed$1 = seed.length ? seed : /* array */[0];
+      var seed$1 = seed.length ? seed : /* int array */[0];
       var l = seed$1.length;
       for(var i = 0; i<= 54; ++i){
-        s[1][i] = i;
+        s[/* st */0][i] = i;
       }
       var accu = "x";
-      for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l); i$1<= i_finish; ++i$1){
+      for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l) | 0; i$1<= i_finish; ++i$1){
         var j = i$1 % 55;
         var k = i$1 % l;
         accu = combine(accu, seed$1[k]);
-        s[1][j] = (s[1][j] ^ extract(accu)) & 1073741823;
+        s[/* st */0][j] = (s[/* st */0][j] ^ extract(accu)) & 1073741823;
       }
-      s[2] = 0;
+      s[/* idx */1] = 0;
       return /* () */0;
     }
     
@@ -57,17 +56,20 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
     }
     
     function bits(s) {
-      s[2] = (s[2] + 1) % 55;
-      var curval = s[1][s[2]];
-      var newval = s[1][(s[2] + 24) % 55] + (curval ^ (curval >>> 25) & 31);
+      s[/* idx */1] = (s[/* idx */1] + 1 | 0) % 55;
+      var curval = s[/* st */0][s[/* idx */1]];
+      var newval = s[/* st */0][(s[/* idx */1] + 24 | 0) % 55] + (curval ^ (curval >>> 25) & 31) | 0;
       var newval30 = newval & 1073741823;
-      s[1][s[2]] = newval30;
+      s[/* st */0][s[/* idx */1]] = newval30;
       return newval30;
     }
     
     function $$int(s, bound) {
       if (bound > 1073741823 || bound <= 0) {
-        return Pervasives.invalid_arg("Random.int");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Random.int"
+            ];
       }
       else {
         var s$1 = s;
@@ -75,17 +77,23 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
         while(true) {
           var r = bits(s$1);
           var v = r % n;
-          if (r - v <= 1073741823 - n + 1) {
+          if ((r - v | 0) > ((1073741823 - n | 0) + 1 | 0)) {
+            continue ;
+            
+          }
+          else {
             return v;
           }
-          
         };
       }
     }
     
     function int32(s, bound) {
       if (bound <= 0) {
-        return Pervasives.invalid_arg("Random.int32");
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Random.int32"
+            ];
       }
       else {
         var s$1 = s;
@@ -95,46 +103,63 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
           var b2 = ((bits(s$1) & 1) << 30);
           var r = b1 | b2;
           var v = r % n;
-          if (r - v <= Int32.max_int - n + 1) {
+          if ((r - v | 0) > ((Int32.max_int - n | 0) + 1 | 0)) {
+            continue ;
+            
+          }
+          else {
             return v;
           }
-          
         };
       }
     }
     
     function int64(s, bound) {
-      if (bound <= 0) {
-        return Pervasives.invalid_arg("Random.int64");
+      if (Caml_int64.le(bound, /* int64 */[
+              0,
+              0
+            ])) {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Random.int64"
+            ];
       }
       else {
         var s$1 = s;
         var n = bound;
         while(true) {
-          var b1 = bits(s$1);
-          var b2 = (bits(s$1) << 30);
-          var b3 = ((bits(s$1) & 7) << 60);
-          var r = b1 | b2 | b3;
-          var v = r % n;
-          if (r - v <= Int64.max_int - n + 1) {
+          var b1 = Caml_int64.of_int32(bits(s$1));
+          var b2 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1)), 30);
+          var b3 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1) & 7), 60);
+          var r_000 = b1[0] | b2[0] | b3[0];
+          var r_001 = ((b1[1] | b2[1] | b3[1]) >>> 0);
+          var r = /* int64 */[
+            r_000,
+            r_001
+          ];
+          var v = Caml_int64.mod_(r, n);
+          if (Caml_int64.gt(Caml_int64.sub(r, v), Caml_int64.add(Caml_int64.sub(Int64.max_int, n), /* int64 */[
+                      0,
+                      1
+                    ]))) {
+            continue ;
+            
+          }
+          else {
             return v;
           }
-          
         };
       }
     }
     
-    var nativeint = Nativeint.size === 32 ? function (s, bound) {
-        return int32(s, bound);
-      } : function (s, bound) {
-        return int64(s, bound);
+    var nativeint = Nativeint.size === 32 ? int32 : function (s, bound) {
+        return int64(s, Caml_int64.of_int32(bound))[1] | 0;
       };
     
     function rawfloat(s) {
-      var scale = 1073741824.0;
       var r1 = bits(s);
       var r2 = bits(s);
-      return (r1 / scale + r2) / scale;
+      return (r1 / 1073741824.0 + r2) / 1073741824.0;
     }
     
     function $$float(s, bound) {
@@ -145,8 +170,7 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
       return +((bits(s) & 1) === 0);
     }
     
-    var $$default = [
-      /* record */0,
+    var $$default = /* record */[
       /* array */[
         987910699,
         495797812,
@@ -220,7 +244,7 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
     }
     
     function nativeint$1(bound) {
-      return nativeint($$default, bound);
+      return Curry._2(nativeint, $$default, bound);
     }
     
     function int64$1(bound) {
@@ -240,7 +264,7 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
     }
     
     function init(seed) {
-      return full_init($$default, /* array */[seed]);
+      return full_init($$default, /* int array */[seed]);
     }
     
     function self_init() {
@@ -256,7 +280,6 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
     }
     
     var State = [
-      0,
       make,
       make_self_init,
       copy,
@@ -268,20 +291,20 @@ define(["../runtime/caml_sys","./pervasives","./nativeint","./int32","./digest",
       $$float,
       bool
     ];
-    return {
-      init : init, 
-      full_init : full_init$1, 
-      self_init : self_init, 
-      bits : bits$1, 
-      $$int : $$int$1, 
-      int32 : int32$1, 
-      nativeint : nativeint$1, 
-      int64 : int64$1, 
-      $$float : $$float$1, 
-      bool : bool$1, 
-      State : State, 
-      get_state : get_state, 
-      set_state : set_state
-    }
+    
+    exports.init      = init;
+    exports.full_init = full_init$1;
+    exports.self_init = self_init;
+    exports.bits      = bits$1;
+    exports.$$int     = $$int$1;
+    exports.int32     = int32$1;
+    exports.nativeint = nativeint$1;
+    exports.int64     = int64$1;
+    exports.$$float   = $$float$1;
+    exports.bool      = bool$1;
+    exports.State     = State;
+    exports.get_state = get_state;
+    exports.set_state = set_state;
+    
   })
 /* No side effect */

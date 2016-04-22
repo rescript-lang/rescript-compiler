@@ -1,26 +1,26 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
-define(["./pervasives","./buffer","./camlinternalFormat"],
-  function(Pervasives,Buffer,CamlinternalFormat){
+define(["exports", "./pervasives", "../runtime/curry", "./buffer", "./camlinternalFormat"],
+  function(exports, Pervasives, Curry, Buffer, CamlinternalFormat){
     'use strict';
     function kfprintf(k, o, param) {
       return CamlinternalFormat.make_printf(function (o, acc) {
                   CamlinternalFormat.output_acc(o, acc);
-                  return k(o);
-                }, o, /* End_of_acc */0, param[1]);
+                  return Curry._1(k, o);
+                }, o, /* End_of_acc */0, param[0]);
     }
     
     function kbprintf(k, b, param) {
       return CamlinternalFormat.make_printf(function (b, acc) {
                   CamlinternalFormat.bufput_acc(b, acc);
-                  return k(b);
-                }, b, /* End_of_acc */0, param[1]);
+                  return Curry._1(k, b);
+                }, b, /* End_of_acc */0, param[0]);
     }
     
     function ikfprintf(k, oc, param) {
       return CamlinternalFormat.make_printf(function (oc, _) {
-                  return k(oc);
-                }, oc, /* End_of_acc */0, param[1]);
+                  return Curry._1(k, oc);
+                }, oc, /* End_of_acc */0, param[0]);
     }
     
     function fprintf(oc, fmt) {
@@ -53,9 +53,9 @@ define(["./pervasives","./buffer","./camlinternalFormat"],
       var k$prime = function (_, acc) {
         var buf = Buffer.create(64);
         CamlinternalFormat.strput_acc(buf, acc);
-        return k(Buffer.contents(buf));
+        return Curry._1(k, Buffer.contents(buf));
       };
-      return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[1]);
+      return CamlinternalFormat.make_printf(k$prime, /* () */0, /* End_of_acc */0, param[0]);
     }
     
     function sprintf(fmt) {
@@ -65,18 +65,18 @@ define(["./pervasives","./buffer","./camlinternalFormat"],
     }
     
     var kprintf = ksprintf;
-    return {
-      fprintf : fprintf, 
-      printf : printf, 
-      eprintf : eprintf, 
-      sprintf : sprintf, 
-      bprintf : bprintf, 
-      ifprintf : ifprintf, 
-      kfprintf : kfprintf, 
-      ikfprintf : ikfprintf, 
-      ksprintf : ksprintf, 
-      kbprintf : kbprintf, 
-      kprintf : kprintf
-    }
+    
+    exports.fprintf   = fprintf;
+    exports.printf    = printf;
+    exports.eprintf   = eprintf;
+    exports.sprintf   = sprintf;
+    exports.bprintf   = bprintf;
+    exports.ifprintf  = ifprintf;
+    exports.kfprintf  = kfprintf;
+    exports.ikfprintf = ikfprintf;
+    exports.ksprintf  = ksprintf;
+    exports.kbprintf  = kbprintf;
+    exports.kprintf   = kprintf;
+    
   })
 /* No side effect */
