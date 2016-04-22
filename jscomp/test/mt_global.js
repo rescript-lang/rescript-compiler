@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Block = require("../runtime/block");
 
 function collect_eq(test_id, suites, loc, x, y) {
   test_id[0] = test_id[0] + 1 | 0;
@@ -8,12 +9,10 @@ function collect_eq(test_id, suites, loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Eq */{
-                0: x,
-                1: y,
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
       }
     ],
     suites[0]
@@ -27,12 +26,10 @@ function collect_neq(test_id, suites, loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Neq */{
-                0: x,
-                1: y,
-                length: 2,
-                tag: 1
-              };
+        return /* Neq */Block.__(1, [
+                  x,
+                  y
+                ]);
       }
     ],
     suites[0]
@@ -46,12 +43,10 @@ function collect_approx(test_id, suites, loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Approx */{
-                0: x,
-                1: y,
-                length: 2,
-                tag: 2
-              };
+        return /* Approx */Block.__(2, [
+                  x,
+                  y
+                ]);
       }
     ],
     suites[0]

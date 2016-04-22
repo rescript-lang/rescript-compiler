@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Block   = require("../runtime/block");
 var Caml_gc = require("../runtime/caml_gc");
 var Sys     = require("./sys");
 var Curry   = require("../runtime/curry");
@@ -9,318 +10,228 @@ var Printf  = require("./printf");
 function print_stat(c) {
   var st = Caml_gc.caml_gc_stat(/* () */0);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "minor_words: ",
-              1: /* Float */{
-                0: /* Float_f */0,
-                1: /* No_padding */0,
-                2: /* Lit_precision */[0],
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 8
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "minor_words: ",
+                /* Float */Block.__(8, [
+                    /* Float_f */0,
+                    /* No_padding */0,
+                    /* Lit_precision */[0],
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "minor_words: %.0f\n"
           ]), st[/* minor_words */0]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "promoted_words: ",
-              1: /* Float */{
-                0: /* Float_f */0,
-                1: /* No_padding */0,
-                2: /* Lit_precision */[0],
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 8
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "promoted_words: ",
+                /* Float */Block.__(8, [
+                    /* Float_f */0,
+                    /* No_padding */0,
+                    /* Lit_precision */[0],
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "promoted_words: %.0f\n"
           ]), st[/* promoted_words */1]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "major_words: ",
-              1: /* Float */{
-                0: /* Float_f */0,
-                1: /* No_padding */0,
-                2: /* Lit_precision */[0],
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 8
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "major_words: ",
+                /* Float */Block.__(8, [
+                    /* Float_f */0,
+                    /* No_padding */0,
+                    /* Lit_precision */[0],
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "major_words: %.0f\n"
           ]), st[/* major_words */2]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "minor_collections: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "minor_collections: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "minor_collections: %d\n"
           ]), st[/* minor_collections */3]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "major_collections: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "major_collections: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "major_collections: %d\n"
           ]), st[/* major_collections */4]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "heap_words: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "heap_words: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "heap_words: %d\n"
           ]), st[/* heap_words */5]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "heap_chunks: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "heap_chunks: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "heap_chunks: %d\n"
           ]), st[/* heap_chunks */6]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "top_heap_words: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "top_heap_words: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "top_heap_words: %d\n"
           ]), st[/* top_heap_words */14]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "live_words: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "live_words: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "live_words: %d\n"
           ]), st[/* live_words */7]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "live_blocks: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "live_blocks: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "live_blocks: %d\n"
           ]), st[/* live_blocks */8]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "free_words: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "free_words: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "free_words: %d\n"
           ]), st[/* free_words */9]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "free_blocks: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "free_blocks: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "free_blocks: %d\n"
           ]), st[/* free_blocks */10]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "largest_free: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "largest_free: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "largest_free: %d\n"
           ]), st[/* largest_free */11]);
   Curry._1(Printf.fprintf(c, /* Format */[
-            /* String_literal */{
-              0: "fragments: ",
-              1: /* Int */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* "\n" */10,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 4
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "fragments: ",
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* "\n" */10,
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "fragments: %d\n"
           ]), st[/* fragments */12]);
   return Curry._1(Printf.fprintf(c, /* Format */[
-                  /* String_literal */{
-                    0: "compactions: ",
-                    1: /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* Char_literal */{
-                        0: /* "\n" */10,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "compactions: ",
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "compactions: %d\n"
                 ]), st[/* compactions */13]);
 }

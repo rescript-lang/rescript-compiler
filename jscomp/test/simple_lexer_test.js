@@ -4,6 +4,7 @@
 var Bytes       = require("../stdlib/bytes");
 var Mt          = require("./mt");
 var Lexing      = require("../stdlib/lexing");
+var Block       = require("../runtime/block");
 var Curry       = require("../runtime/curry");
 var Caml_string = require("../runtime/caml_string");
 
@@ -53,12 +54,10 @@ function __ocaml_lex_translate_rec(lexbuf, ___ocaml_lex_state) {
 var suites_000 = /* tuple */[
   "translate",
   function () {
-    return /* Eq */{
-            0: __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
-            1: "-- . --",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              __ocaml_lex_translate_rec(Lexing.from_string("-- current_directory --"), 0),
+              "-- . --"
+            ]);
   }
 ];
 

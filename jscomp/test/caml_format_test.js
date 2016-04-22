@@ -7,6 +7,7 @@ var Caml_float  = require("../runtime/caml_float");
 var Pervasives  = require("../stdlib/pervasives");
 var Caml_format = require("../runtime/caml_format");
 var Mt          = require("./mt");
+var Block       = require("../runtime/block");
 var Curry       = require("../runtime/curry");
 var Printf      = require("../stdlib/printf");
 var Int64       = require("../stdlib/int64");
@@ -97,26 +98,20 @@ function from_of_string() {
                   var a = param[0];
                   return /* tuple */[
                           Curry._1(Printf.sprintf(/* Format */[
-                                    /* String_literal */{
-                                      0: "of_string ",
-                                      1: /* Scan_get_counter */{
-                                        0: /* Token_counter */2,
-                                        1: /* End_of_format */0,
-                                        length: 2,
-                                        tag: 21
-                                      },
-                                      length: 2,
-                                      tag: 11
-                                    },
+                                    /* String_literal */Block.__(11, [
+                                        "of_string ",
+                                        /* Scan_get_counter */Block.__(21, [
+                                            /* Token_counter */2,
+                                            /* End_of_format */0
+                                          ])
+                                      ]),
                                     "of_string %L"
                                   ]), i),
                           function () {
-                            return /* Eq */{
-                                    0: Caml_format.caml_int_of_string(b),
-                                    1: a,
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Caml_format.caml_int_of_string(b),
+                                      a
+                                    ]);
                           }
                         ];
                 }, of_string));
@@ -124,19 +119,15 @@ function from_of_string() {
 
 function u(v) {
   return Curry._1(Printf.sprintf(/* Format */[
-                  /* Int */{
-                    0: /* Int_d */0,
-                    1: /* Lit_padding */{
-                      0: /* Right */1,
-                      1: 33,
-                      length: 2,
-                      tag: 0
-                    },
-                    2: /* No_precision */0,
-                    3: /* End_of_format */0,
-                    length: 4,
-                    tag: 4
-                  },
+                  /* Int */Block.__(4, [
+                      /* Int_d */0,
+                      /* Lit_padding */Block.__(0, [
+                          /* Right */1,
+                          33
+                        ]),
+                      /* No_precision */0,
+                      /* End_of_format */0
+                    ]),
                   "%33d"
                 ]), v);
 }
@@ -144,19 +135,15 @@ function u(v) {
 var to_str = Caml_format.caml_int_of_string
 
 var v = Curry._1(Printf.sprintf(/* Format */[
-          /* Int */{
-            0: /* Int_d */0,
-            1: /* Lit_padding */{
-              0: /* Right */1,
-              1: 3,
-              length: 2,
-              tag: 0
-            },
-            2: /* No_precision */0,
-            3: /* End_of_format */0,
-            length: 4,
-            tag: 4
-          },
+          /* Int */Block.__(4, [
+              /* Int_d */0,
+              /* Lit_padding */Block.__(0, [
+                  /* Right */1,
+                  3
+                ]),
+              /* No_precision */0,
+              /* End_of_format */0
+            ]),
           "%3d"
         ]), 3333);
 
@@ -202,12 +189,10 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
           /* tuple */[
             "isnan_of_string",
             function () {
-              return /* Eq */{
-                      0: /* true */1,
-                      1: +(Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        /* true */1,
+                        +(Caml_float.caml_classify_float(Caml_format.caml_float_of_string("nan")) === /* FP_nan */4)
+                      ]);
             }
           ],
           /* [] */0
@@ -216,53 +201,41 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                       var a = param[0];
                       return /* tuple */[
                               Curry._1(Printf.sprintf(/* Format */[
-                                        /* String_literal */{
-                                          0: "infinity_of_string ",
-                                          1: /* Int */{
-                                            0: /* Int_d */0,
-                                            1: /* No_padding */0,
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 4
-                                          },
-                                          length: 2,
-                                          tag: 11
-                                        },
+                                        /* String_literal */Block.__(11, [
+                                            "infinity_of_string ",
+                                            /* Int */Block.__(4, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ]),
                                         "infinity_of_string %d"
                                       ]), i),
                               function () {
-                                return /* Eq */{
-                                        0: a,
-                                        1: Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b)),
-                                        length: 2,
-                                        tag: 0
-                                      };
+                                return /* Eq */Block.__(0, [
+                                          a,
+                                          Caml_float.caml_classify_float(Caml_format.caml_float_of_string(b))
+                                        ]);
                               }
                             ];
                     }, pairs)), Pervasives.$at(/* :: */[
                   /* tuple */[
                     "throw",
                     function () {
-                      return /* ThrowAny */{
-                              0: function () {
-                                return Caml_format.caml_float_of_string("");
-                              },
-                              length: 1,
-                              tag: 3
-                            };
+                      return /* ThrowAny */Block.__(3, [function () {
+                                  return Caml_format.caml_float_of_string("");
+                                }]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
                       "format_int",
                       function () {
-                        return /* Eq */{
-                                0: "                              33",
-                                1: Caml_format.caml_format_int("%32d", 33),
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  "                              33",
+                                  Caml_format.caml_format_int("%32d", 33)
+                                ]);
                       }
                     ],
                     /* [] */0
@@ -272,28 +245,22 @@ var suites = Pervasives.$at(from_of_string(of_string), Pervasives.$at(/* :: */[
                           var a = param[0];
                           return /* tuple */[
                                   Curry._1(Printf.sprintf(/* Format */[
-                                            /* String_literal */{
-                                              0: "normal_float_of_string ",
-                                              1: /* Int */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 11
-                                            },
+                                            /* String_literal */Block.__(11, [
+                                                "normal_float_of_string ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
                                             "normal_float_of_string %d"
                                           ]), i),
                                   function () {
-                                    return /* Eq */{
-                                            0: a,
-                                            1: Caml_format.caml_float_of_string(b),
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              a,
+                                              Caml_format.caml_float_of_string(b)
+                                            ]);
                                   }
                                 ];
                         }, pairs$1))))));
@@ -305,82 +272,56 @@ function ff(param) {
 var formatter_suites_000 = /* tuple */[
   "fmt_concat",
   function () {
-    return /* Eq */{
-            0: Curry._6(Format.asprintf(Pervasives.$caret$caret(/* Format */[
-                          /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* Int */{
-                                0: /* Int_d */0,
-                                1: /* Lit_padding */{
-                                  0: /* Zeros */2,
-                                  1: 3,
-                                  length: 2,
-                                  tag: 0
-                                },
-                                2: /* No_precision */0,
-                                3: /* Char_literal */{
-                                  0: /* " " */32,
-                                  1: /* Scan_get_counter */{
-                                    0: /* Token_counter */2,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 21
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
-                                length: 4,
-                                tag: 4
-                              },
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          "%s %03d %L"
-                        ], /* Format */[
-                          /* Caml_string */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* Int */{
-                                0: /* Int_d */0,
-                                1: /* Lit_padding */{
-                                  0: /* Zeros */2,
-                                  1: 3,
-                                  length: 2,
-                                  tag: 0
-                                },
-                                2: /* No_precision */0,
-                                3: /* Char_literal */{
-                                  0: /* " " */32,
-                                  1: /* Scan_get_counter */{
-                                    0: /* Token_counter */2,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 21
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
-                                length: 4,
-                                tag: 4
-                              },
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 3
-                          },
-                          "%S %03d %L"
-                        ])), "32", 33, 33, "a", 33, 3),
-            1: '32 033 33"a" 033 3',
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Curry._6(Format.asprintf(Pervasives.$caret$caret(/* Format */[
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Int */Block.__(4, [
+                                        /* Int_d */0,
+                                        /* Lit_padding */Block.__(0, [
+                                            /* Zeros */2,
+                                            3
+                                          ]),
+                                        /* No_precision */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* Scan_get_counter */Block.__(21, [
+                                                /* Token_counter */2,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ]),
+                            "%s %03d %L"
+                          ], /* Format */[
+                            /* Caml_string */Block.__(3, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Int */Block.__(4, [
+                                        /* Int_d */0,
+                                        /* Lit_padding */Block.__(0, [
+                                            /* Zeros */2,
+                                            3
+                                          ]),
+                                        /* No_precision */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* Scan_get_counter */Block.__(21, [
+                                                /* Token_counter */2,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ]),
+                            "%S %03d %L"
+                          ])), "32", 33, 33, "a", 33, 3),
+              '32 033 33"a" 033 3'
+            ]);
   }
 ];
 
@@ -388,996 +329,320 @@ var formatter_suites_001 = /* :: */[
   /* tuple */[
     "fmt_gen",
     function () {
-      return /* Eq */{
-              0: Curry._8(Format.asprintf(Pervasives.$caret$caret(/* Format */[
-                            /* String */{
-                              0: /* No_padding */0,
-                              1: /* Char_literal */{
-                                0: /* " " */32,
-                                1: /* Int */{
-                                  0: /* Int_d */0,
-                                  1: /* Lit_padding */{
-                                    0: /* Zeros */2,
-                                    1: 3,
-                                    length: 2,
-                                    tag: 0
-                                  },
-                                  2: /* No_precision */0,
-                                  3: /* Char_literal */{
-                                    0: /* " " */32,
-                                    1: /* Scan_get_counter */{
-                                      0: /* Token_counter */2,
-                                      1: /* End_of_format */0,
-                                      length: 2,
-                                      tag: 21
-                                    },
-                                    length: 2,
-                                    tag: 12
-                                  },
-                                  length: 4,
-                                  tag: 4
-                                },
-                                length: 2,
-                                tag: 12
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            "%s %03d %L"
-                          ], /* Format */[
-                            /* Caml_string */{
-                              0: /* No_padding */0,
-                              1: /* Char_literal */{
-                                0: /* " " */32,
-                                1: /* Int */{
-                                  0: /* Int_d */0,
-                                  1: /* Lit_padding */{
-                                    0: /* Zeros */2,
-                                    1: 3,
-                                    length: 2,
-                                    tag: 0
-                                  },
-                                  2: /* No_precision */0,
-                                  3: /* Char_literal */{
-                                    0: /* " " */32,
-                                    1: /* Scan_get_counter */{
-                                      0: /* Token_counter */2,
-                                      1: /* Char_literal */{
-                                        0: /* " " */32,
-                                        1: /* Alpha */{
-                                          0: /* End_of_format */0,
-                                          length: 1,
-                                          tag: 15
-                                        },
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 21
-                                    },
-                                    length: 2,
-                                    tag: 12
-                                  },
-                                  length: 4,
-                                  tag: 4
-                                },
-                                length: 2,
-                                tag: 12
-                              },
-                              length: 2,
-                              tag: 3
-                            },
-                            "%S %03d %L %a"
-                          ])), "32", 33, 33, "a", 33, 3, function (param, param$1) {
-                    return Format.pp_print_list(/* None */0, Format.pp_print_int, param, param$1);
-                  }, /* :: */[
-                    1,
-                    /* :: */[
-                      2,
+      return /* Eq */Block.__(0, [
+                Curry._8(Format.asprintf(Pervasives.$caret$caret(/* Format */[
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* " " */32,
+                                      /* Int */Block.__(4, [
+                                          /* Int_d */0,
+                                          /* Lit_padding */Block.__(0, [
+                                              /* Zeros */2,
+                                              3
+                                            ]),
+                                          /* No_precision */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* Scan_get_counter */Block.__(21, [
+                                                  /* Token_counter */2,
+                                                  /* End_of_format */0
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ]),
+                              "%s %03d %L"
+                            ], /* Format */[
+                              /* Caml_string */Block.__(3, [
+                                  /* No_padding */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* " " */32,
+                                      /* Int */Block.__(4, [
+                                          /* Int_d */0,
+                                          /* Lit_padding */Block.__(0, [
+                                              /* Zeros */2,
+                                              3
+                                            ]),
+                                          /* No_precision */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* Scan_get_counter */Block.__(21, [
+                                                  /* Token_counter */2,
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* " " */32,
+                                                      /* Alpha */Block.__(15, [/* End_of_format */0])
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ]),
+                              "%S %03d %L %a"
+                            ])), "32", 33, 33, "a", 33, 3, function (param, param$1) {
+                      return Format.pp_print_list(/* None */0, Format.pp_print_int, param, param$1);
+                    }, /* :: */[
+                      1,
                       /* :: */[
-                        3,
-                        /* [] */0
+                        2,
+                        /* :: */[
+                          3,
+                          /* [] */0
+                        ]
                       ]
-                    ]
-                  ]),
-              1: '32 033 33"a" 033 3 12\n3',
-              length: 2,
-              tag: 0
-            };
+                    ]),
+                '32 033 33"a" 033 3 12\n3'
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "long_fmt",
       function () {
-        return /* Eq */{
-                0: Curry.app(Format.asprintf(/* Format */[
-                          /* Int */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* Int */{
-                                0: /* Int_i */3,
-                                1: /* No_padding */0,
-                                2: /* No_precision */0,
-                                3: /* Char_literal */{
-                                  0: /* " " */32,
-                                  1: /* Int */{
-                                    0: /* Int_u */12,
-                                    1: /* No_padding */0,
-                                    2: /* No_precision */0,
-                                    3: /* Char_literal */{
-                                      0: /* " " */32,
-                                      1: /* Scan_get_counter */{
-                                        0: /* Char_counter */1,
-                                        1: /* Char_literal */{
-                                          0: /* " " */32,
-                                          1: /* Scan_get_counter */{
-                                            0: /* Line_counter */0,
-                                            1: /* Char_literal */{
-                                              0: /* " " */32,
-                                              1: /* Scan_get_counter */{
-                                                0: /* Token_counter */2,
-                                                1: /* Char_literal */{
-                                                  0: /* " " */32,
-                                                  1: /* Scan_get_counter */{
-                                                    0: /* Token_counter */2,
-                                                    1: /* Char_literal */{
-                                                      0: /* " " */32,
-                                                      1: /* Int */{
-                                                        0: /* Int_x */6,
-                                                        1: /* No_padding */0,
-                                                        2: /* No_precision */0,
-                                                        3: /* Char_literal */{
-                                                          0: /* " " */32,
-                                                          1: /* Int */{
-                                                            0: /* Int_X */8,
-                                                            1: /* No_padding */0,
-                                                            2: /* No_precision */0,
-                                                            3: /* Char_literal */{
-                                                              0: /* " " */32,
-                                                              1: /* Int */{
-                                                                0: /* Int_o */10,
-                                                                1: /* No_padding */0,
-                                                                2: /* No_precision */0,
-                                                                3: /* Char_literal */{
-                                                                  0: /* " " */32,
-                                                                  1: /* String */{
-                                                                    0: /* No_padding */0,
-                                                                    1: /* Char_literal */{
-                                                                      0: /* " " */32,
-                                                                      1: /* Caml_string */{
-                                                                        0: /* No_padding */0,
-                                                                        1: /* Char_literal */{
-                                                                          0: /* " " */32,
-                                                                          1: /* Char */{
-                                                                            0: /* Char_literal */{
-                                                                              0: /* " " */32,
-                                                                              1: /* Caml_char */{
-                                                                                0: /* Char_literal */{
-                                                                                  0: /* " " */32,
-                                                                                  1: /* Float */{
-                                                                                    0: /* Float_f */0,
-                                                                                    1: /* No_padding */0,
-                                                                                    2: /* No_precision */0,
-                                                                                    3: /* Char_literal */{
-                                                                                      0: /* " " */32,
-                                                                                      1: /* Float */{
-                                                                                        0: /* Float_F */15,
-                                                                                        1: /* No_padding */0,
-                                                                                        2: /* No_precision */0,
-                                                                                        3: /* Char_literal */{
-                                                                                          0: /* " " */32,
-                                                                                          1: /* Float */{
-                                                                                            0: /* Float_e */3,
-                                                                                            1: /* No_padding */0,
-                                                                                            2: /* No_precision */0,
-                                                                                            3: /* Char_literal */{
-                                                                                              0: /* " " */32,
-                                                                                              1: /* Float */{
-                                                                                                0: /* Float_E */6,
-                                                                                                1: /* No_padding */0,
-                                                                                                2: /* No_precision */0,
-                                                                                                3: /* Char_literal */{
-                                                                                                  0: /* " " */32,
-                                                                                                  1: /* Float */{
-                                                                                                    0: /* Float_g */9,
-                                                                                                    1: /* No_padding */0,
-                                                                                                    2: /* No_precision */0,
-                                                                                                    3: /* Char_literal */{
-                                                                                                      0: /* " " */32,
-                                                                                                      1: /* Float */{
-                                                                                                        0: /* Float_G */12,
-                                                                                                        1: /* No_padding */0,
-                                                                                                        2: /* No_precision */0,
-                                                                                                        3: /* Char_literal */{
-                                                                                                          0: /* " " */32,
-                                                                                                          1: /* Bool */{
-                                                                                                            0: /* Char_literal */{
-                                                                                                              0: /* " " */32,
-                                                                                                              1: /* Bool */{
-                                                                                                                0: /* Char_literal */{
-                                                                                                                  0: /* " " */32,
-                                                                                                                  1: /* Int32 */{
-                                                                                                                    0: /* Int_d */0,
-                                                                                                                    1: /* No_padding */0,
-                                                                                                                    2: /* No_precision */0,
-                                                                                                                    3: /* Char_literal */{
-                                                                                                                      0: /* " " */32,
-                                                                                                                      1: /* Int32 */{
-                                                                                                                        0: /* Int_i */3,
-                                                                                                                        1: /* No_padding */0,
-                                                                                                                        2: /* No_precision */0,
-                                                                                                                        3: /* Char_literal */{
-                                                                                                                          0: /* " " */32,
-                                                                                                                          1: /* Int32 */{
-                                                                                                                            0: /* Int_u */12,
-                                                                                                                            1: /* No_padding */0,
-                                                                                                                            2: /* No_precision */0,
-                                                                                                                            3: /* Char_literal */{
-                                                                                                                              0: /* " " */32,
-                                                                                                                              1: /* Int32 */{
-                                                                                                                                0: /* Int_x */6,
-                                                                                                                                1: /* No_padding */0,
-                                                                                                                                2: /* No_precision */0,
-                                                                                                                                3: /* Char_literal */{
-                                                                                                                                  0: /* " " */32,
-                                                                                                                                  1: /* Int32 */{
-                                                                                                                                    0: /* Int_X */8,
-                                                                                                                                    1: /* No_padding */0,
-                                                                                                                                    2: /* No_precision */0,
-                                                                                                                                    3: /* Char_literal */{
-                                                                                                                                      0: /* " " */32,
-                                                                                                                                      1: /* Int32 */{
-                                                                                                                                        0: /* Int_o */10,
-                                                                                                                                        1: /* No_padding */0,
-                                                                                                                                        2: /* No_precision */0,
-                                                                                                                                        3: /* Char_literal */{
-                                                                                                                                          0: /* " " */32,
-                                                                                                                                          1: /* Nativeint */{
-                                                                                                                                            0: /* Int_d */0,
-                                                                                                                                            1: /* No_padding */0,
-                                                                                                                                            2: /* No_precision */0,
-                                                                                                                                            3: /* Char_literal */{
-                                                                                                                                              0: /* " " */32,
-                                                                                                                                              1: /* Nativeint */{
-                                                                                                                                                0: /* Int_i */3,
-                                                                                                                                                1: /* No_padding */0,
-                                                                                                                                                2: /* No_precision */0,
-                                                                                                                                                3: /* Char_literal */{
-                                                                                                                                                  0: /* " " */32,
-                                                                                                                                                  1: /* Nativeint */{
-                                                                                                                                                    0: /* Int_u */12,
-                                                                                                                                                    1: /* No_padding */0,
-                                                                                                                                                    2: /* No_precision */0,
-                                                                                                                                                    3: /* Char_literal */{
-                                                                                                                                                      0: /* " " */32,
-                                                                                                                                                      1: /* Nativeint */{
-                                                                                                                                                        0: /* Int_x */6,
-                                                                                                                                                        1: /* No_padding */0,
-                                                                                                                                                        2: /* No_precision */0,
-                                                                                                                                                        3: /* Char_literal */{
-                                                                                                                                                          0: /* " " */32,
-                                                                                                                                                          1: /* Nativeint */{
-                                                                                                                                                            0: /* Int_x */6,
-                                                                                                                                                            1: /* No_padding */0,
-                                                                                                                                                            2: /* No_precision */0,
-                                                                                                                                                            3: /* Char_literal */{
-                                                                                                                                                              0: /* " " */32,
-                                                                                                                                                              1: /* Nativeint */{
-                                                                                                                                                                0: /* Int_o */10,
-                                                                                                                                                                1: /* No_padding */0,
-                                                                                                                                                                2: /* No_precision */0,
-                                                                                                                                                                3: /* String_literal */{
-                                                                                                                                                                  0: "  ",
-                                                                                                                                                                  1: /* End_of_format */0,
-                                                                                                                                                                  length: 2,
-                                                                                                                                                                  tag: 11
-                                                                                                                                                                },
-                                                                                                                                                                length: 4,
-                                                                                                                                                                tag: 6
-                                                                                                                                                              },
-                                                                                                                                                              length: 2,
-                                                                                                                                                              tag: 12
-                                                                                                                                                            },
-                                                                                                                                                            length: 4,
-                                                                                                                                                            tag: 6
-                                                                                                                                                          },
-                                                                                                                                                          length: 2,
-                                                                                                                                                          tag: 12
-                                                                                                                                                        },
-                                                                                                                                                        length: 4,
-                                                                                                                                                        tag: 6
-                                                                                                                                                      },
-                                                                                                                                                      length: 2,
-                                                                                                                                                      tag: 12
-                                                                                                                                                    },
-                                                                                                                                                    length: 4,
-                                                                                                                                                    tag: 6
-                                                                                                                                                  },
-                                                                                                                                                  length: 2,
-                                                                                                                                                  tag: 12
-                                                                                                                                                },
-                                                                                                                                                length: 4,
-                                                                                                                                                tag: 6
-                                                                                                                                              },
-                                                                                                                                              length: 2,
-                                                                                                                                              tag: 12
-                                                                                                                                            },
-                                                                                                                                            length: 4,
-                                                                                                                                            tag: 6
-                                                                                                                                          },
-                                                                                                                                          length: 2,
-                                                                                                                                          tag: 12
-                                                                                                                                        },
-                                                                                                                                        length: 4,
-                                                                                                                                        tag: 5
-                                                                                                                                      },
-                                                                                                                                      length: 2,
-                                                                                                                                      tag: 12
-                                                                                                                                    },
-                                                                                                                                    length: 4,
-                                                                                                                                    tag: 5
-                                                                                                                                  },
-                                                                                                                                  length: 2,
-                                                                                                                                  tag: 12
-                                                                                                                                },
-                                                                                                                                length: 4,
-                                                                                                                                tag: 5
-                                                                                                                              },
-                                                                                                                              length: 2,
-                                                                                                                              tag: 12
-                                                                                                                            },
-                                                                                                                            length: 4,
-                                                                                                                            tag: 5
-                                                                                                                          },
-                                                                                                                          length: 2,
-                                                                                                                          tag: 12
-                                                                                                                        },
-                                                                                                                        length: 4,
-                                                                                                                        tag: 5
-                                                                                                                      },
-                                                                                                                      length: 2,
-                                                                                                                      tag: 12
-                                                                                                                    },
-                                                                                                                    length: 4,
-                                                                                                                    tag: 5
-                                                                                                                  },
-                                                                                                                  length: 2,
-                                                                                                                  tag: 12
-                                                                                                                },
-                                                                                                                length: 1,
-                                                                                                                tag: 9
-                                                                                                              },
-                                                                                                              length: 2,
-                                                                                                              tag: 12
-                                                                                                            },
-                                                                                                            length: 1,
-                                                                                                            tag: 9
-                                                                                                          },
-                                                                                                          length: 2,
-                                                                                                          tag: 12
-                                                                                                        },
-                                                                                                        length: 4,
-                                                                                                        tag: 8
-                                                                                                      },
-                                                                                                      length: 2,
-                                                                                                      tag: 12
-                                                                                                    },
-                                                                                                    length: 4,
-                                                                                                    tag: 8
-                                                                                                  },
-                                                                                                  length: 2,
-                                                                                                  tag: 12
-                                                                                                },
-                                                                                                length: 4,
-                                                                                                tag: 8
-                                                                                              },
-                                                                                              length: 2,
-                                                                                              tag: 12
-                                                                                            },
-                                                                                            length: 4,
-                                                                                            tag: 8
-                                                                                          },
-                                                                                          length: 2,
-                                                                                          tag: 12
-                                                                                        },
-                                                                                        length: 4,
-                                                                                        tag: 8
-                                                                                      },
-                                                                                      length: 2,
-                                                                                      tag: 12
-                                                                                    },
-                                                                                    length: 4,
-                                                                                    tag: 8
-                                                                                  },
-                                                                                  length: 2,
-                                                                                  tag: 12
-                                                                                },
-                                                                                length: 1,
-                                                                                tag: 1
-                                                                              },
-                                                                              length: 2,
-                                                                              tag: 12
-                                                                            },
-                                                                            length: 1,
-                                                                            tag: 0
-                                                                          },
-                                                                          length: 2,
-                                                                          tag: 12
-                                                                        },
-                                                                        length: 2,
-                                                                        tag: 3
-                                                                      },
-                                                                      length: 2,
-                                                                      tag: 12
-                                                                    },
-                                                                    length: 2,
-                                                                    tag: 2
-                                                                  },
-                                                                  length: 2,
-                                                                  tag: 12
-                                                                },
-                                                                length: 4,
-                                                                tag: 4
-                                                              },
-                                                              length: 2,
-                                                              tag: 12
-                                                            },
-                                                            length: 4,
-                                                            tag: 4
-                                                          },
-                                                          length: 2,
-                                                          tag: 12
-                                                        },
-                                                        length: 4,
-                                                        tag: 4
-                                                      },
-                                                      length: 2,
-                                                      tag: 12
-                                                    },
-                                                    length: 2,
-                                                    tag: 21
-                                                  },
-                                                  length: 2,
-                                                  tag: 12
-                                                },
-                                                length: 2,
-                                                tag: 21
-                                              },
-                                              length: 2,
-                                              tag: 12
-                                            },
-                                            length: 2,
-                                            tag: 21
-                                          },
-                                          length: 2,
-                                          tag: 12
-                                        },
-                                        length: 2,
-                                        tag: 21
-                                      },
-                                      length: 2,
-                                      tag: 12
-                                    },
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
-                                length: 4,
-                                tag: 4
-                              },
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 4,
-                            tag: 4
-                          },
-                          "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  "
-                        ]), [
-                      1,
-                      2,
-                      3,
-                      4,
-                      5,
-                      6,
-                      7,
-                      8,
-                      9,
-                      10,
-                      "a",
-                      "b",
-                      /* "c" */99,
-                      /* "d" */100,
-                      1,
-                      2,
-                      3,
-                      4,
-                      5,
-                      6,
-                      /* true */1,
-                      /* false */0,
-                      0,
-                      1,
-                      2,
-                      3,
-                      4,
-                      5,
-                      6,
-                      7,
-                      8,
-                      9,
-                      10,
-                      11
-                    ]),
-                1: "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  ",
-                length: 2,
-                tag: 0
-              };
-      }
-    ],
-    /* :: */[
-      /* tuple */[
-        "long_fmt_2",
-        function () {
-          return /* Eq */{
-                  0: Curry.app(Format.asprintf(/* Format */[
-                            /* Formatting_gen */{
-                              0: /* Open_box */{
-                                0: /* Format */[
-                                  /* End_of_format */0,
-                                  ""
-                                ],
-                                length: 1,
-                                tag: 1
-                              },
-                              1: /* Int */{
-                                0: /* Int_d */0,
-                                1: /* Lit_padding */{
-                                  0: /* Right */1,
-                                  1: 23,
-                                  length: 2,
-                                  tag: 0
-                                },
-                                2: /* No_precision */0,
-                                3: /* Char_literal */{
-                                  0: /* " " */32,
-                                  1: /* Int */{
-                                    0: /* Int_i */3,
-                                    1: /* Lit_padding */{
-                                      0: /* Right */1,
-                                      1: 2,
-                                      length: 2,
-                                      tag: 0
-                                    },
-                                    2: /* No_precision */0,
-                                    3: /* Char_literal */{
-                                      0: /* " " */32,
-                                      1: /* Int */{
-                                        0: /* Int_u */12,
-                                        1: /* Lit_padding */{
-                                          0: /* Right */1,
-                                          1: 3,
-                                          length: 2,
-                                          tag: 0
-                                        },
-                                        2: /* No_precision */0,
-                                        3: /* Char_literal */{
-                                          0: /* " " */32,
-                                          1: /* Scan_get_counter */{
-                                            0: /* Char_counter */1,
-                                            1: /* Char_literal */{
-                                              0: /* " " */32,
-                                              1: /* Int */{
-                                                0: /* Int_x */6,
-                                                1: /* Lit_padding */{
-                                                  0: /* Right */1,
-                                                  1: 0,
-                                                  length: 2,
-                                                  tag: 0
-                                                },
-                                                2: /* No_precision */0,
-                                                3: /* String_literal */{
-                                                  0: "l ",
-                                                  1: /* Int */{
-                                                    0: /* Int_x */6,
-                                                    1: /* Lit_padding */{
-                                                      0: /* Right */1,
-                                                      1: 0,
-                                                      length: 2,
-                                                      tag: 0
-                                                    },
-                                                    2: /* No_precision */0,
-                                                    3: /* String_literal */{
-                                                      0: "L ",
-                                                      1: /* Scan_get_counter */{
-                                                        0: /* Token_counter */2,
-                                                        1: /* Char_literal */{
-                                                          0: /* " " */32,
-                                                          1: /* Int */{
-                                                            0: /* Int_x */6,
-                                                            1: /* Lit_padding */{
-                                                              0: /* Zeros */2,
-                                                              1: 3,
-                                                              length: 2,
-                                                              tag: 0
-                                                            },
-                                                            2: /* No_precision */0,
-                                                            3: /* Char_literal */{
-                                                              0: /* " " */32,
-                                                              1: /* Int */{
-                                                                0: /* Int_X */8,
-                                                                1: /* No_padding */0,
-                                                                2: /* No_precision */0,
-                                                                3: /* Char_literal */{
-                                                                  0: /* " " */32,
-                                                                  1: /* Int */{
-                                                                    0: /* Int_o */10,
-                                                                    1: /* No_padding */0,
-                                                                    2: /* No_precision */0,
-                                                                    3: /* Char_literal */{
-                                                                      0: /* " " */32,
-                                                                      1: /* String */{
-                                                                        0: /* No_padding */0,
-                                                                        1: /* Char_literal */{
-                                                                          0: /* " " */32,
-                                                                          1: /* Caml_string */{
-                                                                            0: /* No_padding */0,
-                                                                            1: /* Char_literal */{
-                                                                              0: /* " " */32,
-                                                                              1: /* Char */{
-                                                                                0: /* Char_literal */{
-                                                                                  0: /* " " */32,
-                                                                                  1: /* Caml_char */{
-                                                                                    0: /* Char_literal */{
-                                                                                      0: /* " " */32,
-                                                                                      1: /* Float */{
-                                                                                        0: /* Float_f */0,
-                                                                                        1: /* Lit_padding */{
-                                                                                          0: /* Right */1,
-                                                                                          1: 3,
-                                                                                          length: 2,
-                                                                                          tag: 0
-                                                                                        },
-                                                                                        2: /* No_precision */0,
-                                                                                        3: /* Char_literal */{
-                                                                                          0: /* " " */32,
-                                                                                          1: /* Float */{
-                                                                                            0: /* Float_F */15,
-                                                                                            1: /* Lit_padding */{
-                                                                                              0: /* Right */1,
-                                                                                              1: 2,
-                                                                                              length: 2,
-                                                                                              tag: 0
-                                                                                            },
-                                                                                            2: /* No_precision */0,
-                                                                                            3: /* Char_literal */{
-                                                                                              0: /* " " */32,
-                                                                                              1: /* Float */{
-                                                                                                0: /* Float_e */3,
-                                                                                                1: /* Lit_padding */{
-                                                                                                  0: /* Right */1,
-                                                                                                  1: 2,
-                                                                                                  length: 2,
-                                                                                                  tag: 0
-                                                                                                },
-                                                                                                2: /* No_precision */0,
-                                                                                                3: /* Char_literal */{
-                                                                                                  0: /* " " */32,
-                                                                                                  1: /* Float */{
-                                                                                                    0: /* Float_E */6,
-                                                                                                    1: /* No_padding */0,
-                                                                                                    2: /* No_precision */0,
-                                                                                                    3: /* Char_literal */{
-                                                                                                      0: /* " " */32,
-                                                                                                      1: /* Float */{
-                                                                                                        0: /* Float_g */9,
-                                                                                                        1: /* No_padding */0,
-                                                                                                        2: /* No_precision */0,
-                                                                                                        3: /* Char_literal */{
-                                                                                                          0: /* " " */32,
-                                                                                                          1: /* Float */{
-                                                                                                            0: /* Float_G */12,
-                                                                                                            1: /* No_padding */0,
-                                                                                                            2: /* No_precision */0,
-                                                                                                            3: /* Char_literal */{
-                                                                                                              0: /* " " */32,
-                                                                                                              1: /* Bool */{
-                                                                                                                0: /* Char_literal */{
-                                                                                                                  0: /* " " */32,
-                                                                                                                  1: /* Bool */{
-                                                                                                                    0: /* Char_literal */{
-                                                                                                                      0: /* " " */32,
-                                                                                                                      1: /* Int32 */{
-                                                                                                                        0: /* Int_d */0,
-                                                                                                                        1: /* No_padding */0,
-                                                                                                                        2: /* No_precision */0,
-                                                                                                                        3: /* Char_literal */{
-                                                                                                                          0: /* " " */32,
-                                                                                                                          1: /* Int32 */{
-                                                                                                                            0: /* Int_i */3,
-                                                                                                                            1: /* No_padding */0,
-                                                                                                                            2: /* No_precision */0,
-                                                                                                                            3: /* Char_literal */{
-                                                                                                                              0: /* " " */32,
-                                                                                                                              1: /* Int32 */{
-                                                                                                                                0: /* Int_u */12,
-                                                                                                                                1: /* No_padding */0,
-                                                                                                                                2: /* No_precision */0,
-                                                                                                                                3: /* Char_literal */{
-                                                                                                                                  0: /* " " */32,
-                                                                                                                                  1: /* Int32 */{
-                                                                                                                                    0: /* Int_x */6,
-                                                                                                                                    1: /* No_padding */0,
-                                                                                                                                    2: /* No_precision */0,
-                                                                                                                                    3: /* Char_literal */{
-                                                                                                                                      0: /* " " */32,
-                                                                                                                                      1: /* Int32 */{
-                                                                                                                                        0: /* Int_X */8,
-                                                                                                                                        1: /* No_padding */0,
-                                                                                                                                        2: /* No_precision */0,
-                                                                                                                                        3: /* Char_literal */{
-                                                                                                                                          0: /* " " */32,
-                                                                                                                                          1: /* Int32 */{
-                                                                                                                                            0: /* Int_o */10,
-                                                                                                                                            1: /* No_padding */0,
-                                                                                                                                            2: /* No_precision */0,
-                                                                                                                                            3: /* Char_literal */{
-                                                                                                                                              0: /* " " */32,
-                                                                                                                                              1: /* Nativeint */{
-                                                                                                                                                0: /* Int_d */0,
-                                                                                                                                                1: /* No_padding */0,
-                                                                                                                                                2: /* No_precision */0,
-                                                                                                                                                3: /* Char_literal */{
-                                                                                                                                                  0: /* " " */32,
-                                                                                                                                                  1: /* Nativeint */{
-                                                                                                                                                    0: /* Int_i */3,
-                                                                                                                                                    1: /* No_padding */0,
-                                                                                                                                                    2: /* No_precision */0,
-                                                                                                                                                    3: /* Char_literal */{
-                                                                                                                                                      0: /* " " */32,
-                                                                                                                                                      1: /* Nativeint */{
-                                                                                                                                                        0: /* Int_u */12,
-                                                                                                                                                        1: /* No_padding */0,
-                                                                                                                                                        2: /* No_precision */0,
-                                                                                                                                                        3: /* Char_literal */{
-                                                                                                                                                          0: /* " " */32,
-                                                                                                                                                          1: /* Nativeint */{
-                                                                                                                                                            0: /* Int_x */6,
-                                                                                                                                                            1: /* No_padding */0,
-                                                                                                                                                            2: /* No_precision */0,
-                                                                                                                                                            3: /* Char_literal */{
-                                                                                                                                                              0: /* " " */32,
-                                                                                                                                                              1: /* Nativeint */{
-                                                                                                                                                                0: /* Int_x */6,
-                                                                                                                                                                1: /* No_padding */0,
-                                                                                                                                                                2: /* No_precision */0,
-                                                                                                                                                                3: /* Char_literal */{
-                                                                                                                                                                  0: /* " " */32,
-                                                                                                                                                                  1: /* Nativeint */{
-                                                                                                                                                                    0: /* Int_o */10,
-                                                                                                                                                                    1: /* No_padding */0,
-                                                                                                                                                                    2: /* No_precision */0,
-                                                                                                                                                                    3: /* String_literal */{
-                                                                                                                                                                      0: "  ",
-                                                                                                                                                                      1: /* Formatting_lit */{
-                                                                                                                                                                        0: /* Close_box */0,
-                                                                                                                                                                        1: /* End_of_format */0,
-                                                                                                                                                                        length: 2,
-                                                                                                                                                                        tag: 17
-                                                                                                                                                                      },
-                                                                                                                                                                      length: 2,
-                                                                                                                                                                      tag: 11
-                                                                                                                                                                    },
-                                                                                                                                                                    length: 4,
-                                                                                                                                                                    tag: 6
-                                                                                                                                                                  },
-                                                                                                                                                                  length: 2,
-                                                                                                                                                                  tag: 12
-                                                                                                                                                                },
-                                                                                                                                                                length: 4,
-                                                                                                                                                                tag: 6
-                                                                                                                                                              },
-                                                                                                                                                              length: 2,
-                                                                                                                                                              tag: 12
-                                                                                                                                                            },
-                                                                                                                                                            length: 4,
-                                                                                                                                                            tag: 6
-                                                                                                                                                          },
-                                                                                                                                                          length: 2,
-                                                                                                                                                          tag: 12
-                                                                                                                                                        },
-                                                                                                                                                        length: 4,
-                                                                                                                                                        tag: 6
-                                                                                                                                                      },
-                                                                                                                                                      length: 2,
-                                                                                                                                                      tag: 12
-                                                                                                                                                    },
-                                                                                                                                                    length: 4,
-                                                                                                                                                    tag: 6
-                                                                                                                                                  },
-                                                                                                                                                  length: 2,
-                                                                                                                                                  tag: 12
-                                                                                                                                                },
-                                                                                                                                                length: 4,
-                                                                                                                                                tag: 6
-                                                                                                                                              },
-                                                                                                                                              length: 2,
-                                                                                                                                              tag: 12
-                                                                                                                                            },
-                                                                                                                                            length: 4,
-                                                                                                                                            tag: 5
-                                                                                                                                          },
-                                                                                                                                          length: 2,
-                                                                                                                                          tag: 12
-                                                                                                                                        },
-                                                                                                                                        length: 4,
-                                                                                                                                        tag: 5
-                                                                                                                                      },
-                                                                                                                                      length: 2,
-                                                                                                                                      tag: 12
-                                                                                                                                    },
-                                                                                                                                    length: 4,
-                                                                                                                                    tag: 5
-                                                                                                                                  },
-                                                                                                                                  length: 2,
-                                                                                                                                  tag: 12
-                                                                                                                                },
-                                                                                                                                length: 4,
-                                                                                                                                tag: 5
-                                                                                                                              },
-                                                                                                                              length: 2,
-                                                                                                                              tag: 12
-                                                                                                                            },
-                                                                                                                            length: 4,
-                                                                                                                            tag: 5
-                                                                                                                          },
-                                                                                                                          length: 2,
-                                                                                                                          tag: 12
-                                                                                                                        },
-                                                                                                                        length: 4,
-                                                                                                                        tag: 5
-                                                                                                                      },
-                                                                                                                      length: 2,
-                                                                                                                      tag: 12
-                                                                                                                    },
-                                                                                                                    length: 1,
-                                                                                                                    tag: 9
-                                                                                                                  },
-                                                                                                                  length: 2,
-                                                                                                                  tag: 12
-                                                                                                                },
-                                                                                                                length: 1,
-                                                                                                                tag: 9
-                                                                                                              },
-                                                                                                              length: 2,
-                                                                                                              tag: 12
-                                                                                                            },
-                                                                                                            length: 4,
-                                                                                                            tag: 8
-                                                                                                          },
-                                                                                                          length: 2,
-                                                                                                          tag: 12
-                                                                                                        },
-                                                                                                        length: 4,
-                                                                                                        tag: 8
-                                                                                                      },
-                                                                                                      length: 2,
-                                                                                                      tag: 12
-                                                                                                    },
-                                                                                                    length: 4,
-                                                                                                    tag: 8
-                                                                                                  },
-                                                                                                  length: 2,
-                                                                                                  tag: 12
-                                                                                                },
-                                                                                                length: 4,
-                                                                                                tag: 8
-                                                                                              },
-                                                                                              length: 2,
-                                                                                              tag: 12
-                                                                                            },
-                                                                                            length: 4,
-                                                                                            tag: 8
-                                                                                          },
-                                                                                          length: 2,
-                                                                                          tag: 12
-                                                                                        },
-                                                                                        length: 4,
-                                                                                        tag: 8
-                                                                                      },
-                                                                                      length: 2,
-                                                                                      tag: 12
-                                                                                    },
-                                                                                    length: 1,
-                                                                                    tag: 1
-                                                                                  },
-                                                                                  length: 2,
-                                                                                  tag: 12
-                                                                                },
-                                                                                length: 1,
-                                                                                tag: 0
-                                                                              },
-                                                                              length: 2,
-                                                                              tag: 12
-                                                                            },
-                                                                            length: 2,
-                                                                            tag: 3
-                                                                          },
-                                                                          length: 2,
-                                                                          tag: 12
-                                                                        },
-                                                                        length: 2,
-                                                                        tag: 2
-                                                                      },
-                                                                      length: 2,
-                                                                      tag: 12
-                                                                    },
-                                                                    length: 4,
-                                                                    tag: 4
-                                                                  },
-                                                                  length: 2,
-                                                                  tag: 12
-                                                                },
-                                                                length: 4,
-                                                                tag: 4
-                                                              },
-                                                              length: 2,
-                                                              tag: 12
-                                                            },
-                                                            length: 4,
-                                                            tag: 4
-                                                          },
-                                                          length: 2,
-                                                          tag: 12
-                                                        },
-                                                        length: 2,
-                                                        tag: 21
-                                                      },
-                                                      length: 2,
-                                                      tag: 11
-                                                    },
-                                                    length: 4,
-                                                    tag: 4
-                                                  },
-                                                  length: 2,
-                                                  tag: 11
-                                                },
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 12
-                                            },
-                                            length: 2,
-                                            tag: 21
-                                          },
-                                          length: 2,
-                                          tag: 12
-                                        },
-                                        length: 4,
-                                        tag: 4
-                                      },
-                                      length: 2,
-                                      tag: 12
-                                    },
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
-                                length: 4,
-                                tag: 4
-                              },
-                              length: 2,
-                              tag: 18
-                            },
-                            "@[%23d %2i %3u %4n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]"
+        return /* Eq */Block.__(0, [
+                  Curry.app(Format.asprintf(/* Format */[
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Int */Block.__(4, [
+                                        /* Int_i */3,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* Int */Block.__(4, [
+                                                /* Int_u */12,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* Char_literal */Block.__(12, [
+                                                    /* " " */32,
+                                                    /* Scan_get_counter */Block.__(21, [
+                                                        /* Char_counter */1,
+                                                        /* Char_literal */Block.__(12, [
+                                                            /* " " */32,
+                                                            /* Scan_get_counter */Block.__(21, [
+                                                                /* Line_counter */0,
+                                                                /* Char_literal */Block.__(12, [
+                                                                    /* " " */32,
+                                                                    /* Scan_get_counter */Block.__(21, [
+                                                                        /* Token_counter */2,
+                                                                        /* Char_literal */Block.__(12, [
+                                                                            /* " " */32,
+                                                                            /* Scan_get_counter */Block.__(21, [
+                                                                                /* Token_counter */2,
+                                                                                /* Char_literal */Block.__(12, [
+                                                                                    /* " " */32,
+                                                                                    /* Int */Block.__(4, [
+                                                                                        /* Int_x */6,
+                                                                                        /* No_padding */0,
+                                                                                        /* No_precision */0,
+                                                                                        /* Char_literal */Block.__(12, [
+                                                                                            /* " " */32,
+                                                                                            /* Int */Block.__(4, [
+                                                                                                /* Int_X */8,
+                                                                                                /* No_padding */0,
+                                                                                                /* No_precision */0,
+                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                    /* " " */32,
+                                                                                                    /* Int */Block.__(4, [
+                                                                                                        /* Int_o */10,
+                                                                                                        /* No_padding */0,
+                                                                                                        /* No_precision */0,
+                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                            /* " " */32,
+                                                                                                            /* String */Block.__(2, [
+                                                                                                                /* No_padding */0,
+                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                    /* " " */32,
+                                                                                                                    /* Caml_string */Block.__(3, [
+                                                                                                                        /* No_padding */0,
+                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                            /* " " */32,
+                                                                                                                            /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                                                                                                                    /* " " */32,
+                                                                                                                                    /* Caml_char */Block.__(1, [/* Char_literal */Block.__(12, [
+                                                                                                                                            /* " " */32,
+                                                                                                                                            /* Float */Block.__(8, [
+                                                                                                                                                /* Float_f */0,
+                                                                                                                                                /* No_padding */0,
+                                                                                                                                                /* No_precision */0,
+                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                    /* " " */32,
+                                                                                                                                                    /* Float */Block.__(8, [
+                                                                                                                                                        /* Float_F */15,
+                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                            /* " " */32,
+                                                                                                                                                            /* Float */Block.__(8, [
+                                                                                                                                                                /* Float_e */3,
+                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                    /* Float */Block.__(8, [
+                                                                                                                                                                        /* Float_E */6,
+                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                            /* Float */Block.__(8, [
+                                                                                                                                                                                /* Float_g */9,
+                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                    /* Float */Block.__(8, [
+                                                                                                                                                                                        /* Float_G */12,
+                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                            /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                    /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                            /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                /* Int_d */0,
+                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                    /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                        /* Int_i */3,
+                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                                            /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                /* Int_u */12,
+                                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                                    /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                        /* Int_x */6,
+                                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                                                            /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                                /* Int_X */8,
+                                                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                                                    /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                                        /* Int_o */10,
+                                                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                                                                            /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                /* Int_d */0,
+                                                                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                                                                    /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                        /* Int_i */3,
+                                                                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                                                                                            /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                /* Int_u */12,
+                                                                                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                                                                                    /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                        /* Int_x */6,
+                                                                                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                                                                                        /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                            /* " " */32,
+                                                                                                                                                                                                                                                                                            /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                                /* Int_x */6,
+                                                                                                                                                                                                                                                                                                /* No_padding */0,
+                                                                                                                                                                                                                                                                                                /* No_precision */0,
+                                                                                                                                                                                                                                                                                                /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                                    /* " " */32,
+                                                                                                                                                                                                                                                                                                    /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                                        /* Int_o */10,
+                                                                                                                                                                                                                                                                                                        /* No_padding */0,
+                                                                                                                                                                                                                                                                                                        /* No_precision */0,
+                                                                                                                                                                                                                                                                                                        /* String_literal */Block.__(11, [
+                                                                                                                                                                                                                                                                                                            "  ",
+                                                                                                                                                                                                                                                                                                            /* End_of_format */0
+                                                                                                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                                                                                                              ])
+                                                                                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                                                                                              ])
+                                                                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                                                                              ])
+                                                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                                                              ])
+                                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                                              ])
+                                                                                                                                                                                                                          ])
+                                                                                                                                                                                                                      ])
+                                                                                                                                                                                                                  ])
+                                                                                                                                                                                                              ])
+                                                                                                                                                                                                          ])])
+                                                                                                                                                                                                  ])])
+                                                                                                                                                                                          ])
+                                                                                                                                                                                      ])
+                                                                                                                                                                                  ])
+                                                                                                                                                                              ])
+                                                                                                                                                                          ])
+                                                                                                                                                                      ])
+                                                                                                                                                                  ])
+                                                                                                                                                              ])
+                                                                                                                                                          ])
+                                                                                                                                                      ])
+                                                                                                                                                  ])
+                                                                                                                                              ])
+                                                                                                                                          ])])
+                                                                                                                                  ])])
+                                                                                                                          ])
+                                                                                                                      ])
+                                                                                                                  ])
+                                                                                                              ])
+                                                                                                          ])
+                                                                                                      ])
+                                                                                                  ])
+                                                                                              ])
+                                                                                          ])
+                                                                                      ])
+                                                                                  ])
+                                                                              ])
+                                                                          ])
+                                                                      ])
+                                                                  ])
+                                                              ])
+                                                          ])
+                                                      ])
+                                                  ])
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ]),
+                            "%d %i %u %n %l %L %N %x %X %o %s %S %c %C %f %F %e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  "
                           ]), [
                         1,
                         2,
@@ -1414,336 +679,598 @@ var formatter_suites_001 = /* :: */[
                         10,
                         11
                       ]),
-                  1: "                      1  2   3 4 5l 6L 7 008 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  ",
-                  length: 2,
-                  tag: 0
-                };
+                  "1 2 3 4 5 6 7 8 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "
+                ]);
+      }
+    ],
+    /* :: */[
+      /* tuple */[
+        "long_fmt_2",
+        function () {
+          return /* Eq */Block.__(0, [
+                    Curry.app(Format.asprintf(/* Format */[
+                              /* Formatting_gen */Block.__(18, [
+                                  /* Open_box */Block.__(1, [/* Format */[
+                                        /* End_of_format */0,
+                                        ""
+                                      ]]),
+                                  /* Int */Block.__(4, [
+                                      /* Int_d */0,
+                                      /* Lit_padding */Block.__(0, [
+                                          /* Right */1,
+                                          23
+                                        ]),
+                                      /* No_precision */0,
+                                      /* Char_literal */Block.__(12, [
+                                          /* " " */32,
+                                          /* Int */Block.__(4, [
+                                              /* Int_i */3,
+                                              /* Lit_padding */Block.__(0, [
+                                                  /* Right */1,
+                                                  2
+                                                ]),
+                                              /* No_precision */0,
+                                              /* Char_literal */Block.__(12, [
+                                                  /* " " */32,
+                                                  /* Int */Block.__(4, [
+                                                      /* Int_u */12,
+                                                      /* Lit_padding */Block.__(0, [
+                                                          /* Right */1,
+                                                          3
+                                                        ]),
+                                                      /* No_precision */0,
+                                                      /* Char_literal */Block.__(12, [
+                                                          /* " " */32,
+                                                          /* Scan_get_counter */Block.__(21, [
+                                                              /* Char_counter */1,
+                                                              /* Char_literal */Block.__(12, [
+                                                                  /* " " */32,
+                                                                  /* Int */Block.__(4, [
+                                                                      /* Int_x */6,
+                                                                      /* Lit_padding */Block.__(0, [
+                                                                          /* Right */1,
+                                                                          0
+                                                                        ]),
+                                                                      /* No_precision */0,
+                                                                      /* String_literal */Block.__(11, [
+                                                                          "l ",
+                                                                          /* Int */Block.__(4, [
+                                                                              /* Int_x */6,
+                                                                              /* Lit_padding */Block.__(0, [
+                                                                                  /* Right */1,
+                                                                                  0
+                                                                                ]),
+                                                                              /* No_precision */0,
+                                                                              /* String_literal */Block.__(11, [
+                                                                                  "L ",
+                                                                                  /* Scan_get_counter */Block.__(21, [
+                                                                                      /* Token_counter */2,
+                                                                                      /* Char_literal */Block.__(12, [
+                                                                                          /* " " */32,
+                                                                                          /* Int */Block.__(4, [
+                                                                                              /* Int_x */6,
+                                                                                              /* Lit_padding */Block.__(0, [
+                                                                                                  /* Zeros */2,
+                                                                                                  3
+                                                                                                ]),
+                                                                                              /* No_precision */0,
+                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                  /* " " */32,
+                                                                                                  /* Int */Block.__(4, [
+                                                                                                      /* Int_X */8,
+                                                                                                      /* No_padding */0,
+                                                                                                      /* No_precision */0,
+                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                          /* " " */32,
+                                                                                                          /* Int */Block.__(4, [
+                                                                                                              /* Int_o */10,
+                                                                                                              /* No_padding */0,
+                                                                                                              /* No_precision */0,
+                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                  /* " " */32,
+                                                                                                                  /* String */Block.__(2, [
+                                                                                                                      /* No_padding */0,
+                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                          /* " " */32,
+                                                                                                                          /* Caml_string */Block.__(3, [
+                                                                                                                              /* No_padding */0,
+                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                  /* " " */32,
+                                                                                                                                  /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                                                                                                                          /* " " */32,
+                                                                                                                                          /* Caml_char */Block.__(1, [/* Char_literal */Block.__(12, [
+                                                                                                                                                  /* " " */32,
+                                                                                                                                                  /* Float */Block.__(8, [
+                                                                                                                                                      /* Float_f */0,
+                                                                                                                                                      /* Lit_padding */Block.__(0, [
+                                                                                                                                                          /* Right */1,
+                                                                                                                                                          3
+                                                                                                                                                        ]),
+                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                          /* " " */32,
+                                                                                                                                                          /* Float */Block.__(8, [
+                                                                                                                                                              /* Float_F */15,
+                                                                                                                                                              /* Lit_padding */Block.__(0, [
+                                                                                                                                                                  /* Right */1,
+                                                                                                                                                                  2
+                                                                                                                                                                ]),
+                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                  /* Float */Block.__(8, [
+                                                                                                                                                                      /* Float_e */3,
+                                                                                                                                                                      /* Lit_padding */Block.__(0, [
+                                                                                                                                                                          /* Right */1,
+                                                                                                                                                                          2
+                                                                                                                                                                        ]),
+                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                          /* Float */Block.__(8, [
+                                                                                                                                                                              /* Float_E */6,
+                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                  /* Float */Block.__(8, [
+                                                                                                                                                                                      /* Float_g */9,
+                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                          /* Float */Block.__(8, [
+                                                                                                                                                                                              /* Float_G */12,
+                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                  /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                          /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                  /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                      /* Int_d */0,
+                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                          /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                              /* Int_i */3,
+                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                                  /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                      /* Int_u */12,
+                                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                                          /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                              /* Int_x */6,
+                                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                                                  /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                                      /* Int_X */8,
+                                                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                                                          /* Int32 */Block.__(5, [
+                                                                                                                                                                                                                                                              /* Int_o */10,
+                                                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                                                                  /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                      /* Int_d */0,
+                                                                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                                                                          /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                              /* Int_i */3,
+                                                                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                                                                                  /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                      /* Int_u */12,
+                                                                                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                                                                                          /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                              /* Int_x */6,
+                                                                                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                                                                                              /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                                  /* " " */32,
+                                                                                                                                                                                                                                                                                                  /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                                      /* Int_x */6,
+                                                                                                                                                                                                                                                                                                      /* No_padding */0,
+                                                                                                                                                                                                                                                                                                      /* No_precision */0,
+                                                                                                                                                                                                                                                                                                      /* Char_literal */Block.__(12, [
+                                                                                                                                                                                                                                                                                                          /* " " */32,
+                                                                                                                                                                                                                                                                                                          /* Nativeint */Block.__(6, [
+                                                                                                                                                                                                                                                                                                              /* Int_o */10,
+                                                                                                                                                                                                                                                                                                              /* No_padding */0,
+                                                                                                                                                                                                                                                                                                              /* No_precision */0,
+                                                                                                                                                                                                                                                                                                              /* String_literal */Block.__(11, [
+                                                                                                                                                                                                                                                                                                                  "  ",
+                                                                                                                                                                                                                                                                                                                  /* Formatting_lit */Block.__(17, [
+                                                                                                                                                                                                                                                                                                                      /* Close_box */0,
+                                                                                                                                                                                                                                                                                                                      /* End_of_format */0
+                                                                                                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                                ])
+                                                                                                                                                                                                                            ])
+                                                                                                                                                                                                                        ])
+                                                                                                                                                                                                                    ])
+                                                                                                                                                                                                                ])])
+                                                                                                                                                                                                        ])])
+                                                                                                                                                                                                ])
+                                                                                                                                                                                            ])
+                                                                                                                                                                                        ])
+                                                                                                                                                                                    ])
+                                                                                                                                                                                ])
+                                                                                                                                                                            ])
+                                                                                                                                                                        ])
+                                                                                                                                                                    ])
+                                                                                                                                                                ])
+                                                                                                                                                            ])
+                                                                                                                                                        ])
+                                                                                                                                                    ])
+                                                                                                                                                ])])
+                                                                                                                                        ])])
+                                                                                                                                ])
+                                                                                                                            ])
+                                                                                                                        ])
+                                                                                                                    ])
+                                                                                                                ])
+                                                                                                            ])
+                                                                                                        ])
+                                                                                                    ])
+                                                                                                ])
+                                                                                            ])
+                                                                                        ])
+                                                                                    ])
+                                                                                ])
+                                                                            ])
+                                                                        ])
+                                                                    ])
+                                                                ])
+                                                            ])
+                                                        ])
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ]),
+                              "@[%23d %2i %3u %4n %0xl %0xL %N %03x %X %o %s %S %c %C %3f %2F %2e %E %g %G %B %b %ld %li %lu %lx %lX %lo %nd %ni %nu %nx %nx %no  @]"
+                            ]), [
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8,
+                          9,
+                          10,
+                          "a",
+                          "b",
+                          /* "c" */99,
+                          /* "d" */100,
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          /* true */1,
+                          /* false */0,
+                          0,
+                          1,
+                          2,
+                          3,
+                          4,
+                          5,
+                          6,
+                          7,
+                          8,
+                          9,
+                          10,
+                          11
+                        ]),
+                    "                      1  2   3 4 5l 6L 7 008 9 12 a \"b\" c 'd' 1.000000 2. 3.000000e+00 4.000000E+00 5 6 true false 0 1 2 3 4 5 6 7 8 9 a 13  "
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "width_1",
           function () {
-            return /* Eq */{
-                    0: Curry._1(Format.asprintf(/* Format */[
-                              /* Int */{
-                                0: /* Int_d */0,
-                                1: /* Lit_padding */{
-                                  0: /* Zeros */2,
-                                  1: 14,
-                                  length: 2,
-                                  tag: 0
-                                },
-                                2: /* No_precision */0,
-                                3: /* End_of_format */0,
-                                length: 4,
-                                tag: 4
-                              },
-                              "%014d"
-                            ]), 32),
-                    1: "00000000000032",
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      Curry._1(Format.asprintf(/* Format */[
+                                /* Int */Block.__(4, [
+                                    /* Int_d */0,
+                                    /* Lit_padding */Block.__(0, [
+                                        /* Zeros */2,
+                                        14
+                                      ]),
+                                    /* No_precision */0,
+                                    /* End_of_format */0
+                                  ]),
+                                "%014d"
+                              ]), 32),
+                      "00000000000032"
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "width_2",
             function () {
-              return /* Eq */{
-                      0: Curry._1(Format.asprintf(/* Format */[
-                                /* Float */{
-                                  0: /* Float_f */0,
-                                  1: /* Lit_padding */{
-                                    0: /* Right */1,
-                                    1: 10,
-                                    length: 2,
-                                    tag: 0
-                                  },
-                                  2: /* Lit_precision */[3],
-                                  3: /* End_of_format */0,
-                                  length: 4,
-                                  tag: 8
-                                },
-                                "%10.3f"
-                              ]), 32333.02),
-                      1: " 32333.020",
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        Curry._1(Format.asprintf(/* Format */[
+                                  /* Float */Block.__(8, [
+                                      /* Float_f */0,
+                                      /* Lit_padding */Block.__(0, [
+                                          /* Right */1,
+                                          10
+                                        ]),
+                                      /* Lit_precision */[3],
+                                      /* End_of_format */0
+                                    ]),
+                                  "%10.3f"
+                                ]), 32333.02),
+                        " 32333.020"
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "alternate_1",
               function () {
-                return /* Eq */{
-                        0: Curry._1(Format.asprintf(/* Format */[
-                                  /* Int */{
-                                    0: /* Int_x */6,
-                                    1: /* Lit_padding */{
-                                      0: /* Right */1,
-                                      1: 0,
-                                      length: 2,
-                                      tag: 0
-                                    },
-                                    2: /* No_precision */0,
-                                    3: /* End_of_format */0,
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  "%0x"
-                                ]), 32333),
-                        1: "7e4d",
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Curry._1(Format.asprintf(/* Format */[
+                                    /* Int */Block.__(4, [
+                                        /* Int_x */6,
+                                        /* Lit_padding */Block.__(0, [
+                                            /* Right */1,
+                                            0
+                                          ]),
+                                        /* No_precision */0,
+                                        /* End_of_format */0
+                                      ]),
+                                    "%0x"
+                                  ]), 32333),
+                          "7e4d"
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 "alternate_2",
                 function () {
-                  return /* Eq */{
-                          0: Curry._1(Format.asprintf(/* Format */[
-                                    /* Int */{
-                                      0: /* Int_Cx */7,
-                                      1: /* Lit_padding */{
-                                        0: /* Right */1,
-                                        1: 0,
-                                        length: 2,
-                                        tag: 0
-                                      },
-                                      2: /* No_precision */0,
-                                      3: /* End_of_format */0,
-                                      length: 4,
-                                      tag: 4
-                                    },
-                                    "%#0x"
-                                  ]), 32333),
-                          1: "0x7e4d",
-                          length: 2,
-                          tag: 0
-                        };
+                  return /* Eq */Block.__(0, [
+                            Curry._1(Format.asprintf(/* Format */[
+                                      /* Int */Block.__(4, [
+                                          /* Int_Cx */7,
+                                          /* Lit_padding */Block.__(0, [
+                                              /* Right */1,
+                                              0
+                                            ]),
+                                          /* No_precision */0,
+                                          /* End_of_format */0
+                                        ]),
+                                      "%#0x"
+                                    ]), 32333),
+                            "0x7e4d"
+                          ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
                   "alternate_3",
                   function () {
-                    return /* Eq */{
-                            0: /* tuple */[
-                              Curry._1(Format.asprintf(/* Format */[
-                                        /* Int */{
-                                          0: /* Int_Co */11,
-                                          1: /* No_padding */0,
-                                          2: /* No_precision */0,
-                                          3: /* End_of_format */0,
-                                          length: 4,
-                                          tag: 4
-                                        },
-                                        "%#o"
-                                      ]), 32),
-                              Curry._1(Format.asprintf(/* Format */[
-                                        /* Int */{
-                                          0: /* Int_o */10,
-                                          1: /* No_padding */0,
-                                          2: /* No_precision */0,
-                                          3: /* End_of_format */0,
-                                          length: 4,
-                                          tag: 4
-                                        },
-                                        "%o"
-                                      ]), 32)
-                            ],
-                            1: /* tuple */[
-                              "040",
-                              "40"
-                            ],
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              /* tuple */[
+                                Curry._1(Format.asprintf(/* Format */[
+                                          /* Int */Block.__(4, [
+                                              /* Int_Co */11,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* End_of_format */0
+                                            ]),
+                                          "%#o"
+                                        ]), 32),
+                                Curry._1(Format.asprintf(/* Format */[
+                                          /* Int */Block.__(4, [
+                                              /* Int_o */10,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* End_of_format */0
+                                            ]),
+                                          "%o"
+                                        ]), 32)
+                              ],
+                              /* tuple */[
+                                "040",
+                                "40"
+                              ]
+                            ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
                     "justify_0",
                     function () {
-                      return /* Eq */{
-                              0: Caml_format.caml_format_int("%-8d", 32),
-                              1: "32      ",
-                              length: 2,
-                              tag: 0
-                            };
+                      return /* Eq */Block.__(0, [
+                                Caml_format.caml_format_int("%-8d", 32),
+                                "32      "
+                              ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
                       "sign_p",
                       function () {
-                        return /* Eq */{
-                                0: Curry._1(Format.asprintf(/* Format */[
-                                          /* Int */{
-                                            0: /* Int_pd */1,
-                                            1: /* Lit_padding */{
-                                              0: /* Right */1,
-                                              1: 4,
-                                              length: 2,
-                                              tag: 0
-                                            },
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 4
-                                          },
-                                          "%+4d"
-                                        ]), 32),
-                                1: " +32",
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  Curry._1(Format.asprintf(/* Format */[
+                                            /* Int */Block.__(4, [
+                                                /* Int_pd */1,
+                                                /* Lit_padding */Block.__(0, [
+                                                    /* Right */1,
+                                                    4
+                                                  ]),
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ]),
+                                            "%+4d"
+                                          ]), 32),
+                                  " +32"
+                                ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
                         "sign_2p",
                         function () {
-                          return /* Eq */{
-                                  0: Curry._1(Format.asprintf(/* Format */[
-                                            /* Int */{
-                                              0: /* Int_sd */2,
-                                              1: /* Lit_padding */{
-                                                0: /* Right */1,
-                                                1: 4,
-                                                length: 2,
-                                                tag: 0
-                                              },
-                                              2: /* No_precision */0,
-                                              3: /* End_of_format */0,
-                                              length: 4,
-                                              tag: 4
-                                            },
-                                            "% 4d"
-                                          ]), 32),
-                                  1: "  32",
-                                  length: 2,
-                                  tag: 0
-                                };
+                          return /* Eq */Block.__(0, [
+                                    Curry._1(Format.asprintf(/* Format */[
+                                              /* Int */Block.__(4, [
+                                                  /* Int_sd */2,
+                                                  /* Lit_padding */Block.__(0, [
+                                                      /* Right */1,
+                                                      4
+                                                    ]),
+                                                  /* No_precision */0,
+                                                  /* End_of_format */0
+                                                ]),
+                                              "% 4d"
+                                            ]), 32),
+                                    "  32"
+                                  ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
                           "sign_3p",
                           function () {
-                            return /* Eq */{
-                                    0: Curry._1(Format.asprintf(/* Format */[
-                                              /* Int32 */{
-                                                0: /* Int_u */12,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 5
-                                              },
-                                              "%lu"
-                                            ]), -1),
-                                    1: "4294967295",
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Curry._1(Format.asprintf(/* Format */[
+                                                /* Int32 */Block.__(5, [
+                                                    /* Int_u */12,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ]),
+                                                "%lu"
+                                              ]), -1),
+                                      "4294967295"
+                                    ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
                             "sign_4p",
                             function () {
-                              return /* Eq */{
-                                      0: Curry._1(Format.asprintf(/* Format */[
-                                                /* Int32 */{
-                                                  0: /* Int_d */0,
-                                                  1: /* No_padding */0,
-                                                  2: /* No_precision */0,
-                                                  3: /* End_of_format */0,
-                                                  length: 4,
-                                                  tag: 5
-                                                },
-                                                "%ld"
-                                              ]), -1),
-                                      1: "-1",
-                                      length: 2,
-                                      tag: 0
-                                    };
+                              return /* Eq */Block.__(0, [
+                                        Curry._1(Format.asprintf(/* Format */[
+                                                  /* Int32 */Block.__(5, [
+                                                      /* Int_d */0,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
+                                                      /* End_of_format */0
+                                                    ]),
+                                                  "%ld"
+                                                ]), -1),
+                                        "-1"
+                                      ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
                               "width_3",
                               function () {
-                                return /* Eq */{
-                                        0: Caml_format.caml_format_int("%032d", 32),
-                                        1: "00000000000000000000000000000032",
-                                        length: 2,
-                                        tag: 0
-                                      };
+                                return /* Eq */Block.__(0, [
+                                          Caml_format.caml_format_int("%032d", 32),
+                                          "00000000000000000000000000000032"
+                                        ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
                                 "prec_1",
                                 function () {
-                                  return /* Eq */{
-                                          0: Curry._1(Format.asprintf(/* Format */[
-                                                    /* Int */{
-                                                      0: /* Int_d */0,
-                                                      1: /* No_padding */0,
-                                                      2: /* Lit_precision */[10],
-                                                      3: /* End_of_format */0,
-                                                      length: 4,
-                                                      tag: 4
-                                                    },
-                                                    "%.10d"
-                                                  ]), 32),
-                                          1: "0000000032",
-                                          length: 2,
-                                          tag: 0
-                                        };
+                                  return /* Eq */Block.__(0, [
+                                            Curry._1(Format.asprintf(/* Format */[
+                                                      /* Int */Block.__(4, [
+                                                          /* Int_d */0,
+                                                          /* No_padding */0,
+                                                          /* Lit_precision */[10],
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "%.10d"
+                                                    ]), 32),
+                                            "0000000032"
+                                          ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
                                   "prec_2",
                                   function () {
-                                    return /* Eq */{
-                                            0: Caml_format.caml_format_int("%.10d", 32),
-                                            1: "0000000032",
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              Caml_format.caml_format_int("%.10d", 32),
+                                              "0000000032"
+                                            ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
                                     "prec_3",
                                     function () {
-                                      return /* Eq */{
-                                              0: Caml_format.caml_format_int("%.d", 32),
-                                              1: "32",
-                                              length: 2,
-                                              tag: 0
-                                            };
+                                      return /* Eq */Block.__(0, [
+                                                Caml_format.caml_format_int("%.d", 32),
+                                                "32"
+                                              ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
                                       "prec_4",
                                       function () {
-                                        return /* Eq */{
-                                                0: Caml_format.caml_format_int("%.d", 32),
-                                                1: "32",
-                                                length: 2,
-                                                tag: 0
-                                              };
+                                        return /* Eq */Block.__(0, [
+                                                  Caml_format.caml_format_int("%.d", 32),
+                                                  "32"
+                                                ]);
                                       }
                                     ],
                                     /* [] */0
@@ -1881,24 +1408,20 @@ var float_data = /* array */[
 
 function ident(ppf, s) {
   return Curry._1(Format.fprintf(ppf, /* Format */[
-                  /* String */{
-                    0: /* No_padding */0,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 2
-                  },
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ]),
                   "%s"
                 ]), s);
 }
 
 function kwd(ppf, s) {
   return Curry._1(Format.fprintf(ppf, /* Format */[
-                  /* String */{
-                    0: /* No_padding */0,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 2
-                  },
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ]),
                   "%s"
                 ]), s);
 }
@@ -1908,11 +1431,7 @@ function pr_exp0(ppf, lam) {
   switch (lam.tag | 0) {
     case 1 : 
         return Curry._2(Format.fprintf(ppf, /* Format */[
-                        /* Alpha */{
-                          0: /* End_of_format */0,
-                          length: 1,
-                          tag: 15
-                        },
+                        /* Alpha */Block.__(15, [/* End_of_format */0]),
                         "%a"
                       ]), ident, lam[0]);
     case 0 : 
@@ -1923,43 +1442,25 @@ function pr_exp0(ppf, lam) {
   }
   if (exit === 1) {
     return Curry._2(Format.fprintf(ppf, /* Format */[
-                    /* Formatting_gen */{
-                      0: /* Open_box */{
-                        0: /* Format */[
-                          /* String_literal */{
-                            0: "<1>",
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 11
-                          },
-                          "<1>"
-                        ],
-                        length: 1,
-                        tag: 1
-                      },
-                      1: /* Char_literal */{
-                        0: /* "(" */40,
-                        1: /* Alpha */{
-                          0: /* Char_literal */{
-                            0: /* ")" */41,
-                            1: /* Formatting_lit */{
-                              0: /* Close_box */0,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 17
-                            },
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 1,
-                          tag: 15
-                        },
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 18
-                    },
+                    /* Formatting_gen */Block.__(18, [
+                        /* Open_box */Block.__(1, [/* Format */[
+                              /* String_literal */Block.__(11, [
+                                  "<1>",
+                                  /* End_of_format */0
+                                ]),
+                              "<1>"
+                            ]]),
+                        /* Char_literal */Block.__(12, [
+                            /* "(" */40,
+                            /* Alpha */Block.__(15, [/* Char_literal */Block.__(12, [
+                                    /* ")" */41,
+                                    /* Formatting_lit */Block.__(17, [
+                                        /* Close_box */0,
+                                        /* End_of_format */0
+                                      ])
+                                  ])])
+                          ])
+                      ]),
                     "@[<1>(%a)@]"
                   ]), pr_lambda, lam);
   }
@@ -1968,33 +1469,19 @@ function pr_exp0(ppf, lam) {
 
 function pr_app(ppf, e) {
   return Curry._2(Format.fprintf(ppf, /* Format */[
-                  /* Formatting_gen */{
-                    0: /* Open_box */{
-                      0: /* Format */[
-                        /* String_literal */{
-                          0: "<2>",
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 11
-                        },
-                        "<2>"
-                      ],
-                      length: 1,
-                      tag: 1
-                    },
-                    1: /* Alpha */{
-                      0: /* Formatting_lit */{
-                        0: /* Close_box */0,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 17
-                      },
-                      length: 1,
-                      tag: 15
-                    },
-                    length: 2,
-                    tag: 18
-                  },
+                  /* Formatting_gen */Block.__(18, [
+                      /* Open_box */Block.__(1, [/* Format */[
+                            /* String_literal */Block.__(11, [
+                                "<2>",
+                                /* End_of_format */0
+                              ]),
+                            "<2>"
+                          ]]),
+                      /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                              /* Close_box */0,
+                              /* End_of_format */0
+                            ])])
+                    ]),
                   "@[<2>%a@]"
                 ]), pr_other_applications, e);
 }
@@ -2006,26 +1493,14 @@ function pr_other_applications(ppf, f) {
         return pr_exp0(ppf, f);
     case 2 : 
         return Curry._4(Format.fprintf(ppf, /* Format */[
-                        /* Alpha */{
-                          0: /* Formatting_lit */{
-                            0: /* Break */{
-                              0: "@ ",
-                              1: 1,
-                              2: 0,
-                              length: 3,
-                              tag: 0
-                            },
-                            1: /* Alpha */{
-                              0: /* End_of_format */0,
-                              length: 1,
-                              tag: 15
-                            },
-                            length: 2,
-                            tag: 17
-                          },
-                          length: 1,
-                          tag: 15
-                        },
+                        /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                /* Break */Block.__(0, [
+                                    "@ ",
+                                    1,
+                                    0
+                                  ]),
+                                /* Alpha */Block.__(15, [/* End_of_format */0])
+                              ])]),
                         "%a@ %a"
                       ]), pr_app, f[0], pr_exp0, f[1]);
     
@@ -2036,56 +1511,26 @@ function pr_lambda(ppf, e) {
   switch (e.tag | 0) {
     case 0 : 
         return Curry._8(Format.fprintf(ppf, /* Format */[
-                        /* Formatting_gen */{
-                          0: /* Open_box */{
-                            0: /* Format */[
-                              /* String_literal */{
-                                0: "<1>",
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 11
-                              },
-                              "<1>"
-                            ],
-                            length: 1,
-                            tag: 1
-                          },
-                          1: /* Alpha */{
-                            0: /* Alpha */{
-                              0: /* Alpha */{
-                                0: /* Formatting_lit */{
-                                  0: /* Break */{
-                                    0: "@ ",
-                                    1: 1,
-                                    2: 0,
-                                    length: 3,
-                                    tag: 0
-                                  },
-                                  1: /* Alpha */{
-                                    0: /* Formatting_lit */{
-                                      0: /* Close_box */0,
-                                      1: /* End_of_format */0,
-                                      length: 2,
-                                      tag: 17
-                                    },
-                                    length: 1,
-                                    tag: 15
-                                  },
-                                  length: 2,
-                                  tag: 17
-                                },
-                                length: 1,
-                                tag: 15
-                              },
-                              length: 1,
-                              tag: 15
-                            },
-                            length: 1,
-                            tag: 15
-                          },
-                          length: 2,
-                          tag: 18
-                        },
+                        /* Formatting_gen */Block.__(18, [
+                            /* Open_box */Block.__(1, [/* Format */[
+                                  /* String_literal */Block.__(11, [
+                                      "<1>",
+                                      /* End_of_format */0
+                                    ]),
+                                  "<1>"
+                                ]]),
+                            /* Alpha */Block.__(15, [/* Alpha */Block.__(15, [/* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                            /* Break */Block.__(0, [
+                                                "@ ",
+                                                1,
+                                                0
+                                              ]),
+                                            /* Alpha */Block.__(15, [/* Formatting_lit */Block.__(17, [
+                                                    /* Close_box */0,
+                                                    /* End_of_format */0
+                                                  ])])
+                                          ])])])])
+                          ]),
                         "@[<1>%a%a%a@ %a@]"
                       ]), kwd, "\\", ident, e[0], kwd, ".", pr_lambda, e[1]);
     case 1 : 
@@ -2096,11 +1541,7 @@ function pr_lambda(ppf, e) {
 }
 
 var string_of_lambda = Curry._1(Format.asprintf(/* Format */[
-          /* Alpha */{
-            0: /* End_of_format */0,
-            length: 1,
-            tag: 15
-          },
+          /* Alpha */Block.__(15, [/* End_of_format */0]),
           "%a"
         ]), pr_lambda);
 
@@ -2116,77 +1557,37 @@ var Lambda_suites = /* module */[
 
 var lambda_suites = /* array */[
   /* tuple */[
-    /* Var */{
-      0: "x",
-      length: 1,
-      tag: 1
-    },
+    /* Var */Block.__(1, ["x"]),
     "x"
   ],
   /* tuple */[
-    /* Apply */{
-      0: /* Var */{
-        0: "x",
-        length: 1,
-        tag: 1
-      },
-      1: /* Var */{
-        0: "y",
-        length: 1,
-        tag: 1
-      },
-      length: 2,
-      tag: 2
-    },
+    /* Apply */Block.__(2, [
+        /* Var */Block.__(1, ["x"]),
+        /* Var */Block.__(1, ["y"])
+      ]),
     "x y"
   ],
   /* tuple */[
-    /* Lambda */{
-      0: "z",
-      1: /* Apply */{
-        0: /* Var */{
-          0: "x",
-          length: 1,
-          tag: 1
-        },
-        1: /* Var */{
-          0: "y",
-          length: 1,
-          tag: 1
-        },
-        length: 2,
-        tag: 2
-      },
-      length: 2,
-      tag: 0
-    },
+    /* Lambda */Block.__(0, [
+        "z",
+        /* Apply */Block.__(2, [
+            /* Var */Block.__(1, ["x"]),
+            /* Var */Block.__(1, ["y"])
+          ])
+      ]),
     "\\z. x y"
   ],
   /* tuple */[
-    /* Lambda */{
-      0: "z",
-      1: /* Lambda */{
-        0: "z",
-        1: /* Apply */{
-          0: /* Var */{
-            0: "x",
-            length: 1,
-            tag: 1
-          },
-          1: /* Var */{
-            0: "y",
-            length: 1,
-            tag: 1
-          },
-          length: 2,
-          tag: 2
-        },
-        length: 2,
-        tag: 0
-      },
-      length: 2,
-      tag: 0
-    },
+    /* Lambda */Block.__(0, [
+        "z",
+        /* Lambda */Block.__(0, [
+            "z",
+            /* Apply */Block.__(2, [
+                /* Var */Block.__(1, ["x"]),
+                /* Var */Block.__(1, ["y"])
+              ])
+          ])
+      ]),
     "\\z. \\z. x y"
   ]
 ];
@@ -2197,28 +1598,22 @@ function from_lambda_pairs() {
                   var a = param[0];
                   return /* tuple */[
                           Curry._1(Printf.sprintf(/* Format */[
-                                    /* String_literal */{
-                                      0: "lambda_print ",
-                                      1: /* Int */{
-                                        0: /* Int_d */0,
-                                        1: /* No_padding */0,
-                                        2: /* No_precision */0,
-                                        3: /* End_of_format */0,
-                                        length: 4,
-                                        tag: 4
-                                      },
-                                      length: 2,
-                                      tag: 11
-                                    },
+                                    /* String_literal */Block.__(11, [
+                                        "lambda_print ",
+                                        /* Int */Block.__(4, [
+                                            /* Int_d */0,
+                                            /* No_padding */0,
+                                            /* No_precision */0,
+                                            /* End_of_format */0
+                                          ])
+                                      ]),
                                     "lambda_print %d"
                                   ]), i),
                           function () {
-                            return /* Eq */{
-                                    0: Curry._1(string_of_lambda, a),
-                                    1: b,
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Curry._1(string_of_lambda, a),
+                                      b
+                                    ]);
                           }
                         ];
                 }, lambda_suites));
@@ -2232,35 +1627,25 @@ var ksprintf_suites_000 = /* tuple */[
                   return x + x;
                 }, fmt);
     };
-    return /* Eq */{
-            0: Curry._2(f(/* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Char_literal */{
-                          0: /* " " */32,
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* String_literal */{
-                              0: " a ",
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 11
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      "%s %s a "
-                    ]), "x", "xx"),
-            1: "x xx a x xx a ",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Curry._2(f(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* " " */32,
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        " a ",
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ])
+                          ]),
+                        "%s %s a "
+                      ]), "x", "xx"),
+              "x xx a x xx a "
+            ]);
   }
 ];
 
@@ -2268,30 +1653,22 @@ var ksprintf_suites_001 = /* :: */[
   /* tuple */[
     "sprintf",
     function () {
-      return /* Eq */{
-              0: Curry._2(Format.sprintf(/* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* " " */32,
-                            1: /* Caml_string */{
-                              0: /* No_padding */0,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 3
-                            },
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        "%s %S"
-                      ]), "x", "X"),
-              1: 'x "X"',
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                Curry._2(Format.sprintf(/* Format */[
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* Caml_string */Block.__(3, [
+                                      /* No_padding */0,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ]),
+                          "%s %S"
+                        ]), "x", "X"),
+                'x "X"'
+              ]);
     }
   ],
   /* [] */0
@@ -2305,22 +1682,18 @@ var ksprintf_suites = /* :: */[
 var int64_suites_000 = /* tuple */[
   "i32_simple",
   function () {
-    return /* Eq */{
-            0: Curry._1(Format.asprintf(/* Format */[
-                      /* Nativeint */{
-                        0: /* Int_x */6,
-                        1: /* No_padding */0,
-                        2: /* No_precision */0,
-                        3: /* End_of_format */0,
-                        length: 4,
-                        tag: 6
-                      },
-                      "%nx"
-                    ]), 4294967295),
-            1: "ffffffff",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Curry._1(Format.asprintf(/* Format */[
+                        /* Nativeint */Block.__(6, [
+                            /* Int_x */6,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* End_of_format */0
+                          ]),
+                        "%nx"
+                      ]), 4294967295),
+              "ffffffff"
+            ]);
   }
 ];
 
@@ -2328,619 +1701,509 @@ var int64_suites_001 = /* :: */[
   /* tuple */[
     "i32_simple1",
     function () {
-      return /* Eq */{
-              0: Curry._1(Format.asprintf(/* Format */[
-                        /* Nativeint */{
-                          0: /* Int_o */10,
-                          1: /* No_padding */0,
-                          2: /* No_precision */0,
-                          3: /* End_of_format */0,
-                          length: 4,
-                          tag: 6
-                        },
-                        "%no"
-                      ]), 4294967295),
-              1: "37777777777",
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                Curry._1(Format.asprintf(/* Format */[
+                          /* Nativeint */Block.__(6, [
+                              /* Int_o */10,
+                              /* No_padding */0,
+                              /* No_precision */0,
+                              /* End_of_format */0
+                            ]),
+                          "%no"
+                        ]), 4294967295),
+                "37777777777"
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "i64_simple",
       function () {
-        return /* Eq */{
-                0: Curry._1(Format.asprintf(/* Format */[
-                          /* Int64 */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* End_of_format */0,
-                            length: 4,
-                            tag: 7
-                          },
-                          "%Ld"
-                        ]), /* int64 */[
-                      0,
-                      3
-                    ]),
-                1: "3",
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  Curry._1(Format.asprintf(/* Format */[
+                            /* Int64 */Block.__(7, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ]),
+                            "%Ld"
+                          ]), /* int64 */[
+                        0,
+                        3
+                      ]),
+                  "3"
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "i64_simple2",
         function () {
-          return /* Eq */{
-                  0: Curry._1(Format.asprintf(/* Format */[
-                            /* Int64 */{
-                              0: /* Int_x */6,
-                              1: /* No_padding */0,
-                              2: /* No_precision */0,
-                              3: /* End_of_format */0,
-                              length: 4,
-                              tag: 7
-                            },
-                            "%Lx"
-                          ]), /* int64 */[
-                        0,
-                        33
-                      ]),
-                  1: "21",
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    Curry._1(Format.asprintf(/* Format */[
+                              /* Int64 */Block.__(7, [
+                                  /* Int_x */6,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* End_of_format */0
+                                ]),
+                              "%Lx"
+                            ]), /* int64 */[
+                          0,
+                          33
+                        ]),
+                    "21"
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "i64_simple3",
           function () {
-            return /* Eq */{
-                    0: Curry._1(Format.asprintf(/* Format */[
-                              /* Int64 */{
-                                0: /* Int_i */3,
-                                1: /* No_padding */0,
-                                2: /* No_precision */0,
-                                3: /* End_of_format */0,
-                                length: 4,
-                                tag: 7
-                              },
-                              "%Li"
-                            ]), /* int64 */[
-                          0,
-                          33
-                        ]),
-                    1: "33",
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      Curry._1(Format.asprintf(/* Format */[
+                                /* Int64 */Block.__(7, [
+                                    /* Int_i */3,
+                                    /* No_padding */0,
+                                    /* No_precision */0,
+                                    /* End_of_format */0
+                                  ]),
+                                "%Li"
+                              ]), /* int64 */[
+                            0,
+                            33
+                          ]),
+                      "33"
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "i64_simple4",
             function () {
-              return /* Eq */{
-                      0: Curry._1(Format.asprintf(/* Format */[
-                                /* Int64 */{
-                                  0: /* Int_X */8,
-                                  1: /* No_padding */0,
-                                  2: /* No_precision */0,
-                                  3: /* End_of_format */0,
-                                  length: 4,
-                                  tag: 7
-                                },
-                                "%LX"
-                              ]), /* int64 */[
-                            0,
-                            44
-                          ]),
-                      1: "2C",
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        Curry._1(Format.asprintf(/* Format */[
+                                  /* Int64 */Block.__(7, [
+                                      /* Int_X */8,
+                                      /* No_padding */0,
+                                      /* No_precision */0,
+                                      /* End_of_format */0
+                                    ]),
+                                  "%LX"
+                                ]), /* int64 */[
+                              0,
+                              44
+                            ]),
+                        "2C"
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "i64_simple5",
               function () {
-                return /* Eq */{
-                        0: Curry._1(Format.asprintf(/* Format */[
-                                  /* Int64 */{
-                                    0: /* Int_x */6,
-                                    1: /* No_padding */0,
-                                    2: /* No_precision */0,
-                                    3: /* End_of_format */0,
-                                    length: 4,
-                                    tag: 7
-                                  },
-                                  "%Lx"
-                                ]), /* int64 */[
-                              0,
-                              44
-                            ]),
-                        1: "2c",
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Curry._1(Format.asprintf(/* Format */[
+                                    /* Int64 */Block.__(7, [
+                                        /* Int_x */6,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* End_of_format */0
+                                      ]),
+                                    "%Lx"
+                                  ]), /* int64 */[
+                                0,
+                                44
+                              ]),
+                          "2c"
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 "i64_simple6",
                 function () {
-                  return /* Eq */{
-                          0: Curry._2(Format.asprintf(/* Format */[
-                                    /* Int64 */{
-                                      0: /* Int_x */6,
-                                      1: /* Arg_padding */{
-                                        0: /* Right */1,
-                                        length: 1,
-                                        tag: 1
-                                      },
-                                      2: /* No_precision */0,
-                                      3: /* End_of_format */0,
-                                      length: 4,
-                                      tag: 7
-                                    },
-                                    "%*Lx"
-                                  ]), 5, /* int64 */[
-                                0,
-                                44
-                              ]),
-                          1: "   2c",
-                          length: 2,
-                          tag: 0
-                        };
+                  return /* Eq */Block.__(0, [
+                            Curry._2(Format.asprintf(/* Format */[
+                                      /* Int64 */Block.__(7, [
+                                          /* Int_x */6,
+                                          /* Arg_padding */Block.__(1, [/* Right */1]),
+                                          /* No_precision */0,
+                                          /* End_of_format */0
+                                        ]),
+                                      "%*Lx"
+                                    ]), 5, /* int64 */[
+                                  0,
+                                  44
+                                ]),
+                            "   2c"
+                          ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
                   "i64_simple7",
                   function () {
-                    return /* Eq */{
-                            0: Caml_format.caml_int64_format("%d", /* int64 */[
-                                  0,
-                                  3333
-                                ]),
-                            1: "3333",
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              Caml_format.caml_int64_format("%d", /* int64 */[
+                                    0,
+                                    3333
+                                  ]),
+                              "3333"
+                            ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
                     "i64_simple8",
                     function () {
-                      return /* Eq */{
-                              0: Curry._2(Format.asprintf(/* Format */[
-                                        /* Int64 */{
-                                          0: /* Int_d */0,
-                                          1: /* No_padding */0,
-                                          2: /* No_precision */0,
-                                          3: /* Int64 */{
-                                            0: /* Int_d */0,
-                                            1: /* Lit_padding */{
-                                              0: /* Zeros */2,
-                                              1: 18,
-                                              length: 2,
-                                              tag: 0
-                                            },
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 7
-                                          },
-                                          length: 4,
-                                          tag: 7
-                                        },
-                                        "%Ld%018Ld"
-                                      ]), /* int64 */[
-                                    0,
-                                    3
-                                  ], /* int64 */[
-                                    0,
-                                    3
-                                  ]),
-                              1: "3000000000000000003",
-                              length: 2,
-                              tag: 0
-                            };
+                      return /* Eq */Block.__(0, [
+                                Curry._2(Format.asprintf(/* Format */[
+                                          /* Int64 */Block.__(7, [
+                                              /* Int_d */0,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* Int64 */Block.__(7, [
+                                                  /* Int_d */0,
+                                                  /* Lit_padding */Block.__(0, [
+                                                      /* Zeros */2,
+                                                      18
+                                                    ]),
+                                                  /* No_precision */0,
+                                                  /* End_of_format */0
+                                                ])
+                                            ]),
+                                          "%Ld%018Ld"
+                                        ]), /* int64 */[
+                                      0,
+                                      3
+                                    ], /* int64 */[
+                                      0,
+                                      3
+                                    ]),
+                                "3000000000000000003"
+                              ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
                       "i64_simple9",
                       function () {
-                        return /* Eq */{
-                                0: Curry._2(Format.asprintf(/* Format */[
-                                          /* Int64 */{
-                                            0: /* Int_d */0,
-                                            1: /* No_padding */0,
-                                            2: /* No_precision */0,
-                                            3: /* Int64 */{
-                                              0: /* Int_d */0,
-                                              1: /* Lit_padding */{
-                                                0: /* Zeros */2,
-                                                1: 18,
-                                                length: 2,
-                                                tag: 0
-                                              },
-                                              2: /* No_precision */0,
-                                              3: /* End_of_format */0,
-                                              length: 4,
-                                              tag: 7
-                                            },
-                                            length: 4,
-                                            tag: 7
-                                          },
-                                          "%Ld%018Ld"
-                                        ]), /* int64 */[
-                                      107288,
-                                      1548746752
-                                    ], /* int64 */[
-                                      0,
-                                      0
-                                    ]),
-                                1: "460800000000000000000000000000000",
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  Curry._2(Format.asprintf(/* Format */[
+                                            /* Int64 */Block.__(7, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* Int64 */Block.__(7, [
+                                                    /* Int_d */0,
+                                                    /* Lit_padding */Block.__(0, [
+                                                        /* Zeros */2,
+                                                        18
+                                                      ]),
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
+                                            "%Ld%018Ld"
+                                          ]), /* int64 */[
+                                        107288,
+                                        1548746752
+                                      ], /* int64 */[
+                                        0,
+                                        0
+                                      ]),
+                                  "460800000000000000000000000000000"
+                                ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
                         "i64_simple10",
                         function () {
-                          return /* Eq */{
-                                  0: Curry._1(Format.asprintf(/* Format */[
-                                            /* Int64 */{
-                                              0: /* Int_x */6,
-                                              1: /* No_padding */0,
-                                              2: /* No_precision */0,
-                                              3: /* End_of_format */0,
-                                              length: 4,
-                                              tag: 7
-                                            },
-                                            "%Lx"
-                                          ]), Int64.max_int),
-                                  1: "7fffffffffffffff",
-                                  length: 2,
-                                  tag: 0
-                                };
+                          return /* Eq */Block.__(0, [
+                                    Curry._1(Format.asprintf(/* Format */[
+                                              /* Int64 */Block.__(7, [
+                                                  /* Int_x */6,
+                                                  /* No_padding */0,
+                                                  /* No_precision */0,
+                                                  /* End_of_format */0
+                                                ]),
+                                              "%Lx"
+                                            ]), Int64.max_int),
+                                    "7fffffffffffffff"
+                                  ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
                           "i64_simple15",
                           function () {
-                            return /* Eq */{
-                                    0: Curry._1(Format.asprintf(/* Format */[
-                                              /* Int64 */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 7
-                                              },
-                                              "%Ld"
-                                            ]), /* int64 */[
-                                          -1,
-                                          4294967295
-                                        ]),
-                                    1: "-1",
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Curry._1(Format.asprintf(/* Format */[
+                                                /* Int64 */Block.__(7, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ]),
+                                                "%Ld"
+                                              ]), /* int64 */[
+                                            -1,
+                                            4294967295
+                                          ]),
+                                      "-1"
+                                    ]);
                           }
                         ],
                         /* :: */[
                           /* tuple */[
                             "i64_simple16",
                             function () {
-                              return /* Eq */{
-                                      0: Curry._1(Format.asprintf(/* Format */[
-                                                /* Int64 */{
-                                                  0: /* Int_d */0,
-                                                  1: /* No_padding */0,
-                                                  2: /* No_precision */0,
-                                                  3: /* End_of_format */0,
-                                                  length: 4,
-                                                  tag: 7
-                                                },
-                                                "%Ld"
-                                              ]), /* int64 */[
-                                            -1,
-                                            4294956185
-                                          ]),
-                                      1: "-11111",
-                                      length: 2,
-                                      tag: 0
-                                    };
+                              return /* Eq */Block.__(0, [
+                                        Curry._1(Format.asprintf(/* Format */[
+                                                  /* Int64 */Block.__(7, [
+                                                      /* Int_d */0,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
+                                                      /* End_of_format */0
+                                                    ]),
+                                                  "%Ld"
+                                                ]), /* int64 */[
+                                              -1,
+                                              4294956185
+                                            ]),
+                                        "-11111"
+                                      ]);
                             }
                           ],
                           /* :: */[
                             /* tuple */[
                               "i64_simple14",
                               function () {
-                                return /* Eq */{
-                                        0: Curry._1(Format.asprintf(/* Format */[
-                                                  /* Int64 */{
-                                                    0: /* Int_X */8,
-                                                    1: /* No_padding */0,
-                                                    2: /* No_precision */0,
-                                                    3: /* End_of_format */0,
-                                                    length: 4,
-                                                    tag: 7
-                                                  },
-                                                  "%LX"
-                                                ]), /* int64 */[
-                                              -1,
-                                              4294967295
-                                            ]),
-                                        1: "FFFFFFFFFFFFFFFF",
-                                        length: 2,
-                                        tag: 0
-                                      };
+                                return /* Eq */Block.__(0, [
+                                          Curry._1(Format.asprintf(/* Format */[
+                                                    /* Int64 */Block.__(7, [
+                                                        /* Int_X */8,
+                                                        /* No_padding */0,
+                                                        /* No_precision */0,
+                                                        /* End_of_format */0
+                                                      ]),
+                                                    "%LX"
+                                                  ]), /* int64 */[
+                                                -1,
+                                                4294967295
+                                              ]),
+                                          "FFFFFFFFFFFFFFFF"
+                                        ]);
                               }
                             ],
                             /* :: */[
                               /* tuple */[
                                 "i64_simple17",
                                 function () {
-                                  return /* Eq */{
-                                          0: Curry._1(Format.asprintf(/* Format */[
-                                                    /* Int64 */{
-                                                      0: /* Int_x */6,
-                                                      1: /* No_padding */0,
-                                                      2: /* No_precision */0,
-                                                      3: /* End_of_format */0,
-                                                      length: 4,
-                                                      tag: 7
-                                                    },
-                                                    "%Lx"
-                                                  ]), /* int64 */[
-                                                -1,
-                                                4294967295
-                                              ]),
-                                          1: "ffffffffffffffff",
-                                          length: 2,
-                                          tag: 0
-                                        };
+                                  return /* Eq */Block.__(0, [
+                                            Curry._1(Format.asprintf(/* Format */[
+                                                      /* Int64 */Block.__(7, [
+                                                          /* Int_x */6,
+                                                          /* No_padding */0,
+                                                          /* No_precision */0,
+                                                          /* End_of_format */0
+                                                        ]),
+                                                      "%Lx"
+                                                    ]), /* int64 */[
+                                                  -1,
+                                                  4294967295
+                                                ]),
+                                            "ffffffffffffffff"
+                                          ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
                                   "i64_simple11",
                                   function () {
-                                    return /* Eq */{
-                                            0: Curry._1(Format.asprintf(/* Format */[
-                                                      /* Int64 */{
-                                                        0: /* Int_X */8,
-                                                        1: /* No_padding */0,
-                                                        2: /* No_precision */0,
-                                                        3: /* End_of_format */0,
-                                                        length: 4,
-                                                        tag: 7
-                                                      },
-                                                      "%LX"
-                                                    ]), Int64.max_int),
-                                            1: "7FFFFFFFFFFFFFFF",
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              Curry._1(Format.asprintf(/* Format */[
+                                                        /* Int64 */Block.__(7, [
+                                                            /* Int_X */8,
+                                                            /* No_padding */0,
+                                                            /* No_precision */0,
+                                                            /* End_of_format */0
+                                                          ]),
+                                                        "%LX"
+                                                      ]), Int64.max_int),
+                                              "7FFFFFFFFFFFFFFF"
+                                            ]);
                                   }
                                 ],
                                 /* :: */[
                                   /* tuple */[
                                     "i64_simple12",
                                     function () {
-                                      return /* Eq */{
-                                              0: Curry._1(Format.asprintf(/* Format */[
-                                                        /* Int64 */{
-                                                          0: /* Int_X */8,
-                                                          1: /* No_padding */0,
-                                                          2: /* No_precision */0,
-                                                          3: /* End_of_format */0,
-                                                          length: 4,
-                                                          tag: 7
-                                                        },
-                                                        "%LX"
-                                                      ]), Int64.min_int),
-                                              1: "8000000000000000",
-                                              length: 2,
-                                              tag: 0
-                                            };
+                                      return /* Eq */Block.__(0, [
+                                                Curry._1(Format.asprintf(/* Format */[
+                                                          /* Int64 */Block.__(7, [
+                                                              /* Int_X */8,
+                                                              /* No_padding */0,
+                                                              /* No_precision */0,
+                                                              /* End_of_format */0
+                                                            ]),
+                                                          "%LX"
+                                                        ]), Int64.min_int),
+                                                "8000000000000000"
+                                              ]);
                                     }
                                   ],
                                   /* :: */[
                                     /* tuple */[
                                       "i64_simple17",
                                       function () {
-                                        return /* Eq */{
-                                                0: Curry._1(Format.asprintf(/* Format */[
-                                                          /* Int64 */{
-                                                            0: /* Int_u */12,
-                                                            1: /* No_padding */0,
-                                                            2: /* No_precision */0,
-                                                            3: /* End_of_format */0,
-                                                            length: 4,
-                                                            tag: 7
-                                                          },
-                                                          "%Lu"
-                                                        ]), /* int64 */[
-                                                      -1,
-                                                      4294967295
-                                                    ]),
-                                                1: "18446744073709551615",
-                                                length: 2,
-                                                tag: 0
-                                              };
+                                        return /* Eq */Block.__(0, [
+                                                  Curry._1(Format.asprintf(/* Format */[
+                                                            /* Int64 */Block.__(7, [
+                                                                /* Int_u */12,
+                                                                /* No_padding */0,
+                                                                /* No_precision */0,
+                                                                /* End_of_format */0
+                                                              ]),
+                                                            "%Lu"
+                                                          ]), /* int64 */[
+                                                        -1,
+                                                        4294967295
+                                                      ]),
+                                                  "18446744073709551615"
+                                                ]);
                                       }
                                     ],
                                     /* :: */[
                                       /* tuple */[
                                         "i64_simple21",
                                         function () {
-                                          return /* Eq */{
-                                                  0: Curry._1(Format.asprintf(/* Format */[
-                                                            /* Int64 */{
-                                                              0: /* Int_u */12,
-                                                              1: /* No_padding */0,
-                                                              2: /* No_precision */0,
-                                                              3: /* End_of_format */0,
-                                                              length: 4,
-                                                              tag: 7
-                                                            },
-                                                            "%Lu"
-                                                          ]), /* int64 */[
-                                                        -1,
-                                                        4294957296
-                                                      ]),
-                                                  1: "18446744073709541616",
-                                                  length: 2,
-                                                  tag: 0
-                                                };
+                                          return /* Eq */Block.__(0, [
+                                                    Curry._1(Format.asprintf(/* Format */[
+                                                              /* Int64 */Block.__(7, [
+                                                                  /* Int_u */12,
+                                                                  /* No_padding */0,
+                                                                  /* No_precision */0,
+                                                                  /* End_of_format */0
+                                                                ]),
+                                                              "%Lu"
+                                                            ]), /* int64 */[
+                                                          -1,
+                                                          4294957296
+                                                        ]),
+                                                    "18446744073709541616"
+                                                  ]);
                                         }
                                       ],
                                       /* :: */[
                                         /* tuple */[
                                           "i64_simple19",
                                           function () {
-                                            return /* Eq */{
-                                                    0: Curry._1(Format.asprintf(/* Format */[
-                                                              /* Int64 */{
-                                                                0: /* Int_o */10,
-                                                                1: /* No_padding */0,
-                                                                2: /* No_precision */0,
-                                                                3: /* End_of_format */0,
-                                                                length: 4,
-                                                                tag: 7
-                                                              },
-                                                              "%Lo"
-                                                            ]), Int64.min_int),
-                                                    1: "1000000000000000000000",
-                                                    length: 2,
-                                                    tag: 0
-                                                  };
+                                            return /* Eq */Block.__(0, [
+                                                      Curry._1(Format.asprintf(/* Format */[
+                                                                /* Int64 */Block.__(7, [
+                                                                    /* Int_o */10,
+                                                                    /* No_padding */0,
+                                                                    /* No_precision */0,
+                                                                    /* End_of_format */0
+                                                                  ]),
+                                                                "%Lo"
+                                                              ]), Int64.min_int),
+                                                      "1000000000000000000000"
+                                                    ]);
                                           }
                                         ],
                                         /* :: */[
                                           /* tuple */[
                                             "i64_simple13",
                                             function () {
-                                              return /* Eq */{
-                                                      0: Curry._1(Format.asprintf(/* Format */[
-                                                                /* Int64 */{
-                                                                  0: /* Int_X */8,
-                                                                  1: /* No_padding */0,
-                                                                  2: /* No_precision */0,
-                                                                  3: /* End_of_format */0,
-                                                                  length: 4,
-                                                                  tag: 7
-                                                                },
-                                                                "%LX"
-                                                              ]), Caml_int64.add(Int64.min_int, /* int64 */[
-                                                                0,
-                                                                1
-                                                              ])),
-                                                      1: "8000000000000001",
-                                                      length: 2,
-                                                      tag: 0
-                                                    };
+                                              return /* Eq */Block.__(0, [
+                                                        Curry._1(Format.asprintf(/* Format */[
+                                                                  /* Int64 */Block.__(7, [
+                                                                      /* Int_X */8,
+                                                                      /* No_padding */0,
+                                                                      /* No_precision */0,
+                                                                      /* End_of_format */0
+                                                                    ]),
+                                                                  "%LX"
+                                                                ]), Caml_int64.add(Int64.min_int, /* int64 */[
+                                                                  0,
+                                                                  1
+                                                                ])),
+                                                        "8000000000000001"
+                                                      ]);
                                             }
                                           ],
                                           /* :: */[
                                             /* tuple */[
                                               "i64_simple20",
                                               function () {
-                                                return /* Eq */{
-                                                        0: Curry._1(Format.asprintf(/* Format */[
-                                                                  /* Int64 */{
-                                                                    0: /* Int_x */6,
-                                                                    1: /* Lit_padding */{
-                                                                      0: /* Right */1,
-                                                                      1: 12,
-                                                                      length: 2,
-                                                                      tag: 0
-                                                                    },
-                                                                    2: /* No_precision */0,
-                                                                    3: /* End_of_format */0,
-                                                                    length: 4,
-                                                                    tag: 7
-                                                                  },
-                                                                  "%12Lx"
-                                                                ]), /* int64 */[
-                                                              0,
-                                                              3
-                                                            ]),
-                                                        1: "           3",
-                                                        length: 2,
-                                                        tag: 0
-                                                      };
+                                                return /* Eq */Block.__(0, [
+                                                          Curry._1(Format.asprintf(/* Format */[
+                                                                    /* Int64 */Block.__(7, [
+                                                                        /* Int_x */6,
+                                                                        /* Lit_padding */Block.__(0, [
+                                                                            /* Right */1,
+                                                                            12
+                                                                          ]),
+                                                                        /* No_precision */0,
+                                                                        /* End_of_format */0
+                                                                      ]),
+                                                                    "%12Lx"
+                                                                  ]), /* int64 */[
+                                                                0,
+                                                                3
+                                                              ]),
+                                                          "           3"
+                                                        ]);
                                               }
                                             ],
                                             /* :: */[
                                               /* tuple */[
                                                 "i64_simple21",
                                                 function () {
-                                                  return /* Eq */{
-                                                          0: Curry._1(Format.asprintf(/* Format */[
-                                                                    /* Int64 */{
-                                                                      0: /* Int_X */8,
-                                                                      1: /* No_padding */0,
-                                                                      2: /* No_precision */0,
-                                                                      3: /* End_of_format */0,
-                                                                      length: 4,
-                                                                      tag: 7
-                                                                    },
-                                                                    "%LX"
-                                                                  ]), /* int64 */[
-                                                                1859194407,
-                                                                1163551168
-                                                              ]),
-                                                          1: "6ED10E27455A61C0",
-                                                          length: 2,
-                                                          tag: 0
-                                                        };
+                                                  return /* Eq */Block.__(0, [
+                                                            Curry._1(Format.asprintf(/* Format */[
+                                                                      /* Int64 */Block.__(7, [
+                                                                          /* Int_X */8,
+                                                                          /* No_padding */0,
+                                                                          /* No_precision */0,
+                                                                          /* End_of_format */0
+                                                                        ]),
+                                                                      "%LX"
+                                                                    ]), /* int64 */[
+                                                                  1859194407,
+                                                                  1163551168
+                                                                ]),
+                                                            "6ED10E27455A61C0"
+                                                          ]);
                                                 }
                                               ],
                                               /* :: */[
                                                 /* tuple */[
                                                   "missing_neline",
                                                   function () {
-                                                    return /* Eq */{
-                                                            0: Curry._1(Format.asprintf(/* Format */[
-                                                                      /* Int64 */{
-                                                                        0: /* Int_d */0,
-                                                                        1: /* No_padding */0,
-                                                                        2: /* No_precision */0,
-                                                                        3: /* Char_literal */{
-                                                                          0: /* "\n" */10,
-                                                                          1: /* End_of_format */0,
-                                                                          length: 2,
-                                                                          tag: 12
-                                                                        },
-                                                                        length: 4,
-                                                                        tag: 7
-                                                                      },
-                                                                      "%Ld\n"
-                                                                    ]), /* int64 */[
-                                                                  0,
-                                                                  32
-                                                                ]),
-                                                            1: "32\n",
-                                                            length: 2,
-                                                            tag: 0
-                                                          };
+                                                    return /* Eq */Block.__(0, [
+                                                              Curry._1(Format.asprintf(/* Format */[
+                                                                        /* Int64 */Block.__(7, [
+                                                                            /* Int_d */0,
+                                                                            /* No_padding */0,
+                                                                            /* No_precision */0,
+                                                                            /* Char_literal */Block.__(12, [
+                                                                                /* "\n" */10,
+                                                                                /* End_of_format */0
+                                                                              ])
+                                                                          ]),
+                                                                        "%Ld\n"
+                                                                      ]), /* int64 */[
+                                                                    0,
+                                                                    32
+                                                                  ]),
+                                                              "32\n"
+                                                            ]);
                                                   }
                                                 ],
                                                 /* :: */[
@@ -2948,30 +2211,24 @@ var int64_suites_001 = /* :: */[
                                                     "missing_newline2",
                                                     function () {
                                                       var buf = Buffer.create(30);
-                                                      return /* Eq */{
-                                                              0: (Curry._1(Printf.bprintf(buf, /* Format */[
-                                                                          /* Int64 */{
-                                                                            0: /* Int_d */0,
-                                                                            1: /* No_padding */0,
-                                                                            2: /* No_precision */0,
-                                                                            3: /* Char_literal */{
-                                                                              0: /* "\n" */10,
-                                                                              1: /* End_of_format */0,
-                                                                              length: 2,
-                                                                              tag: 12
-                                                                            },
-                                                                            length: 4,
-                                                                            tag: 7
-                                                                          },
-                                                                          "%Ld\n"
-                                                                        ]), /* int64 */[
-                                                                      0,
-                                                                      32
-                                                                    ]), Buffer.contents(buf)),
-                                                              1: "32\n",
-                                                              length: 2,
-                                                              tag: 0
-                                                            };
+                                                      return /* Eq */Block.__(0, [
+                                                                (Curry._1(Printf.bprintf(buf, /* Format */[
+                                                                            /* Int64 */Block.__(7, [
+                                                                                /* Int_d */0,
+                                                                                /* No_padding */0,
+                                                                                /* No_precision */0,
+                                                                                /* Char_literal */Block.__(12, [
+                                                                                    /* "\n" */10,
+                                                                                    /* End_of_format */0
+                                                                                  ])
+                                                                              ]),
+                                                                            "%Ld\n"
+                                                                          ]), /* int64 */[
+                                                                        0,
+                                                                        32
+                                                                      ]), Buffer.contents(buf)),
+                                                                "32\n"
+                                                              ]);
                                                     }
                                                   ],
                                                   /* [] */0
@@ -3078,28 +2335,22 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                   var fmt = param[0];
                                   return /* tuple */[
                                           Curry._1(Printf.sprintf(/* Format */[
-                                                    /* String_literal */{
-                                                      0: "float_format ",
-                                                      1: /* Int */{
-                                                        0: /* Int_d */0,
-                                                        1: /* No_padding */0,
-                                                        2: /* No_precision */0,
-                                                        3: /* End_of_format */0,
-                                                        length: 4,
-                                                        tag: 4
-                                                      },
-                                                      length: 2,
-                                                      tag: 11
-                                                    },
+                                                    /* String_literal */Block.__(11, [
+                                                        "float_format ",
+                                                        /* Int */Block.__(4, [
+                                                            /* Int_d */0,
+                                                            /* No_padding */0,
+                                                            /* No_precision */0,
+                                                            /* End_of_format */0
+                                                          ])
+                                                      ]),
                                                     "float_format %d"
                                                   ]), i),
                                           function () {
-                                            return /* Eq */{
-                                                    0: Caml_format.caml_format_float(fmt, f),
-                                                    1: str_result,
-                                                    length: 2,
-                                                    tag: 0
-                                                  };
+                                            return /* Eq */Block.__(0, [
+                                                      Caml_format.caml_format_float(fmt, f),
+                                                      str_result
+                                                    ]);
                                           }
                                         ];
                                 }, float_data)), Pervasives.$at(int64_suites, $$Array.to_list($$Array.mapi(function (i, param) {
@@ -3107,33 +2358,25 @@ Mt.from_pair_suites("caml_format_test.ml", Pervasives.$at(suites, Pervasives.$at
                                       var a = param[0];
                                       return /* tuple */[
                                               Curry._1(Printf.sprintf(/* Format */[
-                                                        /* String_literal */{
-                                                          0: "int64_of_string ",
-                                                          1: /* Int */{
-                                                            0: /* Int_d */0,
-                                                            1: /* No_padding */0,
-                                                            2: /* No_precision */0,
-                                                            3: /* Char_literal */{
-                                                              0: /* " " */32,
-                                                              1: /* End_of_format */0,
-                                                              length: 2,
-                                                              tag: 12
-                                                            },
-                                                            length: 4,
-                                                            tag: 4
-                                                          },
-                                                          length: 2,
-                                                          tag: 11
-                                                        },
+                                                        /* String_literal */Block.__(11, [
+                                                            "int64_of_string ",
+                                                            /* Int */Block.__(4, [
+                                                                /* Int_d */0,
+                                                                /* No_padding */0,
+                                                                /* No_precision */0,
+                                                                /* Char_literal */Block.__(12, [
+                                                                    /* " " */32,
+                                                                    /* End_of_format */0
+                                                                  ])
+                                                              ])
+                                                          ]),
                                                         "int64_of_string %d "
                                                       ]), i),
                                               function () {
-                                                return /* Eq */{
-                                                        0: Caml_format.caml_int64_of_string(b),
-                                                        1: a,
-                                                        length: 2,
-                                                        tag: 0
-                                                      };
+                                                return /* Eq */Block.__(0, [
+                                                          Caml_format.caml_int64_of_string(b),
+                                                          a
+                                                        ]);
                                               }
                                             ];
                                     }, of_string_data)))))))));

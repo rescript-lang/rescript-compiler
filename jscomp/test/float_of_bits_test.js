@@ -5,6 +5,7 @@ var Caml_int64 = require("../runtime/caml_int64");
 var Caml_float = require("../runtime/caml_float");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
 var $$Array    = require("../stdlib/array");
@@ -33,55 +34,43 @@ function from_pairs() {
                       return /* :: */[
                               /* tuple */[
                                 Curry._1(Printf.sprintf(/* Format */[
-                                          /* String_literal */{
-                                            0: "int32_float_of_bits ",
-                                            1: /* Int */{
-                                              0: /* Int_d */0,
-                                              1: /* No_padding */0,
-                                              2: /* No_precision */0,
-                                              3: /* End_of_format */0,
-                                              length: 4,
-                                              tag: 4
-                                            },
-                                            length: 2,
-                                            tag: 11
-                                          },
+                                          /* String_literal */Block.__(11, [
+                                              "int32_float_of_bits ",
+                                              /* Int */Block.__(4, [
+                                                  /* Int_d */0,
+                                                  /* No_padding */0,
+                                                  /* No_precision */0,
+                                                  /* End_of_format */0
+                                                ])
+                                            ]),
                                           "int32_float_of_bits %d"
                                         ]), i),
                                 function () {
-                                  return /* Eq */{
-                                          0: Caml_float.caml_int32_float_of_bits(i32),
-                                          1: f,
-                                          length: 2,
-                                          tag: 0
-                                        };
+                                  return /* Eq */Block.__(0, [
+                                            Caml_float.caml_int32_float_of_bits(i32),
+                                            f
+                                          ]);
                                 }
                               ],
                               /* :: */[
                                 /* tuple */[
                                   Curry._1(Printf.sprintf(/* Format */[
-                                            /* String_literal */{
-                                              0: "int32_bits_of_float ",
-                                              1: /* Int */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 11
-                                            },
+                                            /* String_literal */Block.__(11, [
+                                                "int32_bits_of_float ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
                                             "int32_bits_of_float %d"
                                           ]), i),
                                   function () {
-                                    return /* Eq */{
-                                            0: Caml_float.caml_int32_bits_of_float(f),
-                                            1: i32,
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              Caml_float.caml_int32_bits_of_float(f),
+                                              i32
+                                            ]);
                                   }
                                 ],
                                 /* [] */0
@@ -94,24 +83,20 @@ var suites = Pervasives.$at(/* :: */[
       /* tuple */[
         "one",
         function () {
-          return /* Eq */{
-                  0: Caml_int64.bits_of_float(1.0),
-                  1: one_float,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    Caml_int64.bits_of_float(1.0),
+                    one_float
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "two",
           function () {
-            return /* Eq */{
-                    0: Caml_int64.float_of_bits(one_float),
-                    1: 1.0,
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      Caml_int64.float_of_bits(one_float),
+                      1.0
+                    ]);
           }
         ],
         /* [] */0

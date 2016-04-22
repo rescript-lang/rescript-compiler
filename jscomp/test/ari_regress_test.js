@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt    = require("./mt");
+var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 var g = 7;
@@ -34,12 +35,10 @@ function v(param) {
 var suites_000 = /* tuple */[
   "curry",
   function () {
-    return /* Eq */{
-            0: g,
-            1: 7,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              g,
+              7
+            ]);
   }
 ];
 
@@ -47,36 +46,30 @@ var suites_001 = /* :: */[
   /* tuple */[
     "curry2",
     function () {
-      return /* Eq */{
-              0: 14,
-              1: (Curry._1(v, 1), Curry._1(v, 1)),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                14,
+                (Curry._1(v, 1), Curry._1(v, 1))
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "curry3",
       function () {
-        return /* Eq */{
-                0: x,
-                1: 14,
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  x,
+                  14
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         'File "ari_regress_test.ml", line 20, characters 4-11',
         function () {
-          return /* Eq */{
-                  0: h[0],
-                  1: 1,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    h[0],
+                    1
+                  ]);
         }
       ],
       /* [] */0

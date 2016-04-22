@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 function f() {
   var v = [0];
@@ -23,12 +24,10 @@ function f() {
 var suites_000 = /* tuple */[
   "sum",
   function () {
-    return /* Eq */{
-            0: 55,
-            1: f(/* () */0),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              55,
+              f(/* () */0)
+            ]);
   }
 ];
 

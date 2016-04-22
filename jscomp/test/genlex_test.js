@@ -3,6 +3,7 @@
 
 var Stream = require("../stdlib/stream");
 var Mt     = require("./mt");
+var Block  = require("../runtime/block");
 var Genlex = require("../stdlib/genlex");
 var List   = require("../stdlib/list");
 
@@ -65,61 +66,31 @@ function to_list(s) {
 var suites_000 = /* tuple */[
   "lexer_stream_genlex",
   function () {
-    return /* Eq */{
-            0: /* :: */[
-              /* Int */{
-                0: 3,
-                length: 1,
-                tag: 2
-              },
+    return /* Eq */Block.__(0, [
               /* :: */[
-                /* Kwd */{
-                  0: "(",
-                  length: 1,
-                  tag: 0
-                },
+                /* Int */Block.__(2, [3]),
                 /* :: */[
-                  /* Int */{
-                    0: 3,
-                    length: 1,
-                    tag: 2
-                  },
+                  /* Kwd */Block.__(0, ["("]),
                   /* :: */[
-                    /* Kwd */{
-                      0: "+",
-                      length: 1,
-                      tag: 0
-                    },
+                    /* Int */Block.__(2, [3]),
                     /* :: */[
-                      /* Int */{
-                        0: 2,
-                        length: 1,
-                        tag: 2
-                      },
+                      /* Kwd */Block.__(0, ["+"]),
                       /* :: */[
-                        /* Int */{
-                          0: -1,
-                          length: 1,
-                          tag: 2
-                        },
+                        /* Int */Block.__(2, [2]),
                         /* :: */[
-                          /* Kwd */{
-                            0: ")",
-                            length: 1,
-                            tag: 0
-                          },
-                          /* [] */0
+                          /* Int */Block.__(2, [-1]),
+                          /* :: */[
+                            /* Kwd */Block.__(0, [")"]),
+                            /* [] */0
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
-              ]
-            ],
-            1: to_list(lexer(Stream.of_string("3(3 + 2 -1)"))),
-            length: 2,
-            tag: 0
-          };
+              ],
+              to_list(lexer(Stream.of_string("3(3 + 2 -1)")))
+            ]);
   }
 ];
 

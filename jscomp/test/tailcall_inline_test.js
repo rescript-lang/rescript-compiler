@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 
@@ -31,23 +32,21 @@ function f() {
 var suites_000 = /* tuple */[
   "acc",
   function () {
-    return /* Eq */{
-            0: f(/* () */0),
-            1: /* array */[
-              0,
-              1,
-              3,
-              6,
-              10,
-              15,
-              21,
-              28,
-              36,
-              45
-            ],
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              f(/* () */0),
+              /* array */[
+                0,
+                1,
+                3,
+                6,
+                10,
+                15,
+                21,
+                28,
+                36,
+                45
+              ]
+            ]);
   }
 ];
 
@@ -55,25 +54,23 @@ var suites_001 = /* :: */[
   /* tuple */[
     "array_to_list",
     function () {
-      return /* Eq */{
-              0: /* :: */[
-                1,
+      return /* Eq */Block.__(0, [
                 /* :: */[
-                  2,
+                  1,
                   /* :: */[
-                    3,
-                    /* [] */0
-                  ]
-                ]
-              ],
-              1: $$Array.to_list(/* int array */[
-                    1,
                     2,
-                    3
-                  ]),
-              length: 2,
-              tag: 0
-            };
+                    /* :: */[
+                      3,
+                      /* [] */0
+                    ]
+                  ]
+                ],
+                $$Array.to_list(/* int array */[
+                      1,
+                      2,
+                      3
+                    ])
+              ]);
     }
   ],
   /* [] */0

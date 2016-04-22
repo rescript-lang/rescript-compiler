@@ -3,18 +3,17 @@
 
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 
 var v = (Number.EPSILON?Number.EPSILON:2.220446049250313e-16);
 
 var suites_000 = /* tuple */[
   "epsilon",
   function () {
-    return /* Eq */{
-            0: Pervasives.epsilon_float,
-            1: v,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Pervasives.epsilon_float,
+              v
+            ]);
   }
 ];
 
@@ -22,12 +21,10 @@ var suites_001 = /* :: */[
   /* tuple */[
     "raw_epsilon",
     function () {
-      return /* Eq */{
-              0: 2.220446049250313e-16,
-              1: v,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                2.220446049250313e-16,
+                v
+              ]);
     }
   ],
   /* [] */0

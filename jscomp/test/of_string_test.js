@@ -3,16 +3,15 @@
 
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 
 var suites_000 = /* tuple */[
   "string_of_float_1",
   function () {
-    return /* Eq */{
-            0: "10.",
-            1: Pervasives.string_of_float(10),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              "10.",
+              Pervasives.string_of_float(10)
+            ]);
   }
 ];
 
@@ -20,24 +19,20 @@ var suites_001 = /* :: */[
   /* tuple */[
     "string_of_int",
     function () {
-      return /* Eq */{
-              0: "10",
-              1: "" + 10,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                "10",
+                "" + 10
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "valid_float_lexem",
       function () {
-        return /* Eq */{
-                0: "10.",
-                1: Pervasives.valid_float_lexem("10"),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  "10.",
+                  Pervasives.valid_float_lexem("10")
+                ]);
       }
     ],
     /* [] */0

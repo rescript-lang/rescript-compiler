@@ -7,6 +7,7 @@ var Hashtbl                 = require("./hashtbl");
 var Stream                  = require("./stream");
 var Caml_format             = require("../runtime/caml_format");
 var Caml_int32              = require("../runtime/caml_int32");
+var Block                   = require("../runtime/block");
 var Char                    = require("./char");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
@@ -42,11 +43,7 @@ function get_string() {
 function make_lexer(keywords) {
   var kwd_table = Hashtbl.create(/* None */0, 17);
   List.iter(function (s) {
-        return Hashtbl.add(kwd_table, s, /* Kwd */{
-                    0: s,
-                    length: 1,
-                    tag: 0
-                  });
+        return Hashtbl.add(kwd_table, s, /* Kwd */Block.__(0, [s]));
       }, keywords);
   var ident_or_keyword = function (id) {
     try {
@@ -54,11 +51,7 @@ function make_lexer(keywords) {
     }
     catch (exn){
       if (exn === Caml_builtin_exceptions.not_found) {
-        return /* Ident */{
-                0: id,
-                length: 1,
-                tag: 1
-              };
+        return /* Ident */Block.__(1, [id]);
       }
       else {
         throw exn;
@@ -107,11 +100,7 @@ function make_lexer(keywords) {
                     case 34 : 
                     Stream.junk(strm__);
                     reset_buffer(/* () */0);
-                    return /* Some */[/* String */{
-                              0: string(strm__),
-                              length: 1,
-                              tag: 4
-                            }];
+                    return /* Some */[/* String */Block.__(4, [string(strm__)])];
                 case 39 : 
                     Stream.junk(strm__);
                     var c$1;
@@ -139,11 +128,7 @@ function make_lexer(keywords) {
                       }
                       else {
                         Stream.junk(strm__);
-                        return /* Some */[/* Char */{
-                                  0: c$1,
-                                  length: 1,
-                                  tag: 5
-                                }];
+                        return /* Some */[/* Char */Block.__(5, [c$1])];
                       }
                     }
                     else {
@@ -520,11 +505,7 @@ function make_lexer(keywords) {
               exit$1 = 1;
             }
             if (exit$1 === 1) {
-              return /* Some */[/* Float */{
-                        0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                        length: 1,
-                        tag: 3
-                      }];
+              return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
             }
             
           };
@@ -534,11 +515,7 @@ function make_lexer(keywords) {
         exit = 1;
       }
       if (exit === 1) {
-        return /* Some */[/* Int */{
-                  0: Caml_format.caml_int_of_string(get_string(/* () */0)),
-                  length: 1,
-                  tag: 2
-                }];
+        return /* Some */[/* Int */Block.__(2, [Caml_format.caml_int_of_string(get_string(/* () */0))])];
       }
       
     };
@@ -573,11 +550,7 @@ function make_lexer(keywords) {
       if (match) {
         var c = match[0];
         if (c > 57 || c < 48) {
-          return /* Some */[/* Float */{
-                    0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                    length: 1,
-                    tag: 3
-                  }];
+          return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
         }
         else {
           Stream.junk(strm__);
@@ -587,11 +560,7 @@ function make_lexer(keywords) {
         }
       }
       else {
-        return /* Some */[/* Float */{
-                  0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                  length: 1,
-                  tag: 3
-                }];
+        return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
       }
     };
   };

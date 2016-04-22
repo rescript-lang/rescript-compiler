@@ -7,6 +7,7 @@ var Pervasives               = require("./pervasives");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Caml_int32               = require("../runtime/caml_int32");
+var Block                    = require("../runtime/block");
 var Curry                    = require("../runtime/curry");
 var Printf                   = require("./printf");
 var Caml_primitive           = require("../runtime/caml_primitive");
@@ -188,12 +189,10 @@ function from_ic(scan_close_ic, iname, ic) {
   return create(iname, next);
 }
 
-var stdin = from_ic(scan_raise_at_end, /* From_file */{
-      0: "-",
-      1: Pervasives.stdin,
-      length: 2,
-      tag: 0
-    }, Pervasives.stdin);
+var stdin = from_ic(scan_raise_at_end, /* From_file */Block.__(0, [
+        "-",
+        Pervasives.stdin
+      ]), Pervasives.stdin);
 
 function open_in(fname) {
   if (fname === "-") {
@@ -201,12 +200,10 @@ function open_in(fname) {
   }
   else {
     var ic = Pervasives.open_in(fname);
-    return from_ic(scan_close_at_end, /* From_file */{
-                0: fname,
-                1: ic,
-                length: 2,
-                tag: 0
-              }, ic);
+    return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
+                  fname,
+                  ic
+                ]), ic);
   }
 }
 
@@ -216,12 +213,10 @@ function open_in_bin(fname) {
   }
   else {
     var ic = Pervasives.open_in_bin(fname);
-    return from_ic(scan_close_at_end, /* From_file */{
-                0: fname,
-                1: ic,
-                length: 2,
-                tag: 0
-              }, ic);
+    return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
+                  fname,
+                  ic
+                ]), ic);
   }
 }
 
@@ -233,11 +228,7 @@ function memo_from_ic(scan_close_ic, ic) {
   }
   catch (exn){
     if (exn === Caml_builtin_exceptions.not_found) {
-      var ib = from_ic(scan_close_ic, /* From_channel */{
-            0: ic,
-            length: 1,
-            tag: 1
-          }, ic);
+      var ib = from_ic(scan_close_ic, /* From_channel */Block.__(1, [ic]), ic);
       memo[0] = /* :: */[
         /* tuple */[
           ic,
@@ -274,16 +265,10 @@ var Scan_failure = Caml_exceptions.create("Scanf.Scan_failure");
 
 function bad_input_escape(c) {
   var s = Curry._1(Printf.sprintf(/* Format */[
-            /* String_literal */{
-              0: "illegal escape character ",
-              1: /* Caml_char */{
-                0: /* End_of_format */0,
-                length: 1,
-                tag: 1
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "illegal escape character ",
+                /* Caml_char */Block.__(1, [/* End_of_format */0])
+              ]),
             "illegal escape character %C"
           ]), c);
   throw [
@@ -294,22 +279,16 @@ function bad_input_escape(c) {
 
 function bad_token_length(message) {
   var s = Curry._1(Printf.sprintf(/* Format */[
-            /* String_literal */{
-              0: "scanning of ",
-              1: /* String */{
-                0: /* No_padding */0,
-                1: /* String_literal */{
-                  0: " failed: the specified length was too short for token",
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 11
-                },
-                length: 2,
-                tag: 2
-              },
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                "scanning of ",
+                /* String */Block.__(2, [
+                    /* No_padding */0,
+                    /* String_literal */Block.__(11, [
+                        " failed: the specified length was too short for token",
+                        /* End_of_format */0
+                      ])
+                  ])
+              ]),
             "scanning of %s failed: the specified length was too short for token"
           ]), message);
   throw [
@@ -320,25 +299,13 @@ function bad_token_length(message) {
 
 function character_mismatch_err(c, ci) {
   return Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */{
-                    0: "looking for ",
-                    1: /* Caml_char */{
-                      0: /* String_literal */{
-                        0: ", found ",
-                        1: /* Caml_char */{
-                          0: /* End_of_format */0,
-                          length: 1,
-                          tag: 1
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 1,
-                      tag: 1
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "looking for ",
+                      /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                              ", found ",
+                              /* Caml_char */Block.__(1, [/* End_of_format */0])
+                            ])])
+                    ]),
                   "looking for %C, found %C"
                 ]), c, ci);
 }
@@ -419,17 +386,13 @@ function token_bool(ib) {
         return /* true */1;
     default:
       var s$1 = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "invalid boolean ",
-                  1: /* Caml_string */{
-                    0: /* No_padding */0,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 3
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "invalid boolean ",
+                    /* Caml_string */Block.__(3, [
+                        /* No_padding */0,
+                        /* End_of_format */0
+                      ])
+                  ]),
                 "invalid boolean %S"
               ]), s);
       throw [
@@ -557,21 +520,13 @@ function scan_decimal_digits_plus(width, ib) {
     var c = checked_peek_char(ib);
     if (c > 57 || c < 48) {
       var s = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "character ",
-                  1: /* Caml_char */{
-                    0: /* String_literal */{
-                      0: " is not a decimal digit",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
-                    length: 1,
-                    tag: 1
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "character ",
+                    /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                            " is not a decimal digit",
+                            /* End_of_format */0
+                          ])])
+                  ]),
                 "character %C is not a decimal digit"
               ]), c);
       throw [
@@ -622,31 +577,19 @@ function scan_digits_plus(basis, digitp, width, ib) {
     }
     else {
       var s = Curry._2(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "character ",
-                  1: /* Caml_char */{
-                    0: /* String_literal */{
-                      0: " is not a valid ",
-                      1: /* String */{
-                        0: /* No_padding */0,
-                        1: /* String_literal */{
-                          0: " digit",
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      length: 2,
-                      tag: 11
-                    },
-                    length: 1,
-                    tag: 1
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "character ",
+                    /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                            " is not a valid ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " digit",
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])])
+                  ]),
                 "character %C is not a valid %s digit"
               ]), c, basis);
       throw [
@@ -1040,24 +983,10 @@ function char_for_decimal_code(c0, c1, c2) {
   var c = (Caml_int32.imul(100, c0 - /* "0" */48 | 0) + Caml_int32.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
   if (c < 0 || c > 255) {
     var s = Curry._3(Printf.sprintf(/* Format */[
-              /* String_literal */{
-                0: "bad character decimal encoding \\",
-                1: /* Char */{
-                  0: /* Char */{
-                    0: /* Char */{
-                      0: /* End_of_format */0,
-                      length: 1,
-                      tag: 0
-                    },
-                    length: 1,
-                    tag: 0
-                  },
-                  length: 1,
-                  tag: 0
-                },
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "bad character decimal encoding \\",
+                  /* Char */Block.__(0, [/* Char */Block.__(0, [/* Char */Block.__(0, [/* End_of_format */0])])])
+                ]),
               "bad character decimal encoding \\%c%c%c"
             ]), c0, c1, c2);
     throw [
@@ -1086,20 +1015,10 @@ function char_for_hexadecimal_code(c1, c2) {
   var c = (hexadecimal_value_of_char(c1) << 4) + hexadecimal_value_of_char(c2) | 0;
   if (c < 0 || c > 255) {
     var s = Curry._2(Printf.sprintf(/* Format */[
-              /* String_literal */{
-                0: "bad character hexadecimal encoding \\",
-                1: /* Char */{
-                  0: /* Char */{
-                    0: /* End_of_format */0,
-                    length: 1,
-                    tag: 0
-                  },
-                  length: 1,
-                  tag: 0
-                },
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "bad character hexadecimal encoding \\",
+                  /* Char */Block.__(0, [/* Char */Block.__(0, [/* End_of_format */0])])
+                ]),
               "bad character hexadecimal encoding \\%c%c"
             ]), c1, c2);
     throw [
@@ -1118,22 +1037,16 @@ function check_next_char(message, width, ib) {
     if (ib[/* eof */0]) {
       var message$1 = message;
       var s = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "scanning of ",
-                  1: /* String */{
-                    0: /* No_padding */0,
-                    1: /* String_literal */{
-                      0: " failed: premature end of file occurred before end of token",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
-                    length: 2,
-                    tag: 2
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "scanning of ",
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            " failed: premature end of file occurred before end of token",
+                            /* End_of_format */0
+                          ])
+                      ])
+                  ]),
                 "scanning of %s failed: premature end of file occurred before end of token"
               ]), message$1);
       throw [
@@ -1361,21 +1274,13 @@ function scan_bool(ib) {
   if (c !== 102) {
     if (c !== 116) {
       var s = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "the character ",
-                  1: /* Caml_char */{
-                    0: /* String_literal */{
-                      0: " cannot start a boolean",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
-                    length: 1,
-                    tag: 1
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "the character ",
+                    /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                            " cannot start a boolean",
+                            /* End_of_format */0
+                          ])])
+                  ]),
                 "the character %C cannot start a boolean"
               ]), c);
       throw [
@@ -1452,29 +1357,21 @@ function scanf_bad_input(ib, x) {
   if (exit === 1) {
     var i = char_count(ib);
     var s$1 = Curry._2(Printf.sprintf(/* Format */[
-              /* String_literal */{
-                0: "scanf: bad input at char number ",
-                1: /* Int */{
-                  0: /* Int_i */3,
-                  1: /* No_padding */0,
-                  2: /* No_precision */0,
-                  3: /* String_literal */{
-                    0: ": ",
-                    1: /* Caml_string */{
-                      0: /* No_padding */0,
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 3
-                    },
-                    length: 2,
-                    tag: 11
-                  },
-                  length: 4,
-                  tag: 4
-                },
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "scanf: bad input at char number ",
+                  /* Int */Block.__(4, [
+                      /* Int_i */3,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      /* String_literal */Block.__(11, [
+                          ": ",
+                          /* Caml_string */Block.__(3, [
+                              /* No_padding */0,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ])
+                ]),
               "scanf: bad input at char number %i: %S"
             ]), i, s);
     throw [
@@ -1740,12 +1637,10 @@ function make_scanf(ib, _fmt, readers) {
                     }(stp));
                     var str_rest_000 = match[1];
                     var str_rest_001 = rest[1];
-                    var str_rest = /* String_literal */{
-                      0: str_rest_000,
-                      1: str_rest_001,
-                      length: 2,
-                      tag: 11
-                    };
+                    var str_rest = /* String_literal */Block.__(11, [
+                        str_rest_000,
+                        str_rest_001
+                      ]);
                     return pad_prec_scanf(ib, str_rest, readers, pad, /* No_precision */0, scan, token);
                 case 18 : 
                     var match$1 = rest[0];
@@ -1972,12 +1867,10 @@ function make_scanf(ib, _fmt, readers) {
               var s$3 = token(ib);
               var str_rest_000$1 = match$6[1];
               var str_rest_001$1 = rest$1[1];
-              var str_rest$1 = /* String_literal */{
-                0: str_rest_000$1,
-                1: str_rest_001$1,
-                length: 2,
-                tag: 11
-              };
+              var str_rest$1 = /* String_literal */Block.__(11, [
+                  str_rest_000$1,
+                  str_rest_001$1
+                ]);
               return /* Cons */[
                       s$3,
                       make_scanf(ib, str_rest$1, readers)
@@ -2111,33 +2004,17 @@ function kscanf(ib, ef, param) {
     Buffer.reset(ib[/* tokbuf */7]);
     var match;
     try {
-      match = /* Args */{
-        0: make_scanf(ib, fmt, readers),
-        length: 1,
-        tag: 0
-      };
+      match = /* Args */Block.__(0, [make_scanf(ib, fmt, readers)]);
     }
     catch (exc){
       if (exc[0] === Scan_failure) {
-        match = /* Exc */{
-          0: exc,
-          length: 1,
-          tag: 1
-        };
+        match = /* Exc */Block.__(1, [exc]);
       }
       else if (exc[0] === Caml_builtin_exceptions.failure) {
-        match = /* Exc */{
-          0: exc,
-          length: 1,
-          tag: 1
-        };
+        match = /* Exc */Block.__(1, [exc]);
       }
       else if (exc === Caml_builtin_exceptions.end_of_file) {
-        match = /* Exc */{
-          0: exc,
-          length: 1,
-          tag: 1
-        };
+        match = /* Exc */Block.__(1, [exc]);
       }
       else if (exc[0] === Caml_builtin_exceptions.invalid_argument) {
         var s = exc[1] + (' in format "' + ($$String.escaped(str) + '"'));
@@ -2246,16 +2123,10 @@ function format_from_string(s, fmt) {
 
 function unescaped(s) {
   return Curry._1(sscanf('"' + (s + '"'), /* Format */[
-                  /* Caml_string */{
-                    0: /* No_padding */0,
-                    1: /* Flush */{
-                      0: /* End_of_format */0,
-                      length: 1,
-                      tag: 10
-                    },
-                    length: 2,
-                    tag: 3
-                  },
+                  /* Caml_string */Block.__(3, [
+                      /* No_padding */0,
+                      /* Flush */Block.__(10, [/* End_of_format */0])
+                    ]),
                   "%S%!"
                 ]), function (x) {
               return x;

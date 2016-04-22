@@ -145,8 +145,11 @@ let weak = "Caml_weak"
 let backtrace = "Caml_backtrace"
 let gc = "Caml_gc"
 let int32 = "Caml_int32"
+let block = "Block"
+
 let runtime_set = 
   [
+    block;
     int32;
     gc ;
     backtrace; 

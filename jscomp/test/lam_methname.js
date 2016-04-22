@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Caml_format             = require("../runtime/caml_format");
+var Block                   = require("../runtime/block");
 var Ext_string              = require("./ext_string");
 var Curry                   = require("../runtime/curry");
 var Ext_log                 = require("./ext_log");
@@ -34,11 +35,7 @@ function process(x) {
       var v = Ext_string.rfind(sub, x);
       if (v < 0) {
         return /* tuple */[
-                /* Unknown */{
-                  0: /* None */0,
-                  length: 1,
-                  tag: 2
-                },
+                /* Unknown */Block.__(2, [/* None */0]),
                 x
               ];
       }
@@ -64,12 +61,10 @@ function process(x) {
             var fail = function (l) {
               var error = "invalid indicator" + (indicator + ("in method name " + (x + (":" + Lam_current_unit.get_file(/* () */0)))));
               Curry._1(Ext_log.err(l, /* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 2
-                        },
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* End_of_format */0
+                          ]),
                         "%s"
                       ]), error);
               throw [
@@ -124,27 +119,11 @@ function process(x) {
             if (match) {
               var match$1 = match[0];
               $js = match$1 !== 17279 ? (
-                  match$1 >= 785140586 ? /* Unknown */{
-                      0: arity$1,
-                      length: 1,
-                      tag: 2
-                    } : /* Js */{
-                      0: arity$1,
-                      length: 1,
-                      tag: 0
-                    }
-                ) : /* Ml */{
-                  0: arity$1,
-                  length: 1,
-                  tag: 1
-                };
+                  match$1 >= 785140586 ? /* Unknown */Block.__(2, [arity$1]) : /* Js */Block.__(0, [arity$1])
+                ) : /* Ml */Block.__(1, [arity$1]);
             }
             else {
-              $js = /* Js */{
-                0: arity$1,
-                length: 1,
-                tag: 0
-              };
+              $js = /* Js */Block.__(0, [arity$1]);
             }
             return /* tuple */[
                     $js,

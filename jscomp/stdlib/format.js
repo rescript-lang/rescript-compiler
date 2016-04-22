@@ -7,6 +7,7 @@ var Bytes                   = require("./bytes");
 var Caml_io                 = require("../runtime/caml_io");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Buffer                  = require("./buffer");
 var $$String                = require("./string");
@@ -371,22 +372,14 @@ function enqueue_advance(state, tok) {
 function enqueue_string_as(state, size, s) {
   return enqueue_advance(state, /* record */[
               size,
-              /* Pp_text */{
-                0: s,
-                length: 1,
-                tag: 0
-              },
+              /* Pp_text */Block.__(0, [s]),
               size
             ]);
 }
 
 var q_elem = /* record */[
   -1,
-  /* Pp_text */{
-    0: "",
-    length: 1,
-    tag: 0
-  },
+  /* Pp_text */Block.__(0, [""]),
   0
 ];
 
@@ -474,12 +467,10 @@ function pp_open_box_gen(state, indent, br_ty) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       -state[/* pp_right_total */12],
-      /* Pp_begin */{
-        0: indent,
-        1: br_ty,
-        length: 2,
-        tag: 3
-      },
+      /* Pp_begin */Block.__(3, [
+          indent,
+          br_ty
+        ]),
       0
     ];
     return scan_push(state, /* false */0, elem);
@@ -525,11 +516,7 @@ function pp_open_tag(state, tag_name) {
   if (state[/* pp_mark_tags */21]) {
     return pp_enqueue(state, /* record */[
                 0,
-                /* Pp_open_tag */{
-                  0: tag_name,
-                  length: 1,
-                  tag: 5
-                },
+                /* Pp_open_tag */Block.__(5, [tag_name]),
                 0
               ]);
   }
@@ -719,12 +706,10 @@ function pp_print_break(state, width, offset) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       -state[/* pp_right_total */12],
-      /* Pp_break */{
-        0: width,
-        1: offset,
-        length: 2,
-        tag: 1
-      },
+      /* Pp_break */Block.__(1, [
+          width,
+          offset
+        ]),
       width
     ];
     return scan_push(state, /* true */1, elem);
@@ -747,11 +732,7 @@ function pp_open_tbox(state, _) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       0,
-      /* Pp_tbegin */{
-        0: /* Pp_tbox */[[/* [] */0]],
-        length: 1,
-        tag: 4
-      },
+      /* Pp_tbegin */Block.__(4, [/* Pp_tbox */[[/* [] */0]]]),
       0
     ];
     return enqueue_advance(state, elem);
@@ -786,12 +767,10 @@ function pp_print_tbreak(state, width, offset) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       -state[/* pp_right_total */12],
-      /* Pp_tbreak */{
-        0: width,
-        1: offset,
-        length: 2,
-        tag: 2
-      },
+      /* Pp_tbreak */Block.__(2, [
+          width,
+          offset
+        ]),
       width
     ];
     return scan_push(state, /* true */1, elem);
@@ -1060,12 +1039,10 @@ function pp_make_formatter(f, g, h, i) {
   ];
   var sys_tok = /* record */[
     -1,
-    /* Pp_begin */{
-      0: 0,
-      1: /* Pp_hovbox */3,
-      length: 2,
-      tag: 3
-    },
+    /* Pp_begin */Block.__(3, [
+        0,
+        /* Pp_hovbox */3
+      ]),
     0
   ];
   add_queue(sys_tok, pp_q);

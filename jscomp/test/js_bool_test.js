@@ -3,6 +3,7 @@
 
 var Caml_obj = require("../runtime/caml_obj");
 var Mt       = require("./mt");
+var Block    = require("../runtime/block");
 
 function f(x) {
   if (x) {
@@ -40,12 +41,10 @@ var v = ( true);
 var suites_000 = /* tuple */[
   "caml_bool_eq_caml_bool",
   function () {
-    return /* Eq */{
-            0: u,
-            1: f(true),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              u,
+              f(true)
+            ]);
   }
 ];
 
@@ -53,24 +52,20 @@ var suites_001 = /* :: */[
   /* tuple */[
     "js_bool_eq_js_bool",
     function () {
-      return /* Eq */{
-              0: v,
-              1: true,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                v,
+                true
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "js_bool_neq_acml_bool",
       function () {
-        return /* Eq */{
-                0: /* false */0,
-                1: Caml_obj.caml_equal(f(true), (true)),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  /* false */0,
+                  Caml_obj.caml_equal(f(true), (true))
+                ]);
       }
     ],
     /* [] */0

@@ -1,17 +1,16 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 var suites_000 = /* tuple */[
   "int_type",
   function () {
-    return /* Eq */{
-            0: "number",
-            1: "number",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              "number",
+              "number"
+            ]);
   }
 ];
 
@@ -19,12 +18,10 @@ var suites_001 = /* :: */[
   /* tuple */[
     "string_type",
     function () {
-      return /* Eq */{
-              0: "string",
-              1: "string",
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                "string",
+                "string"
+              ]);
     }
   ],
   /* [] */0

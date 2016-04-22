@@ -3,6 +3,7 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 var Mt_global               = require("./mt_global");
 var Curry                   = require("../runtime/curry");
 var Scanf                   = require("../stdlib/scanf");
@@ -19,13 +20,11 @@ function eq(f, param) {
 
 function scan_rest(ib, accu) {
   return Curry._1(Scanf.bscanf(ib, /* Format */[
-                  /* Scan_char_set */{
-                    0: /* None */0,
-                    1: "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                    2: /* End_of_format */0,
-                    length: 3,
-                    tag: 20
-                  },
+                  /* Scan_char_set */Block.__(20, [
+                      /* None */0,
+                      "\0\0\0\0\0\0\0\0\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                      /* End_of_format */0
+                    ]),
                   "%[]]"
                 ]), function (param) {
               if (param === "]") {
@@ -35,24 +34,18 @@ function scan_rest(ib, accu) {
                 var ib$1 = ib;
                 var accu$1 = accu;
                 return Curry._1(Scanf.bscanf(ib$1, /* Format */[
-                                /* Char_literal */{
-                                  0: /* " " */32,
-                                  1: /* Int */{
-                                    0: /* Int_i */3,
-                                    1: /* No_padding */0,
-                                    2: /* No_precision */0,
-                                    3: /* Char_literal */{
-                                      0: /* " " */32,
-                                      1: /* End_of_format */0,
-                                      length: 2,
-                                      tag: 12
-                                    },
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* Int */Block.__(4, [
+                                        /* Int_i */3,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* End_of_format */0
+                                          ])
+                                      ])
+                                  ]),
                                 " %i "
                               ]), function (i) {
                             var ib$2 = ib$1;
@@ -61,13 +54,11 @@ function scan_rest(ib, accu) {
                               accu$1
                             ];
                             return Curry._1(Scanf.bscanf(ib$2, /* Format */[
-                                            /* Scan_char_set */{
-                                              0: /* Some */[1],
-                                              1: "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
-                                              2: /* End_of_format */0,
-                                              length: 3,
-                                              tag: 20
-                                            },
+                                            /* Scan_char_set */Block.__(20, [
+                                                /* Some */[1],
+                                                "\0\0\0\0\0\0\0\b\0\0\0 \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
+                                                /* End_of_format */0
+                                              ]),
                                             "%1[];]"
                                           ]), function (param) {
                                         switch (param) {
@@ -77,12 +68,10 @@ function scan_rest(ib, accu) {
                                               return accu$2;
                                           default:
                                             var s = Printf.sprintf(/* Format */[
-                                                  /* String_literal */{
-                                                    0: "scan_int_list",
-                                                    1: /* End_of_format */0,
-                                                    length: 2,
-                                                    tag: 11
-                                                  },
+                                                  /* String_literal */Block.__(11, [
+                                                      "scan_int_list",
+                                                      /* End_of_format */0
+                                                    ]),
                                                   "scan_int_list"
                                                 ]);
                                             throw [
@@ -98,12 +87,10 @@ function scan_rest(ib, accu) {
 
 function scan_int_list(ib) {
   Curry._1(Scanf.bscanf(ib, /* Format */[
-            /* String_literal */{
-              0: " [ ",
-              1: /* End_of_format */0,
-              length: 2,
-              tag: 11
-            },
+            /* String_literal */Block.__(11, [
+                " [ ",
+                /* End_of_format */0
+              ]),
             " [ "
           ]), /* () */0);
   return List.rev(scan_rest(ib, /* [] */0));

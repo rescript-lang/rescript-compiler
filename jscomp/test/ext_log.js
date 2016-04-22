@@ -2,31 +2,26 @@
 'use strict';
 
 var Pervasives       = require("../stdlib/pervasives");
+var Block            = require("../runtime/block");
 var Curry            = require("../runtime/curry");
 var Lam_current_unit = require("./lam_current_unit");
 var Format           = require("../stdlib/format");
 
 function err(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Char_literal */{
-                          0: /* " " */32,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* " " */32,
+                              /* End_of_format */0
+                            ])
+                        ]),
                       "%s "
                     ], Pervasives.$caret$caret(f, /* Format */[
-                          /* Formatting_lit */{
-                            0: /* Flush_newline */4,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 17
-                          },
+                          /* Formatting_lit */Block.__(17, [
+                              /* Flush_newline */4,
+                              /* End_of_format */0
+                            ]),
                           "@."
                         ]))), str);
 }
@@ -34,33 +29,25 @@ function err(str, f) {
 function ierr(b, str, f) {
   if (b) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* " " */32,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* " " */32,
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "%s "
                       ], f)), str);
   }
   else {
     return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* " " */32,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Char_literal */Block.__(12, [
+                                /* " " */32,
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "%s "
                       ], f)), str);
   }
@@ -68,30 +55,22 @@ function ierr(b, str, f) {
 
 function warn(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                      /* String_literal */{
-                        0: "WARN: ",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* " " */32,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
+                      /* String_literal */Block.__(11, [
+                          "WARN: ",
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
                       "WARN: %s "
                     ], Pervasives.$caret$caret(f, /* Format */[
-                          /* Formatting_lit */{
-                            0: /* Flush_newline */4,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 17
-                          },
+                          /* Formatting_lit */Block.__(17, [
+                              /* Flush_newline */4,
+                              /* End_of_format */0
+                            ]),
                           "@."
                         ]))), str);
 }
@@ -99,43 +78,31 @@ function warn(str, f) {
 function iwarn(b, str, f) {
   if (b) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "WARN: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "WARN: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "WARN: %s "
                       ], f)), str);
   }
   else {
     return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "WARN: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "WARN: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "WARN: %s "
                       ], f)), str);
   }
@@ -144,59 +111,43 @@ function iwarn(b, str, f) {
 function dwarn(str, f) {
   if (Lam_current_unit.is_same_file(/* () */0)) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "WARN: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "WARN: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "WARN: %s "
                       ], Pervasives.$caret$caret(f, /* Format */[
-                            /* Formatting_lit */{
-                              0: /* Flush_newline */4,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 17
-                            },
+                            /* Formatting_lit */Block.__(17, [
+                                /* Flush_newline */4,
+                                /* End_of_format */0
+                              ]),
                             "@."
                           ]))), str);
   }
   else {
     return Curry._1(Format.ifprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "WARN: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "WARN: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "WARN: %s "
                       ], Pervasives.$caret$caret(f, /* Format */[
-                            /* Formatting_lit */{
-                              0: /* Flush_newline */4,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 17
-                            },
+                            /* Formatting_lit */Block.__(17, [
+                                /* Flush_newline */4,
+                                /* End_of_format */0
+                              ]),
                             "@."
                           ]))), str);
   }
@@ -204,22 +155,16 @@ function dwarn(str, f) {
 
 function info(str, f) {
   return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                      /* String_literal */{
-                        0: "INFO: ",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* " " */32,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
+                      /* String_literal */Block.__(11, [
+                          "INFO: ",
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
                       "INFO: %s "
                     ], f)), str);
 }
@@ -227,43 +172,31 @@ function info(str, f) {
 function iinfo(b, str, f) {
   if (b) {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "INFO: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "INFO: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "INFO: %s "
                       ], f)), str);
   }
   else {
     return Curry._1(Format.fprintf(Format.err_formatter, Pervasives.$caret$caret(/* Format */[
-                        /* String_literal */{
-                          0: "INFO: ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "INFO: ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* " " */32,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         "INFO: %s "
                       ], f)), str);
   }

@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt        = require("./mt");
+var Block     = require("../runtime/block");
 var Mt_global = require("./mt_global");
 var Curry     = require("../runtime/curry");
 var Scanf     = require("../stdlib/scanf");
@@ -16,26 +17,20 @@ function eq(f, param) {
 
 eq('File "scanf_test.ml", line 6, characters 5-12', /* tuple */[
       Curry._1(Scanf.sscanf("32 31", /* Format */[
-                /* Int */{
-                  0: /* Int_d */0,
-                  1: /* No_padding */0,
-                  2: /* No_precision */0,
-                  3: /* Char_literal */{
-                    0: /* " " */32,
-                    1: /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* End_of_format */0,
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 12
-                  },
-                  length: 4,
-                  tag: 4
-                },
+                /* Int */Block.__(4, [
+                    /* Int_d */0,
+                    /* No_padding */0,
+                    /* No_precision */0,
+                    /* Char_literal */Block.__(12, [
+                        /* " " */32,
+                        /* Int */Block.__(4, [
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* End_of_format */0
+                          ])
+                      ])
+                  ]),
                 "%d %d"
               ]), function (x, y) {
             return x + y | 0;

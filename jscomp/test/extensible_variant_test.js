@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 
 var Str = Caml_exceptions.create("Extensible_variant_test.Str");
 
@@ -38,16 +39,14 @@ function to_int(x) {
 var suites_000 = /* tuple */[
   "test_int",
   function () {
-    return /* Eq */{
-            0: 3,
-            1: to_int([
-                  Int,
-                  3,
-                  0
-                ]),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              3,
+              to_int([
+                    Int,
+                    3,
+                    0
+                  ])
+            ]);
   }
 ];
 
@@ -55,31 +54,27 @@ var suites_001 = /* :: */[
   /* tuple */[
     "test_int2",
     function () {
-      return /* Eq */{
-              0: 0,
-              1: to_int([
-                    Int$1,
-                    3,
-                    0
-                  ]),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                0,
+                to_int([
+                      Int$1,
+                      3,
+                      0
+                    ])
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "test_string",
       function () {
-        return /* Eq */{
-                0: -1,
-                1: to_int([
-                      Str,
-                      "x"
-                    ]),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  -1,
+                  to_int([
+                        Str,
+                        "x"
+                      ])
+                ]);
       }
     ],
     /* [] */0

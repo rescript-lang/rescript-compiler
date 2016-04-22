@@ -5,6 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var Caml_primitive          = require("../runtime/caml_primitive");
@@ -233,13 +234,9 @@ function chop_extension(name) {
   };
 }
 
-var prng = {
-  0: function () {
-    return Curry._1(Random.State[/* make_self_init */1], /* () */0);
-  },
-  length: 1,
-  tag: 246
-};
+var prng = Block.__(246, [function () {
+      return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+    }]);
 
 function temp_file_name(temp_dir, prefix, suffix) {
   var tag = prng.tag | 0;
@@ -247,29 +244,21 @@ function temp_file_name(temp_dir, prefix, suffix) {
           tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
         )) & 16777215;
   return concat(temp_dir, Curry._3(Printf.sprintf(/* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Int */{
-                          0: /* Int_x */6,
-                          1: /* Lit_padding */{
-                            0: /* Zeros */2,
-                            1: 6,
-                            length: 2,
-                            tag: 0
-                          },
-                          2: /* No_precision */0,
-                          3: /* String */{
-                            0: /* No_padding */0,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 4,
-                          tag: 4
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Int */Block.__(4, [
+                              /* Int_x */6,
+                              /* Lit_padding */Block.__(0, [
+                                  /* Zeros */2,
+                                  6
+                                ]),
+                              /* No_precision */0,
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ]),
                       "%s%06x%s"
                     ]), prefix, rnd, suffix));
 }

@@ -5,6 +5,7 @@ var Caml_obj       = require("../runtime/caml_obj");
 var Pervasives     = require("../stdlib/pervasives");
 var Mt             = require("./mt");
 var Caml_int32     = require("../runtime/caml_int32");
+var Block          = require("../runtime/block");
 var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 var List           = require("../stdlib/list");
@@ -70,12 +71,10 @@ function eq(loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Eq */{
-                0: x,
-                1: y,
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
       }
     ],
     suites[0]

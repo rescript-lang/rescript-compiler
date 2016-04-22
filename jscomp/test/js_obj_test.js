@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Block          = require("../runtime/block");
 var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 
@@ -35,12 +36,10 @@ var suites_000 = /* tuple */[
       CamlinternalOO.init_class($$class);
       class_tables[0] = env_init;
     }
-    return /* Eq */{
-            0: 33,
-            1: f(Curry._1(class_tables[0], 0)),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              33,
+              f(Curry._1(class_tables[0], 0))
+            ]);
   }
 ];
 
@@ -48,16 +47,14 @@ var suites_001 = /* :: */[
   /* tuple */[
     "js_obj",
     function () {
-      return /* Eq */{
-              0: 34,
-              1: f({
-                    "say": function (x) {
-                      return x + 2 | 0;
-                    }
-                  }),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                34,
+                f({
+                      "say": function (x) {
+                        return x + 2 | 0;
+                      }
+                    })
+              ]);
     }
   ],
   /* [] */0

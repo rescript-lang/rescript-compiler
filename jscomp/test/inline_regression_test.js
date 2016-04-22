@@ -3,6 +3,7 @@
 
 var Filename = require("../stdlib/filename");
 var Mt       = require("./mt");
+var Block    = require("../runtime/block");
 var Curry    = require("../runtime/curry");
 var $$String = require("../stdlib/string");
 
@@ -53,12 +54,10 @@ function basename(param) {
 var suites_000 = /* tuple */[
   "basename",
   function () {
-    return /* Eq */{
-            0: basename("b/c/a.b"),
-            1: "a.b",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              basename("b/c/a.b"),
+              "a.b"
+            ]);
   }
 ];
 

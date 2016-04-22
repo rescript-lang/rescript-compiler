@@ -3,6 +3,7 @@
 
 var Bytes  = require("../stdlib/bytes");
 var Mt     = require("./mt");
+var Block  = require("../runtime/block");
 var Buffer = require("../stdlib/buffer");
 
 var v = "gso";
@@ -10,18 +11,16 @@ var v = "gso";
 var suites_000 = /* tuple */[
   "equal",
   function () {
-    return /* Eq */{
-            0: /* tuple */[
-              Bytes.make(3, /* "a" */97)[0],
-              Bytes.make(3, /* "a" */97)[0]
-            ],
-            1: /* tuple */[
-              /* "a" */97,
-              /* "a" */97
-            ],
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              /* tuple */[
+                Bytes.make(3, /* "a" */97)[0],
+                Bytes.make(3, /* "a" */97)[0]
+              ],
+              /* tuple */[
+                /* "a" */97,
+                /* "a" */97
+              ]
+            ]);
   }
 ];
 
@@ -31,18 +30,16 @@ var suites_001 = /* :: */[
     function () {
       var u = Bytes.make(3, /* "a" */97);
       u[0] = /* "b" */98;
-      return /* Eq */{
-              0: /* tuple */[
-                u[0],
-                v.charCodeAt(0)
-              ],
-              1: /* tuple */[
-                /* "b" */98,
-                /* "g" */103
-              ],
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                /* tuple */[
+                  u[0],
+                  v.charCodeAt(0)
+                ],
+                /* tuple */[
+                  /* "b" */98,
+                  /* "g" */103
+                ]
+              ]);
     }
   ],
   /* :: */[
@@ -53,12 +50,10 @@ var suites_001 = /* :: */[
         for(var i = 0; i <= 10; ++i){
           Buffer.add_string(v, "" + i);
         }
-        return /* Eq */{
-                0: Buffer.contents(v),
-                1: "012345678910",
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  Buffer.contents(v),
+                  "012345678910"
+                ]);
       }
     ],
     /* [] */0

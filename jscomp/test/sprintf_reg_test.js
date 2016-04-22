@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt        = require("./mt");
+var Block     = require("../runtime/block");
 var Mt_global = require("./mt_global");
 var Curry     = require("../runtime/curry");
 var Printf    = require("../stdlib/printf");
@@ -15,35 +16,23 @@ function eq(f, param) {
 }
 
 var s = Curry._1(Printf.sprintf(/* Format */[
-          /* Format_arg */{
-            0: /* None */0,
-            1: /* String_ty */{
-              0: /* End_of_fmtty */0,
-              length: 1,
-              tag: 1
-            },
-            2: /* Char_literal */{
-              0: /* "." */46,
-              1: /* End_of_format */0,
-              length: 2,
-              tag: 12
-            },
-            length: 3,
-            tag: 13
-          },
+          /* Format_arg */Block.__(13, [
+              /* None */0,
+              /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
+              /* Char_literal */Block.__(12, [
+                  /* "." */46,
+                  /* End_of_format */0
+                ])
+            ]),
           "%{%s%}."
         ]), /* Format */[
-      /* String_literal */{
-        0: "32",
-        1: /* String */{
-          0: /* No_padding */0,
-          1: /* End_of_format */0,
-          length: 2,
-          tag: 2
-        },
-        length: 2,
-        tag: 11
-      },
+      /* String_literal */Block.__(11, [
+          "32",
+          /* String */Block.__(2, [
+              /* No_padding */0,
+              /* End_of_format */0
+            ])
+        ]),
       "32%s"
     ]);
 
@@ -53,42 +42,28 @@ eq('File "sprintf_reg_test.ml", line 8, characters 5-12', /* tuple */[
     ]);
 
 var s$1 = Curry._2(Printf.sprintf(/* Format */[
-          /* Int */{
-            0: /* Int_i */3,
-            1: /* No_padding */0,
-            2: /* No_precision */0,
-            3: /* Char_literal */{
-              0: /* " " */32,
-              1: /* Format_arg */{
-                0: /* None */0,
-                1: /* String_ty */{
-                  0: /* End_of_fmtty */0,
-                  length: 1,
-                  tag: 1
-                },
-                2: /* End_of_format */0,
-                length: 3,
-                tag: 13
-              },
-              length: 2,
-              tag: 12
-            },
-            length: 4,
-            tag: 4
-          },
+          /* Int */Block.__(4, [
+              /* Int_i */3,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* Char_literal */Block.__(12, [
+                  /* " " */32,
+                  /* Format_arg */Block.__(13, [
+                      /* None */0,
+                      /* String_ty */Block.__(1, [/* End_of_fmtty */0]),
+                      /* End_of_format */0
+                    ])
+                ])
+            ]),
           "%i %{%s%}"
         ]), 1, /* Format */[
-      /* String_literal */{
-        0: "spells one ",
-        1: /* String */{
-          0: /* No_padding */0,
-          1: /* End_of_format */0,
-          length: 2,
-          tag: 2
-        },
-        length: 2,
-        tag: 11
-      },
+      /* String_literal */Block.__(11, [
+          "spells one ",
+          /* String */Block.__(2, [
+              /* No_padding */0,
+              /* End_of_format */0
+            ])
+        ]),
       "spells one %s"
     ]);
 

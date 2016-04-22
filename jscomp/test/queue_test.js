@@ -3,6 +3,7 @@
 
 var Mt         = require("./mt");
 var Queue      = require("../stdlib/queue");
+var Block      = require("../runtime/block");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 
@@ -35,12 +36,10 @@ var suites_000 = /* tuple */[
       5,
       2
     ];
-    return /* Eq */{
-            0: x,
-            1: queue_1(x),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              x,
+              queue_1(x)
+            ]);
   }
 ];
 

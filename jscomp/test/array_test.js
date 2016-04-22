@@ -3,6 +3,7 @@
 
 var Caml_obj   = require("../runtime/caml_obj");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
 var List       = require("../stdlib/list");
@@ -29,20 +30,18 @@ function is_sorted(x) {
 var array_suites_000 = /* tuple */[
   "init",
   function () {
-    return /* Eq */{
-            0: $$Array.init(5, function (x) {
-                  return x;
-                }),
-            1: /* array */[
-              0,
-              1,
-              2,
-              3,
-              4
-            ],
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              $$Array.init(5, function (x) {
+                    return x;
+                  }),
+              /* array */[
+                0,
+                1,
+                2,
+                3,
+                4
+              ]
+            ]);
   }
 ];
 
@@ -68,85 +67,77 @@ var array_suites_001 = /* :: */[
                 ],
                 /* [] */0
               ]));
-      return /* Eq */{
-              0: match[0],
-              1: match[1],
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                match[0],
+                match[1]
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "concat",
       function () {
-        return /* Eq */{
-                0: /* array */[
-                  0,
-                  1,
-                  2,
-                  3,
-                  4,
-                  5
-                ],
-                1: Caml_array.caml_array_concat(/* :: */[
-                      /* int array */[
-                        0,
-                        1,
-                        2
-                      ],
-                      /* :: */[
+        return /* Eq */Block.__(0, [
+                  /* array */[
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ],
+                  Caml_array.caml_array_concat(/* :: */[
                         /* int array */[
-                          3,
-                          4
+                          0,
+                          1,
+                          2
                         ],
                         /* :: */[
-                          /* int array */[],
+                          /* int array */[
+                            3,
+                            4
+                          ],
                           /* :: */[
-                            /* int array */[5],
-                            /* [] */0
+                            /* int array */[],
+                            /* :: */[
+                              /* int array */[5],
+                              /* [] */0
+                            ]
                           ]
                         ]
-                      ]
-                    ]),
-                length: 2,
-                tag: 0
-              };
+                      ])
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "make",
         function () {
-          return /* Eq */{
-                  0: Caml_array.caml_make_vect(100, /* "a" */97),
-                  1: $$Array.init(100, function () {
-                        return /* "a" */97;
-                      }),
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    Caml_array.caml_make_vect(100, /* "a" */97),
+                    $$Array.init(100, function () {
+                          return /* "a" */97;
+                        })
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "sub",
           function () {
-            return /* Eq */{
-                    0: $$Array.sub(/* array */[
-                          0,
-                          1,
-                          2,
-                          3,
-                          4
-                        ], 2, 2),
-                    1: /* int array */[
-                      2,
-                      3
-                    ],
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      $$Array.sub(/* array */[
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                          ], 2, 2),
+                      /* int array */[
+                        2,
+                        3
+                      ]
+                    ]);
           }
         ],
         /* :: */[
@@ -162,41 +153,37 @@ var array_suites_001 = /* :: */[
                     return (x << 1);
                   });
               $$Array.blit(v, 1, u, 1, 2);
-              return /* Eq */{
-                      0: /* tuple */[
-                        /* int array */[
-                          0,
-                          2,
-                          4
+              return /* Eq */Block.__(0, [
+                        /* tuple */[
+                          /* int array */[
+                            0,
+                            2,
+                            4
+                          ],
+                          /* int array */[
+                            100,
+                            2,
+                            4
+                          ]
                         ],
-                        /* int array */[
-                          100,
-                          2,
-                          4
+                        /* tuple */[
+                          v,
+                          u
                         ]
-                      ],
-                      1: /* tuple */[
-                        v,
-                        u
-                      ],
-                      length: 2,
-                      tag: 0
-                    };
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "make",
               function () {
-                return /* Eq */{
-                        0: Caml_array.caml_make_vect(2, 1),
-                        1: /* int array */[
-                          1,
-                          1
-                        ],
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Caml_array.caml_make_vect(2, 1),
+                          /* int array */[
+                            1,
+                            1
+                          ]
+                        ]);
               }
             ],
             /* :: */[
@@ -209,16 +196,14 @@ var array_suites_001 = /* :: */[
                     1
                   ];
                   $$Array.sort(Caml_obj.caml_int_compare, u);
-                  return /* Eq */{
-                          0: Caml_obj.caml_equal(/* int array */[
-                                0,
-                                1,
-                                3
-                              ], u),
-                          1: /* true */1,
-                          length: 2,
-                          tag: 0
-                        };
+                  return /* Eq */Block.__(0, [
+                            Caml_obj.caml_equal(/* int array */[
+                                  0,
+                                  1,
+                                  3
+                                ], u),
+                            /* true */1
+                          ]);
                 }
               ],
               /* :: */[
@@ -229,12 +214,10 @@ var array_suites_001 = /* :: */[
                           return i % 17;
                         });
                     $$Array.sort(Caml_obj.caml_int_compare, v);
-                    return /* Eq */{
-                            0: /* true */1,
-                            1: is_sorted(v),
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              /* true */1,
+                              is_sorted(v)
+                            ]);
                   }
                 ],
                 /* [] */0

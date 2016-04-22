@@ -2,17 +2,16 @@
 'use strict';
 
 var Mt           = require("./mt");
+var Block        = require("../runtime/block");
 var Ext_filename = require("./ext_filename");
 
 var suites_000 = /* tuple */[
   "basic",
   function () {
-    return /* Eq */{
-            0: Ext_filename.node_relative_path("./a/b.c", "./a/u/g.c"),
-            1: "./u/g",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Ext_filename.node_relative_path("./a/b.c", "./a/u/g.c"),
+              "./u/g"
+            ]);
   }
 ];
 

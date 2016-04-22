@@ -18,4 +18,5 @@
 
 (* Author: Hongbo Zhang *)
 
-val create : int -> Obj.t -> Obj.t
+
+val __ : int -> Obj.t -> Obj.t

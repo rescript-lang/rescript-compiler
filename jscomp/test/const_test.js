@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Block = require("../runtime/block");
 
 function f(x) {
   return x;
@@ -11,11 +12,7 @@ function ff(x) {
 }
 
 function fff(x) {
-  var match = /* A */{
-    0: x,
-    length: 1,
-    tag: 0
-  };
+  var match = /* A */Block.__(0, [x]);
   switch (match.tag | 0) {
     case 0 : 
         return x;

@@ -3,6 +3,7 @@
 
 var Mt         = require("./mt");
 var Caml_int32 = require("../runtime/caml_int32");
+var Block      = require("../runtime/block");
 var Curry      = require("../runtime/curry");
 
 function f(v) {
@@ -52,101 +53,91 @@ Mt.from_pair_suites("ffi_arity_test.ml", /* :: */[
       /* tuple */[
         'File "ffi_arity_test.ml", line 23, characters 4-11',
         function () {
-          return /* Eq */{
-                  0: v,
-                  1: /* int array */[
-                    0,
-                    1,
-                    4
-                  ],
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    v,
+                    /* int array */[
+                      0,
+                      1,
+                      4
+                    ]
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           'File "ffi_arity_test.ml", line 24, characters 4-11',
           function () {
-            return /* Eq */{
-                    0: vv,
-                    1: /* int array */[
-                      1,
-                      3,
-                      5
-                    ],
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      vv,
+                      /* int array */[
+                        1,
+                        3,
+                        5
+                      ]
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             'File "ffi_arity_test.ml", line 25, characters 4-11',
             function () {
-              return /* Eq */{
-                      0: hh,
-                      1: /* int array */[
-                        1,
-                        2,
-                        3
-                      ],
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        hh,
+                        /* int array */[
+                          1,
+                          2,
+                          3
+                        ]
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               'File "ffi_arity_test.ml", line 26, characters 4-11',
               function () {
-                return /* Eq */{
-                        0: /* int array */[
-                              1,
-                              2,
-                              3
-                            ].map(function (x) {
-                                return function (y) {
-                                  return x + y | 0;
-                                };
-                              }).map(function (y) {
-                              return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
-                            }),
-                        1: /* int array */[
-                          2,
-                          6,
-                          12
-                        ],
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          /* int array */[
+                                1,
+                                2,
+                                3
+                              ].map(function (x) {
+                                  return function (y) {
+                                    return x + y | 0;
+                                  };
+                                }).map(function (y) {
+                                return Caml_int32.imul(Curry._1(y, 0), Curry._1(y, 1));
+                              }),
+                          /* int array */[
+                            2,
+                            6,
+                            12
+                          ]
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 'File "ffi_arity_test.ml", line 31, characters 4-11',
                 function () {
-                  return /* Eq */{
-                          0: /* int array */[
+                  return /* Eq */Block.__(0, [
+                            /* int array */[
+                                1,
+                                2,
+                                3
+                              ].map(function (param, param$1) {
+                                  return Curry._2(function (x) {
+                                              var y = Caml_int32.imul(x, x);
+                                              return function (i) {
+                                                return y + i | 0;
+                                              };
+                                            }, param, param$1);
+                                }),
+                            /* int array */[
                               1,
-                              2,
-                              3
-                            ].map(function (param, param$1) {
-                                return Curry._2(function (x) {
-                                            var y = Caml_int32.imul(x, x);
-                                            return function (i) {
-                                              return y + i | 0;
-                                            };
-                                          }, param, param$1);
-                              }),
-                          1: /* int array */[
-                            1,
-                            5,
-                            11
-                          ],
-                          length: 2,
-                          tag: 0
-                        };
+                              5,
+                              11
+                            ]
+                          ]);
                 }
               ],
               /* [] */0

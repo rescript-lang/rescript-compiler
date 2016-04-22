@@ -6,24 +6,23 @@ var Caml_obj    = require("../runtime/caml_obj");
 var Pervasives  = require("../stdlib/pervasives");
 var Caml_format = require("../runtime/caml_format");
 var Mt          = require("./mt");
+var Block       = require("../runtime/block");
 var Curry       = require("../runtime/curry");
 var Printf      = require("../stdlib/printf");
 var $$Array     = require("../stdlib/array");
 var List        = require("../stdlib/list");
 
 function commutative_mul(result, a, b) {
-  return /* Eq */{
-          0: /* tuple */[
-            result,
-            result
-          ],
-          1: /* tuple */[
-            Caml_int64.mul(a, b),
-            Caml_int64.mul(b, a)
-          ],
-          length: 2,
-          tag: 0
-        };
+  return /* Eq */Block.__(0, [
+            /* tuple */[
+              result,
+              result
+            ],
+            /* tuple */[
+              Caml_int64.mul(a, b),
+              Caml_int64.mul(b, a)
+            ]
+          ]);
 }
 
 var pairs = Caml_obj.caml_obj_dup(/* array */[
@@ -316,24 +315,18 @@ function from_pairs(prefix, pairs) {
                   var result = param[0];
                   return /* tuple */[
                           Curry._2(Printf.sprintf(/* Format */[
-                                    /* String */{
-                                      0: /* No_padding */0,
-                                      1: /* Char_literal */{
-                                        0: /* "_" */95,
-                                        1: /* Int */{
-                                          0: /* Int_d */0,
-                                          1: /* No_padding */0,
-                                          2: /* No_precision */0,
-                                          3: /* End_of_format */0,
-                                          length: 4,
-                                          tag: 4
-                                        },
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 2
-                                    },
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* "_" */95,
+                                            /* Int */Block.__(4, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ]),
                                     "%s_%d"
                                   ]), prefix, i),
                           function () {
@@ -1648,32 +1641,26 @@ function from(xs) {
               var a = param[0];
               return /* tuple */[
                       Curry._1(Printf.sprintf(/* Format */[
-                                /* String_literal */{
-                                  0: "small_divs ",
-                                  1: /* Scan_get_counter */{
-                                    0: /* Token_counter */2,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 21
-                                  },
-                                  length: 2,
-                                  tag: 11
-                                },
+                                /* String_literal */Block.__(11, [
+                                    "small_divs ",
+                                    /* Scan_get_counter */Block.__(21, [
+                                        /* Token_counter */2,
+                                        /* End_of_format */0
+                                      ])
+                                  ]),
                                 "small_divs %L"
                               ]), i),
                       function () {
-                        return /* Eq */{
-                                0: /* tuple */[
-                                  c,
-                                  d
-                                ],
-                                1: /* tuple */[
-                                  Caml_int64.div(a, b),
-                                  Caml_int64.mod_(a, b)
-                                ],
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  /* tuple */[
+                                    c,
+                                    d
+                                  ],
+                                  /* tuple */[
+                                    Caml_int64.div(a, b),
+                                    Caml_int64.mod_(a, b)
+                                  ]
+                                ]);
                       }
                     ];
             }, $$Array.to_list(xs));
@@ -1730,26 +1717,20 @@ function from_compare(xs) {
               var a = param[0];
               return /* tuple */[
                       Curry._1(Printf.sprintf(/* Format */[
-                                /* String_literal */{
-                                  0: "int64_compare ",
-                                  1: /* Scan_get_counter */{
-                                    0: /* Token_counter */2,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 21
-                                  },
-                                  length: 2,
-                                  tag: 11
-                                },
+                                /* String_literal */Block.__(11, [
+                                    "int64_compare ",
+                                    /* Scan_get_counter */Block.__(21, [
+                                        /* Token_counter */2,
+                                        /* End_of_format */0
+                                      ])
+                                  ]),
                                 "int64_compare %L"
                               ]), i),
                       function () {
-                        return /* Eq */{
-                                0: c,
-                                1: Caml_int64.compare(a, b),
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  c,
+                                  Caml_int64.compare(a, b)
+                                ]);
                       }
                     ];
             }, $$Array.to_list(xs));
@@ -1761,26 +1742,20 @@ function from_to_string(xs) {
               var a = param[0];
               return /* tuple */[
                       Curry._1(Printf.sprintf(/* Format */[
-                                /* String_literal */{
-                                  0: "to_string ",
-                                  1: /* Scan_get_counter */{
-                                    0: /* Token_counter */2,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 21
-                                  },
-                                  length: 2,
-                                  tag: 11
-                                },
+                                /* String_literal */Block.__(11, [
+                                    "to_string ",
+                                    /* Scan_get_counter */Block.__(21, [
+                                        /* Token_counter */2,
+                                        /* End_of_format */0
+                                      ])
+                                  ]),
                                 "to_string %L"
                               ]), i),
                       function () {
-                        return /* Eq */{
-                                0: str_a,
-                                1: Caml_format.caml_int64_format("%d", a),
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  str_a,
+                                  Caml_format.caml_int64_format("%d", a)
+                                ]);
                       }
                     ];
             }, $$Array.to_list(xs));
@@ -1791,28 +1766,22 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                       var i64 = param[0];
                       return /* tuple */[
                               Curry._1(Printf.sprintf(/* Format */[
-                                        /* String_literal */{
-                                          0: "to_float_",
-                                          1: /* Int */{
-                                            0: /* Int_d */0,
-                                            1: /* No_padding */0,
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 4
-                                          },
-                                          length: 2,
-                                          tag: 11
-                                        },
+                                        /* String_literal */Block.__(11, [
+                                            "to_float_",
+                                            /* Int */Block.__(4, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ]),
                                         "to_float_%d"
                                       ]), i),
                               function () {
-                                return /* Eq */{
-                                        0: Caml_int64.to_float(i64),
-                                        1: f,
-                                        length: 2,
-                                        tag: 0
-                                      };
+                                return /* Eq */Block.__(0, [
+                                          Caml_int64.to_float(i64),
+                                          f
+                                        ]);
                               }
                             ];
                     }, $$Array.to_list(to_floats)), Pervasives.$at(List.mapi(function (i, param) {
@@ -1820,42 +1789,34 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                           var f = param[0];
                           return /* tuple */[
                                   Curry._1(Printf.sprintf(/* Format */[
-                                            /* String_literal */{
-                                              0: "of_float_",
-                                              1: /* Int */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 11
-                                            },
+                                            /* String_literal */Block.__(11, [
+                                                "of_float_",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
                                             "of_float_%d"
                                           ]), i),
                                   function () {
-                                    return /* Eq */{
-                                            0: Caml_int64.of_float(f),
-                                            1: i64,
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              Caml_int64.of_float(f),
+                                              i64
+                                            ]);
                                   }
                                 ];
                         }, $$Array.to_list(of_float_pairs)), Pervasives.$at(/* :: */[
                           /* tuple */[
                             "compare_check_complete",
                             function () {
-                              return /* Eq */{
-                                      0: $$Array.map(function () {
-                                            return /* true */1;
-                                          }, check_complete_compare),
-                                      1: check_complete_compare,
-                                      length: 2,
-                                      tag: 0
-                                    };
+                              return /* Eq */Block.__(0, [
+                                        $$Array.map(function () {
+                                              return /* true */1;
+                                            }, check_complete_compare),
+                                        check_complete_compare
+                                      ]);
                             }
                           ],
                           /* [] */0
@@ -1863,42 +1824,38 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                   /* tuple */[
                                     "div_rem_0",
                                     function () {
-                                      return /* Eq */{
-                                              0: Caml_int64.div(/* int64 */[
-                                                    -1,
-                                                    4294967295
-                                                  ], /* int64 */[
-                                                    0,
-                                                    16
-                                                  ]),
-                                              1: /* int64 */[
-                                                0,
-                                                0
-                                              ],
-                                              length: 2,
-                                              tag: 0
-                                            };
-                                    }
-                                  ],
-                                  /* :: */[
-                                    /* tuple */[
-                                      "div_rem_1",
-                                      function () {
-                                        return /* Eq */{
-                                                0: Caml_int64.mod_(/* int64 */[
+                                      return /* Eq */Block.__(0, [
+                                                Caml_int64.div(/* int64 */[
                                                       -1,
                                                       4294967295
                                                     ], /* int64 */[
                                                       0,
                                                       16
                                                     ]),
-                                                1: /* int64 */[
-                                                  -1,
-                                                  4294967295
-                                                ],
-                                                length: 2,
-                                                tag: 0
-                                              };
+                                                /* int64 */[
+                                                  0,
+                                                  0
+                                                ]
+                                              ]);
+                                    }
+                                  ],
+                                  /* :: */[
+                                    /* tuple */[
+                                      "div_rem_1",
+                                      function () {
+                                        return /* Eq */Block.__(0, [
+                                                  Caml_int64.mod_(/* int64 */[
+                                                        -1,
+                                                        4294967295
+                                                      ], /* int64 */[
+                                                        0,
+                                                        16
+                                                      ]),
+                                                  /* int64 */[
+                                                    -1,
+                                                    4294967295
+                                                  ]
+                                                ]);
                                       }
                                     ],
                                     /* [] */0

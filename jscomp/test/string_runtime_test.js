@@ -4,22 +4,21 @@
 var Caml_string = require("../runtime/caml_string");
 var Bytes       = require("../stdlib/bytes");
 var Mt          = require("./mt");
+var Block       = require("../runtime/block");
 var List        = require("../stdlib/list");
 var Caml_string = require("../runtime/caml_string");
 
 var suites_000 = /* tuple */[
   "string_of_char_array",
   function () {
-    return /* Eq */{
-            0: Caml_string.caml_string_of_char_array(/* int array */[
-                  /* "a" */97,
-                  /* "b" */98,
-                  /* "c" */99
-                ]),
-            1: "abc",
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              Caml_string.caml_string_of_char_array(/* int array */[
+                    /* "a" */97,
+                    /* "b" */98,
+                    /* "c" */99
+                  ]),
+              "abc"
+            ]);
   }
 ];
 
@@ -27,12 +26,10 @@ var suites_001 = /* :: */[
   /* tuple */[
     "caml_is_printable",
     function () {
-      return /* Eq */{
-              0: Caml_string.caml_is_printable(/* "a" */97),
-              1: /* true */1,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                Caml_string.caml_is_printable(/* "a" */97),
+                /* true */1
+              ]);
     }
   ],
   /* :: */[
@@ -71,12 +68,10 @@ var suites_001 = /* :: */[
                     ]
                   ]
                 ]));
-        return /* Eq */{
-                0: match[0],
-                1: match[1],
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  match[0],
+                  match[1]
+                ]);
       }
     ],
     /* [] */0

@@ -3,6 +3,7 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var CamlinternalMod         = require("../stdlib/camlinternalMod");
 var List                    = require("../stdlib/list");
@@ -1064,22 +1065,20 @@ CamlinternalMod.update_mod([[0]], AAA, /* module */[compare$1]);
 var suites_000 = /* tuple */[
   "test1",
   function () {
-    return /* Eq */{
-            0: /* tuple */[
-              /* true */1,
-              /* true */1,
-              /* false */0,
-              /* false */0
-            ],
-            1: /* tuple */[
-              Curry._1(A[/* even */0], 2),
-              Curry._1(AA[/* even */0], 4),
-              Curry._1(B[/* odd */0], 2),
-              Curry._1(BB[/* odd */0], 4)
-            ],
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              /* tuple */[
+                /* true */1,
+                /* true */1,
+                /* false */0,
+                /* false */0
+              ],
+              /* tuple */[
+                Curry._1(A[/* even */0], 2),
+                Curry._1(AA[/* even */0], 4),
+                Curry._1(B[/* odd */0], 2),
+                Curry._1(BB[/* odd */0], 4)
+              ]
+            ]);
   }
 ];
 
@@ -1087,93 +1086,69 @@ var suites_001 = /* :: */[
   /* tuple */[
     "test2",
     function () {
-      return /* Eq */{
-              0: Curry._1(BB[/* y */1], /* () */0),
-              1: 32,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                Curry._1(BB[/* y */1], /* () */0),
+                32
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "test3",
       function () {
-        return /* Eq */{
-                0: Curry._1(AA[/* x */1], /* () */0),
-                1: 35,
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  Curry._1(AA[/* x */1], /* () */0),
+                  35
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "test4",
         function () {
-          return /* Eq */{
-                  0: /* true */1,
-                  1: Curry._1(A[/* even */0], 2),
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    /* true */1,
+                    Curry._1(A[/* even */0], 2)
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "test4",
           function () {
-            return /* Eq */{
-                    0: /* true */1,
-                    1: Curry._1(AA[/* even */0], 4),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      /* true */1,
+                      Curry._1(AA[/* even */0], 4)
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "test5",
             function () {
-              return /* Eq */{
-                      0: /* false */0,
-                      1: Curry._1(B[/* odd */0], 2),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        /* false */0,
+                        Curry._1(B[/* odd */0], 2)
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "test6",
               function () {
-                return /* Eq */{
-                        0: 2,
-                        1: cardinal(of_list(/* :: */[
-                                  /* Leaf */{
-                                    0: "a",
-                                    length: 1,
-                                    tag: 0
-                                  },
-                                  /* :: */[
-                                    /* Leaf */{
-                                      0: "b",
-                                      length: 1,
-                                      tag: 0
-                                    },
+                return /* Eq */Block.__(0, [
+                          2,
+                          cardinal(of_list(/* :: */[
+                                    /* Leaf */Block.__(0, ["a"]),
                                     /* :: */[
-                                      /* Leaf */{
-                                        0: "a",
-                                        length: 1,
-                                        tag: 0
-                                      },
-                                      /* [] */0
+                                      /* Leaf */Block.__(0, ["b"]),
+                                      /* :: */[
+                                        /* Leaf */Block.__(0, ["a"]),
+                                        /* [] */0
+                                      ]
                                     ]
-                                  ]
-                                ])),
-                        length: 2,
-                        tag: 0
-                      };
+                                  ]))
+                        ]);
               }
             ],
             /* [] */0

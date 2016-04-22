@@ -4,6 +4,7 @@
 var Caml_float = require("../runtime/caml_float");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Mt_global  = require("./mt_global");
 var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
@@ -121,28 +122,22 @@ function from_pairs(ps) {
                   var a = param[0];
                   return /* tuple */[
                           Curry._1(Printf.sprintf(/* Format */[
-                                    /* String_literal */{
-                                      0: "pair ",
-                                      1: /* Int */{
-                                        0: /* Int_d */0,
-                                        1: /* No_padding */0,
-                                        2: /* No_precision */0,
-                                        3: /* End_of_format */0,
-                                        length: 4,
-                                        tag: 4
-                                      },
-                                      length: 2,
-                                      tag: 11
-                                    },
+                                    /* String_literal */Block.__(11, [
+                                        "pair ",
+                                        /* Int */Block.__(4, [
+                                            /* Int_d */0,
+                                            /* No_padding */0,
+                                            /* No_precision */0,
+                                            /* End_of_format */0
+                                          ])
+                                      ]),
                                     "pair %d"
                                   ]), i),
                           function () {
-                            return /* Approx */{
-                                    0: a,
-                                    1: b,
-                                    length: 2,
-                                    tag: 2
-                                  };
+                            return /* Approx */Block.__(2, [
+                                      a,
+                                      b
+                                    ]);
                           }
                         ];
                 }, ps));
@@ -242,48 +237,40 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             "mod_float",
             function () {
-              return /* Approx */{
-                      0: 3.2 % 0.5,
-                      1: 0.200000000000000178,
-                      length: 2,
-                      tag: 2
-                    };
+              return /* Approx */Block.__(2, [
+                        3.2 % 0.5,
+                        0.200000000000000178
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "modf_float1",
               function () {
-                return /* Approx */{
-                        0: a,
-                        1: 0.299999999999997158,
-                        length: 2,
-                        tag: 2
-                      };
+                return /* Approx */Block.__(2, [
+                          a,
+                          0.299999999999997158
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 "modf_float2",
                 function () {
-                  return /* Approx */{
-                          0: b,
-                          1: 32,
-                          length: 2,
-                          tag: 2
-                        };
+                  return /* Approx */Block.__(2, [
+                            b,
+                            32
+                          ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
                   "int_of_float",
                   function () {
-                    return /* Eq */{
-                            0: 3.2 | 0,
-                            1: 3,
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              3.2 | 0,
+                              3
+                            ]);
                   }
                 ],
                 /* [] */0

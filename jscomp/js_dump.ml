@@ -110,6 +110,8 @@ module L = struct
   let ge = ">="
   let plus_plus = "++" (* FIXME: use (i = i + 1 | 0) instead *)
   let minus_minus = "--"
+  let caml_block = "Block"
+  let caml_block_create = "__"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -892,11 +894,8 @@ and
 
     | Number (Int { i = 0l ; _})  , 
       (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
-      |  Blk_constructor (_, 1)
+      |  Blk_constructor (_, 1) (* Sync up with {!Js_dump}*)
       ) 
-      (* Hack to optimize option which is really pervasive in ocaml, 
-         we need concrete benchmark to support this
-      *) 
       -> expression_desc cxt l f  (Array (el, mutable_flag))
     (* TODO: for numbers like 248, 255 we can reverse engineer to make it 
        [Obj.xx_flag], but we can not do this in runtime libraries
@@ -904,16 +903,10 @@ and
 
     | _, _
       -> 
-      expression_desc cxt l f 
-        (J.Object (
-            let length, rev_list = 
-              List.fold_left (fun (i,acc) v -> 
-                (i+1, (Js_op.Int_key i, v) :: acc)                
-              ) (0, []) el in
-            List.rev_append rev_list 
-              [(Js_op.Length, E.small_int length) ;  (Js_op.Tag, tag)]
-          )
-        )
+      P.string f L.caml_block; 
+      P.string f L.dot ;
+      P.string f L.caml_block_create;
+      P.paren_group f 1 (fun _ -> arguments cxt f [tag; E.arr mutable_flag el])
     end
   | Caml_block_tag e ->
     P.group f 1 (fun _ ->  
