@@ -20,6 +20,7 @@ caml_md5
 caml_queue
 caml_hash
 caml_weak
+caml_backtrace
 typed_array
 js
 fn

@@ -773,6 +773,7 @@ let query (prim : Lam_compile_env.primitive_description)
     -> E.runtime_call Js_config.bigarray prim.prim_name args 
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
+    -> E.runtime_call Js_config.backtrace prim.prim_name args
   | "caml_bswap16"
   | "caml_int32_bswap"
   | "caml_nativeint_bswap"

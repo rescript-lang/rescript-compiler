@@ -33,7 +33,7 @@ val cmd_set_module : string -> unit
 val default_gen_tds : bool ref
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
-
+val backtrace : string
 val prim : string 
 val builtin_exceptions : string
 val exceptions : string
