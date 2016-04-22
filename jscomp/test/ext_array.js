@@ -12,7 +12,7 @@ function reverse_in_place(a) {
   var i = 0;
   var len = a.length;
   if (len) {
-    for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k<= k_finish; ++k){
+    for(var k = 0 ,k_finish = (len - 1 | 0) / 2 | 0; k <= k_finish; ++k){
       var t = a$1[i + k | 0];
       a$1[i + k | 0] = a$1[((i + len | 0) - 1 | 0) - k | 0];
       a$1[((i + len | 0) - 1 | 0) - k | 0] = t;

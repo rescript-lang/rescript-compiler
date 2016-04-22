@@ -33,7 +33,7 @@ var freeze_char_set = Bytes.to_string
 
 function rev_char_set(char_set) {
   var char_set$prime = Bytes.make(32, /* "\000" */0);
-  for(var i = 0; i<= 31; ++i){
+  for(var i = 0; i <= 31; ++i){
     char_set$prime[i] = Pervasives.char_of_int(char_set.charCodeAt(i) ^ 255);
   }
   return Caml_string.bytes_to_string(char_set$prime);
@@ -625,7 +625,7 @@ function bprint_char_literal(buf, chr) {
 }
 
 function bprint_string_literal(buf, str) {
-  for(var i = 0 ,i_finish = str.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = str.length - 1 | 0; i <= i_finish; ++i){
     bprint_char_literal(buf, str.charCodeAt(i));
   }
   return /* () */0;
@@ -883,7 +883,7 @@ function bprint_fmt(buf, fmt) {
             _fmt = match[0];
             continue ;
             case 24 : 
-            for(var _i = 1 ,_i_finish = int_of_custom_arity(fmt$1[0]); _i<= _i_finish; ++_i){
+            for(var _i = 1 ,_i_finish = int_of_custom_arity(fmt$1[0]); _i <= _i_finish; ++_i){
               buffer_add_char(buf, /* "%" */37);
               bprint_ignored_flag(buf, ign_flag);
               buffer_add_char(buf, /* "?" */63);
@@ -6692,7 +6692,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
     }
     var char_set = Bytes.make(32, /* "\000" */0);
     var add_range = function (c, c$prime) {
-      for(var i = c; i<= c$prime; ++i){
+      for(var i = c; i <= c$prime; ++i){
         add_in_char_set(char_set, Pervasives.char_of_int(i));
       }
       return /* () */0;

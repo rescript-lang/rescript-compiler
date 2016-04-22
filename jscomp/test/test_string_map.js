@@ -158,13 +158,13 @@ function timing(label, f) {
 function assertion_test() {
   var m = [/* Empty */0];
   timing("building", function () {
-        for(var i = 0; i<= 1000000; ++i){
+        for(var i = 0; i <= 1000000; ++i){
           m[0] = add("" + i, "" + i, m[0]);
         }
         return /* () */0;
       });
   return timing("querying", function () {
-              for(var i = 0; i<= 1000000; ++i){
+              for(var i = 0; i <= 1000000; ++i){
                 find("" + i, m[0]);
               }
               return /* () */0;

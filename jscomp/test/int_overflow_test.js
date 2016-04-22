@@ -7,7 +7,7 @@ var Caml_primitive = require("../runtime/caml_primitive");
 
 function hash_variant(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) & 2147483647;
   }
   if (accu > 1073741823) {
@@ -20,7 +20,7 @@ function hash_variant(s) {
 
 function hash_variant2(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
   }
   accu = accu & 2147483647;

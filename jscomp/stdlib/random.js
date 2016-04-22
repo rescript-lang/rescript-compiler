@@ -35,11 +35,11 @@ function full_init(s, seed) {
   };
   var seed$1 = seed.length ? seed : /* int array */[0];
   var l = seed$1.length;
-  for(var i = 0; i<= 54; ++i){
+  for(var i = 0; i <= 54; ++i){
     s[/* st */0][i] = i;
   }
   var accu = "x";
-  for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l) | 0; i$1<= i_finish; ++i$1){
+  for(var i$1 = 0 ,i_finish = 54 + Pervasives.max(55, l) | 0; i$1 <= i_finish; ++i$1){
     var j = i$1 % 55;
     var k = i$1 % l;
     accu = combine(accu, seed$1[k]);

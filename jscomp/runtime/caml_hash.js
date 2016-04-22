@@ -31,7 +31,7 @@ function caml_hash_mix_string(h, s) {
   var len = s.length;
   var block = (len / 4 | 0) - 1 | 0;
   var hash = h;
-  for(var i = 0; i<= block; ++i){
+  for(var i = 0; i <= block; ++i){
     var j = (i << 2);
     var w = s.charCodeAt(j) | (s.charCodeAt(j + 1 | 0) << 8) | (s.charCodeAt(j + 2 | 0) << 16) | (s.charCodeAt(j + 3 | 0) << 24);
     hash = mix(hash, w);
@@ -101,7 +101,7 @@ function caml_hash(count, _, seed, obj) {
                 hash = mix(hash, tag);
                 var v = size - 1 | 0;
                 var block = v < num ? v : num;
-                for(var i = 0; i<= block; ++i){
+                for(var i = 0; i <= block; ++i){
                   Caml_queue.push(obj$1[i], queue);
                 }
               }

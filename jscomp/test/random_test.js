@@ -45,7 +45,7 @@ Random.init(0);
 
 var v = Caml_array.caml_make_vect(10, /* false */0);
 
-for(var i = 0; i<= 9; ++i){
+for(var i = 0; i <= 9; ++i){
   v[i] = Random.bool(/* () */0);
 }
 

@@ -5,7 +5,7 @@ var Curry = require("../runtime/curry");
 
 function sum_float_array(arr) {
   var v = 0;
-  for(var i = 0 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
     v += arr[i];
   }
   return v;
@@ -13,7 +13,7 @@ function sum_float_array(arr) {
 
 function sum_int_array(arr) {
   var v = 0;
-  for(var i = 0 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
     v = v + arr[i] | 0;
   }
   return v;
@@ -21,7 +21,7 @@ function sum_int_array(arr) {
 
 function sum_poly(zero, add, arr) {
   var v = zero;
-  for(var i = 0 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
     v = Curry._2(add, v, arr[i]);
   }
   return v;

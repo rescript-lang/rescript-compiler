@@ -6,14 +6,14 @@ var Caml_primitive = require("../runtime/caml_primitive");
 var $$Array        = require("../stdlib/array");
 
 function for_(x) {
-  for(var i = 0 ,i_finish = (console.log("hi"), x.length); i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){
     console.log(x[i]);
   }
   return /* () */0;
 }
 
 function for_2(x) {
-  for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     console.log(x[i]);
   }
   return /* () */0;
@@ -24,7 +24,7 @@ function for_3(x) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     arr[i] = (function(j){
     return function () {
@@ -44,7 +44,7 @@ function for_4(x) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var j = (i << 1);
     var k = (j << 1);
     arr[i] = (function(k){
@@ -65,7 +65,7 @@ function for_5(x, u) {
   var arr = $$Array.map(function (_, _$1) {
         return /* () */0;
       }, x);
-  for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
     var k = Caml_primitive.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
@@ -88,11 +88,11 @@ function for_6(x, u) {
   var v4 = [0];
   var v5 = [0];
   v4[0] = v4[0] + 1 | 0;
-  for(var j = 0; j<= 1; ++j){
+  for(var j = 0; j <= 1; ++j){
     v5[0] = v5[0] + 1 | 0;
     var v2 = [0];
     (function(v2){
-    for(var i = 0 ,i_finish = x.length; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
       var k = Caml_primitive.imul((u << 1), u);
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;

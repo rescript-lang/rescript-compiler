@@ -100,7 +100,7 @@ function create($staropt$star, initial_size) {
 function clear(h) {
   h[/* size */0] = 0;
   var len = h[/* data */1].length;
-  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
     h[/* data */1][i] = /* Empty */0;
   }
   return /* () */0;
@@ -154,7 +154,7 @@ function resize(indexfun, h) {
         return /* () */0;
       }
     };
-    for(var i = 0 ,i_finish = osize - 1 | 0; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = osize - 1 | 0; i <= i_finish; ++i){
       insert_bucket(odata[i]);
     }
     return /* () */0;
@@ -384,7 +384,7 @@ function iter(f, h) {
     };
   };
   var d = h[/* data */1];
-  for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = d.length - 1 | 0; i <= i_finish; ++i){
     do_bucket(d[i]);
   }
   return /* () */0;
@@ -408,7 +408,7 @@ function fold(f, h, init) {
   };
   var d = h[/* data */1];
   var accu = init;
-  for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = d.length - 1 | 0; i <= i_finish; ++i){
     accu = do_bucket(d[i], accu);
   }
   return accu;

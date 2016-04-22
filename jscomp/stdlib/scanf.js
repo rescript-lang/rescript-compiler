@@ -2226,7 +2226,7 @@ function string_to_String(s) {
   var l = s.length;
   var b = Buffer.create(l + 2 | 0);
   Buffer.add_char(b, /* "\"" */34);
-  for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
     var c = s.charCodeAt(i);
     if (c === /* "\"" */34) {
       Buffer.add_char(b, /* "\\" */92);

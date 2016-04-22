@@ -931,7 +931,7 @@ function verify_read(c) {
 }
 
 function verify_scan_Chars() {
-  for(var i = 0; i<= 255; ++i){
+  for(var i = 0; i <= 255; ++i){
     verify_read(Pervasives.char_of_int(i));
   }
   return /* () */0;

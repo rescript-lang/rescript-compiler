@@ -50,7 +50,7 @@ var suites_001 = /* :: */[
       "buffer",
       function () {
         var v = Buffer.create(30);
-        for(var i = 0; i<= 10; ++i){
+        for(var i = 0; i <= 10; ++i){
           Buffer.add_string(v, "" + i);
         }
         return /* Eq */{

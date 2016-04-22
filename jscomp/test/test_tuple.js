@@ -5,8 +5,8 @@ var Caml_primitive = require("../runtime/caml_primitive");
 
 var r = 0;
 
-for(var k = 1; k<= 10; ++k){
-  for(var i = 1; i<= 10; ++i){
+for(var k = 1; k <= 10; ++k){
+  for(var i = 1; i <= 10; ++i){
     var match = i % 2 ? /* tuple */[
         2,
         Caml_primitive.imul(i, 3)

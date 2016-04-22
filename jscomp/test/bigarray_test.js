@@ -10,7 +10,7 @@ var v = Curry._3(Bigarray.Array1[/* create */0], /* Int32 */6, /* C_layout */0, 
 
 function sum(v) {
   var result = 0;
-  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i <= i_finish; ++i){
     result = result + Caml_bigarray.caml_ba_get_1(v, i) | 0;
   }
   return /* () */0;
@@ -19,7 +19,7 @@ function sum(v) {
 var vv = Curry._3(Bigarray.Array1[/* create */0], /* Int32 */6, /* Fortran_layout */1, 30);
 
 function init(v) {
-  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i <= i_finish; ++i){
     v[i] = /* float array */[
       Caml_primitive.imul(i, i),
       Caml_primitive.imul(Caml_primitive.imul(i, i), i)
@@ -29,14 +29,14 @@ function init(v) {
 }
 
 function init2(v) {
-  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i <= i_finish; ++i){
     v[i] = i;
   }
   return /* () */0;
 }
 
 function init3(v) {
-  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = Caml_bigarray.caml_ba_dim_1(v) - 1 | 0; i <= i_finish; ++i){
     Caml_bigarray.caml_ba_set_1(v, i, i);
   }
   return /* () */0;

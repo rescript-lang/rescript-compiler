@@ -78,7 +78,7 @@ function from_function(f) {
               lexbuf[/* lex_last_pos */6] = lexbuf[/* lex_last_pos */6] - s | 0;
               lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] - s | 0;
               var t = lexbuf[/* lex_mem */9];
-              for(var i = 0 ,i_finish = t.length - 1 | 0; i<= i_finish; ++i){
+              for(var i = 0 ,i_finish = t.length - 1 | 0; i <= i_finish; ++i){
                 var v = t[i];
                 if (v >= 0) {
                   t[i] = v - s | 0;

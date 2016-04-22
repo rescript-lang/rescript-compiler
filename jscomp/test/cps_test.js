@@ -39,7 +39,7 @@ function test_closure() {
   var arr = Caml_array.caml_make_vect(6, function (x) {
         return x;
       });
-  for(var i = 0; i<= 5; ++i){
+  for(var i = 0; i <= 5; ++i){
     arr[i] = (function(i){
     return function () {
       return i;
@@ -58,7 +58,7 @@ function test_closure2() {
   var arr = Caml_array.caml_make_vect(6, function (x) {
         return x;
       });
-  for(var i = 0; i<= 5; ++i){
+  for(var i = 0; i <= 5; ++i){
     var j = i + i | 0;
     arr[i] = (function(j){
     return function () {

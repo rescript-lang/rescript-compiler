@@ -466,7 +466,7 @@ var q$3 = /* record */[
   /* None */0
 ];
 
-for(var i = 1; i<= 10; ++i){
+for(var i = 1; i <= 10; ++i){
   Queue.add(i, q$3);
 }
 
@@ -526,7 +526,7 @@ var q1 = /* record */[
   /* None */0
 ];
 
-for(var i$1 = 1; i$1<= 10; ++i$1){
+for(var i$1 = 1; i$1 <= 10; ++i$1){
   Queue.add(i$1, q1);
 }
 
@@ -636,7 +636,7 @@ if (q2[/* length */0] !== 10) {
       ];
 }
 
-for(var i$2 = 1; i$2<= 10; ++i$2){
+for(var i$2 = 1; i$2 <= 10; ++i$2){
   if (Queue.take(q1) !== i$2) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -650,7 +650,7 @@ for(var i$2 = 1; i$2<= 10; ++i$2){
   
 }
 
-for(var i$3 = 1; i$3<= 10; ++i$3){
+for(var i$3 = 1; i$3 <= 10; ++i$3){
   if (Queue.take(q2) !== i$3) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -680,7 +680,7 @@ if (q$4[/* length */0] !== 0) {
       ];
 }
 
-for(var i$4 = 1; i$4<= 10; ++i$4){
+for(var i$4 = 1; i$4 <= 10; ++i$4){
   Queue.add(i$4, q$4);
   if (q$4[/* length */0] !== i$4) {
     throw [
@@ -705,7 +705,7 @@ for(var i$4 = 1; i$4<= 10; ++i$4){
   
 }
 
-for(var i$5 = 10; i$5>= 1; --i$5){
+for(var i$5 = 10; i$5 >= 1; --i$5){
   if (q$4[/* length */0] !== i$5) {
     throw [
           Caml_builtin_exceptions.assert_failure,
@@ -756,7 +756,7 @@ var q$5 = /* record */[
   /* None */0
 ];
 
-for(var i$6 = 1; i$6<= 10; ++i$6){
+for(var i$6 = 1; i$6 <= 10; ++i$6){
   Queue.add(i$6, q$5);
 }
 
@@ -886,7 +886,7 @@ var q2$2 = /* record */[
   /* None */0
 ];
 
-for(var i$8 = 1; i$8<= 4; ++i$8){
+for(var i$8 = 1; i$8 <= 4; ++i$8){
   Queue.add(i$8, q1$2);
 }
 
@@ -1014,7 +1014,7 @@ var q2$3 = /* record */[
   /* None */0
 ];
 
-for(var i$9 = 5; i$9<= 8; ++i$9){
+for(var i$9 = 5; i$9 <= 8; ++i$9){
   Queue.add(i$9, q2$3);
 }
 
@@ -1142,11 +1142,11 @@ var q2$4 = /* record */[
   /* None */0
 ];
 
-for(var i$10 = 1; i$10<= 4; ++i$10){
+for(var i$10 = 1; i$10 <= 4; ++i$10){
   Queue.add(i$10, q1$4);
 }
 
-for(var i$11 = 5; i$11<= 8; ++i$11){
+for(var i$11 = 5; i$11 <= 8; ++i$11){
   Queue.add(i$11, q2$4);
 }
 
