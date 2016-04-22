@@ -29,8 +29,8 @@ external to_json_string : 'a -> string = "js_json_stringify"
 
 external log : 'a -> unit = "js_dump"
 
-external anything_to_string : 'a -> string = "js_anything_to_string"
-external anything_to_number : 'a -> float = "js_anything_to_number"
+
+
 
 
 type any = Obj.t 
@@ -38,38 +38,39 @@ type any = Obj.t
 external erase : 'a -> any = "%identity" 
 external cast : any -> 'a = "%identity" 
 
-type + 'a opt
-
-external from_opt : 'a opt -> 'a option = "js_from_nullable"
-external to_opt : 'a -> 'a opt  = "%identity"
-
-
-
-
-external is_nil : 'a opt -> bool = "js_is_nil"
-
-external nil : 'a opt = "null" [@@bs.val]
-
 (* Note [to_opt null] will be [null : 'a opt opt]*)
 
+module Null = struct 
+  type + 'a t 
+  external to_opt : 'a t -> 'a option = "js_from_nullable"
+  external return : 'a -> 'a t  = "%identity"
+  external test : 'a t -> bool = "js_is_nil"
+end
 
-type + 'a def
-external from_def : 'a def -> 'a option = "js_from_def"
-external to_def : 'a -> 'a def = "%identity"
-external is_undef : 'a def -> bool =  "js_is_undef"
-external undef : 'a def = "undefined" [@@bs.val]
+module Def = struct 
+  type + 'a t 
+  external to_opt : 'a t -> 'a option = "js_from_def"
+  external return : 'a -> 'a t = "%identity"
+  external test : 'a t -> bool =  "js_is_undef"
+
+end
+
+external null : 'a Null.t = "null" [@@bs.val]
+external undef : 'a Def.t = "undefined" [@@bs.val]
+
+
 
 type boolean 
 
-(* let true_ : boolean = unsafe_js_expr "true" *)
-external true_ : boolean = "true" [@@bs.val]
 
+external true_ : boolean = "true" [@@bs.val]
 external false_ : boolean = "false" [@@bs.val]
 
 external to_bool : boolean -> bool = "js_boolean_to_bool" 
 external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
 external string_of_nativeint : nativeint -> string = "js_anything_to_string"
-external string_of_char : char -> string = "js_string_of_char" 
+
+external string_of_char : char -> string = "js_string_of_char"
 (** TODO: check with {!String.of_char} 
     it's quite common that we have
     {[ Js.String.of_char x.[0] ]}
@@ -94,6 +95,7 @@ module String = struct
   external of_small_int32_array : int32 array -> string = "js_string_of_small_int_array"
   external lastIndexOf : string -> string -> int = "lastIndexOf"
       [@@bs.send]    
+  external of_any : 'a -> string = "js_anything_to_string"
 end
 
 module Array = struct 
@@ -134,7 +136,7 @@ module Float = struct
     [@@bs.call]
   external random : unit -> float = "Math.random"
     [@@bs.call ]
-
+  external of_any : 'a -> float = "js_anything_to_number"
 end
 
 module Caml_obj = struct 
@@ -144,9 +146,12 @@ module Caml_obj = struct
   external tag : Obj.t -> int = "caml_obj_tag"
   external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
   external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
-  external is_instance_array : Obj.t -> bool = "js_is_instance_array" (* use Array.isArray instead*)
-  external size_of_any : Obj.t -> 'a def = "length" [@@bs.get]
-  external tag_of_any : Obj.t -> 'a def = "tag" [@@bs.get]
+  external is_instance_array : Obj.t -> bool = 
+    "js_is_instance_array" (* use Array.isArray instead*)
+  external size_of_any : Obj.t -> 'a Def.t =
+    "length" [@@bs.get]
+  external tag_of_any : Obj.t -> 'a Def.t =
+    "tag" [@@bs.get]
 end
 
 module Caml_int64 = struct
@@ -154,4 +159,3 @@ module Caml_int64 = struct
   external div_mod : int64 -> int64 -> int64 * int64 = "js_int64_div_mod"
   external to_hex : int64 -> string = "js_int64_to_hex"    
 end  
-
