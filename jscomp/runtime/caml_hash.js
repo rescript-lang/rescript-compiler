@@ -2,8 +2,8 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Caml_int32              = require("./caml_int32");
 var Caml_queue              = require("./caml_queue");
-var Caml_primitive          = require("./caml_primitive");
 
 function rotl32(x, n) {
   return (x << n) | (x >>> (32 - n | 0));
@@ -11,9 +11,9 @@ function rotl32(x, n) {
 
 function mix(h, d) {
   var d$1 = d;
-  d$1 = Caml_primitive.imul(d$1, 3432918353);
+  d$1 = Caml_int32.imul(d$1, 3432918353);
   d$1 = rotl32(d$1, 15);
-  d$1 = Caml_primitive.imul(d$1, 461845907);
+  d$1 = Caml_int32.imul(d$1, 461845907);
   var h$1 = h ^ d$1;
   h$1 = rotl32(h$1, 13);
   return (h$1 + (h$1 << 2) | 0) + 3864292196 | 0;
@@ -21,9 +21,9 @@ function mix(h, d) {
 
 function final_mix(h) {
   var h$1 = h ^ (h >>> 16);
-  h$1 = Caml_primitive.imul(h$1, 2246822507);
+  h$1 = Caml_int32.imul(h$1, 2246822507);
   h$1 = h$1 ^ (h$1 >>> 13);
-  h$1 = Caml_primitive.imul(h$1, 3266489909);
+  h$1 = Caml_int32.imul(h$1, 3266489909);
   return h$1 ^ (h$1 >>> 16);
 }
 

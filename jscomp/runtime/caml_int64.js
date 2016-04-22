@@ -3,7 +3,7 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Caml_obj                = require("./caml_obj");
-var Caml_primitive          = require("./caml_primitive");
+var Caml_int32              = require("./caml_int32");
 var Caml_utils              = require("./caml_utils");
 
 var min_int = /* record */[
@@ -285,8 +285,8 @@ function mul(_this, _other) {
 }
 
 function swap(param) {
-  var hi = Caml_primitive.caml_int32_bswap(param[/* lo */1]);
-  var lo = Caml_primitive.caml_int32_bswap(param[/* hi */0]);
+  var hi = Caml_int32.caml_int32_bswap(param[/* lo */1]);
+  var lo = Caml_int32.caml_int32_bswap(param[/* hi */0]);
   return /* record */[
           hi,
           (lo >>> 0)

@@ -144,9 +144,10 @@ let md5 = "Caml_md5"
 let weak = "Caml_weak"
 let backtrace = "Caml_backtrace"
 let gc = "Caml_gc"
-
+let int32 = "Caml_int32"
 let runtime_set = 
   [
+    int32;
     gc ;
     backtrace; 
     prim;               

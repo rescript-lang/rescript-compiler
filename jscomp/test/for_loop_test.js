@@ -1,11 +1,11 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Curry          = require("../runtime/curry");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_array     = require("../runtime/caml_array");
-var $$Array        = require("../stdlib/array");
-var List           = require("../stdlib/list");
+var Caml_int32 = require("../runtime/caml_int32");
+var Curry      = require("../runtime/curry");
+var Caml_array = require("../runtime/caml_array");
+var $$Array    = require("../stdlib/array");
+var List       = require("../stdlib/list");
 
 function for_3(x) {
   var v = [0];
@@ -54,7 +54,7 @@ function for_5(x, u) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
-    var k = Caml_primitive.imul((u << 1), u);
+    var k = Caml_int32.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
       v[0] = v[0] + k | 0;
@@ -82,7 +82,7 @@ function for_6(x, u) {
     var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length - 1 | 0; i <= i_finish; ++i){
-      var k = Caml_primitive.imul((u << 1), u);
+      var k = Caml_int32.imul((u << 1), u);
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;
       arr[i] = (function(k,h){
@@ -114,7 +114,7 @@ function for_7() {
   for(var i = 0; i <= 6; ++i){
     (function(i){
     for(var j = 0; j <= 2; ++j){
-      arr[Caml_primitive.imul(i, 3) + j | 0] = (function(j){
+      arr[Caml_int32.imul(i, 3) + j | 0] = (function(j){
       return function () {
         v[0] = (v[0] + i | 0) + j | 0;
         return /* () */0;
@@ -139,7 +139,7 @@ function for_8() {
     (function(i,k){
     for(var j = 0; j <= 2; ++j){
       var h = i + j | 0;
-      arr[Caml_primitive.imul(i, 3) + j | 0] = (function(j,h){
+      arr[Caml_int32.imul(i, 3) + j | 0] = (function(j,h){
       return function () {
         v[0] = (((v[0] + i | 0) + j | 0) + h | 0) + k | 0;
         return /* () */0;

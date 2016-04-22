@@ -3,7 +3,7 @@
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 
-function string_of_char(prim) {
+function js_string_of_char(prim) {
   return String.fromCharCode(prim);
 }
 
@@ -158,6 +158,14 @@ function caml_is_printable(c) {
   }
 }
 
+function caml_string_get16(s, i) {
+  return s.charCodeAt(i) + (s.charCodeAt(i + 1 | 0) << 8) | 0;
+}
+
+function caml_string_get32(s, i) {
+  return ((s.charCodeAt(i) + (s.charCodeAt(i + 1 | 0) << 8) | 0) + (s.charCodeAt(i + 2 | 0) << 16) | 0) + (s.charCodeAt(i + 3 | 0) << 24) | 0;
+}
+
 exports.add                       = add;
 exports.bytes_of_string           = bytes_of_string;
 exports.bytes_to_string           = bytes_to_string;
@@ -169,5 +177,7 @@ exports.caml_create_string        = caml_create_string;
 exports.caml_fill_string          = caml_fill_string;
 exports.caml_blit_string          = caml_blit_string;
 exports.caml_blit_bytes           = caml_blit_bytes;
-exports.string_of_char            = string_of_char;
+exports.caml_string_get16         = caml_string_get16;
+exports.caml_string_get32         = caml_string_get32;
+exports.js_string_of_char         = js_string_of_char;
 /* No side effect */

@@ -6,9 +6,9 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Obj                     = require("./obj");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Caml_oo                 = require("../runtime/caml_oo");
+var Caml_int32              = require("../runtime/caml_int32");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
 var Caml_string             = require("../runtime/caml_string");
@@ -29,7 +29,7 @@ var params = /* record */[
 function public_method_label(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
-    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
+    accu = Caml_int32.imul(223, accu) + s.charCodeAt(i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {
@@ -494,7 +494,7 @@ function new_table(pub_labels) {
   var len = pub_labels.length;
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
   methods[0] = len;
-  methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
+  methods[1] = (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
   for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
     methods[(i << 1) + 3 | 0] = pub_labels[i];
   }

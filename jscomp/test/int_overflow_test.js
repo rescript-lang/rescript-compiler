@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt             = require("./mt");
-var Int32          = require("../stdlib/int32");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Mt         = require("./mt");
+var Caml_int32 = require("../runtime/caml_int32");
+var Int32      = require("../stdlib/int32");
 
 function hash_variant(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
-    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) & 2147483647;
+    accu = Caml_int32.imul(223, accu) + s.charCodeAt(i) & 2147483647;
   }
   if (accu > 1073741823) {
     return accu - -2147483648 | 0;
@@ -21,7 +21,7 @@ function hash_variant(s) {
 function hash_variant2(s) {
   var accu = 0;
   for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
-    accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
+    accu = Caml_int32.imul(223, accu) + s.charCodeAt(i) | 0;
   }
   accu = accu & 2147483647;
   if (accu > 1073741823) {

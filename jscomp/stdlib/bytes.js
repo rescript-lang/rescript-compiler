@@ -4,9 +4,9 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("./pervasives");
+var Caml_int32              = require("../runtime/caml_int32");
 var Char                    = require("./char");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
@@ -138,7 +138,7 @@ function concat(sep, l) {
           len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
+    var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
     Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {

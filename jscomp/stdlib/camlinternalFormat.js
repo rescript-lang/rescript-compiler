@@ -9,10 +9,10 @@ var Caml_float               = require("../runtime/caml_float");
 var Pervasives               = require("./pervasives");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
+var Caml_int32               = require("../runtime/caml_int32");
 var Char                     = require("./char");
 var Sys                      = require("./sys");
 var Curry                    = require("../runtime/curry");
-var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
 var $$String                 = require("./string");
@@ -6931,7 +6931,7 @@ function fmt_ebb_of_string(legacy_behavior, str) {
               ];
       }
       else {
-        var new_acc = Caml_primitive.imul(acc, 10) + (c - /* "0" */48 | 0) | 0;
+        var new_acc = Caml_int32.imul(acc, 10) + (c - /* "0" */48 | 0) | 0;
         if (new_acc > Sys.max_string_length) {
           return Curry._3(failwith_message(/* Format */[
                           /* String_literal */{

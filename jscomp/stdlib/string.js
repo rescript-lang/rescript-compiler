@@ -1,10 +1,10 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Bytes          = require("./bytes");
-var Caml_primitive = require("../runtime/caml_primitive");
-var Caml_string    = require("../runtime/caml_string");
-var List           = require("./list");
+var Bytes       = require("./bytes");
+var Caml_int32  = require("../runtime/caml_int32");
+var Caml_string = require("../runtime/caml_string");
+var List        = require("./list");
 
 function make(n, c) {
   return Caml_string.bytes_to_string(Bytes.make(n, c));
@@ -32,7 +32,7 @@ function concat(sep, l) {
           len[0] = len[0] + s.length | 0;
           return /* () */0;
         }, l);
-    var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
+    var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
     Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
     var pos = [hd.length];
     List.iter(function (s) {

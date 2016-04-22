@@ -6,8 +6,8 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Hashtbl                 = require("./hashtbl");
 var Stream                  = require("./stream");
 var Caml_format             = require("../runtime/caml_format");
+var Caml_int32              = require("../runtime/caml_int32");
 var Char                    = require("./char");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("./list");
 
@@ -724,7 +724,7 @@ function make_lexer(keywords) {
               }
               else {
                 Stream.junk(strm__);
-                return Char.chr((Caml_primitive.imul(c1 - 48 | 0, 100) + Caml_primitive.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
+                return Char.chr((Caml_int32.imul(c1 - 48 | 0, 100) + Caml_int32.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
               }
             }
             else {

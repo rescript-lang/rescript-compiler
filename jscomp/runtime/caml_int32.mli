@@ -21,3 +21,12 @@
 val idiv : nativeint -> nativeint -> nativeint
 
 val imod : nativeint -> nativeint -> nativeint
+
+val caml_bswap16 : nativeint -> nativeint
+
+val caml_int32_bswap : nativeint -> nativeint
+
+val caml_nativeint_bswap : nativeint -> nativeint
+
+val imul :int32 -> int32 -> int32
+

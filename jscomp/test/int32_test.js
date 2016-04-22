@@ -1,14 +1,14 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Pervasives     = require("../stdlib/pervasives");
-var Mt             = require("./mt");
-var Int32          = require("../stdlib/int32");
-var Curry          = require("../runtime/curry");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array        = require("../stdlib/array");
-var Ext_array      = require("./ext_array");
-var Format         = require("../stdlib/format");
+var Pervasives = require("../stdlib/pervasives");
+var Mt         = require("./mt");
+var Caml_int32 = require("../runtime/caml_int32");
+var Int32      = require("../stdlib/int32");
+var Curry      = require("../runtime/curry");
+var $$Array    = require("../stdlib/array");
+var Ext_array  = require("./ext_array");
+var Format     = require("../stdlib/format");
 
 function f(x) {
   return /* tuple */[
@@ -152,7 +152,7 @@ var shift_left_tests = /* tuple */[
 
 var test_div = 30;
 
-var $star$tilde = Caml_primitive.imul
+var $star$tilde = Caml_int32.imul
 
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[

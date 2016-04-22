@@ -44,6 +44,10 @@ function caml_sys_system_command() {
   return 127;
 }
 
+function caml_sys_getcwd() {
+  return "/";
+}
+
 function caml_sys_getenv(prim) {
   return $$caml_sys_getenv(prim);
 }
@@ -53,4 +57,5 @@ exports.caml_sys_getenv         = caml_sys_getenv;
 exports.caml_sys_time           = caml_sys_time;
 exports.caml_sys_random_seed    = caml_sys_random_seed;
 exports.caml_sys_system_command = caml_sys_system_command;
+exports.caml_sys_getcwd         = caml_sys_getcwd;
 /*  Not a pure module */

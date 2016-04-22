@@ -58,3 +58,5 @@ let caml_sys_random_seed () : nativeint array =
                              0xffffffffn)) *. Js.Float.random ()) |]
 
 let caml_sys_system_command () = 127
+
+let caml_sys_getcwd () = "/"

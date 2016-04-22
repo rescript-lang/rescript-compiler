@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Curry          = require("../runtime/curry");
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_int32 = require("../runtime/caml_int32");
+var Curry      = require("../runtime/curry");
 
 function h0(x) {
   return x();
@@ -64,7 +64,7 @@ function a3(x, y, z) {
 
 function a4(param, param$1, param$2, param$3) {
   return Curry._4(function (x, y, z) {
-              var u = (Caml_primitive.imul(x, x) + Caml_primitive.imul(y, y) | 0) + Caml_primitive.imul(z, z) | 0;
+              var u = (Caml_int32.imul(x, x) + Caml_int32.imul(y, y) | 0) + Caml_int32.imul(z, z) | 0;
               return function (d) {
                 return u + d | 0;
               };
@@ -72,7 +72,7 @@ function a4(param, param$1, param$2, param$3) {
 }
 
 function a44(x, y, z, d) {
-  var u = (Caml_primitive.imul(x, x) + Caml_primitive.imul(y, y) | 0) + Caml_primitive.imul(z, z) | 0;
+  var u = (Caml_int32.imul(x, x) + Caml_int32.imul(y, y) | 0) + Caml_int32.imul(z, z) | 0;
   return u + d | 0;
 }
 

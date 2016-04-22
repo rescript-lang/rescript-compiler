@@ -6,6 +6,7 @@ var Bytes                    = require("./bytes");
 var Pervasives               = require("./pervasives");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
+var Caml_int32               = require("../runtime/caml_int32");
 var Curry                    = require("../runtime/curry");
 var Printf                   = require("./printf");
 var Caml_primitive           = require("../runtime/caml_primitive");
@@ -1036,7 +1037,7 @@ function char_for_backslash(c) {
 }
 
 function char_for_decimal_code(c0, c1, c2) {
-  var c = (Caml_primitive.imul(100, c0 - /* "0" */48 | 0) + Caml_primitive.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
+  var c = (Caml_int32.imul(100, c0 - /* "0" */48 | 0) + Caml_int32.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
   if (c < 0 || c > 255) {
     var s = Curry._3(Printf.sprintf(/* Format */[
               /* String_literal */{

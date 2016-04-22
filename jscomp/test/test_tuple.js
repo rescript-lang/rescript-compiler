@@ -1,7 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Caml_primitive = require("../runtime/caml_primitive");
+var Caml_int32 = require("../runtime/caml_int32");
 
 var r = 0;
 
@@ -9,12 +9,12 @@ for(var k = 1; k <= 10; ++k){
   for(var i = 1; i <= 10; ++i){
     var match = i % 2 ? /* tuple */[
         2,
-        Caml_primitive.imul(i, 3)
+        Caml_int32.imul(i, 3)
       ] : /* tuple */[
         1,
         (i << 1)
       ];
-    r = Caml_primitive.imul(r, match[0]) + match[1] | 0;
+    r = Caml_int32.imul(r, match[0]) + match[1] | 0;
   }
 }
 

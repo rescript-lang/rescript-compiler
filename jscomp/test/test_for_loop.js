@@ -1,9 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Curry          = require("../runtime/curry");
-var Caml_primitive = require("../runtime/caml_primitive");
-var $$Array        = require("../stdlib/array");
+var Caml_int32 = require("../runtime/caml_int32");
+var Curry      = require("../runtime/curry");
+var $$Array    = require("../stdlib/array");
 
 function for_(x) {
   for(var i = 0 ,i_finish = (console.log("hi"), x.length); i <= i_finish; ++i){
@@ -66,7 +66,7 @@ function for_5(x, u) {
         return /* () */0;
       }, x);
   for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
-    var k = Caml_primitive.imul((u << 1), u);
+    var k = Caml_int32.imul((u << 1), u);
     arr[i] = (function(k){
     return function () {
       v[0] = v[0] + k | 0;
@@ -93,7 +93,7 @@ function for_6(x, u) {
     var v2 = [0];
     (function(v2){
     for(var i = 0 ,i_finish = x.length; i <= i_finish; ++i){
-      var k = Caml_primitive.imul((u << 1), u);
+      var k = Caml_int32.imul((u << 1), u);
       var h = (v5[0] << 1);
       v2[0] = v2[0] + 1 | 0;
       arr[i] = (function(k,h){
