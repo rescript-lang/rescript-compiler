@@ -48,11 +48,11 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
     | Browser 
       (* In browser *)
       ->  
-      let target = String.uncapitalize file in
+      let target = Filename.chop_extension @@ String.uncapitalize file in
       if String_set.mem target Js_config.runtime_set   then
-        "./runtime/" ^ Filename.chop_extension target
+        "./runtime/" ^  target
       else
-        "./stdlib/" ^ Filename.chop_extension target 
+        "./stdlib/" ^ target 
     | AmdJS
     | NodeJS -> 
       let filename = String.uncapitalize id.name in

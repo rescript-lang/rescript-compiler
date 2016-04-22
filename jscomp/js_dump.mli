@@ -26,7 +26,7 @@
 
 
 
-
+val pp_deps_program : J.deps_program -> Ext_pp.t -> unit
 
 val dump_deps_program : J.deps_program -> out_channel -> unit
 
