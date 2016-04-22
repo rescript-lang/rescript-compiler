@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 var List                    = require("../stdlib/list");
 
 function height(param) {
@@ -181,12 +182,10 @@ Mt.from_pair_suites("inline_map_test.ml", /* :: */[
       /* tuple */[
         "find",
         function () {
-          return /* Eq */{
-                  0: find(10, m),
-                  1: /* "a" */97,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    find(10, m),
+                    /* "a" */97
+                  ]);
         }
       ],
       /* [] */0

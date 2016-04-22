@@ -1,6 +1,7 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 function f(param) {
@@ -32,11 +33,7 @@ function bind(x, f) {
     return x;
   }
   else {
-    return /* Left */{
-            0: Curry._1(f, x[0]),
-            length: 1,
-            tag: 0
-          };
+    return /* Left */Block.__(0, [Curry._1(f, x[0])]);
   }
 }
 

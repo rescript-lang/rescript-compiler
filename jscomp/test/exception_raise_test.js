@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 
 var Local = Caml_exceptions.create("Exception_raise_test.Local");
@@ -102,20 +103,18 @@ Mt.from_pair_suites("exception_raise_test.ml", /* :: */[
       /* tuple */[
         'File "exception_raise_test.ml", line 97, characters 4-11',
         function () {
-          return /* Eq */{
-                  0: /* tuple */[
-                    f,
-                    ff,
-                    fff
-                  ],
-                  1: /* tuple */[
-                    2,
-                    2,
-                    2
-                  ],
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    /* tuple */[
+                      f,
+                      ff,
+                      fff
+                    ],
+                    /* tuple */[
+                      2,
+                      2,
+                      2
+                    ]
+                  ]);
         }
       ],
       /* [] */0

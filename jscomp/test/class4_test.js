@@ -3,6 +3,7 @@
 
 var Caml_obj       = require("../runtime/caml_obj");
 var Mt             = require("./mt");
+var Block          = require("../runtime/block");
 var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 
@@ -28,12 +29,10 @@ function eq(loc, x, y) {
     /* tuple */[
       loc + (" id " + test_id[0]),
       function () {
-        return /* Eq */{
-                0: x,
-                1: y,
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  x,
+                  y
+                ]);
       }
     ],
     suites[0]

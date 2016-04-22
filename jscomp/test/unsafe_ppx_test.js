@@ -3,6 +3,7 @@
 
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Curry      = require("../runtime/curry");
 var Ffi_js     = require("./ffi_js");
 
@@ -57,48 +58,40 @@ Mt.from_pair_suites("unsafe_ppx_test.ml", /* :: */[
       /* tuple */[
         "unsafe_max",
         function () {
-          return /* Eq */{
-                  0: 2,
-                  1: max(1, 2),
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    2,
+                    max(1, 2)
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "unsafe_test",
           function () {
-            return /* Eq */{
-                    0: 3,
-                    1: v,
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      3,
+                      v
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "unsafe_max2",
             function () {
-              return /* Eq */{
-                      0: 2,
-                      1: (Math.max)(1, 2),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        2,
+                        (Math.max)(1, 2)
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "ffi_keys",
               function () {
-                return /* Eq */{
-                        0: /* array */["a"],
-                        1: Ffi_js.keys(( {a : 3})),
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          /* array */["a"],
+                          Ffi_js.keys(( {a : 3}))
+                        ]);
               }
             ],
             /* [] */0

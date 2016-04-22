@@ -6,6 +6,7 @@ var Caml_io                 = require("../runtime/caml_io");
 var Obj                     = require("./obj");
 var Pervasives              = require("./pervasives");
 var Caml_backtrace          = require("../runtime/caml_backtrace");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
 var $$Array                 = require("./array");
@@ -14,63 +15,43 @@ var Buffer                  = require("./buffer");
 var printers = [/* [] */0];
 
 var locfmt = /* Format */[
-  /* String_literal */{
-    0: 'File "',
-    1: /* String */{
-      0: /* No_padding */0,
-      1: /* String_literal */{
-        0: '", line ',
-        1: /* Int */{
-          0: /* Int_d */0,
-          1: /* No_padding */0,
-          2: /* No_precision */0,
-          3: /* String_literal */{
-            0: ", characters ",
-            1: /* Int */{
-              0: /* Int_d */0,
-              1: /* No_padding */0,
-              2: /* No_precision */0,
-              3: /* Char_literal */{
-                0: /* "-" */45,
-                1: /* Int */{
-                  0: /* Int_d */0,
-                  1: /* No_padding */0,
-                  2: /* No_precision */0,
-                  3: /* String_literal */{
-                    0: ": ",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
-                  length: 4,
-                  tag: 4
-                },
-                length: 2,
-                tag: 12
-              },
-              length: 4,
-              tag: 4
-            },
-            length: 2,
-            tag: 11
-          },
-          length: 4,
-          tag: 4
-        },
-        length: 2,
-        tag: 11
-      },
-      length: 2,
-      tag: 2
-    },
-    length: 2,
-    tag: 11
-  },
+  /* String_literal */Block.__(11, [
+      'File "',
+      /* String */Block.__(2, [
+          /* No_padding */0,
+          /* String_literal */Block.__(11, [
+              '", line ',
+              /* Int */Block.__(4, [
+                  /* Int_d */0,
+                  /* No_padding */0,
+                  /* No_precision */0,
+                  /* String_literal */Block.__(11, [
+                      ", characters ",
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "-" */45,
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* String_literal */Block.__(11, [
+                                      ": ",
+                                      /* String */Block.__(2, [
+                                          /* No_padding */0,
+                                          /* End_of_format */0
+                                        ])
+                                    ])
+                                ])
+                            ])
+                        ])
+                    ])
+                ])
+            ])
+        ])
+    ]),
   'File "%s", line %d, characters %d-%d: %s'
 ];
 
@@ -78,25 +59,21 @@ function field(x, i) {
   var f = x[i];
   if (f.length === undefined) {
     return Curry._1(Printf.sprintf(/* Format */[
-                    /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* End_of_format */0,
-                      length: 4,
-                      tag: 4
-                    },
+                    /* Int */Block.__(4, [
+                        /* Int_d */0,
+                        /* No_padding */0,
+                        /* No_precision */0,
+                        /* End_of_format */0
+                      ]),
                     "%d"
                   ]), f);
   }
   else if ((f.tag | 0) === Obj.string_tag) {
     return Curry._1(Printf.sprintf(/* Format */[
-                    /* Caml_string */{
-                      0: /* No_padding */0,
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 3
-                    },
+                    /* Caml_string */Block.__(3, [
+                        /* No_padding */0,
+                        /* End_of_format */0
+                      ]),
                     "%S"
                   ]), f);
   }
@@ -114,22 +91,16 @@ function other_fields(x, i) {
   }
   else {
     return Curry._2(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: ", ",
-                      1: /* String */{
-                        0: /* No_padding */0,
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        ", ",
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
                     ", %s%s"
                   ]), field(x, i), other_fields(x, i + 1 | 0));
   }
@@ -139,27 +110,19 @@ function fields(x) {
   var n = x.length;
   if (n > 2 || n < 0) {
     return Curry._2(Printf.sprintf(/* Format */[
-                    /* Char_literal */{
-                      0: /* "(" */40,
-                      1: /* String */{
-                        0: /* No_padding */0,
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* Char_literal */{
-                            0: /* ")" */41,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      length: 2,
-                      tag: 12
-                    },
+                    /* Char_literal */Block.__(12, [
+                        /* "(" */40,
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* Char_literal */Block.__(12, [
+                                    /* ")" */41,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])
+                      ]),
                     "(%s%s)"
                   ]), field(x, 1), other_fields(x, 2));
   }
@@ -170,22 +133,16 @@ function fields(x) {
           return "";
       case 2 : 
           return Curry._1(Printf.sprintf(/* Format */[
-                          /* Char_literal */{
-                            0: /* "(" */40,
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* Char_literal */{
-                                0: /* ")" */41,
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 12
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 12
-                          },
+                          /* Char_literal */Block.__(12, [
+                              /* "(" */40,
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* ")" */41,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ]),
                           "(%s)"
                         ]), field(x, 1));
       
@@ -251,22 +208,16 @@ function print(fct, arg) {
   }
   catch (x){
     Curry._1(Printf.eprintf(/* Format */[
-              /* String_literal */{
-                0: "Uncaught exception: ",
-                1: /* String */{
-                  0: /* No_padding */0,
-                  1: /* Char_literal */{
-                    0: /* "\n" */10,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 12
-                  },
-                  length: 2,
-                  tag: 2
-                },
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "Uncaught exception: ",
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ])
+                ]),
               "Uncaught exception: %s\n"
             ]), to_string(x));
     Caml_io.caml_ml_flush(Pervasives.stderr);
@@ -281,22 +232,16 @@ function $$catch(fct, arg) {
   catch (x){
     Caml_io.caml_ml_flush(Pervasives.stdout);
     Curry._1(Printf.eprintf(/* Format */[
-              /* String_literal */{
-                0: "Uncaught exception: ",
-                1: /* String */{
-                  0: /* No_padding */0,
-                  1: /* Char_literal */{
-                    0: /* "\n" */10,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 12
-                  },
-                  length: 2,
-                  tag: 2
-                },
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "Uncaught exception: ",
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ])
+                ]),
               "Uncaught exception: %s\n"
             ]), to_string(x));
     return Pervasives.exit(2);
@@ -340,75 +285,53 @@ function format_backtrace_slot(pos, slot) {
     }
     else {
       return /* Some */[Curry._1(Printf.sprintf(/* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* String_literal */{
-                            0: " unknown location",
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 2,
-                          tag: 2
-                        },
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                " unknown location",
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "%s unknown location"
                       ]), info(/* false */0))];
     }
   }
   else {
     return /* Some */[Curry._5(Printf.sprintf(/* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* String_literal */{
-                          0: ' file "',
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* String_literal */{
-                              0: '", line ',
-                              1: /* Int */{
-                                0: /* Int_d */0,
-                                1: /* No_padding */0,
-                                2: /* No_precision */0,
-                                3: /* String_literal */{
-                                  0: ", characters ",
-                                  1: /* Int */{
-                                    0: /* Int_d */0,
-                                    1: /* No_padding */0,
-                                    2: /* No_precision */0,
-                                    3: /* Char_literal */{
-                                      0: /* "-" */45,
-                                      1: /* Int */{
-                                        0: /* Int_d */0,
-                                        1: /* No_padding */0,
-                                        2: /* No_precision */0,
-                                        3: /* End_of_format */0,
-                                        length: 4,
-                                        tag: 4
-                                      },
-                                      length: 2,
-                                      tag: 12
-                                    },
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  length: 2,
-                                  tag: 11
-                                },
-                                length: 4,
-                                tag: 4
-                              },
-                              length: 2,
-                              tag: 11
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* String_literal */Block.__(11, [
+                              ' file "',
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* String_literal */Block.__(11, [
+                                      '", line ',
+                                      /* Int */Block.__(4, [
+                                          /* Int_d */0,
+                                          /* No_padding */0,
+                                          /* No_precision */0,
+                                          /* String_literal */Block.__(11, [
+                                              ", characters ",
+                                              /* Int */Block.__(4, [
+                                                  /* Int_d */0,
+                                                  /* No_padding */0,
+                                                  /* No_precision */0,
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* "-" */45,
+                                                      /* Int */Block.__(4, [
+                                                          /* Int_d */0,
+                                                          /* No_padding */0,
+                                                          /* No_precision */0,
+                                                          /* End_of_format */0
+                                                        ])
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ])
+                        ]),
                       '%s file "%s", line %d, characters %d-%d'
                     ]), info(slot[0]), slot[1], slot[2], slot[3], slot[4])];
   }
@@ -423,17 +346,13 @@ function print_raw_backtrace(outchan, raw_backtrace) {
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
         Curry._1(Printf.fprintf(outchan$1, /* Format */[
-                  /* String */{
-                    0: /* No_padding */0,
-                    1: /* Char_literal */{
-                      0: /* "\n" */10,
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 12
-                    },
-                    length: 2,
-                    tag: 2
-                  },
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ]),
                   "%s\n"
                 ]), match[0]);
       }
@@ -443,12 +362,10 @@ function print_raw_backtrace(outchan, raw_backtrace) {
   }
   else {
     return Printf.fprintf(outchan$1, /* Format */[
-                /* String_literal */{
-                  0: "(Program not linked with -g, cannot print stack backtrace)\n",
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "(Program not linked with -g, cannot print stack backtrace)\n",
+                    /* End_of_format */0
+                  ]),
                 "(Program not linked with -g, cannot print stack backtrace)\n"
               ]);
   }
@@ -466,17 +383,13 @@ function backtrace_to_string(backtrace) {
       var match = format_backtrace_slot(i, a[i]);
       if (match) {
         Curry._1(Printf.bprintf(b, /* Format */[
-                  /* String */{
-                    0: /* No_padding */0,
-                    1: /* Char_literal */{
-                      0: /* "\n" */10,
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 12
-                    },
-                    length: 2,
-                    tag: 2
-                  },
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* Char_literal */Block.__(12, [
+                          /* "\n" */10,
+                          /* End_of_format */0
+                        ])
+                    ]),
                   "%s\n"
                 ]), match[0]);
       }

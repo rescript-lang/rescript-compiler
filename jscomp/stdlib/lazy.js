@@ -4,13 +4,10 @@
 var Caml_obj         = require("../runtime/caml_obj");
 var Obj              = require("./obj");
 var CamlinternalLazy = require("./camlinternalLazy");
+var Block            = require("../runtime/block");
 
 function from_fun(f) {
-  var x = {
-    0: 0,
-    length: 1,
-    tag: Obj.lazy_tag
-  };
+  var x = Block.__(Obj.lazy_tag, [0]);
   x[0] = f;
   return x;
 }

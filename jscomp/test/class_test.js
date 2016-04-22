@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Block          = require("../runtime/block");
 var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 
@@ -90,48 +91,40 @@ Mt.from_pair_suites("class_test.ml", /* :: */[
       /* tuple */[
         'File "class_test.ml", line 33, characters 4-11',
         function () {
-          return /* Eq */{
-                  0: zero,
-                  1: 0,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    zero,
+                    0
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           'File "class_test.ml", line 34, characters 4-11',
           function () {
-            return /* Eq */{
-                    0: three,
-                    1: 3,
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      three,
+                      3
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             'File "class_test.ml", line 35, characters 4-11',
             function () {
-              return /* Eq */{
-                      0: one,
-                      1: 1,
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        one,
+                        1
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               'File "class_test.ml", line 36, characters 4-11',
               function () {
-                return /* Eq */{
-                        0: two,
-                        1: 2,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          two,
+                          2
+                        ]);
               }
             ],
             /* [] */0

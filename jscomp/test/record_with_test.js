@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt    = require("./mt");
+var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 var v = /* record */[
@@ -27,12 +28,10 @@ function f(g, h) {
 var suites_000 = /* tuple */[
   "eq_with",
   function () {
-    return /* Eq */{
-            0: v,
-            1: newrecord,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              v,
+              newrecord
+            ]);
   }
 ];
 

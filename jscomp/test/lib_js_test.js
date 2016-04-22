@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 console.log(JSON.stringify(/* :: */[
           1,
@@ -19,12 +20,10 @@ console.log("hey");
 var suites_000 = /* tuple */[
   "anything_to_string",
   function () {
-    return /* Eq */{
-            0: "3",
-            1: "" + 3,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              "3",
+              "" + 3
+            ]);
   }
 ];
 

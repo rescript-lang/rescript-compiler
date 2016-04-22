@@ -4,6 +4,7 @@
 var Bytes       = require("../stdlib/bytes");
 var Pervasives  = require("../stdlib/pervasives");
 var Mt          = require("./mt");
+var Block       = require("../runtime/block");
 var Digest      = require("../stdlib/digest");
 var Curry       = require("../runtime/curry");
 var Printf      = require("../stdlib/printf");
@@ -152,48 +153,40 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             'File "digest_test.ml", line 6, characters 4-11',
             function () {
-              return /* Eq */{
-                      0: Digest.to_hex(Digest.string("value")),
-                      1: "2063c1608d6e0baf80249c42e2be5804",
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        Digest.to_hex(Digest.string("value")),
+                        "2063c1608d6e0baf80249c42e2be5804"
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               'File "digest_test.ml", line 7, characters 4-11',
               function () {
-                return /* Eq */{
-                        0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
-                        1: "9e107d9d372bb6826bd81d3542a419d6",
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog")),
+                          "9e107d9d372bb6826bd81d3542a419d6"
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 'File "digest_test.ml", line 9, characters 4-11',
                 function () {
-                  return /* Eq */{
-                          0: Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
-                          1: "e4d909c290d0fb1ca068ffaddf22cbd0",
-                          length: 2,
-                          tag: 0
-                        };
+                  return /* Eq */Block.__(0, [
+                            Digest.to_hex(Digest.string("The quick brown fox jumps over the lazy dog.")),
+                            "e4d909c290d0fb1ca068ffaddf22cbd0"
+                          ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
                   'File "digest_test.ml", line 11, characters 4-11',
                   function () {
-                    return /* Eq */{
-                            0: Digest.to_hex(Digest.string("")),
-                            1: "d41d8cd98f00b204e9800998ecf8427e",
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              Digest.to_hex(Digest.string("")),
+                              "d41d8cd98f00b204e9800998ecf8427e"
+                            ]);
                   }
                 ],
                 /* :: */[
@@ -201,12 +194,10 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                     'File "digest_test.ml", line 12, characters 4-11',
                     function () {
                       var x = "The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.";
-                      return /* Eq */{
-                              0: Digest.to_hex(Digest.string(x)),
-                              1: "7065cc36bba1d155fb09f9d02f22e8bf",
-                              length: 2,
-                              tag: 0
-                            };
+                      return /* Eq */Block.__(0, [
+                                Digest.to_hex(Digest.string(x)),
+                                "7065cc36bba1d155fb09f9d02f22e8bf"
+                              ]);
                     }
                   ],
                   /* :: */[
@@ -214,12 +205,10 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
                       'File "digest_test.ml", line 13, characters 4-11',
                       function () {
                         var x = "The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.";
-                        return /* Eq */{
-                                0: Digest.to_hex(Digest.string(x)),
-                                1: "b9193d1df4b7a8f0a25ffdd1005c5b2b",
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  Digest.to_hex(Digest.string(x)),
+                                  "b9193d1df4b7a8f0a25ffdd1005c5b2b"
+                                ]);
                       }
                     ],
                     /* [] */0
@@ -231,23 +220,19 @@ Mt.from_pair_suites("digest_test.ml", Pervasives.$at(/* :: */[
         ], $$Array.to_list($$Array.map(function (i) {
                   return /* tuple */[
                           Curry._1(Printf.sprintf(/* Format */[
-                                    /* Int */{
-                                      0: /* Int_d */0,
-                                      1: /* No_padding */0,
-                                      2: /* No_precision */0,
-                                      3: /* End_of_format */0,
-                                      length: 4,
-                                      tag: 4
-                                    },
+                                    /* Int */Block.__(4, [
+                                        /* Int_d */0,
+                                        /* No_padding */0,
+                                        /* No_precision */0,
+                                        /* End_of_format */0
+                                      ]),
                                     "%d"
                                   ]), i),
                           function () {
-                            return /* Eq */{
-                                    0: Digest.to_hex(Digest.string(Caml_string.bytes_to_string(Bytes.make(i, /* "a" */97)))),
-                                    1: ref[i],
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Digest.to_hex(Digest.string(Caml_string.bytes_to_string(Bytes.make(i, /* "a" */97)))),
+                                      ref[i]
+                                    ]);
                           }
                         ];
                 }, Ext_array.range(0, 129)))));

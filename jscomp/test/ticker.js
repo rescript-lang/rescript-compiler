@@ -5,6 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Pervasives              = require("../stdlib/pervasives");
 var Caml_format             = require("../runtime/caml_format");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("../stdlib/printf");
 var $$String                = require("../stdlib/string");
@@ -88,24 +89,18 @@ function string_of_rank(param) {
   }
   else {
     return Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "Ranked(",
-                      1: /* Int */{
-                        0: /* Int_i */3,
-                        1: /* No_padding */0,
-                        2: /* No_precision */0,
-                        3: /* Char_literal */{
-                          0: /* ")" */41,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 4,
-                        tag: 4
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "Ranked(",
+                        /* Int */Block.__(4, [
+                            /* Int_i */3,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* Char_literal */Block.__(12, [
+                                /* ")" */41,
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
                     "Ranked(%i)"
                   ]), param[0]);
   }

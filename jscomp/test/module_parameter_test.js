@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt       = require("./mt");
+var Block    = require("../runtime/block");
 var $$String = require("../stdlib/string");
 
 function u(v) {
@@ -47,12 +48,10 @@ function v(x) {
 var suites_000 = /* tuple */[
   "const",
   function () {
-    return /* Eq */{
-            0: 1,
-            1: v0,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              1,
+              v0
+            ]);
   }
 ];
 
@@ -60,12 +59,10 @@ var suites_001 = /* :: */[
   /* tuple */[
     "other",
     function () {
-      return /* Eq */{
-              0: 3,
-              1: v("abc"),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                3,
+                v("abc")
+              ]);
     }
   ],
   /* [] */0

@@ -20,5 +20,5 @@
 
 (* Note that when we introduce it in {!Js_dump} 
    we need introduce dependency properly *)
-let create tag block = 
+let __ tag block = 
   Obj.set_tag block tag; block

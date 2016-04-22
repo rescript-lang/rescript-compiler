@@ -58,11 +58,24 @@ class count_hard_dependencies =
       match  x with
       | {expression_desc = Call (_,_, {arity = NA}); _}
         (* see [Js_exp_make.runtime_var_dot] *)
-        -> begin 
+        -> 
+        Hash_set.add hard_dependencies 
+          (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
+        super#expression x             
+      | {expression_desc = Caml_block(_,_, tag, tag_info); _}
+        -> 
+        begin match tag.expression_desc, tag_info with 
+          | Number (Int { i = 0l ; _})  , 
+            (Blk_tuple | Blk_array | Blk_variant _ | Blk_record _ | Blk_na | Blk_module _
+            |  Blk_constructor (_, 1)
+            )  (*Sync up with {!Js_dump}*)
+            -> ()
+          | _, _
+            -> 
             Hash_set.add hard_dependencies 
-              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.curry));
-            super#expression x             
-          end
+              (Lam_module_ident.of_runtime (Ext_ident.create_js Js_config.block));
+        end;
+        super#expression x 
       | _ -> super#expression x
     method get_hard_dependencies = hard_dependencies
   end

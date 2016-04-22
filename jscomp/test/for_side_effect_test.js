@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 function tst() {
   for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
@@ -23,12 +24,10 @@ function test2() {
 var suites_000 = /* tuple */[
   "for_order",
   function () {
-    return /* Eq */{
-            0: 10,
-            1: test2(/* () */0),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              10,
+              test2(/* () */0)
+            ]);
   }
 ];
 

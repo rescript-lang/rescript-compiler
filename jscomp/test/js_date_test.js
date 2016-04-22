@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 var d = new Date(2016, 2);
 
@@ -19,12 +20,10 @@ var d3 = d2(2016)(1, /* () */0);
 var suites_000 = /* tuple */[
   "getMonth",
   function () {
-    return /* Eq */{
-            0: 2,
-            1: d.getMonth(),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              2,
+              d.getMonth()
+            ]);
   }
 ];
 
@@ -32,20 +31,18 @@ var suites_001 = /* :: */[
   /* tuple */[
     "getYear",
     function () {
-      return /* Eq */{
-              0: /* tuple */[
-                2016,
-                2,
-                1
-              ],
-              1: /* tuple */[
-                d3.getFullYear(),
-                d3.getMonth(),
-                d3.getDate()
-              ],
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                /* tuple */[
+                  2016,
+                  2,
+                  1
+                ],
+                /* tuple */[
+                  d3.getFullYear(),
+                  d3.getMonth(),
+                  d3.getDate()
+                ]
+              ]);
     }
   ],
   /* [] */0

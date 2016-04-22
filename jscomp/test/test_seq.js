@@ -5,6 +5,7 @@ var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("../stdlib/pervasives");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 
 var Bad = Caml_exceptions.create("Test_seq.Bad");
@@ -36,11 +37,7 @@ function assoc3(x, _l) {
 function help_action() {
   throw [
         Stop,
-        /* Unknown */{
-          0: "-help",
-          length: 1,
-          tag: 0
-        }
+        /* Unknown */Block.__(0, ["-help"])
       ];
 }
 
@@ -64,11 +61,7 @@ function add_help(speclist) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
-          /* Unit */{
-            0: help_action,
-            length: 1,
-            tag: 0
-          },
+          /* Unit */Block.__(0, [help_action]),
           " Display this list of options"
         ],
         /* [] */0
@@ -88,11 +81,7 @@ function add_help(speclist) {
       add2 = /* :: */[
         /* tuple */[
           "--help",
-          /* Unit */{
-            0: help_action,
-            length: 1,
-            tag: 0
-          },
+          /* Unit */Block.__(0, [help_action]),
           " Display this list of options"
         ],
         /* [] */0

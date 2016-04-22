@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt             = require("./mt");
+var Block          = require("../runtime/block");
 var Curry          = require("../runtime/curry");
 var CamlinternalOO = require("../stdlib/camlinternalOO");
 
@@ -162,18 +163,16 @@ var vvvv = CamlinternalOO.create_object_opt(0, $$class$5);
 var suites_000 = /* tuple */[
   "single_obj",
   function () {
-    return /* Eq */{
-            0: /* int array */[
-              3,
-              32
-            ],
-            1: /* int array */[
-              v.tag === 248 ? Curry.js1(120, 1, v) : v.x,
-              v.tag === 248 ? Curry.js1(121, 2, v) : v.y
-            ],
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              /* int array */[
+                3,
+                32
+              ],
+              /* int array */[
+                v.tag === 248 ? Curry.js1(120, 1, v) : v.x,
+                v.tag === 248 ? Curry.js1(121, 2, v) : v.y
+              ]
+            ]);
   }
 ];
 
@@ -181,150 +180,126 @@ var suites_001 = /* :: */[
   /* tuple */[
     "single_obj_cache",
     function () {
-      return /* Eq */{
-              0: /* int array */[
-                3,
-                32
-              ],
-              1: /* int array */[
-                v.tag === 248 ? Curry.js1(120, 3, v) : v.x,
-                v.tag === 248 ? Curry.js1(121, 4, v) : v.y
-              ],
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                /* int array */[
+                  3,
+                  32
+                ],
+                /* int array */[
+                  v.tag === 248 ? Curry.js1(120, 3, v) : v.x,
+                  v.tag === 248 ? Curry.js1(121, 4, v) : v.y
+                ]
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "self_obj",
       function () {
-        return /* Eq */{
-                0: 13,
-                1: vv.tag === 248 ? Curry.js2(616641298, 5, vv, 3) : Curry._1(vv.hello.bind(vv), 3),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  13,
+                  vv.tag === 248 ? Curry.js2(616641298, 5, vv, 3) : Curry._1(vv.hello.bind(vv), 3)
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "uu_id",
         function () {
-          return /* Eq */{
-                  0: "uu",
-                  1: uu.tag === 248 ? Curry.js1(23515, 6, uu) : uu.id,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    "uu",
+                    uu.tag === 248 ? Curry.js1(23515, 6, uu) : uu.id
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "uu_add",
           function () {
-            return /* Eq */{
-                    0: uuu.tag === 248 ? Curry.js3(4846113, 7, uuu, 1, 20) : Curry._2(uuu.add.bind(uuu), 1, 20),
-                    1: 21,
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      uuu.tag === 248 ? Curry.js3(4846113, 7, uuu, 1, 20) : Curry._2(uuu.add.bind(uuu), 1, 20),
+                      21
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "v_add",
             function () {
-              return /* Eq */{
-                      0: vvvv.tag === 248 ? Curry.js3(4846113, 8, vvvv, 3, 7) : Curry._2(vvvv.add.bind(vvvv), 3, 7),
-                      1: 10,
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        vvvv.tag === 248 ? Curry.js3(4846113, 8, vvvv, 3, 7) : Curry._2(vvvv.add.bind(vvvv), 3, 7),
+                        10
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               "u_id1",
               function () {
-                return /* Eq */{
-                        0: u.tag === 248 ? Curry.js1(5243894, 9, u) : u.id1,
-                        1: 3,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          u.tag === 248 ? Curry.js1(5243894, 9, u) : u.id1,
+                          3
+                        ]);
               }
             ],
             /* :: */[
               /* tuple */[
                 "u_id2",
                 function () {
-                  return /* Eq */{
-                          0: u.tag === 248 ? Curry.js1(5243895, 10, u) : u.id2,
-                          1: 4,
-                          length: 2,
-                          tag: 0
-                        };
+                  return /* Eq */Block.__(0, [
+                            u.tag === 248 ? Curry.js1(5243895, 10, u) : u.id2,
+                            4
+                          ]);
                 }
               ],
               /* :: */[
                 /* tuple */[
                   "u hi",
                   function () {
-                    return /* Eq */{
-                            0: u.tag === 248 ? Curry.js3(23297, 11, u, 1, 2) : Curry._2(u.hi.bind(u), 1, 2),
-                            1: 3,
-                            length: 2,
-                            tag: 0
-                          };
+                    return /* Eq */Block.__(0, [
+                              u.tag === 248 ? Curry.js3(23297, 11, u, 1, 2) : Curry._2(u.hi.bind(u), 1, 2),
+                              3
+                            ]);
                   }
                 ],
                 /* :: */[
                   /* tuple */[
                     "u hello",
                     function () {
-                      return /* Eq */{
-                              0: u.tag === 248 ? Curry.js2(616641298, 12, u, 32) : Curry._1(u.hello.bind(u), 32),
-                              1: 32,
-                              length: 2,
-                              tag: 0
-                            };
+                      return /* Eq */Block.__(0, [
+                                u.tag === 248 ? Curry.js2(616641298, 12, u, 32) : Curry._1(u.hello.bind(u), 32),
+                                32
+                              ]);
                     }
                   ],
                   /* :: */[
                     /* tuple */[
                       "v hi",
                       function () {
-                        return /* Eq */{
-                                0: vvvv.tag === 248 ? Curry.js2(23297, 13, vvvv, 31) : Curry._1(vvvv.hi.bind(vvvv), 31),
-                                1: 63,
-                                length: 2,
-                                tag: 0
-                              };
+                        return /* Eq */Block.__(0, [
+                                  vvvv.tag === 248 ? Curry.js2(23297, 13, vvvv, 31) : Curry._1(vvvv.hi.bind(vvvv), 31),
+                                  63
+                                ]);
                       }
                     ],
                     /* :: */[
                       /* tuple */[
                         "uuu add",
                         function () {
-                          return /* Eq */{
-                                  0: uuu.tag === 248 ? Curry.js3(4846113, 14, uuu, 3, 4) : Curry._2(uuu.add.bind(uuu), 3, 4),
-                                  1: 7,
-                                  length: 2,
-                                  tag: 0
-                                };
+                          return /* Eq */Block.__(0, [
+                                    uuu.tag === 248 ? Curry.js3(4846113, 14, uuu, 3, 4) : Curry._2(uuu.add.bind(uuu), 3, 4),
+                                    7
+                                  ]);
                         }
                       ],
                       /* :: */[
                         /* tuple */[
                           "v x",
                           function () {
-                            return /* Eq */{
-                                    0: v.tag === 248 ? Curry.js1(120, 15, v) : v.x,
-                                    1: 3,
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      v.tag === 248 ? Curry.js1(120, 15, v) : v.x,
+                                      3
+                                    ]);
                           }
                         ],
                         /* [] */0

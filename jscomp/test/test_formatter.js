@@ -1,22 +1,19 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Block = require("../runtime/block");
 
 function f() {
   return /* Format */[
-          /* Int */{
-            0: /* Int_d */0,
-            1: /* No_padding */0,
-            2: /* No_precision */0,
-            3: /* String */{
-              0: /* No_padding */0,
-              1: /* End_of_format */0,
-              length: 2,
-              tag: 2
-            },
-            length: 4,
-            tag: 4
-          },
+          /* Int */Block.__(4, [
+              /* Int_d */0,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* String */Block.__(2, [
+                  /* No_padding */0,
+                  /* End_of_format */0
+                ])
+            ]),
           "%d%s"
         ];
 }

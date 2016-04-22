@@ -4,6 +4,7 @@
 var Caml_obj                = require("../runtime/caml_obj");
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("../stdlib/camlinternalLazy");
+var Block                   = require("../runtime/block");
 var List                    = require("../stdlib/list");
 
 var x = {
@@ -79,11 +80,7 @@ var h = {
   
 };
 
-Caml_obj.caml_update_dummy(h, {
-      0: fib,
-      length: 1,
-      tag: 250
-    });
+Caml_obj.caml_update_dummy(h, Block.__(250, [fib]));
 
 function fib(n) {
   if (n > 3 || n < 0) {
@@ -286,12 +283,10 @@ var v$1 = 3;
 var suites_000 = /* tuple */[
   "hd",
   function () {
-    return /* Eq */{
-            0: 1,
-            1: List.hd(List.tl(x)),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              1,
+              List.hd(List.tl(x))
+            ]);
   }
 ];
 
@@ -326,60 +321,44 @@ var suites_001 = /* :: */[
               ]
             ];
       }
-      return /* Eq */{
-              0: 3,
-              1: $js,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                3,
+                $js
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "rec_sum",
       function () {
-        return /* Eq */{
-                0: 55,
-                1: sum(0, 10),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  55,
+                  sum(0, 10)
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "fake_rec",
         function () {
-          return /* Eq */{
-                  0: /* tuple */[
-                    /* :: */[
-                      1,
+          return /* Eq */Block.__(0, [
+                    /* tuple */[
                       /* :: */[
-                        2,
-                        /* [] */0
-                      ]
-                    ],
-                    /* :: */[
-                      2,
-                      /* :: */[
-                        3,
-                        /* [] */0
-                      ]
-                    ],
-                    /* :: */[
-                      1,
+                        1,
+                        /* :: */[
+                          2,
+                          /* [] */0
+                        ]
+                      ],
                       /* :: */[
                         2,
                         /* :: */[
                           3,
                           /* [] */0
                         ]
-                      ]
-                    ],
-                    /* :: */[
-                      1,
+                      ],
                       /* :: */[
-                        55,
+                        1,
                         /* :: */[
                           2,
                           /* :: */[
@@ -387,28 +366,38 @@ var suites_001 = /* :: */[
                             /* [] */0
                           ]
                         ]
-                      ]
-                    ],
-                    /* :: */[
-                      2,
+                      ],
                       /* :: */[
-                        3,
-                        /* [] */0
-                      ]
+                        1,
+                        /* :: */[
+                          55,
+                          /* :: */[
+                            2,
+                            /* :: */[
+                              3,
+                              /* [] */0
+                            ]
+                          ]
+                        ]
+                      ],
+                      /* :: */[
+                        2,
+                        /* :: */[
+                          3,
+                          /* [] */0
+                        ]
+                      ],
+                      3
                     ],
-                    3
-                  ],
-                  1: /* tuple */[
-                    fake_v,
-                    fake_y,
-                    fake_z,
-                    fake_z2,
-                    fake_y2,
-                    v$1
-                  ],
-                  length: 2,
-                  tag: 0
-                };
+                    /* tuple */[
+                      fake_v,
+                      fake_y,
+                      fake_z,
+                      fake_z2,
+                      fake_y2,
+                      v$1
+                    ]
+                  ]);
         }
       ],
       /* [] */0

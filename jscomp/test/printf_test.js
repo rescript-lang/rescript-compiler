@@ -2,42 +2,33 @@
 'use strict';
 
 var Mt     = require("./mt");
+var Block  = require("../runtime/block");
 var Curry  = require("../runtime/curry");
 var Printf = require("../stdlib/printf");
 var Format = require("../stdlib/format");
 
 function print_pair(fmt, param) {
   return Curry._2(Format.fprintf(fmt, /* Format */[
-                  /* Char_literal */{
-                    0: /* "(" */40,
-                    1: /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* Char_literal */{
-                        0: /* "," */44,
-                        1: /* Int */{
-                          0: /* Int_d */0,
-                          1: /* No_padding */0,
-                          2: /* No_precision */0,
-                          3: /* Char_literal */{
-                            0: /* ")" */41,
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 12
-                          },
-                          length: 4,
-                          tag: 4
-                        },
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 12
-                  },
+                  /* Char_literal */Block.__(12, [
+                      /* "(" */40,
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "," */44,
+                              /* Int */Block.__(4, [
+                                  /* Int_d */0,
+                                  /* No_padding */0,
+                                  /* No_precision */0,
+                                  /* Char_literal */Block.__(12, [
+                                      /* ")" */41,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ])
+                        ])
+                    ]),
                   "(%d,%d)"
                 ]), param[0], param[1]);
 }
@@ -45,27 +36,21 @@ function print_pair(fmt, param) {
 var suites_000 = /* tuple */[
   "sprintf_simple",
   function () {
-    return /* Eq */{
-            0: "3232",
-            1: Curry._2(Printf.sprintf(/* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Int */{
-                          0: /* Int_d */0,
-                          1: /* No_padding */0,
-                          2: /* No_precision */0,
-                          3: /* End_of_format */0,
-                          length: 4,
-                          tag: 4
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      "%s%d"
-                    ]), "32", 32),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              "3232",
+              Curry._2(Printf.sprintf(/* Format */[
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
+                        "%s%d"
+                      ]), "32", 32)
+            ]);
   }
 ];
 
@@ -73,42 +58,32 @@ var suites_001 = /* :: */[
   /* tuple */[
     "print_asprintf",
     function () {
-      return /* Eq */{
-              0: "xx",
-              1: Format.asprintf(/* Format */[
-                    /* String_literal */{
-                      0: "xx",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
-                    "xx"
-                  ]),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                "xx",
+                Format.asprintf(/* Format */[
+                      /* String_literal */Block.__(11, [
+                          "xx",
+                          /* End_of_format */0
+                        ]),
+                      "xx"
+                    ])
+              ]);
     }
   ],
   /* :: */[
     /* tuple */[
       "print_pair",
       function () {
-        return /* Eq */{
-                0: "(1,2)",
-                1: Curry._2(Format.asprintf(/* Format */[
-                          /* Alpha */{
-                            0: /* End_of_format */0,
-                            length: 1,
-                            tag: 15
-                          },
-                          "%a"
-                        ]), print_pair, /* tuple */[
-                      1,
-                      2
-                    ]),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  "(1,2)",
+                  Curry._2(Format.asprintf(/* Format */[
+                            /* Alpha */Block.__(15, [/* End_of_format */0]),
+                            "%a"
+                          ]), print_pair, /* tuple */[
+                        1,
+                        2
+                      ])
+                ]);
       }
     ],
     /* [] */0
@@ -121,12 +96,10 @@ var suites = /* :: */[
 ];
 
 var v = Format.asprintf(/* Format */[
-      /* String_literal */{
-        0: "xx",
-        1: /* End_of_format */0,
-        length: 2,
-        tag: 11
-      },
+      /* String_literal */Block.__(11, [
+          "xx",
+          /* End_of_format */0
+        ]),
       "xx"
     ]);
 

@@ -1,7 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Mt = require("./mt");
+var Mt    = require("./mt");
+var Block = require("../runtime/block");
 
 var a = /* float array */[
   0,
@@ -36,18 +37,16 @@ function h() {
 
 function g() {
   f(/* () */0);
-  return /* Eq */{
-          0: /* tuple */[
-            a[0],
-            b[0]
-          ],
-          1: /* tuple */[
-            3.0,
-            3
-          ],
-          length: 2,
-          tag: 0
-        };
+  return /* Eq */Block.__(0, [
+            /* tuple */[
+              a[0],
+              b[0]
+            ],
+            /* tuple */[
+              3.0,
+              3
+            ]
+          ]);
 }
 
 var suites_000 = /* tuple */[
@@ -61,19 +60,17 @@ var suites_001 = /* :: */[
     function () {
       c[0] = 3;
       c[1] = 4;
-      return /* Eq */{
-              0: /* array */[
-                3,
-                4,
-                2,
-                3,
-                4,
-                5
-              ],
-              1: c,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                /* array */[
+                  3,
+                  4,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                c
+              ]);
     }
   ],
   /* [] */0

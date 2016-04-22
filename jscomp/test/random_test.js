@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Mt_global  = require("./mt_global");
 var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
@@ -78,67 +79,47 @@ var xx = Random.$$float(3.0);
 var xxx = Random.int32(103);
 
 Curry._5(Printf.printf(/* Format */[
-          /* Int64 */{
-            0: /* Int_d */0,
-            1: /* No_padding */0,
-            2: /* No_precision */0,
-            3: /* Char_literal */{
-              0: /* " " */32,
-              1: /* Int64 */{
-                0: /* Int_d */0,
-                1: /* No_padding */0,
-                2: /* No_precision */0,
-                3: /* Char_literal */{
-                  0: /* " " */32,
-                  1: /* Int */{
-                    0: /* Int_d */0,
-                    1: /* No_padding */0,
-                    2: /* No_precision */0,
-                    3: /* Char_literal */{
-                      0: /* " " */32,
-                      1: /* Float */{
-                        0: /* Float_f */0,
-                        1: /* No_padding */0,
-                        2: /* No_precision */0,
-                        3: /* Char_literal */{
-                          0: /* " " */32,
-                          1: /* Int32 */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* String_literal */{
-                              0: " \n",
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 11
-                            },
-                            length: 4,
-                            tag: 5
-                          },
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 4,
-                        tag: 8
-                      },
-                      length: 2,
-                      tag: 12
-                    },
-                    length: 4,
-                    tag: 4
-                  },
-                  length: 2,
-                  tag: 12
-                },
-                length: 4,
-                tag: 7
-              },
-              length: 2,
-              tag: 12
-            },
-            length: 4,
-            tag: 7
-          },
+          /* Int64 */Block.__(7, [
+              /* Int_d */0,
+              /* No_padding */0,
+              /* No_precision */0,
+              /* Char_literal */Block.__(12, [
+                  /* " " */32,
+                  /* Int64 */Block.__(7, [
+                      /* Int_d */0,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      /* Char_literal */Block.__(12, [
+                          /* " " */32,
+                          /* Int */Block.__(4, [
+                              /* Int_d */0,
+                              /* No_padding */0,
+                              /* No_precision */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* " " */32,
+                                  /* Float */Block.__(8, [
+                                      /* Float_f */0,
+                                      /* No_padding */0,
+                                      /* No_precision */0,
+                                      /* Char_literal */Block.__(12, [
+                                          /* " " */32,
+                                          /* Int32 */Block.__(5, [
+                                              /* Int_d */0,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* String_literal */Block.__(11, [
+                                                  " \n",
+                                                  /* End_of_format */0
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ])
+                        ])
+                    ])
+                ])
+            ]),
           "%Ld %Ld %d %f %ld \n"
         ]), f, h, vv, xx, xxx);
 

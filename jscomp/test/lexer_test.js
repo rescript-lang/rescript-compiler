@@ -5,6 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Arith_syntax            = require("./arith_syntax");
 var Mt                      = require("./mt");
 var Lexing                  = require("../stdlib/lexing");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Number_lexer            = require("./number_lexer");
 var Arith_lexer             = require("./arith_lexer");
@@ -53,49 +54,31 @@ function from_tokens(lst) {
 var lexer_suites_000 = /* tuple */[
   "arith_token",
   function () {
-    return /* Eq */{
-            0: f("x + 3 + 4 + y"),
-            1: /* :: */[
-              /* IDENT */{
-                0: "x",
-                length: 1,
-                tag: 1
-              },
+    return /* Eq */Block.__(0, [
+              f("x + 3 + 4 + y"),
               /* :: */[
-                /* PLUS */0,
+                /* IDENT */Block.__(1, ["x"]),
                 /* :: */[
-                  /* NUMERAL */{
-                    0: 3,
-                    length: 1,
-                    tag: 0
-                  },
+                  /* PLUS */0,
                   /* :: */[
-                    /* PLUS */0,
+                    /* NUMERAL */Block.__(0, [3]),
                     /* :: */[
-                      /* NUMERAL */{
-                        0: 4,
-                        length: 1,
-                        tag: 0
-                      },
+                      /* PLUS */0,
                       /* :: */[
-                        /* PLUS */0,
+                        /* NUMERAL */Block.__(0, [4]),
                         /* :: */[
-                          /* IDENT */{
-                            0: "y",
-                            length: 1,
-                            tag: 1
-                          },
-                          /* [] */0
+                          /* PLUS */0,
+                          /* :: */[
+                            /* IDENT */Block.__(1, ["y"]),
+                            /* [] */0
+                          ]
                         ]
                       ]
                     ]
                   ]
                 ]
               ]
-            ],
-            length: 2,
-            tag: 0
-          };
+            ]);
   }
 ];
 
@@ -103,16 +86,10 @@ var lexer_suites_001 = /* :: */[
   /* tuple */[
     "simple token",
     function () {
-      return /* Eq */{
-              0: Arith_lexer.lexeme(Lexing.from_string("10")),
-              1: /* NUMERAL */{
-                0: 10,
-                length: 1,
-                tag: 0
-              },
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                Arith_lexer.lexeme(Lexing.from_string("10")),
+                /* NUMERAL */Block.__(0, [10])
+              ]);
     }
   ],
   /* :: */[
@@ -128,43 +105,44 @@ var lexer_suites_001 = /* :: */[
           return /* () */0;
         };
         Number_lexer.token(add, Lexing.from_string("32 + 32 ( ) * / "));
-        return /* Eq */{
-                0: List.rev(v[0]),
-                1: /* :: */[
-                  "number",
+        return /* Eq */Block.__(0, [
+                  List.rev(v[0]),
                   /* :: */[
-                    "32",
+                    "number",
                     /* :: */[
-                      "new line",
+                      "32",
                       /* :: */[
-                        "+",
+                        "new line",
                         /* :: */[
-                          "new line",
+                          "+",
                           /* :: */[
-                            "number",
+                            "new line",
                             /* :: */[
-                              "32",
+                              "number",
                               /* :: */[
-                                "new line",
+                                "32",
                                 /* :: */[
-                                  "(",
+                                  "new line",
                                   /* :: */[
-                                    "new line",
+                                    "(",
                                     /* :: */[
-                                      ")",
+                                      "new line",
                                       /* :: */[
-                                        "new line",
+                                        ")",
                                         /* :: */[
-                                          "*",
+                                          "new line",
                                           /* :: */[
-                                            "new line",
+                                            "*",
                                             /* :: */[
-                                              "/",
+                                              "new line",
                                               /* :: */[
-                                                "new line",
+                                                "/",
                                                 /* :: */[
-                                                  "eof",
-                                                  /* [] */0
+                                                  "new line",
+                                                  /* :: */[
+                                                    "eof",
+                                                    /* [] */0
+                                                  ]
                                                 ]
                                               ]
                                             ]
@@ -181,34 +159,27 @@ var lexer_suites_001 = /* :: */[
                       ]
                     ]
                   ]
-                ],
-                length: 2,
-                tag: 0
-              };
+                ]);
       }
     ],
     /* :: */[
       /* tuple */[
         "simple number",
         function () {
-          return /* Eq */{
-                  0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
-                  1: "10.",
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("10"))),
+                    "10."
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "arith",
           function () {
-            return /* Eq */{
-                    0: Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
-                    1: "x+3.+4.+y",
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      Arith_syntax.str(Arith_parser.toplevel(Arith_lexer.lexeme, Lexing.from_string("x + 3 + 4 + y"))),
+                      "x+3.+4.+y"
+                    ]);
           }
         ],
         /* [] */0

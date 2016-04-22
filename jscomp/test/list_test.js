@@ -3,27 +3,26 @@
 
 var Caml_obj = require("../runtime/caml_obj");
 var Mt       = require("./mt");
+var Block    = require("../runtime/block");
 var $$Array  = require("../stdlib/array");
 var List     = require("../stdlib/list");
 
 var list_suites_000 = /* tuple */[
   "length",
   function () {
-    return /* Eq */{
-            0: 1,
-            1: List.length(/* :: */[
-                  /* tuple */[
-                    0,
-                    1,
-                    2,
-                    3,
-                    4
-                  ],
-                  /* [] */0
-                ]),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              1,
+              List.length(/* :: */[
+                    /* tuple */[
+                      0,
+                      1,
+                      2,
+                      3,
+                      4
+                    ],
+                    /* [] */0
+                  ])
+            ]);
   }
 ];
 
@@ -31,10 +30,57 @@ var list_suites_001 = /* :: */[
   /* tuple */[
     "length2",
     function () {
-      return /* Eq */{
-              0: 5,
-              1: List.length(/* :: */[
-                    0,
+      return /* Eq */Block.__(0, [
+                5,
+                List.length(/* :: */[
+                      0,
+                      /* :: */[
+                        1,
+                        /* :: */[
+                          2,
+                          /* :: */[
+                            3,
+                            /* :: */[
+                              4,
+                              /* [] */0
+                            ]
+                          ]
+                        ]
+                      ]
+                    ])
+              ]);
+    }
+  ],
+  /* :: */[
+    /* tuple */[
+      "long_length",
+      function () {
+        return /* Eq */Block.__(0, [
+                  30000,
+                  List.length($$Array.to_list($$Array.init(30000, function () {
+                                return 0;
+                              })))
+                ]);
+      }
+    ],
+    /* :: */[
+      /* tuple */[
+        "sort",
+        function () {
+          return /* Eq */Block.__(0, [
+                    List.sort(Caml_obj.caml_int_compare, /* :: */[
+                          4,
+                          /* :: */[
+                            1,
+                            /* :: */[
+                              2,
+                              /* :: */[
+                                3,
+                                /* [] */0
+                              ]
+                            ]
+                          ]
+                        ]),
                     /* :: */[
                       1,
                       /* :: */[
@@ -48,60 +94,7 @@ var list_suites_001 = /* :: */[
                         ]
                       ]
                     ]
-                  ]),
-              length: 2,
-              tag: 0
-            };
-    }
-  ],
-  /* :: */[
-    /* tuple */[
-      "long_length",
-      function () {
-        return /* Eq */{
-                0: 30000,
-                1: List.length($$Array.to_list($$Array.init(30000, function () {
-                              return 0;
-                            }))),
-                length: 2,
-                tag: 0
-              };
-      }
-    ],
-    /* :: */[
-      /* tuple */[
-        "sort",
-        function () {
-          return /* Eq */{
-                  0: List.sort(Caml_obj.caml_int_compare, /* :: */[
-                        4,
-                        /* :: */[
-                          1,
-                          /* :: */[
-                            2,
-                            /* :: */[
-                              3,
-                              /* [] */0
-                            ]
-                          ]
-                        ]
-                      ]),
-                  1: /* :: */[
-                    1,
-                    /* :: */[
-                      2,
-                      /* :: */[
-                        3,
-                        /* :: */[
-                          4,
-                          /* [] */0
-                        ]
-                      ]
-                    ]
-                  ],
-                  length: 2,
-                  tag: 0
-                };
+                  ]);
         }
       ],
       /* [] */0

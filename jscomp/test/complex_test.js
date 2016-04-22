@@ -3,19 +3,18 @@
 
 var Complex = require("../stdlib/complex");
 var Mt      = require("./mt");
+var Block   = require("../runtime/block");
 
 var suites_000 = /* tuple */[
   "basic_add",
   function () {
-    return /* Eq */{
-            0: /* float array */[
-              2,
-              2
-            ],
-            1: Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i),
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              /* float array */[
+                2,
+                2
+              ],
+              Complex.add(Complex.add(Complex.add(Complex.one, Complex.one), Complex.i), Complex.i)
+            ]);
   }
 ];
 

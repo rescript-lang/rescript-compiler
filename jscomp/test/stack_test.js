@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt    = require("./mt");
+var Block = require("../runtime/block");
 var Stack = require("../stdlib/stack");
 var List  = require("../stdlib/list");
 
@@ -27,21 +28,19 @@ function v() {
 var suites_000 = /* tuple */[
   "push_test",
   function () {
-    return /* Eq */{
-            0: /* :: */[
-              1,
+    return /* Eq */Block.__(0, [
               /* :: */[
-                4,
+                1,
                 /* :: */[
-                  3,
-                  /* [] */0
+                  4,
+                  /* :: */[
+                    3,
+                    /* [] */0
+                  ]
                 ]
-              ]
-            ],
-            1: v(/* () */0),
-            length: 2,
-            tag: 0
-          };
+              ],
+              v(/* () */0)
+            ]);
   }
 ];
 

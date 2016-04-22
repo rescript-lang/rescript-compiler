@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt    = require("./mt");
+var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 var v = [3];
@@ -84,22 +85,20 @@ Mt.from_pair_suites("pr_regression_test.ml", /* :: */[
       /* tuple */[
         "partial",
         function () {
-          return /* Eq */{
-                  0: /* tuple */[
-                    5,
-                    5,
-                    5,
-                    5
-                  ],
-                  1: /* tuple */[
-                    a,
-                    b,
-                    c,
-                    d
-                  ],
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    /* tuple */[
+                      5,
+                      5,
+                      5,
+                      5
+                    ],
+                    /* tuple */[
+                      a,
+                      b,
+                      c,
+                      d
+                    ]
+                  ]);
         }
       ],
       /* [] */0

@@ -5,6 +5,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var List                    = require("./list");
 
@@ -59,17 +60,13 @@ function get_data(count, _d) {
                   ];
             }
             else {
-              return /* Scons */{
-                      0: match[0],
-                      1: /* Sapp */{
-                        0: match[1],
-                        1: d2,
-                        length: 2,
-                        tag: 1
-                      },
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Scons */Block.__(0, [
+                        match[0],
+                        /* Sapp */Block.__(1, [
+                            match[1],
+                            d2
+                          ])
+                      ]);
             }
             break;
         case 2 : 
@@ -86,12 +83,10 @@ function get_data(count, _d) {
               var match$2 = match$1[0];
               if (match$2) {
                 g[/* curr */0] = /* None */0;
-                return /* Scons */{
-                        0: match$2[0],
-                        1: d,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Scons */Block.__(0, [
+                          match$2[0],
+                          d
+                        ]);
               }
               else {
                 return /* Sempty */0;
@@ -100,12 +95,10 @@ function get_data(count, _d) {
             else {
               var match$3 = Curry._1(g[/* func */1], count);
               if (match$3) {
-                return /* Scons */{
-                        0: match$3[0],
-                        1: d,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Scons */Block.__(0, [
+                          match$3[0],
+                          d
+                        ]);
               }
               else {
                 g[/* curr */0] = /* Some */[/* None */0];
@@ -121,12 +114,10 @@ function get_data(count, _d) {
             if (b[/* len */2]) {
               var r = b[/* buff */1][b[/* ind */3]];
               b[/* ind */3] = b[/* ind */3] + 1 | 0;
-              return /* Scons */{
-                      0: r,
-                      1: d,
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Scons */Block.__(0, [
+                        r,
+                        d
+                      ]);
             }
             else {
               return /* Sempty */0;
@@ -284,12 +275,10 @@ function nget(n, s) {
                 a,
                 match$1[0]
               ],
-              /* Scons */{
-                0: a,
-                1: match$1[1],
-                length: 2,
-                tag: 0
-              },
+              /* Scons */Block.__(0, [
+                  a,
+                  match$1[1]
+                ]),
               match$1[2] + 1 | 0
             ];
     }
@@ -351,14 +340,10 @@ function iter(f, strm) {
 function from(f) {
   return /* record */[
           0,
-          /* Sgen */{
-            0: /* record */[
-              /* None */0,
-              f
-            ],
-            length: 1,
-            tag: 3
-          }
+          /* Sgen */Block.__(3, [/* record */[
+                /* None */0,
+                f
+              ]])
         ];
 }
 
@@ -366,12 +351,10 @@ function of_list(l) {
   return /* record */[
           0,
           List.fold_right(function (x, l) {
-                return /* Scons */{
-                        0: x,
-                        1: l,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Scons */Block.__(0, [
+                          x,
+                          l
+                        ]);
               }, l, /* Sempty */0)
         ];
 }
@@ -407,135 +390,87 @@ function of_bytes(s) {
 function of_channel(ic) {
   return /* record */[
           0,
-          /* Sbuffio */{
-            0: /* record */[
-              ic,
-              new Array(4096),
-              0,
-              0
-            ],
-            length: 1,
-            tag: 4
-          }
+          /* Sbuffio */Block.__(4, [/* record */[
+                ic,
+                new Array(4096),
+                0,
+                0
+              ]])
         ];
 }
 
 function iapp(i, s) {
   return /* record */[
           0,
-          /* Sapp */{
-            0: i[/* data */1],
-            1: s[/* data */1],
-            length: 2,
-            tag: 1
-          }
+          /* Sapp */Block.__(1, [
+              i[/* data */1],
+              s[/* data */1]
+            ])
         ];
 }
 
 function icons(i, s) {
   return /* record */[
           0,
-          /* Scons */{
-            0: i,
-            1: s[/* data */1],
-            length: 2,
-            tag: 0
-          }
+          /* Scons */Block.__(0, [
+              i,
+              s[/* data */1]
+            ])
         ];
 }
 
 function ising(i) {
   return /* record */[
           0,
-          /* Scons */{
-            0: i,
-            1: /* Sempty */0,
-            length: 2,
-            tag: 0
-          }
+          /* Scons */Block.__(0, [
+              i,
+              /* Sempty */0
+            ])
         ];
 }
 
 function lapp(f, s) {
   return /* record */[
           0,
-          /* Slazy */{
-            0: {
-              0: function () {
-                return /* Sapp */{
-                        0: Curry._1(f, /* () */0)[/* data */1],
-                        1: s[/* data */1],
-                        length: 2,
-                        tag: 1
-                      };
-              },
-              length: 1,
-              tag: 246
-            },
-            length: 1,
-            tag: 2
-          }
+          /* Slazy */Block.__(2, [Block.__(246, [function () {
+                    return /* Sapp */Block.__(1, [
+                              Curry._1(f, /* () */0)[/* data */1],
+                              s[/* data */1]
+                            ]);
+                  }])])
         ];
 }
 
 function lcons(f, s) {
   return /* record */[
           0,
-          /* Slazy */{
-            0: {
-              0: function () {
-                return /* Scons */{
-                        0: Curry._1(f, /* () */0),
-                        1: s[/* data */1],
-                        length: 2,
-                        tag: 0
-                      };
-              },
-              length: 1,
-              tag: 246
-            },
-            length: 1,
-            tag: 2
-          }
+          /* Slazy */Block.__(2, [Block.__(246, [function () {
+                    return /* Scons */Block.__(0, [
+                              Curry._1(f, /* () */0),
+                              s[/* data */1]
+                            ]);
+                  }])])
         ];
 }
 
 function lsing(f) {
   return /* record */[
           0,
-          /* Slazy */{
-            0: {
-              0: function () {
-                return /* Scons */{
-                        0: Curry._1(f, /* () */0),
-                        1: /* Sempty */0,
-                        length: 2,
-                        tag: 0
-                      };
-              },
-              length: 1,
-              tag: 246
-            },
-            length: 1,
-            tag: 2
-          }
+          /* Slazy */Block.__(2, [Block.__(246, [function () {
+                    return /* Scons */Block.__(0, [
+                              Curry._1(f, /* () */0),
+                              /* Sempty */0
+                            ]);
+                  }])])
         ];
 }
 
 function slazy(f) {
   return /* record */[
           0,
-          /* Slazy */{
-            0: {
-              0: function () {
-                return Curry._1(f, /* () */0)[/* data */1];
-              },
-              length: 1,
-              tag: 246
-            },
-            length: 1,
-            tag: 2
-          }
+          /* Slazy */Block.__(2, [Block.__(246, [function () {
+                    return Curry._1(f, /* () */0)[/* data */1];
+                  }])])
         ];
 }
 

@@ -4,6 +4,7 @@
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 var Caml_int32 = require("../runtime/caml_int32");
+var Block      = require("../runtime/block");
 var Int32      = require("../stdlib/int32");
 var Curry      = require("../runtime/curry");
 var $$Array    = require("../stdlib/array");
@@ -158,24 +159,20 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
           /* tuple */[
             'File "int32_test.ml", line 32, characters 2-9',
             function () {
-              return /* Eq */{
-                      0: 1,
-                      1: 1,
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        1,
+                        1
+                      ]);
             }
           ],
           /* :: */[
             /* tuple */[
               'File "int32_test.ml", line 33, characters 2-9',
               function () {
-                return /* Eq */{
-                        0: -2147483647,
-                        1: -2147483647,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          -2147483647,
+                          -2147483647
+                        ]);
               }
             ],
             /* [] */0
@@ -183,82 +180,64 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
         ], Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                       return /* tuple */[
                               Curry._1(Format.asprintf(/* Format */[
-                                        /* String_literal */{
-                                          0: "shift_right_logical_cases ",
-                                          1: /* Int */{
-                                            0: /* Int_d */0,
-                                            1: /* No_padding */0,
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 4
-                                          },
-                                          length: 2,
-                                          tag: 11
-                                        },
+                                        /* String_literal */Block.__(11, [
+                                            "shift_right_logical_cases ",
+                                            /* Int */Block.__(4, [
+                                                /* Int_d */0,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ]),
                                         "shift_right_logical_cases %d"
                                       ]), i),
                               function () {
-                                return /* Eq */{
-                                        0: a,
-                                        1: b,
-                                        length: 2,
-                                        tag: 0
-                                      };
+                                return /* Eq */Block.__(0, [
+                                          a,
+                                          b
+                                        ]);
                               }
                             ];
                     }, shift_right_logical_tests_000, shift_right_logical_tests_001)), Pervasives.$at($$Array.to_list(Ext_array.map2i(function (i, a, b) {
                           return /* tuple */[
                                   Curry._1(Format.asprintf(/* Format */[
-                                            /* String_literal */{
-                                              0: "shift_right_cases ",
-                                              1: /* Int */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 11
-                                            },
+                                            /* String_literal */Block.__(11, [
+                                                "shift_right_cases ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
                                             "shift_right_cases %d"
                                           ]), i),
                                   function () {
-                                    return /* Eq */{
-                                            0: a,
-                                            1: b,
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              a,
+                                              b
+                                            ]);
                                   }
                                 ];
                         }, shift_right_tests_000, shift_right_tests_001)), $$Array.to_list(Ext_array.map2i(function (i, a, b) {
                           return /* tuple */[
                                   Curry._1(Format.asprintf(/* Format */[
-                                            /* String_literal */{
-                                              0: "shift_left_cases ",
-                                              1: /* Int */{
-                                                0: /* Int_d */0,
-                                                1: /* No_padding */0,
-                                                2: /* No_precision */0,
-                                                3: /* End_of_format */0,
-                                                length: 4,
-                                                tag: 4
-                                              },
-                                              length: 2,
-                                              tag: 11
-                                            },
+                                            /* String_literal */Block.__(11, [
+                                                "shift_left_cases ",
+                                                /* Int */Block.__(4, [
+                                                    /* Int_d */0,
+                                                    /* No_padding */0,
+                                                    /* No_precision */0,
+                                                    /* End_of_format */0
+                                                  ])
+                                              ]),
                                             "shift_left_cases %d"
                                           ]), i),
                                   function () {
-                                    return /* Eq */{
-                                            0: a,
-                                            1: b,
-                                            length: 2,
-                                            tag: 0
-                                          };
+                                    return /* Eq */Block.__(0, [
+                                              a,
+                                              b
+                                            ]);
                                   }
                                 ];
                         }, shift_left_tests_000, shift_left_tests_001))))));

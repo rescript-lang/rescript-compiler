@@ -4,6 +4,7 @@
 var Caml_obj = require("../runtime/caml_obj");
 var Hashtbl  = require("../stdlib/hashtbl");
 var Mt       = require("./mt");
+var Block    = require("../runtime/block");
 var $$Array  = require("../stdlib/array");
 var List     = require("../stdlib/list");
 
@@ -45,24 +46,22 @@ function g(count) {
 var suites_000 = /* tuple */[
   "simple",
   function () {
-    return /* Eq */{
-            0: /* :: */[
-              /* tuple */[
-                1,
-                /* "1" */49
-              ],
+    return /* Eq */Block.__(0, [
               /* :: */[
                 /* tuple */[
-                  2,
-                  /* "2" */50
+                  1,
+                  /* "1" */49
                 ],
-                /* [] */0
-              ]
-            ],
-            1: f(/* () */0),
-            length: 2,
-            tag: 0
-          };
+                /* :: */[
+                  /* tuple */[
+                    2,
+                    /* "2" */50
+                  ],
+                  /* [] */0
+                ]
+              ],
+              f(/* () */0)
+            ]);
   }
 ];
 
@@ -70,17 +69,15 @@ var suites_001 = /* :: */[
   /* tuple */[
     "more_iterations",
     function () {
-      return /* Eq */{
-              0: $$Array.init(1001, function (i) {
-                    return /* tuple */[
-                            (i << 1),
-                            "" + i
-                          ];
-                  }),
-              1: g(1000),
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                $$Array.init(1001, function (i) {
+                      return /* tuple */[
+                              (i << 1),
+                              "" + i
+                            ];
+                    }),
+                g(1000)
+              ]);
     }
   ],
   /* [] */0

@@ -7,6 +7,7 @@ var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var CamlinternalLazy        = require("./camlinternalLazy");
 var Caml_sys                = require("../runtime/caml_sys");
 var Pervasives              = require("./pervasives");
+var Block                   = require("../runtime/block");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
 var Caml_primitive          = require("../runtime/caml_primitive");
@@ -51,13 +52,9 @@ function randomize() {
   return /* () */0;
 }
 
-var prng = {
-  0: function () {
-    return Curry._1(Random.State[/* make_self_init */1], /* () */0);
-  },
-  length: 1,
-  tag: 246
-};
+var prng = Block.__(246, [function () {
+      return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+    }]);
 
 function power_2_above(_x, n) {
   while(true) {

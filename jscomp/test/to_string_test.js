@@ -3,6 +3,7 @@
 
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 
 var ff = Pervasives.string_of_float
 
@@ -14,24 +15,20 @@ Mt.from_pair_suites("to_string_test.ml", /* :: */[
       /* tuple */[
         'File "to_string_test.ml", line 7, characters 2-9',
         function () {
-          return /* Eq */{
-                  0: Pervasives.string_of_float(Pervasives.infinity),
-                  1: "inf",
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    Pervasives.string_of_float(Pervasives.infinity),
+                    "inf"
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           'File "to_string_test.ml", line 8, characters 1-8',
           function () {
-            return /* Eq */{
-                    0: Pervasives.string_of_float(Pervasives.neg_infinity),
-                    1: "-inf",
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      Pervasives.string_of_float(Pervasives.neg_infinity),
+                      "-inf"
+                    ]);
           }
         ],
         /* [] */0

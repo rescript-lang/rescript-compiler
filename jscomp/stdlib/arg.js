@@ -7,6 +7,7 @@ var Bytes                   = require("./bytes");
 var Caml_exceptions         = require("../runtime/caml_exceptions");
 var Pervasives              = require("./pervasives");
 var Caml_format             = require("../runtime/caml_format");
+var Block                   = require("../runtime/block");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
@@ -55,11 +56,7 @@ function make_symlist(prefix, sep, suffix, l) {
 function help_action() {
   throw [
         Stop,
-        /* Unknown */{
-          0: "-help",
-          length: 1,
-          tag: 0
-        }
+        /* Unknown */Block.__(0, ["-help"])
       ];
 }
 
@@ -74,11 +71,7 @@ function add_help(speclist) {
       add1 = /* :: */[
         /* tuple */[
           "-help",
-          /* Unit */{
-            0: help_action,
-            length: 1,
-            tag: 0
-          },
+          /* Unit */Block.__(0, [help_action]),
           " Display this list of options"
         ],
         /* [] */0
@@ -98,11 +91,7 @@ function add_help(speclist) {
       add2 = /* :: */[
         /* tuple */[
           "--help",
-          /* Unit */{
-            0: help_action,
-            length: 1,
-            tag: 0
-          },
+          /* Unit */Block.__(0, [help_action]),
           " Display this list of options"
         ],
         /* [] */0
@@ -117,17 +106,13 @@ function add_help(speclist) {
 
 function usage_b(buf, speclist, errmsg) {
   Curry._1(Printf.bprintf(buf, /* Format */[
-            /* String */{
-              0: /* No_padding */0,
-              1: /* Char_literal */{
-                0: /* "\n" */10,
-                1: /* End_of_format */0,
-                length: 2,
-                tag: 12
-              },
-              length: 2,
-              tag: 2
-            },
+            /* String */Block.__(2, [
+                /* No_padding */0,
+                /* Char_literal */Block.__(12, [
+                    /* "\n" */10,
+                    /* End_of_format */0
+                  ])
+              ]),
             "%s\n"
           ]), errmsg);
   return List.iter(function (param) {
@@ -139,68 +124,46 @@ function usage_b(buf, speclist, errmsg) {
               if (doc.length) {
                 if (spec.tag === 11) {
                   return Curry._3(Printf.bprintf(buf$1, /* Format */[
-                                  /* String_literal */{
-                                    0: "  ",
-                                    1: /* String */{
-                                      0: /* No_padding */0,
-                                      1: /* Char_literal */{
-                                        0: /* " " */32,
-                                        1: /* String */{
-                                          0: /* No_padding */0,
-                                          1: /* String */{
-                                            0: /* No_padding */0,
-                                            1: /* Char_literal */{
-                                              0: /* "\n" */10,
-                                              1: /* End_of_format */0,
-                                              length: 2,
-                                              tag: 12
-                                            },
-                                            length: 2,
-                                            tag: 2
-                                          },
-                                          length: 2,
-                                          tag: 2
-                                        },
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 2
-                                    },
-                                    length: 2,
-                                    tag: 11
-                                  },
+                                  /* String_literal */Block.__(11, [
+                                      "  ",
+                                      /* String */Block.__(2, [
+                                          /* No_padding */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* String */Block.__(2, [
+                                                  /* No_padding */0,
+                                                  /* String */Block.__(2, [
+                                                      /* No_padding */0,
+                                                      /* Char_literal */Block.__(12, [
+                                                          /* "\n" */10,
+                                                          /* End_of_format */0
+                                                        ])
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ]),
                                   "  %s %s%s\n"
                                 ]), key, make_symlist("{", "|", "}", spec[0]), doc);
                 }
                 else {
                   return Curry._2(Printf.bprintf(buf$1, /* Format */[
-                                  /* String_literal */{
-                                    0: "  ",
-                                    1: /* String */{
-                                      0: /* No_padding */0,
-                                      1: /* Char_literal */{
-                                        0: /* " " */32,
-                                        1: /* String */{
-                                          0: /* No_padding */0,
-                                          1: /* Char_literal */{
-                                            0: /* "\n" */10,
-                                            1: /* End_of_format */0,
-                                            length: 2,
-                                            tag: 12
-                                          },
-                                          length: 2,
-                                          tag: 2
-                                        },
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 2
-                                    },
-                                    length: 2,
-                                    tag: 11
-                                  },
+                                  /* String_literal */Block.__(11, [
+                                      "  ",
+                                      /* String */Block.__(2, [
+                                          /* No_padding */0,
+                                          /* Char_literal */Block.__(12, [
+                                              /* " " */32,
+                                              /* String */Block.__(2, [
+                                                  /* No_padding */0,
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* "\n" */10,
+                                                      /* End_of_format */0
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ]),
                                   "  %s %s\n"
                                 ]), key, doc);
                 }
@@ -219,12 +182,10 @@ function usage_string(speclist, errmsg) {
 
 function usage(speclist, errmsg) {
   return Curry._1(Printf.eprintf(/* Format */[
-                  /* String */{
-                    0: /* No_padding */0,
-                    1: /* End_of_format */0,
-                    length: 2,
-                    tag: 2
-                  },
+                  /* String */Block.__(2, [
+                      /* No_padding */0,
+                      /* End_of_format */0
+                    ]),
                   "%s"
                 ]), usage_string(speclist, errmsg));
 }
@@ -247,141 +208,93 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 break;
             default:
               Curry._2(Printf.bprintf(b, /* Format */[
-                        /* String */{
-                          0: /* No_padding */0,
-                          1: /* String_literal */{
-                            0: ": unknown option '",
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* String_literal */{
-                                0: "'.\n",
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 11
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 2,
-                          tag: 2
-                        },
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                ": unknown option '",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        "'.\n",
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ])
+                          ]),
                         "%s: unknown option '%s'.\n"
                       ]), progname, s);
           }
           break;
       case 1 : 
           Curry._4(Printf.bprintf(b, /* Format */[
-                    /* String */{
-                      0: /* No_padding */0,
-                      1: /* String_literal */{
-                        0: ": wrong argument '",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* String_literal */{
-                            0: "'; option '",
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* String_literal */{
-                                0: "' expects ",
-                                1: /* String */{
-                                  0: /* No_padding */0,
-                                  1: /* String_literal */{
-                                    0: ".\n",
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 11
-                                  },
-                                  length: 2,
-                                  tag: 2
-                                },
-                                length: 2,
-                                tag: 11
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 2,
-                      tag: 2
-                    },
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            ": wrong argument '",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    "'; option '",
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* String_literal */Block.__(11, [
+                                            "' expects ",
+                                            /* String */Block.__(2, [
+                                                /* No_padding */0,
+                                                /* String_literal */Block.__(11, [
+                                                    ".\n",
+                                                    /* End_of_format */0
+                                                  ])
+                                              ])
+                                          ])
+                                      ])
+                                  ])
+                              ])
+                          ])
+                      ]),
                     "%s: wrong argument '%s'; option '%s' expects %s.\n"
                   ]), progname, error[1], error[0], error[2]);
           break;
       case 2 : 
           Curry._2(Printf.bprintf(b, /* Format */[
-                    /* String */{
-                      0: /* No_padding */0,
-                      1: /* String_literal */{
-                        0: ": option '",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* String_literal */{
-                            0: "' needs an argument.\n",
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 2,
-                      tag: 2
-                    },
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            ": option '",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    "' needs an argument.\n",
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])
+                      ]),
                     "%s: option '%s' needs an argument.\n"
                   ]), progname, error[0]);
           break;
       case 3 : 
           Curry._2(Printf.bprintf(b, /* Format */[
-                    /* String */{
-                      0: /* No_padding */0,
-                      1: /* String_literal */{
-                        0: ": ",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* String_literal */{
-                            0: ".\n",
-                            1: /* End_of_format */0,
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 2,
-                      tag: 2
-                    },
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            ": ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    ".\n",
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ])
+                      ]),
                     "%s: %s.\n"
                   ]), progname, error[0]);
           break;
       
     }
     usage_b(b, speclist[0], errmsg);
-    if (Caml_obj.caml_equal(error, /* Unknown */{
-            0: "-help",
-            length: 1,
-            tag: 0
-          }) || Caml_obj.caml_equal(error, /* Unknown */{
-            0: "--help",
-            length: 1,
-            tag: 0
-          })) {
+    if (Caml_obj.caml_equal(error, /* Unknown */Block.__(0, ["-help"])) || Caml_obj.caml_equal(error, /* Unknown */Block.__(0, ["--help"]))) {
       throw [
             Help,
             Buffer.contents(b)
@@ -404,11 +317,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
       }
       catch (exn){
         if (exn === Caml_builtin_exceptions.not_found) {
-          action = stop(/* Unknown */{
-                0: s,
-                length: 1,
-                tag: 0
-              });
+          action = stop(/* Unknown */Block.__(0, [s]));
         }
         else {
           throw exn;
@@ -431,13 +340,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       if (exn[1] === "bool_of_string") {
                         throw [
                               Stop,
-                              /* Wrong */{
-                                0: s,
-                                1: arg,
-                                2: "a boolean",
-                                length: 3,
-                                tag: 1
-                              }
+                              /* Wrong */Block.__(1, [
+                                  s,
+                                  arg,
+                                  "a boolean"
+                                ])
                             ];
                       }
                       else {
@@ -453,11 +360,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -475,11 +378,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -491,11 +390,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -510,13 +405,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       if (exn$1[1] === "int_of_string") {
                         throw [
                               Stop,
-                              /* Wrong */{
-                                0: s,
-                                1: arg$1,
-                                2: "an integer",
-                                length: 3,
-                                tag: 1
-                              }
+                              /* Wrong */Block.__(1, [
+                                  s,
+                                  arg$1,
+                                  "an integer"
+                                ])
                             ];
                       }
                       else {
@@ -532,11 +425,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -551,13 +440,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       if (exn$2[1] === "int_of_string") {
                         throw [
                               Stop,
-                              /* Wrong */{
-                                0: s,
-                                1: arg$2,
-                                2: "an integer",
-                                length: 3,
-                                tag: 1
-                              }
+                              /* Wrong */Block.__(1, [
+                                  s,
+                                  arg$2,
+                                  "an integer"
+                                ])
                             ];
                       }
                       else {
@@ -573,11 +460,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -592,13 +475,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       if (exn$3[1] === "float_of_string") {
                         throw [
                               Stop,
-                              /* Wrong */{
-                                0: s,
-                                1: arg$3,
-                                2: "a float",
-                                length: 3,
-                                tag: 1
-                              }
+                              /* Wrong */Block.__(1, [
+                                  s,
+                                  arg$3,
+                                  "a float"
+                                ])
                             ];
                       }
                       else {
@@ -614,11 +495,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -633,13 +510,11 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                       if (exn$4[1] === "float_of_string") {
                         throw [
                               Stop,
-                              /* Wrong */{
-                                0: s,
-                                1: arg$4,
-                                2: "a float",
-                                length: 3,
-                                tag: 1
-                              }
+                              /* Wrong */Block.__(1, [
+                                  s,
+                                  arg$4,
+                                  "a float"
+                                ])
                             ];
                       }
                       else {
@@ -655,11 +530,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -676,24 +547,18 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
                   else {
                     throw [
                           Stop,
-                          /* Wrong */{
-                            0: s,
-                            1: arg$5,
-                            2: "one of: " + make_symlist("", " ", "", symb),
-                            length: 3,
-                            tag: 1
-                          }
+                          /* Wrong */Block.__(1, [
+                              s,
+                              arg$5,
+                              "one of: " + make_symlist("", " ", "", symb)
+                            ])
                         ];
                   }
                 }
                 else {
                   throw [
                         Stop,
-                        /* Missing */{
-                          0: s,
-                          length: 1,
-                          tag: 2
-                        }
+                        /* Missing */Block.__(2, [s])
                       ];
                 }
                 break;
@@ -712,11 +577,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
       }
       catch (exn$1){
         if (exn$1[0] === Bad) {
-          stop(/* Message */{
-                0: exn$1[1],
-                length: 1,
-                tag: 3
-              });
+          stop(/* Message */Block.__(3, [exn$1[1]]));
         }
         else if (exn$1[0] === Stop) {
           stop(exn$1[1]);
@@ -733,11 +594,7 @@ function parse_argv_dynamic($staropt$star, argv, speclist, anonfun, errmsg) {
       }
       catch (exn$2){
         if (exn$2[0] === Bad) {
-          stop(/* Message */{
-                0: exn$2[1],
-                length: 1,
-                tag: 3
-              });
+          stop(/* Message */Block.__(3, [exn$2[1]]));
         }
         else {
           throw exn$2;
@@ -761,24 +618,20 @@ function parse(l, f, msg) {
   catch (exn){
     if (exn[0] === Bad) {
       Curry._1(Printf.eprintf(/* Format */[
-                /* String */{
-                  0: /* No_padding */0,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 2
-                },
+                /* String */Block.__(2, [
+                    /* No_padding */0,
+                    /* End_of_format */0
+                  ]),
                 "%s"
               ]), exn[1]);
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
       Curry._1(Printf.printf(/* Format */[
-                /* String */{
-                  0: /* No_padding */0,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 2
-                },
+                /* String */Block.__(2, [
+                    /* No_padding */0,
+                    /* End_of_format */0
+                  ]),
                 "%s"
               ]), exn[1]);
       return Pervasives.exit(0);
@@ -796,24 +649,20 @@ function parse_dynamic(l, f, msg) {
   catch (exn){
     if (exn[0] === Bad) {
       Curry._1(Printf.eprintf(/* Format */[
-                /* String */{
-                  0: /* No_padding */0,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 2
-                },
+                /* String */Block.__(2, [
+                    /* No_padding */0,
+                    /* End_of_format */0
+                  ]),
                 "%s"
               ]), exn[1]);
       return Pervasives.exit(2);
     }
     else if (exn[0] === Help) {
       Curry._1(Printf.printf(/* Format */[
-                /* String */{
-                  0: /* No_padding */0,
-                  1: /* End_of_format */0,
-                  length: 2,
-                  tag: 2
-                },
+                /* String */Block.__(2, [
+                    /* No_padding */0,
+                    /* End_of_format */0
+                  ]),
                 "%s"
               ]), exn[1]);
       return Pervasives.exit(0);

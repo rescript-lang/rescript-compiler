@@ -4,6 +4,7 @@
 var Caml_obj = require("../runtime/caml_obj");
 var Mt       = require("./mt");
 var Arg      = require("../stdlib/arg");
+var Block    = require("../runtime/block");
 var Printf   = require("../stdlib/printf");
 var Curry    = require("../runtime/curry");
 var List     = require("../stdlib/list");
@@ -24,33 +25,23 @@ function record(fmt) {
 
 function f_unit() {
   return record(/* Format */[
-              /* String_literal */{
-                0: "unit()",
-                1: /* End_of_format */0,
-                length: 2,
-                tag: 11
-              },
+              /* String_literal */Block.__(11, [
+                  "unit()",
+                  /* End_of_format */0
+                ]),
               "unit()"
             ]);
 }
 
 function f_bool(b) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "bool(",
-                    1: /* Bool */{
-                      0: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 1,
-                      tag: 9
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "bool(",
+                      /* Bool */Block.__(9, [/* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])])
+                    ]),
                   "bool(%b)"
                 ]), b);
 }
@@ -61,22 +52,16 @@ var r_clear = [/* true */1];
 
 function f_string(s) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "string(",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "string(",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "string(%s)"
                 ]), s);
 }
@@ -85,24 +70,18 @@ var r_string = [""];
 
 function f_int(i) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "int(",
-                    1: /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "int(",
+                      /* Int */Block.__(4, [
+                          /* Int_d */0,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "int(%d)"
                 ]), i);
 }
@@ -111,24 +90,18 @@ var r_int = [0];
 
 function f_float(f) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "float(",
-                    1: /* Float */{
-                      0: /* Float_g */9,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 4,
-                      tag: 8
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "float(",
+                      /* Float */Block.__(8, [
+                          /* Float_g */9,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "float(%g)"
                 ]), f);
 }
@@ -137,229 +110,149 @@ var r_float = [0.0];
 
 function f_symbol(s) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "symbol(",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "symbol(",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "symbol(%s)"
                 ]), s);
 }
 
 function f_rest(s) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "rest(",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "rest(",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "rest(%s)"
                 ]), s);
 }
 
 function f_anon(s) {
   return Curry._1(record(/* Format */[
-                  /* String_literal */{
-                    0: "anon(",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* ")" */41,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "anon(",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* ")" */41,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "anon(%s)"
                 ]), s);
 }
 
 var spec_000 = /* tuple */[
   "-u",
-  /* Unit */{
-    0: f_unit,
-    length: 1,
-    tag: 0
-  },
+  /* Unit */Block.__(0, [f_unit]),
   "Unit (0)"
 ];
 
 var spec_001 = /* :: */[
   /* tuple */[
     "-b",
-    /* Bool */{
-      0: f_bool,
-      length: 1,
-      tag: 1
-    },
+    /* Bool */Block.__(1, [f_bool]),
     "Bool (1)"
   ],
   /* :: */[
     /* tuple */[
       "-s",
-      /* Set */{
-        0: r_set,
-        length: 1,
-        tag: 2
-      },
+      /* Set */Block.__(2, [r_set]),
       "Set (0)"
     ],
     /* :: */[
       /* tuple */[
         "-c",
-        /* Clear */{
-          0: r_clear,
-          length: 1,
-          tag: 3
-        },
+        /* Clear */Block.__(3, [r_clear]),
         "Clear (0)"
       ],
       /* :: */[
         /* tuple */[
           "-str",
-          /* String */{
-            0: f_string,
-            length: 1,
-            tag: 4
-          },
+          /* String */Block.__(4, [f_string]),
           "String (1)"
         ],
         /* :: */[
           /* tuple */[
             "-sstr",
-            /* Set_string */{
-              0: r_string,
-              length: 1,
-              tag: 5
-            },
+            /* Set_string */Block.__(5, [r_string]),
             "Set_string (1)"
           ],
           /* :: */[
             /* tuple */[
               "-i",
-              /* Int */{
-                0: f_int,
-                length: 1,
-                tag: 6
-              },
+              /* Int */Block.__(6, [f_int]),
               "Int (1)"
             ],
             /* :: */[
               /* tuple */[
                 "-si",
-                /* Set_int */{
-                  0: r_int,
-                  length: 1,
-                  tag: 7
-                },
+                /* Set_int */Block.__(7, [r_int]),
                 "Set_int (1)"
               ],
               /* :: */[
                 /* tuple */[
                   "-f",
-                  /* Float */{
-                    0: f_float,
-                    length: 1,
-                    tag: 8
-                  },
+                  /* Float */Block.__(8, [f_float]),
                   "Float (1)"
                 ],
                 /* :: */[
                   /* tuple */[
                     "-sf",
-                    /* Set_float */{
-                      0: r_float,
-                      length: 1,
-                      tag: 9
-                    },
+                    /* Set_float */Block.__(9, [r_float]),
                     "Set_float (1)"
                   ],
                   /* :: */[
                     /* tuple */[
                       "-t",
-                      /* Tuple */{
-                        0: /* :: */[
-                          /* Bool */{
-                            0: f_bool,
-                            length: 1,
-                            tag: 1
-                          },
-                          /* :: */[
-                            /* String */{
-                              0: f_string,
-                              length: 1,
-                              tag: 4
-                            },
+                      /* Tuple */Block.__(10, [/* :: */[
+                            /* Bool */Block.__(1, [f_bool]),
                             /* :: */[
-                              /* Int */{
-                                0: f_int,
-                                length: 1,
-                                tag: 6
-                              },
-                              /* [] */0
+                              /* String */Block.__(4, [f_string]),
+                              /* :: */[
+                                /* Int */Block.__(6, [f_int]),
+                                /* [] */0
+                              ]
                             ]
-                          ]
-                        ],
-                        length: 1,
-                        tag: 10
-                      },
+                          ]]),
                       "Tuple (3)"
                     ],
                     /* :: */[
                       /* tuple */[
                         "-sym",
-                        /* Symbol */{
-                          0: /* :: */[
-                            "a",
+                        /* Symbol */Block.__(11, [
                             /* :: */[
-                              "b",
+                              "a",
                               /* :: */[
-                                "c",
-                                /* [] */0
+                                "b",
+                                /* :: */[
+                                  "c",
+                                  /* [] */0
+                                ]
                               ]
-                            ]
-                          ],
-                          1: f_symbol,
-                          length: 2,
-                          tag: 11
-                        },
+                            ],
+                            f_symbol
+                          ]),
                         "Symbol (1)"
                       ],
                       /* :: */[
                         /* tuple */[
                           "-rest",
-                          /* Rest */{
-                            0: f_rest,
-                            length: 1,
-                            tag: 12
-                          },
+                          /* Rest */Block.__(12, [f_rest]),
                           "Rest (*)"
                         ],
                         /* [] */0
@@ -443,22 +336,16 @@ var args2 = /* array */[
 
 function error(s) {
   return Curry._1(Printf.printf(/* Format */[
-                  /* String_literal */{
-                    0: "error (",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* String_literal */{
-                        0: ")\n",
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "error (",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* String_literal */Block.__(11, [
+                              ")\n",
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "error (%s)\n"
                 ]), s);
 }
@@ -531,50 +418,28 @@ function test(argv) {
   if (Caml_obj.caml_notequal(result, reference)) {
     var f = function (x, y) {
       return Curry._3(Printf.printf(/* Format */[
-                      /* String */{
-                        0: /* Lit_padding */{
-                          0: /* Right */1,
-                          1: 20,
-                          length: 2,
-                          tag: 0
-                        },
-                        1: /* Char_literal */{
-                          0: /* " " */32,
-                          1: /* Char */{
-                            0: /* Char_literal */{
-                              0: /* " " */32,
-                              1: /* String */{
-                                0: /* Lit_padding */{
-                                  0: /* Left */0,
-                                  1: 20,
-                                  length: 2,
-                                  tag: 0
-                                },
-                                1: /* Char_literal */{
-                                  0: /* "\n" */10,
-                                  1: /* Flush */{
-                                    0: /* End_of_format */0,
-                                    length: 1,
-                                    tag: 10
-                                  },
-                                  length: 2,
-                                  tag: 12
-                                },
-                                length: 2,
-                                tag: 2
-                              },
-                              length: 2,
-                              tag: 12
-                            },
-                            length: 1,
-                            tag: 0
-                          },
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* Lit_padding */Block.__(0, [
+                              /* Right */1,
+                              20
+                            ]),
+                          /* Char_literal */Block.__(12, [
+                              /* " " */32,
+                              /* Char */Block.__(0, [/* Char_literal */Block.__(12, [
+                                      /* " " */32,
+                                      /* String */Block.__(2, [
+                                          /* Lit_padding */Block.__(0, [
+                                              /* Left */0,
+                                              20
+                                            ]),
+                                          /* Char_literal */Block.__(12, [
+                                              /* "\n" */10,
+                                              /* Flush */Block.__(10, [/* End_of_format */0])
+                                            ])
+                                        ])
+                                    ])])
+                            ])
+                        ]),
                       "%20s %c %-20s\n%!"
                     ]), x, x === y ? /* "=" */61 : /* "#" */35, y);
     };
@@ -592,13 +457,9 @@ test(args1);
 var suites_000 = /* tuple */[
   "should raise",
   function () {
-    return /* ThrowAny */{
-            0: function () {
-              return test(args2);
-            },
-            length: 1,
-            tag: 3
-          };
+    return /* ThrowAny */Block.__(3, [function () {
+                return test(args2);
+              }]);
   }
 ];
 

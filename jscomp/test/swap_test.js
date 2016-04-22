@@ -6,6 +6,7 @@ var Caml_obj   = require("../runtime/caml_obj");
 var Pervasives = require("../stdlib/pervasives");
 var Mt         = require("./mt");
 var Caml_int32 = require("../runtime/caml_int32");
+var Block      = require("../runtime/block");
 var Curry      = require("../runtime/curry");
 var Printf     = require("../stdlib/printf");
 var $$Array    = require("../stdlib/array");
@@ -858,28 +859,22 @@ var suites_16 = List.map(function (param) {
       var a = param[0];
       return /* tuple */[
               Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */{
-                          0: "swap16 ",
-                          1: /* Int */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* End_of_format */0,
-                            length: 4,
-                            tag: 4
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "swap16 ",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "swap16 %d"
                       ]), a),
               function () {
-                return /* Eq */{
-                        0: Caml_int32.caml_bswap16(a),
-                        1: b,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Caml_int32.caml_bswap16(a),
+                          b
+                        ]);
               }
             ];
     }, $$Array.to_list(tests_16));
@@ -889,28 +884,22 @@ var suites_32 = List.map(function (param) {
       var a = param[0];
       return /* tuple */[
               Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */{
-                          0: "swap32 ",
-                          1: /* Int */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* End_of_format */0,
-                            length: 4,
-                            tag: 4
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "swap32 ",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "swap32 %d"
                       ]), a),
               function () {
-                return /* Eq */{
-                        0: Caml_int32.caml_int32_bswap(a),
-                        1: b,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Caml_int32.caml_int32_bswap(a),
+                          b
+                        ]);
               }
             ];
     }, $$Array.to_list(tests_32));
@@ -920,41 +909,33 @@ var suites_64 = List.map(function (param) {
       var a = param[0];
       return /* tuple */[
               Curry._1(Printf.sprintf(/* Format */[
-                        /* String_literal */{
-                          0: "swap64 ",
-                          1: /* Int */{
-                            0: /* Int_d */0,
-                            1: /* No_padding */0,
-                            2: /* No_precision */0,
-                            3: /* End_of_format */0,
-                            length: 4,
-                            tag: 4
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            "swap64 ",
+                            /* Int */Block.__(4, [
+                                /* Int_d */0,
+                                /* No_padding */0,
+                                /* No_precision */0,
+                                /* End_of_format */0
+                              ])
+                          ]),
                         "swap64 %d"
                       ]), a[1] | 0),
               function () {
-                return /* Eq */{
-                        0: Caml_int64.swap(a),
-                        1: b,
-                        length: 2,
-                        tag: 0
-                      };
+                return /* Eq */Block.__(0, [
+                          Caml_int64.swap(a),
+                          b
+                        ]);
               }
             ];
     }, $$Array.to_list(tests_64));
 
 var d16_000 = /* Format */[
-  /* Int */{
-    0: /* Int_x */6,
-    1: /* No_padding */0,
-    2: /* No_precision */0,
-    3: /* End_of_format */0,
-    length: 4,
-    tag: 4
-  },
+  /* Int */Block.__(4, [
+      /* Int_x */6,
+      /* No_padding */0,
+      /* No_precision */0,
+      /* End_of_format */0
+    ]),
   "%x"
 ];
 
@@ -978,14 +959,12 @@ var d16 = /* tuple */[
 ];
 
 var d32_000 = /* Format */[
-  /* Int32 */{
-    0: /* Int_x */6,
-    1: /* No_padding */0,
-    2: /* No_precision */0,
-    3: /* End_of_format */0,
-    length: 4,
-    tag: 5
-  },
+  /* Int32 */Block.__(5, [
+      /* Int_x */6,
+      /* No_padding */0,
+      /* No_precision */0,
+      /* End_of_format */0
+    ]),
   "%lx"
 ];
 
@@ -1016,33 +995,25 @@ function f(s, param) {
                   var a = param[0];
                   return /* tuple */[
                           Curry._2(Format.asprintf(/* Format */[
-                                    /* String */{
-                                      0: /* No_padding */0,
-                                      1: /* Char_literal */{
-                                        0: /* " " */32,
-                                        1: /* Int */{
-                                          0: /* Int_i */3,
-                                          1: /* No_padding */0,
-                                          2: /* No_precision */0,
-                                          3: /* End_of_format */0,
-                                          length: 4,
-                                          tag: 4
-                                        },
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 2
-                                    },
+                                    /* String */Block.__(2, [
+                                        /* No_padding */0,
+                                        /* Char_literal */Block.__(12, [
+                                            /* " " */32,
+                                            /* Int */Block.__(4, [
+                                                /* Int_i */3,
+                                                /* No_padding */0,
+                                                /* No_precision */0,
+                                                /* End_of_format */0
+                                              ])
+                                          ])
+                                      ]),
                                     "%s %i"
                                   ]), s, i),
                           function () {
-                            return /* Eq */{
-                                    0: Curry._1(Format.asprintf(x), Curry._1(swap, a)),
-                                    1: b,
-                                    length: 2,
-                                    tag: 0
-                                  };
+                            return /* Eq */Block.__(0, [
+                                      Curry._1(Format.asprintf(x), Curry._1(swap, a)),
+                                      b
+                                    ]);
                           }
                         ];
                 }, param[2]));

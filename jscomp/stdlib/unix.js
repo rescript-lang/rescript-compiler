@@ -9,6 +9,7 @@ var Pervasives              = require("./pervasives");
 var Hashtbl                 = require("./hashtbl");
 var Caml_format             = require("../runtime/caml_format");
 var Callback                = require("./callback");
+var Block                   = require("../runtime/block");
 var Caml_unix               = require("../runtime/caml_unix");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
@@ -243,59 +244,41 @@ Printexc.register_printer(function (param) {
         }
         else {
           msg = Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "EUNKNOWNERR ",
-                      1: /* Int */{
-                        0: /* Int_d */0,
-                        1: /* No_padding */0,
-                        2: /* No_precision */0,
-                        3: /* End_of_format */0,
-                        length: 4,
-                        tag: 4
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "EUNKNOWNERR ",
+                        /* Int */Block.__(4, [
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* End_of_format */0
+                          ])
+                      ]),
                     "EUNKNOWNERR %d"
                   ]), e[0]);
         }
         return /* Some */[Curry._3(Printf.sprintf(/* Format */[
-                          /* String_literal */{
-                            0: "Unix.Unix_error(Unix.",
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* String_literal */{
-                                0: ", ",
-                                1: /* Caml_string */{
-                                  0: /* No_padding */0,
-                                  1: /* String_literal */{
-                                    0: ", ",
-                                    1: /* Caml_string */{
-                                      0: /* No_padding */0,
-                                      1: /* Char_literal */{
-                                        0: /* ")" */41,
-                                        1: /* End_of_format */0,
-                                        length: 2,
-                                        tag: 12
-                                      },
-                                      length: 2,
-                                      tag: 3
-                                    },
-                                    length: 2,
-                                    tag: 11
-                                  },
-                                  length: 2,
-                                  tag: 3
-                                },
-                                length: 2,
-                                tag: 11
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 11
-                          },
+                          /* String_literal */Block.__(11, [
+                              "Unix.Unix_error(Unix.",
+                              /* String */Block.__(2, [
+                                  /* No_padding */0,
+                                  /* String_literal */Block.__(11, [
+                                      ", ",
+                                      /* Caml_string */Block.__(3, [
+                                          /* No_padding */0,
+                                          /* String_literal */Block.__(11, [
+                                              ", ",
+                                              /* Caml_string */Block.__(3, [
+                                                  /* No_padding */0,
+                                                  /* Char_literal */Block.__(12, [
+                                                      /* ")" */41,
+                                                      /* End_of_format */0
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ]),
                           "Unix.Unix_error(Unix.%s, %S, %S)"
                         ]), msg, param[2], param[3])];
       }
@@ -694,12 +677,10 @@ function getaddrinfo(node, service, opts) {
                                           /* PF_INET */1,
                                           ty,
                                           opt_protocol[0],
-                                          /* ADDR_INET */{
-                                            0: param[0],
-                                            1: port,
-                                            length: 2,
-                                            tag: 1
-                                          },
+                                          /* ADDR_INET */Block.__(1, [
+                                              param[0],
+                                              port
+                                            ]),
                                           param[1]
                                         ];
                                 }, addresses);
@@ -933,11 +914,7 @@ function open_process_in(cmd) {
   var in_read = match[0];
   var inchan = Caml_io.caml_ml_open_descriptor_in(in_read);
   try {
-    open_proc(cmd, /* Process_in */{
-          0: inchan,
-          length: 1,
-          tag: 1
-        }, 0, in_write, /* :: */[
+    open_proc(cmd, /* Process_in */Block.__(1, [inchan]), 0, in_write, /* :: */[
           in_read,
           /* [] */0
         ]);
@@ -957,11 +934,7 @@ function open_process_out(cmd) {
   var out_read = match[0];
   var outchan = Caml_io.caml_ml_open_descriptor_out(out_write);
   try {
-    open_proc(cmd, /* Process_out */{
-          0: outchan,
-          length: 1,
-          tag: 2
-        }, out_read, 1, /* :: */[
+    open_proc(cmd, /* Process_out */Block.__(2, [outchan]), out_read, 1, /* :: */[
           out_write,
           /* [] */0
         ]);
@@ -1006,12 +979,10 @@ function open_process(cmd) {
     ];
     var inchan = Caml_io.caml_ml_open_descriptor_in(in_read);
     var outchan = Caml_io.caml_ml_open_descriptor_out(out_write);
-    open_proc(cmd, /* Process */{
-          0: inchan,
-          1: outchan,
-          length: 2,
-          tag: 0
-        }, out_read, in_write, /* :: */[
+    open_proc(cmd, /* Process */Block.__(0, [
+            inchan,
+            outchan
+          ]), out_read, in_write, /* :: */[
           in_read,
           /* :: */[
             out_write,
@@ -1095,13 +1066,11 @@ function open_process_full(cmd, env) {
     var inchan = Caml_io.caml_ml_open_descriptor_in(in_read);
     var outchan = Caml_io.caml_ml_open_descriptor_out(out_write);
     var errchan = Caml_io.caml_ml_open_descriptor_in(err_read);
-    open_proc_full(cmd, env, /* Process_full */{
-          0: inchan,
-          1: outchan,
-          2: errchan,
-          length: 3,
-          tag: 3
-        }, out_read, in_write, err_write, /* :: */[
+    open_proc_full(cmd, env, /* Process_full */Block.__(3, [
+            inchan,
+            outchan,
+            errchan
+          ]), out_read, in_write, err_write, /* :: */[
           in_read,
           /* :: */[
             out_write,
@@ -1148,21 +1117,13 @@ function find_proc_id(fun_name, proc) {
 }
 
 function close_process_in(inchan) {
-  var pid = find_proc_id("close_process_in", /* Process_in */{
-        0: inchan,
-        length: 1,
-        tag: 1
-      });
+  var pid = find_proc_id("close_process_in", /* Process_in */Block.__(1, [inchan]));
   Caml_primitive.caml_ml_close_channel(inchan);
   return waitpid_non_intr(pid)[1];
 }
 
 function close_process_out(outchan) {
-  var pid = find_proc_id("close_process_out", /* Process_out */{
-        0: outchan,
-        length: 1,
-        tag: 2
-      });
+  var pid = find_proc_id("close_process_out", /* Process_out */Block.__(2, [outchan]));
   Caml_io.caml_ml_flush(outchan);
   Caml_primitive.caml_ml_close_channel(outchan);
   return waitpid_non_intr(pid)[1];
@@ -1171,12 +1132,10 @@ function close_process_out(outchan) {
 function close_process(param) {
   var outchan = param[1];
   var inchan = param[0];
-  var pid = find_proc_id("close_process", /* Process */{
-        0: inchan,
-        1: outchan,
-        length: 2,
-        tag: 0
-      });
+  var pid = find_proc_id("close_process", /* Process */Block.__(0, [
+          inchan,
+          outchan
+        ]));
   Caml_primitive.caml_ml_close_channel(inchan);
   try {
     Caml_io.caml_ml_flush(outchan);
@@ -1195,13 +1154,11 @@ function close_process_full(param) {
   var errchan = param[2];
   var outchan = param[1];
   var inchan = param[0];
-  var pid = find_proc_id("close_process_full", /* Process_full */{
-        0: inchan,
-        1: outchan,
-        2: errchan,
-        length: 3,
-        tag: 3
-      });
+  var pid = find_proc_id("close_process_full", /* Process_full */Block.__(3, [
+          inchan,
+          outchan,
+          errchan
+        ]));
   Caml_primitive.caml_ml_close_channel(inchan);
   try {
     Caml_io.caml_ml_flush(outchan);

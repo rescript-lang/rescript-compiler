@@ -2,6 +2,7 @@
 'use strict';
 
 var Mt         = require("./mt");
+var Block      = require("../runtime/block");
 var Curry      = require("../runtime/curry");
 var Caml_array = require("../runtime/caml_array");
 var $$Array    = require("../stdlib/array");
@@ -77,36 +78,30 @@ Mt.from_pair_suites("cps_test.ml", /* :: */[
       /* tuple */[
         "cps_test_sum",
         function () {
-          return /* Eq */{
-                  0: 55,
-                  1: test(/* () */0),
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    55,
+                    test(/* () */0)
+                  ]);
         }
       ],
       /* :: */[
         /* tuple */[
           "cps_test_closure",
           function () {
-            return /* Eq */{
-                    0: 15,
-                    1: test_closure(/* () */0),
-                    length: 2,
-                    tag: 0
-                  };
+            return /* Eq */Block.__(0, [
+                      15,
+                      test_closure(/* () */0)
+                    ]);
           }
         ],
         /* :: */[
           /* tuple */[
             "cps_test_closure2",
             function () {
-              return /* Eq */{
-                      0: 30,
-                      1: test_closure2(/* () */0),
-                      length: 2,
-                      tag: 0
-                    };
+              return /* Eq */Block.__(0, [
+                        30,
+                        test_closure2(/* () */0)
+                      ]);
             }
           ],
           /* [] */0

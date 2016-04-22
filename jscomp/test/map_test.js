@@ -4,6 +4,7 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Caml_obj                = require("../runtime/caml_obj");
 var Mt                      = require("./mt");
+var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Caml_string             = require("../runtime/caml_string");
 var List                    = require("../stdlib/list");
@@ -406,12 +407,10 @@ var int_map_suites_000 = /* tuple */[
             ]
           ]
         ]);
-    return /* Eq */{
-            0: cardinal(v),
-            1: 3,
-            length: 2,
-            tag: 0
-          };
+    return /* Eq */Block.__(0, [
+              cardinal(v),
+              3
+            ]);
   }
 ];
 
@@ -457,12 +456,10 @@ var int_map_suites_001 = /* :: */[
               ]
             ]
           ]);
-      return /* Eq */{
-              0: compare(Caml_obj.caml_compare, u, v),
-              1: 0,
-              length: 2,
-              tag: 0
-            };
+      return /* Eq */Block.__(0, [
+                compare(Caml_obj.caml_compare, u, v),
+                0
+              ]);
     }
   ],
   /* :: */[
@@ -507,14 +504,12 @@ var int_map_suites_001 = /* :: */[
                 ]
               ]
             ]);
-        return /* Eq */{
-                0: /* true */1,
-                1: equal(function (x, y) {
-                      return +(x === y);
-                    }, u, v),
-                length: 2,
-                tag: 0
-              };
+        return /* Eq */Block.__(0, [
+                  /* true */1,
+                  equal(function (x, y) {
+                        return +(x === y);
+                      }, u, v)
+                ]);
       }
     ],
     /* :: */[
@@ -532,12 +527,10 @@ var int_map_suites_001 = /* :: */[
             }
             
           }
-          return /* Eq */{
-                  0: v,
-                  1: -1,
-                  length: 2,
-                  tag: 0
-                };
+          return /* Eq */Block.__(0, [
+                    v,
+                    -1
+                  ]);
         }
       ],
       /* [] */0

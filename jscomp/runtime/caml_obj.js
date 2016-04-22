@@ -2,6 +2,7 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
+var Block                   = require("./block");
 
 function caml_obj_dup(x) {
   var len = x.length;
@@ -36,11 +37,7 @@ function caml_obj_truncate(x, new_size) {
 }
 
 function caml_lazy_make_forward(x) {
-  return {
-          0: x,
-          length: 1,
-          tag: 250
-        };
+  return Block.__(250, [x]);
 }
 
 function caml_update_dummy(x, y) {
