@@ -50,7 +50,7 @@ let implementation non_export ppf  str  =
   |>  Translmod.transl_implementation modulename
   |> (* Printlambda.lambda ppf *) (fun lam -> 
       let buffer = Buffer.create 1000 in 
-      let () = Js_dump.(pp_program 
+      let () = Js_dump.(pp_deps_program 
                           (Lam_compile_group.compile ~filename:"" non_export
                              !finalenv !types_signature lam)
                           (Ext_pp.from_buffer buffer)) in

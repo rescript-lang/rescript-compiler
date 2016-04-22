@@ -1287,7 +1287,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
                    P.string f " ";
                    let id = Ext_ident.create (Ident.name id ^ "_finish") in
                    let cxt = ident cxt f id in
-                   P.string f " = ";
+                   P.string f " = "; (* FIXME: space *)
                    expression 15 cxt f finish, Some id
                 ) in
               semi f ; 
@@ -1585,7 +1585,6 @@ let amd_program f
     ) in
   P.string f ")";
   v
-;;
 
 let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) = 
   begin

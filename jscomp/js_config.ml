@@ -137,7 +137,6 @@ let float              = "Caml_float"
 let hash               = "Caml_hash"
 let oo                 = "Caml_oo"
 let curry              = "Curry"
-let internalMod        = "Caml_internalMod"
 let bigarray           = "Caml_bigarray"
 let unix               = "Caml_unix"
 let int64              = "Caml_int64"
@@ -161,7 +160,6 @@ let runtime_set =
   hash ;
   oo ;
   curry ;
-  internalMod ;
   bigarray ;
   unix ;
   int64 ;

@@ -18,39 +18,25 @@
 
 (* Author: Hongbo Zhang  *)
 
-type env = 
-  | Browser
-  | NodeJS
-  | AmdJS
-  | Goog of string option
+type 'a t = 'a Js.def array
 
-val get_env : unit -> env
-val get_ext : unit -> string
+let caml_weak_create n =
+  Js.Array.new_uninitialized n 
 
-val get_goog_package_name : unit -> string option
-val set_env : env -> unit
-val cmd_set_module : string -> unit  
-val default_gen_tds : bool ref
-val runtime_set : String_set.t
-val stdlib_set : String_set.t
+let caml_weak_set xs i v = 
+  match v with 
+  | Some x -> xs.(i) <- Js.to_def x 
+  | None -> ()
 
-val prim : string 
-val builtin_exceptions : string
-val exceptions : string
-val io : string
-val oo : string
-val sys : string
-val lexer : string 
-val parser : string
-val obj_runtime : string
-val array : string
-val format : string
-val string : string 
-val float : string 
-val curry : string 
-val bigarray : string
-val unix : string
-val int64 : string
-val md5 : string
-val hash : string
-val weak : string
+let caml_weak_get  xs i = 
+  Js.from_def xs.(i) 
+
+let caml_weak_get_copy  xs i = 
+  match Js.from_def xs.(i) with 
+  | None -> None 
+  | Some x -> Some (Obj.magic (Obj.dup (Obj.repr x) ))
+
+let caml_weak_check xs i = 
+  not @@ Js.is_undef xs.(i)
+
+let caml_weak_blit = Caml_array.caml_array_blit
