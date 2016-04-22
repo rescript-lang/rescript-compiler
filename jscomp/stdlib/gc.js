@@ -1,11 +1,13 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var Sys    = require("./sys");
-var Curry  = require("../runtime/curry");
-var Printf = require("./printf");
+var Caml_gc = require("../runtime/caml_gc");
+var Sys     = require("./sys");
+var Curry   = require("../runtime/curry");
+var Printf  = require("./printf");
 
 function print_stat(c) {
+  var st = Caml_gc.caml_gc_stat(/* () */0);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "minor_words: ",
@@ -26,7 +28,7 @@ function print_stat(c) {
               tag: 11
             },
             "minor_words: %.0f\n"
-          ]), 0);
+          ]), st[/* minor_words */0]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "promoted_words: ",
@@ -47,7 +49,7 @@ function print_stat(c) {
               tag: 11
             },
             "promoted_words: %.0f\n"
-          ]), 0);
+          ]), st[/* promoted_words */1]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "major_words: ",
@@ -68,7 +70,7 @@ function print_stat(c) {
               tag: 11
             },
             "major_words: %.0f\n"
-          ]), 0);
+          ]), st[/* major_words */2]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "minor_collections: ",
@@ -89,7 +91,7 @@ function print_stat(c) {
               tag: 11
             },
             "minor_collections: %d\n"
-          ]), 0);
+          ]), st[/* minor_collections */3]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "major_collections: ",
@@ -110,7 +112,7 @@ function print_stat(c) {
               tag: 11
             },
             "major_collections: %d\n"
-          ]), 0);
+          ]), st[/* major_collections */4]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "heap_words: ",
@@ -131,7 +133,7 @@ function print_stat(c) {
               tag: 11
             },
             "heap_words: %d\n"
-          ]), 0);
+          ]), st[/* heap_words */5]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "heap_chunks: ",
@@ -152,7 +154,7 @@ function print_stat(c) {
               tag: 11
             },
             "heap_chunks: %d\n"
-          ]), 0);
+          ]), st[/* heap_chunks */6]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "top_heap_words: ",
@@ -173,7 +175,7 @@ function print_stat(c) {
               tag: 11
             },
             "top_heap_words: %d\n"
-          ]), 0);
+          ]), st[/* top_heap_words */14]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "live_words: ",
@@ -194,7 +196,7 @@ function print_stat(c) {
               tag: 11
             },
             "live_words: %d\n"
-          ]), 0);
+          ]), st[/* live_words */7]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "live_blocks: ",
@@ -215,7 +217,7 @@ function print_stat(c) {
               tag: 11
             },
             "live_blocks: %d\n"
-          ]), 0);
+          ]), st[/* live_blocks */8]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "free_words: ",
@@ -236,7 +238,7 @@ function print_stat(c) {
               tag: 11
             },
             "free_words: %d\n"
-          ]), 0);
+          ]), st[/* free_words */9]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "free_blocks: ",
@@ -257,7 +259,7 @@ function print_stat(c) {
               tag: 11
             },
             "free_blocks: %d\n"
-          ]), 0);
+          ]), st[/* free_blocks */10]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "largest_free: ",
@@ -278,7 +280,7 @@ function print_stat(c) {
               tag: 11
             },
             "largest_free: %d\n"
-          ]), 0);
+          ]), st[/* largest_free */11]);
   Curry._1(Printf.fprintf(c, /* Format */[
             /* String_literal */{
               0: "fragments: ",
@@ -299,7 +301,7 @@ function print_stat(c) {
               tag: 11
             },
             "fragments: %d\n"
-          ]), 0);
+          ]), st[/* fragments */12]);
   return Curry._1(Printf.fprintf(c, /* Format */[
                   /* String_literal */{
                     0: "compactions: ",
@@ -320,15 +322,31 @@ function print_stat(c) {
                     tag: 11
                   },
                   "compactions: %d\n"
-                ]), 0);
+                ]), st[/* compactions */13]);
 }
 
 function allocated_bytes() {
-  return (0 + 0 - 0) * (Sys.word_size / 8 | 0);
+  var match = Caml_gc.caml_gc_counters(/* () */0);
+  return (match[0] + match[2] - match[1]) * (Sys.word_size / 8 | 0);
+}
+
+function call_alarm(arec) {
+  if (arec[/* active */0][0]) {
+    Caml_gc.caml_final_register(call_alarm, arec);
+    return Curry._1(arec[/* f */1], /* () */0);
+  }
+  else {
+    return 0;
+  }
 }
 
 function create_alarm(f) {
   var arec_000 = [/* true */1];
+  var arec = /* record */[
+    arec_000,
+    f
+  ];
+  Caml_gc.caml_final_register(call_alarm, arec);
   return arec_000;
 }
 
@@ -337,13 +355,9 @@ function delete_alarm(a) {
   return /* () */0;
 }
 
-function finalise(_, _$1) {
-  return /* () */0;
-}
+var finalise = Caml_gc.caml_final_register
 
-function finalise_release() {
-  return /* () */0;
-}
+var finalise_release = Caml_gc.caml_final_release
 
 exports.print_stat       = print_stat;
 exports.allocated_bytes  = allocated_bytes;

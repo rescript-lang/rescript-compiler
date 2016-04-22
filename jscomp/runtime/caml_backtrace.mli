@@ -16,8 +16,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
-
-
-val repeat : int -> string -> string
+val caml_convert_raw_backtrace_slot : 
+  Printexc.raw_backtrace_slot -> Printexc.backtrace_slot

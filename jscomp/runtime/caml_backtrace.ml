@@ -16,8 +16,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
+let caml_convert_raw_backtrace_slot : Printexc.raw_backtrace_slot -> Printexc.backtrace_slot 
+  =
+  function _ -> 
+    raise @@ Failure "caml_convert_raw_backtrace_slot unimplemented"
 
-
-val repeat : int -> string -> string

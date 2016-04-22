@@ -34,37 +34,23 @@ There are two things we need consider:
 *)
 let query (prim : Lam_compile_env.primitive_description) 
     (args : J.expression list) : J.expression  =
-  begin match prim.prim_name  with 
-  | "caml_gc_stat" | "caml_gc_quick_stat"  -> 
-    (** 
-        external caml_gc_stat : unit -> stat 
-        external caml_gc_quick_stat : unit -> stat 
 
-        Need check stat concrete representation 
-        all fields are either [float ]
-        It even does not make sense to have GC module 
-    *)
-    Js_of_lam_record.make Immutable E.[ 
-        "minor_words" , zero_float_lit;
-        "promoted_words", zero_float_lit;
-        "major_words", zero_float_lit;
-        "minor_collections" , zero_int_literal;
-        "major_collections" , zero_int_literal;
-        "heap_words", zero_int_literal;
-        "heap_chunks",zero_int_literal;
-        "live_words", zero_int_literal;
-        "live_blocks", zero_int_literal ;
-        "free_words", zero_int_literal; 
-        "free_blocks", zero_int_literal;
-        "largest_free", zero_int_literal;
-        "fragments", zero_int_literal;
-        "compactions", zero_int_literal;
-        "top_heap_words", zero_int_literal;
-        "stack_size" , zero_int_literal;
-      ]
-
-
-
+  let prim_name = prim.prim_name in
+  let call m = E.runtime_call m prim_name args in 
+  begin match prim_name with 
+  | "caml_gc_stat" 
+  | "caml_gc_quick_stat"  
+  | "caml_gc_counters"
+  | "caml_gc_get"
+  | "caml_gc_set"
+  | "caml_gc_minor"
+  | "caml_gc_major_slice"
+  | "caml_gc_major"
+  | "caml_gc_full_major"
+  | "caml_gc_compaction"
+  | "caml_final_register"
+  | "caml_final_release"
+    ->  call Js_config.gc
   | "caml_abs_float" -> 
     E.math "abs" args 
   | "caml_acos_float" -> 
@@ -312,7 +298,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_hypot_float"
 
     ->
-    E.runtime_call Js_config.float prim.prim_name args
+    E.runtime_call Js_config.float prim_name args
   | "caml_fmod_float" 
     (* float module like js number module *)      
     ->      
@@ -378,7 +364,7 @@ let query (prim : Lam_compile_env.primitive_description)
       E.uninitialized_array v 
     (* TODO: inline and spits out a warning when i is negative *)
     | _ -> 
-      E.runtime_call Js_config.string prim.prim_name args
+      E.runtime_call Js_config.string prim_name args
     end
 
   | "caml_string_get"
@@ -392,7 +378,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_blit_string" 
   | "caml_blit_bytes"
     -> 
-    E.runtime_call Js_config.string prim.prim_name args
+    E.runtime_call Js_config.string prim_name args
 
   | "caml_register_named_value" -> 
     (**
@@ -418,14 +404,7 @@ let query (prim : Lam_compile_env.primitive_description)
        handle it 
     *)
     E.unit
-  | "caml_gc_compaction" 
-  | "caml_gc_full_major" 
-  | "caml_gc_major" 
-  | "caml_gc_major_slice" 
-  | "caml_gc_minor"
-  | "caml_gc_set" 
-  | "caml_final_register" 
-  | "caml_final_release"
+
   | "caml_backtrace_status"
 
 
@@ -439,22 +418,6 @@ let query (prim : Lam_compile_env.primitive_description)
      _ -> unit  
      major_slice : int -> int 
   *)
-  |"caml_gc_counters" ->
-    Js_of_lam_tuple.make E.[ zero_float_lit; zero_float_lit; zero_float_lit]
-                           (* unit -> (float * float * float) *)
-
-  |  "caml_gc_get" ->  
-    (* unit -> Gc.control*)
-    Js_of_lam_record.make NA 
-      E.[
-        "minor_heap_size",   zero_int_literal ;
-        "major_heap_increment",  zero_int_literal ;
-        "space_overhead",  zero_int_literal; 
-        "verbose", zero_int_literal; (* TODO*)
-        "max_overhead",  zero_int_literal;
-        "stack_limit", zero_int_literal;
-        "allocation_policy", zero_int_literal
-      ]
   | "caml_set_oo_id" 
     ->
     (** ATT: relevant to how exception is encoded in OCaml 
@@ -491,15 +454,15 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_sys_random_seed"
   | "caml_sys_getenv"
   | "caml_sys_system_command" -> 
-    E.runtime_call Js_config.sys prim.prim_name args 
+    E.runtime_call Js_config.sys prim_name args 
   | "caml_lex_engine"
   | "caml_new_lex_engine"
     -> 
-    E.runtime_call Js_config.lexer prim.prim_name args 
+    E.runtime_call Js_config.lexer prim_name args 
   | "caml_parse_engine"
   | "caml_set_parser_trace" 
     -> 
-    E.runtime_call Js_config.parser prim.prim_name args 
+    E.runtime_call Js_config.parser prim_name args 
 
   | "caml_array_sub"
   | "caml_array_concat"
@@ -508,7 +471,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
   | "caml_array_blit"
   | "caml_make_vect" -> 
-    E.runtime_call Js_config.array prim.prim_name args 
+    E.runtime_call Js_config.array prim_name args 
   | "caml_ml_flush"
   | "caml_ml_out_channels_list"
   | "caml_ml_open_descriptor_in" 
@@ -517,7 +480,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_ml_output" 
   | "caml_ml_input_char"
     -> 
-    E.runtime_call Js_config.io prim.prim_name args 
+    E.runtime_call Js_config.io prim_name args 
   | "caml_update_dummy"
   | "caml_obj_dup" -> 
     (** Note currently is an Array copy function, this is tightly coupled with 
@@ -529,7 +492,7 @@ let query (prim : Lam_compile_env.primitive_description)
       match args with 
       | [ a ] when Js_analyzer.is_constant a ->  a 
       | _ -> 
-        E.runtime_call Js_config.obj_runtime prim.prim_name args 
+        E.runtime_call Js_config.obj_runtime prim_name args 
     end
   | "caml_obj_block" -> 
     (** TODO: Optimize  for [CamlinternalOO] input 
@@ -562,14 +525,14 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_int64_format"
   | "caml_int64_of_string"
     -> 
-    E.runtime_call Js_config.format prim.prim_name args
+    E.runtime_call Js_config.format prim_name args
   | "caml_format_int" -> 
     begin match args with 
     | [ {expression_desc = Str (_, "%d"); _}; v] 
       ->
       E.int_to_string v 
     | _ -> 
-      E.runtime_call Js_config.format prim.prim_name args
+      E.runtime_call Js_config.format prim_name args
     end
     (*   "caml_alloc_dummy"; *)
     (* TODO:   "caml_alloc_dummy_float"; *)
@@ -595,7 +558,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_lessthan"
 
     -> 
-    E.runtime_call Js_config.obj_runtime prim.prim_name args 
+    E.runtime_call Js_config.obj_runtime prim_name args 
   | "caml_obj_set_tag" 
     -> begin match args with 
       | [a;b]  -> E.set_tag a b 
@@ -735,7 +698,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "unix_getlogin"
   | "unix_getpwnam"
 
-    -> E.runtime_call Js_config.unix prim.prim_name args
+    -> E.runtime_call Js_config.unix prim_name args
   (* End of Unix support *)
   (* bigarrary support *)
   | "caml_ba_init"
@@ -770,18 +733,18 @@ let query (prim : Lam_compile_env.primitive_description)
     (* caml_ba_dim_2,  *)
     (* caml_ba_dim_3,  *)
 
-    -> E.runtime_call Js_config.bigarray prim.prim_name args 
+    -> E.runtime_call Js_config.bigarray prim_name args 
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
-    -> E.runtime_call Js_config.backtrace prim.prim_name args
+    -> E.runtime_call Js_config.backtrace prim_name args
   | "caml_bswap16"
+    -> E.runtime_call Js_config.prim prim_name args 
   | "caml_int32_bswap"
-  | "caml_nativeint_bswap"
-
-    -> E.runtime_call Js_config.prim prim.prim_name args 
+  | "caml_nativeint_bswap" 
+    -> E.runtime_call Js_config.prim prim_name args 
   | "caml_get_public_method"
     ->
-    E.runtime_call Js_config.oo prim.prim_name args      
+    E.runtime_call Js_config.oo prim_name args      
   (** TODO: Primitives not implemented yet ...*)
   | "caml_install_signal_handler"
     -> 
@@ -791,16 +754,16 @@ let query (prim : Lam_compile_env.primitive_description)
     | _ -> assert false
     end
   | "caml_md5_string"
-    -> E.runtime_call Js_config.md5 prim.prim_name args
+    -> E.runtime_call Js_config.md5 prim_name args
   | "caml_hash"
-    -> E.runtime_call Js_config.hash prim.prim_name args
+    -> E.runtime_call Js_config.hash prim_name args
   | "caml_weak_set"
   | "caml_weak_create"
   | "caml_weak_get"
   | "caml_weak_check"
   | "caml_weak_blit"
   | "caml_weak_get_copy"
-    -> E.runtime_call Js_config.weak prim.prim_name args
+    -> E.runtime_call Js_config.weak prim_name args
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"
@@ -834,7 +797,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_ml_seek_out_64"
   | "caml_ml_set_binary_mode"
   | "caml_sys_getcwd" (* check browser or nodejs *)
-    ->  E.runtime_call Js_config.prim prim.prim_name args 
+    ->  E.runtime_call Js_config.prim prim_name args 
 
 
   | "js_function_length"
@@ -1041,10 +1004,10 @@ let query (prim : Lam_compile_env.primitive_description)
     | _ -> 
 
       let comment = "Missing primitve" in       
-      Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim.prim_name 
+      Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Lam_current_unit.get_file ()) ;
       (*we dont use [throw] here, since [throw] is an statement  *)        
-      E.dump ~comment Error [( E.str ~comment ~pure:false  prim.prim_name)];
+      E.dump ~comment Error [( E.str ~comment ~pure:false  prim_name)];
 
   end 
 

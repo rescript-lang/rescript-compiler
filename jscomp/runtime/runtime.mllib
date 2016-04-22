@@ -21,6 +21,8 @@ caml_queue
 caml_hash
 caml_weak
 caml_backtrace
+caml_int32
+caml_gc
 typed_array
 js
 fn

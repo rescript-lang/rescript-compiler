@@ -16,8 +16,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *)
 
-(* Author: Hongbo Zhang  *)
+(* Author: Hongbo Zhang *)
 
 
+let idiv (x:nativeint) (y:nativeint) = 
+  if y = 0n  then
+    raise Division_by_zero
+  else Nativeint.div x y
 
-val repeat : int -> string -> string
+let imod (x : nativeint) (y:nativeint) = 
+  if y = 0n then
+    raise Division_by_zero
+  else Nativeint.rem x  y
