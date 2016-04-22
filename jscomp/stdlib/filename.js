@@ -154,7 +154,7 @@ function quote(param) {
   var l = s.length;
   var b = Buffer.create(l + 20 | 0);
   Buffer.add_char(b, /* "'" */39);
-  for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
     if (s[i] === "'") {
       Buffer.add_string(b, quotequote);
     }

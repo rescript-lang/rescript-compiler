@@ -28,10 +28,10 @@ function f(H) {
 function g(H) {
   return function (count) {
     var tbl = Curry._1(H[/* create */0], 17);
-    for(var i = 0; i<= count; ++i){
+    for(var i = 0; i <= count; ++i){
       Curry._3(H[/* replace */8], tbl, (i << 1), "" + i);
     }
-    for(var i$1 = 0; i$1<= count; ++i$1){
+    for(var i$1 = 0; i$1 <= count; ++i$1){
       Curry._3(H[/* replace */8], tbl, (i$1 << 1), "" + i$1);
     }
     var v = Curry._3(H[/* fold */11], function (k, v, acc) {

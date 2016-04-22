@@ -30,10 +30,10 @@ function f() {
 
 function g(count) {
   var tbl = Hashtbl.create(/* None */0, 17);
-  for(var i = 0; i<= count; ++i){
+  for(var i = 0; i <= count; ++i){
     Hashtbl.replace(tbl, (i << 1), "" + i);
   }
-  for(var i$1 = 0; i$1<= count; ++i$1){
+  for(var i$1 = 0; i$1 <= count; ++i$1){
     Hashtbl.replace(tbl, (i$1 << 1), "" + i$1);
   }
   var v = to_list(tbl);

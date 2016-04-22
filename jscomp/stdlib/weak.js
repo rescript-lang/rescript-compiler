@@ -23,7 +23,7 @@ function fill(ar, ofs, len, x) {
         ];
   }
   else {
-    for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i<= i_finish; ++i){
+    for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i <= i_finish; ++i){
       Caml_weak.caml_weak_set(ar, i, x);
     }
     return /* () */0;
@@ -47,7 +47,7 @@ function Make(H) {
           ];
   };
   var clear = function (t) {
-    for(var i = 0 ,i_finish = t[/* table */0].length - 1 | 0; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = t[/* table */0].length - 1 | 0; i <= i_finish; ++i){
       t[/* table */0][i] = emptybucket;
       t[/* hashes */1][i] = /* int array */[];
     }
@@ -242,7 +242,7 @@ function Make(H) {
         t[/* hashes */1][index] = newhashes;
         if (sz <= t[/* limit */2] && newsz > t[/* limit */2]) {
           t[/* oversize */3] = t[/* oversize */3] + 1 | 0;
-          for(var _i$1 = 0; _i$1<= 2; ++_i$1){
+          for(var _i$1 = 0; _i$1 <= 2; ++_i$1){
             test_shrink_bucket(t);
           }
         }

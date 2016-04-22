@@ -4,7 +4,7 @@
 var Mt = require("./mt");
 
 function tst() {
-  for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i<= i_finish; ++i){
+  for(var i = (console.log("hi"), 0) ,i_finish = (console.log("hello"), 3); i <= i_finish; ++i){
     
   }
   return /* () */0;
@@ -14,7 +14,7 @@ function test2() {
   var v = 0;
   v = 3;
   v = 10;
-  for(var i = 0; i<= 1; ++i){
+  for(var i = 0; i <= 1; ++i){
     
   }
   return v;

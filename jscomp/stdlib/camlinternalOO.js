@@ -28,7 +28,7 @@ var params = /* record */[
 
 function public_method_label(s) {
   var accu = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
   }
   accu = accu & 2147483647;
@@ -495,7 +495,7 @@ function new_table(pub_labels) {
   var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
   methods[0] = len;
   methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
-  for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
     methods[(i << 1) + 3 | 0] = pub_labels[i];
   }
   return /* record */[
@@ -749,10 +749,10 @@ function new_methods_variables(table, meths, vals) {
   var nmeths = meths$1.length;
   var nvals = vals.length;
   var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
-  for(var i = 0 ,i_finish = nmeths - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = nmeths - 1 | 0; i <= i_finish; ++i){
     res[i] = get_method_label(table, meths$1[i]);
   }
-  for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1<= i_finish$1; ++i$1){
+  for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1 <= i_finish$1; ++i$1){
     res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
   }
   return res;
@@ -952,7 +952,7 @@ function build_path(n, keys, tables) {
     /* Empty */0
   ];
   var r = res;
-  for(var i = 0; i<= n; ++i){
+  for(var i = 0; i <= n; ++i){
     r = /* Cons */[
       keys[i],
       r,

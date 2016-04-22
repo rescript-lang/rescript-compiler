@@ -90,11 +90,14 @@ module L = struct
   let console = "console"
   let define = "define"
   let break = "break"
+  let continue = "continue"
+  let switch = "switch"
   let strict_directive = "'use strict';"
   let true_ = "true"
   let false_ = "false"
   let app = Literals.app (* curry arbitrary args *)
   let app_array = Literals.app_array
+  let debugger = "debugger"
   let tag = "tag"
   let bind = "bind"
   let math = "Math"
@@ -102,6 +105,11 @@ module L = struct
   let null = "null"
   let string_cap = "String"
   let fromCharcode = "fromCharCode"
+  let eq = "="
+  let le = "<="
+  let ge = ">="
+  let plus_plus = "++" (* FIXME: use (i = i + 1 | 0) instead *)
+  let minus_minus = "--"
 end
 let return_indent = (String.length L.return / Ext_pp.indent_length) 
 
@@ -1284,25 +1292,29 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
                    cxt, None 
                  | None , _ -> 
                    P.string f L.var;
-                   P.string f " ";
+                   P.space f ;
                    let id = Ext_ident.create (Ident.name id ^ "_finish") in
                    let cxt = ident cxt f id in
-                   P.string f " = "; (* FIXME: space *)
+                   P.space f ; 
+                   P.string f L.eq ; 
+                   P.space f ; 
                    expression 15 cxt f finish, Some id
                 ) in
+
               semi f ; 
               P.space f;
               let cxt = ident cxt f id in
+              P.space f;
               let right_prec  = 
 
                 match direction with 
                 | Upto -> 
                   let (_,_,right) = op_prec Le  in
-                  P.string f "<=";
+                  P.string f L.le;
                   right
                 | Downto -> 
                   let (_,_,right) = op_prec Ge in
-                  P.string f ">=" ;
+                  P.string f L.ge ;
                   right
               in
               P.space f ; 
@@ -1315,8 +1327,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
               P.space f;
               let ()  = 
                 match direction with 
-                | Upto -> P.string f "++"
-                | Downto -> P.string f "--" in
+                | Upto -> P.string f L.plus_plus
+                | Downto -> P.string f L.minus_minus in
               ident cxt f id
         in
         block  cxt f s  in
@@ -1357,7 +1369,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       _enclose action inner_cxt lexical
 
   | Continue s ->
-    P.string f "continue "; (* ASI becareful...*)
+    P.string f L.continue;
+    P.space f ;
     P.string f s;
     semi f;
     P.newline f;
@@ -1365,13 +1378,14 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
   | Debugger
     -> 
     P.newline f ;
-    P.string f "debugger";
+    P.string f L.debugger;
     semi f ;
     P.newline f;
     cxt 
   | Break
     ->
-    P.string f "break ";
+    P.string f L.break;
+    P.space f ;
     semi f;
     P.newline f; 
     cxt
@@ -1394,7 +1408,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
              argument. A line return will not work *)
     end
   | Int_switch (e, cc, def) ->
-    P.string f "switch";  
+    P.string f L.switch;  
     P.space f;
     let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e 
     in
@@ -1412,7 +1426,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       )
 
   | String_switch (e, cc, def) ->
-    P.string f "switch";
+    P.string f L.switch;
     P.space f;
     let cxt = P.paren_group f 1 @@ fun _ ->  expression 0 cxt f e 
     in

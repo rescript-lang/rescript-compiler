@@ -540,7 +540,7 @@ function finish_formatting(param, rawbuffer) {
   }
   var buffer = "";
   if (justify === "+" && filter === " ") {
-    for(var i = len ,i_finish = width - 1 | 0; i<= i_finish; ++i){
+    for(var i = len ,i_finish = width - 1 | 0; i <= i_finish; ++i){
       buffer = buffer + filter;
     }
   }
@@ -560,13 +560,13 @@ function finish_formatting(param, rawbuffer) {
     buffer = buffer + "0x";
   }
   if (justify === "+" && filter === "0") {
-    for(var i$1 = len ,i_finish$1 = width - 1 | 0; i$1<= i_finish$1; ++i$1){
+    for(var i$1 = len ,i_finish$1 = width - 1 | 0; i$1 <= i_finish$1; ++i$1){
       buffer = buffer + filter;
     }
   }
   buffer = uppercase ? buffer + rawbuffer.toUpperCase() : buffer + rawbuffer;
   if (justify === "-") {
-    for(var i$2 = len ,i_finish$2 = width - 1 | 0; i$2<= i_finish$2; ++i$2){
+    for(var i$2 = len ,i_finish$2 = width - 1 | 0; i$2 <= i_finish$2; ++i$2){
       buffer = buffer + " ";
     }
   }

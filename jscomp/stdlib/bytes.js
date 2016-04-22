@@ -18,7 +18,7 @@ function make(n, c) {
 
 function init(n, f) {
   var s = Caml_string.caml_create_string(n);
-  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
     s[i] = Curry._1(f, i);
   }
   return s;
@@ -115,14 +115,14 @@ function blit_string(s1, ofs1, s2, ofs2, len) {
 }
 
 function iter(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
     Curry._1(f, a[i]);
   }
   return /* () */0;
 }
 
 function iteri(f, a) {
-  for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
     Curry._2(f, i, a[i]);
   }
   return /* () */0;
@@ -197,7 +197,7 @@ function trim(s) {
 
 function escaped(s) {
   var n = 0;
-  for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
     var c = s[i];
     var $js;
     var exit = 0;
@@ -234,7 +234,7 @@ function escaped(s) {
   else {
     var s$prime = Caml_string.caml_create_string(n);
     n = 0;
-    for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1<= i_finish$1; ++i$1){
+    for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
       var c$1 = s[i$1];
       var exit$1 = 0;
       var switcher = c$1 - 34 | 0;
@@ -312,7 +312,7 @@ function map(f, s) {
   var l = s.length;
   if (l) {
     var r = Caml_string.caml_create_string(l);
-    for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
       r[i] = Curry._1(f, s[i]);
     }
     return r;
@@ -326,7 +326,7 @@ function mapi(f, s) {
   var l = s.length;
   if (l) {
     var r = Caml_string.caml_create_string(l);
-    for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+    for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
       r[i] = Curry._2(f, i, s[i]);
     }
     return r;

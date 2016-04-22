@@ -17,7 +17,7 @@ var arr = $$Array.init(2, function () {
       return 0;
     });
 
-for(var i = 0; i<= 2; ++i){
+for(var i = 0; i <= 2; ++i){
   arr[i] = i + 1 | 0;
 }
 

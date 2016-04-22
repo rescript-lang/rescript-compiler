@@ -92,7 +92,7 @@ function resize(newSize) {
       }
     };
   };
-  for(var n = 0 ,n_finish = sz_1[0]; n<= n_finish; ++n){
+  for(var n = 0 ,n_finish = sz_1[0]; n <= n_finish; ++n){
     copyBucket(arr[n]);
   }
   htab[0] = newArr;
@@ -374,7 +374,7 @@ function random() {
 
 function random_vars(n) {
   var vars = Caml_array.caml_make_vect(n, /* false */0);
-  for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
     vars[i] = random(/* () */0);
   }
   return vars;
@@ -399,7 +399,7 @@ function bool_equal(a, b) {
 
 function test_hwb(bdd, vars) {
   var ntrue = 0;
-  for(var i = 0 ,i_finish = vars.length - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = vars.length - 1 | 0; i <= i_finish; ++i){
     if (vars[i]) {
       ntrue = ntrue + 1 | 0;
     }
@@ -411,7 +411,7 @@ function test_hwb(bdd, vars) {
 function main() {
   var bdd = hwb(22);
   var succeeded = /* true */1;
-  for(var i = 1; i<= 100; ++i){
+  for(var i = 1; i <= 100; ++i){
     succeeded = +(succeeded && test_hwb(bdd, random_vars(22)));
   }
   if (succeeded) {

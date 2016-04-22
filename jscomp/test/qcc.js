@@ -107,7 +107,7 @@ function match_001(n) {
 }
 
 function match_002(f) {
-  for(var i = 0 ,i_finish = syms[0] - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = syms[0] - 1 | 0; i <= i_finish; ++i){
     Curry._2(f, i, symtab[i]);
   }
   return /* () */0;
@@ -418,7 +418,7 @@ function out(x) {
 }
 
 function le(n, x) {
-  for(var i = 0 ,i_finish = (n / 8 | 0) - 1 | 0; i<= i_finish; ++i){
+  for(var i = 0 ,i_finish = (n / 8 | 0) - 1 | 0; i <= i_finish; ++i){
     var $$byte = (x >>> (i << 3)) & 255;
     obuf[opos[0]] = Char.chr($$byte);
     opos[0] = opos[0] + 1 | 0;
@@ -1087,7 +1087,7 @@ function unary(stk) {
                       "[cast] expected"
                     ];
               }
-              for(var k = 1 ,k_finish = match$1[1]; k<= k_finish; ++k){
+              for(var k = 1 ,k_finish = match$1[1]; k <= k_finish; ++k){
                 Curry._1(next$1, /* () */0);
               }
               unary(stk);
@@ -1974,7 +1974,7 @@ function elfgen(outf) {
   le(32, 1);
   le(32, n$2 + 1 | 0);
   le(32, n$2 > 0 ? 1 : 0);
-  for(var i = 1; i<= n$2; ++i){
+  for(var i = 1; i <= n$2; ++i){
     le(32, i);
   }
   le(32, 0);

@@ -66,7 +66,7 @@ function char_hex(n) {
 
 function to_hex(d) {
   var result = new Array(32);
-  for(var i = 0; i<= 15; ++i){
+  for(var i = 0; i <= 15; ++i){
     var x = d.charCodeAt(i);
     result[(i << 1)] = char_hex((x >>> 4));
     result[(i << 1) + 1 | 0] = char_hex(x & 15);
@@ -118,7 +118,7 @@ function from_hex(s) {
     return (digit(s.charCodeAt(i)) << 4) + digit(s.charCodeAt(i + 1 | 0)) | 0;
   };
   var result = new Array(16);
-  for(var i = 0; i<= 15; ++i){
+  for(var i = 0; i <= 15; ++i){
     result[i] = Char.chr($$byte((i << 1)));
   }
   return Caml_string.bytes_to_string(result);

@@ -40,7 +40,7 @@ function aaaa(x) {
 }
 
 function f(x) {
-  for(var i = 0; i<= 10; ++i){
+  for(var i = 0; i <= 10; ++i){
     x[i] = i;
   }
   return /* () */0;

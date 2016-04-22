@@ -34,7 +34,7 @@ function map(f, param) {
 
 function sum(n) {
   var v = 0;
-  for(var i = 0; i<= n; ++i){
+  for(var i = 0; i <= n; ++i){
     v = v + i | 0;
   }
   return v;
