@@ -306,15 +306,16 @@ let compile  ~filename non_export env _sigs lam   =
                    -> Ident_map.add id lam export_map
                  | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
 
-          let () =
-            if not @@ Ext_string.is_empty filename 
-            then
-              let f = 
-                Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
-              Ext_pervasives.with_file_as_pp f @@ fun fmt ->
-              Format.pp_print_list ~pp_sep:Format.pp_print_newline
-                (Lam_group.pp_group env) fmt rest ;
-          in
+          (* TODO: turn in on debug mode later*)
+          (* let () = *)
+          (*   if not @@ Ext_string.is_empty filename  *)
+          (*   then *)
+          (*     let f =  *)
+          (*       Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in *)
+          (*     Ext_pervasives.with_file_as_pp f @@ fun fmt -> *)
+          (*     Format.pp_print_list ~pp_sep:Format.pp_print_newline *)
+          (*       (Lam_group.pp_group env) fmt rest ; *)
+          (* in *)
           let rest = Lam_dce.remove meta.exports rest 
           in
           let module  E = struct exception  Not_pure of string end in
