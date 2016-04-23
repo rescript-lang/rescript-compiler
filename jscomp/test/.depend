@@ -354,6 +354,8 @@ small_inline_test.cmo :
 small_inline_test.cmx :
 sprintf_reg_test.cmo : ../stdlib/printf.cmi mt_global.cmi mt.cmi
 sprintf_reg_test.cmx : ../stdlib/printf.cmx mt_global.cmx mt.cmx
+stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
+stack_comp_test.cmx : ../stdlib/stack.cmx mt_global.cmx mt.cmx
 stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
@@ -934,6 +936,8 @@ small_inline_test.cmo :
 small_inline_test.cmj :
 sprintf_reg_test.cmo : ../stdlib/printf.cmi mt_global.cmi mt.cmi
 sprintf_reg_test.cmj : ../stdlib/printf.cmj mt_global.cmj mt.cmj
+stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
+stack_comp_test.cmj : ../stdlib/stack.cmj mt_global.cmj mt.cmj
 stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi

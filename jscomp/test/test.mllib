@@ -260,4 +260,8 @@ scanf_reference_error_regression_test
 
 sprintf_reg_test
 scanf_io
+
 fail_comp
+
+stack_comp_test
+
