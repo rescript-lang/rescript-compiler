@@ -121,7 +121,7 @@ let () =
 ;;
 
 let () =
-  let s1 = S.create () in let s2 = S.create () in
+  let s1 = S.create () in let _s2 = S.create () in
   for i = 1 to 4 do S.push i s1 done;
   assert_ __LOC__ (S.length s1 = 4); assert_ __LOC__ (S.to_list s1 = [1; 2; 3; 4]);
   let s2 = S.copy s1 in
