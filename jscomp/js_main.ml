@@ -152,6 +152,8 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: Options.list 
 
+let () = Clflags.unsafe_string := false
+
 let main () =
   try
     readenv ppf Before_args;

@@ -29,7 +29,10 @@
      *    type: "error" // or "warning" or "info"
      *  }
 *)
-let () = Js_config.set_env Browser
+let () = 
+  Js_config.set_env Browser;
+  Clflags.unsafe_string := false
+
 let implementation non_export ppf  str  =
   let modulename = "Test" in
   (* let env = !Toploop.toplevel_env in *)
