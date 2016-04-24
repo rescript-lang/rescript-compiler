@@ -61,10 +61,23 @@ let simplify_alias
         begin match x with 
         | Null 
           -> 
-          Lam_comb.if_ ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil])) (simpl l3)  (simpl l2)
+          Lam_comb.if_ 
+            ( Lprim (Lam_util.js_is_nil_primitive, [l])) 
+            (simpl l3)  
+            (simpl l2)
         | Undefined 
           -> 
-          Lam_comb.if_ ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.undefined])) (simpl l3)  (simpl l2)
+          Lam_comb.if_ 
+            (Lprim (Lam_util.js_is_undef_primitive, [l]))
+            (simpl l3)
+            (simpl l2)
+        | Null_undefined (* TODO: fix me*)
+          -> 
+          Lam_comb.if_ 
+            ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil])) 
+            (simpl l3)  
+            (simpl l2)
+
         | Normal -> 
           Lam_comb.if_ l1 (simpl l2) (simpl l3)
         end

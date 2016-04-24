@@ -45,6 +45,7 @@ module Null = struct
   external to_opt : 'a t -> 'a option = "js_from_nullable"
   external return : 'a -> 'a t  = "%identity"
   external test : 'a t -> bool = "js_is_nil"
+  external empty : 'a t = "null" [@@bs.val]
 end
 
 module Def = struct 
@@ -52,13 +53,16 @@ module Def = struct
   external to_opt : 'a t -> 'a option = "js_from_def"
   external return : 'a -> 'a t = "%identity"
   external test : 'a t -> bool =  "js_is_undef"
-
+  external empty : 'a t = "undefined" [@@bs.val]
 end
 
-external null : 'a Null.t = "null" [@@bs.val]
-external undef : 'a Def.t = "undefined" [@@bs.val]
-
-
+module Null_def = struct
+  type + 'a t 
+  external to_opt : 'a t -> 'a option = "js_from_nullable_def"
+  external return : 'a -> 'a t = "%identity"
+  external test : 'a t -> bool =  "js_is_nil_undef"
+  external empty : 'a t = "undefined" [@@bs.val]
+end
 
 type boolean 
 

@@ -962,6 +962,9 @@ let query (prim : Lam_compile_env.primitive_description)
       | [e] -> E.is_undef e 
       | _ -> assert false
       end
+    | "js_is_nil_undef" 
+    | "js_from_nullable_def"
+      -> call Js_config.js_primitive
     | "js_from_def" 
       -> 
       begin match args with 

@@ -393,3 +393,33 @@ let eta_conversion n info fn args =
 (* FIXME: application location is important for error message *)
 let default_apply_info : Lambda.apply_info = 
   { apply_status = App_na ; apply_loc = Location.none }
+
+let js_is_nil_primitive = 
+  Lambda.Pccall{ prim_name = "js_is_nil";
+    prim_arity = 1 ;
+    prim_alloc = false;
+    prim_native_name = "js_is_nil";
+    prim_native_float = false;
+    prim_attributes = [];
+    prim_ty = None
+  }
+
+let js_is_undef_primitive = 
+  Lambda.Pccall{ prim_name = "js_is_undef";
+    prim_arity = 1 ;
+    prim_alloc = false;
+    prim_native_name = "js_is_undef";
+    prim_native_float = false;
+    prim_attributes = [];
+    prim_ty = None
+  }
+
+let js_is_nil_undef_primitive = 
+  Lambda.Pccall{ prim_name = "js_is_nil_undef";
+    prim_arity = 1 ;
+    prim_alloc = false;
+    prim_native_name = "js_is_nil_undef";
+    prim_native_float = false;
+    prim_attributes = [];
+    prim_ty = None
+  }

@@ -111,11 +111,21 @@ let deep_flatten
       (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
-    | Llet (str, id, (Lprim (Pccall {prim_name = ("js_from_nullable" | "js_from_def"); _ }
-                            , [Lvar _]) as arg), body)
+    | Llet (str, id, 
+            (Lprim (Pccall 
+                      {prim_name = 
+                         ("js_from_nullable" 
+                         | "js_from_def"
+                         |"js_from_nullable_def"); _ }
+                   , [Lvar _]) as arg), body)
       -> 
       flatten (Single(str, id, (aux arg) ) :: acc) body
-    | Llet (str, id, Lprim (Pccall ({prim_name = ("js_from_nullable" | "js_from_def"); _ } as p ),
+    | Llet (str, id, 
+            Lprim (Pccall 
+                     ({prim_name = 
+                         ("js_from_nullable"
+                         | "js_from_def"
+                         | "js_from_nullable_def"); _ } as p ),
                             [arg]), body)
       -> 
       let id' = Ident.rename id in 
