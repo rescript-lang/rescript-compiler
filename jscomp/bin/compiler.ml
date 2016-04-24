@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/22-15:01"]
+[@@@ocaml.doc "04/24-11:45"]
 include
   struct
     module Literals :
@@ -740,6 +740,7 @@ include
         type boxed_nullable =
           | Undefined
           | Null
+          | Null_undefined
           | Normal
         type kind =
           | ImmutableBlock of element array* boxed_nullable
@@ -796,6 +797,7 @@ include
         type boxed_nullable =
           | Undefined
           | Null
+          | Null_undefined
           | Normal
         type kind =
           | ImmutableBlock of element array* boxed_nullable
@@ -955,7 +957,8 @@ include
                             |"caml_sys_get_config"|"caml_sys_get_argv"
                             |"caml_create_string"|"caml_make_vect"
                             |"caml_obj_dup"|"caml_obj_block"
-                            |"js_from_nullable"|"js_from_def"),_) -> true
+                            |"js_from_nullable"|"js_from_def"
+                            |"js_from_nullable_def"),_) -> true
                         | ("caml_ml_open_descriptor_in",(Lconst (Const_base
                            (Const_int 0)))::[]) -> true
                         | ("caml_ml_open_descriptor_out",(Lconst (Const_base
@@ -1712,6 +1715,7 @@ include
         val md5 : string
         val hash : string
         val weak : string
+        val js_primitive : string
       end =
       struct
         type env =
@@ -1827,8 +1831,10 @@ include
         let gc = "Caml_gc"
         let int32 = "Caml_int32"
         let block = "Block"
+        let js_primitive = "Js_primitive"
         let runtime_set =
-          [block;
+          [js_primitive;
+          block;
           int32;
           gc;
           backtrace;
@@ -2215,6 +2221,9 @@ include
             Lambda.apply_info ->
               Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
         val default_apply_info : Lambda.apply_info
+        val js_is_nil_primitive : Lambda.primitive
+        val js_is_undef_primitive : Lambda.primitive
+        val js_is_nil_undef_primitive : Lambda.primitive
       end =
       struct
         let string_of_lambda = Format.asprintf "%a" Printlambda.lambda
@@ -2434,6 +2443,39 @@ include
           | (_,_) -> assert false
         let default_apply_info: Lambda.apply_info =
           { apply_status = App_na; apply_loc = Location.none }
+        let js_is_nil_primitive =
+          Lambda.Pccall
+            {
+              prim_name = "js_is_nil";
+              prim_arity = 1;
+              prim_alloc = false;
+              prim_native_name = "js_is_nil";
+              prim_native_float = false;
+              prim_attributes = [];
+              prim_ty = None
+            }
+        let js_is_undef_primitive =
+          Lambda.Pccall
+            {
+              prim_name = "js_is_undef";
+              prim_arity = 1;
+              prim_alloc = false;
+              prim_native_name = "js_is_undef";
+              prim_native_float = false;
+              prim_attributes = [];
+              prim_ty = None
+            }
+        let js_is_nil_undef_primitive =
+          Lambda.Pccall
+            {
+              prim_name = "js_is_nil_undef";
+              prim_arity = 1;
+              prim_alloc = false;
+              prim_native_name = "js_is_nil_undef";
+              prim_native_float = false;
+              prim_attributes = [];
+              prim_ty = None
+            }
       end 
     module Js_number :
       sig
@@ -2553,14 +2595,19 @@ include
                              (Pccall
                               {
                                 prim_name =
-                                  ("js_from_nullable"|"js_from_def");_},(Lvar
+                                  ("js_from_nullable"|"js_from_def"
+                                   |"js_from_nullable_def");_},(Lvar
                               _)::[])
                              as arg),body)
                   -> flatten ((Single (str, id, (aux arg))) :: acc) body
               | Llet
                   (str,id,Lprim
                    (Pccall
-                    ({ prim_name = ("js_from_nullable"|"js_from_def");_} as p),arg::[]),body)
+                    ({
+                       prim_name =
+                         ("js_from_nullable"|"js_from_def"
+                          |"js_from_nullable_def");_}
+                       as p),arg::[]),body)
                   ->
                   let id' = Ident.rename id in
                   flatten acc
@@ -3814,16 +3861,6 @@ include
           t)
         let rec and_ ?comment  (e1 : t) (e2 : t) =
           match ((e1.expression_desc), (e2.expression_desc)) with
-          | ((Bin
-              (NotEqEq
-               ,e1,{
-                     expression_desc = Var (Id
-                       ({ name = "undefined";_} as id))
-                     })|Bin
-              (NotEqEq
-               ,{ expression_desc = Var (Id ({ name = "undefined";_} as id))
-                  },e1)),_)
-              when Ext_ident.is_js id -> and_ e1 e2
           | (Int_of_boolean e1,Int_of_boolean e2) -> and_ ?comment e1 e2
           | (Int_of_boolean e1,_) -> and_ ?comment e1 e2
           | (_,Int_of_boolean e2) -> and_ ?comment e1 e2
@@ -3875,13 +3912,6 @@ include
            | (Bin
               (Bor ,v,{ expression_desc = Number (Int { i = 0l;_}) }),_,_) ->
                econd v t f
-           | (Bin
-              (NotEqEq
-               ,e1,{
-                     expression_desc = Var (Id
-                       ({ name = "undefined";_} as id))
-                     }),_,_)
-               when Ext_ident.is_js id -> econd e1 t f
            | ((Bin
                (EqEqEq ,{ expression_desc = Number (Int { i = 0l;_});_},x)
                |Bin
@@ -4532,13 +4562,6 @@ include
                  |Bin
                  (EqEqEq ,e,{ expression_desc = Number (Int { i = 0l;_});_})),_,else_)
                  -> aux ?comment e else_ then_ acc
-             | (Bin
-                (NotEqEq
-                 ,e1,{
-                       expression_desc = Var (Id
-                         ({ name = "undefined";_} as id))
-                       }),_,_)
-                 when Ext_ident.is_js id -> aux ?comment e1 then_ else_ acc
              | ((Bin
                  (Gt
                   ,({ expression_desc = Length _;_} as e),{
@@ -6566,7 +6589,7 @@ include
             ("caml_io.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\003\b\000\000\000\179\000\000\002u\000\000\002D\176\208\208\208\208@-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\005\"oc@@@@@@A-caml_ml_input\160\176A\160\160D\144\160\176\001\004\024\"ic@\160\176\001\004\025%bytes@\160\176\001\004\026&offset@\160\176\001\004\027#len@@@A\144\179@\004\014\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t caml_ml_input ic not implemented@@@\208\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\029\"ic@@@A\144\179@\004\005\166\004\028\160\166\004\027\160\166\147\004\026@\160\145\144\162\t!caml_ml_input_char not implemnted@@@@A:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\004\001!i@@@A\144\179@\004\005\166\156@\160\166\0042\160\166\147\0041@\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@@@BC;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\004\003!i@@@A\144\179@\004\005\166\156@\160\166\004I\160\166\147\004H@\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@@\208\208\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\0041%param@@@@@@A.caml_ml_output\160\176@\160\160D\144\160\176\001\004\n\"oc@\160\176\001\004\011#str@\160\176\001\004\012&offset@\160\176\001\004\r#len@@@@@\208@3caml_ml_output_char\160\176@\160\160B\144\160\176\001\004\021\"oc@\160\176\001\004\022$char@@@@@@AB/node_std_output\160\176@\160\160A@@@@@CD&stderr\160\176A@@@\208@%stdin\160\176@@@@\208@&stdout\160\004\b@@ABE\144%stdin@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\003\b\000\000\000\179\000\000\002u\000\000\002D\176\208\208\208\208@-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\004\"oc@@@@@@A-caml_ml_input\160\176A\160\160D\144\160\176\001\004\023\"ic@\160\176\001\004\024%bytes@\160\176\001\004\025&offset@\160\176\001\004\026#len@@@A\144\179@\004\014\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t caml_ml_input ic not implemented@@@\208\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\028\"ic@@@A\144\179@\004\005\166\004\028\160\166\004\027\160\166\147\004\026@\160\145\144\162\t!caml_ml_input_char not implemnted@@@@A:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\004\000!i@@@A\144\179@\004\005\166\156@\160\166\0042\160\166\147\0041@\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@@@BC;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\004\002!i@@@A\144\179@\004\005\166\156@\160\166\004I\160\166\147\004H@\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@@\208\208\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\0040%param@@@@@@A.caml_ml_output\160\176@\160\160D\144\160\176\001\004\t\"oc@\160\176\001\004\n#str@\160\176\001\004\011&offset@\160\176\001\004\012#len@@@@@\208@3caml_ml_output_char\160\176@\160\160B\144\160\176\001\004\020\"oc@\160\176\001\004\021$char@@@@@@AB/node_std_output\160\176@\160\160A@@@@@CD&stderr\160\176A@@@\208@%stdin\160\176@@@@\208@&stdout\160\004\b@@ABE\144%stdin@")));
             ("caml_lexer.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6598,7 +6621,7 @@ include
             ("caml_string.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\003\182\000\000\000\245\000\000\003K\000\000\003&\176\208\208\208@#add\160\176@\160\160B\144\160\176\001\0045$prim@\160\176\001\0044\004\003@@@@\144\179@\004\007\166\155\2400js_string_appendBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\004Y\176\193\004\t\176\179\004\b@\144@\002\005\245\225\000\001\004\\\176\179\004\011@\144@\002\005\245\225\000\001\004_@\002\005\245\225\000\001\004b@\002\005\245\225\000\001\004c\160\144\004\031\160\144\004\030@@A/bytes_of_string\160\176@\160\160A\144\160\176\001\004\021!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\144\160\176\001\004$!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\011\"s1@\160\176\001\004\012\"i1@\160\176\001\004\r\"s2@\160\176\001\004\014\"i2@\160\176\001\004\015#len@@@@@@AB0caml_blit_string\160\176A\160\160E\144\160\176\001\004\001\"s1@\160\176\001\004\002\"i1@\160\176\001\004\003\"s2@\160\176\001\004\004\"i2@\160\176\001\004\005#len@@@@@\208@2caml_create_string\160\176@\160\160A\144\160\176\001\003\246#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\003\251!s@\160\176\001\003\252!i@\160\176\001\003\253!l@\160\176\001\003\254!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\144\160\176\001\004+!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\248\"s1@\160\176\001\003\249\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\243!s@\160\176\001\003\244!i@@@@@@B1caml_string_get16\160\176A\160\160B\144\160\176\001\004.!s@\160\176\001\004/!i@@@@@\208\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0041!s@\160\176\001\0042!i@@@@@@A9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004&%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\0046\004\204@@@@\144\179@\004\004\166\155\2403String.fromCharCodeAA\004\201@\160\160\160'bs.call\176\192%js.ml\000S\001\t\196\001\t\205\192\004\002\000S\001\t\196\001\t\212@\144@@\144\176\193\004\209\176\179\144\176B$char@@\144@\002\005\245\225\000\001\004\016\176\179\004\214@\144@\002\005\245\225\000\001\004\019@\002\005\245\225\000\001\004\022\160\144\004\030@@ABCE@@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\003\182\000\000\000\245\000\000\003K\000\000\003&\176\208\208\208@#add\160\176@\160\160B\144\160\176\001\0045$prim@\160\176\001\0044\004\003@@@@\144\179@\004\007\166\155\2400js_string_appendBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\004w\176\193\004\t\176\179\004\b@\144@\002\005\245\225\000\001\004z\176\179\004\011@\144@\002\005\245\225\000\001\004}@\002\005\245\225\000\001\004\128@\002\005\245\225\000\001\004\129\160\144\004\031\160\144\004\030@@A/bytes_of_string\160\176@\160\160A\144\160\176\001\004\021!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\144\160\176\001\004$!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\011\"s1@\160\176\001\004\012\"i1@\160\176\001\004\r\"s2@\160\176\001\004\014\"i2@\160\176\001\004\015#len@@@@@@AB0caml_blit_string\160\176A\160\160E\144\160\176\001\004\001\"s1@\160\176\001\004\002\"i1@\160\176\001\004\003\"s2@\160\176\001\004\004\"i2@\160\176\001\004\005#len@@@@@\208@2caml_create_string\160\176@\160\160A\144\160\176\001\003\246#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\003\251!s@\160\176\001\003\252!i@\160\176\001\003\253!l@\160\176\001\003\254!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\144\160\176\001\004+!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\248\"s1@\160\176\001\003\249\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\243!s@\160\176\001\003\244!i@@@@@@B1caml_string_get16\160\176A\160\160B\144\160\176\001\004.!s@\160\176\001\004/!i@@@@@\208\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0041!s@\160\176\001\0042!i@@@@@@A9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004&%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\0046\004\204@@@@\144\179@\004\004\166\155\2403String.fromCharCodeAA\004\201@\160\160\160'bs.call\176\192%js.ml\000W\001\n\186\001\n\195\192\004\002\000W\001\n\186\001\n\202@\144@@\144\176\193\004\209\176\179\144\176B$char@@\144@\002\005\245\225\000\001\004.\176\179\004\214@\144@\002\005\245\225\000\001\0041@\002\005\245\225\000\001\0044\160\144\004\030@@ABCE@@")));
             ("caml_sys.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6610,7 +6633,7 @@ include
             ("caml_weak.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\002(\000\000\000\156\000\000\001\252\000\000\001\235\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\022\"a1@\160\176\001\004\023\"i1@\160\176\001\004\024\"a2@\160\176\001\004\025\"i2@\160\176\001\004\026#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\004\"xs@\160\176\001\004\005!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\246!n@@@@\144\179@\004\005\166\155\240/js_create_arrayAA @@\144\176\193 \176\179\144\176A#int@@\144@\002\005\245\225\000\001\004\142\176\179\144\176H%array@\160\176\150\176\144\144!a\002\005\245\225\000\001\004\153\001\004\022\001\004\145@\144@\002\005\245\225\000\001\004\147@\002\005\245\225\000\001\004\151\160\144\004\"@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\253\"xs@\160\176\001\003\254!i@@@@\144\179@\004\b\166\155\240+js_from_defAA\004,@@\144\176\193\004+\176\179\144\176\001\003\251!t@\160\176\150\176\144\144!a\002\005\245\225\000\001\003\184\001\003\252\001\003\171@\144@\002\005\245\225\000\001\003\173\176\179\144\176J&option@\160\004\r@\144@\002\005\245\225\000\001\003\178@\002\005\245\225\000\001\003\182\160\166\b\000\000\004\021@\160\144\004'\160\144\004&@@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\004\000\"xs@\160\176\001\004\001!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\248\"xs@\160\176\001\003\249!i@\160\176\001\003\250!v@@@@@@BD@@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\002(\000\000\000\156\000\000\001\252\000\000\001\235\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\022\"a1@\160\176\001\004\023\"i1@\160\176\001\004\024\"a2@\160\176\001\004\025\"i2@\160\176\001\004\026#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\005\"xs@\160\176\001\004\006!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\247!n@@@@\144\179@\004\005\166\155\240/js_create_arrayAA @@\144\176\193 \176\179\144\176A#int@@\144@\002\005\245\225\000\001\004\172\176\179\144\176H%array@\160\176\150\176\144\144!a\002\005\245\225\000\001\004\183\001\004\028\001\004\175@\144@\002\005\245\225\000\001\004\177@\002\005\245\225\000\001\004\181\160\144\004\"@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\254\"xs@\160\176\001\003\255!i@@@@\144\179@\004\b\166\155\240+js_from_defAA\004,@@\144\176\193\004+\176\179\144\176\001\003\252!t@\160\176\150\176\144\144!a\002\005\245\225\000\001\003\192\001\003\253\001\003\179@\144@\002\005\245\225\000\001\003\181\176\179\144\176J&option@\160\004\r@\144@\002\005\245\225\000\001\003\186@\002\005\245\225\000\001\003\190\160\166\b\000\000\004\021@\160\144\004'\160\144\004&@@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\004\001\"xs@\160\176\001\004\002!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@\160\176\001\003\251!v@@@@@@BD@@")));
             ("curry.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6622,11 +6645,15 @@ include
             ("js.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\000j\000\000\000\025\000\000\000e\000\000\000^\176\208\208\208@%Array\160@@@A%Bytes\160@@\208\208@*Caml_int64\160@@@A(Caml_obj\160@@@BC#Def\160@@\208\208@%Float\160@@@A$Null\160@@\208@&String\160@@@ABD@@")));
+                    "BUCKLE20160310\132\149\166\190\000\000\000y\000\000\000\028\000\000\000r\000\000\000j\176\208\208\208\208@%Array\160@@@A%Bytes\160@@\208\208@*Caml_int64\160@@@A(Caml_obj\160@@@BC#Def\160@@\208@%Float\160@@@AD$Null\160@@\208@(Null_def\160@@\208@&String\160@@@ABE@@")));
             ("js_error.cmj",
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@")));
+            ("js_primitive.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\000U\000\000\000\021\000\000\000L\000\000\000G\176\208\208@4js_from_nullable_def\160\176A\160\160A\144\160\176\001\003\243!x@@@@@@A/js_is_nil_undef\160\176A\160\160A\144\160\176\001\003\241!x@@@@@@B@@")));
             ("typed_array.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -7770,6 +7797,8 @@ include
                (match args with | e::[] -> E.is_nil e | _ -> assert false)
            | "js_is_undef" ->
                (match args with | e::[] -> E.is_undef e | _ -> assert false)
+           | "js_is_nil_undef"|"js_from_nullable_def" ->
+               call Js_config.js_primitive
            | "js_from_def" ->
                (match args with
                 | e::[] ->
@@ -10518,15 +10547,17 @@ include
                        (match x with
                         | Null  ->
                             Lam_comb.if_
-                              (Lprim
-                                 ((Pintcomp Ceq), [l; Lvar Ext_ident.nil]))
+                              (Lprim (Lam_util.js_is_nil_primitive, [l]))
                               (simpl l3) (simpl l2)
                         | Undefined  ->
                             Lam_comb.if_
+                              (Lprim (Lam_util.js_is_undef_primitive, [l]))
+                              (simpl l3) (simpl l2)
+                        | Null_undefined  ->
+                            Lam_comb.if_
                               (Lprim
-                                 ((Pintcomp Ceq),
-                                   [l; Lvar Ext_ident.undefined])) (simpl l3)
-                              (simpl l2)
+                                 ((Pintcomp Ceq), [l; Lvar Ext_ident.nil]))
+                              (simpl l3) (simpl l2)
                         | Normal  -> Lam_comb.if_ l1 (simpl l2) (simpl l3))
                    | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
                    | exception Not_found  ->
@@ -11173,6 +11204,12 @@ include
                 ->
                 Hashtbl.replace meta.ident_tbl ident
                   (Lam_util.kind_of_lambda_block Undefined ls)
+            | Lprim
+                (Pccall
+                 { prim_name = "js_from_nullable_def";_},((Lvar _)::[] as ls))
+                ->
+                Hashtbl.replace meta.ident_tbl ident
+                  (Lam_util.kind_of_lambda_block Null_undefined ls)
             | Lprim (Pgetglobal v,[]) ->
                 (Lam_util.alias meta ident v (Module v) kind;
                  (match kind with
@@ -12652,17 +12689,6 @@ include
                                   Ident_map.add id lam export_map
                               | _ -> export_map), (x :: acc)))
                        (export_map, coercion_groups) rest in
-                   let () =
-                     if not @@ (Ext_string.is_empty filename)
-                     then
-                       let f =
-                         (Ext_filename.chop_extension ~loc:__LOC__ filename)
-                           ^ ".lambda" in
-                       (Ext_pervasives.with_file_as_pp f) @@
-                         (fun fmt  ->
-                            Format.pp_print_list
-                              ~pp_sep:Format.pp_print_newline
-                              (Lam_group.pp_group env) fmt rest) in
                    let rest = Lam_dce.remove meta.exports rest in
                    let module E = struct exception Not_pure of string end in
                      let no_side_effects rest =
@@ -12746,7 +12772,7 @@ include
         let lambda_as_module env (sigs : Types.signature) (filename : string)
           (lam : Lambda.lambda) =
           Lam_current_unit.set_file filename;
-          Lam_current_unit.iset_debug_file "caml_int64.ml";
+          Lam_current_unit.iset_debug_file "caml_hash.ml";
           Ext_pervasives.with_file_as_chan
             ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^
                (Js_config.get_ext ()))
@@ -13239,6 +13265,7 @@ include
           ("-js-gen-tds", (Arg.Set Js_config.default_gen_tds),
             " set will generate `.d.ts` file for typescript (experimental)")
           :: Options.list
+        let () = Clflags.unsafe_string := false
         let main () =
           try
             readenv ppf Before_args;
