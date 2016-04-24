@@ -4,6 +4,7 @@ ari_regress_test.cmi :
 array_test.cmi :
 const_block_test.cmi :
 demo_int_map.cmi :
+float_record.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 map_test.cmi :
@@ -164,10 +165,14 @@ ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmx : ../lib/js.cmx
 fib.cmo :
 fib.cmx :
+float_array.cmo :
+float_array.cmx :
 float_of_bits_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
 float_of_bits_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/int64.cmx ../stdlib/int32.cmx ../stdlib/array.cmx
+float_record.cmo : float_record.cmi
+float_record.cmx : float_record.cmi
 float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
     mt.cmi ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
 float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
@@ -576,6 +581,10 @@ test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmx : ../lib/js.cmx
 testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmx : ../stdlib/scanf.cmx ../stdlib/printf.cmx testing.cmi
+tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \
+    float_record.cmi float_array.cmo ../stdlib/buffer.cmi ../stdlib/array.cmi
+tfloat_record_test.cmx : mt_global.cmx mt.cmx ../stdlib/format.cmx \
+    float_record.cmx float_array.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
@@ -746,10 +755,14 @@ ffi_test.cmo : ../lib/js.cmo
 ffi_test.cmj : ../lib/js.cmj
 fib.cmo :
 fib.cmj :
+float_array.cmo :
+float_array.cmj :
 float_of_bits_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/int64.cmi ../stdlib/int32.cmi ../stdlib/array.cmi
 float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/int32.cmj ../stdlib/array.cmj
+float_record.cmo : float_record.cmi
+float_record.cmj : float_record.cmi
 float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
     mt.cmi ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
@@ -1158,6 +1171,10 @@ test_zero_nullable.cmo : ../lib/js.cmo
 test_zero_nullable.cmj : ../lib/js.cmj
 testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmj : ../stdlib/scanf.cmj ../stdlib/printf.cmj testing.cmi
+tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \
+    float_record.cmi float_array.cmo ../stdlib/buffer.cmi ../stdlib/array.cmi
+tfloat_record_test.cmj : mt_global.cmj mt.cmj ../stdlib/format.cmj \
+    float_record.cmj float_array.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
 ticker.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
     ../stdlib/pervasives.cmi ../stdlib/map.cmi ../stdlib/list.cmi
 ticker.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
