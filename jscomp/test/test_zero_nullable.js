@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
+var Js_primitive = require("../runtime/js_primitive");
 var Curry        = require("../runtime/curry");
-var js_primitive = require("../runtime/js_primitive");
 
 function f1(x) {
   if (x === null) {
@@ -245,11 +245,11 @@ function f8$2(x) {
 
 var u$2 = f8$2(/* None */0);
 
-var f9$2 = js_primitive.js_from_nullable_def
+var f9$2 = Js_primitive.js_from_nullable_def
 
-var f10$2 = js_primitive.js_is_nil_undef
+var f10$2 = Js_primitive.js_is_nil_undef
 
-var f11$2 = js_primitive.js_is_nil_undef(3);
+var f11$2 = Js_primitive.js_is_nil_undef(3);
 
 var Test_null_def = /* module */[
   f1$2,

@@ -146,7 +146,7 @@ let backtrace = "Caml_backtrace"
 let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
-let js_primitive = "js_primitive"
+let js_primitive = "Js_primitive"
 
 let runtime_set = 
   [
