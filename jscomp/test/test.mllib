@@ -269,3 +269,7 @@ float_array
 float_record
 tfloat_record_test
 
+basic_module_test
+offset
+pr6726
+

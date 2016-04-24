@@ -2,6 +2,7 @@ a_recursive_type.cmi :
 abstract_type.cmi :
 ari_regress_test.cmi :
 array_test.cmi :
+basic_module_test.cmi :
 const_block_test.cmi :
 demo_int_map.cmi :
 float_record.cmi :
@@ -49,6 +50,10 @@ array_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx array_test.cmi
 b.cmo :
 b.cmx :
+basic_module_test.cmo : ../stdlib/set.cmi pr6726.cmo offset.cmo \
+    mt_global.cmi mt.cmi basic_module_test.cmi
+basic_module_test.cmx : ../stdlib/set.cmx pr6726.cmx offset.cmx \
+    mt_global.cmx mt.cmx basic_module_test.cmi
 bdd.cmo : ../stdlib/array.cmi
 bdd.cmx : ../stdlib/array.cmx
 bigarray_test.cmo : ../stdlib/int32.cmi ../stdlib/complex.cmi \
@@ -303,8 +308,12 @@ obj_test.cmo : mt.cmi
 obj_test.cmx : mt.cmx
 of_string_test.cmo : mt.cmi
 of_string_test.cmx : mt.cmx
+offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
+offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
 pq_test.cmo :
 pq_test.cmx :
+pr6726.cmo :
+pr6726.cmx :
 pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmx : mt.cmx
 primitive_reg_test.cmo :
@@ -639,6 +648,10 @@ array_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj array_test.cmi
 b.cmo :
 b.cmj :
+basic_module_test.cmo : ../stdlib/set.cmi pr6726.cmo offset.cmo \
+    mt_global.cmi mt.cmi basic_module_test.cmi
+basic_module_test.cmj : ../stdlib/set.cmj pr6726.cmj offset.cmj \
+    mt_global.cmj mt.cmj basic_module_test.cmi
 bdd.cmo : ../stdlib/array.cmi
 bdd.cmj : ../stdlib/array.cmj
 bigarray_test.cmo : ../stdlib/int32.cmi ../stdlib/complex.cmi \
@@ -893,8 +906,12 @@ obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
 of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
+offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
+offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
 pq_test.cmo :
 pq_test.cmj :
+pr6726.cmo :
+pr6726.cmj :
 pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmj : mt.cmj
 primitive_reg_test.cmo :
