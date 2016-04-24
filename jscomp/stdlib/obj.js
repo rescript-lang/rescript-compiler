@@ -26,9 +26,9 @@ function unmarshal(str, pos) {
 }
 
 function extension_slot(x) {
-  var slot = x.length && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
+  var slot = x.length !== undefined && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
   var name;
-  if (slot.length && slot.tag === 248) {
+  if (slot.length !== undefined && slot.tag === 248) {
     name = slot[0];
   }
   else {

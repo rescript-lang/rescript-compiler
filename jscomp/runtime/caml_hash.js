@@ -91,7 +91,7 @@ function caml_hash(count, _, seed, obj) {
           }
           else if (typeof obj$1 !== "function") {
             var size = obj$1.length;
-            if (size) {
+            if (size !== undefined) {
               var obj_tag = obj$1.tag | 0;
               var tag = (size << 10) | obj_tag;
               if (tag === 248) {

@@ -273,3 +273,4 @@ basic_module_test
 offset
 pr6726
 
+undef_regression_test
