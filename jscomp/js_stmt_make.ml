@@ -243,11 +243,11 @@ let rec if_ ?comment  ?declaration ?else_ (e : J.expression) (then_ : J.block)  
       ->
       aux ?comment e else_  then_ acc 
 
-    | Bin (NotEqEq, e1, 
-           {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
-      _, _
-      when Ext_ident.is_js id -> 
-      aux ?comment e1 then_ else_ acc 
+    (* | Bin (NotEqEq, e1,  *)
+    (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
+    (*   _, _ *)
+    (*   when Ext_ident.is_js id ->  *)
+    (*   aux ?comment e1 then_ else_ acc  *)
 
     | ((Bin (Gt, 
              ({expression_desc = 

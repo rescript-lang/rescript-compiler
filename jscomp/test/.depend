@@ -610,6 +610,8 @@ tscanf_test.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
     ../stdlib/buffer.cmx
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
+undef_regression_test.cmo : ../lib/js.cmo
+undef_regression_test.cmx : ../lib/js.cmx
 unitest_string.cmo :
 unitest_string.cmx :
 unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo
@@ -1208,6 +1210,8 @@ tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/buffer.cmj
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
+undef_regression_test.cmo : ../lib/js.cmo
+undef_regression_test.cmj : ../lib/js.cmj
 unitest_string.cmo :
 unitest_string.cmj :
 unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo

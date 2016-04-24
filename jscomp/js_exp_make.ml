@@ -490,14 +490,14 @@ let bin ?comment (op : J.binop) e0 e1 : t =
 *)
 let rec and_ ?comment (e1 : t) (e2 : t) = 
   match e1.expression_desc, e2.expression_desc with 
-  | (Bin (NotEqEq, e1, 
-          {expression_desc = Var (Id ({name = "undefined"; _} as id))})
-    | Bin (NotEqEq, 
-           {expression_desc = Var (Id ({name = "undefined"; _} as id))}, 
-           e1)
-    ), 
-    _ when Ext_ident.is_js id -> 
-    and_ e1 e2
+  (* | (Bin (NotEqEq, e1,  *)
+  (*         {expression_desc = Var (Id ({name = "undefined"; _} as id))}) *)
+  (*   | Bin (NotEqEq,  *)
+  (*          {expression_desc = Var (Id ({name = "undefined"; _} as id))},  *)
+  (*          e1) *)
+  (*   ),  *)
+  (*   _ when Ext_ident.is_js id ->  *)
+  (*   and_ e1 e2 *)
   |  Int_of_boolean e1 , Int_of_boolean e2 -> 
     and_ ?comment e1 e2
   |  Int_of_boolean e1 , _ -> and_ ?comment e1 e2
@@ -576,11 +576,17 @@ let rec econd ?comment (b : t) (t : t) (f : t) : t =
   | Bool false,  _, _ -> f
   | (Bin (Bor, v , {expression_desc = Number (Int {i = 0l ; _})})), _, _
     -> econd v t f 
-  | Bin (NotEqEq, e1, 
-         {expression_desc = Var (Id ({name = "undefined"; _} as id))}),
-    _, _
-    when Ext_ident.is_js id -> 
-    econd e1 t f 
+  (* TODO: could be more non undefined cases 
+     check [caml_obj_is_block]
+     acutally we should avoid introducing undefined
+     as much as we can, this kind of inlining and mirco-optimization
+     can be done after we can inline runtime in the future 
+  *)
+  (* | Bin (NotEqEq, ({expression_desc = Length _; _} as e1) , *)
+  (*        {expression_desc = Var (Id ({name = "undefined"; _} as id))}), *)
+  (*   _, _  *)
+  (*   when Ext_ident.is_js id -> *)
+  (*   econd e1 t f *)
 
   | ((Bin ((EqEqEq, {expression_desc = Number (Int { i = 0l; _}); _},x)) 
      | Bin (EqEqEq, x,{expression_desc = Number (Int { i = 0l; _});_}))), _, _ 
