@@ -144,6 +144,29 @@ var param$7 = Hashtbl.hash(/* :: */[
 
 Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 36, characters 5-12', param$7, 81986873);
 
+var param$8 = Hashtbl.hash(/* :: */[
+      /* tuple */[
+        /* `A */[
+          65,
+          /* tuple */[
+            0,
+            2,
+            1
+          ]
+        ],
+        /* `B */[
+          66,
+          /* array */[/* tuple */[
+              "x",
+              "y"
+            ]]
+        ]
+      ],
+      /* [] */0
+    ]) & 1073741823;
+
+Mt_global.collect_eq(test_id, suites, 'File "hash_test.ml", line 39, characters 5-12', param$8, 100650590);
+
 Mt.from_pair_suites("hash_test.ml", suites[0]);
 
 exports.suites                    = suites;

@@ -265,3 +265,7 @@ fail_comp
 
 stack_comp_test
 
+float_array
+float_record
+tfloat_record_test
+

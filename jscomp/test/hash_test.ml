@@ -35,6 +35,8 @@ let () =
   eq __LOC__ (caml_hash [`A 3; `B 2 ; `C 3 ]) 1017654909;
   eq __LOC__ (caml_hash [`A "3", `B "2" ; `C "3", `D "4"]) (81986873)  
 
+let () =
+  eq __LOC__ (caml_hash ([ `A (0,2,1), `B [| "x", "y"|]])) 100650590
 
 let () =
   Mt.from_pair_suites __FILE__ !suites
