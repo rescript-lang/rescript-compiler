@@ -72,3 +72,7 @@ val eta_conversion :
   Lambda.apply_info -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
 
 val default_apply_info : Lambda.apply_info
+
+val js_is_nil_primitive : Lambda.primitive
+val js_is_undef_primitive : Lambda.primitive
+val js_is_nil_undef_primitive : Lambda.primitive

@@ -64,6 +64,7 @@ type boxed_nullable
   = 
   | Undefined 
   | Null 
+  | Null_undefined
   | Normal 
 
 type kind = 

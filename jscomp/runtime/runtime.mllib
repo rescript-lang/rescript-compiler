@@ -30,3 +30,4 @@ js_error
 caml_curry
 curry
 block
+js_primitive

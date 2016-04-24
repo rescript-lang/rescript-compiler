@@ -6,6 +6,8 @@ var Null = /* module */[];
 
 var Def = /* module */[];
 
+var Null_def = /* module */[];
+
 var $$String = /* module */[];
 
 var $$Array = /* module */[];
@@ -20,6 +22,7 @@ var Caml_int64 = /* module */[];
 
 exports.Null       = Null;
 exports.Def        = Def;
+exports.Null_def   = Null_def;
 exports.$$String   = $$String;
 exports.$$Array    = $$Array;
 exports.Bytes      = Bytes;

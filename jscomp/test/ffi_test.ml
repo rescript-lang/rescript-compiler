@@ -4,9 +4,9 @@ external f : int -> int = "xx" [@@bs.call ]
 
 
 let u () = f 3 
-let v = Js.null
+let v = Js.Null.empty
 
-let a, b ,c, d = Js.(true_, false_, null, undef)
+let a, b ,c, d = Js.(true_, false_, Js.Null.empty, Js.Def.empty)
 
 module Textarea = struct
   type t

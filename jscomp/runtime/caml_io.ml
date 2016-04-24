@@ -18,12 +18,12 @@
 
 (* Author: Hongbo Zhang  *)
 
-type 'a def
 
 
-let stdin = Js.undef
 
-let stderr = Js.undef 
+let stdin = Js.Def.empty
+
+let stderr = Js.Def.empty
 
 type out_channel  = {
   mutable buffer :  string;
