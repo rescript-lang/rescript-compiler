@@ -95,11 +95,15 @@ outputMirror.setValue(PROMPT + '"h,e,l,l,o,o,c,a,m,l"');
 errorMirror.setSize(null,50);
 errorMirror.setValue(ERR_OUTPUT);
 
+var sourceLocation = ""
+if (typeof window.location !== "undefined"){
+    sourceLocation = "\n//# sourceURL=" + window.location.href + "/repl.js"
+}
 
 function evalCode(js){
   console.log = redirect;
   try {
-    window.eval(js);
+    window.eval(js + sourceLocation);
     outputMirror.setValue(get_log_output());
     console.log = original_log;
   }
