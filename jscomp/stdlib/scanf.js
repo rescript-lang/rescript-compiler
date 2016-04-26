@@ -10,7 +10,6 @@ var Caml_int32               = require("../runtime/caml_int32");
 var Block                    = require("../runtime/block");
 var Curry                    = require("../runtime/curry");
 var Printf                   = require("./printf");
-var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Buffer                   = require("./buffer");
 var $$String                 = require("./string");
@@ -150,8 +149,10 @@ function from_function(param) {
 
 var file_buffer_size = [1024];
 
-function scan_close_at_end(ic) {
-  Caml_primitive.caml_ml_close_channel(ic);
+function scan_close_at_end() {
+  (function () {
+        throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+      }());
   throw Caml_builtin_exceptions.end_of_file;
 }
 
@@ -254,10 +255,14 @@ function close_in(ib) {
     return /* () */0;
   }
   else if (match.tag) {
-    return Caml_primitive.caml_ml_close_channel(match[0]);
+    return function () {
+              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+            }();
   }
   else {
-    return Caml_primitive.caml_ml_close_channel(match[1]);
+    return function () {
+              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+            }();
   }
 }
 

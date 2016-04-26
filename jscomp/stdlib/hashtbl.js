@@ -10,7 +10,6 @@ var Pervasives              = require("./pervasives");
 var Block                   = require("../runtime/block");
 var Sys                     = require("./sys");
 var Curry                   = require("../runtime/curry");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$Array                 = require("./array");
 var Caml_string             = require("../runtime/caml_string");
@@ -166,7 +165,9 @@ function key_index(h, key) {
     return Caml_hash.caml_hash(10, 100, h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
   }
   else {
-    return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[/* data */1].length;
+    return function () {
+              throw "caml_hash_univ_param not implemented by bucklescript yet\n";
+            }() % h[/* data */1].length;
   }
 }
 

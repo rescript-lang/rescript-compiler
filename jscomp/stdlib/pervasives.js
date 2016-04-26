@@ -7,7 +7,6 @@ var Caml_io                  = require("../runtime/caml_io");
 var Caml_exceptions          = require("../runtime/caml_exceptions");
 var Caml_format              = require("../runtime/caml_format");
 var Curry                    = require("../runtime/curry");
-var Caml_primitive           = require("../runtime/caml_primitive");
 var CamlinternalFormatBasics = require("./camlinternalFormatBasics");
 var Caml_string              = require("../runtime/caml_string");
 
@@ -159,8 +158,10 @@ var stdout = Caml_io.stdout;
 
 var stderr = Caml_io.stderr;
 
-function open_out_gen(mode, perm, name) {
-  return Caml_io.caml_ml_open_descriptor_out(Caml_primitive.caml_sys_open(name, mode, perm));
+function open_out_gen(_, _$1, _$2) {
+  return Caml_io.caml_ml_open_descriptor_out(function () {
+                throw "caml_sys_open not implemented by bucklescript yet\n";
+              }());
 }
 
 function open_out(name) {
@@ -248,13 +249,17 @@ function output_substring(oc, s, ofs, len) {
   }
 }
 
-function output_value(chan, v) {
-  return Caml_primitive.caml_output_value(chan, v, /* [] */0);
+function output_value(_, _$1) {
+  return function () {
+            throw "caml_output_value not implemented by bucklescript yet\n";
+          }();
 }
 
 function close_out(oc) {
   Caml_io.caml_ml_flush(oc);
-  return Caml_primitive.caml_ml_close_channel(oc);
+  return function () {
+            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+          }();
 }
 
 function close_out_noerr(oc) {
@@ -265,15 +270,19 @@ function close_out_noerr(oc) {
     
   }
   try {
-    return Caml_primitive.caml_ml_close_channel(oc);
+    return function () {
+              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+            }();
   }
   catch (exn$1){
     return /* () */0;
   }
 }
 
-function open_in_gen(mode, perm, name) {
-  return Caml_io.caml_ml_open_descriptor_in(Caml_primitive.caml_sys_open(name, mode, perm));
+function open_in_gen(_, _$1, _$2) {
+  return Caml_io.caml_ml_open_descriptor_in(function () {
+                throw "caml_sys_open not implemented by bucklescript yet\n";
+              }());
 }
 
 function open_in(name) {
@@ -296,7 +305,7 @@ function open_in_bin(name) {
             ], 0, name);
 }
 
-function input(ic, s, ofs, len) {
+function input(_, s, ofs, len) {
   if (ofs < 0 || len < 0 || ofs > (s.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -304,11 +313,13 @@ function input(ic, s, ofs, len) {
         ];
   }
   else {
-    return Caml_primitive.caml_ml_input(ic, s, ofs, len);
+    return function () {
+              throw "caml_ml_input not implemented by bucklescript yet\n";
+            }();
   }
 }
 
-function unsafe_really_input(ic, s, _ofs, _len) {
+function unsafe_really_input(_, _$1, _ofs, _len) {
   while(true) {
     var len = _len;
     var ofs = _ofs;
@@ -316,7 +327,9 @@ function unsafe_really_input(ic, s, _ofs, _len) {
       return /* () */0;
     }
     else {
-      var r = Caml_primitive.caml_ml_input(ic, s, ofs, len);
+      var r = function () {
+          throw "caml_ml_input not implemented by bucklescript yet\n";
+        }();
       if (r) {
         _len = len - r | 0;
         _ofs = ofs + r | 0;
@@ -371,11 +384,15 @@ function input_line(chan) {
     while(true) {
       var len = _len;
       var accu = _accu;
-      var n = Caml_primitive.caml_ml_input_scan_line(chan);
+      var n = function () {
+          throw "caml_ml_input_scan_line not implemented by bucklescript yet\n";
+        }();
       if (n) {
         if (n > 0) {
           var res = Caml_string.caml_create_string(n - 1 | 0);
-          Caml_primitive.caml_ml_input(chan, res, 0, n - 1 | 0);
+          (function () {
+                throw "caml_ml_input not implemented by bucklescript yet\n";
+              }());
           Caml_io.caml_ml_input_char(chan);
           if (accu) {
             var len$1 = (len + n | 0) - 1 | 0;
@@ -390,7 +407,9 @@ function input_line(chan) {
         }
         else {
           var beg = Caml_string.caml_create_string(-n);
-          Caml_primitive.caml_ml_input(chan, beg, 0, -n);
+          (function () {
+                throw "caml_ml_input not implemented by bucklescript yet\n";
+              }());
           _len = len - n | 0;
           _accu = /* :: */[
             beg,
@@ -411,9 +430,11 @@ function input_line(chan) {
   return Caml_string.bytes_to_string(scan(/* [] */0, 0));
 }
 
-function close_in_noerr(ic) {
+function close_in_noerr() {
   try {
-    return Caml_primitive.caml_ml_close_channel(ic);
+    return function () {
+              throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+            }();
   }
   catch (exn){
     return /* () */0;
@@ -519,9 +540,11 @@ function do_at_exit() {
   return Curry._1(exit_function[0], /* () */0);
 }
 
-function exit(retcode) {
+function exit() {
   do_at_exit(/* () */0);
-  return Caml_primitive.caml_sys_exit(retcode);
+  return function () {
+            throw "caml_sys_exit not implemented by bucklescript yet\n";
+          }();
 }
 
 var infinity = Infinity;
@@ -542,45 +565,117 @@ var output_char = Caml_io.caml_ml_output_char
 
 var output_byte = Caml_io.caml_ml_output_char
 
-var output_binary_int = Caml_primitive.caml_ml_output_int
+function output_binary_int(_, _$1) {
+  return function () {
+            throw "caml_ml_output_int not implemented by bucklescript yet\n";
+          }();
+}
 
-var seek_out = Caml_primitive.caml_ml_seek_out
+function seek_out(_, _$1) {
+  return function () {
+            throw "caml_ml_seek_out not implemented by bucklescript yet\n";
+          }();
+}
 
-var pos_out = Caml_primitive.caml_ml_pos_out
+function pos_out() {
+  return function () {
+            throw "caml_ml_pos_out not implemented by bucklescript yet\n";
+          }();
+}
 
-var out_channel_length = Caml_primitive.caml_ml_channel_size
+function out_channel_length() {
+  return function () {
+            throw "caml_ml_channel_size not implemented by bucklescript yet\n";
+          }();
+}
 
-var set_binary_mode_out = Caml_primitive.caml_ml_set_binary_mode
+function set_binary_mode_out(_, _$1) {
+  return function () {
+            throw "caml_ml_set_binary_mode not implemented by bucklescript yet\n";
+          }();
+}
 
 var input_char = Caml_io.caml_ml_input_char
 
 var input_byte = Caml_io.caml_ml_input_char
 
-var input_binary_int = Caml_primitive.caml_ml_input_int
+function input_binary_int() {
+  return function () {
+            throw "caml_ml_input_int not implemented by bucklescript yet\n";
+          }();
+}
 
-var input_value = Caml_primitive.caml_input_value
+function input_value() {
+  return function () {
+            throw "caml_input_value not implemented by bucklescript yet\n";
+          }();
+}
 
-var seek_in = Caml_primitive.caml_ml_seek_in
+function seek_in(_, _$1) {
+  return function () {
+            throw "caml_ml_seek_in not implemented by bucklescript yet\n";
+          }();
+}
 
-var pos_in = Caml_primitive.caml_ml_pos_in
+function pos_in() {
+  return function () {
+            throw "caml_ml_pos_in not implemented by bucklescript yet\n";
+          }();
+}
 
-var in_channel_length = Caml_primitive.caml_ml_channel_size
+function in_channel_length() {
+  return function () {
+            throw "caml_ml_channel_size not implemented by bucklescript yet\n";
+          }();
+}
 
-var close_in = Caml_primitive.caml_ml_close_channel
+function close_in() {
+  return function () {
+            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+          }();
+}
 
-var set_binary_mode_in = Caml_primitive.caml_ml_set_binary_mode
+function set_binary_mode_in(_, _$1) {
+  return function () {
+            throw "caml_ml_set_binary_mode not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_000 = Caml_primitive.caml_ml_seek_out_64
+function LargeFile_000(_, _$1) {
+  return function () {
+            throw "caml_ml_seek_out_64 not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_001 = Caml_primitive.caml_ml_pos_out_64
+function LargeFile_001() {
+  return function () {
+            throw "caml_ml_pos_out_64 not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_002 = Caml_primitive.caml_ml_channel_size_64
+function LargeFile_002() {
+  return function () {
+            throw "caml_ml_channel_size_64 not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_003 = Caml_primitive.caml_ml_seek_in_64
+function LargeFile_003(_, _$1) {
+  return function () {
+            throw "caml_ml_seek_in_64 not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_004 = Caml_primitive.caml_ml_pos_in_64
+function LargeFile_004() {
+  return function () {
+            throw "caml_ml_pos_in_64 not implemented by bucklescript yet\n";
+          }();
+}
 
-var LargeFile_005 = Caml_primitive.caml_ml_channel_size_64
+function LargeFile_005() {
+  return function () {
+            throw "caml_ml_channel_size_64 not implemented by bucklescript yet\n";
+          }();
+}
 
 var LargeFile = [
   LargeFile_000,

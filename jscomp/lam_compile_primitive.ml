@@ -517,7 +517,9 @@ let translate
   | Pfloatfield (i, field_info) -> (** RUNTIME *)
       begin 
         match args with 
-        | [e] -> Js_of_lam_float_record.get_double_feild field_info e (Int32.of_int i) 
+        | [e] ->
+          Js_of_lam_float_record.get_double_feild field_info e
+            (Int32.of_int i) 
         | _ -> assert false 
       end
   | Parrayrefu _kind

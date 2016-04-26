@@ -698,8 +698,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "unix_initgroups"
   | "unix_getlogin"
   | "unix_getpwnam"
-
-    ->  call Js_config.unix
+    ->  E.not_implemented prim_name
   (* End of Unix support *)
   (* bigarrary support *)
   | "caml_ba_init"
@@ -765,27 +764,23 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_weak_blit"
   | "caml_weak_get_copy"
     -> call Js_config.weak
+
   | "caml_output_value_to_buffer"
   | "caml_marshal_data_size"
   | "caml_input_value_from_string"
   | "caml_output_value"
   | "caml_input_value"
   | "caml_output_value_to_string"
-
   | "caml_md5_chan"
-
   | "caml_hash_univ_param"
   | "caml_sys_close"
-
   | "caml_sys_open"
-
   | "caml_ml_input"
   | "caml_ml_input_scan_line"
   | "caml_ml_input_int"
   | "caml_ml_close_channel"
   | "caml_ml_output_int"
   | "caml_sys_exit"
-
   | "caml_ml_channel_size_64"
   | "caml_ml_channel_size"
   | "caml_ml_pos_in_64"
@@ -797,8 +792,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_ml_seek_out"
   | "caml_ml_seek_out_64"
   | "caml_ml_set_binary_mode"
-    ->  call Js_config.prim
-
+    ->  E.not_implemented prim_name
 
   | "js_function_length"
 
@@ -1009,8 +1003,10 @@ let query (prim : Lam_compile_env.primitive_description)
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
         (Lam_current_unit.get_file ()) ;
-      (*we dont use [throw] here, since [throw] is an statement  *)        
-      E.dump ~comment Error [( E.str ~comment ~pure:false  prim_name)];
+      E.not_implemented prim_name
+      (*we dont use [throw] here, since [throw] is an statement 
+        so we wrap in IIFE
+      *)        
 
   end 
 

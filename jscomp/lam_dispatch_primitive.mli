@@ -27,4 +27,6 @@
 (** 
     @return None when the primitives are not handled in  pre-processing
  *)
-val query : Lam_compile_env.primitive_description -> J.expression list -> J.expression 
+val query : 
+  Lam_compile_env.primitive_description ->
+  J.expression list -> J.expression 

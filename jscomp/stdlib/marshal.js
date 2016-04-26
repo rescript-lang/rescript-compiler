@@ -2,10 +2,9 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_string             = require("../runtime/caml_string");
 
-function to_buffer(buff, ofs, len, v, flags) {
+function to_buffer(buff, ofs, len, _, _$1) {
   if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -13,7 +12,9 @@ function to_buffer(buff, ofs, len, v, flags) {
         ];
   }
   else {
-    return Caml_primitive.caml_output_value_to_buffer(buff, ofs, len, v, flags);
+    return function () {
+              throw "caml_output_value_to_buffer not implemented by bucklescript yet\n";
+            }();
   }
 }
 
@@ -25,7 +26,9 @@ function data_size(buff, ofs) {
         ];
   }
   else {
-    return Caml_primitive.caml_marshal_data_size(buff, ofs);
+    return function () {
+              throw "caml_marshal_data_size not implemented by bucklescript yet\n";
+            }();
   }
 }
 
@@ -41,7 +44,9 @@ function from_bytes(buff, ofs) {
         ];
   }
   else {
-    var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
+    var len = function () {
+        throw "caml_marshal_data_size not implemented by bucklescript yet\n";
+      }();
     if (ofs > (buff.length - (20 + len | 0) | 0)) {
       throw [
             Caml_builtin_exceptions.invalid_argument,
@@ -49,7 +54,9 @@ function from_bytes(buff, ofs) {
           ];
     }
     else {
-      return Caml_primitive.caml_input_value_from_string(buff, ofs);
+      return function () {
+                throw "caml_input_value_from_string not implemented by bucklescript yet\n";
+              }();
     }
   }
 }
@@ -58,9 +65,17 @@ function from_string(buff, ofs) {
   return from_bytes(Caml_string.bytes_of_string(buff), ofs);
 }
 
-var to_channel = Caml_primitive.caml_output_value
+function to_channel(_, _$1, _$2) {
+  return function () {
+            throw "caml_output_value not implemented by bucklescript yet\n";
+          }();
+}
 
-var from_channel = Caml_primitive.caml_input_value
+function from_channel() {
+  return function () {
+            throw "caml_input_value not implemented by bucklescript yet\n";
+          }();
+}
 
 var header_size = 20;
 
