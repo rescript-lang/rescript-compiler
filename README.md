@@ -49,7 +49,9 @@ As you can see, there is no name mangling in the generated code, so if this modu
 ## Disclaimer
 
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
-It is in an *very early* stage and not production ready for your own projects *yet*.
+
+It is in an *pre-alpha* stage and we encourage you to try it and share
+your feedback.
 
 ## [Link to wiki Documentation](https://github.com/bloomberg/bucklescript/wiki)
 
@@ -84,10 +86,11 @@ It is in an *very early* stage and not production ready for your own projects *y
 
 3. Build BuckleScript Compiler
 
-  Assume that you have `ocamlopt.opt` in the `PATH`
+  Assume that you have `ocamlopt.opt`(the one which we just built) in the `PATH`
+
   ```sh
   cd ../jscomp
-  ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+  make world
   ```
 
   Now you have a binary called `bsc` under `jscomp/bin` directory,
@@ -95,9 +98,16 @@ It is in an *very early* stage and not production ready for your own projects *y
   pointing to the stdlib, like `BSC_LIB=/path/to/jscomp/stdlib`
 
 
-  Our compiler is released as a single file so that for release-builds
-  it does not need any build system (easier to be supported on Windows Platform).
+  Note by default, `bsc` will generate `commonjs` modules, you can
+  override such behavior by picking up your own module system:
 
+
+  ```sh
+  MODULE_FLAGS='-js-module amdjs' make world
+  MODULE_FLAGS='-js-module commonjs' make world
+  MODULE_FLAGS='-js-module goog:buckle' make world
+  ```
+  
 4. Test
 
   In a separate directory, create a file called `hello.ml`:
@@ -121,30 +131,6 @@ It is in an *very early* stage and not production ready for your own projects *y
 
   If everything goes well, you will see `hello world` on your screen.
 
-Note that the following steps are optional, they are used to build the
-runtime and standard library to verify whether it works, you don't need to run
-these steps.
-
-
-1. Build the runtime with `bsc`
-
-  ```sh
-  cd runtime
-  make all
-  ```
-
-2. Build the ocaml standard library with `bsc`
-
-  ```sh
-  cd ../stdlib
-  make all
-  ```
-3. Build the bucklescript library (it contains JS bindings) with `bsc`
-
-   ```sh
-   cd ../lib
-   make all
-   ```
 
 ## Windows support
 
@@ -172,6 +158,9 @@ JS backend.
 
 [stdlib](jscomp/stdlib) is copied from ocaml's [stdlib](ocaml/stdlib) to have it compiled with
 the new JS compiler.
+
+[test](jscomp/test) copied and adapted some modules from ocaml's [testsuite](ocaml/testsuite).
+
 
 Since our work is derivative work of [js_of_ocaml](http://ocsigen.org/js_of_ocaml/), the license of the BuckleScript components is GPLv2, the same as js_of_ocaml.
 
@@ -266,7 +255,10 @@ Some known issues are listed as below:
    are then inlined so there will no be performance cost or code size
    penalty.
 
-   Bigarray, Unix, Num
+   Bigarray, Unix, Num, Str(regex)
+
+   For `Print` to behave correctly, you have to add a newline after
+   your output to guarantee it will be flushed, otherwise, it may be buffered.
 
 2. String is immutable, user is expected to compile with the flag `-safe-string` for all modules:
 
