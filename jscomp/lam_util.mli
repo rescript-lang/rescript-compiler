@@ -51,7 +51,7 @@ val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
 
 
 (** [dump] when {!Lam_current_unit.is_same_file}*)
-val dump : Env.t -> string  -> Lambda.lambda -> Lambda.lambda
+val dump : Env.t   -> string -> Lambda.lambda -> Lambda.lambda
 
 val ident_set_of_list : Ident.t list -> Ident_set.t
 

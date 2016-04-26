@@ -608,6 +608,8 @@ tscanf_test.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
     ../stdlib/printf.cmx ../stdlib/nativeint.cmx mt_global.cmx mt.cmx \
     ../stdlib/list.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
     ../stdlib/buffer.cmx
+tuple_alloc.cmo :
+tuple_alloc.cmx :
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmx : mt.cmx ../lib/js.cmx
 undef_regression_test.cmo : ../lib/js.cmo
@@ -1208,6 +1210,8 @@ tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/printf.cmj ../stdlib/nativeint.cmj mt_global.cmj mt.cmj \
     ../stdlib/list.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/buffer.cmj
+tuple_alloc.cmo :
+tuple_alloc.cmj :
 typeof_test.cmo : mt.cmi ../lib/js.cmo
 typeof_test.cmj : mt.cmj ../lib/js.cmj
 undef_regression_test.cmo : ../lib/js.cmo

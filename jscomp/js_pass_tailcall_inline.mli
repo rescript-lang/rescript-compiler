@@ -20,6 +20,17 @@
 
 
 
-(** Inline and remove unused code in JS IR *)
+(** This pass detect functions used once and if it is used in used
+    in the tail position, it will get inlined, this will help 
+    remove some common use cases like This
+    {[
+      let length x = 
+        let rec aux n x = 
+          match x with 
+          | [] -> n 
+          | _ :: rest -> aux (n + 1) rest in
+        aux 0 x         
+    ]} 
+*)
 
-val inline_and_shake : J.program -> J.program 
+val tailcall_inline : J.program -> J.program 

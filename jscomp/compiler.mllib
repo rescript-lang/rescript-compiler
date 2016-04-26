@@ -75,6 +75,7 @@ js_fold_basic
 js_fun_env
 js_pass_flatten_and_mark_dead
 js_pass_scope
+js_pass_beta
 js_call_info
 js_pass_debug
 
@@ -93,7 +94,7 @@ js_op
 js_op_util
 js_analyzer
 js_shake
-js_inline_and_eliminate
+js_pass_tailcall_inline
 js_pass_flatten
 js_number
 js_long
