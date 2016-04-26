@@ -2,7 +2,7 @@
 'use strict';
 
 
-var h = uuu.x(3);
+var h = x(3);
 
 var hh = x(3);
 

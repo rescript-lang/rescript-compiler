@@ -179,13 +179,13 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
             [@@bs.module "./react.js"]
             [@@bs.module "react-dom" "React"]
          *)
-         | "bs.scope"
-           -> 
-           begin match is_string_or_strings pay_load with 
-             | `None -> ()
-             | `Single name -> qualifiers := [name]
-             | `Some vs -> qualifiers := List.rev vs 
-           end
+         (* | "bs.scope" *)
+         (*   ->  *)
+         (*   begin match is_string_or_strings pay_load with  *)
+         (*     | `None -> () *)
+         (*     | `Single name -> qualifiers := [name] *)
+         (*     | `Some vs -> qualifiers := List.rev vs  *)
+         (*   end *)
          | "bs.new" -> 
            begin match is_single_string pay_load with 
              | Some x -> js_new := Some x 

@@ -32,8 +32,9 @@ class type suites =
     method run : unit -> unit 
   end
 
+
 external js_new_suites : unit ->  suites = "Suite" 
-    [@@bs.new ] [@@bs.module "benchmark" "Bench"] [@@bs.scope "Bench"]
+    [@@bs.new ] [@@bs.module "benchmark" "Bench"] 
 
 let suite = js_new_suites ()
 
