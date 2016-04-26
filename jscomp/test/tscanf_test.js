@@ -4281,8 +4281,8 @@ function test53() {
                     ]),
                   "%Ld"
                 ]), id), /* int64 */[
-          0,
-          123
+          /* hi */0,
+          /* lo */123
         ])) {
     return Curry._1(Scanf.sscanf("124", /* Format */[
                     /* Int64 */Block.__(7, [
@@ -4294,11 +4294,11 @@ function test53() {
                     "%Ld"
                   ]), function (i) {
                 return Caml_int64.eq(Caml_int64.sub(i, /* int64 */[
-                                0,
-                                1
+                                /* hi */0,
+                                /* lo */1
                               ]), /* int64 */[
-                            0,
-                            123
+                            /* hi */0,
+                            /* lo */123
                           ]);
               });
   }

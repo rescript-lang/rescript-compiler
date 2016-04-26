@@ -111,22 +111,22 @@ var yyact = /* array */[
 ];
 
 var yytables = /* record */[
-  yyact,
-  yytransl_const,
-  yytransl_block,
-  yylhs,
-  yylen,
-  yydefred,
-  yydgoto,
-  yysindex,
-  yyrindex,
-  yygindex,
-  272,
-  yytable,
-  yycheck,
-  Parsing.parse_error,
-  yynames_const,
-  yynames_block
+  /* actions */yyact,
+  /* transl_const */yytransl_const,
+  /* transl_block */yytransl_block,
+  /* lhs */yylhs,
+  /* len */yylen,
+  /* defred */yydefred,
+  /* dgoto */yydgoto,
+  /* sindex */yysindex,
+  /* rindex */yyrindex,
+  /* gindex */yygindex,
+  /* tablesize */272,
+  /* table */yytable,
+  /* check */yycheck,
+  /* error_function */Parsing.parse_error,
+  /* names_const */yynames_const,
+  /* names_block */yynames_block
 ];
 
 function toplevel(lexfun, lexbuf) {

@@ -856,8 +856,8 @@ function bprint_fmt(buf, fmt) {
 
 function string_of_fmt(fmt) {
   var buf = /* record */[
-    0,
-    new Array(16)
+    /* ind */0,
+    /* bytes */new Array(16)
   ];
   bprint_fmt(buf, fmt);
   return buffer_contents(buf);
@@ -3128,8 +3128,8 @@ function format_of_fconv(fconv, prec) {
     var prec$1 = Pervasives.abs(prec);
     var symb = char_of_fconv(fconv);
     var buf = /* record */[
-      0,
-      new Array(16)
+      /* ind */0,
+      /* bytes */new Array(16)
     ];
     buffer_add_char(buf, /* "%" */37);
     bprint_fconv_flag(buf, fconv);
@@ -3227,8 +3227,8 @@ function format_caml_char(c) {
 
 function string_of_fmtty(fmtty) {
   var buf = /* record */[
-    0,
-    new Array(16)
+    /* ind */0,
+    /* bytes */new Array(16)
   ];
   bprint_fmtty(buf, fmtty);
   return buffer_contents(buf);

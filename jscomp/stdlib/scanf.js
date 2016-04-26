@@ -115,15 +115,15 @@ function store_char(width, ib, c) {
 
 function create(iname, next) {
   return /* record */[
-          /* false */0,
-          /* "\000" */0,
-          /* false */0,
-          0,
-          0,
-          0,
-          next,
-          Buffer.create(1024),
-          iname
+          /* eof : false */0,
+          /* current_char : "\000" */0,
+          /* current_char_is_valid : false */0,
+          /* char_count */0,
+          /* line_count */0,
+          /* token_count */0,
+          /* get_next_char */next,
+          /* tokbuf */Buffer.create(1024),
+          /* input_name */iname
         ];
 }
 

@@ -35,7 +35,7 @@ function even(n) {
   }
 }
 
-CamlinternalMod.update_mod([[0]], A, /* module */[even]);
+CamlinternalMod.update_mod([[0]], A, /* module */[/* even */even]);
 
 function odd(n) {
   if (n === 1) {
@@ -49,7 +49,7 @@ function odd(n) {
   }
 }
 
-CamlinternalMod.update_mod([[0]], B, /* module */[odd]);
+CamlinternalMod.update_mod([[0]], B, /* module */[/* odd */odd]);
 
 var AA = CamlinternalMod.init_mod([
       "rec_module_test.ml",
@@ -91,8 +91,8 @@ CamlinternalMod.update_mod([[
         0,
         0
       ]], AA, /* module */[
-      even$1,
-      x
+      /* even */even$1,
+      /* x */x
     ]);
 
 function odd$1(n) {
@@ -115,8 +115,8 @@ CamlinternalMod.update_mod([[
         0,
         0
       ]], BB, /* module */[
-      odd$1,
-      y
+      /* odd */odd$1,
+      /* y */y
     ]);
 
 var Even = {
@@ -1060,7 +1060,7 @@ function compare$1(t1, t2) {
   }
 }
 
-CamlinternalMod.update_mod([[0]], AAA, /* module */[compare$1]);
+CamlinternalMod.update_mod([[0]], AAA, /* module */[/* compare */compare$1]);
 
 var suites_000 = /* tuple */[
   "test1",

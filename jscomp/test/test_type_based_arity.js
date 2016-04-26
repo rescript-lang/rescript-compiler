@@ -63,7 +63,7 @@ function f13(g, x) {
   return Curry._1(g, x);
 }
 
-var X2 = /* module */[f13];
+var X2 = /* module */[/* f13 */f13];
 
 function f14(h, g, x) {
   return Curry._2(h, g, x);

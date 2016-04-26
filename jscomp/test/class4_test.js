@@ -96,7 +96,7 @@ var restricted_point2$prime = CamlinternalOO.make_class(shared$2, restricted_poi
 
 var restricted_point$prime$1 = restricted_point;
 
-var Point = /* module */[restricted_point$prime$1];
+var Point = /* module */[/* restricted_point' */restricted_point$prime$1];
 
 var abstract_point = {
   

@@ -57,8 +57,8 @@ function equal(x, y) {
 }
 
 var Int_hash = Hashtbl.Make(/* module */[
-      equal,
-      hash
+      /* equal */equal,
+      /* hash */hash
     ]);
 
 var suites_000 = /* tuple */[

@@ -6,13 +6,13 @@ var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 var v = /* record */[
-  /* None */0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
+  /* syntax : None */0,
+  /* imports */0,
+  /* file_options */0,
+  /* package */0,
+  /* messages */0,
+  /* enums */0,
+  /* extends */0
 ];
 
 var newrecord = v.slice();
@@ -43,13 +43,13 @@ var suites = /* :: */[
 Mt.from_pair_suites("record_with_test.ml", suites);
 
 var uv = /* record */[
-  /* None */0,
-  1,
-  0,
-  0,
-  0,
-  0,
-  0
+  /* syntax : None */0,
+  /* imports */1,
+  /* file_options */0,
+  /* package */0,
+  /* messages */0,
+  /* enums */0,
+  /* extends */0
 ];
 
 var u_v = newrecord;

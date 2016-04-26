@@ -41,10 +41,11 @@ let translate
     Js_of_lam_block.make_block 
       (Js_op_util.of_lam_mutable_flag mutable_flag) 
       tag_info (E.small_int tag) args 
-  | Pfield (i, fld_info (* XXFLD*)) -> 
+  | Pfield (i, fld_info) -> 
     begin match args with 
       | [ e ]  -> 
-        Js_of_lam_block.field fld_info e (Int32.of_int i) (* Invariant depends on runtime *)
+        Js_of_lam_block.field fld_info e (Int32.of_int i)
+      (* Invariant depends on runtime *)
       | _ -> assert false
     end
 

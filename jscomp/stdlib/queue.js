@@ -9,8 +9,8 @@ var Empty = Caml_exceptions.create("Queue.Empty");
 
 function create() {
   return /* record */[
-          0,
-          /* None */0
+          /* length */0,
+          /* tail : None */0
         ];
 }
 
@@ -25,8 +25,8 @@ function add(x, q) {
     var tail = q[/* tail */1];
     var head = tail[/* next */1];
     var cell = /* record */[
-      x,
-      head
+      /* content */x,
+      /* next */head
     ];
     q[/* length */0] = q[/* length */0] + 1 | 0;
     tail[/* next */1] = cell;
@@ -75,8 +75,8 @@ function copy(q) {
       
     };
     Caml_obj.caml_update_dummy(tail$prime, /* record */[
-          tail[/* content */0],
-          tail$prime
+          /* content */tail[/* content */0],
+          /* next */tail$prime
         ]);
     var copy$1 = function (_prev, _cell) {
       while(true) {
@@ -84,8 +84,8 @@ function copy(q) {
         var prev = _prev;
         if (cell !== tail) {
           var res = /* record */[
-            cell[/* content */0],
-            tail$prime
+            /* content */cell[/* content */0],
+            /* next */tail$prime
           ];
           prev[/* next */1] = res;
           _cell = cell[/* next */1];
@@ -100,14 +100,14 @@ function copy(q) {
     };
     copy$1(tail$prime, tail[/* next */1]);
     return /* record */[
-            q[/* length */0],
-            tail$prime
+            /* length */q[/* length */0],
+            /* tail */tail$prime
           ];
   }
   else {
     return /* record */[
-            0,
-            /* None */0
+            /* length */0,
+            /* tail : None */0
           ];
   }
 }

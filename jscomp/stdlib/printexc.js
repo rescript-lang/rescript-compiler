@@ -416,10 +416,10 @@ function backtrace_slot_location(param) {
   }
   else {
     return /* Some */[/* record */[
-              param[1],
-              param[2],
-              param[3],
-              param[4]
+              /* filename */param[1],
+              /* line_number */param[2],
+              /* start_char */param[3],
+              /* end_char */param[4]
             ]];
   }
 }

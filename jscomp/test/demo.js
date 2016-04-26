@@ -8,16 +8,16 @@ var BUI     = require("@blp/ui");
 
 var data = /* array */[
   /* record */[
-    "GOOG",
-    700.0
+    /* ticker */"GOOG",
+    /* price */700.0
   ],
   /* record */[
-    "AAPL",
-    500.0
+    /* ticker */"AAPL",
+    /* price */500.0
   ],
   /* record */[
-    "MSFT",
-    300.0
+    /* ticker */"MSFT",
+    /* price */300.0
   ]
 ];
 

@@ -17,8 +17,8 @@ Curry._1(Printf.printf(/* Format */[
             ]),
           "%Ld\n"
         ]), /* int64 */[
-      0,
-      32
+      /* hi */0,
+      /* lo */32
     ]);
 
 Printf.printf(/* Format */[

@@ -37,7 +37,7 @@ var s = [
   $$String.compare
 ];
 
-var N = /* module */[s];
+var N = /* module */[/* s */s];
 
 var v0 = 1;
 

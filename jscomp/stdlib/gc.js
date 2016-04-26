@@ -252,10 +252,10 @@ function call_alarm(arec) {
 }
 
 function create_alarm(f) {
-  var arec_000 = [/* true */1];
+  var arec_000 = /* active */[/* true */1];
   var arec = /* record */[
     arec_000,
-    f
+    /* f */f
   ];
   Caml_gc.caml_final_register(call_alarm, arec);
   return arec_000;

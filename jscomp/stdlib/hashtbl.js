@@ -86,10 +86,10 @@ function create($staropt$star, initial_size) {
     seed = 0;
   }
   return /* record */[
-          0,
-          Caml_array.caml_make_vect(s, /* Empty */0),
-          seed,
-          s
+          /* size */0,
+          /* data */Caml_array.caml_make_vect(s, /* Empty */0),
+          /* seed */seed,
+          /* initial_size */s
         ];
 }
 
@@ -116,10 +116,10 @@ function reset(h) {
 
 function copy(h) {
   return /* record */[
-          h[/* size */0],
-          $$Array.copy(h[/* data */1]),
-          h[/* seed */2],
-          h[/* initial_size */3]
+          /* size */h[/* size */0],
+          /* data */$$Array.copy(h[/* data */1]),
+          /* seed */h[/* seed */2],
+          /* initial_size */h[/* initial_size */3]
         ];
 }
 
@@ -439,10 +439,10 @@ function stats(h) {
         return /* () */0;
       }, h[/* data */1]);
   return /* record */[
-          h[/* size */0],
-          h[/* data */1].length,
-          mbl,
-          histo
+          /* num_bindings */h[/* size */0],
+          /* num_buckets */h[/* data */1].length,
+          /* max_bucket_length */mbl,
+          /* bucket_histogram */histo
         ];
 }
 
@@ -636,20 +636,20 @@ function MakeSeeded(H) {
     };
   };
   return /* module */[
-          create,
-          clear,
-          reset,
-          copy,
-          add,
-          remove,
-          find,
-          find_all,
-          replace,
-          mem,
-          iter,
-          fold,
-          length,
-          stats
+          /* create */create,
+          /* clear */clear,
+          /* reset */reset,
+          /* copy */copy,
+          /* add */add,
+          /* remove */remove,
+          /* find */find,
+          /* find_all */find_all,
+          /* replace */replace,
+          /* mem */mem,
+          /* iter */iter,
+          /* fold */fold,
+          /* length */length,
+          /* stats */stats
         ];
 }
 
@@ -847,20 +847,20 @@ function Make(H) {
     return create(/* Some */[/* false */0], sz);
   };
   return /* module */[
-          create$1,
-          clear,
-          reset,
-          copy,
-          add,
-          remove,
-          find,
-          find_all,
-          replace,
-          mem,
-          iter,
-          fold,
-          length,
-          stats
+          /* create */create$1,
+          /* clear */clear,
+          /* reset */reset,
+          /* copy */copy,
+          /* add */add,
+          /* remove */remove,
+          /* find */find,
+          /* find_all */find_all,
+          /* replace */replace,
+          /* mem */mem,
+          /* iter */iter,
+          /* fold */fold,
+          /* length */length,
+          /* stats */stats
         ];
 }
 

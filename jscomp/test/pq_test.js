@@ -90,11 +90,11 @@ function extract(queue) {
 }
 
 var PrioQueue = /* module */[
-  /* Empty */0,
-  insert,
-  Queue_is_empty,
-  remove_top,
-  extract
+  /* empty : Empty */0,
+  /* insert */insert,
+  /* Queue_is_empty */Queue_is_empty,
+  /* remove_top */remove_top,
+  /* extract */extract
 ];
 
 exports.PrioQueue = PrioQueue;

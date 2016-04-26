@@ -185,26 +185,26 @@ function caml_int64_of_string(s) {
   switch (hbase) {
     case 0 : 
         threshold = /* int64 */[
-          536870911,
-          4294967295
+          /* hi */536870911,
+          /* lo */4294967295
         ];
         break;
     case 1 : 
         threshold = /* int64 */[
-          268435455,
-          4294967295
+          /* hi */268435455,
+          /* lo */4294967295
         ];
         break;
     case 2 : 
         threshold = /* int64 */[
-          429496729,
-          2576980377
+          /* hi */429496729,
+          /* lo */2576980377
         ];
         break;
     case 3 : 
         threshold = /* int64 */[
-          2147483647,
-          4294967295
+          /* hi */2147483647,
+          /* lo */4294967295
         ];
         break;
     
@@ -213,8 +213,8 @@ function caml_int64_of_string(s) {
   var c = i < len ? s.charCodeAt(i) : /* "\000" */0;
   var d = Caml_int64.of_int32(parse_digit(c));
   if (Caml_int64.lt(d, /* int64 */[
-          0,
-          0
+          /* hi */0,
+          /* lo */0
         ]) || Caml_int64.ge(d, base)) {
     throw [
           Caml_builtin_exceptions.failure,
@@ -238,8 +238,8 @@ function caml_int64_of_string(s) {
         else {
           var v = Caml_int64.of_int32(parse_digit(a));
           if (Caml_int64.lt(v, /* int64 */[
-                  0,
-                  0
+                  /* hi */0,
+                  /* lo */0
                 ]) || Caml_int64.ge(v, base)) {
             throw [
                   Caml_builtin_exceptions.failure,
@@ -266,15 +266,15 @@ function caml_int64_of_string(s) {
     };
   };
   var res = Caml_int64.mul(sign, aux(d, i + 1 | 0));
-  var or_res_000 = res[0] | 0;
-  var or_res_001 = (res[1] >>> 0);
+  var or_res_000 = /* hi */res[0] | /* hi */0;
+  var or_res_001 = /* lo */(res[1] >>> 0);
   var or_res = /* int64 */[
     or_res_000,
     or_res_001
   ];
   if (Caml_int64.eq(base, /* int64 */[
-          0,
-          10
+          /* hi */0,
+          /* lo */10
         ]) && Caml_int64.neq(res, or_res)) {
     throw [
           Caml_builtin_exceptions.failure,
@@ -314,17 +314,17 @@ function parse_format(fmt) {
         ];
   }
   var f = /* record */[
-    "+",
-    "-",
-    " ",
-    /* false */0,
-    /* Dec */2,
-    /* false */0,
-    0,
-    /* false */0,
-    1,
-    -1,
-    "f"
+    /* justify */"+",
+    /* signstyle */"-",
+    /* filter */" ",
+    /* alternate : false */0,
+    /* base : Dec */2,
+    /* signedconv : false */0,
+    /* width */0,
+    /* uppercase : false */0,
+    /* sign */1,
+    /* prec */-1,
+    /* conv */"f"
   ];
   var _i = 0;
   while(true) {
@@ -600,33 +600,33 @@ function caml_format_int(fmt, i) {
 function caml_int64_format(fmt, x) {
   var f = parse_format(fmt);
   var x$1 = f[/* signedconv */5] && Caml_int64.lt(x, /* int64 */[
-        0,
-        0
+        /* hi */0,
+        /* lo */0
       ]) ? (f[/* sign */8] = -1, Caml_int64.neg(x)) : x;
   var s = "";
   var match = f[/* base */4];
   switch (match) {
     case 0 : 
         var wbase = /* int64 */[
-          0,
-          8
+          /* hi */0,
+          /* lo */8
         ];
         var cvtbl = "01234567";
         if (Caml_int64.lt(x$1, /* int64 */[
-                0,
-                0
+                /* hi */0,
+                /* lo */0
               ])) {
           var y = Caml_int64.discard_sign(x$1);
           var match$1 = Caml_int64.div_mod(y, wbase);
           var quotient = Caml_int64.add(/* int64 */[
-                268435456,
-                0
+                /* hi */268435456,
+                /* lo */0
               ], match$1[0]);
           var modulus = match$1[1];
           s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus[1] | 0)) + s;
           while(Caml_int64.neq(quotient, /* int64 */[
-                  0,
-                  0
+                  /* hi */0,
+                  /* lo */0
                 ])) {
             var match$2 = Caml_int64.div_mod(quotient, wbase);
             quotient = match$2[0];
@@ -640,8 +640,8 @@ function caml_int64_format(fmt, x) {
           var modulus$1 = match$3[1];
           s = Caml_string.js_string_of_char(cvtbl.charCodeAt(modulus$1[1] | 0)) + s;
           while(Caml_int64.neq(quotient$1, /* int64 */[
-                  0,
-                  0
+                  /* hi */0,
+                  /* lo */0
                 ])) {
             var match$4 = Caml_int64.div_mod(quotient$1, wbase);
             quotient$1 = match$4[0];
@@ -655,29 +655,29 @@ function caml_int64_format(fmt, x) {
         break;
     case 2 : 
         var wbase$1 = /* int64 */[
-          0,
-          10
+          /* hi */0,
+          /* lo */10
         ];
         var cvtbl$1 = "0123456789";
         if (Caml_int64.lt(x$1, /* int64 */[
-                0,
-                0
+                /* hi */0,
+                /* lo */0
               ])) {
           var y$1 = Caml_int64.discard_sign(x$1);
           var match$5 = Caml_int64.div_mod(y$1, wbase$1);
           var match$6 = Caml_int64.div_mod(Caml_int64.add(/* int64 */[
-                    0,
-                    8
+                    /* hi */0,
+                    /* lo */8
                   ], match$5[1]), wbase$1);
           var quotient$2 = Caml_int64.add(Caml_int64.add(/* int64 */[
-                    214748364,
-                    3435973836
+                    /* hi */214748364,
+                    /* lo */3435973836
                   ], match$5[0]), match$6[0]);
           var modulus$2 = match$6[1];
           s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$2[1] | 0)) + s;
           while(Caml_int64.neq(quotient$2, /* int64 */[
-                  0,
-                  0
+                  /* hi */0,
+                  /* lo */0
                 ])) {
             var match$7 = Caml_int64.div_mod(quotient$2, wbase$1);
             quotient$2 = match$7[0];
@@ -691,8 +691,8 @@ function caml_int64_format(fmt, x) {
           var modulus$3 = match$8[1];
           s = Caml_string.js_string_of_char(cvtbl$1.charCodeAt(modulus$3[1] | 0)) + s;
           while(Caml_int64.neq(quotient$3, /* int64 */[
-                  0,
-                  0
+                  /* hi */0,
+                  /* lo */0
                 ])) {
             var match$9 = Caml_int64.div_mod(quotient$3, wbase$1);
             quotient$3 = match$9[0];

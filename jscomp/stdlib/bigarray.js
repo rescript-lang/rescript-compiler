@@ -16,15 +16,15 @@ function dims(a) {
 
 function map_file(fd, $staropt$star, kind, layout, shared, dims) {
   var pos = $staropt$star ? $staropt$star[0] : /* int64 */[
-      0,
-      0
+      /* hi */0,
+      /* lo */0
     ];
   return Caml_bigarray.caml_ba_map_file_bytecode(fd, kind, layout, shared, dims, pos);
 }
 
 var Genarray = /* module */[
-  dims,
-  map_file
+  /* dims */dims,
+  /* map_file */map_file
 ];
 
 function create(kind, layout, dim) {
@@ -45,9 +45,9 @@ function map_file$1(fd, pos, kind, layout, shared, dim) {
 }
 
 var Array1 = /* module */[
-  create,
-  of_array,
-  map_file$1
+  /* create */create,
+  /* of_array */of_array,
+  /* map_file */map_file$1
 ];
 
 function create$1(kind, layout, dim1, dim2) {
@@ -93,11 +93,11 @@ function map_file$2(fd, pos, kind, layout, shared, dim1, dim2) {
 }
 
 var Array2 = /* module */[
-  create$1,
-  slice_left,
-  slice_right,
-  of_array$1,
-  map_file$2
+  /* create */create$1,
+  /* slice_left */slice_left,
+  /* slice_right */slice_right,
+  /* of_array */of_array$1,
+  /* map_file */map_file$2
 ];
 
 function create$2(kind, layout, dim1, dim2, dim3) {
@@ -169,13 +169,13 @@ function map_file$3(fd, pos, kind, layout, shared, dim1, dim2, dim3) {
 }
 
 var Array3 = /* module */[
-  create$2,
-  slice_left_1,
-  slice_right_1,
-  slice_left_2,
-  slice_right_2,
-  of_array$2,
-  map_file$3
+  /* create */create$2,
+  /* slice_left_1 */slice_left_1,
+  /* slice_right_1 */slice_right_1,
+  /* slice_left_2 */slice_left_2,
+  /* slice_right_2 */slice_right_2,
+  /* of_array */of_array$2,
+  /* map_file */map_file$3
 ];
 
 function array1_of_genarray(a) {

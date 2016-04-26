@@ -372,8 +372,6 @@ stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
 stack_comp_test.cmx : ../stdlib/stack.cmx mt_global.cmx mt.cmx
 stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
-statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
-statck_test.cmx : ../stdlib/stack.cmx mt.cmx ../stdlib/list.cmx
 string_get_set_test.cmo : mt.cmi
 string_get_set_test.cmx : mt.cmx
 string_literal_print_test.cmo : mt.cmi
@@ -396,8 +394,6 @@ swap_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/array.cmx
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmx : mt.cmx ../stdlib/array.cmx
-test.cmo :
-test.cmx :
 test_alias.cmo : test_global_print.cmo
 test_alias.cmx : test_global_print.cmx
 test_ari.cmo : ../stdlib/list.cmi
@@ -976,8 +972,6 @@ stack_comp_test.cmo : ../stdlib/stack.cmi mt_global.cmi mt.cmi
 stack_comp_test.cmj : ../stdlib/stack.cmj mt_global.cmj mt.cmj
 stack_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
 stack_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
-statck_test.cmo : ../stdlib/stack.cmi mt.cmi ../stdlib/list.cmi
-statck_test.cmj : ../stdlib/stack.cmj mt.cmj ../stdlib/list.cmj
 string_get_set_test.cmo : mt.cmi
 string_get_set_test.cmj : mt.cmj
 string_literal_print_test.cmo : mt.cmi
@@ -1000,8 +994,6 @@ swap_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/array.cmj
 tailcall_inline_test.cmo : mt.cmi ../stdlib/array.cmi
 tailcall_inline_test.cmj : mt.cmj ../stdlib/array.cmj
-test.cmo :
-test.cmj :
 test_alias.cmo : test_global_print.cmo
 test_alias.cmj : test_global_print.cmj
 test_ari.cmo : ../stdlib/list.cmi

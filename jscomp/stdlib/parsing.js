@@ -14,22 +14,22 @@ var YYexit = Caml_exceptions.create("Parsing.YYexit");
 var Parse_error = Caml_exceptions.create("Parsing.Parse_error");
 
 var env = /* record */[
-  Caml_array.caml_make_vect(100, 0),
-  Caml_array.caml_make_vect(100, /* () */0),
-  Caml_array.caml_make_vect(100, Lexing.dummy_pos),
-  Caml_array.caml_make_vect(100, Lexing.dummy_pos),
-  100,
-  0,
-  0,
-  /* () */0,
-  Lexing.dummy_pos,
-  Lexing.dummy_pos,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
+  /* s_stack */Caml_array.caml_make_vect(100, 0),
+  /* v_stack */Caml_array.caml_make_vect(100, /* () */0),
+  /* symb_start_stack */Caml_array.caml_make_vect(100, Lexing.dummy_pos),
+  /* symb_end_stack */Caml_array.caml_make_vect(100, Lexing.dummy_pos),
+  /* stacksize */100,
+  /* stackbase */0,
+  /* curr_char */0,
+  /* lval : () */0,
+  /* symb_start */Lexing.dummy_pos,
+  /* symb_end */Lexing.dummy_pos,
+  /* asp */0,
+  /* rule_len */0,
+  /* rule_number */0,
+  /* sp */0,
+  /* state */0,
+  /* errflag */0
 ];
 
 function grow_stacks() {

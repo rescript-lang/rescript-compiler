@@ -15,10 +15,10 @@ function engine(tbl, state, buf) {
     buf[/* lex_start_p */10] = buf[/* lex_curr_p */11];
     var init = buf[/* lex_curr_p */11];
     buf[/* lex_curr_p */11] = /* record */[
-      init[/* pos_fname */0],
-      init[/* pos_lnum */1],
-      init[/* pos_bol */2],
-      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
+      /* pos_fname */init[/* pos_fname */0],
+      /* pos_lnum */init[/* pos_lnum */1],
+      /* pos_bol */init[/* pos_bol */2],
+      /* pos_cnum */buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
     ];
   }
   return result;
@@ -30,26 +30,26 @@ function new_engine(tbl, state, buf) {
     buf[/* lex_start_p */10] = buf[/* lex_curr_p */11];
     var init = buf[/* lex_curr_p */11];
     buf[/* lex_curr_p */11] = /* record */[
-      init[/* pos_fname */0],
-      init[/* pos_lnum */1],
-      init[/* pos_bol */2],
-      buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
+      /* pos_fname */init[/* pos_fname */0],
+      /* pos_lnum */init[/* pos_lnum */1],
+      /* pos_bol */init[/* pos_bol */2],
+      /* pos_cnum */buf[/* lex_abs_pos */3] + buf[/* lex_curr_pos */5] | 0
     ];
   }
   return result;
 }
 
 var zero_pos = /* record */[
-  "",
-  1,
-  0,
-  0
+  /* pos_fname */"",
+  /* pos_lnum */1,
+  /* pos_bol */0,
+  /* pos_cnum */0
 ];
 
 function from_function(f) {
   var partial_arg = new Array(512);
   return /* record */[
-          function (param) {
+          /* refill_buff */function (param) {
             var read_fun = f;
             var aux_buffer = partial_arg;
             var lexbuf = param;
@@ -90,17 +90,17 @@ function from_function(f) {
             lexbuf[/* lex_buffer_len */2] = lexbuf[/* lex_buffer_len */2] + n | 0;
             return /* () */0;
           },
-          new Array(1024),
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          /* false */0,
-          /* int array */[],
-          zero_pos,
-          zero_pos
+          /* lex_buffer */new Array(1024),
+          /* lex_buffer_len */0,
+          /* lex_abs_pos */0,
+          /* lex_start_pos */0,
+          /* lex_curr_pos */0,
+          /* lex_last_pos */0,
+          /* lex_last_action */0,
+          /* lex_eof_reached : false */0,
+          /* lex_mem : int array */[],
+          /* lex_start_p */zero_pos,
+          /* lex_curr_p */zero_pos
         ];
 }
 
@@ -112,21 +112,21 @@ function from_channel(ic) {
 
 function from_string(s) {
   return /* record */[
-          function (lexbuf) {
+          /* refill_buff */function (lexbuf) {
             lexbuf[/* lex_eof_reached */8] = /* true */1;
             return /* () */0;
           },
-          Bytes.of_string(s),
-          s.length,
-          0,
-          0,
-          0,
-          0,
-          0,
-          /* true */1,
-          /* int array */[],
-          zero_pos,
-          zero_pos
+          /* lex_buffer */Bytes.of_string(s),
+          /* lex_buffer_len */s.length,
+          /* lex_abs_pos */0,
+          /* lex_start_pos */0,
+          /* lex_curr_pos */0,
+          /* lex_last_pos */0,
+          /* lex_last_action */0,
+          /* lex_eof_reached : true */1,
+          /* lex_mem : int array */[],
+          /* lex_start_p */zero_pos,
+          /* lex_curr_p */zero_pos
         ];
 }
 
@@ -186,10 +186,10 @@ function lexeme_end_p(lexbuf) {
 function new_line(lexbuf) {
   var lcp = lexbuf[/* lex_curr_p */11];
   lexbuf[/* lex_curr_p */11] = /* record */[
-    lcp[/* pos_fname */0],
-    lcp[/* pos_lnum */1] + 1 | 0,
-    lcp[/* pos_cnum */3],
-    lcp[/* pos_cnum */3]
+    /* pos_fname */lcp[/* pos_fname */0],
+    /* pos_lnum */lcp[/* pos_lnum */1] + 1 | 0,
+    /* pos_bol */lcp[/* pos_cnum */3],
+    /* pos_cnum */lcp[/* pos_cnum */3]
   ];
   return /* () */0;
 }
@@ -199,20 +199,20 @@ function flush_input(lb) {
   lb[/* lex_abs_pos */3] = 0;
   var init = lb[/* lex_curr_p */11];
   lb[/* lex_curr_p */11] = /* record */[
-    init[/* pos_fname */0],
-    init[/* pos_lnum */1],
-    init[/* pos_bol */2],
-    0
+    /* pos_fname */init[/* pos_fname */0],
+    /* pos_lnum */init[/* pos_lnum */1],
+    /* pos_bol */init[/* pos_bol */2],
+    /* pos_cnum */0
   ];
   lb[/* lex_buffer_len */2] = 0;
   return /* () */0;
 }
 
 var dummy_pos = /* record */[
-  "",
-  0,
-  0,
-  -1
+  /* pos_fname */"",
+  /* pos_lnum */0,
+  /* pos_bol */0,
+  /* pos_cnum */-1
 ];
 
 exports.dummy_pos           = dummy_pos;

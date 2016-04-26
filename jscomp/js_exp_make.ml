@@ -89,13 +89,34 @@ let anything_to_string ?comment (e : t) : t =
 let arr ?comment mt es : t  = 
   {expression_desc = Array (es,mt) ; comment}
 
+let sep = " : "
+let merge_outer_comment comment (e : t )  = 
+  match e.comment with
+  | None -> {e with comment = Some comment}
+  | Some s -> { e with 
+                comment 
+                = Some (comment ^ sep ^ s)} 
 
 let make_block ?comment tag tag_info es mutable_flag : t = 
+  let comment = 
+    match comment with 
+    | None -> Lam_compile_util.comment_of_tag_info tag_info 
+    | _ -> comment in
+  let es = 
+    match tag_info with 
+    | Blk_record des 
+      when Array.length des <> 0 
+      -> 
+      List.mapi (fun i (e : t) -> merge_outer_comment des.(i) e) es
+    (* TODO: may overriden its previous comments *)
+    | Blk_module (Some des) 
+      ->  List.map2  merge_outer_comment 
+            des es
+    | _ -> es 
+  in
   {
     expression_desc = Caml_block( es, mutable_flag, tag,tag_info) ;
-    comment = (match comment with 
-        | None -> Lam_compile_util.comment_of_tag_info tag_info 
-        | _ -> comment)
+    comment 
   }    
 
 let uninitialized_object ?comment tag size : t = 
