@@ -137,7 +137,7 @@ let float = "Caml_float"
 let hash = "Caml_hash"
 let oo = "Caml_oo"
 let curry = "Curry"
-let bigarray = "Caml_bigarray"
+(* let bigarray = "Caml_bigarray" *)
 (* let unix = "Caml_unix" *)
 let int64 = "Caml_int64"
 let md5 = "Caml_md5"
@@ -169,7 +169,7 @@ let runtime_set =
     hash ;
     oo ;
     curry ;
-    bigarray ;
+    (* bigarray ; *)
     (* unix ; *)
     int64 ;
     md5 ;

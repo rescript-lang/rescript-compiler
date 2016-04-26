@@ -52,7 +52,7 @@ val format : string
 val string : string 
 val float : string 
 val curry : string 
-val bigarray : string
+(* val bigarray : string *)
 (* val unix : string *)
 val int64 : string
 val md5 : string

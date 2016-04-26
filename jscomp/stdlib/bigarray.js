@@ -2,24 +2,29 @@
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
-var Caml_bigarray           = require("../runtime/caml_bigarray");
 var Caml_array              = require("../runtime/caml_array");
 
-function dims(a) {
-  var n = Caml_bigarray.caml_ba_num_dims(a);
+function dims() {
+  var n = function () {
+      throw "caml_ba_num_dims not implemented by bucklescript yet\n";
+    }();
   var d = Caml_array.caml_make_vect(n, 0);
   for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
-    d[i] = Caml_bigarray.caml_ba_dim(a, i);
+    d[i] = function () {
+        throw "caml_ba_dim not implemented by bucklescript yet\n";
+      }();
   }
   return d;
 }
 
-function map_file(fd, $staropt$star, kind, layout, shared, dims) {
-  var pos = $staropt$star ? $staropt$star[0] : /* int64 */[
+function map_file(_, $staropt$star, _$1, _$2, _$3, _$4) {
+  $staropt$star ? $staropt$star[0] : /* int64 */[
       /* hi */0,
       /* lo */0
     ];
-  return Caml_bigarray.caml_ba_map_file_bytecode(fd, kind, layout, shared, dims, pos);
+  return function () {
+            throw "caml_ba_map_file_bytecode not implemented by bucklescript yet\n";
+          }();
 }
 
 var Genarray = /* module */[
@@ -27,15 +32,19 @@ var Genarray = /* module */[
   /* map_file */map_file
 ];
 
-function create(kind, layout, dim) {
-  return Caml_bigarray.caml_ba_create(kind, layout, /* int array */[dim]);
+function create(_, _$1, _$2) {
+  return function () {
+            throw new Error("caml_ba_create not implemented by bucklescript yet\n");
+          }();
 }
 
 function of_array(kind, layout, data) {
   var ba = create(kind, layout, data.length);
-  var ofs = layout !== 0 ? 1 : 0;
+  layout !== 0 ? 1 : 0;
   for(var i = 0 ,i_finish = data.length - 1 | 0; i <= i_finish; ++i){
-    Caml_bigarray.caml_ba_set_1(ba, i + ofs | 0, data[i]);
+    (function () {
+          throw "caml_ba_set_1 not implemented by bucklescript yet\n";
+        }());
   }
   return ba;
 }
@@ -50,26 +59,29 @@ var Array1 = /* module */[
   /* map_file */map_file$1
 ];
 
-function create$1(kind, layout, dim1, dim2) {
-  return Caml_bigarray.caml_ba_create(kind, layout, /* int array */[
-              dim1,
-              dim2
-            ]);
+function create$1(_, _$1, _$2, _$3) {
+  return function () {
+            throw "caml_ba_create not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_left(a, n) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[n]);
+function slice_left(_, _$1) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_right(a, n) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[n]);
+function slice_right(_, _$1) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
 function of_array$1(kind, layout, data) {
   var dim1 = data.length;
   var dim2 = dim1 ? data[0].length : 0;
   var ba = create$1(kind, layout, dim1, dim2);
-  var ofs = layout !== 0 ? 1 : 0;
+  layout !== 0 ? 1 : 0;
   for(var i = 0 ,i_finish = dim1 - 1 | 0; i <= i_finish; ++i){
     var row = data[i];
     if (row.length !== dim2) {
@@ -79,7 +91,9 @@ function of_array$1(kind, layout, data) {
           ];
     }
     for(var j = 0 ,j_finish = dim2 - 1 | 0; j <= j_finish; ++j){
-      Caml_bigarray.caml_ba_set_2(ba, i + ofs | 0, j + ofs | 0, row[j]);
+      (function () {
+            throw "caml_ba_set_2 not implemented by bucklescript yet\n";
+          }());
     }
   }
   return ba;
@@ -100,34 +114,34 @@ var Array2 = /* module */[
   /* map_file */map_file$2
 ];
 
-function create$2(kind, layout, dim1, dim2, dim3) {
-  return Caml_bigarray.caml_ba_create(kind, layout, /* int array */[
-              dim1,
-              dim2,
-              dim3
-            ]);
+function create$2(_, _$1, _$2, _$3, _$4) {
+  return function () {
+            throw "caml_ba_create not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_left_1(a, n, m) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[
-              n,
-              m
-            ]);
+function slice_left_1(_, _$1, _$2) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_right_1(a, n, m) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[
-              n,
-              m
-            ]);
+function slice_right_1(_, _$1, _$2) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_left_2(a, n) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[n]);
+function slice_left_2(_, _$1) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
-function slice_right_2(a, n) {
-  return Caml_bigarray.caml_ba_slice(a, /* int array */[n]);
+function slice_right_2(_, _$1) {
+  return function () {
+            throw "caml_ba_slice not implemented by bucklescript yet\n";
+          }();
 }
 
 function of_array$2(kind, layout, data) {
@@ -135,7 +149,7 @@ function of_array$2(kind, layout, data) {
   var dim2 = dim1 ? data[0].length : 0;
   var dim3 = dim2 ? data[0][0].length : 0;
   var ba = create$2(kind, layout, dim1, dim2, dim3);
-  var ofs = layout !== 0 ? 1 : 0;
+  layout !== 0 ? 1 : 0;
   for(var i = 0 ,i_finish = dim1 - 1 | 0; i <= i_finish; ++i){
     var row = data[i];
     if (row.length !== dim2) {
@@ -153,7 +167,9 @@ function of_array$2(kind, layout, data) {
             ];
       }
       for(var k = 0 ,k_finish = dim3 - 1 | 0; k <= k_finish; ++k){
-        Caml_bigarray.caml_ba_set_3(ba, i + ofs | 0, j + ofs | 0, k + ofs | 0, col[k]);
+        (function () {
+              throw "caml_ba_set_3 not implemented by bucklescript yet\n";
+            }());
       }
     }
   }
@@ -179,7 +195,9 @@ var Array3 = /* module */[
 ];
 
 function array1_of_genarray(a) {
-  if (Caml_bigarray.caml_ba_num_dims(a) === 1) {
+  if (function () {
+        throw "caml_ba_num_dims not implemented by bucklescript yet\n";
+      }() === 1) {
     return a;
   }
   else {
@@ -191,7 +209,9 @@ function array1_of_genarray(a) {
 }
 
 function array2_of_genarray(a) {
-  if (Caml_bigarray.caml_ba_num_dims(a) === 2) {
+  if (function () {
+        throw "caml_ba_num_dims not implemented by bucklescript yet\n";
+      }() === 2) {
     return a;
   }
   else {
@@ -203,7 +223,9 @@ function array2_of_genarray(a) {
 }
 
 function array3_of_genarray(a) {
-  if (Caml_bigarray.caml_ba_num_dims(a) === 3) {
+  if (function () {
+        throw "caml_ba_num_dims not implemented by bucklescript yet\n";
+      }() === 3) {
     return a;
   }
   else {
@@ -214,23 +236,22 @@ function array3_of_genarray(a) {
   }
 }
 
-function reshape_1(a, dim1) {
-  return Caml_bigarray.caml_ba_reshape(a, /* int array */[dim1]);
+function reshape_1(_, _$1) {
+  return function () {
+            throw "caml_ba_reshape not implemented by bucklescript yet\n";
+          }();
 }
 
-function reshape_2(a, dim1, dim2) {
-  return Caml_bigarray.caml_ba_reshape(a, /* int array */[
-              dim1,
-              dim2
-            ]);
+function reshape_2(_, _$1, _$2) {
+  return function () {
+            throw "caml_ba_reshape not implemented by bucklescript yet\n";
+          }();
 }
 
-function reshape_3(a, dim1, dim2, dim3) {
-  return Caml_bigarray.caml_ba_reshape(a, /* int array */[
-              dim1,
-              dim2,
-              dim3
-            ]);
+function reshape_3(_, _$1, _$2, _$3) {
+  return function () {
+            throw "caml_ba_reshape not implemented by bucklescript yet\n";
+          }();
 }
 
 var float32 = /* Float32 */0;
@@ -263,7 +284,11 @@ var c_layout = /* C_layout */0;
 
 var fortran_layout = /* Fortran_layout */1;
 
-var reshape = Caml_bigarray.caml_ba_reshape
+function reshape(_, _$1) {
+  return function () {
+            throw "caml_ba_reshape not implemented by bucklescript yet\n";
+          }();
+}
 
 exports.float32            = float32;
 exports.float64            = float64;

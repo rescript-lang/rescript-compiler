@@ -594,8 +594,9 @@ let translate
         | _ -> assert false
         end
     | _, _, _ ,_ -> 
-      E.runtime_call Js_config.bigarray 
-        ("caml_ba_get_" ^ string_of_int dimension ) args 
+      E.not_implemented ("caml_ba_get_" ^ string_of_int dimension )
+      (* E.runtime_call Js_config.bigarray  *)
+      (*   ("caml_ba_get_" ^ string_of_int dimension ) args  *)
     end
   | Pbigarrayset (unsafe, dimension, kind, layout)
     -> 
@@ -615,14 +616,17 @@ let translate
       
       | _ , _, _,_ 
         -> 
-        E.runtime_call Js_config.bigarray 
-          ("caml_ba_set_" ^ string_of_int dimension ) args 
+        E.not_implemented
+          ("caml_ba_set_" ^ string_of_int dimension )
+        (* E.runtime_call Js_config.bigarray  *)
+        (*   ("caml_ba_set_" ^ string_of_int dimension ) args  *)
     end
 
   | Pbigarraydim i
     -> 
-    E.runtime_call Js_config.bigarray
-      ("caml_ba_dim_" ^ string_of_int i) args       
+    E.not_implemented ("caml_ba_dim_" ^ string_of_int i)
+    (* E.runtime_call Js_config.bigarray *)
+    (*   ("caml_ba_dim_" ^ string_of_int i) args        *)
   | Pbswap16 
     -> 
     E.runtime_call Js_config.int32 "caml_bswap16" args

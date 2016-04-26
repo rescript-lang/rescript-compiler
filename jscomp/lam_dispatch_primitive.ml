@@ -733,7 +733,9 @@ let query (prim : Lam_compile_env.primitive_description)
     (* caml_ba_dim_2,  *)
     (* caml_ba_dim_3,  *)
 
-    -> call  Js_config.bigarray
+    -> 
+    E.not_implemented prim_name
+    (* call  Js_config.bigarray *)
   (* End of bigarray support *)
   | "caml_convert_raw_backtrace_slot"
     -> call  Js_config.backtrace
