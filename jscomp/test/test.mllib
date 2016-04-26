@@ -277,3 +277,5 @@ undef_regression_test
 tuple_alloc
 
 test_unsupported_primitive
+
+module_alias

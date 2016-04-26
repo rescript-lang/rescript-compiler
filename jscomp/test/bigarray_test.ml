@@ -1,7 +1,7 @@
 module BA1 = Bigarray.Array1
 
 
-let v = BA1.create Int32 C_layout 20;;
+(* let v = BA1.create Int32 C_layout 20;; *)
 
 let sum (v : (int32, 'a, 'b) BA1.t )  = 
   let result = ref 0l  in
@@ -9,8 +9,8 @@ let sum (v : (int32, 'a, 'b) BA1.t )  =
     result := Int32.add (!result)  v.{i} (* caml_ba_get_1*)
   done   
 
-let vv : (int32, Bigarray.int32_elt, Bigarray.fortran_layout) BA1.t
- = BA1.create Int32 Fortran_layout 30 ;;
+(* let vv : (int32, Bigarray.int32_elt, Bigarray.fortran_layout) BA1.t *)
+(*  = BA1.create Int32 Fortran_layout 30 ;; *)
 
 let init  (v : (Complex.t, 
              Bigarray.int32_elt, Bigarray.c_layout ) BA1.t) = 
