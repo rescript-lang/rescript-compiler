@@ -7,8 +7,8 @@ INCLUDES= -I ../stdlib  -I ../lib -I ../runtime
 SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
-COMPFLAGS+=  -w -40 
-# COMPFLAGS+= -js-module goog:buckle.test
+COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
+
 
 $(TESTS): $(CAMLC)
 

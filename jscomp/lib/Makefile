@@ -7,8 +7,9 @@ SOURCE_LIST := $(shell cat lib.mllib)
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
 INCLUDES := -I ../runtime
-# COMPFLAGS := -js-module amdjs
-# COMPFLAGS += -js-module goog:buckle.js
+
+COMPFLAGS = $(MODULE_FLAGS)
+
 
 $(RUNTIME): $(CAMLC)
 
