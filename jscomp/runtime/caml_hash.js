@@ -61,7 +61,7 @@ function caml_hash(count, _, seed, obj) {
   else {
     var queue = /* record */[
       /* length */0,
-      /* tail */0
+      /* tail : None */0
     ];
     var num = count;
     Caml_queue.push(obj, queue);

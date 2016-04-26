@@ -918,8 +918,8 @@ var $$Set = [
 ];
 
 var M = /* module */[
-  1,
-  $$Set
+  /* x */1,
+  /* Set */$$Set
 ];
 
 var x = 1;

@@ -468,18 +468,18 @@ function Make(H) {
           ];
   };
   return /* module */[
-          create,
-          clear,
-          merge,
-          add,
-          remove,
-          find,
-          find_all,
-          mem,
-          iter,
-          fold,
-          count,
-          stats
+          /* create */create,
+          /* clear */clear,
+          /* merge */merge,
+          /* add */add,
+          /* remove */remove,
+          /* find */find,
+          /* find_all */find_all,
+          /* mem */mem,
+          /* iter */iter,
+          /* fold */fold,
+          /* count */count,
+          /* stats */stats
         ];
 }
 

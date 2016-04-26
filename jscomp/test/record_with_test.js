@@ -6,7 +6,7 @@ var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 var v = /* record */[
-  /* syntax */0,
+  /* syntax : None */0,
   /* imports */0,
   /* file_options */0,
   /* package */0,
@@ -43,7 +43,7 @@ var suites = /* :: */[
 Mt.from_pair_suites("record_with_test.ml", suites);
 
 var uv = /* record */[
-  /* syntax */0,
+  /* syntax : None */0,
   /* imports */1,
   /* file_options */0,
   /* package */0,

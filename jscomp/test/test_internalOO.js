@@ -19,9 +19,9 @@ function copy(o) {
 }
 
 var params = /* record */[
-  /* compact_table */1,
-  /* copy_parent */1,
-  /* clean_when_copying */1,
+  /* compact_table : true */1,
+  /* copy_parent : true */1,
+  /* clean_when_copying : true */1,
   /* retry_count */3,
   /* bucket_small_size */16
 ];
@@ -2296,13 +2296,13 @@ var Labs = [
 
 var dummy_table = /* record */[
   /* size */0,
-  /* methods */[/* () */0],
-  /* methods_by_name */0,
-  /* methods_by_label */0,
-  /* previous_states */0,
-  /* hidden_meths */0,
-  /* vars */0,
-  /* initializers */0
+  /* methods : array */[/* () */0],
+  /* methods_by_name : Empty */0,
+  /* methods_by_label : Empty */0,
+  /* previous_states : [] */0,
+  /* hidden_meths : [] */0,
+  /* vars : Empty */0,
+  /* initializers : [] */0
 ];
 
 var table_count = [0];
@@ -2330,12 +2330,12 @@ function new_table(pub_labels) {
   return /* record */[
           /* size */2,
           /* methods */methods,
-          /* methods_by_name */0,
-          /* methods_by_label */0,
-          /* previous_states */0,
-          /* hidden_meths */0,
-          /* vars */0,
-          /* initializers */0
+          /* methods_by_name : Empty */0,
+          /* methods_by_label : Empty */0,
+          /* previous_states : [] */0,
+          /* hidden_meths : [] */0,
+          /* vars : Empty */0,
+          /* initializers : [] */0
         ];
 }
 
@@ -2760,8 +2760,8 @@ function create_object_and_run_initializers(obj_0, table) {
 function build_path(n, keys, tables) {
   var res = /* record */[
     /* key */0,
-    /* data */0,
-    /* next */0
+    /* data : Empty */0,
+    /* next : Empty */0
   ];
   var r = res;
   for(var i = 0; i <= n; ++i){

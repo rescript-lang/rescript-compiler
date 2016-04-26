@@ -21,7 +21,7 @@ var env = /* record */[
   /* stacksize */100,
   /* stackbase */0,
   /* curr_char */0,
-  /* lval */0,
+  /* lval : () */0,
   /* symb_start */Lexing.dummy_pos,
   /* symb_end */Lexing.dummy_pos,
   /* asp */0,

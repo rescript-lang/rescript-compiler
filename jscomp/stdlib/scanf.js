@@ -115,9 +115,9 @@ function store_char(width, ib, c) {
 
 function create(iname, next) {
   return /* record */[
-          /* eof */0,
-          /* current_char */0,
-          /* current_char_is_valid */0,
+          /* eof : false */0,
+          /* current_char : "\000" */0,
+          /* current_char_is_valid : false */0,
           /* char_count */0,
           /* line_count */0,
           /* token_count */0,

@@ -3,10 +3,10 @@
 
 
 function M() {
-  return /* module */[3];
+  return /* module */[/* v */3];
 }
 
-var V = /* module */[3];
+var V = /* module */[/* v */3];
 
 exports.M = M;
 exports.V = V;

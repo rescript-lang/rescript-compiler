@@ -716,10 +716,10 @@ function getaddrinfo(node, service, opts) {
                       var ty = param[0];
                       return List.map(function (param) {
                                   return /* record */[
-                                          /* ai_family */1,
+                                          /* ai_family : PF_INET */1,
                                           /* ai_socktype */ty,
                                           /* ai_protocol */opt_protocol[0],
-                                          /* ai_addr */Block.__(1, [
+                                          /* ai_addr : ADDR_INET */Block.__(1, [
                                               param[0],
                                               port
                                             ]),

@@ -181,7 +181,7 @@ function bool(s) {
 }
 
 var $$default = /* record */[
-  /* st */[
+  /* st : array */[
     987910699,
     495797812,
     364182224,

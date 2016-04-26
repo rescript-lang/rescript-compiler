@@ -8,19 +8,19 @@ var List       = require("../stdlib/list");
 function Make(U) {
   var compare = U[0];
   return /* module */[
-          compare,
-          compare
+          /* compare */compare,
+          /* v */compare
         ];
 }
 
 var X = /* module */[
-  $$String.compare,
-  $$String.compare
+  /* compare */$$String.compare,
+  /* v */$$String.compare
 ];
 
 var U = /* module */[
-  Test_order.compare,
-  Test_order.compare
+  /* compare */Test_order.compare,
+  /* v */Test_order.compare
 ];
 
 var N = 0;

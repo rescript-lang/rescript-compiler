@@ -7,7 +7,7 @@ var List            = require("./list");
 var Empty = Caml_exceptions.create("Stack.Empty");
 
 function create() {
-  return /* record */[/* c */0];
+  return /* record */[/* c : [] */0];
 }
 
 function clear(s) {

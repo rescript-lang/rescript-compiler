@@ -17,7 +17,7 @@ var CamlinternalFormat      = require("./camlinternalFormat");
 function add_queue(x, q) {
   var c = /* Cons */[/* record */[
       /* head */x,
-      /* tail */0
+      /* tail : Nil */0
     ]];
   var match = q[/* insert */0];
   if (match) {
@@ -372,14 +372,14 @@ function enqueue_advance(state, tok) {
 function enqueue_string_as(state, size, s) {
   return enqueue_advance(state, /* record */[
               /* elem_size */size,
-              /* token */Block.__(0, [s]),
+              /* token : Pp_text */Block.__(0, [s]),
               /* length */size
             ]);
 }
 
 var q_elem = /* record */[
   /* elem_size */-1,
-  /* token */Block.__(0, [""]),
+  /* token : Pp_text */Block.__(0, [""]),
   /* length */0
 ];
 
@@ -467,7 +467,7 @@ function pp_open_box_gen(state, indent, br_ty) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       /* elem_size */-state[/* pp_right_total */12],
-      /* token */Block.__(3, [
+      /* token : Pp_begin */Block.__(3, [
           indent,
           br_ty
         ]),
@@ -491,7 +491,7 @@ function pp_close_box(state, _) {
     if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
       pp_enqueue(state, /* record */[
             /* elem_size */0,
-            /* token */1,
+            /* token : Pp_end */1,
             /* length */0
           ]);
       set_size(state, /* true */1);
@@ -516,7 +516,7 @@ function pp_open_tag(state, tag_name) {
   if (state[/* pp_mark_tags */21]) {
     return pp_enqueue(state, /* record */[
                 /* elem_size */0,
-                /* token */Block.__(5, [tag_name]),
+                /* token : Pp_open_tag */Block.__(5, [tag_name]),
                 /* length */0
               ]);
   }
@@ -529,7 +529,7 @@ function pp_close_tag(state, _) {
   if (state[/* pp_mark_tags */21]) {
     pp_enqueue(state, /* record */[
           /* elem_size */0,
-          /* token */5,
+          /* token : Pp_close_tag */5,
           /* length */0
         ]);
   }
@@ -680,7 +680,7 @@ function pp_force_newline(state, _) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     return enqueue_advance(state, /* record */[
                 /* elem_size */0,
-                /* token */3,
+                /* token : Pp_newline */3,
                 /* length */0
               ]);
   }
@@ -693,7 +693,7 @@ function pp_print_if_newline(state, _) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     return enqueue_advance(state, /* record */[
                 /* elem_size */0,
-                /* token */4,
+                /* token : Pp_if_newline */4,
                 /* length */0
               ]);
   }
@@ -706,7 +706,7 @@ function pp_print_break(state, width, offset) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       /* elem_size */-state[/* pp_right_total */12],
-      /* token */Block.__(1, [
+      /* token : Pp_break */Block.__(1, [
           width,
           offset
         ]),
@@ -732,7 +732,7 @@ function pp_open_tbox(state, _) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       /* elem_size */0,
-      /* token */Block.__(4, [/* Pp_tbox */[[/* [] */0]]]),
+      /* token : Pp_tbegin */Block.__(4, [/* Pp_tbox */[[/* [] */0]]]),
       /* length */0
     ];
     return enqueue_advance(state, elem);
@@ -747,7 +747,7 @@ function pp_close_tbox(state, _) {
     if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
       var elem = /* record */[
         /* elem_size */0,
-        /* token */2,
+        /* token : Pp_tend */2,
         /* length */0
       ];
       enqueue_advance(state, elem);
@@ -767,7 +767,7 @@ function pp_print_tbreak(state, width, offset) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       /* elem_size */-state[/* pp_right_total */12],
-      /* token */Block.__(2, [
+      /* token : Pp_tbreak */Block.__(2, [
           width,
           offset
         ]),
@@ -788,7 +788,7 @@ function pp_set_tab(state, _) {
   if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
     var elem = /* record */[
       /* elem_size */0,
-      /* token */0,
+      /* token : Pp_stab */0,
       /* length */0
     ];
     return enqueue_advance(state, elem);
@@ -1034,12 +1034,12 @@ function default_pp_print_close_tag(prim) {
 
 function pp_make_formatter(f, g, h, i) {
   var pp_q = /* record */[
-    /* insert */0,
-    /* body */0
+    /* insert : Nil */0,
+    /* body : Nil */0
   ];
   var sys_tok = /* record */[
     /* elem_size */-1,
-    /* token */Block.__(3, [
+    /* token : Pp_begin */Block.__(3, [
         0,
         /* Pp_hovbox */3
       ]),
@@ -1056,16 +1056,16 @@ function pp_make_formatter(f, g, h, i) {
   ];
   return /* record */[
           /* pp_scan_stack */sys_scan_stack,
-          /* pp_format_stack */0,
-          /* pp_tbox_stack */0,
-          /* pp_tag_stack */0,
-          /* pp_mark_stack */0,
+          /* pp_format_stack : [] */0,
+          /* pp_tbox_stack : [] */0,
+          /* pp_tag_stack : [] */0,
+          /* pp_mark_stack : [] */0,
           /* pp_margin */78,
           /* pp_min_space_left */10,
           /* pp_max_indent */68,
           /* pp_space_left */78,
           /* pp_current_indent */0,
-          /* pp_is_new_line */1,
+          /* pp_is_new_line : true */1,
           /* pp_left_total */1,
           /* pp_right_total */1,
           /* pp_curr_depth */1,
@@ -1075,8 +1075,8 @@ function pp_make_formatter(f, g, h, i) {
           /* pp_out_flush */g,
           /* pp_out_newline */h,
           /* pp_out_spaces */i,
-          /* pp_print_tags */0,
-          /* pp_mark_tags */0,
+          /* pp_print_tags : false */0,
+          /* pp_mark_tags : false */0,
           /* pp_mark_open_tag */default_pp_mark_open_tag,
           /* pp_mark_close_tag */default_pp_mark_close_tag,
           /* pp_print_open_tag */default_pp_print_open_tag,

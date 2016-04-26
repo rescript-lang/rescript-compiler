@@ -97,8 +97,8 @@ function from_function(f) {
           /* lex_curr_pos */0,
           /* lex_last_pos */0,
           /* lex_last_action */0,
-          /* lex_eof_reached */0,
-          /* lex_mem */[],
+          /* lex_eof_reached : false */0,
+          /* lex_mem : int array */[],
           /* lex_start_p */zero_pos,
           /* lex_curr_p */zero_pos
         ];
@@ -123,8 +123,8 @@ function from_string(s) {
           /* lex_curr_pos */0,
           /* lex_last_pos */0,
           /* lex_last_action */0,
-          /* lex_eof_reached */1,
-          /* lex_mem */[],
+          /* lex_eof_reached : true */1,
+          /* lex_mem : int array */[],
           /* lex_start_p */zero_pos,
           /* lex_curr_p */zero_pos
         ];

@@ -5,7 +5,7 @@
 function create() {
   return /* record */[
           /* length */0,
-          /* tail */0
+          /* tail : None */0
         ];
 }
 

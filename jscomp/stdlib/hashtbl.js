@@ -636,20 +636,20 @@ function MakeSeeded(H) {
     };
   };
   return /* module */[
-          create,
-          clear,
-          reset,
-          copy,
-          add,
-          remove,
-          find,
-          find_all,
-          replace,
-          mem,
-          iter,
-          fold,
-          length,
-          stats
+          /* create */create,
+          /* clear */clear,
+          /* reset */reset,
+          /* copy */copy,
+          /* add */add,
+          /* remove */remove,
+          /* find */find,
+          /* find_all */find_all,
+          /* replace */replace,
+          /* mem */mem,
+          /* iter */iter,
+          /* fold */fold,
+          /* length */length,
+          /* stats */stats
         ];
 }
 
@@ -847,20 +847,20 @@ function Make(H) {
     return create(/* Some */[/* false */0], sz);
   };
   return /* module */[
-          create$1,
-          clear,
-          reset,
-          copy,
-          add,
-          remove,
-          find,
-          find_all,
-          replace,
-          mem,
-          iter,
-          fold,
-          length,
-          stats
+          /* create */create$1,
+          /* clear */clear,
+          /* reset */reset,
+          /* copy */copy,
+          /* add */add,
+          /* remove */remove,
+          /* find */find,
+          /* find_all */find_all,
+          /* replace */replace,
+          /* mem */mem,
+          /* iter */iter,
+          /* fold */fold,
+          /* length */length,
+          /* stats */stats
         ];
 }
 

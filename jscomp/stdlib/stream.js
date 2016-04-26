@@ -340,8 +340,8 @@ function iter(f, strm) {
 function from(f) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(3, [/* record */[
-                /* curr */0,
+          /* data : Sgen */Block.__(3, [/* record */[
+                /* curr : None */0,
                 /* func */f
               ]])
         ];
@@ -390,7 +390,7 @@ function of_bytes(s) {
 function of_channel(ic) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(4, [/* record */[
+          /* data : Sbuffio */Block.__(4, [/* record */[
                 /* ic */ic,
                 /* buff */new Array(4096),
                 /* len */0,
@@ -402,7 +402,7 @@ function of_channel(ic) {
 function iapp(i, s) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(1, [
+          /* data : Sapp */Block.__(1, [
               i[/* data */1],
               s[/* data */1]
             ])
@@ -412,7 +412,7 @@ function iapp(i, s) {
 function icons(i, s) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(0, [
+          /* data : Scons */Block.__(0, [
               i,
               s[/* data */1]
             ])
@@ -422,7 +422,7 @@ function icons(i, s) {
 function ising(i) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(0, [
+          /* data : Scons */Block.__(0, [
               i,
               /* Sempty */0
             ])
@@ -432,7 +432,7 @@ function ising(i) {
 function lapp(f, s) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(2, [Block.__(246, [function () {
+          /* data : Slazy */Block.__(2, [Block.__(246, [function () {
                     return /* Sapp */Block.__(1, [
                               Curry._1(f, /* () */0)[/* data */1],
                               s[/* data */1]
@@ -444,7 +444,7 @@ function lapp(f, s) {
 function lcons(f, s) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(2, [Block.__(246, [function () {
+          /* data : Slazy */Block.__(2, [Block.__(246, [function () {
                     return /* Scons */Block.__(0, [
                               Curry._1(f, /* () */0),
                               s[/* data */1]
@@ -456,7 +456,7 @@ function lcons(f, s) {
 function lsing(f) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(2, [Block.__(246, [function () {
+          /* data : Slazy */Block.__(2, [Block.__(246, [function () {
                     return /* Scons */Block.__(0, [
                               Curry._1(f, /* () */0),
                               /* Sempty */0
@@ -468,7 +468,7 @@ function lsing(f) {
 function slazy(f) {
   return /* record */[
           /* count */0,
-          /* data */Block.__(2, [Block.__(246, [function () {
+          /* data : Slazy */Block.__(2, [Block.__(246, [function () {
                     return Curry._1(f, /* () */0)[/* data */1];
                   }])])
         ];
@@ -518,7 +518,7 @@ function count(prim) {
 
 var sempty = /* record */[
   /* count */0,
-  /* data */0
+  /* data : Sempty */0
 ];
 
 exports.Failure    = Failure;
