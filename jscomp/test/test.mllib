@@ -274,3 +274,4 @@ offset
 pr6726
 
 undef_regression_test
+tuple_alloc

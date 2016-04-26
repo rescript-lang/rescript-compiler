@@ -180,49 +180,50 @@ let compile  ~filename non_export env _sigs lam   =
   in
   let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
   let ()   = Lam_compile_env.reset ()  in
-  let _d  = Lam_util.dump env filename in
+  let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
-  let lam = _d  lam in
+  let lam = _d "initial"  lam in
   let lam  = Lam_group.deep_flatten lam in
-  let lam = _d  lam in
+  let lam = _d  "flatten" lam in
   let meta = 
     Lam_pass_collect.count_alias_globals env filename  export_idents lam in
   let lam = 
     let lam =  
       lam
-      |> _d
+      |> _d "flattern"
       |>  Lam_pass_exits.simplify_exits
-      |> _d
-      |>  Lam_pass_remove_alias.simplify_alias  meta in  (* Inling happens*)
-    (* TODO: research how to combine those passes efficiently *)
-    let () = ignore @@ _d lam in
-    let lam = Lam_group.deep_flatten lam in
-    let () = ignore @@ _d lam  in
+      |> _d "simplyf_exits"
+      |>  Lam_pass_remove_alias.simplify_alias  meta 
+      |> _d "simplify_alias"
+      |> Lam_group.deep_flatten
+      |> _d "flatten"
+    in  (* Inling happens*)
+  
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = Lam_pass_remove_alias.simplify_alias meta lam  in
     let lam = Lam_group.deep_flatten lam in
     let ()  = Lam_pass_collect.collect_helper meta lam in
     let lam = 
       lam
-      |> _d
+      |> _d "alpha_before"
       |> Lam_pass_alpha_conversion.alpha_conversion meta
       |> Lam_pass_exits.simplify_exits in    
     let () = Lam_pass_collect.collect_helper meta lam in
 
 
     lam
-    |> _d 
+    |> _d "simplify_alias_before"
     |>  Lam_pass_remove_alias.simplify_alias meta 
-    |> _d 
+    |> _d "alpha_conversion"
     |>  Lam_pass_alpha_conversion.alpha_conversion meta
-    |> _d
+    |> _d "simplify_lets"
     (* we should investigate a better way to put different passes : )*)
     |> Lam_pass_lets_dce.simplify_lets 
-    |> _d
+    |> _d "simplify_lets"
     (* |> (fun lam -> Lam_pass_collect.collect_helper meta lam 
        ; Lam_pass_remove_alias.simplify_alias meta lam) *)
     |> Lam_pass_exits.simplify_exits
-    |> _d
+    |> _d "simplify_lets"
 
 
   in
@@ -307,15 +308,14 @@ let compile  ~filename non_export env _sigs lam   =
                  | _ -> export_map), x :: acc ) (export_map, coercion_groups) rest in
 
           (* TODO: turn in on debug mode later*)
-          (* let () = *)
-          (*   if not @@ Ext_string.is_empty filename  *)
-          (*   then *)
-          (*     let f =  *)
-          (*       Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in *)
-          (*     Ext_pervasives.with_file_as_pp f @@ fun fmt -> *)
-          (*     Format.pp_print_list ~pp_sep:Format.pp_print_newline *)
-          (*       (Lam_group.pp_group env) fmt rest ; *)
-          (* in *)
+          let () =
+            if Lam_current_unit.is_same_file () then
+              let f =
+                Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
+              Ext_pervasives.with_file_as_pp f @@ fun fmt ->
+              Format.pp_print_list ~pp_sep:Format.pp_print_newline
+                (Lam_group.pp_group env) fmt rest ;
+          in
           let rest = Lam_dce.remove meta.exports rest 
           in
           let module  E = struct exception  Not_pure of string end in
@@ -364,10 +364,12 @@ let compile  ~filename non_export env _sigs lam   =
           |> _j "initial"
           |> Js_pass_flatten.program
           |> _j "flattern"
-          |> Js_inline_and_eliminate.inline_and_shake
+          |> Js_pass_tailcall_inline.tailcall_inline
           |> _j "inline_and_shake"
           |> Js_pass_flatten_and_mark_dead.program
           |> _j "flatten_and_mark_dead"
+          (* |> Js_inline_and_eliminate.inline_and_shake *)
+          (* |> _j "inline_and_shake" *)
           |> (fun js -> ignore @@ Js_pass_scope.program  js ; js )
           |> Js_shake.shake_program
           |> _j "shake"
@@ -407,7 +409,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.iset_debug_file "caml_hash.ml";
+    Lam_current_unit.set_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Ext_filename.chop_extension ~loc:__LOC__ filename ^  Js_config.get_ext())
       (fun chan -> Js_dump.dump_deps_program (compile ~filename false env sigs lam) chan)
