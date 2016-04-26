@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/24-11:45"]
+[@@@ocaml.doc "04/26-11:18"]
 include
   struct
     module Literals :
@@ -2379,15 +2379,16 @@ include
         let generate_label ?(name= "")  () =
           incr count; Printf.sprintf "%s_tailcall_%04d" name (!count)
         let log_counter = ref 0
-        let dump env filename lam =
+        let dump env ext lam =
           incr log_counter;
           if
             ((Js_config.get_env ()) <> Browser) &&
               (Lam_current_unit.is_same_file ())
           then
             Printlambda.seriaize env
-              ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^
-                 (Printf.sprintf ".%02d.lam" (!log_counter))) lam;
+              ((Ext_filename.chop_extension ~loc:__LOC__
+                  (Lam_current_unit.get_file ()))
+                 ^ (Printf.sprintf ".%02d%s.lam" (!log_counter) ext)) lam;
           lam
         let ident_set_of_list ls =
           List.fold_left (fun acc  -> fun k  -> Ident_set.add k acc)
@@ -7973,11 +7974,6 @@ include
                                external_module_name := (Some (Bind (a, b)))
                            | `Some _ -> ()
                            | `None -> ())
-                      | "bs.scope" ->
-                          (match is_string_or_strings pay_load with
-                           | `None -> ()
-                           | `Single name -> qualifiers := [name]
-                           | `Some vs -> qualifiers := (List.rev vs))
                       | "bs.new" ->
                           (match is_single_string pay_load with
                            | Some x -> js_new := (Some x)
@@ -11528,140 +11524,6 @@ include
         let decorate_deps modules side_effect program =
           ({ program; modules; side_effect } : J.deps_program)
       end 
-    module Js_pass_scope :
-      sig
-        [@@@ocaml.text " A module to do scope analysis over JS IR "]
-        val program : J.program -> Ident_set.t
-      end =
-      struct
-        let _l idents =
-          Ext_log.err __LOC__ "hey .. %s@."
-            ((String.concat ",") @@
-               (List.map (fun i  -> i.Ident.name) idents))
-        let scope_pass =
-          object (self)
-            inherit  Js_fold.fold as super
-            val defined_idents = Ident_set.empty
-            val used_idents = Ident_set.empty[@@ocaml.doc
-                                               " [used_idents] \n        does not contain locally defined idents "]
-            [@@ocaml.doc
-              " we need collect mutable values and loop defined varaibles "]
-            val loop_mutable_values = Ident_set.empty[@@ocaml.doc
-                                                       " we need collect mutable values and loop defined varaibles "]
-            val mutable_values = Ident_set.empty
-            val closured_idents = Ident_set.empty
-            val in_loop = false[@@ocaml.doc " check if in loop or not "]
-            method get_in_loop = in_loop
-            method get_defined_idents = defined_idents
-            method get_used_idents = used_idents
-            method get_loop_mutable_values = loop_mutable_values
-            method get_mutable_values = mutable_values
-            method get_closured_idents = closured_idents
-            method with_in_loop b =
-              if b = self#get_in_loop then self else {<in_loop = b>}
-            method with_loop_mutable_values b = {<loop_mutable_values = b>}
-            method add_loop_mutable_variable id =
-              {<loop_mutable_values = Ident_set.add id loop_mutable_values;
-                mutable_values = Ident_set.add id mutable_values>}
-            method add_mutable_variable id =
-              {<mutable_values = Ident_set.add id mutable_values>}
-            method add_defined_ident ident =
-              {<defined_idents = Ident_set.add ident defined_idents>}
-            method! expression x =
-              match x.expression_desc with
-              | Fun (params,block,env) ->
-                  let param_set = Ident_set.of_list params in
-                  let obj =
-                    ({<defined_idents = Ident_set.empty;used_idents =
-                                                          Ident_set.empty;
-                       in_loop = false;loop_mutable_values = Ident_set.empty;
-                       mutable_values =
-                         Ident_set.of_list
-                           (Js_fun_env.get_mutable_params params env);
-                       closured_idents = Ident_set.empty>})#block block in
-                  let (defined_idents',used_idents') =
-                    ((obj#get_defined_idents), (obj#get_used_idents)) in
-                  (params |>
-                     (List.iteri
-                        (fun i  ->
-                           fun v  ->
-                             if not (Ident_set.mem v used_idents')
-                             then Js_fun_env.mark_unused env i));
-                   (let closured_idents' =
-                      let open Ident_set in
-                        diff used_idents' (union defined_idents' param_set) in
-                    Js_fun_env.set_bound env closured_idents';
-                    (let lexical_scopes =
-                       let open Ident_set in
-                         inter closured_idents' self#get_loop_mutable_values in
-                     Js_fun_env.set_lexical_scope env lexical_scopes;
-                     {<used_idents =
-                         Ident_set.union used_idents closured_idents';
-                       closured_idents =
-                         Ident_set.union closured_idents closured_idents'>})))
-              | _ -> super#expression x
-            method! variable_declaration x =
-              match x with
-              | { ident; value; property } ->
-                  let obj =
-                    (match ((self#get_in_loop), property) with
-                     | (true ,Variable ) ->
-                         self#add_loop_mutable_variable ident
-                     | (true ,(Strict |StrictOpt |Alias )) ->
-                         (match value with
-                          | None  -> self#add_loop_mutable_variable ident
-                          | Some x ->
-                              (match x.expression_desc with
-                               | Fun _|Number _|Str _ -> self
-                               | _ -> self#add_loop_mutable_variable ident))
-                     | (false ,Variable ) -> self#add_mutable_variable ident
-                     | (false ,(Strict |StrictOpt |Alias )) -> self)#add_defined_ident
-                      ident in
-                  (match value with
-                   | None  -> obj
-                   | Some x -> obj#expression x)
-            method! statement x =
-              match x.statement_desc with
-              | ForRange (_,_,loop_id,_,_,a_env) as y ->
-                  let obj =
-                    ({<in_loop = true;loop_mutable_values =
-                                        Ident_set.singleton loop_id;used_idents
-                                                                    =
-                                                                    Ident_set.empty;
-                       defined_idents = Ident_set.singleton loop_id;closured_idents
-                                                                    =
-                                                                    Ident_set.empty>})#statement_desc
-                      y in
-                  let (defined_idents',used_idents',closured_idents') =
-                    ((obj#get_defined_idents), (obj#get_used_idents),
-                      (obj#get_closured_idents)) in
-                  let lexical_scope =
-                    let open Ident_set in
-                      inter (diff closured_idents' defined_idents')
-                        self#get_loop_mutable_values in
-                  let () = Js_closure.set_lexical_scope a_env lexical_scope in
-                  {<used_idents = Ident_set.union used_idents used_idents';
-                    defined_idents =
-                      Ident_set.union defined_idents defined_idents';
-                    closured_idents =
-                      Ident_set.union closured_idents lexical_scope>}
-              | While (_label,pred,body,_env) ->
-                  (((self#expression pred)#with_in_loop true)#block body)#with_in_loop
-                    self#get_in_loop
-              | _ -> super#statement x
-            method! exception_ident x =
-              {<used_idents = Ident_set.add x used_idents;defined_idents =
-                                                            Ident_set.add x
-                                                              defined_idents>}
-            method! for_ident x =
-              {<loop_mutable_values = Ident_set.add x loop_mutable_values>}
-            method! ident x =
-              if Ident_set.mem x defined_idents
-              then self
-              else {<used_idents = Ident_set.add x used_idents>}
-          end
-        let program js = (scope_pass#program js)#get_loop_mutable_values
-      end 
     module Js_map =
       struct
         open J[@@ocaml.doc " GENERATED CODE, map visitor for JS IR  "]
@@ -11957,6 +11819,272 @@ include
             method unknown : 'a . 'a -> 'a= fun x  -> x
           end
       end
+    module Js_pass_tailcall_inline :
+      sig
+        [@@@ocaml.text
+          " This pass detect functions used once and if it is used in used\n    in the tail position, it will get inlined, this will help \n    remove some common use cases like This\n    {[\n      let length x = \n        let rec aux n x = \n          match x with \n          | [] -> n \n          | _ :: rest -> aux (n + 1) rest in\n        aux 0 x         \n    ]} \n"]
+        val tailcall_inline : J.program -> J.program
+      end =
+      struct
+        module S = Js_stmt_make
+        module E = Js_exp_make
+        let count_collects () =
+          object (self)
+            inherit  Js_fold.fold as super
+            val stats = (Hashtbl.create 83 : (Ident.t,int ref) Hashtbl.t)
+            val defined_idents =
+              (Hashtbl.create 83 : (Ident.t,J.variable_declaration) Hashtbl.t)
+            val mutable export_set = (Ident_set.empty : Ident_set.t)
+            val mutable name = ("" : string)
+            method add_use id =
+              match Hashtbl.find stats id with
+              | exception Not_found  -> Hashtbl.add stats id (ref 1)
+              | v -> incr v
+            method! program x =
+              export_set <- x.export_set; name <- x.name; super#program x
+            method! variable_declaration
+              ({ ident; value; property; ident_info } as v) =
+              Hashtbl.add defined_idents ident v;
+              (match value with | None  -> self | Some x -> self#expression x)
+            method! ident id = self#add_use id; self
+            method get_stats =
+              Hashtbl.iter
+                (fun ident  ->
+                   fun (v : J.variable_declaration)  ->
+                     if Ident_set.mem ident export_set
+                     then Js_op_util.update_used_stats v.ident_info Exported
+                     else
+                       (let pure =
+                          match v.value with
+                          | None  -> false
+                          | Some x -> Js_analyzer.no_side_effect_expression x in
+                        match Hashtbl.find stats ident with
+                        | exception Not_found  ->
+                            Js_op_util.update_used_stats v.ident_info
+                              (if pure then Dead_pure else Dead_non_pure)
+                        | num ->
+                            if (!num) = 1
+                            then
+                              Js_op_util.update_used_stats v.ident_info
+                                (if pure then Once_pure else Used)))
+                defined_idents;
+              defined_idents
+          end[@@ocaml.doc
+               " Update ident info use cases, it is a non pure function, \n    it will annotate [program] with some meta data\n    TODO: Ident Hashtbl could be improved, \n    since in this case it can not be global?  \n\n "]
+        let get_stats program =
+          ((count_collects ())#program program)#get_stats
+        let subst name export_set stats =
+          object (self)
+            inherit  Js_map.map as super
+            method! statement st =
+              match st with
+              | {
+                  statement_desc = Variable
+                    { value = _; ident_info = { used_stats = Dead_pure  } };
+                  comment = _ } -> S.block []
+              | {
+                  statement_desc = Variable
+                    { ident_info = { used_stats = Dead_non_pure  };
+                      value = Some v;_};_}
+                  -> S.exp v
+              | _ -> super#statement st
+            method! variable_declaration
+              ({ ident; value; property; ident_info } as v) =
+              let v = super#variable_declaration v in
+              Hashtbl.add stats ident v; v
+            method! block bs =
+              match bs with
+              | ({
+                   statement_desc = Variable
+                     ({ value = Some ({ expression_desc = Fun _;_} as v) } as
+                        vd);
+                   comment = _ } as st)::rest
+                  ->
+                  let is_export = Ident_set.mem vd.ident export_set in
+                  if is_export
+                  then (self#statement st) :: (self#block rest)
+                  else
+                    (match (Hashtbl.find stats vd.ident : J.variable_declaration)
+                     with
+                     | exception Not_found  ->
+                         if Js_analyzer.no_side_effect_expression v
+                         then (S.exp v) :: (self#block rest)
+                         else self#block rest
+                     | _ -> (self#statement st) :: (self#block rest))
+              | ({
+                   statement_desc = Return
+                     {
+                       return_value =
+                         {
+                           expression_desc = Call
+                             ({ expression_desc = Var (Id id) },args,_info)
+                           }
+                       }
+                   } as st)::rest
+                  ->
+                  (match Hashtbl.find stats id with
+                   | exception Not_found  -> (self#statement st) ::
+                       (self#block rest)
+                   | {
+                       value = Some
+                         { expression_desc = Fun (params,block,_env);
+                           comment = _ };
+                       property = (Alias |StrictOpt |Strict );
+                       ident_info = { used_stats = Once_pure  }; ident = _ }
+                       as v when Ext_list.same_length params args ->
+                       (Js_op_util.update_used_stats v.ident_info Dead_pure;
+                        (let block =
+                           List.fold_right2
+                             (fun param  ->
+                                fun arg  ->
+                                  fun acc  ->
+                                    (S.define ~kind:Variable param arg) ::
+                                    acc) params args (self#block block) in
+                         block @ (self#block rest)))
+                   | _ -> (self#statement st) :: (self#block rest))
+              | x::xs -> (self#statement x) :: (self#block xs)
+              | [] -> []
+          end[@@ocaml.doc
+               " There is a side effect when traversing dead code, since \n   we assume that substitue a node would mark a node as dead node,\n  \n    so if we traverse a dead node, this would get a wrong result.\n   it does happen in such scenario\n   {[\n     let generic_basename is_dir_sep current_dir_name name =\n       let rec find_end n =\n         if n < 0 then String.sub name 0 1\n         else if is_dir_sep name n then find_end (n - 1)\n         else find_beg n (n + 1)\n       and find_beg n p =\n         if n < 0 then String.sub name 0 p\n         else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)\n         else find_beg (n - 1) p\n       in\n       if name = \"\"\n       then current_dir_name\n       else find_end (String.length name - 1)\n   ]}\n   [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, \n   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded \n   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, \n   while it is still called \n"]
+        let tailcall_inline (program : J.program) =
+          let _stats = get_stats program in
+          let _export_set = program.export_set in
+          program |> (subst program.name _export_set _stats)#program
+      end 
+    module Js_pass_scope :
+      sig
+        [@@@ocaml.text " A module to do scope analysis over JS IR "]
+        val program : J.program -> Ident_set.t
+      end =
+      struct
+        let _l idents =
+          Ext_log.err __LOC__ "hey .. %s@."
+            ((String.concat ",") @@
+               (List.map (fun i  -> i.Ident.name) idents))
+        let scope_pass =
+          object (self)
+            inherit  Js_fold.fold as super
+            val defined_idents = Ident_set.empty
+            val used_idents = Ident_set.empty[@@ocaml.doc
+                                               " [used_idents] \n        does not contain locally defined idents "]
+            [@@ocaml.doc
+              " we need collect mutable values and loop defined varaibles "]
+            val loop_mutable_values = Ident_set.empty[@@ocaml.doc
+                                                       " we need collect mutable values and loop defined varaibles "]
+            val mutable_values = Ident_set.empty
+            val closured_idents = Ident_set.empty
+            val in_loop = false[@@ocaml.doc " check if in loop or not "]
+            method get_in_loop = in_loop
+            method get_defined_idents = defined_idents
+            method get_used_idents = used_idents
+            method get_loop_mutable_values = loop_mutable_values
+            method get_mutable_values = mutable_values
+            method get_closured_idents = closured_idents
+            method with_in_loop b =
+              if b = self#get_in_loop then self else {<in_loop = b>}
+            method with_loop_mutable_values b = {<loop_mutable_values = b>}
+            method add_loop_mutable_variable id =
+              {<loop_mutable_values = Ident_set.add id loop_mutable_values;
+                mutable_values = Ident_set.add id mutable_values>}
+            method add_mutable_variable id =
+              {<mutable_values = Ident_set.add id mutable_values>}
+            method add_defined_ident ident =
+              {<defined_idents = Ident_set.add ident defined_idents>}
+            method! expression x =
+              match x.expression_desc with
+              | Fun (params,block,env) ->
+                  let param_set = Ident_set.of_list params in
+                  let obj =
+                    ({<defined_idents = Ident_set.empty;used_idents =
+                                                          Ident_set.empty;
+                       in_loop = false;loop_mutable_values = Ident_set.empty;
+                       mutable_values =
+                         Ident_set.of_list
+                           (Js_fun_env.get_mutable_params params env);
+                       closured_idents = Ident_set.empty>})#block block in
+                  let (defined_idents',used_idents') =
+                    ((obj#get_defined_idents), (obj#get_used_idents)) in
+                  (params |>
+                     (List.iteri
+                        (fun i  ->
+                           fun v  ->
+                             if not (Ident_set.mem v used_idents')
+                             then Js_fun_env.mark_unused env i));
+                   (let closured_idents' =
+                      let open Ident_set in
+                        diff used_idents' (union defined_idents' param_set) in
+                    Js_fun_env.set_bound env closured_idents';
+                    (let lexical_scopes =
+                       let open Ident_set in
+                         inter closured_idents' self#get_loop_mutable_values in
+                     Js_fun_env.set_lexical_scope env lexical_scopes;
+                     {<used_idents =
+                         Ident_set.union used_idents closured_idents';
+                       closured_idents =
+                         Ident_set.union closured_idents closured_idents'>})))
+              | _ -> super#expression x
+            method! variable_declaration x =
+              match x with
+              | { ident; value; property } ->
+                  let obj =
+                    (match ((self#get_in_loop), property) with
+                     | (true ,Variable ) ->
+                         self#add_loop_mutable_variable ident
+                     | (true ,(Strict |StrictOpt |Alias )) ->
+                         (match value with
+                          | None  -> self#add_loop_mutable_variable ident
+                          | Some x ->
+                              (match x.expression_desc with
+                               | Fun _|Number _|Str _ -> self
+                               | _ -> self#add_loop_mutable_variable ident))
+                     | (false ,Variable ) -> self#add_mutable_variable ident
+                     | (false ,(Strict |StrictOpt |Alias )) -> self)#add_defined_ident
+                      ident in
+                  (match value with
+                   | None  -> obj
+                   | Some x -> obj#expression x)
+            method! statement x =
+              match x.statement_desc with
+              | ForRange (_,_,loop_id,_,_,a_env) as y ->
+                  let obj =
+                    ({<in_loop = true;loop_mutable_values =
+                                        Ident_set.singleton loop_id;used_idents
+                                                                    =
+                                                                    Ident_set.empty;
+                       defined_idents = Ident_set.singleton loop_id;closured_idents
+                                                                    =
+                                                                    Ident_set.empty>})#statement_desc
+                      y in
+                  let (defined_idents',used_idents',closured_idents') =
+                    ((obj#get_defined_idents), (obj#get_used_idents),
+                      (obj#get_closured_idents)) in
+                  let lexical_scope =
+                    let open Ident_set in
+                      inter (diff closured_idents' defined_idents')
+                        self#get_loop_mutable_values in
+                  let () = Js_closure.set_lexical_scope a_env lexical_scope in
+                  {<used_idents = Ident_set.union used_idents used_idents';
+                    defined_idents =
+                      Ident_set.union defined_idents defined_idents';
+                    closured_idents =
+                      Ident_set.union closured_idents lexical_scope>}
+              | While (_label,pred,body,_env) ->
+                  (((self#expression pred)#with_in_loop true)#block body)#with_in_loop
+                    self#get_in_loop
+              | _ -> super#statement x
+            method! exception_ident x =
+              {<used_idents = Ident_set.add x used_idents;defined_idents =
+                                                            Ident_set.add x
+                                                              defined_idents>}
+            method! for_ident x =
+              {<loop_mutable_values = Ident_set.add x loop_mutable_values>}
+            method! ident x =
+              if Ident_set.mem x defined_idents
+              then self
+              else {<used_idents = Ident_set.add x used_idents>}
+          end
+        let program js = (scope_pass#program js)#get_loop_mutable_values
+      end 
     module Js_pass_flatten_and_mark_dead :
       sig
         [@@@ocaml.text
@@ -12230,232 +12358,6 @@ include
                  (fun chan  -> Js_dump.dump_program prog chan)) in
           prog
       end 
-    module Js_inline_and_eliminate :
-      sig
-        [@@@ocaml.text " Inline and remove unused code in JS IR "]
-        val inline_and_shake : J.program -> J.program
-      end =
-      struct
-        module S = Js_stmt_make
-        module E = Js_exp_make
-        let count_collects () =
-          object (self)
-            inherit  Js_fold.fold as super
-            val stats = (Hashtbl.create 83 : (Ident.t,int ref) Hashtbl.t)
-            val defined_idents =
-              (Hashtbl.create 83 : (Ident.t,J.variable_declaration) Hashtbl.t)
-            val mutable export_set = (Ident_set.empty : Ident_set.t)
-            val mutable name = ("" : string)
-            method add_use id =
-              match Hashtbl.find stats id with
-              | exception Not_found  -> Hashtbl.add stats id (ref 1)
-              | v -> incr v
-            method! program x =
-              export_set <- x.export_set; name <- x.name; super#program x
-            method! variable_declaration
-              ({ ident; value; property; ident_info } as v) =
-              Hashtbl.add defined_idents ident v;
-              (match value with | None  -> self | Some x -> self#expression x)
-            method! ident id = self#add_use id; self
-            method get_stats =
-              Hashtbl.iter
-                (fun ident  ->
-                   fun (v : J.variable_declaration)  ->
-                     if Ident_set.mem ident export_set
-                     then Js_op_util.update_used_stats v.ident_info Exported
-                     else
-                       (let pure =
-                          match v.value with
-                          | None  -> false
-                          | Some x -> Js_analyzer.no_side_effect_expression x in
-                        match Hashtbl.find stats ident with
-                        | exception Not_found  ->
-                            Js_op_util.update_used_stats v.ident_info
-                              (if pure then Dead_pure else Dead_non_pure)
-                        | num ->
-                            if (!num) = 1
-                            then
-                              Js_op_util.update_used_stats v.ident_info
-                                (if pure then Once_pure else Used)))
-                defined_idents;
-              defined_idents
-          end[@@ocaml.doc
-               " Update ident info use cases, it is a non pure function, \n    it will annotate [program] with some meta data\n    TODO: Ident Hashtbl could be improved, \n    since in this case it can not be global?  \n\n "]
-        let get_stats program =
-          ((count_collects ())#program program)#get_stats
-        let subst name export_set stats =
-          object (self)
-            inherit  Js_map.map as super
-            method! statement st =
-              match st with
-              | {
-                  statement_desc = Variable
-                    { value = _; ident_info = { used_stats = Dead_pure  } };
-                  comment = _ } -> S.block []
-              | {
-                  statement_desc = Variable
-                    { ident_info = { used_stats = Dead_non_pure  };
-                      value = Some v;_};_}
-                  -> S.exp v
-              | _ -> super#statement st
-            method! variable_declaration
-              ({ ident; value; property; ident_info } as v) =
-              let v = super#variable_declaration v in
-              Hashtbl.add stats ident v; v
-            method! block bs =
-              match bs with
-              | ({
-                   statement_desc = Variable
-                     ({ value = Some ({ expression_desc = Fun _;_} as v) } as
-                        vd);
-                   comment = _ } as st)::rest
-                  ->
-                  let is_export = Ident_set.mem vd.ident export_set in
-                  if is_export
-                  then (self#statement st) :: (self#block rest)
-                  else
-                    (match (Hashtbl.find stats vd.ident : J.variable_declaration)
-                     with
-                     | exception Not_found  ->
-                         if Js_analyzer.no_side_effect_expression v
-                         then (S.exp v) :: (self#block rest)
-                         else self#block rest
-                     | _ -> (self#statement st) :: (self#block rest))
-              | ({
-                   statement_desc = Return
-                     {
-                       return_value =
-                         {
-                           expression_desc = Call
-                             ({ expression_desc = Var (Id id) },args,_info)
-                           }
-                       }
-                   } as st)::rest
-                  ->
-                  (match Hashtbl.find stats id with
-                   | exception Not_found  -> (self#statement st) ::
-                       (self#block rest)
-                   | {
-                       value = Some
-                         { expression_desc = Fun (params,block,_env);
-                           comment = _ };
-                       property = (Alias |StrictOpt |Strict );
-                       ident_info = { used_stats = Once_pure  }; ident = _ }
-                       as v when Ext_list.same_length params args ->
-                       (Js_op_util.update_used_stats v.ident_info Dead_pure;
-                        (let block =
-                           List.fold_right2
-                             (fun param  ->
-                                fun arg  ->
-                                  fun acc  ->
-                                    (S.define ~kind:Variable param arg) ::
-                                    acc) params args (self#block block) in
-                         block @ (self#block rest)))
-                   | _ -> (self#statement st) :: (self#block rest))
-              | x::xs -> (self#statement x) :: (self#block xs)
-              | [] -> []
-          end[@@ocaml.doc
-               " There is a side effect when traversing dead code, since \n   we assume that substitue a node would mark a node as dead node,\n  \n    so if we traverse a dead node, this would get a wrong result.\n   it does happen in such scenario\n   {[\n     let generic_basename is_dir_sep current_dir_name name =\n       let rec find_end n =\n         if n < 0 then String.sub name 0 1\n         else if is_dir_sep name n then find_end (n - 1)\n         else find_beg n (n + 1)\n       and find_beg n p =\n         if n < 0 then String.sub name 0 p\n         else if is_dir_sep name n then String.sub name (n + 1) (p - n - 1)\n         else find_beg (n - 1) p\n       in\n       if name = \"\"\n       then current_dir_name\n       else find_end (String.length name - 1)\n   ]}\n   [find_beg] can potentially be expanded in [find_end] and in [find_end]'s expansion, \n   if the order is not correct, or even worse, only the wrong one [find_beg] in [find_end] get expanded \n   (when we forget to recursive apply), then some code non-dead [find_beg] will be marked as dead, \n   while it is still called \n"]
-        type inline_state =
-          | False
-          | Inline_ignore of bool
-          | Inline_ret of J.expression* bool
-          | Inline_return
-        let pass_beta =
-          object (self)
-            inherit  Js_map.map as super
-            val inline_state = False
-            method with_inline_state x = {<inline_state = x>}
-            method! block bs =
-              match bs with
-              | { statement_desc = Block bs;_}::rest ->
-                  self#block (bs @ rest)
-              | {
-                  statement_desc = Exp
-                    {
-                      expression_desc = Call
-                        ({ expression_desc = Fun (params,body,env) },args,_info);_};_}::rest
-                  when Ext_list.same_length args params ->
-                  let body = self#block body in
-                  (List.fold_right2
-                     (fun p  ->
-                        fun a  ->
-                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
-                     params args
-                     ((self#with_inline_state
-                         (Inline_ignore (Js_fun_env.is_tailcalled env)))#block
-                        body))
-                    @ (self#block rest)
-              | {
-                  statement_desc = Exp
-                    {
-                      expression_desc = Bin
-                        (Eq
-                         ,e,{
-                              expression_desc = Call
-                                ({ expression_desc = Fun (params,body,env) },args,_info);_});_};_}::rest
-                  when Ext_list.same_length args params ->
-                  let body = self#block body in
-                  (List.fold_right2
-                     (fun p  ->
-                        fun a  ->
-                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
-                     params args
-                     ((self#with_inline_state
-                         (Inline_ret (e, (Js_fun_env.is_tailcalled env))))#block
-                        body))
-                    @ (self#block rest)
-              | {
-                  statement_desc = Return
-                    {
-                      return_value =
-                        {
-                          expression_desc = Call
-                            ({ expression_desc = Fun (params,body,_) },args,_info);_}
-                      };_}::rest
-                  when Ext_list.same_length args params ->
-                  let body = self#block body in
-                  (List.fold_right2
-                     (fun p  ->
-                        fun a  ->
-                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
-                     params args
-                     ((self#with_inline_state Inline_return)#block body))
-                    @ (self#block rest)
-              | ({ statement_desc = Return { return_value = e } } as st)::rest
-                  ->
-                  (match inline_state with
-                   | False  -> (self#statement st) :: (self#block rest)
-                   | Inline_ignore b -> (S.exp (self#expression e)) ::
-                       (if b
-                        then (S.break ()) :: (self#block rest)
-                        else self#block rest)
-                   | Inline_ret (v,b) ->
-                       (S.exp (E.assign v (self#expression e))) ::
-                       (if b
-                        then (S.break ()) :: (self#block rest)
-                        else self#block rest)
-                   | Inline_return  -> (S.return (self#expression e)) ::
-                       (self#block rest))
-              | x::xs -> (self#statement x) :: (self#block xs)
-              | [] -> []
-            method! expression e =
-              match e.expression_desc with
-              | Fun (params,body,env) ->
-                  {
-                    e with
-                    expression_desc =
-                      (Fun
-                         (params, (({<inline_state = False>})#block body),
-                           env))
-                  }
-              | _ -> super#expression e
-          end
-        let inline_and_shake (program : J.program) =
-          let _stats = get_stats program in
-          let _export_set = program.export_set in
-          program |> (subst program.name _export_set _stats)#program
-      end 
     module Lam_compile_group :
       sig
         [@@@ocaml.text " BuckleScript entry point in the OCaml compiler "]
@@ -12607,38 +12509,40 @@ include
                     Ext_log.dwarn __LOC__ "export: %s/%d" id.name id.stamp)) in
           let () = Translmod.reset () in
           let () = Lam_compile_env.reset () in
-          let _d = Lam_util.dump env filename in
+          let _d = Lam_util.dump env in
           let _j = Js_pass_debug.dump in
-          let lam = _d lam in
+          let lam = _d "initial" lam in
           let lam = Lam_group.deep_flatten lam in
-          let lam = _d lam in
+          let lam = _d "flatten" lam in
           let meta =
             Lam_pass_collect.count_alias_globals env filename export_idents
               lam in
           let lam =
             let lam =
-              (((lam |> _d) |> Lam_pass_exits.simplify_exits) |> _d) |>
-                (Lam_pass_remove_alias.simplify_alias meta) in
-            let () = ignore @@ (_d lam) in
-            let lam = Lam_group.deep_flatten lam in
-            let () = ignore @@ (_d lam) in
+              ((((((lam |> (_d "flattern")) |> Lam_pass_exits.simplify_exits)
+                    |> (_d "simplyf_exits"))
+                   |> (Lam_pass_remove_alias.simplify_alias meta))
+                  |> (_d "simplify_alias"))
+                 |> Lam_group.deep_flatten)
+                |> (_d "flatten") in
             let () = Lam_pass_collect.collect_helper meta lam in
             let lam = Lam_pass_remove_alias.simplify_alias meta lam in
             let lam = Lam_group.deep_flatten lam in
             let () = Lam_pass_collect.collect_helper meta lam in
             let lam =
-              ((lam |> _d) |>
+              ((lam |> (_d "alpha_before")) |>
                  (Lam_pass_alpha_conversion.alpha_conversion meta))
                 |> Lam_pass_exits.simplify_exits in
             let () = Lam_pass_collect.collect_helper meta lam in
-            ((((((((lam |> _d) |> (Lam_pass_remove_alias.simplify_alias meta))
-                    |> _d)
+            ((((((((lam |> (_d "simplify_alias_before")) |>
+                     (Lam_pass_remove_alias.simplify_alias meta))
+                    |> (_d "alpha_conversion"))
                    |> (Lam_pass_alpha_conversion.alpha_conversion meta))
-                  |> _d)
+                  |> (_d "simplify_lets"))
                  |> Lam_pass_lets_dce.simplify_lets)
-                |> _d)
+                |> (_d "simplify_lets"))
                |> Lam_pass_exits.simplify_exits)
-              |> _d in
+              |> (_d "simplify_lets") in
           match (lam : Lambda.lambda) with
           | Lprim (Psetglobal id,biglambda::[]) ->
               (match Lam_group.flatten [] biglambda with
@@ -12689,6 +12593,17 @@ include
                                   Ident_map.add id lam export_map
                               | _ -> export_map), (x :: acc)))
                        (export_map, coercion_groups) rest in
+                   let () =
+                     if Lam_current_unit.is_same_file ()
+                     then
+                       let f =
+                         (Ext_filename.chop_extension ~loc:__LOC__ filename)
+                           ^ ".lambda" in
+                       (Ext_pervasives.with_file_as_pp f) @@
+                         (fun fmt  ->
+                            Format.pp_print_list
+                              ~pp_sep:Format.pp_print_newline
+                              (Lam_group.pp_group env) fmt rest) in
                    let rest = Lam_dce.remove meta.exports rest in
                    let module E = struct exception Not_pure of string end in
                      let no_side_effects rest =
@@ -12730,7 +12645,7 @@ include
                      ((((((((((js |> (_j "initial")) |>
                                 Js_pass_flatten.program)
                                |> (_j "flattern"))
-                              |> Js_inline_and_eliminate.inline_and_shake)
+                              |> Js_pass_tailcall_inline.tailcall_inline)
                              |> (_j "inline_and_shake"))
                             |> Js_pass_flatten_and_mark_dead.program)
                            |> (_j "flatten_and_mark_dead"))
@@ -12772,7 +12687,7 @@ include
         let lambda_as_module env (sigs : Types.signature) (filename : string)
           (lam : Lambda.lambda) =
           Lam_current_unit.set_file filename;
-          Lam_current_unit.iset_debug_file "caml_hash.ml";
+          Lam_current_unit.iset_debug_file "tuple_alloc.ml";
           Ext_pervasives.with_file_as_chan
             ((Ext_filename.chop_extension ~loc:__LOC__ filename) ^
                (Js_config.get_ext ()))
@@ -13384,6 +13299,108 @@ include
           then invalid_arg "Ext_array.map2i"
           else
             Array.mapi (fun i  -> fun a  -> f i a (Array.unsafe_get b i)) a
+      end 
+    module Js_pass_beta : sig [@@@ocaml.text " "] end =
+      struct
+        module S = Js_stmt_make
+        module E = Js_exp_make
+        [@@@ocaml.text
+          " Update ident info use cases, it is a non pure function, \n    it will annotate [program] with some meta data\n    TODO: Ident Hashtbl could be improved, \n    since in this case it can not be global?  \n\n "]
+        type inline_state =
+          | False
+          | Inline_ignore of bool
+          | Inline_ret of J.expression* bool
+          | Inline_return
+        let pass_beta =
+          object (self)
+            inherit  Js_map.map as super
+            val inline_state = False
+            method with_inline_state x = {<inline_state = x>}
+            method! block bs =
+              match bs with
+              | { statement_desc = Block bs;_}::rest ->
+                  self#block (bs @ rest)
+              | {
+                  statement_desc = Exp
+                    {
+                      expression_desc = Call
+                        ({ expression_desc = Fun (params,body,env) },args,_info);_};_}::rest
+                  when Ext_list.same_length args params ->
+                  let body = self#block body in
+                  (List.fold_right2
+                     (fun p  ->
+                        fun a  ->
+                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
+                     params args
+                     ((self#with_inline_state
+                         (Inline_ignore (Js_fun_env.is_tailcalled env)))#block
+                        body))
+                    @ (self#block rest)
+              | {
+                  statement_desc = Exp
+                    {
+                      expression_desc = Bin
+                        (Eq
+                         ,e,{
+                              expression_desc = Call
+                                ({ expression_desc = Fun (params,body,env) },args,_info);_});_};_}::rest
+                  when Ext_list.same_length args params ->
+                  let body = self#block body in
+                  (List.fold_right2
+                     (fun p  ->
+                        fun a  ->
+                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
+                     params args
+                     ((self#with_inline_state
+                         (Inline_ret (e, (Js_fun_env.is_tailcalled env))))#block
+                        body))
+                    @ (self#block rest)
+              | {
+                  statement_desc = Return
+                    {
+                      return_value =
+                        {
+                          expression_desc = Call
+                            ({ expression_desc = Fun (params,body,_) },args,_info);_}
+                      };_}::rest
+                  when Ext_list.same_length args params ->
+                  let body = self#block body in
+                  (List.fold_right2
+                     (fun p  ->
+                        fun a  ->
+                          fun acc  -> (S.define ~kind:Variable p a) :: acc)
+                     params args
+                     ((self#with_inline_state Inline_return)#block body))
+                    @ (self#block rest)
+              | ({ statement_desc = Return { return_value = e } } as st)::rest
+                  ->
+                  (match inline_state with
+                   | False  -> (self#statement st) :: (self#block rest)
+                   | Inline_ignore b -> (S.exp (self#expression e)) ::
+                       (if b
+                        then (S.break ()) :: (self#block rest)
+                        else self#block rest)
+                   | Inline_ret (v,b) ->
+                       (S.exp (E.assign v (self#expression e))) ::
+                       (if b
+                        then (S.break ()) :: (self#block rest)
+                        else self#block rest)
+                   | Inline_return  -> (S.return (self#expression e)) ::
+                       (self#block rest))
+              | x::xs -> (self#statement x) :: (self#block xs)
+              | [] -> []
+            method! expression e =
+              match e.expression_desc with
+              | Fun (params,body,env) ->
+                  {
+                    e with
+                    expression_desc =
+                      (Fun
+                         (params, (({<inline_state = False>})#block body),
+                           env))
+                  }
+              | _ -> super#expression e
+          end
       end 
     module Ext_char :
       sig

@@ -78,7 +78,27 @@ world:
 	cd stdlib && make all	
 	@echo "Making lib finished"
 
+world-test:
+	@echo "Making compiler"		
+	ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	@echo "Making compiler finished"		
 
+	@echo "Making runtime"
+	cd runtime && make all
+	@echo "Making runtime finished"
+
+	@echo "Making stdlib"
+	cd lib && make all
+	@echo "Making stdlib finished"
+
+	@echo "Making lib"
+	cd stdlib && make all	
+	@echo "Making lib finished"
+
+	@echo "Making test"
+	cd test && make all
+	@echo "Making test finsihed"
+ 
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
 
