@@ -38,7 +38,7 @@ val block : string
 val int32 : string
 val gc : string 
 val backtrace : string
-val prim : string 
+
 val builtin_exceptions : string
 val exceptions : string
 val io : string
@@ -53,7 +53,7 @@ val string : string
 val float : string 
 val curry : string 
 val bigarray : string
-val unix : string
+(* val unix : string *)
 val int64 : string
 val md5 : string
 val hash : string

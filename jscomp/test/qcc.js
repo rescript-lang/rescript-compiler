@@ -12,7 +12,6 @@ var Char                    = require("../stdlib/char");
 var Sys                     = require("../stdlib/sys");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("../stdlib/printf");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_array              = require("../runtime/caml_array");
 var $$String                = require("../stdlib/string");
 var Caml_string             = require("../runtime/caml_string");
@@ -1963,7 +1962,9 @@ function main() {
       top(/* () */0);
       elfgen(oc);
       Caml_io.caml_ml_flush(oc);
-      return Caml_primitive.caml_ml_close_channel(oc);
+      return function () {
+                throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+              }();
   }
 }
 

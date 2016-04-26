@@ -11,7 +11,6 @@ var Digest                  = require("../stdlib/digest");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("../stdlib/printf");
 var Scanf                   = require("../stdlib/scanf");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Buffer                  = require("../stdlib/buffer");
 var List                    = require("../stdlib/list");
 var Caml_string             = require("../runtime/caml_string");
@@ -54,7 +53,9 @@ function write_tscanf_data_file(fname, lines) {
   create_tscanf_data(ob, lines);
   Buffer.output_buffer(oc, ob);
   Caml_io.caml_ml_flush(oc);
-  return Caml_primitive.caml_ml_close_channel(oc);
+  return function () {
+            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+          }();
 }
 
 function get_lines(fname) {

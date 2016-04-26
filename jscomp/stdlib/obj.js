@@ -3,7 +3,6 @@
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Marshal                 = require("./marshal");
-var Caml_primitive          = require("../runtime/caml_primitive");
 
 function double_field(x, i) {
   return x[i];
@@ -14,8 +13,10 @@ function set_double_field(x, i, v) {
   return /* () */0;
 }
 
-function marshal(obj) {
-  return Caml_primitive.caml_output_value_to_string(obj, /* [] */0);
+function marshal() {
+  return function () {
+            throw "caml_output_value_to_string not implemented by bucklescript yet\n";
+          }();
 }
 
 function unmarshal(str, pos) {

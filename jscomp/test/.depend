@@ -582,6 +582,8 @@ test_type_based_arity.cmo : abstract_type.cmi
 test_type_based_arity.cmx : abstract_type.cmx
 test_u.cmo :
 test_u.cmx :
+test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
+test_unsupported_primitive.cmx : ../stdlib/bytes.cmx
 test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmx : ../stdlib/array.cmx
 test_while_side_effect.cmo :
@@ -1184,6 +1186,8 @@ test_type_based_arity.cmo : abstract_type.cmi
 test_type_based_arity.cmj : abstract_type.cmj
 test_u.cmo :
 test_u.cmj :
+test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
+test_unsupported_primitive.cmj : ../stdlib/bytes.cmj
 test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmj : ../stdlib/array.cmj
 test_while_side_effect.cmo :

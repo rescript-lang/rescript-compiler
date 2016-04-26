@@ -8,7 +8,6 @@ var Pervasives              = require("./pervasives");
 var Block                   = require("../runtime/block");
 var Curry                   = require("../runtime/curry");
 var Printf                  = require("./printf");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Buffer                  = require("./buffer");
 var $$String                = require("./string");
 var Random                  = require("./random");
@@ -281,16 +280,9 @@ function temp_file($staropt$star, prefix, suffix) {
     var counter = _counter;
     var name = temp_file_name(temp_dir, prefix, suffix);
     try {
-      Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, /* :: */[
-                /* Open_wronly */1,
-                /* :: */[
-                  /* Open_creat */3,
-                  /* :: */[
-                    /* Open_excl */5,
-                    /* [] */0
-                  ]
-                ]
-              ], 384));
+      (function () {
+            throw "caml_sys_close not implemented by bucklescript yet\n";
+          }());
       return name;
     }
     catch (e){

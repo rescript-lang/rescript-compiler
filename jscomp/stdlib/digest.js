@@ -4,7 +4,6 @@
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
 var Pervasives              = require("./pervasives");
 var Char                    = require("./char");
-var Caml_primitive          = require("../runtime/caml_primitive");
 var Caml_md5                = require("../runtime/caml_md5");
 var $$String                = require("./string");
 var Caml_string             = require("../runtime/caml_string");
@@ -34,19 +33,25 @@ function subbytes(b, ofs, len) {
 }
 
 function file(filename) {
-  var ic = Pervasives.open_in_bin(filename);
+  Pervasives.open_in_bin(filename);
   var exit = 0;
   var d;
   try {
-    d = Caml_primitive.caml_md5_chan(ic, -1);
+    d = function () {
+        throw "caml_md5_chan not implemented by bucklescript yet\n";
+      }();
     exit = 1;
   }
   catch (e){
-    Caml_primitive.caml_ml_close_channel(ic);
+    (function () {
+          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+        }());
     throw e;
   }
   if (exit === 1) {
-    Caml_primitive.caml_ml_close_channel(ic);
+    (function () {
+          throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+        }());
     return d;
   }
   
