@@ -53,6 +53,32 @@ releasebuild:
 stdlib:
 	cd stdlib && ./build.sh
 
+
+
+
+# Example:
+# MODULE_FLAGS='-js-module amdjs' make world
+# MODULE_FLAGS='-js-module commonjs' make world
+# MODULE_FLAGS='-js-module goog:buckle' make world
+
+world:
+	@echo "Making compiler"		
+	ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	@echo "Making compiler finished"		
+
+	@echo "Making runtime"
+	cd runtime && make all
+	@echo "Making runtime finished"
+
+	@echo "Making stdlib"
+	cd lib && make all
+	@echo "Making stdlib finished"
+
+	@echo "Making lib"
+	cd stdlib && make all	
+	@echo "Making lib finished"
+
+
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
 
