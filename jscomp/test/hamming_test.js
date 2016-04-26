@@ -12,28 +12,28 @@ var Printf           = require("../stdlib/printf");
 var Buffer           = require("../stdlib/buffer");
 
 var n0 = /* int64 */[
-  0,
-  0
+  /* hi */0,
+  /* lo */0
 ];
 
 var n1 = /* int64 */[
-  0,
-  1
+  /* hi */0,
+  /* lo */1
 ];
 
 var n2 = /* int64 */[
-  0,
-  2
+  /* hi */0,
+  /* lo */2
 ];
 
 var n3 = /* int64 */[
-  0,
-  3
+  /* hi */0,
+  /* lo */3
 ];
 
 var n5 = /* int64 */[
-  0,
-  5
+  /* hi */0,
+  /* lo */5
 ];
 
 var $percent = Caml_int64.mod_

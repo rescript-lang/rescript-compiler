@@ -716,14 +716,14 @@ function getaddrinfo(node, service, opts) {
                       var ty = param[0];
                       return List.map(function (param) {
                                   return /* record */[
-                                          /* PF_INET */1,
-                                          ty,
-                                          opt_protocol[0],
-                                          /* ADDR_INET */Block.__(1, [
+                                          /* ai_family */1,
+                                          /* ai_socktype */ty,
+                                          /* ai_protocol */opt_protocol[0],
+                                          /* ai_addr */Block.__(1, [
                                               param[0],
                                               port
                                             ]),
-                                          param[1]
+                                          /* ai_canonname */param[1]
                                         ];
                                 }, addresses);
                     }, ports));
@@ -787,14 +787,14 @@ function getnameinfo(addr, opts) {
           }
         }
         return /* record */[
-                hostname,
-                service
+                /* ni_hostname */hostname,
+                /* ni_service */service
               ];
       }
       else {
         return /* record */[
-                "",
-                addr$1[0]
+                /* ni_hostname */"",
+                /* ni_service */addr$1[0]
               ];
       }
     }

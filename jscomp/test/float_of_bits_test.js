@@ -12,8 +12,8 @@ var $$Array    = require("../stdlib/array");
 var List       = require("../stdlib/list");
 
 var one_float = /* int64 */[
-  1072693248,
-  0
+  /* hi */1072693248,
+  /* lo */0
 ];
 
 var int32_pairs = /* array */[

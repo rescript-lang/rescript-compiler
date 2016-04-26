@@ -15,8 +15,8 @@ var $$Array                 = require("./array");
 
 function new_state() {
   return /* record */[
-          Caml_array.caml_make_vect(55, 0),
-          0
+          /* st */Caml_array.caml_make_vect(55, 0),
+          /* idx */0
         ];
 }
 
@@ -126,8 +126,8 @@ function int32(s, bound) {
 
 function int64(s, bound) {
   if (Caml_int64.le(bound, /* int64 */[
-          0,
-          0
+          /* hi */0,
+          /* lo */0
         ])) {
     throw [
           Caml_builtin_exceptions.invalid_argument,
@@ -141,16 +141,16 @@ function int64(s, bound) {
       var b1 = Caml_int64.of_int32(bits(s$1));
       var b2 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1)), 30);
       var b3 = Caml_int64.lsl_(Caml_int64.of_int32(bits(s$1) & 7), 60);
-      var r_000 = b1[0] | b2[0] | b3[0];
-      var r_001 = ((b1[1] | b2[1] | b3[1]) >>> 0);
+      var r_000 = /* hi */b1[0] | /* hi */b2[0] | b3[0];
+      var r_001 = /* lo */((b1[1] | b2[1] | b3[1]) >>> 0);
       var r = /* int64 */[
         r_000,
         r_001
       ];
       var v = Caml_int64.mod_(r, n);
       if (Caml_int64.gt(Caml_int64.sub(r, v), Caml_int64.add(Caml_int64.sub(Int64.max_int, n), /* int64 */[
-                  0,
-                  1
+                  /* hi */0,
+                  /* lo */1
                 ]))) {
         continue ;
         
@@ -181,7 +181,7 @@ function bool(s) {
 }
 
 var $$default = /* record */[
-  /* array */[
+  /* st */[
     987910699,
     495797812,
     364182224,
@@ -238,7 +238,7 @@ var $$default = /* record */[
     409934019,
     801085050
   ],
-  0
+  /* idx */0
 ];
 
 function bits$1() {

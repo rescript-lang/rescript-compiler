@@ -11,8 +11,8 @@ function g(x) {
 
 function ff(v, u) {
   return /* record */[
-          v,
-          u
+          /* v */v,
+          /* u */u
         ];
 }
 

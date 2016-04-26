@@ -63,8 +63,8 @@ Mt.from_pair_suites("string_get_set_test.ml", /* :: */[
                     return /* Eq */Block.__(0, [
                               Caml_int64.get64("12345678", 0),
                               /* int64 */[
-                                943142453,
-                                875770417
+                                /* hi */943142453,
+                                /* lo */875770417
                               ]
                             ]);
                   }
@@ -76,8 +76,8 @@ Mt.from_pair_suites("string_get_set_test.ml", /* :: */[
                       return /* Eq */Block.__(0, [
                                 Caml_int64.get64("87654321", 0),
                                 /* int64 */[
-                                  825373492,
-                                  892745528
+                                  /* hi */825373492,
+                                  /* lo */892745528
                                 ]
                               ]);
                     }

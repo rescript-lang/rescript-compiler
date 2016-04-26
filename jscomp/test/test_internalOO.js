@@ -19,11 +19,11 @@ function copy(o) {
 }
 
 var params = /* record */[
-  /* true */1,
-  /* true */1,
-  /* true */1,
-  3,
-  16
+  /* compact_table */1,
+  /* copy_parent */1,
+  /* clean_when_copying */1,
+  /* retry_count */3,
+  /* bucket_small_size */16
 ];
 
 var step = Sys.word_size / 16 | 0;
@@ -2295,14 +2295,14 @@ var Labs = [
 ];
 
 var dummy_table = /* record */[
-  0,
-  /* array */[/* () */0],
-  /* Empty */0,
-  /* Empty */0,
-  /* [] */0,
-  /* [] */0,
-  /* Empty */0,
-  /* [] */0
+  /* size */0,
+  /* methods */[/* () */0],
+  /* methods_by_name */0,
+  /* methods_by_label */0,
+  /* previous_states */0,
+  /* hidden_meths */0,
+  /* vars */0,
+  /* initializers */0
 ];
 
 var table_count = [0];
@@ -2328,14 +2328,14 @@ function new_table(pub_labels) {
     methods[(i << 1) + 3 | 0] = pub_labels[i];
   }
   return /* record */[
-          2,
-          methods,
-          /* Empty */0,
-          /* Empty */0,
-          /* [] */0,
-          /* [] */0,
-          /* Empty */0,
-          /* [] */0
+          /* size */2,
+          /* methods */methods,
+          /* methods_by_name */0,
+          /* methods_by_label */0,
+          /* previous_states */0,
+          /* hidden_meths */0,
+          /* vars */0,
+          /* initializers */0
         ];
 }
 
@@ -2759,9 +2759,9 @@ function create_object_and_run_initializers(obj_0, table) {
 
 function build_path(n, keys, tables) {
   var res = /* record */[
-    0,
-    /* Empty */0,
-    /* Empty */0
+    /* key */0,
+    /* data */0,
+    /* next */0
   ];
   var r = res;
   for(var i = 0; i <= n; ++i){
@@ -3115,9 +3115,9 @@ function set_methods(table, methods) {
 
 function stats() {
   return /* record */[
-          table_count[0],
-          method_count[0],
-          inst_var_count[0]
+          /* classes */table_count[0],
+          /* methods */method_count[0],
+          /* inst_vars */inst_var_count[0]
         ];
 }
 

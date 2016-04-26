@@ -39,11 +39,11 @@ function Make(H) {
     var sz$1 = sz < 7 ? 7 : sz;
     var sz$2 = sz$1 > Sys.max_array_length ? Sys.max_array_length : sz$1;
     return /* record */[
-            Caml_array.caml_make_vect(sz$2, emptybucket),
-            Caml_array.caml_make_vect(sz$2, /* int array */[]),
-            7,
-            0,
-            0
+            /* table */Caml_array.caml_make_vect(sz$2, emptybucket),
+            /* hashes */Caml_array.caml_make_vect(sz$2, /* int array */[]),
+            /* limit */7,
+            /* oversize */0,
+            /* rover */0
           ];
   };
   var clear = function (t) {

@@ -16,8 +16,8 @@ function dims(a) {
 
 function map_file(fd, $staropt$star, kind, layout, shared, dims) {
   var pos = $staropt$star ? $staropt$star[0] : /* int64 */[
-      0,
-      0
+      /* hi */0,
+      /* lo */0
     ];
   return Caml_bigarray.caml_ba_map_file_bytecode(fd, kind, layout, shared, dims, pos);
 }

@@ -3,22 +3,22 @@
 
 
 var dummy_stat = /* record */[
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0
+  /* minor_words */0,
+  /* promoted_words */0,
+  /* major_words */0,
+  /* minor_collections */0,
+  /* major_collections */0,
+  /* heap_words */0,
+  /* heap_chunks */0,
+  /* live_words */0,
+  /* live_blocks */0,
+  /* free_words */0,
+  /* free_blocks */0,
+  /* largest_free */0,
+  /* fragments */0,
+  /* compactions */0,
+  /* top_heap_words */0,
+  /* stack_size */0
 ];
 
 function caml_gc_stat() {
@@ -39,13 +39,13 @@ function caml_gc_counters() {
 
 function caml_gc_get() {
   return /* record */[
-          0,
-          0,
-          0,
-          0,
-          0,
-          0,
-          0
+          /* minor_heap_size */0,
+          /* major_heap_increment */0,
+          /* space_overhead */0,
+          /* verbose */0,
+          /* max_overhead */0,
+          /* stack_limit */0,
+          /* allocation_policy */0
         ];
 }
 

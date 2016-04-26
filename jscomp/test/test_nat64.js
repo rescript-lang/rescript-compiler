@@ -3,8 +3,8 @@
 
 
 var v = /* int64 */[
-  0,
-  0
+  /* hi */0,
+  /* lo */0
 ];
 
 exports.v = v;

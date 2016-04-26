@@ -543,8 +543,8 @@ function read(param) {
 }
 
 var globs = Caml_array.caml_make_vect(100, /* record */[
-      0,
-      -1
+      /* loc */0,
+      /* va */-1
     ]);
 
 var lvls = /* :: */[
@@ -1025,8 +1025,8 @@ function unary(stk) {
           var loc = opos[0];
           le(64, g[/* loc */0]);
           globs[i] = /* record */[
-            loc,
-            g[/* va */1]
+            /* loc */loc,
+            /* va */g[/* va */1]
           ];
           read(/* Int */0);
         }
@@ -1224,8 +1224,8 @@ function decl(g, _n, _stk) {
                 }
                 var va = (gpos[0] + 232 | 0) + 4194304 | 0;
                 globs[s] = /* record */[
-                  glo[/* loc */0],
-                  va
+                  /* loc */glo[/* loc */0],
+                  /* va */va
                 ];
                 gpos[0] = gpos[0] + 8 | 0;
                 stk$prime = stk;
@@ -1493,8 +1493,8 @@ function top(_param) {
               ];
         }
         globs[f] = /* record */[
-          g[/* loc */0],
-          opos[0]
+          /* loc */g[/* loc */0],
+          /* va */opos[0]
         ];
         var emitargs = function (_regs, _n, _stk) {
           while(true) {
@@ -1671,8 +1671,8 @@ function elfgen(outf) {
   out(18616);
   le(64, gmain[/* loc */0]);
   globs[main] = /* record */[
-    opos[0] - 8 | 0,
-    gmain[/* va */1]
+    /* loc */opos[0] - 8 | 0,
+    /* va */gmain[/* va */1]
   ];
   out(65488);
   out(35271);

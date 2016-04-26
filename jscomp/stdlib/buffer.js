@@ -14,10 +14,10 @@ function create(n) {
   var n$2 = n$1 > Sys.max_string_length ? Sys.max_string_length : n$1;
   var s = Caml_string.caml_create_string(n$2);
   return /* record */[
-          s,
-          0,
-          n$2,
-          s
+          /* buffer */s,
+          /* position */0,
+          /* length */n$2,
+          /* initial_buffer */s
         ];
 }
 

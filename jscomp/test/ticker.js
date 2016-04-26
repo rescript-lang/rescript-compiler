@@ -1020,13 +1020,13 @@ function process_input_line(ticker_map, all_tickers, line) {
     var lhs$1 = find_ticker_by_name(all_tickers, lhs);
     var rhs$1 = find_ticker_by_name(all_tickers, rhs);
     return /* record */[
-            /* None */0,
-            /* Uninitialized */0,
-            ticker_name,
-            /* Binary_op */[/* record */[
-                op,
-                rhs$1,
-                lhs$1
+            /* value */0,
+            /* rank */0,
+            /* ticker_name */ticker_name,
+            /* type_ */[/* record */[
+                /* op */op,
+                /* rhs */rhs$1,
+                /* lhs */lhs$1
               ]]
           ];
   };
@@ -1156,10 +1156,10 @@ function process_input_line(ticker_map, all_tickers, line) {
                       return /* tuple */[
                               /* :: */[
                                 /* record */[
-                                  /* None */0,
-                                  /* Uninitialized */0,
-                                  ticker_name,
-                                  /* Market */0
+                                  /* value */0,
+                                  /* rank */0,
+                                  /* ticker_name */ticker_name,
+                                  /* type_ */0
                                 ],
                                 all_tickers
                               ],
