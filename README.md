@@ -50,7 +50,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
 
-It is in an *alpha* stage and we encourage you to try it and share
+It is in an *pre-alpha* stage and we encourage you to try it and share
 your feedback.
 
 ## [Link to wiki Documentation](https://github.com/bloomberg/bucklescript/wiki)
@@ -98,7 +98,7 @@ your feedback.
   pointing to the stdlib, like `BSC_LIB=/path/to/jscomp/stdlib`
 
 
-  Note by default, `bsc` will generate `commonjs` flags, you can
+  Note by default, `bsc` will generate `commonjs` modules, you can
   override such behavior by picking up your own module system:
 
 
@@ -255,7 +255,10 @@ Some known issues are listed as below:
    are then inlined so there will no be performance cost or code size
    penalty.
 
-   Bigarray, Unix, Num
+   Bigarray, Unix, Num, Str(regex)
+
+   For `Print` to behave correctly, you have to add a newline after
+   your output to guarantee it will be flushed, otherwise, it may be buffered.
 
 2. String is immutable, user is expected to compile with the flag `-safe-string` for all modules:
 
