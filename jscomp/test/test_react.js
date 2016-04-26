@@ -1,10 +1,9 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var React    = require("@");
-var Curry    = require("../runtime/curry");
-var React    = require("react");
 var ReactDom = require("react-dom");
+var React    = require("react");
+var Curry    = require("../runtime/curry");
 
 Curry._1(console.log.bind(console), "hey");
 

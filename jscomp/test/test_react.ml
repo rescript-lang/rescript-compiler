@@ -22,7 +22,7 @@ external log : 'a -> unit = "" [@@bs.call "console.log"]
 let v = log 32
 type t 
 type element
-external document :  t = "document" [@@bs.val ] [@@bs.scope "window"]
+external document :  t = "document" [@@bs.val ] 
 external getElementById : t -> string -> element = "getElementById" [@@bs.send ]        
 
 
@@ -41,19 +41,34 @@ external attrs:
 
 
 external str : string -> component = "%identity"            
-external h1 : ?attrs:attrs -> component array  -> component = "" 
-    [@@bs.call "h1"] [@@bs.scope "DOM"] [@@bs.module"react"] [@@bs.splice]
+type vdom 
+external vdom : vdom = "DOM" [@@bs.module "react"] [@@bs.val]
 
-external h2 : ?attrs:attrs -> component array  -> component = ""
-    [@@bs.call "h2"] [@@bs.scope  "DOM"][@@bs.module "react"] [@@bs.splice]
-external h3 : ?attrs:attrs -> component array  -> component = ""
-    [@@bs.call "h3"] [@@bs.scope  "DOM"][@@bs.module "@" "react"] [@@bs.splice]
 
-external h4 : ?attrs:attrs -> component array  -> component = ""
-    [@@bs.call "h4"] [@@bs.scope  "DOM"][@@bs.module "@" "react"] [@@bs.splice]
+(* FIXME: investigate 
+   cases:
+   {[
+     [@@bs.module "package1" "same_name"]
+     [@@bs.module "package2" "same_name"]
+   ]}
+   {[
+     [@@bs.module "package" "name1"]
+     [@@bs.module "package" "name2"]
+   ]}
+*)
+external h1 : vdom -> ?attrs:attrs -> component array  -> component = "h1" 
+    [@@bs.send]  [@@bs.splice]
+external h2 : vdom -> ?attrs:attrs -> component array  -> component = "h2" 
+    [@@bs.send]  [@@bs.splice]
 
-external div : ?attrs:attrs -> component array ->  component = ""
-    [@@bs.call "div"] [@@bs.scope "DOM"][@@bs.module "react"] [@@bs.splice]
+external h3 : vdom ->  ?attrs:attrs -> component array  -> component = "h3"
+    [@@bs.send]  [@@bs.splice]
+
+external h4 : vdom ->  ?attrs:attrs -> component array  -> component = "h4"
+    [@@bs.send]  [@@bs.splice]
+
+external div : vdom -> ?attrs:attrs -> component array ->  component = "div"
+    [@@bs.send]  [@@bs.splice]
 
 type component_class
 external createClass : 
@@ -70,12 +85,12 @@ render (
      createClass (
      (config
        ~render:(fun _ -> 
-         div 
+         div vdom
               ~attrs:(attrs ~alt:"pic" ())
               [|
-                h1 [| str "hello react"|];
-                h2 [| str "type safe!" |];
-                h3 [| str "type safe!" |];
+                h1 vdom [| str "hello react"|];
+                h2 vdom [| str "type safe!" |];
+                h3 vdom [| str "type safe!" |];
               |]
                )
         ()))) (getElementById document  "hi")

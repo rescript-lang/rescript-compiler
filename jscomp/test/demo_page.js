@@ -1,8 +1,8 @@
 // Generated CODE, PLEASE EDIT WITH CARE
 'use strict';
 
-var React    = require("react");
 var Curry    = require("../runtime/curry");
+var React    = require("react");
 var ReactDom = require("react-dom");
 
 function fib(n) {
