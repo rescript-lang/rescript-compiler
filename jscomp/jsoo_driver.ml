@@ -44,6 +44,7 @@ let implementation non_export ppf  str  =
   let types_signature = ref [] in
   try 
   Parse.implementation (Lexing.from_string str )
+  |> !Ppx_entry.rewrite_implementation
   |> (fun x -> 
       let (a,b,c,signature) = Typemod.type_implementation_more modulename modulename modulename env x in
       finalenv := c ;
