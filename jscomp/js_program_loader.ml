@@ -34,28 +34,28 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
     let id = x.id in
     let file = Printf.sprintf "%s.js" id.name in
     begin match Js_config.get_env () with 
-    | Goog _ -> 
-      (*TODO: we should store 
-        the goog module name in the [cmj] file
-      *)
-      let base =  String.uncapitalize id.name in
-      begin match Lam_compile_env.get_goog_package_name x with 
-      | None 
-      | Some "" -> 
-        base 
-      | Some v -> v ^ "." ^ base 
-      end
-    | Browser 
-      (* In browser *)
-      ->  
-      let target = Filename.chop_extension @@ String.uncapitalize file in
-      if String_set.mem target Js_config.runtime_set   then
-        "./runtime/" ^  target
-      else
-        "./stdlib/" ^ target 
-    | AmdJS
-    | NodeJS -> 
-      let filename = String.uncapitalize id.name in
+      | Goog _ -> 
+        (*TODO: we should store 
+          the goog module name in the [cmj] file
+        *)
+        let base =  String.uncapitalize id.name in
+        begin match Lam_compile_env.get_goog_package_name x with 
+          | None 
+          | Some "" -> 
+            base 
+          | Some v -> v ^ "." ^ base 
+        end
+      | Browser 
+        (* In browser *)
+        ->  
+        let target = Filename.chop_extension @@ String.uncapitalize file in
+        if String_set.mem target Js_config.runtime_set   then
+          "./runtime/" ^  target
+        else
+          "./stdlib/" ^ target 
+      | AmdJS
+      | NodeJS -> 
+        let filename = String.uncapitalize id.name in
         begin match Config_util.find file with   
           (* for some primitive files, no cmj support *)
           | exception Not_found ->
@@ -89,7 +89,6 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
           *)
           | path ->
             Ext_filename.node_relative_path !Location.input_name path
-
         end
     end
   | External name -> name
