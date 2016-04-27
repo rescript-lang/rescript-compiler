@@ -1,6 +1,6 @@
 {
     "name": "bs-stdlib",
-    "version": "3.4.2",
+    "version": "3.4.3",
     "description": "ocaml standard libary by bucklescript and its required runtime support",
     "main": "arg.js",
     "scripts": {
