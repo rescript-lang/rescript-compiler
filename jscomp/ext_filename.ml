@@ -84,13 +84,37 @@ let relative_path file1 file2 =
 
 
 
+let node_modules = "node_modules"
+let node_modules_length = String.length "node_modules"
 (** path2: a/b 
     path1: a 
     result:  ./b 
     TODO: [Filename.concat] with care
  *)
 let node_relative_path path1 path2 = 
-  
+  let v = Ext_string.find  path2 ~sub:node_modules in 
+  let len = String.length path2 in 
+  if v >= 0 then 
+    let rec skip  i =       
+      if i >= len then
+        failwith ("invalid path: " ^ path2)
+      else 
+        match path2.[i] with 
+        | '/'
+        | '.' ->  skip (i + 1) 
+        | _ -> i
+        (*
+          TODO: we need do more than this suppose user 
+          input can be
+           {[
+           "xxxghsoghos/ghsoghso/node_modules/../buckle-stdlib/list.js"
+           ]}
+           This seems weird though
+        *)
+    in 
+    Ext_string.tail_from path2
+      (skip (v + node_modules_length)) 
+  else 
     (relative_path 
        (try_chop_extension (absolute_path path2))
        (try_chop_extension (absolute_path path1))

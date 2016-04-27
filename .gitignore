@@ -60,3 +60,4 @@ coverage
 *.log
 ./jscomp/output
 *.g.js
+dist

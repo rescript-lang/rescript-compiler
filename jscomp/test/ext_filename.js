@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 
 var Caml_builtin_exceptions = require("../runtime/caml_builtin_exceptions");
@@ -125,16 +125,52 @@ function relative_path(file1, file2) {
   }
 }
 
+var node_modules = "node_modules";
+
+var node_modules_length = 12;
+
 function node_relative_path(path1, path2) {
-  return relative_path(try_chop_extension(absolute_path(path2)), try_chop_extension(absolute_path(path1))) + (node_sep + try_chop_extension(Curry._1(Filename.basename, path2)));
+  var v = Ext_string.find(/* None */0, node_modules, path2);
+  var len = path2.length;
+  if (v >= 0) {
+    var skip = function (_i) {
+      while(true) {
+        var i = _i;
+        if (i >= len) {
+          var s = "invalid path: " + path2;
+          throw [
+                Caml_builtin_exceptions.failure,
+                s
+              ];
+        }
+        else {
+          var match = path2.charCodeAt(i);
+          if (match === 47 || match === 46) {
+            _i = i + 1 | 0;
+            continue ;
+            
+          }
+          else {
+            return i;
+          }
+        }
+      };
+    };
+    return Ext_string.tail_from(path2, skip(v + node_modules_length | 0));
+  }
+  else {
+    return relative_path(try_chop_extension(absolute_path(path2)), try_chop_extension(absolute_path(path1))) + (node_sep + try_chop_extension(Curry._1(Filename.basename, path2)));
+  }
 }
 
-exports.node_sep           = node_sep;
-exports.node_parent        = node_parent;
-exports.node_current       = node_current;
-exports.absolute_path      = absolute_path;
-exports.chop_extension     = chop_extension;
-exports.try_chop_extension = try_chop_extension;
-exports.relative_path      = relative_path;
-exports.node_relative_path = node_relative_path;
+exports.node_sep            = node_sep;
+exports.node_parent         = node_parent;
+exports.node_current        = node_current;
+exports.absolute_path       = absolute_path;
+exports.chop_extension      = chop_extension;
+exports.try_chop_extension  = try_chop_extension;
+exports.relative_path       = relative_path;
+exports.node_modules        = node_modules;
+exports.node_modules_length = node_modules_length;
+exports.node_relative_path  = node_relative_path;
 /* Filename Not a pure module */

@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 
 var Test_global_print = require("./test_global_print");
