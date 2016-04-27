@@ -1,0 +1,34 @@
+{
+    "name": "bs-stdlib",
+    "version": "3.4.2",
+    "description": "ocaml standard libary by bucklescript and its required runtime support",
+    "main": "arg.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/bloomberg/bucklescript.git"
+    },
+    "keywords": [
+        "ocaml",
+        "bucklescript",
+        "stdlib"
+    ],
+
+    "author": {
+        "name": "INRIA"
+    },
+    "maintainers" : 
+    [
+        {
+            "name" : "hongbo_zhang",
+            "email" : "bobzhang1988@gmail.com"
+        }
+    ],
+    "license": "GPL V2 with linking exception, see LICENSE",
+    "bugs": {
+        "url": "https://github.com/bloomberg/bucklescript/issues"
+    },
+    "homepage": "https://github.com/bloomberg/bucklescript#readme"
+}
