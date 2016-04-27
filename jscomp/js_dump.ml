@@ -1593,9 +1593,14 @@ let amd_program f
   P.string f ")";
   v
 
+let bs_header = 
+  "// GENERATED CODE BY BUCKLESCRIPT VERSION " ^
+  Js_config.version ^
+  " , PLEASE EDIT WITH CARE"
+
 let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) = 
   begin
-    P.string f "// Generated CODE, PLEASE EDIT WITH CARE";
+    P.string f bs_header;
     P.newline f; 
     P.string f L.strict_directive; 
     P.newline f ;    

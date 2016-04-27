@@ -26,7 +26,10 @@
 
 (** Js_output is node style, which means 
     separator is only '/'
-    TODO: handle [node_modules]
+
+    if the path contains 'node_modules', 
+    [node_relative_path] will discard its prefix and 
+    just treat it as a library instead
  *)
 
 val node_relative_path : string -> string -> string

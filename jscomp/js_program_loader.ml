@@ -56,29 +56,29 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
     | AmdJS
     | NodeJS -> 
       let filename = String.uncapitalize id.name in
-      if String_set.mem filename Js_config.runtime_set  then 
-        let path = 
-          (* For the runtime, only [JS] files are needed, and 
-             unlike the stdlib, [bsc] have some pre-built knowledge 
-             about where it is, since in general, [runtime] 
-             is *transparent* to the user
-          *)        
-          match Sys.getenv "OCAML_JS_RUNTIME_PATH" with 
-          | exception Not_found -> 
-            Filename.concat 
-              (Filename.dirname (Filename.dirname Sys.executable_name))
-              "runtime"
-          | f ->  f  in
-        Ext_filename.node_relative_path !Location.input_name
-          (Filename.concat path filename)        
-      else 
         begin match Config_util.find file with   
           (* for some primitive files, no cmj support *)
           | exception Not_found ->
-            Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] "
-              file !Location.input_name ;
-            Printf.sprintf "%s" 
-              (String.uncapitalize id.name) 
+            if String_set.mem filename Js_config.runtime_set  then 
+              let path = 
+                (* For the runtime, only [JS] files are needed, and 
+                   unlike the stdlib, [bsc] have some pre-built knowledge 
+                   about where it is, since in general, [runtime] 
+                   is *transparent* to the user
+                *)        
+                Filename.concat 
+                  (Filename.dirname (Filename.dirname Sys.executable_name))
+                  "runtime"
+              in
+              Ext_filename.node_relative_path !Location.input_name
+                (Filename.concat path filename)        
+            else
+              begin 
+                Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] "
+                  file !Location.input_name ;
+                Printf.sprintf "%s" 
+                  (String.uncapitalize id.name) 
+              end
           (* maybe from third party library*)
           (* Check: be consistent when generating js files
              A.ml -> a.js
