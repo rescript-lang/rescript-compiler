@@ -27,8 +27,8 @@ clean::
 .ml.cmj:
 	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
 
--include .depend
+-include .libdepend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .depend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .libdepend
 

@@ -1,6 +1,6 @@
 include ../Makefile.shared
 
-CAMLC=../bin/bsc
+COMPILER=../bin/bsc
 
 SOURCE_LIST := $(shell cat runtime.mllib)
 
@@ -11,7 +11,7 @@ COMPFLAGS += $(MODULE_FLAGS) -w -40
 
 
 
-$(RUNTIME): $(CAMLC)
+$(RUNTIME): $(COMPILER)
 
 all: $(RUNTIME)
 
@@ -23,13 +23,13 @@ clean::
 
 
 .mli.cmi:
-	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
 .ml.cmj:
-	$(CAMLC) $(INCLUDES) $(COMPFLAGS)  -c $<
+	$(COMPILER) $(INCLUDES) $(COMPFLAGS)  -c $<
 
--include .depend
+-include .runtimedepend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .runtimedepend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.runtimedepend
 
