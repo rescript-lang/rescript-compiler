@@ -34,7 +34,7 @@ var Genarray = /* module */[
 
 function create(_, _$1, _$2) {
   return function () {
-            throw new Error("caml_ba_create not implemented by bucklescript yet\n");
+            throw "caml_ba_create not implemented by bucklescript yet\n";
           }();
 }
 
