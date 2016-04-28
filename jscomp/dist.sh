@@ -2,6 +2,7 @@
 set -e
 
 cd dist && rm -rf *.ml *.mli *.cm* *.js *.annot  && cd ..
+cp bin/compiler.ml bin/compiler.mli dist/bin
 cd runtime && cp *.ml *.mli *.cmt  *.cmj *.cmi *.js ../dist && cd ..
 cd stdlib && cp $(git ls-files) ../dist  && cd ..
 cd dist && make all && rm -f *.ml *.mli  && cd ..

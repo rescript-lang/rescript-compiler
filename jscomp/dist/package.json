@@ -1,10 +1,16 @@
 {
-    "name": "bs-stdlib",
-    "version": "3.4.3",
-    "description": "ocaml standard libary by bucklescript and its required runtime support",
+    "name": "bs-platform",
+    "version": "0.1.0",
+    "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
     "main": "arg.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+    "scripts": 
+    {
+        "test": "echo \"Error: no test specified\" && exit 1",
+
+        "preinstall" : "ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc || echo 'check your compiler version if it is correct'"
+    },
+    "bin" : {
+        "bsc" : "./bin/bsc"
     },
     "repository": {
         "type": "git",
@@ -26,7 +32,7 @@
             "email" : "bobzhang1988@gmail.com"
         }
     ],
-    "license": "GPL V2 with linking exception, see LICENSE",
+    "license": "see LICENSE",
     "bugs": {
         "url": "https://github.com/bloomberg/bucklescript/issues"
     },

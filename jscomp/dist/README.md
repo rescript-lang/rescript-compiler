@@ -1,12 +1,23 @@
 
 
-OCaml standard library compiled into Javascript
+This packages contains
 
-Documentation see:
-http://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html
+#. Bucklescript compiler(https://github.com/bloomberg/bucklescript)
+   LICENSE see
+   https://github.com/bloomberg/bucklescript/blob/master/LICENSE
+   
+#. Bucklescript runtime 
+   LICENSE see
+   https://github.com/bloomberg/bucklescript/blob/master/LICENSE
+   
+#. OCaml standard library compiled into Javascript
 
-How it is compiled into JS, see:
-https://github.com/bloomberg/bucklescript
+   Documentation see:
+   http://caml.inria.fr/pub/docs/manual-ocaml-4.02/stdlib.html
+
+   LICENSE see LICENSE.stdlib
+
+
 
 
 
