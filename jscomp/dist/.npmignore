@@ -4,3 +4,4 @@ Makefile.shared
 .depend
 .runtimedepend
 README.markdown
+bin/bsc

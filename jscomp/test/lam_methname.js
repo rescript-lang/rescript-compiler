@@ -76,7 +76,7 @@ function process(x) {
               var match = r[0];
               if (match) {
                 if (Caml_obj.caml_notequal(match[0], k)) {
-                  return fail('File "lam_methname.ml", line 98, characters 42-49');
+                  return fail('File "lam_methname.ml", line 107, characters 42-49');
                 }
                 else {
                   return 0;
@@ -105,7 +105,7 @@ function process(x) {
                         exit = 1;
                       }
                       catch (exn){
-                        return fail('File "lam_methname.ml", line 113, characters 34-41');
+                        return fail('File "lam_methname.ml", line 122, characters 34-41');
                       }
                       if (exit === 1) {
                         return update_ref(arity, v);
