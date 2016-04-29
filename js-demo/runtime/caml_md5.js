@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports"],
   function(exports){
@@ -133,30 +133,30 @@ define(["exports"],
       state[1] = -271733879;
       state[2] = -1732584194;
       state[3] = 271733878;
-      for(var i = 0; i<= 15; ++i){
+      for(var i = 0; i <= 15; ++i){
         md5blk[i] = 0;
       }
       var i_end = n / 64 | 0;
-      for(var i$1 = 1; i$1<= i_end; ++i$1){
-        for(var j = 0; j<= 15; ++j){
+      for(var i$1 = 1; i$1 <= i_end; ++i$1){
+        for(var j = 0; j <= 15; ++j){
           var k = ((i$1 << 6) - 64 | 0) + (j << 2) | 0;
           md5blk[j] = ((s$1.charCodeAt(k) + (s$1.charCodeAt(k + 1 | 0) << 8) | 0) + (s$1.charCodeAt(k + 2 | 0) << 16) | 0) + (s$1.charCodeAt(k + 3 | 0) << 24) | 0;
         }
         cycle(state, md5blk);
       }
       var s_tail = s$1.slice((i_end << 6));
-      for(var kk = 0; kk<= 15; ++kk){
+      for(var kk = 0; kk <= 15; ++kk){
         md5blk[kk] = 0;
       }
       var i_end$1 = s_tail.length - 1 | 0;
-      for(var i$2 = 0; i$2<= i_end$1; ++i$2){
+      for(var i$2 = 0; i$2 <= i_end$1; ++i$2){
         md5blk[i$2 / 4 | 0] = md5blk[i$2 / 4 | 0] | (s_tail.charCodeAt(i$2) << (i$2 % 4 << 3));
       }
       var i$3 = i_end$1 + 1 | 0;
       md5blk[i$3 / 4 | 0] = md5blk[i$3 / 4 | 0] | (128 << (i$3 % 4 << 3));
       if (i$3 > 55) {
         cycle(state, md5blk);
-        for(var i$4 = 0; i$4<= 15; ++i$4){
+        for(var i$4 = 0; i$4 <= 15; ++i$4){
           md5blk[i$4] = 0;
         }
       }

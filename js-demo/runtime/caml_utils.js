@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./caml_builtin_exceptions"],
-  function(exports, Caml_builtin_exceptions){
+define(["exports"],
+  function(exports){
     'use strict';
     var repeat = ( (String.prototype.repeat && function (count,self){return self.repeat(count)}) ||
                                                   function(count , self) {
@@ -29,26 +29,6 @@ define(["exports", "./caml_builtin_exceptions"],
     }
 );
     
-    function i32div(x, y) {
-      if (y === 0) {
-        throw Caml_builtin_exceptions.division_by_zero;
-      }
-      else {
-        return x / y | 0;
-      }
-    }
-    
-    function i32mod(x, y) {
-      if (y === 0) {
-        throw Caml_builtin_exceptions.division_by_zero;
-      }
-      else {
-        return x % y;
-      }
-    }
-    
-    exports.i32div = i32div;
-    exports.i32mod = i32mod;
     exports.repeat = repeat;
     
   })

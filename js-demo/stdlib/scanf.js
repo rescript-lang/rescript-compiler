@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasives", "../runtime/caml_exceptions", "../runtime/caml_format", "../runtime/curry", "./printf", "../runtime/caml_primitive", "./camlinternalFormatBasics", "./buffer", "./string", "../runtime/caml_string", "./list", "./camlinternalFormat"],
-  function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Curry, Printf, Caml_primitive, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
+define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasives", "../runtime/caml_exceptions", "../runtime/caml_format", "../runtime/caml_int32", "../runtime/block", "../runtime/curry", "./printf", "./camlinternalFormatBasics", "./buffer", "./string", "../runtime/caml_string", "./list", "./camlinternalFormat"],
+  function(exports, Caml_builtin_exceptions, Bytes, Pervasives, Caml_exceptions, Caml_format, Caml_int32, Block, Curry, Printf, CamlinternalFormatBasics, Buffer, $$String, Caml_string, List, CamlinternalFormat){
     'use strict';
     function next_char(ib) {
       try {
@@ -101,15 +101,15 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     function create(iname, next) {
       return /* record */[
-              /* false */0,
-              /* "\000" */0,
-              /* false */0,
-              0,
-              0,
-              0,
-              next,
-              Buffer.create(1024),
-              iname
+              /* eof : false */0,
+              /* current_char : "\000" */0,
+              /* current_char_is_valid : false */0,
+              /* char_count */0,
+              /* line_count */0,
+              /* token_count */0,
+              /* get_next_char */next,
+              /* tokbuf */Buffer.create(1024),
+              /* input_name */iname
             ];
     }
     
@@ -135,8 +135,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     var file_buffer_size = [1024];
     
-    function scan_close_at_end(ic) {
-      Caml_primitive.caml_ml_close_channel(ic);
+    function scan_close_at_end() {
+      (function () {
+            throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+          }());
       throw Caml_builtin_exceptions.end_of_file;
     }
     
@@ -174,12 +176,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       return create(iname, next);
     }
     
-    var stdin = from_ic(scan_raise_at_end, /* From_file */{
-          0: "-",
-          1: Pervasives.stdin,
-          length: 2,
-          tag: 0
-        }, Pervasives.stdin);
+    var stdin = from_ic(scan_raise_at_end, /* From_file */Block.__(0, [
+            "-",
+            Pervasives.stdin
+          ]), Pervasives.stdin);
     
     function open_in(fname) {
       if (fname === "-") {
@@ -187,12 +187,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       }
       else {
         var ic = Pervasives.open_in(fname);
-        return from_ic(scan_close_at_end, /* From_file */{
-                    0: fname,
-                    1: ic,
-                    length: 2,
-                    tag: 0
-                  }, ic);
+        return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
+                      fname,
+                      ic
+                    ]), ic);
       }
     }
     
@@ -202,12 +200,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       }
       else {
         var ic = Pervasives.open_in_bin(fname);
-        return from_ic(scan_close_at_end, /* From_file */{
-                    0: fname,
-                    1: ic,
-                    length: 2,
-                    tag: 0
-                  }, ic);
+        return from_ic(scan_close_at_end, /* From_file */Block.__(0, [
+                      fname,
+                      ic
+                    ]), ic);
       }
     }
     
@@ -219,11 +215,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       }
       catch (exn){
         if (exn === Caml_builtin_exceptions.not_found) {
-          var ib = from_ic(scan_close_ic, /* From_channel */{
-                0: ic,
-                length: 1,
-                tag: 1
-              }, ic);
+          var ib = from_ic(scan_close_ic, /* From_channel */Block.__(1, [ic]), ic);
           memo[0] = /* :: */[
             /* tuple */[
               ic,
@@ -249,10 +241,14 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
         return /* () */0;
       }
       else if (match.tag) {
-        return Caml_primitive.caml_ml_close_channel(match[0]);
+        return function () {
+                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+                }();
       }
       else {
-        return Caml_primitive.caml_ml_close_channel(match[1]);
+        return function () {
+                  throw "caml_ml_close_channel not implemented by bucklescript yet\n";
+                }();
       }
     }
     
@@ -260,16 +256,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     function bad_input_escape(c) {
       var s = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "illegal escape character ",
-                  1: /* Caml_char */{
-                    0: /* End_of_format */0,
-                    length: 1,
-                    tag: 1
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "illegal escape character ",
+                    /* Caml_char */Block.__(1, [/* End_of_format */0])
+                  ]),
                 "illegal escape character %C"
               ]), c);
       throw [
@@ -280,22 +270,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     function bad_token_length(message) {
       var s = Curry._1(Printf.sprintf(/* Format */[
-                /* String_literal */{
-                  0: "scanning of ",
-                  1: /* String */{
-                    0: /* No_padding */0,
-                    1: /* String_literal */{
-                      0: " failed: the specified length was too short for token",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
-                    length: 2,
-                    tag: 2
-                  },
-                  length: 2,
-                  tag: 11
-                },
+                /* String_literal */Block.__(11, [
+                    "scanning of ",
+                    /* String */Block.__(2, [
+                        /* No_padding */0,
+                        /* String_literal */Block.__(11, [
+                            " failed: the specified length was too short for token",
+                            /* End_of_format */0
+                          ])
+                      ])
+                  ]),
                 "scanning of %s failed: the specified length was too short for token"
               ]), message);
       throw [
@@ -306,25 +290,13 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     function character_mismatch_err(c, ci) {
       return Curry._2(Printf.sprintf(/* Format */[
-                      /* String_literal */{
-                        0: "looking for ",
-                        1: /* Caml_char */{
-                          0: /* String_literal */{
-                            0: ", found ",
-                            1: /* Caml_char */{
-                              0: /* End_of_format */0,
-                              length: 1,
-                              tag: 1
-                            },
-                            length: 2,
-                            tag: 11
-                          },
-                          length: 1,
-                          tag: 1
-                        },
-                        length: 2,
-                        tag: 11
-                      },
+                      /* String_literal */Block.__(11, [
+                          "looking for ",
+                          /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                                  ", found ",
+                                  /* Caml_char */Block.__(1, [/* End_of_format */0])
+                                ])])
+                        ]),
                       "looking for %C, found %C"
                     ]), c, ci);
     }
@@ -405,17 +377,13 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
             return /* true */1;
         default:
           var s$1 = Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "invalid boolean ",
-                      1: /* Caml_string */{
-                        0: /* No_padding */0,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 3
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "invalid boolean ",
+                        /* Caml_string */Block.__(3, [
+                            /* No_padding */0,
+                            /* End_of_format */0
+                          ])
+                      ]),
                     "invalid boolean %S"
                   ]), s);
           throw [
@@ -543,21 +511,13 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
         var c = checked_peek_char(ib);
         if (c > 57 || c < 48) {
           var s = Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "character ",
-                      1: /* Caml_char */{
-                        0: /* String_literal */{
-                          0: " is not a decimal digit",
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 1,
-                        tag: 1
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "character ",
+                        /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                                " is not a decimal digit",
+                                /* End_of_format */0
+                              ])])
+                      ]),
                     "character %C is not a decimal digit"
                   ]), c);
           throw [
@@ -608,31 +568,19 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
         }
         else {
           var s = Curry._2(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "character ",
-                      1: /* Caml_char */{
-                        0: /* String_literal */{
-                          0: " is not a valid ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* String_literal */{
-                              0: " digit",
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 11
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 1,
-                        tag: 1
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "character ",
+                        /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                                " is not a valid ",
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* String_literal */Block.__(11, [
+                                        " digit",
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ])])
+                      ]),
                     "character %C is not a valid %s digit"
                   ]), c, basis);
           throw [
@@ -1023,27 +971,13 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     }
     
     function char_for_decimal_code(c0, c1, c2) {
-      var c = (Caml_primitive.imul(100, c0 - /* "0" */48 | 0) + Caml_primitive.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
+      var c = (Caml_int32.imul(100, c0 - /* "0" */48 | 0) + Caml_int32.imul(10, c1 - /* "0" */48 | 0) | 0) + (c2 - /* "0" */48 | 0) | 0;
       if (c < 0 || c > 255) {
         var s = Curry._3(Printf.sprintf(/* Format */[
-                  /* String_literal */{
-                    0: "bad character decimal encoding \\",
-                    1: /* Char */{
-                      0: /* Char */{
-                        0: /* Char */{
-                          0: /* End_of_format */0,
-                          length: 1,
-                          tag: 0
-                        },
-                        length: 1,
-                        tag: 0
-                      },
-                      length: 1,
-                      tag: 0
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "bad character decimal encoding \\",
+                      /* Char */Block.__(0, [/* Char */Block.__(0, [/* Char */Block.__(0, [/* End_of_format */0])])])
+                    ]),
                   "bad character decimal encoding \\%c%c%c"
                 ]), c0, c1, c2);
         throw [
@@ -1072,20 +1006,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       var c = (hexadecimal_value_of_char(c1) << 4) + hexadecimal_value_of_char(c2) | 0;
       if (c < 0 || c > 255) {
         var s = Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */{
-                    0: "bad character hexadecimal encoding \\",
-                    1: /* Char */{
-                      0: /* Char */{
-                        0: /* End_of_format */0,
-                        length: 1,
-                        tag: 0
-                      },
-                      length: 1,
-                      tag: 0
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "bad character hexadecimal encoding \\",
+                      /* Char */Block.__(0, [/* Char */Block.__(0, [/* End_of_format */0])])
+                    ]),
                   "bad character hexadecimal encoding \\%c%c"
                 ]), c1, c2);
         throw [
@@ -1104,22 +1028,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
         if (ib[/* eof */0]) {
           var message$1 = message;
           var s = Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "scanning of ",
-                      1: /* String */{
-                        0: /* No_padding */0,
-                        1: /* String_literal */{
-                          0: " failed: premature end of file occurred before end of token",
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 2,
-                        tag: 2
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "scanning of ",
+                        /* String */Block.__(2, [
+                            /* No_padding */0,
+                            /* String_literal */Block.__(11, [
+                                " failed: premature end of file occurred before end of token",
+                                /* End_of_format */0
+                              ])
+                          ])
+                      ]),
                     "scanning of %s failed: premature end of file occurred before end of token"
                   ]), message$1);
           throw [
@@ -1347,21 +1265,13 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       if (c !== 102) {
         if (c !== 116) {
           var s = Curry._1(Printf.sprintf(/* Format */[
-                    /* String_literal */{
-                      0: "the character ",
-                      1: /* Caml_char */{
-                        0: /* String_literal */{
-                          0: " cannot start a boolean",
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 11
-                        },
-                        length: 1,
-                        tag: 1
-                      },
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "the character ",
+                        /* Caml_char */Block.__(1, [/* String_literal */Block.__(11, [
+                                " cannot start a boolean",
+                                /* End_of_format */0
+                              ])])
+                      ]),
                     "the character %C cannot start a boolean"
                   ]), c);
           throw [
@@ -1438,29 +1348,21 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       if (exit === 1) {
         var i = char_count(ib);
         var s$1 = Curry._2(Printf.sprintf(/* Format */[
-                  /* String_literal */{
-                    0: "scanf: bad input at char number ",
-                    1: /* Int */{
-                      0: /* Int_i */3,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* String_literal */{
-                        0: ": ",
-                        1: /* Caml_string */{
-                          0: /* No_padding */0,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 3
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "scanf: bad input at char number ",
+                      /* Int */Block.__(4, [
+                          /* Int_i */3,
+                          /* No_padding */0,
+                          /* No_precision */0,
+                          /* String_literal */Block.__(11, [
+                              ": ",
+                              /* Caml_string */Block.__(3, [
+                                  /* No_padding */0,
+                                  /* End_of_format */0
+                                ])
+                            ])
+                        ])
+                    ]),
                   "scanf: bad input at char number %i: %S"
                 ]), i, s);
         throw [
@@ -1726,12 +1628,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
                         }(stp));
                         var str_rest_000 = match[1];
                         var str_rest_001 = rest[1];
-                        var str_rest = /* String_literal */{
-                          0: str_rest_000,
-                          1: str_rest_001,
-                          length: 2,
-                          tag: 11
-                        };
+                        var str_rest = /* String_literal */Block.__(11, [
+                            str_rest_000,
+                            str_rest_001
+                          ]);
                         return pad_prec_scanf(ib, str_rest, readers, pad, /* No_precision */0, scan, token);
                     case 18 : 
                         var match$1 = rest[0];
@@ -1958,12 +1858,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
                   var s$3 = token(ib);
                   var str_rest_000$1 = match$6[1];
                   var str_rest_001$1 = rest$1[1];
-                  var str_rest$1 = /* String_literal */{
-                    0: str_rest_000$1,
-                    1: str_rest_001$1,
-                    length: 2,
-                    tag: 11
-                  };
+                  var str_rest$1 = /* String_literal */Block.__(11, [
+                      str_rest_000$1,
+                      str_rest_001$1
+                    ]);
                   return /* Cons */[
                           s$3,
                           make_scanf(ib, str_rest$1, readers)
@@ -2097,33 +1995,17 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
         Buffer.reset(ib[/* tokbuf */7]);
         var match;
         try {
-          match = /* Args */{
-            0: make_scanf(ib, fmt, readers),
-            length: 1,
-            tag: 0
-          };
+          match = /* Args */Block.__(0, [make_scanf(ib, fmt, readers)]);
         }
         catch (exc){
           if (exc[0] === Scan_failure) {
-            match = /* Exc */{
-              0: exc,
-              length: 1,
-              tag: 1
-            };
+            match = /* Exc */Block.__(1, [exc]);
           }
           else if (exc[0] === Caml_builtin_exceptions.failure) {
-            match = /* Exc */{
-              0: exc,
-              length: 1,
-              tag: 1
-            };
+            match = /* Exc */Block.__(1, [exc]);
           }
           else if (exc === Caml_builtin_exceptions.end_of_file) {
-            match = /* Exc */{
-              0: exc,
-              length: 1,
-              tag: 1
-            };
+            match = /* Exc */Block.__(1, [exc]);
           }
           else if (exc[0] === Caml_builtin_exceptions.invalid_argument) {
             var s = exc[1] + (' in format "' + ($$String.escaped(str) + '"'));
@@ -2213,7 +2095,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
       var l = s.length;
       var b = Buffer.create(l + 2 | 0);
       Buffer.add_char(b, /* "\"" */34);
-      for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
         var c = s.charCodeAt(i);
         if (c === /* "\"" */34) {
           Buffer.add_char(b, /* "\\" */92);
@@ -2232,16 +2114,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./bytes", "./pervasive
     
     function unescaped(s) {
       return Curry._1(sscanf('"' + (s + '"'), /* Format */[
-                      /* Caml_string */{
-                        0: /* No_padding */0,
-                        1: /* Flush */{
-                          0: /* End_of_format */0,
-                          length: 1,
-                          tag: 10
-                        },
-                        length: 2,
-                        tag: 3
-                      },
+                      /* Caml_string */Block.__(3, [
+                          /* No_padding */0,
+                          /* Flush */Block.__(10, [/* End_of_format */0])
+                        ]),
                       "%S%!"
                     ]), function (x) {
                   return x;

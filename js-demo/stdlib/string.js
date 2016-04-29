@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_primitive", "../runtime/caml_string", "./list"],
-  function(exports, Bytes, Caml_primitive, Caml_string, List){
+define(["exports", "./bytes", "../runtime/caml_int32", "../runtime/caml_string", "./list"],
+  function(exports, Bytes, Caml_int32, Caml_string, List){
     'use strict';
     function make(n, c) {
       return Caml_string.bytes_to_string(Bytes.make(n, c));
@@ -29,7 +29,7 @@ define(["exports", "./bytes", "../runtime/caml_primitive", "../runtime/caml_stri
               len[0] = len[0] + s.length | 0;
               return /* () */0;
             }, l);
-        var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
+        var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_string(hd, 0, r, 0, hd.length);
         var pos = [hd.length];
         List.iter(function (s) {

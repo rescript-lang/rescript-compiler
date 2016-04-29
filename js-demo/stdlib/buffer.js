@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./pervasives", "./sys", "../runtime/curry", "./string", "../runtime/caml_string"],
   function(exports, Bytes, Caml_builtin_exceptions, Pervasives, Sys, Curry, $$String, Caml_string){
@@ -8,10 +8,10 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./pervasive
       var n$2 = n$1 > Sys.max_string_length ? Sys.max_string_length : n$1;
       var s = Caml_string.caml_create_string(n$2);
       return /* record */[
-              s,
-              0,
-              n$2,
-              s
+              /* buffer */s,
+              /* position */0,
+              /* length */n$2,
+              /* initial_buffer */s
             ];
     }
     

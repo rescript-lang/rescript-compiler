@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./marshal", "../runtime/caml_primitive"],
-  function(exports, Caml_builtin_exceptions, Marshal, Caml_primitive){
+define(["exports", "../runtime/caml_builtin_exceptions", "./marshal"],
+  function(exports, Caml_builtin_exceptions, Marshal){
     'use strict';
     function double_field(x, i) {
       return x[i];
@@ -12,8 +12,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./marshal", "../runtim
       return /* () */0;
     }
     
-    function marshal(obj) {
-      return Caml_primitive.caml_output_value_to_string(obj, /* [] */0);
+    function marshal() {
+      return function () {
+                throw "caml_output_value_to_string not implemented by bucklescript yet\n";
+              }();
     }
     
     function unmarshal(str, pos) {
@@ -24,9 +26,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./marshal", "../runtim
     }
     
     function extension_slot(x) {
-      var slot = x.length && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
+      var slot = x.length !== undefined && (x.tag | 0) !== 248 && x.length >= 1 ? x[0] : x;
       var name;
-      if (slot.length && slot.tag === 248) {
+      if (slot.length !== undefined && slot.tag === 248) {
         name = slot[0];
       }
       else {

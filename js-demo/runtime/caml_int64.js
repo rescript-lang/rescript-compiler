@@ -1,31 +1,31 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive", "./caml_utils"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Caml_primitive, Caml_utils){
+define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_int32", "./caml_utils"],
+  function(exports, Caml_builtin_exceptions, Caml_obj, Caml_int32, Caml_utils){
     'use strict';
     var min_int = /* record */[
-      -2147483648,
-      0
+      /* hi */-2147483648,
+      /* lo */0
     ];
     
     var max_int = /* record */[
-      134217727,
-      1
+      /* hi */134217727,
+      /* lo */1
     ];
     
     var one = /* record */[
-      0,
-      1
+      /* hi */0,
+      /* lo */1
     ];
     
     var zero = /* record */[
-      0,
-      0
+      /* hi */0,
+      /* lo */0
     ];
     
     var neg_one = /* record */[
-      -1,
-      4294967295
+      /* hi */-1,
+      /* lo */4294967295
     ];
     
     function neg_signed(x) {
@@ -39,8 +39,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
       var overflow = neg_signed(this_low_) && (neg_signed(other_low_) || !neg_signed(lo)) || neg_signed(other_low_) && !neg_signed(lo) ? 1 : 0;
       var hi = param[/* hi */0] + param$1[/* hi */0] + overflow & 4294967295;
       return /* record */[
-              hi,
-              (lo >>> 0)
+              /* hi */hi,
+              /* lo */(lo >>> 0)
             ];
     }
     
@@ -48,8 +48,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
       var hi = param[/* hi */0] ^ -1;
       var lo = param[/* lo */1] ^ -1;
       return /* record */[
-              hi,
-              (lo >>> 0)
+              /* hi */hi,
+              /* lo */(lo >>> 0)
             ];
     }
     
@@ -80,15 +80,15 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
       if (numBits) {
         if (numBits >= 32) {
           return /* record */[
-                  (lo << (numBits - 32 | 0)),
-                  0
+                  /* hi */(lo << (numBits - 32 | 0)),
+                  /* lo */0
                 ];
         }
         else {
           var hi = (lo >>> (32 - numBits | 0)) | (x[/* hi */0] << numBits);
           return /* record */[
-                  hi,
-                  ((lo << numBits) >>> 0)
+                  /* hi */hi,
+                  /* lo */((lo << numBits) >>> 0)
                 ];
         }
       }
@@ -105,23 +105,23 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
           if (offset > 0) {
             var lo = (hi >>> offset);
             return /* record */[
-                    0,
-                    (lo >>> 0)
+                    /* hi */0,
+                    /* lo */(lo >>> 0)
                   ];
           }
           else {
             var hi$1 = (hi >>> numBits);
             var lo$1 = (hi << -offset) | (x[/* lo */1] >>> numBits);
             return /* record */[
-                    hi$1,
-                    (lo$1 >>> 0)
+                    /* hi */hi$1,
+                    /* lo */(lo$1 >>> 0)
                   ];
           }
         }
         else {
           return /* record */[
-                  0,
-                  (hi >>> 0)
+                  /* hi */0,
+                  /* lo */(hi >>> 0)
                 ];
         }
       }
@@ -137,15 +137,15 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
           var hi$1 = (hi >> numBits);
           var lo = (hi << (32 - numBits | 0)) | (x[/* lo */1] >>> numBits);
           return /* record */[
-                  hi$1,
-                  (lo >>> 0)
+                  /* hi */hi$1,
+                  /* lo */(lo >>> 0)
                 ];
         }
         else {
           var lo$1 = (hi >> (numBits - 32 | 0));
           return /* record */[
-                  hi >= 0 ? 0 : -1,
-                  (lo$1 >>> 0)
+                  /* hi */hi >= 0 ? 0 : -1,
+                  /* lo */(lo$1 >>> 0)
                 ];
         }
       }
@@ -262,8 +262,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
               var hi = c32 | (c48 << 16);
               var lo$2 = c00 & 65535 | ((c16 & 65535) << 16);
               return /* record */[
-                      hi,
-                      (lo$2 >>> 0)
+                      /* hi */hi,
+                      /* lo */(lo$2 >>> 0)
                     ];
             }
           }
@@ -282,11 +282,11 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
     }
     
     function swap(param) {
-      var hi = Caml_primitive.caml_int32_bswap(param[/* lo */1]);
-      var lo = Caml_primitive.caml_int32_bswap(param[/* hi */0]);
+      var hi = Caml_int32.caml_int32_bswap(param[/* lo */1]);
+      var lo = Caml_int32.caml_int32_bswap(param[/* hi */0]);
       return /* record */[
-              hi,
-              (lo >>> 0)
+              /* hi */hi,
+              /* lo */(lo >>> 0)
             ];
     }
     
@@ -355,8 +355,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
         var hi = x / two_ptr_32_dbl | 0;
         var lo = x % two_ptr_32_dbl | 0;
         return /* record */[
-                hi,
-                (lo >>> 0)
+                /* hi */hi,
+                /* lo */(lo >>> 0)
               ];
       }
     }
@@ -505,8 +505,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
     
     function of_int32(lo) {
       return /* record */[
-              lo < 0 ? -1 : 0,
-              (lo >>> 0)
+              /* hi */lo < 0 ? -1 : 0,
+              /* lo */(lo >>> 0)
             ];
     }
     
@@ -555,8 +555,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
     
     function discard_sign(x) {
       return /* record */[
-              2147483647 & x[/* hi */0],
-              x[/* lo */1]
+              /* hi */2147483647 & x[/* hi */0],
+              /* lo */x[/* lo */1]
             ];
     }
     
@@ -577,8 +577,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
       var hi = to_nat(int32[1]);
       var lo = to_nat(int32[0]);
       return /* record */[
-              hi,
-              (lo >>> 0)
+              /* hi */hi,
+              /* lo */(lo >>> 0)
             ];
     }
     
@@ -586,8 +586,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_obj", "./caml_primitive"
       var hi = (s.charCodeAt(i + 4 | 0) << 32) | (s.charCodeAt(i + 5 | 0) << 40) | (s.charCodeAt(i + 6 | 0) << 48) | (s.charCodeAt(i + 7 | 0) << 56);
       var lo = s.charCodeAt(i) | (s.charCodeAt(i + 1 | 0) << 8) | (s.charCodeAt(i + 2 | 0) << 16) | (s.charCodeAt(i + 3 | 0) << 24);
       return /* record */[
-              hi,
-              (lo >>> 0)
+              /* hi */hi,
+              /* lo */(lo >>> 0)
             ];
     }
     

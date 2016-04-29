@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_obj", "../runtime/caml_parser", "../runtime/caml_exceptions", "./lexing", "../runtime/curry", "../runtime/caml_array", "./array"],
   function(exports, Caml_obj, Caml_parser, Caml_exceptions, Lexing, Curry, Caml_array, $$Array){
@@ -8,22 +8,22 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_parser", "../runtime/
     var Parse_error = Caml_exceptions.create("Parsing.Parse_error");
     
     var env = /* record */[
-      Caml_array.caml_make_vect(100, 0),
-      Caml_array.caml_make_vect(100, /* () */0),
-      Caml_array.caml_make_vect(100, Lexing.dummy_pos),
-      Caml_array.caml_make_vect(100, Lexing.dummy_pos),
-      100,
-      0,
-      0,
-      /* () */0,
-      Lexing.dummy_pos,
-      Lexing.dummy_pos,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
+      /* s_stack */Caml_array.caml_make_vect(100, 0),
+      /* v_stack */Caml_array.caml_make_vect(100, /* () */0),
+      /* symb_start_stack */Caml_array.caml_make_vect(100, Lexing.dummy_pos),
+      /* symb_end_stack */Caml_array.caml_make_vect(100, Lexing.dummy_pos),
+      /* stacksize */100,
+      /* stackbase */0,
+      /* curr_char */0,
+      /* lval : () */0,
+      /* symb_start */Lexing.dummy_pos,
+      /* symb_end */Lexing.dummy_pos,
+      /* asp */0,
+      /* rule_len */0,
+      /* rule_number */0,
+      /* sp */0,
+      /* state */0,
+      /* errflag */0
     ];
     
     function grow_stacks() {
@@ -138,7 +138,7 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_parser", "../runtime/
         }
         else {
           current_lookahead_fun[0] = function (tok) {
-            if (tok.length) {
+            if (tok.length !== undefined) {
               return +(tables[/* transl_block */2][tok.tag | 0] === curr_char);
             }
             else {

@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl", "./stream", "../runtime/caml_format", "./char", "../runtime/caml_primitive", "../runtime/caml_string", "./list"],
-  function(exports, Bytes, Caml_builtin_exceptions, Hashtbl, Stream, Caml_format, Char, Caml_primitive, Caml_string, List){
+define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl", "./stream", "../runtime/caml_format", "../runtime/caml_int32", "../runtime/block", "./char", "../runtime/caml_string", "./list"],
+  function(exports, Bytes, Caml_builtin_exceptions, Hashtbl, Stream, Caml_format, Caml_int32, Block, Char, Caml_string, List){
     'use strict';
     var initial_buffer = new Array(32);
     
@@ -34,11 +34,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
     function make_lexer(keywords) {
       var kwd_table = Hashtbl.create(/* None */0, 17);
       List.iter(function (s) {
-            return Hashtbl.add(kwd_table, s, /* Kwd */{
-                        0: s,
-                        length: 1,
-                        tag: 0
-                      });
+            return Hashtbl.add(kwd_table, s, /* Kwd */Block.__(0, [s]));
           }, keywords);
       var ident_or_keyword = function (id) {
         try {
@@ -46,11 +42,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
         }
         catch (exn){
           if (exn === Caml_builtin_exceptions.not_found) {
-            return /* Ident */{
-                    0: id,
-                    length: 1,
-                    tag: 1
-                  };
+            return /* Ident */Block.__(1, [id]);
           }
           else {
             throw exn;
@@ -99,11 +91,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
                         case 34 : 
                         Stream.junk(strm__);
                         reset_buffer(/* () */0);
-                        return /* Some */[/* String */{
-                                  0: string(strm__),
-                                  length: 1,
-                                  tag: 4
-                                }];
+                        return /* Some */[/* String */Block.__(4, [string(strm__)])];
                     case 39 : 
                         Stream.junk(strm__);
                         var c$1;
@@ -131,11 +119,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
                           }
                           else {
                             Stream.junk(strm__);
-                            return /* Some */[/* Char */{
-                                      0: c$1,
-                                      length: 1,
-                                      tag: 5
-                                    }];
+                            return /* Some */[/* Char */Block.__(5, [c$1])];
                           }
                         }
                         else {
@@ -512,11 +496,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
                   exit$1 = 1;
                 }
                 if (exit$1 === 1) {
-                  return /* Some */[/* Float */{
-                            0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                            length: 1,
-                            tag: 3
-                          }];
+                  return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
                 }
                 
               };
@@ -526,11 +506,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
             exit = 1;
           }
           if (exit === 1) {
-            return /* Some */[/* Int */{
-                      0: Caml_format.caml_int_of_string(get_string(/* () */0)),
-                      length: 1,
-                      tag: 2
-                    }];
+            return /* Some */[/* Int */Block.__(2, [Caml_format.caml_int_of_string(get_string(/* () */0))])];
           }
           
         };
@@ -565,11 +541,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
           if (match) {
             var c = match[0];
             if (c > 57 || c < 48) {
-              return /* Some */[/* Float */{
-                        0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                        length: 1,
-                        tag: 3
-                      }];
+              return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
             }
             else {
               Stream.junk(strm__);
@@ -579,11 +551,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
             }
           }
           else {
-            return /* Some */[/* Float */{
-                      0: Caml_format.caml_float_of_string(get_string(/* () */0)),
-                      length: 1,
-                      tag: 3
-                    }];
+            return /* Some */[/* Float */Block.__(3, [Caml_format.caml_float_of_string(get_string(/* () */0))])];
           }
         };
       };
@@ -716,7 +684,7 @@ define(["exports", "./bytes", "../runtime/caml_builtin_exceptions", "./hashtbl",
                   }
                   else {
                     Stream.junk(strm__);
-                    return Char.chr((Caml_primitive.imul(c1 - 48 | 0, 100) + Caml_primitive.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
+                    return Char.chr((Caml_int32.imul(c1 - 48 | 0, 100) + Caml_int32.imul(c2 - 48 | 0, 10) | 0) + (c3 - 48 | 0) | 0);
                   }
                 }
                 else {

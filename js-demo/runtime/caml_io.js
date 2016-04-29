@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "./caml_builtin_exceptions", "./curry"],
   function(exports, Caml_builtin_exceptions, Curry){
@@ -6,8 +6,8 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
     var stdin = undefined;
     
     var stdout = /* record */[
-      "",
-      function (_, s) {
+      /* buffer */"",
+      /* output */function (_, s) {
         var v = s.length - 1 | 0;
         if (( (typeof process !== "undefined") && process.stdout && process.stdout.write)) {
           return ( process.stdout.write )(s);
@@ -24,8 +24,8 @@ define(["exports", "./caml_builtin_exceptions", "./curry"],
     ];
     
     var stderr = /* record */[
-      "",
-      function (_, s) {
+      /* buffer */"",
+      /* output */function (_, s) {
         var v = s.length - 1 | 0;
         if (s[v] === "\n") {
           console.log(s.slice(0, v));

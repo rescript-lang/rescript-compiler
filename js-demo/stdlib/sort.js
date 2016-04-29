@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/curry"],
   function(exports, Caml_builtin_exceptions, Curry){
@@ -169,7 +169,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/curry"],
         };
       };
       qsort(0, arr.length - 1 | 0);
-      for(var i = 1 ,i_finish = arr.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 1 ,i_finish = arr.length - 1 | 0; i <= i_finish; ++i){
         var val_i = arr[i];
         if (!Curry._2(cmp, arr[i - 1 | 0], val_i)) {
           arr[i] = arr[i - 1 | 0];

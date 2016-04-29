@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "./sys", "../runtime/curry", "../runtime/caml_primitive", "../runtime/caml_array", "./array", "../runtime/caml_string", "../runtime/caml_hash", "./random"],
-  function(exports, Bytes, Caml_obj, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Sys, Curry, Caml_primitive, Caml_array, $$Array, Caml_string, Caml_hash, Random){
+define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/block", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_string", "../runtime/caml_hash", "./random"],
+  function(exports, Bytes, Caml_obj, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Sys, Curry, Caml_array, $$Array, Caml_string, Caml_hash, Random){
     'use strict';
     function hash(x) {
       return Caml_hash.caml_hash(10, 100, 0, x);
@@ -38,13 +38,9 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
       return /* () */0;
     }
     
-    var prng = {
-      0: function () {
-        return Curry._1(Random.State[/* make_self_init */1], /* () */0);
-      },
-      length: 1,
-      tag: 246
-    };
+    var prng = Block.__(246, [function () {
+          return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+        }]);
     
     function power_2_above(_x, n) {
       while(true) {
@@ -77,17 +73,17 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
         seed = 0;
       }
       return /* record */[
-              0,
-              Caml_array.caml_make_vect(s, /* Empty */0),
-              seed,
-              s
+              /* size */0,
+              /* data */Caml_array.caml_make_vect(s, /* Empty */0),
+              /* seed */seed,
+              /* initial_size */s
             ];
     }
     
     function clear(h) {
       h[/* size */0] = 0;
       var len = h[/* data */1].length;
-      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
         h[/* data */1][i] = /* Empty */0;
       }
       return /* () */0;
@@ -107,10 +103,10 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
     
     function copy(h) {
       return /* record */[
-              h[/* size */0],
-              $$Array.copy(h[/* data */1]),
-              h[/* seed */2],
-              h[/* initial_size */3]
+              /* size */h[/* size */0],
+              /* data */$$Array.copy(h[/* data */1]),
+              /* seed */h[/* seed */2],
+              /* initial_size */h[/* initial_size */3]
             ];
     }
     
@@ -141,7 +137,7 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
             return /* () */0;
           }
         };
-        for(var i = 0 ,i_finish = osize - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = osize - 1 | 0; i <= i_finish; ++i){
           insert_bucket(odata[i]);
         }
         return /* () */0;
@@ -156,7 +152,9 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
         return Caml_hash.caml_hash(10, 100, h[/* seed */2], key) & (h[/* data */1].length - 1 | 0);
       }
       else {
-        return Caml_primitive.caml_hash_univ_param(10, 100, key) % h[/* data */1].length;
+        return function () {
+                  throw "caml_hash_univ_param not implemented by bucklescript yet\n";
+                }() % h[/* data */1].length;
       }
     }
     
@@ -371,7 +369,7 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
         };
       };
       var d = h[/* data */1];
-      for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = d.length - 1 | 0; i <= i_finish; ++i){
         do_bucket(d[i]);
       }
       return /* () */0;
@@ -395,7 +393,7 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
       };
       var d = h[/* data */1];
       var accu = init;
-      for(var i = 0 ,i_finish = d.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = d.length - 1 | 0; i <= i_finish; ++i){
         accu = do_bucket(d[i], accu);
       }
       return accu;
@@ -428,10 +426,10 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
             return /* () */0;
           }, h[/* data */1]);
       return /* record */[
-              h[/* size */0],
-              h[/* data */1].length,
-              mbl,
-              histo
+              /* num_bindings */h[/* size */0],
+              /* num_buckets */h[/* data */1].length,
+              /* max_bucket_length */mbl,
+              /* bucket_histogram */histo
             ];
     }
     
@@ -625,20 +623,20 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
         };
       };
       return /* module */[
-              create,
-              clear,
-              reset,
-              copy,
-              add,
-              remove,
-              find,
-              find_all,
-              replace,
-              mem,
-              iter,
-              fold,
-              length,
-              stats
+              /* create */create,
+              /* clear */clear,
+              /* reset */reset,
+              /* copy */copy,
+              /* add */add,
+              /* remove */remove,
+              /* find */find,
+              /* find_all */find_all,
+              /* replace */replace,
+              /* mem */mem,
+              /* iter */iter,
+              /* fold */fold,
+              /* length */length,
+              /* stats */stats
             ];
     }
     
@@ -836,20 +834,20 @@ define(["exports", "./bytes", "../runtime/caml_obj", "../runtime/caml_builtin_ex
         return create(/* Some */[/* false */0], sz);
       };
       return /* module */[
-              create$1,
-              clear,
-              reset,
-              copy,
-              add,
-              remove,
-              find,
-              find_all,
-              replace,
-              mem,
-              iter,
-              fold,
-              length,
-              stats
+              /* create */create$1,
+              /* clear */clear,
+              /* reset */reset,
+              /* copy */copy,
+              /* add */add,
+              /* remove */remove,
+              /* find */find,
+              /* find_all */find_all,
+              /* replace */replace,
+              /* mem */mem,
+              /* iter */iter,
+              /* fold */fold,
+              /* length */length,
+              /* stats */stats
             ];
     }
     

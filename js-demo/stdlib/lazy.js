@@ -1,14 +1,10 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "./obj", "./camlinternalLazy"],
-  function(exports, Caml_obj, Obj, CamlinternalLazy){
+define(["exports", "../runtime/caml_obj", "./obj", "./camlinternalLazy", "../runtime/block"],
+  function(exports, Caml_obj, Obj, CamlinternalLazy, Block){
     'use strict';
     function from_fun(f) {
-      var x = {
-        0: 0,
-        length: 1,
-        tag: Obj.lazy_tag
-      };
+      var x = Block.__(Obj.lazy_tag, [0]);
       x[0] = f;
       return x;
     }

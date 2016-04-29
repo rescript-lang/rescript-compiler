@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_exceptions", "../runtime/curry", "../runtime/caml_array"],
   function(exports, Caml_builtin_exceptions, Caml_exceptions, Curry, Caml_array){
@@ -13,7 +13,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
         }
         else {
           var res = Caml_array.caml_make_vect(l, Curry._1(f, 0));
-          for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+          for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
             res[i] = Curry._1(f, i);
           }
           return res;
@@ -26,7 +26,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
     
     function make_matrix(sx, sy, init) {
       var res = Caml_array.caml_make_vect(sx, /* array */[]);
-      for(var x = 0 ,x_finish = sx - 1 | 0; x<= x_finish; ++x){
+      for(var x = 0 ,x_finish = sx - 1 | 0; x <= x_finish; ++x){
         res[x] = Caml_array.caml_make_vect(sy, init);
       }
       return res;
@@ -77,7 +77,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
             ];
       }
       else {
-        for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i<= i_finish; ++i){
+        for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i <= i_finish; ++i){
           a[i] = v;
         }
         return /* () */0;
@@ -97,7 +97,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
     }
     
     function iter(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
         Curry._1(f, a[i]);
       }
       return /* () */0;
@@ -107,7 +107,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
       var l = a.length;
       if (l) {
         var r = Caml_array.caml_make_vect(l, Curry._1(f, a[0]));
-        for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+        for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
           r[i] = Curry._1(f, a[i]);
         }
         return r;
@@ -118,7 +118,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
     }
     
     function iteri(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
         Curry._2(f, i, a[i]);
       }
       return /* () */0;
@@ -128,7 +128,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
       var l = a.length;
       if (l) {
         var r = Caml_array.caml_make_vect(l, Curry._2(f, 0, a[0]));
-        for(var i = 1 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+        for(var i = 1 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
           r[i] = Curry._2(f, i, a[i]);
         }
         return r;
@@ -202,7 +202,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
     
     function fold_left(f, x, a) {
       var r = x;
-      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
         r = Curry._2(f, r, a[i]);
       }
       return r;
@@ -210,7 +210,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
     
     function fold_right(f, a, x) {
       var r = x;
-      for(var i = a.length - 1 | 0; i>= 0; --i){
+      for(var i = a.length - 1 | 0; i >= 0; --i){
         r = Curry._2(f, a[i], r);
       }
       return r;
@@ -329,10 +329,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
         };
       };
       var l = a.length;
-      for(var i = ((l + 1 | 0) / 3 | 0) - 1 | 0; i>= 0; --i){
+      for(var i = ((l + 1 | 0) / 3 | 0) - 1 | 0; i >= 0; --i){
         trickle(l, i, a[i]);
       }
-      for(var i$1 = l - 1 | 0; i$1>= 2; --i$1){
+      for(var i$1 = l - 1 | 0; i$1 >= 2; --i$1){
         var e = a[i$1];
         a[i$1] = a[0];
         trickleup(bubble(i$1, 0), e);
@@ -394,7 +394,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_except
         };
       };
       var isortto = function (srcofs, dst, dstofs, len) {
-        for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
           var e = a[srcofs + i | 0];
           var j = (dstofs + i | 0) - 1 | 0;
           while(j >= dstofs && Curry._2(cmp, dst[j], e) > 0) {

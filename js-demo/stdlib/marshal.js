@@ -1,9 +1,9 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primitive", "../runtime/caml_string"],
-  function(exports, Caml_builtin_exceptions, Caml_primitive, Caml_string){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_string"],
+  function(exports, Caml_builtin_exceptions, Caml_string){
     'use strict';
-    function to_buffer(buff, ofs, len, v, flags) {
+    function to_buffer(buff, ofs, len, _, _$1) {
       if (ofs < 0 || len < 0 || ofs > (buff.length - len | 0)) {
         throw [
               Caml_builtin_exceptions.invalid_argument,
@@ -11,7 +11,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primit
             ];
       }
       else {
-        return Caml_primitive.caml_output_value_to_buffer(buff, ofs, len, v, flags);
+        return function () {
+                  throw "caml_output_value_to_buffer not implemented by bucklescript yet\n";
+                }();
       }
     }
     
@@ -23,7 +25,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primit
             ];
       }
       else {
-        return Caml_primitive.caml_marshal_data_size(buff, ofs);
+        return function () {
+                  throw "caml_marshal_data_size not implemented by bucklescript yet\n";
+                }();
       }
     }
     
@@ -39,7 +43,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primit
             ];
       }
       else {
-        var len = Caml_primitive.caml_marshal_data_size(buff, ofs);
+        var len = function () {
+            throw "caml_marshal_data_size not implemented by bucklescript yet\n";
+          }();
         if (ofs > (buff.length - (20 + len | 0) | 0)) {
           throw [
                 Caml_builtin_exceptions.invalid_argument,
@@ -47,7 +53,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primit
               ];
         }
         else {
-          return Caml_primitive.caml_input_value_from_string(buff, ofs);
+          return function () {
+                    throw "caml_input_value_from_string not implemented by bucklescript yet\n";
+                  }();
         }
       }
     }
@@ -56,9 +64,17 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_primit
       return from_bytes(Caml_string.bytes_of_string(buff), ofs);
     }
     
-    var to_channel = Caml_primitive.caml_output_value
+    function to_channel(_, _$1, _$2) {
+      return function () {
+                throw "caml_output_value not implemented by bucklescript yet\n";
+              }();
+    }
     
-    var from_channel = Caml_primitive.caml_input_value
+    function from_channel() {
+      return function () {
+                throw "caml_input_value not implemented by bucklescript yet\n";
+              }();
+    }
     
     var header_size = 20;
     

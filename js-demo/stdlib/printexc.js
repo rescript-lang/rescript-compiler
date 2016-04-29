@@ -1,68 +1,48 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "./obj", "./pervasives", "../runtime/curry", "./printf", "../runtime/caml_primitive", "./array", "./buffer"],
-  function(exports, Caml_builtin_exceptions, Caml_io, Obj, Pervasives, Curry, Printf, Caml_primitive, $$Array, Buffer){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "./obj", "./pervasives", "../runtime/caml_backtrace", "../runtime/block", "../runtime/curry", "./printf", "./array", "./buffer"],
+  function(exports, Caml_builtin_exceptions, Caml_io, Obj, Pervasives, Caml_backtrace, Block, Curry, Printf, $$Array, Buffer){
     'use strict';
     var printers = [/* [] */0];
     
     var locfmt = /* Format */[
-      /* String_literal */{
-        0: 'File "',
-        1: /* String */{
-          0: /* No_padding */0,
-          1: /* String_literal */{
-            0: '", line ',
-            1: /* Int */{
-              0: /* Int_d */0,
-              1: /* No_padding */0,
-              2: /* No_precision */0,
-              3: /* String_literal */{
-                0: ", characters ",
-                1: /* Int */{
-                  0: /* Int_d */0,
-                  1: /* No_padding */0,
-                  2: /* No_precision */0,
-                  3: /* Char_literal */{
-                    0: /* "-" */45,
-                    1: /* Int */{
-                      0: /* Int_d */0,
-                      1: /* No_padding */0,
-                      2: /* No_precision */0,
-                      3: /* String_literal */{
-                        0: ": ",
-                        1: /* String */{
-                          0: /* No_padding */0,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 2
-                        },
-                        length: 2,
-                        tag: 11
-                      },
-                      length: 4,
-                      tag: 4
-                    },
-                    length: 2,
-                    tag: 12
-                  },
-                  length: 4,
-                  tag: 4
-                },
-                length: 2,
-                tag: 11
-              },
-              length: 4,
-              tag: 4
-            },
-            length: 2,
-            tag: 11
-          },
-          length: 2,
-          tag: 2
-        },
-        length: 2,
-        tag: 11
-      },
+      /* String_literal */Block.__(11, [
+          'File "',
+          /* String */Block.__(2, [
+              /* No_padding */0,
+              /* String_literal */Block.__(11, [
+                  '", line ',
+                  /* Int */Block.__(4, [
+                      /* Int_d */0,
+                      /* No_padding */0,
+                      /* No_precision */0,
+                      /* String_literal */Block.__(11, [
+                          ", characters ",
+                          /* Int */Block.__(4, [
+                              /* Int_d */0,
+                              /* No_padding */0,
+                              /* No_precision */0,
+                              /* Char_literal */Block.__(12, [
+                                  /* "-" */45,
+                                  /* Int */Block.__(4, [
+                                      /* Int_d */0,
+                                      /* No_padding */0,
+                                      /* No_precision */0,
+                                      /* String_literal */Block.__(11, [
+                                          ": ",
+                                          /* String */Block.__(2, [
+                                              /* No_padding */0,
+                                              /* End_of_format */0
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ])
+                        ])
+                    ])
+                ])
+            ])
+        ]),
       'File "%s", line %d, characters %d-%d: %s'
     ];
     
@@ -70,25 +50,21 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       var f = x[i];
       if (f.length === undefined) {
         return Curry._1(Printf.sprintf(/* Format */[
-                        /* Int */{
-                          0: /* Int_d */0,
-                          1: /* No_padding */0,
-                          2: /* No_precision */0,
-                          3: /* End_of_format */0,
-                          length: 4,
-                          tag: 4
-                        },
+                        /* Int */Block.__(4, [
+                            /* Int_d */0,
+                            /* No_padding */0,
+                            /* No_precision */0,
+                            /* End_of_format */0
+                          ]),
                         "%d"
                       ]), f);
       }
       else if ((f.tag | 0) === Obj.string_tag) {
         return Curry._1(Printf.sprintf(/* Format */[
-                        /* Caml_string */{
-                          0: /* No_padding */0,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 3
-                        },
+                        /* Caml_string */Block.__(3, [
+                            /* No_padding */0,
+                            /* End_of_format */0
+                          ]),
                         "%S"
                       ]), f);
       }
@@ -106,22 +82,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       }
       else {
         return Curry._2(Printf.sprintf(/* Format */[
-                        /* String_literal */{
-                          0: ", ",
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* End_of_format */0,
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 11
-                        },
+                        /* String_literal */Block.__(11, [
+                            ", ",
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* End_of_format */0
+                                  ])
+                              ])
+                          ]),
                         ", %s%s"
                       ]), field(x, i), other_fields(x, i + 1 | 0));
       }
@@ -131,27 +101,19 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       var n = x.length;
       if (n > 2 || n < 0) {
         return Curry._2(Printf.sprintf(/* Format */[
-                        /* Char_literal */{
-                          0: /* "(" */40,
-                          1: /* String */{
-                            0: /* No_padding */0,
-                            1: /* String */{
-                              0: /* No_padding */0,
-                              1: /* Char_literal */{
-                                0: /* ")" */41,
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 12
-                              },
-                              length: 2,
-                              tag: 2
-                            },
-                            length: 2,
-                            tag: 2
-                          },
-                          length: 2,
-                          tag: 12
-                        },
+                        /* Char_literal */Block.__(12, [
+                            /* "(" */40,
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String */Block.__(2, [
+                                    /* No_padding */0,
+                                    /* Char_literal */Block.__(12, [
+                                        /* ")" */41,
+                                        /* End_of_format */0
+                                      ])
+                                  ])
+                              ])
+                          ]),
                         "(%s%s)"
                       ]), field(x, 1), other_fields(x, 2));
       }
@@ -162,22 +124,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
               return "";
           case 2 : 
               return Curry._1(Printf.sprintf(/* Format */[
-                              /* Char_literal */{
-                                0: /* "(" */40,
-                                1: /* String */{
-                                  0: /* No_padding */0,
-                                  1: /* Char_literal */{
-                                    0: /* ")" */41,
-                                    1: /* End_of_format */0,
-                                    length: 2,
-                                    tag: 12
-                                  },
-                                  length: 2,
-                                  tag: 2
-                                },
-                                length: 2,
-                                tag: 12
-                              },
+                              /* Char_literal */Block.__(12, [
+                                  /* "(" */40,
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* Char_literal */Block.__(12, [
+                                          /* ")" */41,
+                                          /* End_of_format */0
+                                        ])
+                                    ])
+                                ]),
                               "(%s)"
                             ]), field(x, 1));
           
@@ -243,22 +199,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       }
       catch (x){
         Curry._1(Printf.eprintf(/* Format */[
-                  /* String_literal */{
-                    0: "Uncaught exception: ",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* "\n" */10,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "Uncaught exception: ",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "Uncaught exception: %s\n"
                 ]), to_string(x));
         Caml_io.caml_ml_flush(Pervasives.stderr);
@@ -273,22 +223,16 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       catch (x){
         Caml_io.caml_ml_flush(Pervasives.stdout);
         Curry._1(Printf.eprintf(/* Format */[
-                  /* String_literal */{
-                    0: "Uncaught exception: ",
-                    1: /* String */{
-                      0: /* No_padding */0,
-                      1: /* Char_literal */{
-                        0: /* "\n" */10,
-                        1: /* End_of_format */0,
-                        length: 2,
-                        tag: 12
-                      },
-                      length: 2,
-                      tag: 2
-                    },
-                    length: 2,
-                    tag: 11
-                  },
+                  /* String_literal */Block.__(11, [
+                      "Uncaught exception: ",
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ])
+                        ])
+                    ]),
                   "Uncaught exception: %s\n"
                 ]), to_string(x));
         return Pervasives.exit(2);
@@ -297,7 +241,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
     
     function convert_raw_backtrace(rbckt) {
       try {
-        return /* Some */[$$Array.map(Caml_primitive.caml_convert_raw_backtrace_slot, rbckt)];
+        return /* Some */[$$Array.map(Caml_backtrace.caml_convert_raw_backtrace_slot, rbckt)];
       }
       catch (exn){
         if (exn[0] === Caml_builtin_exceptions.failure) {
@@ -332,75 +276,53 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
         }
         else {
           return /* Some */[Curry._1(Printf.sprintf(/* Format */[
-                            /* String */{
-                              0: /* No_padding */0,
-                              1: /* String_literal */{
-                                0: " unknown location",
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 11
-                              },
-                              length: 2,
-                              tag: 2
-                            },
+                            /* String */Block.__(2, [
+                                /* No_padding */0,
+                                /* String_literal */Block.__(11, [
+                                    " unknown location",
+                                    /* End_of_format */0
+                                  ])
+                              ]),
                             "%s unknown location"
                           ]), info(/* false */0))];
         }
       }
       else {
         return /* Some */[Curry._5(Printf.sprintf(/* Format */[
-                          /* String */{
-                            0: /* No_padding */0,
-                            1: /* String_literal */{
-                              0: ' file "',
-                              1: /* String */{
-                                0: /* No_padding */0,
-                                1: /* String_literal */{
-                                  0: '", line ',
-                                  1: /* Int */{
-                                    0: /* Int_d */0,
-                                    1: /* No_padding */0,
-                                    2: /* No_precision */0,
-                                    3: /* String_literal */{
-                                      0: ", characters ",
-                                      1: /* Int */{
-                                        0: /* Int_d */0,
-                                        1: /* No_padding */0,
-                                        2: /* No_precision */0,
-                                        3: /* Char_literal */{
-                                          0: /* "-" */45,
-                                          1: /* Int */{
-                                            0: /* Int_d */0,
-                                            1: /* No_padding */0,
-                                            2: /* No_precision */0,
-                                            3: /* End_of_format */0,
-                                            length: 4,
-                                            tag: 4
-                                          },
-                                          length: 2,
-                                          tag: 12
-                                        },
-                                        length: 4,
-                                        tag: 4
-                                      },
-                                      length: 2,
-                                      tag: 11
-                                    },
-                                    length: 4,
-                                    tag: 4
-                                  },
-                                  length: 2,
-                                  tag: 11
-                                },
-                                length: 2,
-                                tag: 2
-                              },
-                              length: 2,
-                              tag: 11
-                            },
-                            length: 2,
-                            tag: 2
-                          },
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* String_literal */Block.__(11, [
+                                  ' file "',
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* String_literal */Block.__(11, [
+                                          '", line ',
+                                          /* Int */Block.__(4, [
+                                              /* Int_d */0,
+                                              /* No_padding */0,
+                                              /* No_precision */0,
+                                              /* String_literal */Block.__(11, [
+                                                  ", characters ",
+                                                  /* Int */Block.__(4, [
+                                                      /* Int_d */0,
+                                                      /* No_padding */0,
+                                                      /* No_precision */0,
+                                                      /* Char_literal */Block.__(12, [
+                                                          /* "-" */45,
+                                                          /* Int */Block.__(4, [
+                                                              /* Int_d */0,
+                                                              /* No_padding */0,
+                                                              /* No_precision */0,
+                                                              /* End_of_format */0
+                                                            ])
+                                                        ])
+                                                    ])
+                                                ])
+                                            ])
+                                        ])
+                                    ])
+                                ])
+                            ]),
                           '%s file "%s", line %d, characters %d-%d'
                         ]), info(slot[0]), slot[1], slot[2], slot[3], slot[4])];
       }
@@ -411,21 +333,17 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       var backtrace = convert_raw_backtrace(raw_backtrace);
       if (backtrace) {
         var a = backtrace[0];
-        for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
           var match = format_backtrace_slot(i, a[i]);
           if (match) {
             Curry._1(Printf.fprintf(outchan$1, /* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Char_literal */{
-                          0: /* "\n" */10,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ])
+                        ]),
                       "%s\n"
                     ]), match[0]);
           }
@@ -435,12 +353,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       }
       else {
         return Printf.fprintf(outchan$1, /* Format */[
-                    /* String_literal */{
-                      0: "(Program not linked with -g, cannot print stack backtrace)\n",
-                      1: /* End_of_format */0,
-                      length: 2,
-                      tag: 11
-                    },
+                    /* String_literal */Block.__(11, [
+                        "(Program not linked with -g, cannot print stack backtrace)\n",
+                        /* End_of_format */0
+                      ]),
                     "(Program not linked with -g, cannot print stack backtrace)\n"
                   ]);
       }
@@ -454,21 +370,17 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       if (backtrace) {
         var a = backtrace[0];
         var b = Buffer.create(1024);
-        for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
           var match = format_backtrace_slot(i, a[i]);
           if (match) {
             Curry._1(Printf.bprintf(b, /* Format */[
-                      /* String */{
-                        0: /* No_padding */0,
-                        1: /* Char_literal */{
-                          0: /* "\n" */10,
-                          1: /* End_of_format */0,
-                          length: 2,
-                          tag: 12
-                        },
-                        length: 2,
-                        tag: 2
-                      },
+                      /* String */Block.__(2, [
+                          /* No_padding */0,
+                          /* Char_literal */Block.__(12, [
+                              /* "\n" */10,
+                              /* End_of_format */0
+                            ])
+                        ]),
                       "%s\n"
                     ]), match[0]);
           }
@@ -495,10 +407,10 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       }
       else {
         return /* Some */[/* record */[
-                  param[1],
-                  param[2],
-                  param[3],
-                  param[4]
+                  /* filename */param[1],
+                  /* line_number */param[2],
+                  /* start_char */param[3],
+                  /* end_char */param[4]
                 ]];
       }
     }
@@ -613,7 +525,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_io", "
       format_backtrace_slot
     ];
     
-    var convert_raw_backtrace_slot = Caml_primitive.caml_convert_raw_backtrace_slot
+    var convert_raw_backtrace_slot = Caml_backtrace.caml_convert_raw_backtrace_slot
     
     exports.to_string                      = to_string;
     exports.print                          = print;

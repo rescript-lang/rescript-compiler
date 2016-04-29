@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/curry", "./printf", "../runtime/caml_primitive", "./buffer", "./string", "./random"],
-  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Curry, Printf, Caml_primitive, Buffer, $$String, Random){
+define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "../runtime/caml_sys", "./pervasives", "../runtime/block", "../runtime/curry", "./printf", "./buffer", "./string", "./random"],
+  function(exports, Caml_builtin_exceptions, CamlinternalLazy, Caml_sys, Pervasives, Block, Curry, Printf, Buffer, $$String, Random){
     'use strict';
     function generic_basename(is_dir_sep, current_dir_name, name) {
       if (name === "") {
@@ -145,7 +145,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "
       var l = s.length;
       var b = Buffer.create(l + 20 | 0);
       Buffer.add_char(b, /* "'" */39);
-      for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
         if (s[i] === "'") {
           Buffer.add_string(b, quotequote);
         }
@@ -224,13 +224,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "
       };
     }
     
-    var prng = {
-      0: function () {
-        return Curry._1(Random.State[/* make_self_init */1], /* () */0);
-      },
-      length: 1,
-      tag: 246
-    };
+    var prng = Block.__(246, [function () {
+          return Curry._1(Random.State[/* make_self_init */1], /* () */0);
+        }]);
     
     function temp_file_name(temp_dir, prefix, suffix) {
       var tag = prng.tag | 0;
@@ -238,29 +234,21 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "
               tag === 246 ? CamlinternalLazy.force_lazy_block(prng) : prng
             )) & 16777215;
       return concat(temp_dir, Curry._3(Printf.sprintf(/* Format */[
-                          /* String */{
-                            0: /* No_padding */0,
-                            1: /* Int */{
-                              0: /* Int_x */6,
-                              1: /* Lit_padding */{
-                                0: /* Zeros */2,
-                                1: 6,
-                                length: 2,
-                                tag: 0
-                              },
-                              2: /* No_precision */0,
-                              3: /* String */{
-                                0: /* No_padding */0,
-                                1: /* End_of_format */0,
-                                length: 2,
-                                tag: 2
-                              },
-                              length: 4,
-                              tag: 4
-                            },
-                            length: 2,
-                            tag: 2
-                          },
+                          /* String */Block.__(2, [
+                              /* No_padding */0,
+                              /* Int */Block.__(4, [
+                                  /* Int_x */6,
+                                  /* Lit_padding */Block.__(0, [
+                                      /* Zeros */2,
+                                      6
+                                    ]),
+                                  /* No_precision */0,
+                                  /* String */Block.__(2, [
+                                      /* No_padding */0,
+                                      /* End_of_format */0
+                                    ])
+                                ])
+                            ]),
                           "%s%06x%s"
                         ]), prefix, rnd, suffix));
     }
@@ -283,16 +271,9 @@ define(["exports", "../runtime/caml_builtin_exceptions", "./camlinternalLazy", "
         var counter = _counter;
         var name = temp_file_name(temp_dir, prefix, suffix);
         try {
-          Caml_primitive.caml_sys_close(Caml_primitive.caml_sys_open(name, /* :: */[
-                    /* Open_wronly */1,
-                    /* :: */[
-                      /* Open_creat */3,
-                      /* :: */[
-                        /* Open_excl */5,
-                        /* [] */0
-                      ]
-                    ]
-                  ], 384));
+          (function () {
+                throw "caml_sys_close not implemented by bucklescript yet\n";
+              }());
           return name;
         }
         catch (e){

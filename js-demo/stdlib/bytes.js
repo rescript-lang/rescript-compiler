@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "./char", "../runtime/curry", "../runtime/caml_primitive", "../runtime/caml_string", "./list"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Char, Curry, Caml_primitive, Caml_string, List){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "../runtime/caml_int32", "./char", "../runtime/curry", "../runtime/caml_string", "./list"],
+  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Caml_int32, Char, Curry, Caml_string, List){
     'use strict';
     function make(n, c) {
       var s = Caml_string.caml_create_string(n);
@@ -11,7 +11,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
     
     function init(n, f) {
       var s = Caml_string.caml_create_string(n);
-      for(var i = 0 ,i_finish = n - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = n - 1 | 0; i <= i_finish; ++i){
         s[i] = Curry._1(f, i);
       }
       return s;
@@ -108,14 +108,14 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
     }
     
     function iter(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
         Curry._1(f, a[i]);
       }
       return /* () */0;
     }
     
     function iteri(f, a) {
-      for(var i = 0 ,i_finish = a.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = a.length - 1 | 0; i <= i_finish; ++i){
         Curry._2(f, i, a[i]);
       }
       return /* () */0;
@@ -131,7 +131,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
               len[0] = len[0] + s.length | 0;
               return /* () */0;
             }, l);
-        var r = Caml_string.caml_create_string(len[0] + Caml_primitive.imul(sep.length, num[0] - 1 | 0) | 0);
+        var r = Caml_string.caml_create_string(len[0] + Caml_int32.imul(sep.length, num[0] - 1 | 0) | 0);
         Caml_string.caml_blit_bytes(hd, 0, r, 0, hd.length);
         var pos = [hd.length];
         List.iter(function (s) {
@@ -190,7 +190,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
     
     function escaped(s) {
       var n = 0;
-      for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
         var c = s[i];
         var $js;
         var exit = 0;
@@ -227,7 +227,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
       else {
         var s$prime = Caml_string.caml_create_string(n);
         n = 0;
-        for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1<= i_finish$1; ++i$1){
+        for(var i$1 = 0 ,i_finish$1 = s.length - 1 | 0; i$1 <= i_finish$1; ++i$1){
           var c$1 = s[i$1];
           var exit$1 = 0;
           var switcher = c$1 - 34 | 0;
@@ -305,7 +305,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
       var l = s.length;
       if (l) {
         var r = Caml_string.caml_create_string(l);
-        for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
           r[i] = Curry._1(f, s[i]);
         }
         return r;
@@ -319,7 +319,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
       var l = s.length;
       if (l) {
         var r = Caml_string.caml_create_string(l);
-        for(var i = 0 ,i_finish = l - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = l - 1 | 0; i <= i_finish; ++i){
           r[i] = Curry._2(f, i, s[i]);
         }
         return r;

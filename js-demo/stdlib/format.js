@@ -1,12 +1,12 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./bytes", "../runtime/caml_io", "../runtime/caml_exceptions", "./pervasives", "../runtime/curry", "./buffer", "./string", "../runtime/caml_string", "./camlinternalFormat"],
-  function(exports, Caml_obj, Caml_builtin_exceptions, Bytes, Caml_io, Caml_exceptions, Pervasives, Curry, Buffer, $$String, Caml_string, CamlinternalFormat){
+define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./bytes", "../runtime/caml_io", "../runtime/caml_exceptions", "./pervasives", "../runtime/block", "../runtime/curry", "./buffer", "./string", "../runtime/caml_string", "./camlinternalFormat"],
+  function(exports, Caml_obj, Caml_builtin_exceptions, Bytes, Caml_io, Caml_exceptions, Pervasives, Block, Curry, Buffer, $$String, Caml_string, CamlinternalFormat){
     'use strict';
     function add_queue(x, q) {
       var c = /* Cons */[/* record */[
-          x,
-          /* Nil */0
+          /* head */x,
+          /* tail : Nil */0
         ]];
       var match = q[/* insert */0];
       if (match) {
@@ -360,24 +360,16 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function enqueue_string_as(state, size, s) {
       return enqueue_advance(state, /* record */[
-                  size,
-                  /* Pp_text */{
-                    0: s,
-                    length: 1,
-                    tag: 0
-                  },
-                  size
+                  /* elem_size */size,
+                  /* token : Pp_text */Block.__(0, [s]),
+                  /* length */size
                 ]);
     }
     
     var q_elem = /* record */[
-      -1,
-      /* Pp_text */{
-        0: "",
-        length: 1,
-        tag: 0
-      },
-      0
+      /* elem_size */-1,
+      /* token : Pp_text */Block.__(0, [""]),
+      /* length */0
     ];
     
     var scan_stack_bottom_000 = /* Scan_elem */[
@@ -463,14 +455,12 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       state[/* pp_curr_depth */13] = state[/* pp_curr_depth */13] + 1 | 0;
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         var elem = /* record */[
-          -state[/* pp_right_total */12],
-          /* Pp_begin */{
-            0: indent,
-            1: br_ty,
-            length: 2,
-            tag: 3
-          },
-          0
+          /* elem_size */-state[/* pp_right_total */12],
+          /* token : Pp_begin */Block.__(3, [
+              indent,
+              br_ty
+            ]),
+          /* length */0
         ];
         return scan_push(state, /* false */0, elem);
       }
@@ -489,9 +479,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       if (state[/* pp_curr_depth */13] > 1) {
         if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
           pp_enqueue(state, /* record */[
-                0,
-                /* Pp_end */1,
-                0
+                /* elem_size */0,
+                /* token : Pp_end */1,
+                /* length */0
               ]);
           set_size(state, /* true */1);
           set_size(state, /* false */0);
@@ -514,13 +504,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       }
       if (state[/* pp_mark_tags */21]) {
         return pp_enqueue(state, /* record */[
-                    0,
-                    /* Pp_open_tag */{
-                      0: tag_name,
-                      length: 1,
-                      tag: 5
-                    },
-                    0
+                    /* elem_size */0,
+                    /* token : Pp_open_tag */Block.__(5, [tag_name]),
+                    /* length */0
                   ]);
       }
       else {
@@ -531,9 +517,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_close_tag(state, _) {
       if (state[/* pp_mark_tags */21]) {
         pp_enqueue(state, /* record */[
-              0,
-              /* Pp_close_tag */5,
-              0
+              /* elem_size */0,
+              /* token : Pp_close_tag */5,
+              /* length */0
             ]);
       }
       if (state[/* pp_print_tags */20]) {
@@ -578,10 +564,10 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function pp_get_formatter_tag_functions(state, _) {
       return /* record */[
-              state[/* pp_mark_open_tag */22],
-              state[/* pp_mark_close_tag */23],
-              state[/* pp_print_open_tag */24],
-              state[/* pp_print_close_tag */25]
+              /* mark_open_tag */state[/* pp_mark_open_tag */22],
+              /* mark_close_tag */state[/* pp_mark_close_tag */23],
+              /* print_open_tag */state[/* pp_print_open_tag */24],
+              /* print_close_tag */state[/* pp_print_close_tag */25]
             ];
     }
     
@@ -682,9 +668,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_force_newline(state, _) {
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         return enqueue_advance(state, /* record */[
-                    0,
-                    /* Pp_newline */3,
-                    0
+                    /* elem_size */0,
+                    /* token : Pp_newline */3,
+                    /* length */0
                   ]);
       }
       else {
@@ -695,9 +681,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_print_if_newline(state, _) {
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         return enqueue_advance(state, /* record */[
-                    0,
-                    /* Pp_if_newline */4,
-                    0
+                    /* elem_size */0,
+                    /* token : Pp_if_newline */4,
+                    /* length */0
                   ]);
       }
       else {
@@ -708,14 +694,12 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_print_break(state, width, offset) {
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         var elem = /* record */[
-          -state[/* pp_right_total */12],
-          /* Pp_break */{
-            0: width,
-            1: offset,
-            length: 2,
-            tag: 1
-          },
-          width
+          /* elem_size */-state[/* pp_right_total */12],
+          /* token : Pp_break */Block.__(1, [
+              width,
+              offset
+            ]),
+          /* length */width
         ];
         return scan_push(state, /* true */1, elem);
       }
@@ -736,13 +720,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       state[/* pp_curr_depth */13] = state[/* pp_curr_depth */13] + 1 | 0;
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         var elem = /* record */[
-          0,
-          /* Pp_tbegin */{
-            0: /* Pp_tbox */[[/* [] */0]],
-            length: 1,
-            tag: 4
-          },
-          0
+          /* elem_size */0,
+          /* token : Pp_tbegin */Block.__(4, [/* Pp_tbox */[[/* [] */0]]]),
+          /* length */0
         ];
         return enqueue_advance(state, elem);
       }
@@ -755,9 +735,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       if (state[/* pp_curr_depth */13] > 1) {
         if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
           var elem = /* record */[
-            0,
-            /* Pp_tend */2,
-            0
+            /* elem_size */0,
+            /* token : Pp_tend */2,
+            /* length */0
           ];
           enqueue_advance(state, elem);
           state[/* pp_curr_depth */13] = state[/* pp_curr_depth */13] - 1 | 0;
@@ -775,14 +755,12 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_print_tbreak(state, width, offset) {
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         var elem = /* record */[
-          -state[/* pp_right_total */12],
-          /* Pp_tbreak */{
-            0: width,
-            1: offset,
-            length: 2,
-            tag: 2
-          },
-          width
+          /* elem_size */-state[/* pp_right_total */12],
+          /* token : Pp_tbreak */Block.__(2, [
+              width,
+              offset
+            ]),
+          /* length */width
         ];
         return scan_push(state, /* true */1, elem);
       }
@@ -798,9 +776,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     function pp_set_tab(state, _) {
       if (state[/* pp_curr_depth */13] < state[/* pp_max_boxes */14]) {
         var elem = /* record */[
-          0,
-          /* Pp_stab */0,
-          0
+          /* elem_size */0,
+          /* token : Pp_stab */0,
+          /* length */0
         ];
         return enqueue_advance(state, elem);
       }
@@ -949,10 +927,10 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function pp_get_formatter_out_functions(state, _) {
       return /* record */[
-              state[/* pp_out_string */16],
-              state[/* pp_out_flush */17],
-              state[/* pp_out_newline */18],
-              state[/* pp_out_spaces */19]
+              /* out_string */state[/* pp_out_string */16],
+              /* out_flush */state[/* pp_out_flush */17],
+              /* out_newline */state[/* pp_out_newline */18],
+              /* out_spaces */state[/* pp_out_spaces */19]
             ];
     }
     
@@ -1045,18 +1023,16 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function pp_make_formatter(f, g, h, i) {
       var pp_q = /* record */[
-        /* Nil */0,
-        /* Nil */0
+        /* insert : Nil */0,
+        /* body : Nil */0
       ];
       var sys_tok = /* record */[
-        -1,
-        /* Pp_begin */{
-          0: 0,
-          1: /* Pp_hovbox */3,
-          length: 2,
-          tag: 3
-        },
-        0
+        /* elem_size */-1,
+        /* token : Pp_begin */Block.__(3, [
+            0,
+            /* Pp_hovbox */3
+          ]),
+        /* length */0
       ];
       add_queue(sys_tok, pp_q);
       var sys_scan_stack_000 = /* Scan_elem */[
@@ -1068,33 +1044,33 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
         scan_stack_bottom
       ];
       return /* record */[
-              sys_scan_stack,
-              /* [] */0,
-              /* [] */0,
-              /* [] */0,
-              /* [] */0,
-              78,
-              10,
-              68,
-              78,
-              0,
-              /* true */1,
-              1,
-              1,
-              1,
-              Pervasives.max_int,
-              ".",
-              f,
-              g,
-              h,
-              i,
-              /* false */0,
-              /* false */0,
-              default_pp_mark_open_tag,
-              default_pp_mark_close_tag,
-              default_pp_print_open_tag,
-              default_pp_print_close_tag,
-              pp_q
+              /* pp_scan_stack */sys_scan_stack,
+              /* pp_format_stack : [] */0,
+              /* pp_tbox_stack : [] */0,
+              /* pp_tag_stack : [] */0,
+              /* pp_mark_stack : [] */0,
+              /* pp_margin */78,
+              /* pp_min_space_left */10,
+              /* pp_max_indent */68,
+              /* pp_space_left */78,
+              /* pp_current_indent */0,
+              /* pp_is_new_line : true */1,
+              /* pp_left_total */1,
+              /* pp_right_total */1,
+              /* pp_curr_depth */1,
+              /* pp_max_boxes */Pervasives.max_int,
+              /* pp_ellipsis */".",
+              /* pp_out_string */f,
+              /* pp_out_flush */g,
+              /* pp_out_newline */h,
+              /* pp_out_spaces */i,
+              /* pp_print_tags : false */0,
+              /* pp_mark_tags : false */0,
+              /* pp_mark_open_tag */default_pp_mark_open_tag,
+              /* pp_mark_close_tag */default_pp_mark_close_tag,
+              /* pp_print_open_tag */default_pp_print_open_tag,
+              /* pp_print_close_tag */default_pp_print_close_tag,
+              /* pp_queue */pp_q
             ];
     }
     

@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "./caml_builtin_exceptions"],
   function(exports, Caml_builtin_exceptions){
@@ -44,6 +44,10 @@ function $$date(){
       return 127;
     }
     
+    function caml_sys_getcwd() {
+      return "/";
+    }
+    
     function caml_sys_getenv(prim) {
       return $$caml_sys_getenv(prim);
     }
@@ -53,6 +57,7 @@ function $$date(){
     exports.caml_sys_time           = caml_sys_time;
     exports.caml_sys_random_seed    = caml_sys_random_seed;
     exports.caml_sys_system_command = caml_sys_system_command;
+    exports.caml_sys_getcwd         = caml_sys_getcwd;
     
   })
 /*  Not a pure module */

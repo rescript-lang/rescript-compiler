@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitive"],
-  function(exports, Caml_builtin_exceptions, Caml_queue, Caml_primitive){
+define(["exports", "./caml_builtin_exceptions", "./caml_int32", "./caml_queue"],
+  function(exports, Caml_builtin_exceptions, Caml_int32, Caml_queue){
     'use strict';
     function rotl32(x, n) {
       return (x << n) | (x >>> (32 - n | 0));
@@ -9,9 +9,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
     
     function mix(h, d) {
       var d$1 = d;
-      d$1 = Caml_primitive.imul(d$1, 3432918353);
+      d$1 = Caml_int32.imul(d$1, 3432918353);
       d$1 = rotl32(d$1, 15);
-      d$1 = Caml_primitive.imul(d$1, 461845907);
+      d$1 = Caml_int32.imul(d$1, 461845907);
       var h$1 = h ^ d$1;
       h$1 = rotl32(h$1, 13);
       return (h$1 + (h$1 << 2) | 0) + 3864292196 | 0;
@@ -19,9 +19,9 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
     
     function final_mix(h) {
       var h$1 = h ^ (h >>> 16);
-      h$1 = Caml_primitive.imul(h$1, 2246822507);
+      h$1 = Caml_int32.imul(h$1, 2246822507);
       h$1 = h$1 ^ (h$1 >>> 13);
-      h$1 = Caml_primitive.imul(h$1, 3266489909);
+      h$1 = Caml_int32.imul(h$1, 3266489909);
       return h$1 ^ (h$1 >>> 16);
     }
     
@@ -29,7 +29,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
       var len = s.length;
       var block = (len / 4 | 0) - 1 | 0;
       var hash = h;
-      for(var i = 0; i<= block; ++i){
+      for(var i = 0; i <= block; ++i){
         var j = (i << 2);
         var w = s.charCodeAt(j) | (s.charCodeAt(j + 1 | 0) << 8) | (s.charCodeAt(j + 2 | 0) << 16) | (s.charCodeAt(j + 3 | 0) << 24);
         hash = mix(hash, w);
@@ -58,8 +58,8 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
       }
       else {
         var queue = /* record */[
-          0,
-          /* None */0
+          /* length */0,
+          /* tail : None */0
         ];
         var num = count;
         Caml_queue.push(obj, queue);
@@ -89,7 +89,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
               }
               else if (typeof obj$1 !== "function") {
                 var size = obj$1.length;
-                if (size) {
+                if (size !== undefined) {
                   var obj_tag = obj$1.tag | 0;
                   var tag = (size << 10) | obj_tag;
                   if (tag === 248) {
@@ -99,7 +99,7 @@ define(["exports", "./caml_builtin_exceptions", "./caml_queue", "./caml_primitiv
                     hash = mix(hash, tag);
                     var v = size - 1 | 0;
                     var block = v < num ? v : num;
-                    for(var i = 0; i<= block; ++i){
+                    for(var i = 0; i <= block; ++i){
                       Caml_queue.push(obj$1[i], queue);
                     }
                   }

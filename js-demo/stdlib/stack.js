@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_exceptions", "./list"],
   function(exports, Caml_exceptions, List){
@@ -6,7 +6,7 @@ define(["exports", "../runtime/caml_exceptions", "./list"],
     var Empty = Caml_exceptions.create("Stack.Empty");
     
     function create() {
-      return /* record */[/* [] */0];
+      return /* record */[/* c : [] */0];
     }
     
     function clear(s) {
@@ -15,7 +15,7 @@ define(["exports", "../runtime/caml_exceptions", "./list"],
     }
     
     function copy(s) {
-      return /* record */[s[/* c */0]];
+      return /* record */[/* c */s[/* c */0]];
     }
     
     function push(x, s) {

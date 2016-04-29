@@ -1,7 +1,7 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "./sys", "../runtime/curry", "../runtime/caml_primitive", "../runtime/caml_array", "./array", "../runtime/caml_weak"],
-  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Sys, Curry, Caml_primitive, Caml_array, $$Array, Caml_weak){
+define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./pervasives", "../runtime/caml_int32", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_weak"],
+  function(exports, Caml_builtin_exceptions, Caml_obj, Pervasives, Caml_int32, Sys, Curry, Caml_array, $$Array, Caml_weak){
     'use strict';
     function length(x) {
       return x.length - 1 | 0;
@@ -15,7 +15,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
             ];
       }
       else {
-        for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i<= i_finish; ++i){
+        for(var i = ofs ,i_finish = (ofs + len | 0) - 1 | 0; i <= i_finish; ++i){
           Caml_weak.caml_weak_set(ar, i, x);
         }
         return /* () */0;
@@ -31,15 +31,15 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
         var sz$1 = sz < 7 ? 7 : sz;
         var sz$2 = sz$1 > Sys.max_array_length ? Sys.max_array_length : sz$1;
         return /* record */[
-                Caml_array.caml_make_vect(sz$2, emptybucket),
-                Caml_array.caml_make_vect(sz$2, /* int array */[]),
-                7,
-                0,
-                0
+                /* table */Caml_array.caml_make_vect(sz$2, emptybucket),
+                /* hashes */Caml_array.caml_make_vect(sz$2, /* int array */[]),
+                /* limit */7,
+                /* oversize */0,
+                /* rover */0
               ];
       };
       var clear = function (t) {
-        for(var i = 0 ,i_finish = t[/* table */0].length - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = t[/* table */0].length - 1 | 0; i <= i_finish; ++i){
           t[/* table */0][i] = emptybucket;
           t[/* hashes */1][i] = /* int array */[];
         }
@@ -151,7 +151,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
                   }, t[/* table */0], 0);
       };
       var next_sz = function (n) {
-        return Pervasives.min((Caml_primitive.imul(3, n) / 2 | 0) + 3 | 0, Sys.max_array_length);
+        return Pervasives.min((Caml_int32.imul(3, n) / 2 | 0) + 3 | 0, Sys.max_array_length);
       };
       var prev_sz = function (n) {
         return (((n - 3 | 0) << 1) + 2 | 0) / 3 | 0;
@@ -217,7 +217,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
         while(true) {
           var i = _i;
           if (i >= sz) {
-            var newsz = Pervasives.min((Caml_primitive.imul(3, sz) / 2 | 0) + 3 | 0, Sys.max_array_length - 1 | 0);
+            var newsz = Pervasives.min((Caml_int32.imul(3, sz) / 2 | 0) + 3 | 0, Sys.max_array_length - 1 | 0);
             if (newsz <= sz) {
               throw [
                     Caml_builtin_exceptions.failure,
@@ -234,7 +234,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
             t[/* hashes */1][index] = newhashes;
             if (sz <= t[/* limit */2] && newsz > t[/* limit */2]) {
               t[/* oversize */3] = t[/* oversize */3] + 1 | 0;
-              for(var _i$1 = 0; _i$1<= 2; ++_i$1){
+              for(var _i$1 = 0; _i$1 <= 2; ++_i$1){
                 test_shrink_bucket(t);
               }
             }
@@ -460,18 +460,18 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
               ];
       };
       return /* module */[
-              create,
-              clear,
-              merge,
-              add,
-              remove,
-              find,
-              find_all,
-              mem,
-              iter,
-              fold,
-              count,
-              stats
+              /* create */create,
+              /* clear */clear,
+              /* merge */merge,
+              /* add */add,
+              /* remove */remove,
+              /* find */find,
+              /* find_all */find_all,
+              /* mem */mem,
+              /* iter */iter,
+              /* fold */fold,
+              /* count */count,
+              /* stats */stats
             ];
     }
     

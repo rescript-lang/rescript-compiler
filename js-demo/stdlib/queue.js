@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runtime/curry"],
   function(exports, Caml_obj, Caml_exceptions, Curry){
@@ -7,8 +7,8 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runt
     
     function create() {
       return /* record */[
-              0,
-              /* None */0
+              /* length */0,
+              /* tail : None */0
             ];
     }
     
@@ -23,8 +23,8 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runt
         var tail = q[/* tail */1];
         var head = tail[/* next */1];
         var cell = /* record */[
-          x,
-          head
+          /* content */x,
+          /* next */head
         ];
         q[/* length */0] = q[/* length */0] + 1 | 0;
         tail[/* next */1] = cell;
@@ -73,8 +73,8 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runt
           
         };
         Caml_obj.caml_update_dummy(tail$prime, /* record */[
-              tail[/* content */0],
-              tail$prime
+              /* content */tail[/* content */0],
+              /* next */tail$prime
             ]);
         var copy$1 = function (_prev, _cell) {
           while(true) {
@@ -82,8 +82,8 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runt
             var prev = _prev;
             if (cell !== tail) {
               var res = /* record */[
-                cell[/* content */0],
-                tail$prime
+                /* content */cell[/* content */0],
+                /* next */tail$prime
               ];
               prev[/* next */1] = res;
               _cell = cell[/* next */1];
@@ -98,14 +98,14 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_exceptions", "../runt
         };
         copy$1(tail$prime, tail[/* next */1]);
         return /* record */[
-                q[/* length */0],
-                tail$prime
+                /* length */q[/* length */0],
+                /* tail */tail$prime
               ];
       }
       else {
         return /* record */[
-                0,
-                /* None */0
+                /* length */0,
+                /* tail : None */0
               ];
       }
     }

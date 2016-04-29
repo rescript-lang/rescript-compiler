@@ -1,12 +1,12 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports"],
   function(exports){
     'use strict';
     function create() {
       return /* record */[
-              0,
-              /* None */0
+              /* length */0,
+              /* tail : None */0
             ];
     }
     
@@ -15,8 +15,8 @@ define(["exports"],
         var tail = q[/* tail */1];
         var head = tail[/* next */1];
         var cell = /* record */[
-          x,
-          head
+          /* content */x,
+          /* next */head
         ];
         q[/* length */0] = q[/* length */0] + 1 | 0;
         tail[/* next */1] = cell;

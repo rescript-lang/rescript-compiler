@@ -1,4 +1,4 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", "./camlinternalOO"],
   function(exports, Caml_builtin_exceptions, Caml_obj, CamlinternalOO){
@@ -32,7 +32,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
           var v = /* array */[];
           struct_[idx] = v;
           var len = comps.length;
-          for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+          for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
             loop(comps[i], v, i);
           }
           return /* () */0;
@@ -61,7 +61,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
         }
         else {
           var comps = shape[0];
-          for(var i$1 = 0 ,i_finish = comps.length - 1 | 0; i$1<= i_finish; ++i$1){
+          for(var i$1 = 0 ,i_finish = comps.length - 1 | 0; i$1 <= i_finish; ++i$1){
             aux(comps[i$1], o[i$1], n[i$1], o, i$1);
           }
           return /* () */0;
@@ -89,7 +89,7 @@ define(["exports", "../runtime/caml_builtin_exceptions", "../runtime/caml_obj", 
       }
       else {
         var comps = shape[0];
-        for(var i = 0 ,i_finish = comps.length - 1 | 0; i<= i_finish; ++i){
+        for(var i = 0 ,i_finish = comps.length - 1 | 0; i <= i_finish; ++i){
           aux(comps[i], o[i], n[i], o, i);
         }
         return /* () */0;

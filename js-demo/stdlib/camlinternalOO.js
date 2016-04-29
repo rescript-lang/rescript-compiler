@@ -1,24 +1,24 @@
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
-define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./obj", "../runtime/caml_exceptions", "../runtime/caml_oo", "./sys", "../runtime/curry", "../runtime/caml_primitive", "../runtime/caml_array", "./array", "../runtime/caml_string", "./list"],
-  function(exports, Caml_obj, Caml_builtin_exceptions, Obj, Caml_exceptions, Caml_oo, Sys, Curry, Caml_primitive, Caml_array, $$Array, Caml_string, List){
+define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", "./obj", "../runtime/caml_exceptions", "../runtime/caml_oo", "../runtime/caml_int32", "./sys", "../runtime/curry", "../runtime/caml_array", "./array", "../runtime/caml_string", "./list"],
+  function(exports, Caml_obj, Caml_builtin_exceptions, Obj, Caml_exceptions, Caml_oo, Caml_int32, Sys, Curry, Caml_array, $$Array, Caml_string, List){
     'use strict';
     function copy(o) {
       return Caml_exceptions.caml_set_oo_id(Caml_obj.caml_obj_dup(o));
     }
     
     var params = /* record */[
-      /* true */1,
-      /* true */1,
-      /* true */1,
-      3,
-      16
+      /* compact_table : true */1,
+      /* copy_parent : true */1,
+      /* clean_when_copying : true */1,
+      /* retry_count */3,
+      /* bucket_small_size */16
     ];
     
     function public_method_label(s) {
       var accu = 0;
-      for(var i = 0 ,i_finish = s.length - 1 | 0; i<= i_finish; ++i){
-        accu = Caml_primitive.imul(223, accu) + s.charCodeAt(i) | 0;
+      for(var i = 0 ,i_finish = s.length - 1 | 0; i <= i_finish; ++i){
+        accu = Caml_int32.imul(223, accu) + s.charCodeAt(i) | 0;
       }
       accu = accu & 2147483647;
       if (accu > 1073741823) {
@@ -455,14 +455,14 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     }
     
     var dummy_table = /* record */[
-      0,
-      /* array */[/* () */0],
-      /* Empty */0,
-      /* Empty */0,
-      /* [] */0,
-      /* [] */0,
-      /* Empty */0,
-      /* [] */0
+      /* size */0,
+      /* methods : array */[/* () */0],
+      /* methods_by_name : Empty */0,
+      /* methods_by_label : Empty */0,
+      /* previous_states : [] */0,
+      /* hidden_meths : [] */0,
+      /* vars : Empty */0,
+      /* initializers : [] */0
     ];
     
     var table_count = [0];
@@ -483,19 +483,19 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       var len = pub_labels.length;
       var methods = Caml_array.caml_make_vect((len << 1) + 2 | 0, dummy_met);
       methods[0] = len;
-      methods[1] = (Caml_primitive.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
-      for(var i = 0 ,i_finish = len - 1 | 0; i<= i_finish; ++i){
+      methods[1] = (Caml_int32.imul(fit_size(len), Sys.word_size) / 8 | 0) - 1 | 0;
+      for(var i = 0 ,i_finish = len - 1 | 0; i <= i_finish; ++i){
         methods[(i << 1) + 3 | 0] = pub_labels[i];
       }
       return /* record */[
-              2,
-              methods,
-              /* Empty */0,
-              /* Empty */0,
-              /* [] */0,
-              /* [] */0,
-              /* Empty */0,
-              /* [] */0
+              /* size */2,
+              /* methods */methods,
+              /* methods_by_name : Empty */0,
+              /* methods_by_label : Empty */0,
+              /* previous_states : [] */0,
+              /* hidden_meths : [] */0,
+              /* vars : Empty */0,
+              /* initializers : [] */0
             ];
     }
     
@@ -738,10 +738,10 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
       var nmeths = meths$1.length;
       var nvals = vals.length;
       var res = Caml_array.caml_make_vect(nmeths + nvals | 0, 0);
-      for(var i = 0 ,i_finish = nmeths - 1 | 0; i<= i_finish; ++i){
+      for(var i = 0 ,i_finish = nmeths - 1 | 0; i <= i_finish; ++i){
         res[i] = get_method_label(table, meths$1[i]);
       }
-      for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1<= i_finish$1; ++i$1){
+      for(var i$1 = 0 ,i_finish$1 = nvals - 1 | 0; i$1 <= i_finish$1; ++i$1){
         res[i$1 + nmeths | 0] = new_variable(table, vals[i$1]);
       }
       return res;
@@ -936,12 +936,12 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function build_path(n, keys, tables) {
       var res = /* record */[
-        0,
-        /* Empty */0,
-        /* Empty */0
+        /* key */0,
+        /* data : Empty */0,
+        /* next : Empty */0
       ];
       var r = res;
-      for(var i = 0; i<= n; ++i){
+      for(var i = 0; i <= n; ++i){
         r = /* Cons */[
           keys[i],
           r,
@@ -1233,9 +1233,9 @@ define(["exports", "../runtime/caml_obj", "../runtime/caml_builtin_exceptions", 
     
     function stats() {
       return /* record */[
-              table_count[0],
-              method_count[0],
-              inst_var_count[0]
+              /* classes */table_count[0],
+              /* methods */method_count[0],
+              /* inst_vars */inst_var_count[0]
             ];
     }
     
