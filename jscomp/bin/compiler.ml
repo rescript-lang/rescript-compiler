@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/27-16:55"]
+[@@@ocaml.doc "04/28-22:22"]
 include
   struct
     module Literals :
@@ -6351,7 +6351,8 @@ include
              failwith
                ("cmj files have incompatible versions, please rebuilt using the new compiler : "
                   ^ __LOC__)
-           else (input_value ic : cmj_table) : cmj_table)
+           else (let v: cmj_table = input_value ic in close_in ic; v) : 
+          cmj_table)
         let from_string s =
           (let magic_number = String.sub s 0 cmj_magic_number_length in
            if magic_number = cmj_magic_number
