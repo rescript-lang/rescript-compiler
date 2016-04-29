@@ -89,7 +89,7 @@ your feedback.
   Assume that you have `ocamlopt.opt`(the one which we just built) in the `PATH`
 
   ```sh
-  cd ../jscomp
+  cd ./jscomp
   make world
   ```
 
