@@ -248,8 +248,10 @@ io_test.cmo : ../lib/js.cmo
 io_test.cmx : ../lib/js.cmx
 js_bool_test.cmo : mt.cmi ../lib/js.cmo
 js_bool_test.cmx : mt.cmx ../lib/js.cmx
-js_date_test.cmo : mt.cmi ../lib/js_date.cmo
-js_date_test.cmx : mt.cmx ../lib/js_date.cmx
+js_date.cmo :
+js_date.cmx :
+js_date_test.cmo : mt.cmi js_date.cmo
+js_date_test.cmx : mt.cmx js_date.cmx
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmx : mt.cmx
 js_val.cmo :
@@ -850,8 +852,10 @@ io_test.cmo : ../lib/js.cmo
 io_test.cmj : ../lib/js.cmj
 js_bool_test.cmo : mt.cmi ../lib/js.cmo
 js_bool_test.cmj : mt.cmj ../lib/js.cmj
-js_date_test.cmo : mt.cmi ../lib/js_date.cmo
-js_date_test.cmj : mt.cmj ../lib/js_date.cmj
+js_date.cmo :
+js_date.cmj :
+js_date_test.cmo : mt.cmi js_date.cmo
+js_date_test.cmj : mt.cmj js_date.cmj
 js_obj_test.cmo : mt.cmi
 js_obj_test.cmj : mt.cmj
 js_val.cmo :

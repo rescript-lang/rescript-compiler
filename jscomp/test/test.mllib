@@ -189,6 +189,7 @@ string_literal_print_test
 js_bool_test
 class_type_ffi_test
 unsafe_ppx_test
+js_date
 js_date_test
 
 es6_module_test
