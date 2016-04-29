@@ -5,7 +5,7 @@
     "main": "arg.js",
     "scripts": 
     {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "mocha test/*test.js",
 
         "preinstall" : "ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc || echo 'check your compiler version if it is correct'"
     },

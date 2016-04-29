@@ -63,7 +63,9 @@ let from_file name : cmj_table =
       ("cmj files have incompatible versions, please rebuilt using the new compiler : " 
        ^ __LOC__)
   else 
-    (input_value ic  : cmj_table)
+    let v  : cmj_table = input_value ic in 
+    close_in ic ;
+    v 
 
 
 let from_string s : cmj_table = 
