@@ -83,11 +83,12 @@ let () =
 
     <div style="width: 50%;float:right"; >
         <textarea id="jscode#1" style="background-color: #008803">
-// Generated CODE, PLEASE EDIT WITH CARE
+// GENERATED CODE BY BUCKLESCRIPT VERSION 0.3 , PLEASE EDIT WITH CARE
 'use strict';
 
-var $$Array  = require("./stdlib/array.js");
-var $$String = require("./stdlib/string.js");
+var Curry    = require("./runtime/curry");
+var $$Array  = require("./stdlib/array");
+var $$String = require("./stdlib/string");
 
 function debug(x) {
   console.log("" + x);
@@ -104,14 +105,14 @@ function fib(n) {
     return 1;
   }
   else {
-    return fib(n - 1) + fib(n - 2);
+    return fib(n - 1 | 0) + fib(n - 2 | 0) | 0;
   }
 }
 
 function sum(n) {
   var v = 0;
-  for(var i = 0; i<= n; ++i){
-    v += i;
+  for(var i = 0; i <= n; ++i){
+    v = v + i | 0;
   }
   return v;
 }
@@ -123,8 +124,10 @@ function tail_sum(n) {
     var i = _i;
     var acc = _acc;
     if (i <= n) {
-      _i = i + 1;
-      _acc = acc + i;
+      _i = i + 1 | 0;
+      _acc = acc + i | 0;
+      continue ;
+      
     }
     else {
       return acc;
@@ -134,10 +137,9 @@ function tail_sum(n) {
 
 function map(f, param) {
   if (param) {
-    return [
-            /* Cons */0,
-            f(param[1]),
-            map(f, param[2])
+    return /* Cons */[
+            Curry._1(f, param[0]),
+            map(f, param[1])
           ];
   }
   else {
@@ -146,11 +148,11 @@ function map(f, param) {
 }
 
 function test_curry(x, y) {
-  return x + y;
+  return x + y | 0;
 }
 
 function f(param) {
-  return 32 + param;
+  return 32 + param | 0;
 }
 
 var hello_ocaml = /* array */[
