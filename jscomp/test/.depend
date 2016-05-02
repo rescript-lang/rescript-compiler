@@ -5,6 +5,7 @@ array_test.cmi :
 basic_module_test.cmi :
 const_block_test.cmi :
 demo_int_map.cmi :
+ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
 float_record.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
@@ -147,13 +148,17 @@ ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/filename.cmi ext_string.cmo
+    ../stdlib/filename.cmi ext_string.cmo ext_pervasives.cmi
 ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/filename.cmx ext_string.cmx
+    ../stdlib/filename.cmx ext_string.cmx ext_pervasives.cmx
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmo : lam_current_unit.cmo ../stdlib/format.cmi
 ext_log.cmx : lam_current_unit.cmx ../stdlib/format.cmx
+ext_pervasives.cmo : ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_pervasives.cmi
+ext_pervasives.cmx : ../stdlib/int32.cmx ../stdlib/format.cmx \
+    ext_pervasives.cmi
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/char.cmx \
@@ -751,13 +756,17 @@ ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/filename.cmi ext_string.cmo
+    ../stdlib/filename.cmi ext_string.cmo ext_pervasives.cmi
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/filename.cmj ext_string.cmj
+    ../stdlib/filename.cmj ext_string.cmj ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : lam_current_unit.cmo ../stdlib/format.cmi
 ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmj
+ext_pervasives.cmo : ../stdlib/int32.cmi ../stdlib/format.cmi \
+    ext_pervasives.cmi
+ext_pervasives.cmj : ../stdlib/int32.cmj ../stdlib/format.cmj \
+    ext_pervasives.cmi
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/char.cmj \

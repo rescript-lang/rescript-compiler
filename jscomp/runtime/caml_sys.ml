@@ -60,3 +60,6 @@ let caml_sys_random_seed () : nativeint array =
 let caml_sys_system_command () = 127
 
 let caml_sys_getcwd () = "/"
+
+let caml_sys_is_directory _s = 
+  raise @@ Failure "caml_sys_is_directory not implemented"

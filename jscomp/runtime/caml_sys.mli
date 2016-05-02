@@ -29,3 +29,5 @@ val  caml_sys_random_seed : unit -> nativeint array
 val caml_sys_system_command : unit -> int
 
 val caml_sys_getcwd : unit -> string 
+
+val caml_sys_is_directory : string -> bool 

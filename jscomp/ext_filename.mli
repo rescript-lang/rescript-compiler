@@ -38,3 +38,6 @@ val node_relative_path : string -> string -> string
   *)
 
 val chop_extension : ?loc:string -> string -> string
+
+
+val resolve : cwd:string -> string -> string

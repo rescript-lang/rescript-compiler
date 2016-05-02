@@ -51,3 +51,5 @@ let  is_pos_pow n =
       aux (c + 1) (Int32.shift_right n 1 )
     else raise M.E in 
   try aux 0 n  with M.E -> -1
+
+let failwithf fmt = Format.ksprintf failwith fmt
