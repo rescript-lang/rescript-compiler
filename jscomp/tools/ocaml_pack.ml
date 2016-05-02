@@ -1,6 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
+[@@@ocaml.doc "05/02-13:36"]
 include
   struct
     module Depend =
@@ -541,7 +542,11 @@ include
         [@@@ocaml.text
           "\n   known issues:\n   we take precedence of ml seriously, however, there is a case \n   1. module a does not depend on b \n   while interface a does depend on b \n   in this case, we put a before b which will cause a compilation error \n   (this does happens when user use polymorphic variants in the interface while does not refer module b in the implementation, while the interface does refer module b)\n\n   2. if we only take interface seriously, first the current worklist algorithm does not provide \n   [same level ] information, second the dependency captured by interfaces are very limited.\n   3. The solution would be combine the dependency of interfaces and implementations altogether, \n   we will get rid of some valid use cases, but it's worth \n   \n "]
       end 
-    module Ocaml_pack_main =
+    module Line_process :
+      sig
+        val read_lines : string -> string list[@@ocaml.doc
+                                                " Given a filename return a list of modules "]
+      end =
       struct
         let lexer = Genlex.make_lexer []
         let rec to_list acc stream =
@@ -571,6 +576,9 @@ include
                             else []) @ acc)))
             | exception End_of_file  -> (close_in chan; acc) in
           loop []
+      end 
+    module Ocaml_pack_main : sig  end =
+      struct
         let make_comment _loc str =
           {
             Parsetree.pstr_loc = _loc;
@@ -597,7 +605,7 @@ include
             if
               ((Array.length argv) = 2) &&
                 (Filename.check_suffix (argv.(1)) "mllib")
-            then read_lines (argv.(1))
+            then Line_process.read_lines (argv.(1))
             else
               Array.to_list
                 (Array.sub Sys.argv 1 ((Array.length Sys.argv) - 1)) in
@@ -650,5 +658,5 @@ include
                Printf.sprintf "%02d/%02d-%02d:%02d" (v.tm_mon + 1) v.tm_mday
                  v.tm_hour v.tm_min);
             str_item]
-      end
+      end 
   end
