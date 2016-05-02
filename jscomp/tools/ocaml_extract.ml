@@ -41,7 +41,8 @@ let merge (files : (string * file_kind * Depend.StringSet.t) list ) =
                      ) files  in tbl
 
 
-let sort_files_by_dependencies (files : (string * file_kind * Depend.StringSet.t) list)
+let sort_files_by_dependencies 
+    (files : (string * file_kind * Depend.StringSet.t) list)
     =
   let h : (string, Depend.StringSet.t) Hashtbl.t = merge files in
   let () = 
@@ -88,9 +89,97 @@ let sort_files_by_dependencies (files : (string * file_kind * Depend.StringSet.t
   done;
   result
 ;;
-        
+
+let _loc = Location.none 
+
+let assemble  ast_tbl  stack = 
+  let structure_items = ref [] in
+  let visited = Hashtbl.create 31 in
+  Stack.iter
+    (fun base  ->
+      match Hashtbl.find visited base with 
+      | exception Not_found ->
+          Hashtbl.add visited base ();
+          begin match Hashtbl.find_all ast_tbl base with
+            | (`ml (structure, _))::(`mli (signature, _))::[]
+            |(`mli (signature, _))::(`ml (structure, _))::[] ->
+              let v: Parsetree.structure_item =
+                {
+                  Parsetree.pstr_loc = _loc;
+                  pstr_desc =
+                    (Pstr_module
+                       {
+                         pmb_name =
+                           { txt = (String.capitalize base); loc = _loc
+                           };
+                         pmb_expr =
+                           {
+                             pmod_desc =
+                               (Pmod_constraint
+                                  ({
+                                    pmod_desc =
+                                      (Pmod_structure structure);
+                                    pmod_loc = _loc;
+                                    pmod_attributes = []
+                                  },
+                                    ({
+                                      pmty_desc =
+                                        (Pmty_signature signature);
+                                      pmty_loc = _loc;
+                                      pmty_attributes = []
+                                    } : Parsetree.module_type)));
+                             pmod_loc = _loc;
+                             pmod_attributes = []
+                           };
+                         pmb_attributes = [];
+                         pmb_loc = _loc
+                       })
+                } in
+              structure_items := (v :: (!structure_items))
+            | (`ml (structure, _))::[] ->
+              let v: Parsetree.structure_item =
+                {
+                  Parsetree.pstr_loc = _loc;
+                  pstr_desc =
+                    (Pstr_module
+                       {
+                         pmb_name =
+                           { txt = (String.capitalize base); loc = _loc
+                           };
+                         pmb_expr =
+                           {
+                             pmod_desc = (Pmod_structure structure);
+                             pmod_loc = _loc;
+                             pmod_attributes = []
+                           };
+                         pmb_attributes = [];
+                         pmb_loc = _loc
+                       })
+                } in
+              structure_items := (v :: (!structure_items))
+
+            | _ -> assert false
+          end
+      | _ -> () 
+    ) stack;
+  {
+    Parsetree.pstr_loc = _loc;
+    pstr_desc =
+      (Pstr_include
+         {
+           pincl_mod =
+             {
+               pmod_desc = (Pmod_structure ( !structure_items));
+               pmod_loc = _loc;
+               pmod_attributes = []
+             };
+           pincl_loc = _loc;
+           pincl_attributes = []
+         })
+  }
+
 let process arg_files  : Parsetree.structure_item =
-  (* let len = Array.length Sys.argv in *)
+
   let ast_tbl = Hashtbl.create 31 in
   let files_set = Depend.StringSet.of_list @@ arg_files in
   let () = files_set |> Depend.StringSet.iter (fun name ->
@@ -101,7 +190,7 @@ let process arg_files  : Parsetree.structure_item =
     if Filename.check_suffix name ".ml"
     then
       let ast = Parse.implementation lexbuf in
-      (Hashtbl.add ast_tbl base (`ml ast);
+      (Hashtbl.add ast_tbl base (`ml (ast , name));
        ml_file_dependencies (name, ast))
     else
       if Filename.check_suffix name ".mli"
@@ -109,20 +198,20 @@ let process arg_files  : Parsetree.structure_item =
         (if Depend.StringSet.mem  (Filename.chop_extension name ^ ".ml") files_set then
           match Parse.interface lexbuf with 
           | ast -> 
-              Hashtbl.add ast_tbl base (`mli ast);
+              Hashtbl.add ast_tbl base (`mli (ast, name));
               mli_file_dependencies (name, ast)
           | exception _ -> failwith (Printf.sprintf "failed parsing %s" name)
         else
           begin match Parse.interface lexbuf with 
           | ast -> 
               (* prerr_endline name; *)
-              Hashtbl.add ast_tbl base (`mli ast);
+              Hashtbl.add ast_tbl base (`mli (ast, name));
               mli_file_dependencies (name, ast);
               seek_in chan 0 ; 
               let lexbuf = Lexing.from_channel chan in 
               begin match  Parse.implementation lexbuf with
               | impl ->
-                  Hashtbl.add ast_tbl base (`ml impl);
+                  Hashtbl.add ast_tbl base (`ml (impl, name));
                   ml_file_dependencies 
                     (name, impl) (* Fake*)
               | exception _ -> failwith (Printf.sprintf "failed parsing %s as ml" name) 
@@ -133,95 +222,8 @@ let process arg_files  : Parsetree.structure_item =
         )
       else assert false) in
   
-  (let stack = sort_files_by_dependencies (!files) in
-  let visited = Hashtbl.create 31 in
-  let _loc = Location.none in
-  let structure_items = ref [] in
-  C.iter
-    (fun base  ->
-      match Hashtbl.find visited base with 
-      | exception Not_found ->
-          Hashtbl.add visited base ();
-                  (* prerr_endline base ; *)
-                  begin match Hashtbl.find_all ast_tbl base with
-                  | (`ml structure)::(`mli signature)::[]
-                  |(`mli signature)::(`ml structure)::[] ->
-                      let v: Parsetree.structure_item =
-                        {
-                         Parsetree.pstr_loc = _loc;
-                         pstr_desc =
-                         (Pstr_module
-                            {
-                             pmb_name =
-                             { txt = (String.capitalize base); loc = _loc
-                             };
-                             pmb_expr =
-                             {
-                              pmod_desc =
-                              (Pmod_constraint
-                                 ({
-                                  pmod_desc =
-                                  (Pmod_structure structure);
-                                  pmod_loc = _loc;
-                                  pmod_attributes = []
-                                },
-                                  ({
-                                   pmty_desc =
-                                   (Pmty_signature signature);
-                                   pmty_loc = _loc;
-                                   pmty_attributes = []
-                                 } : Parsetree.module_type)));
-                              pmod_loc = _loc;
-                              pmod_attributes = []
-                            };
-                             pmb_attributes = [];
-                             pmb_loc = _loc
-                           })
-                       } in
-                      structure_items := (v :: (!structure_items))
-                  | (`ml structure)::[] ->
-                      let v: Parsetree.structure_item =
-                        {
-                         Parsetree.pstr_loc = _loc;
-                         pstr_desc =
-                         (Pstr_module
-                            {
-                             pmb_name =
-                             { txt = (String.capitalize base); loc = _loc
-                             };
-                             pmb_expr =
-                             {
-                              pmod_desc = (Pmod_structure structure);
-                              pmod_loc = _loc;
-                              pmod_attributes = []
-                            };
-                             pmb_attributes = [];
-                             pmb_loc = _loc
-                           })
-                       } in
-                      structure_items := (v :: (!structure_items))
-
-                  | _ -> assert false
-                  end
-              | _ -> () 
-            ) stack;
-          (let final: Parsetree.structure_item =
-             {
-              Parsetree.pstr_loc = _loc;
-              pstr_desc =
-              (Pstr_include
-                 {
-                  pincl_mod =
-                  {
-                   pmod_desc = (Pmod_structure ((* List.rev *) !structure_items));
-                   pmod_loc = _loc;
-                   pmod_attributes = []
-                 };
-                  pincl_loc = _loc;
-                  pincl_attributes = []
-                })
-            } in
-           final))
+  assemble ast_tbl (sort_files_by_dependencies (!files))
+  
 
 
 (**
