@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "05/02-16:35"]
+[@@@ocaml.doc "05/02-17:10"]
 include
   struct
     module Depend :
@@ -329,6 +329,10 @@ include
           (string* file_kind* Depend.StringSet.t) list ->
             Depend.StringSet.elt C.t
         val process : string list -> Parsetree.structure_item
+        val process_as_string :
+          string list ->
+            [ `All of (string* string* string* string) 
+            | `Ml of (string* string) ] list
       end =
       struct
         module C = Stack
@@ -409,6 +413,18 @@ include
                 | exception Not_found  -> assert false))
             done;
           result
+        type 'a code_info = {
+          name: string;
+          content: string;
+          ast: 'a;}
+        type ml_info = Parsetree.structure code_info
+        type mli_info = Parsetree.signature code_info
+        let load_file f =
+          let ic = open_in f in
+          let n = in_channel_length ic in
+          let s = Bytes.create n in
+          really_input ic s 0 n; close_in ic; Bytes.unsafe_to_string s
+          [@@ocaml.doc " on 32 bit , there are 16M limitation "]
         let _loc = Location.none
         let assemble ast_tbl stack =
           let structure_items = ref [] in
@@ -419,8 +435,10 @@ include
                | exception Not_found  ->
                    (Hashtbl.add visited base ();
                     (match Hashtbl.find_all ast_tbl base with
-                     | (`ml (structure,_))::(`mli (signature,_))::[]
-                       |(`mli (signature,_))::(`ml (structure,_))::[] ->
+                     | (`ml { ast = structure;_})::(`mli { ast = signature;_})::[]
+                       |(`mli { ast = signature;_})::(`ml
+                                                        { ast = structure;_})::[]
+                         ->
                          let v: Parsetree.structure_item =
                            {
                              Parsetree.pstr_loc = _loc;
@@ -456,7 +474,7 @@ include
                                   })
                            } in
                          structure_items := (v :: (!structure_items))
-                     | (`ml (structure,_))::[] ->
+                     | (`ml { ast = structure;_})::[] ->
                          let v: Parsetree.structure_item =
                            {
                              Parsetree.pstr_loc = _loc;
@@ -497,57 +515,91 @@ include
                    pincl_attributes = []
                  })
           }
-        let process arg_files =
-          (let ast_tbl = Hashtbl.create 31 in
-           let files_set = Depend.StringSet.of_list @@ arg_files in
-           let () =
-             files_set |>
-               (Depend.StringSet.iter
-                  (fun name  ->
-                     let chan = open_in name in
-                     let lexbuf = Lexing.from_channel chan in
-                     let base = normalize name in
-                     if Filename.check_suffix name ".ml"
-                     then
-                       let ast = Parse.implementation lexbuf in
-                       (Hashtbl.add ast_tbl base (`ml (ast, name));
-                        ml_file_dependencies (name, ast))
-                     else
-                       if Filename.check_suffix name ".mli"
-                       then
-                         (if
-                            Depend.StringSet.mem
-                              ((Filename.chop_extension name) ^ ".ml")
-                              files_set
-                          then
-                            match Parse.interface lexbuf with
+        let assemble_as_string ast_tbl stack =
+          let structure_items = ref [] in
+          let visited = Hashtbl.create 31 in
+          Stack.iter
+            (fun base  ->
+               match Hashtbl.find visited base with
+               | exception Not_found  ->
+                   (Hashtbl.add visited base ();
+                    (match Hashtbl.find_all ast_tbl base with
+                     | (`ml { content = ml_content; name = ml_name })::(
+                       `mli { content = mli_content; name = mli_name })::[]
+                       |(`mli { content = mli_content; name = mli_name })::(
+                       `ml { content = ml_content; name = ml_name })::[] ->
+                         structure_items :=
+                           ((`All
+                               (ml_content, ml_name, mli_content, mli_name))
+                           :: (!structure_items))
+                     | (`ml { content = ml_content; name })::[] ->
+                         structure_items := ((`Ml (ml_content, name)) ::
+                           (!structure_items))
+                     | _ -> assert false))
+               | _ -> ()) stack;
+          !structure_items
+        let prepare arg_files =
+          let ast_tbl = Hashtbl.create 31 in
+          let files_set = Depend.StringSet.of_list @@ arg_files in
+          let () =
+            files_set |>
+              (Depend.StringSet.iter
+                 (fun name  ->
+                    let content = load_file name in
+                    let base = normalize name in
+                    if Filename.check_suffix name ".ml"
+                    then
+                      let ast =
+                        Parse.implementation (Lexing.from_string content) in
+                      (Hashtbl.add ast_tbl base (`ml { ast; name; content });
+                       ml_file_dependencies (name, ast))
+                    else
+                      if Filename.check_suffix name ".mli"
+                      then
+                        (if
+                           Depend.StringSet.mem
+                             ((Filename.chop_extension name) ^ ".ml")
+                             files_set
+                         then
+                           match Parse.interface (Lexing.from_string content)
+                           with
+                           | ast ->
+                               (Hashtbl.add ast_tbl base
+                                  (`mli { ast; name; content });
+                                mli_file_dependencies (name, ast))
+                           | exception _ ->
+                               failwith
+                                 (Printf.sprintf "failed parsing %s" name)
+                         else
+                           (match Parse.interface
+                                    (Lexing.from_string content)
+                            with
                             | ast ->
-                                (Hashtbl.add ast_tbl base (`mli (ast, name));
-                                 mli_file_dependencies (name, ast))
+                                (Hashtbl.add ast_tbl base
+                                   (`mli { ast; name; content });
+                                 mli_file_dependencies (name, ast);
+                                 (match Parse.implementation
+                                          (Lexing.from_string content)
+                                  with
+                                  | ast ->
+                                      (Hashtbl.add ast_tbl base
+                                         (`ml { ast; name; content });
+                                       ml_file_dependencies (name, ast))
+                                  | exception _ ->
+                                      failwith
+                                        (Printf.sprintf
+                                           "failed parsing %s as ml" name)))
                             | exception _ ->
                                 failwith
-                                  (Printf.sprintf "failed parsing %s" name)
-                          else
-                            (match Parse.interface lexbuf with
-                             | ast ->
-                                 (Hashtbl.add ast_tbl base (`mli (ast, name));
-                                  mli_file_dependencies (name, ast);
-                                  seek_in chan 0;
-                                  (let lexbuf = Lexing.from_channel chan in
-                                   match Parse.implementation lexbuf with
-                                   | impl ->
-                                       (Hashtbl.add ast_tbl base
-                                          (`ml (impl, name));
-                                        ml_file_dependencies (name, impl))
-                                   | exception _ ->
-                                       failwith
-                                         (Printf.sprintf
-                                            "failed parsing %s as ml" name)))
-                             | exception _ ->
-                                 failwith
-                                   (Printf.sprintf "failed parsing %s" name)))
-                       else assert false)) in
-           assemble ast_tbl (sort_files_by_dependencies (!files)) : Parsetree.structure_item)
+                                  (Printf.sprintf "failed parsing %s" name)))
+                      else assert false)) in
+          (ast_tbl, (sort_files_by_dependencies (!files)))
+        let process arg_files =
+          (let (ast_tbl,stack_files) = prepare arg_files in
+           assemble ast_tbl stack_files : Parsetree.structure_item)
+        let process_as_string arg_files =
+          let (ast_tbl,stack_files) = prepare arg_files in
+          assemble_as_string ast_tbl stack_files
         [@@@ocaml.text
           "\n   known issues:\n   we take precedence of ml seriously, however, there is a case \n   1. module a does not depend on b \n   while interface a does depend on b \n   in this case, we put a before b which will cause a compilation error \n   (this does happens when user use polymorphic variants in the interface while does not refer module b in the implementation, while the interface does refer module b)\n\n   2. if we only take interface seriously, first the current worklist algorithm does not provide \n   [same level ] information, second the dependency captured by interfaces are very limited.\n   3. The solution would be combine the dependency of interfaces and implementations altogether, \n   we will get rid of some valid use cases, but it's worth \n   \n "]
       end 
