@@ -147,7 +147,7 @@ end)
 
 let buckle_script_flags = 
   ("-npm-package", Arg.String Js_config.add_include_path, 
-   " set package names, for example -js-package bs-platform "  )
+   " set package names, for example bs-platform "  )
   :: ("-js-module", Arg.String Js_config.cmd_set_module, 
     " set module system: commonjs (default), amdjs, google:package_name")
   :: ("-js-gen-tds", Arg.Set Js_config.default_gen_tds, 
