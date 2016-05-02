@@ -19,6 +19,8 @@ let make_comment _loc str =
                          }, []))
                   }])) : Parsetree.attribute))
       }
+
+
 let _ = 
   let _loc = Location.none in
   let argv = Sys.argv in
@@ -29,58 +31,40 @@ let _ =
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
   in 
+  let tasks = Ocaml_extract.process_as_string files in 
+  let emit name = 
+    output_string stdout "#1 \"";
+    output_string stdout name ;
+    output_string stdout "\"\n" 
+  in
+  tasks |> List.iter (fun t ->
+      match t with
+      | `All (base, ml_content,ml_name, mli_content, mli_name) -> 
+        let base = String.capitalize base in 
+        output_string stdout "module ";
+        output_string stdout base ; 
+        output_string stdout " : sig \n";
 
-  let str_item  = Ocaml_extract.process files  in
-  Pprintast.structure Format.std_formatter 
-    [
-      {
-        Parsetree.pstr_loc = _loc;
-        pstr_desc =
-          (Pstr_attribute
-             (({ loc = _loc; txt = "warning" },
-               (PStr
-                  [{
-                    Parsetree.pstr_loc = _loc;
-                    pstr_desc =
-                      (Pstr_eval
-                         ({
-                           pexp_loc = _loc;
-                           pexp_desc =
-                             (Pexp_constant (** my personal preferrence *)
-                                (Const_string ("-a", None)));
-                           pexp_attributes = []
-                         }, []))
-                  }])) : Parsetree.attribute))
-      } ;
-      make_comment _loc {|
- BuckleScript compiler
- Copyright (C) 2015-2016 Bloomberg Finance L.P.
+        emit mli_name ;
+        output_string stdout mli_content;
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation, with linking exception;
- either version 2.1 of the License, or (at your option) any later version.
+        output_string stdout "\nend = struct\n";
+        emit ml_name ;
+        output_string stdout ml_content;
+        output_string stdout "\nend\n"
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Lesser General Public License for more details.
+      | `Ml (base, ml_content, ml_name) -> 
+        let base = String.capitalize base in 
+        output_string stdout "module \n";
+        output_string stdout base ; 
+        output_string stdout "\n= struct\n";
 
- You should have received a copy of the GNU Lesser General Public License
- along with this program; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+        emit ml_name;
+        output_string stdout ml_content;
 
+        output_string stdout "\nend\n"
 
- Author: Hongbo Zhang  
-
-|};
-      make_comment _loc
-        (let v = Unix.(localtime (gettimeofday ())) in
-         Printf.sprintf "%02d/%02d-%02d:%02d" 
-           (v.tm_mon + 1) v.tm_mday v.tm_hour v.tm_min)
-      ;
-      str_item
-    ] 
+    )
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -no-hygiene -cflags -annot -use-ocamlfind -pkg compiler-libs.common ocaml_pack_main.byte " *)

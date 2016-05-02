@@ -16,3 +16,8 @@ val sort_files_by_dependencies :
       Depend.StringSet.elt C.t
 
 val process : string list -> Parsetree.structure_item
+
+val process_as_string : 
+  string list ->  
+  [`All of string * string * string * string * string 
+  |`Ml of string *  string * string ] list 
