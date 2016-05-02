@@ -213,10 +213,11 @@ let assemble_as_string  ast_tbl  stack =
             | [`mli {content = mli_content; name = mli_name} ;
               `ml { content = ml_content; name = ml_name}] ->
               structure_items := 
-                `All (ml_content,ml_name, mli_content, mli_name)
+                `All (base, ml_content,ml_name, mli_content, mli_name)
                 :: !structure_items
             | `ml {content = ml_content; name}::[] ->
-              structure_items := `Ml (ml_content, name) :: !structure_items
+              structure_items := 
+                `Ml (base, ml_content, name) :: !structure_items
             | _ -> assert false
           end
       | _ -> () 
