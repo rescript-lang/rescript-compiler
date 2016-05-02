@@ -1,2 +1,6 @@
 #!/bin/sh
-./ocaml_pack depend.ml ocaml_extract.ml ocaml_extract.mli ocaml_pack_main.ml > ocaml_pack.ml
+
+## build bundler first
+./pack.sh
+## bootstrap, if successful, there should be no diff with regard to `ocaml_pack.ml
+./repack.sh
