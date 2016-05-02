@@ -144,9 +144,12 @@ module Options = Main_args.Make_bytecomp_options (struct
   let anonymous = anonymous
 end)
 
+let add_include_path s = 
+  let path = Ext_filename.resolve (Sys.getcwd ()) s  in 
+  Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 let buckle_script_flags = 
-  ("-npm-package", Arg.String Js_config.add_include_path, 
+  ("-npm-package", Arg.String add_include_path, 
    " set package names, for example bs-platform "  )
   :: ("-js-module", Arg.String Js_config.cmd_set_module, 
     " set module system: commonjs (default), amdjs, google:package_name")

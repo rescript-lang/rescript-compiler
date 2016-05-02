@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "04/28-22:26"]
+[@@@ocaml.doc "05/02-14:51"]
 include
   struct
     module Literals :
@@ -2116,6 +2116,46 @@ include
             if Ident_set.mem id variables then v := (Ident_set.add id (!v)) in
           ignore @@ (((new count_deps) add)#expression lam); !v
       end 
+    module Ext_pervasives :
+      sig
+        [@@@ocaml.text
+          " Extension to standard library [Pervavives] module, safe to open \n  "]
+        external reraise : exn -> 'a = "%reraise"
+        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+        val is_pos_pow : Int32.t -> int
+        val failwithf : ('a,unit,string,'b) format4 -> 'a
+      end =
+      struct
+        external reraise : exn -> 'a = "%reraise"
+        let finally v f action =
+          match f v with
+          | exception e -> (action v; reraise e)
+          | e -> (action v; e)
+        let with_file_as_chan filename f =
+          let chan = open_out filename in finally chan f close_out
+        let with_file_as_pp filename f =
+          let chan = open_out filename in
+          finally chan
+            (fun chan  ->
+               let fmt = Format.formatter_of_out_channel chan in
+               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
+        let is_pos_pow n =
+          let module M = struct exception E end in
+            let rec aux c (n : Int32.t) =
+              if n <= 0l
+              then (-2)
+              else
+                if n = 1l
+                then c
+                else
+                  if (Int32.logand n 1l) = 0l
+                  then aux (c + 1) (Int32.shift_right n 1)
+                  else raise M.E in
+            try aux 0 n with | M.E  -> (-1)
+        let failwithf fmt = Format.ksprintf failwith fmt
+      end 
     module Ext_filename :
       sig
         [@@@ocaml.text
@@ -2125,6 +2165,7 @@ include
         val node_relative_path : string -> string -> string[@@ocaml.doc
                                                              " TODO Change the module name, this code is not really an extension of the standard \n    library but rather specific to JS Module name convention. \n  "]
         val chop_extension : ?loc:string -> string -> string
+        val resolve : cwd:string -> string -> string
       end =
       struct
         let node_sep = "/"[@@ocaml.doc
@@ -2189,6 +2230,21 @@ include
               ^ (node_sep ^ (try_chop_extension (Filename.basename path2)))
           [@@ocaml.doc
             " path2: a/b \n    path1: a \n    result:  ./b \n    TODO: [Filename.concat] with care\n "]
+        let resolve ~cwd  module_name =
+          let rec aux origin cwd module_name =
+            let v =
+              Filename.concat (Filename.concat cwd node_modules) module_name in
+            if Sys.is_directory v
+            then v
+            else
+              (let cwd' = Filename.dirname cwd in
+               if (String.length cwd') < (String.length cwd)
+               then aux origin cwd' module_name
+               else
+                 Ext_pervasives.failwithf "%s not found in %s" module_name
+                   origin) in
+          aux cwd cwd module_name[@@ocaml.doc
+                                   " [resolve cwd module_name], [cwd] is current working directory, absolute path\n"]
       end 
     module Lam_util :
       sig
@@ -3306,44 +3362,6 @@ include
               (List.for_all is_constant xs) && (is_constant tag)
           | Bin (op,a,b) -> (is_constant a) && (is_constant b)
           | _ -> false
-      end 
-    module Ext_pervasives :
-      sig
-        [@@@ocaml.text
-          " Extension to standard library [Pervavives] module, safe to open \n  "]
-        external reraise : exn -> 'a = "%reraise"
-        val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
-        val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
-        val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
-        val is_pos_pow : Int32.t -> int
-      end =
-      struct
-        external reraise : exn -> 'a = "%reraise"
-        let finally v f action =
-          match f v with
-          | exception e -> (action v; reraise e)
-          | e -> (action v; e)
-        let with_file_as_chan filename f =
-          let chan = open_out filename in finally chan f close_out
-        let with_file_as_pp filename f =
-          let chan = open_out filename in
-          finally chan
-            (fun chan  ->
-               let fmt = Format.formatter_of_out_channel chan in
-               let v = f fmt in Format.pp_print_flush fmt (); v) close_out
-        let is_pos_pow n =
-          let module M = struct exception E end in
-            let rec aux c (n : Int32.t) =
-              if n <= 0l
-              then (-2)
-              else
-                if n = 1l
-                then c
-                else
-                  if (Int32.logand n 1l) = 0l
-                  then aux (c + 1) (Int32.shift_right n 1)
-                  else raise M.E in
-            try aux 0 n with | M.E  -> (-1)
       end 
     module Js_exp_make :
       sig
@@ -6591,6 +6609,10 @@ include
               (lazy
                  (Js_cmj_format.from_string
                     "BUCKLE20160310\132\149\166\190\000\000\000\144\000\000\000\028\000\000\000g\000\000\000[\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@A@@")));
+            ("caml_basic.cmj",
+              (lazy
+                 (Js_cmj_format.from_string
+                    "BUCKLE20160310\132\149\166\190\000\000\001\143\000\000\000\129\000\000\001\160\000\000\001\145\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\254!x@\160\176\001\003\255!y@@@@\144\179@\004\b\166\181@\160\"::A@\160\144\004\r\160\144\004\012@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\004\001!x@@@@\144\179@\004\005\188\144\004\006\166\155\240%false@A @\160\160\160&bs.val\176\192%js.ml\000G\001\bl\001\b\147\192\004\002\000G\001\bl\001\b\153@\144@@\144\176\179\144\176\001\004\b'boolean@@\144@\002\005\245\225\000\001\004\015@\166\155\240$true@A\004\021@\160\160\160&bs.val\176\192\004\020\000F\001\b?\001\bd\192\004\021\000F\001\b?\001\bj@\144@@\144\176\179\004\019@\144@\002\005\245\225\000\001\004\012@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\179@\004\005\188\144\004\006\166\155\0042@\166\155\004\031@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\179@\004\005\166\181@\160$SomeA@\160\144\004\n@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@@")));
             ("caml_builtin_exceptions.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -6662,7 +6684,7 @@ include
             ("caml_sys.cmj",
               (lazy
                  (Js_cmj_format.from_string
-                    "BUCKLE20160310\132\149\166\190\000\000\001\203\000\000\000r\000\000\001\139\000\000\001s\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\003%param@@@A\144\179@\004\005\166\156@\160\166\147\176T)Not_foundC@@\208@/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\003\255\004\019@@@@\144\179@\004\004\145\144\162!/@@AB/caml_sys_getenv\160@\144\179@\160\176\001\003\254$prim@@\166\155\2401$$caml_sys_getenvAA @\160\160\160'bs.call\176\192+caml_sys.mle\001\004\216\001\004\221\192\004\002e\001\004\216\001\004\228@\144@\160\160\160(bs.local\176\192\004\te\001\004\216\001\004\234\192\004\ne\001\004\216\001\004\242@\144@@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\t\176\179\004\006@\144@\002\005\245\225\000\001\003\012@\002\005\245\225\000\001\003\015\160\144\004'@\208\208@4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\001\004O@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\000\004X@@@@\144\179@\004\004\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\002\004e@@@@@@CD\144 @")));
+                    "BUCKLE20160310\132\149\166\190\000\000\002B\000\000\000\141\000\000\001\233\000\000\001\200\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\006%param@@@A\144\179@\004\005\166\156@\160\166\147\176T)Not_foundC@@\208@/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\002\004\019@@@@\144\179@\004\004\145\144\162!/@@AB/caml_sys_getenv\160@\144\179@\160\176\001\004\000$prim@@\166\155\2401$$caml_sys_getenvAA @\160\160\160'bs.call\176\192+caml_sys.mle\001\004\216\001\004\221\192\004\002e\001\004\216\001\004\228@\144@\160\160\160(bs.local\176\192\004\te\001\004\216\001\004\234\192\004\ne\001\004\216\001\004\242@\144@@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\t\176\179\004\006@\144@\002\005\245\225\000\001\003\012@\002\005\245\225\000\001\003\015\160\144\004'@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\255\"_s@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\004\004j@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\003\004s@@@@\144\179@\004\004\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\005\004\128@@@@@@CD\144 @")));
             ("caml_utils.cmj",
               (lazy
                  (Js_cmj_format.from_string
@@ -7633,8 +7655,8 @@ include
                Js_of_lam_tuple.make
                  [E.str "cmd"; Js_of_lam_array.make_array NA Pgenarray []]
            | "caml_sys_time"|"caml_sys_random_seed"|"caml_sys_getenv"
-             |"caml_sys_system_command"|"caml_sys_getcwd" ->
-               call Js_config.sys
+             |"caml_sys_system_command"|"caml_sys_getcwd"
+             |"caml_sys_is_directory" -> call Js_config.sys
            | "caml_lex_engine"|"caml_new_lex_engine" -> call Js_config.lexer
            | "caml_parse_engine"|"caml_set_parser_trace" ->
                call Js_config.parser
@@ -13200,7 +13222,13 @@ include
                                             let _dinstr = set dump_instr
                                             let anonymous = anonymous
                                           end)
+        let add_include_path s =
+          let path = Ext_filename.resolve (Sys.getcwd ()) s in
+          Clflags.include_dirs := (path :: (!Clflags.include_dirs))
         let buckle_script_flags =
+          ("-npm-package", (Arg.String add_include_path),
+            " set package names, for example bs-platform ")
+          ::
           ("-js-module", (Arg.String Js_config.cmd_set_module),
             " set module system: commonjs (default), amdjs, google:package_name")
           ::

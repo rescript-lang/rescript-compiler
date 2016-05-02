@@ -121,9 +121,6 @@ let stdlib_set = String_set.of_list [
     "pervasives"
 ]
 
-let add_include_path s = 
-  let path = Ext_filename.resolve (Sys.getcwd ()) s  in 
-  Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 let builtin_exceptions = "Caml_builtin_exceptions"
 let exceptions = "Caml_exceptions"
