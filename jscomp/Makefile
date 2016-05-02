@@ -48,7 +48,7 @@ snapshotcmj:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 stdlib:
 	cd stdlib && ./build.sh
@@ -63,7 +63,7 @@ stdlib:
 
 world:
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
@@ -80,7 +80,7 @@ world:
 
 world-test:
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 100 -w -a -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
