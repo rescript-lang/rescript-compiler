@@ -1,7 +1,7 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "05/02-13:36"]
+[@@@ocaml.doc "05/02-14:00"]
 include
   struct
     module Depend =
@@ -559,23 +559,42 @@ include
           | (Ident v|Kwd v)::_ -> Some v
           | (Int _|Float _|Char _|String _)::_ -> assert false
           | [] -> None
-        let read_lines file =
+        let rev_lines_of_file file =
           let chan = open_in file in
           let rec loop acc =
             match input_line chan with
-            | line ->
-                (match process_line line with
-                 | None  -> loop acc
-                 | Some f ->
-                     loop
-                       ((if Sys.file_exists (f ^ ".mli")
-                         then [f ^ ".mli"]
-                         else []) @
-                          ((if Sys.file_exists (f ^ ".ml")
-                            then [f ^ ".ml"]
-                            else []) @ acc)))
+            | line -> loop (line :: acc)
             | exception End_of_file  -> (close_in chan; acc) in
           loop []
+        let rec filter_map (f : 'a -> 'b option) xs =
+          match xs with
+          | [] -> []
+          | y::ys ->
+              (match f y with
+               | None  -> filter_map f ys
+               | Some z -> z :: (filter_map f ys))
+        let trim s =
+          let i = ref 0 in
+          let j = String.length s in
+          while
+            ((!i) < j) &&
+              ((let u = s.[!i] in (u = '\t') || ((u = '\n') || (u = ' '))))
+            do incr i done;
+          (let k = ref (j - 1) in
+           while
+             ((!k) >= (!i)) &&
+               ((let u = s.[!k] in (u = '\t') || ((u = '\n') || (u = ' '))))
+             do decr k done;
+           String.sub s (!i) (((!k) - (!i)) + 1))
+        let (@>) v acc = if Sys.file_exists v then v :: acc else acc
+        let read_lines file =
+          (file |> rev_lines_of_file) |>
+            (List.fold_left
+               (fun acc  ->
+                  fun f  ->
+                    match process_line f with
+                    | None  -> acc
+                    | Some f -> (f ^ ".mli") @> ((f ^ ".ml") @> acc)) [])
       end 
     module Ocaml_pack_main : sig  end =
       struct
