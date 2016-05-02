@@ -34,6 +34,7 @@ val default_gen_tds : bool ref
 val runtime_set : String_set.t
 val stdlib_set : String_set.t
 
+val add_include_path : string -> unit
 val block : string
 val int32 : string
 val gc : string 

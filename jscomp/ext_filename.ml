@@ -120,3 +120,19 @@ let node_relative_path path1 path2 =
        (try_chop_extension (absolute_path path1))
     ) ^ node_sep ^
     (try_chop_extension (Filename.basename path2))
+
+
+(** [resolve cwd module_name], [cwd] is current working directory, absolute path
+*)
+let  resolve ~cwd module_name = 
+  let rec aux origin cwd module_name = 
+    let v = Filename.concat (Filename.concat cwd node_modules) module_name 
+    in 
+    if Sys.is_directory v then v 
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux origin   cwd' module_name
+      else Ext_pervasives.failwithf "%s not found in %s" module_name origin 
+  in
+  aux cwd cwd module_name

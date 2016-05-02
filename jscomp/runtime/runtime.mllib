@@ -30,3 +30,4 @@ js_error
 curry
 block
 js_primitive
+caml_basic

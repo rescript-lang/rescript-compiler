@@ -31,3 +31,5 @@ val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
 val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
 
 val is_pos_pow : Int32.t -> int
+
+val failwithf : ('a, unit, string, 'b) format4 -> 'a
