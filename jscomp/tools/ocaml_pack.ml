@@ -1,10 +1,20 @@
 [@@@warning "-a"]
 [@@@ocaml.doc
   "\n BuckleScript compiler\n Copyright (C) 2015-2016 Bloomberg Finance L.P.\n\n This program is free software; you can redistribute it and/or modify\n it under the terms of the GNU Lesser General Public License as published by\n the Free Software Foundation, with linking exception;\n either version 2.1 of the License, or (at your option) any later version.\n\n This program is distributed in the hope that it will be useful,\n but WITHOUT ANY WARRANTY; without even the implied warranty of\n MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n GNU Lesser General Public License for more details.\n\n You should have received a copy of the GNU Lesser General Public License\n along with this program; if not, write to the Free Software\n Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.\n\n\n Author: Hongbo Zhang  \n\n"]
-[@@@ocaml.doc "05/02-14:00"]
+[@@@ocaml.doc "05/02-14:12"]
 include
   struct
-    module Depend =
+    module Depend :
+      sig
+        [@@@ocaml.text " Module dependencies. "]
+        module StringSet : (Set.S with type  elt =  string)
+        val free_structure_names : StringSet.t ref
+        val open_module : StringSet.t -> Longident.t -> unit
+        val add_use_file :
+          StringSet.t -> Parsetree.toplevel_phrase list -> unit
+        val add_signature : StringSet.t -> Parsetree.signature -> unit
+        val add_implementation : StringSet.t -> Parsetree.structure -> unit
+      end =
       struct
         open Asttypes
         open Location
@@ -297,7 +307,7 @@ include
           | Pcf_initializer e -> add_expr bv e
           | Pcf_attribute _|Pcf_extension _ -> ()
         and add_class_declaration bv decl = add_class_expr bv decl.pci_expr
-      end
+      end 
     module Ocaml_extract :
       sig
         module C = Stack
@@ -548,17 +558,6 @@ include
                                                 " Given a filename return a list of modules "]
       end =
       struct
-        let lexer = Genlex.make_lexer []
-        let rec to_list acc stream =
-          match Stream.next stream with
-          | exception _ -> List.rev acc
-          | v -> to_list (v :: acc) stream
-        let process_line line =
-          match to_list [] (lexer (Stream.of_string line)) with
-          | (Ident "#")::_ -> None
-          | (Ident v|Kwd v)::_ -> Some v
-          | (Int _|Float _|Char _|String _)::_ -> assert false
-          | [] -> None
         let rev_lines_of_file file =
           let chan = open_in file in
           let rec loop acc =
@@ -586,6 +585,12 @@ include
                ((let u = s.[!k] in (u = '\t') || ((u = '\n') || (u = ' '))))
              do decr k done;
            String.sub s (!i) (((!k) - (!i)) + 1))
+        let process_line line =
+          let line = trim line in
+          let len = String.length line in
+          if len = 0
+          then None
+          else (match line.[0] with | '#' -> None | _ -> Some line)
         let (@>) v acc = if Sys.file_exists v then v :: acc else acc
         let read_lines file =
           (file |> rev_lines_of_file) |>

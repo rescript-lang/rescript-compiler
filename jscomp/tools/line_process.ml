@@ -1,18 +1,11 @@
 
-let lexer = Genlex.make_lexer [] (* poor man *)
+(* let lexer = Genlex.make_lexer [] (\* poor man *\) *)
 
-let rec to_list acc stream = 
-  match Stream.next stream with 
-  | exception _ -> List.rev acc 
-  | v -> to_list (v::acc) stream 
+(* let rec to_list acc stream =  *)
+(*   match Stream.next stream with  *)
+(*   | exception _ -> List.rev acc  *)
+(*   | v -> to_list (v::acc) stream  *)
  
-let process_line line = 
-  match to_list [] (lexer (Stream.of_string line)) with
-  | Ident "#" :: _ -> None
-  | (Ident v|Kwd v) :: _ -> Some v 
-  | (Int _ | Float _ | Char _ | String _ )  :: _ -> 
-      assert false 
-  | [] -> None 
 
 let rev_lines_of_file file = 
   let chan = open_in file in
@@ -45,6 +38,22 @@ let trim s =
   String.sub s !i (!k - !i + 1)
 
 
+(* let process_line line =  *)
+(*   match to_list [] (lexer (Stream.of_string line)) with *)
+(*   | Ident "#" :: _ -> None *)
+(*   | (Ident v|Kwd v) :: _ -> Some v  *)
+(*   | (Int _ | Float _ | Char _ | String _ )  :: _ ->  *)
+(*       assert false  *)
+(*   | [] -> None  *)
+
+let process_line line = 
+  let line = trim line in 
+  let len = String.length line in 
+  if len = 0 then None
+  else 
+    match line.[0] with 
+    | '#' -> None
+    | _ -> Some line 
 
 let (@>) v acc = 
   if Sys.file_exists v then 
