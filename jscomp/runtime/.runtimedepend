@@ -1,6 +1,7 @@
 block.cmi :
 caml_array.cmi :
 caml_backtrace.cmi :
+caml_basic.cmi : js.cmo
 caml_builtin_exceptions.cmi :
 caml_exceptions.cmi : caml_builtin_exceptions.cmi
 caml_float.cmi :
@@ -27,6 +28,8 @@ caml_array.cmo : js.cmo caml_array.cmi
 caml_array.cmx : js.cmx caml_array.cmi
 caml_backtrace.cmo : caml_backtrace.cmi
 caml_backtrace.cmx : caml_backtrace.cmi
+caml_basic.cmo : js.cmo caml_basic.cmi
+caml_basic.cmx : js.cmx caml_basic.cmi
 caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
 caml_builtin_exceptions.cmx : caml_builtin_exceptions.cmi
 caml_exceptions.cmo : caml_builtin_exceptions.cmi caml_exceptions.cmi
@@ -85,6 +88,8 @@ caml_array.cmo : js.cmo caml_array.cmi
 caml_array.cmj : js.cmj caml_array.cmi
 caml_backtrace.cmo : caml_backtrace.cmi
 caml_backtrace.cmj : caml_backtrace.cmi
+caml_basic.cmo : js.cmo caml_basic.cmi
+caml_basic.cmj : js.cmj caml_basic.cmi
 caml_builtin_exceptions.cmo : caml_builtin_exceptions.cmi
 caml_builtin_exceptions.cmj : caml_builtin_exceptions.cmi
 caml_exceptions.cmo : caml_builtin_exceptions.cmi caml_exceptions.cmi
