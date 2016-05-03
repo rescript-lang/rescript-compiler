@@ -31,6 +31,9 @@
 
 (** Extension to the standard library [String] module, avoid locale sensitivity *) 
 
+
+val trim : string -> string 
+
 val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 (** default is false *)
 

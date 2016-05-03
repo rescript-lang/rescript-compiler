@@ -25,47 +25,75 @@ let rec filter_map (f: 'a -> 'b option) xs =
       | Some z -> z :: filter_map f ys
       end
 
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  let ic = open_in f in
+  let n = in_channel_length ic in
+  let s = Bytes.create n in
+  really_input ic s 0 n;
+  close_in ic;
+  Bytes.unsafe_to_string s
+
+let (@>) (b, v) acc = 
+  if b then 
+    v :: acc 
+  else
+      acc 
 
 
-(* let process_line line =  *)
-(*   match to_list [] (lexer (Stream.of_string line)) with *)
-(*   | Ident "#" :: _ -> None *)
-(*   | (Ident v|Kwd v) :: _ -> Some v  *)
-(*   | (Int _ | Float _ | Char _ | String _ )  :: _ ->  *)
-(*       assert false  *)
-(*   | [] -> None  *)
+let (//) = Filename.concat
 
-let process_line line = 
-  let line = trim line in 
+let rec process_line cwd filedir  line = 
+  let line = Ext_string.trim line in 
   let len = String.length line in 
-  if len = 0 then None
+  if len = 0 then []
   else 
     match line.[0] with 
-    | '#' -> None
-    | _ -> Some line 
+    | '#' -> []
+    | _ -> 
+      let segments = 
+        Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line 
+      in
 
-let (@>) v acc = 
-  if Sys.file_exists v then 
-    v :: acc 
-  else acc 
+      begin 
+        match segments with 
+        | ["include" ;  path ]
+          ->  
+          (* prerr_endline path;  *)
+          read_lines cwd  (filedir// path)
+        | [ x ]  -> 
+          let ml = filedir // x ^ ".ml" in 
+          let mli = filedir // x ^ ".mli" in 
+          let ml_exists, mli_exists = Sys.file_exists ml , Sys.file_exists mli in 
+          if not ml_exists && not mli_exists then 
+            begin 
+              prerr_endline (filedir //x ^ " not exists"); 
+              []
+            end
+          else 
+            (ml_exists, ml) @> (mli_exists , mli) @> []            
 
-let read_lines file = 
+        | _ 
+          ->  Ext_pervasives.failwithf "invalid line %s" line
+      end
+
+(* example 
+   {[ 
+     Line_process.read_lines "." "./tools/tools.mllib" 
+   ]} 
+
+   TODO: we can only concat (dir/file) not (dir/dir)
+   {[
+     Filename.concat "/bb/x/" "/bb/x/";;
+   ]}
+*)
+and read_lines cwd file = 
+
   file 
   |> rev_lines_of_file 
-  |> List.fold_left (fun acc f -> 
-      match process_line f with 
-      | None -> acc 
-      | Some f -> 
-         (f ^ ".mli") @> (f ^ ".ml") @> acc
+  |> List.fold_left (fun acc f ->
+      let filedir  =   Filename.dirname file in
+      let extras = process_line  cwd filedir f in 
+      extras  @ acc       
     ) []

@@ -1,5 +1,633 @@
+module Ext_bytes : sig 
+#1 "ext_bytes.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+(** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
+
+val escaped : bytes -> bytes
+
+end = struct
+#1 "ext_bytes.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+external char_code: char -> int = "%identity"
+external char_chr: int -> char = "%identity"
+
+let escaped s =
+  let n = ref 0 in
+  for i = 0 to Bytes.length s - 1 do
+    n := !n +
+      (match Bytes.unsafe_get s i with
+       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> 2
+       | ' ' .. '~' -> 1
+       | _ -> 4)
+  done;
+  if !n = Bytes.length s then Bytes.copy s else begin
+    let s' = Bytes.create !n in
+    n := 0;
+    for i = 0 to Bytes.length s - 1 do
+      begin match Bytes.unsafe_get s i with
+      | ('"' | '\\') as c ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n c
+      | '\n' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'n'
+      | '\t' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 't'
+      | '\r' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'r'
+      | '\b' ->
+          Bytes.unsafe_set s' !n '\\'; incr n; Bytes.unsafe_set s' !n 'b'
+      | (' ' .. '~') as c -> Bytes.unsafe_set s' !n c
+      | c ->
+          let a = char_code c in
+          Bytes.unsafe_set s' !n '\\';
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a / 100));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + (a / 10) mod 10));
+          incr n;
+          Bytes.unsafe_set s' !n (char_chr (48 + a mod 10));
+      end;
+      incr n
+    done;
+    s'
+  end
+
+end
+module Ext_string : sig 
+#1 "ext_string.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to the standard library [String] module, avoid locale sensitivity *) 
+
+
+val trim : string -> string 
+
+val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
+(** default is false *)
+
+val split : ?keep_empty:bool -> string -> char -> string list
+(** default is false *)
+
+val starts_with : string -> string -> bool
+
+val ends_with : string -> string -> bool
+
+val escaped : string -> string
+
+val for_all : (char -> bool) -> string -> bool
+
+val is_empty : string -> bool
+
+val repeat : int -> string -> string 
+
+val equal : string -> string -> bool
+
+val find : ?start:int -> sub:string -> string -> int
+
+val rfind : sub:string -> string -> int
+
+val tail_from : string -> int -> string
+
+val digits_of_str : string -> offset:int -> int -> int
+
+val starts_with_and_number : string -> offset:int -> string -> int
+
+end = struct
+#1 "ext_string.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+let split_by ?(keep_empty=false) is_delim str =
+  let len = String.length str in
+  let rec loop acc last_pos pos =
+    if pos = -1 then
+      String.sub str 0 last_pos :: acc
+    else
+      if is_delim str.[pos] then
+        let new_len = (last_pos - pos - 1) in
+        if new_len <> 0 || keep_empty then 
+          let v = String.sub str (pos + 1) new_len in
+          loop ( v :: acc)
+            pos (pos - 1)
+        else loop acc pos (pos - 1)
+    else loop acc last_pos (pos - 1)
+  in
+  loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
+let split ?keep_empty  str on = 
+  if str = "" then [] else 
+  split_by ?keep_empty (fun x -> (x : char) = on) str  ;;
+
+let starts_with s beg = 
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+   beg_len <=  s_len &&
+  (let i = ref 0 in
+    while !i <  beg_len 
+          && String.unsafe_get s !i =
+             String.unsafe_get beg !i do 
+      incr i 
+    done;
+    !i = beg_len
+  )
+
+
+(* TODO: optimization *)
+let ends_with s beg = 
+  let s_finish = String.length s - 1 in
+  let s_beg = String.length beg - 1 in
+  if s_beg > s_finish then false 
+  else
+    let rec aux j k = 
+      if k < 0 then true 
+      else if String.unsafe_get s j = String.unsafe_get beg k then 
+        aux (j - 1) (k - 1)
+      else  false in 
+    aux s_finish s_beg
+
+
+(**  In OCaml 4.02.3, {!String.escaped} is locale senstive, 
+     this version try to make it not locale senstive, this bug is fixed
+     in the compiler trunk     
+*)
+let escaped s =
+  let rec needs_escape i =
+    if i >= String.length s then false else
+      match String.unsafe_get s i with
+      | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
+      | ' ' .. '~' -> needs_escape (i+1)
+      | _ -> true
+  in
+  if needs_escape 0 then
+    Bytes.unsafe_to_string (Ext_bytes.escaped (Bytes.unsafe_of_string s))
+  else
+    s
+
+
+let for_all (p : char -> bool) s = 
+  let len = String.length s in
+  let rec aux i = 
+    if i >= len then true 
+    else  p (String.unsafe_get s i) && aux (i + 1)
+  in aux 0 
+
+let is_empty s = String.length s = 0
+
+
+let repeat n s  =
+  let len = String.length s in
+  let res = Bytes.create(n * len) in
+  for i = 0 to pred n do
+    String.blit s 0 res (i * len) len
+  done;
+  Bytes.to_string res
+
+let equal (x : string) y  = x = y
+
+
+
+let _is_sub ~sub i s j ~len =
+  let rec check k =
+    if k = len
+    then true
+    else 
+      String.unsafe_get sub (i+k) = 
+      String.unsafe_get s (j+k) && check (k+1)
+  in
+  j+len <= String.length s && check 0
+
+
+
+let find ?(start=0) ~sub s =
+  let n = String.length sub in
+  let i = ref start in
+  let module M = struct exception Exit end  in
+  try
+    while !i + n <= String.length s do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      incr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+
+let rfind ~sub s =
+  let n = String.length sub in
+  let i = ref (String.length s - n) in
+  let module M = struct exception Exit end in 
+  try
+    while !i >= 0 do
+      if _is_sub ~sub 0 s !i ~len:n then raise M.Exit;
+      decr i
+    done;
+    -1
+  with M.Exit ->
+    !i
+
+let tail_from s x = 
+  let len = String.length s  in 
+  if  x > len then invalid_arg ("Ext_string.tail_from " ^s ^ " : "^ string_of_int x )
+  else String.sub s x (len - x)
+
+
+(**
+   {[ 
+     digits_of_str "11_js" 2 == 11     
+   ]}
+*)
+let digits_of_str s ~offset x = 
+  let rec aux i acc s x  = 
+    if i >= x then acc 
+    else aux (i + 1) (10 * acc + Char.code s.[offset + i] - 48 (* Char.code '0' *)) s x in 
+  aux 0 0 s x 
+
+
+
+(*
+   {[
+     starts_with_and_number "js_fn_mk_01" 0 "js_fn_mk_" = 1 ;;
+     starts_with_and_number "js_fn_run_02" 0 "js_fn_mk_" = -1 ;;
+     starts_with_and_number "js_fn_mk_03" 6 "mk_" = 3 ;;
+     starts_with_and_number "js_fn_mk_04" 6 "run_" = -1;;
+     starts_with_and_number "js_fn_run_04" 6 "run_" = 4;;
+     (starts_with_and_number "js_fn_run_04" 6 "run_" = 3) = false ;;
+   ]}
+*)
+let starts_with_and_number s ~offset beg =
+  let beg_len = String.length beg in
+  let s_len = String.length s in
+  let finish_delim = offset + beg_len in 
+
+   if finish_delim >  s_len  then -1 
+   else 
+     let i = ref offset  in
+      while !i <  finish_delim
+            && String.unsafe_get s !i =
+               String.unsafe_get beg (!i - offset) do 
+        incr i 
+      done;
+      if !i = finish_delim then 
+        digits_of_str ~offset:finish_delim s 2 
+      else 
+        -1 
+
+end
+module Ext_pervasives : sig 
+#1 "ext_pervasives.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Extension to standard library [Pervavives] module, safe to open 
+  *)
+
+external reraise: exn -> 'a = "%reraise"
+val finally : 'a -> ('a -> 'b) -> ('a -> 'c) -> 'b
+
+val with_file_as_chan : string -> (out_channel -> 'a) -> 'a
+
+val with_file_as_pp : string -> (Format.formatter -> 'a) -> 'a
+
+val is_pos_pow : Int32.t -> int
+
+val failwithf : ('a, unit, string, 'b) format4 -> 'a
+
+end = struct
+#1 "ext_pervasives.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+external reraise: exn -> 'a = "%reraise"
+
+let finally v f  action = 
+  match f v with
+  | exception e -> 
+      action v ;
+      reraise e 
+  | e ->  action v ; e 
+
+let with_file_as_chan filename f = 
+  let chan = open_out filename in
+  finally chan f close_out
+
+let with_file_as_pp filename f = 
+  let chan = open_out filename in
+  finally chan 
+    (fun chan -> 
+      let fmt = Format.formatter_of_out_channel chan in
+      let v = f  fmt in
+      Format.pp_print_flush fmt ();
+      v
+    ) close_out
+
+
+let  is_pos_pow n = 
+  let module M = struct exception E end in 
+  let rec aux c (n : Int32.t) = 
+    if n <= 0l then -2 
+    else if n = 1l then c 
+    else if Int32.logand n 1l =  0l then   
+      aux (c + 1) (Int32.shift_right n 1 )
+    else raise M.E in 
+  try aux 0 n  with M.E -> -1
+
+let failwithf fmt = Format.ksprintf failwith fmt
+
+end
+module Line_process : sig 
+#1 "line_process.mli"
+
+
+(** Given a filename return a list of modules *)
+val read_lines : string -> string -> string list 
+val load_file : string -> string 
+
+end = struct
+#1 "line_process.ml"
+
+(* let lexer = Genlex.make_lexer [] (\* poor man *\) *)
+
+(* let rec to_list acc stream =  *)
+(*   match Stream.next stream with  *)
+(*   | exception _ -> List.rev acc  *)
+(*   | v -> to_list (v::acc) stream  *)
+ 
+
+let rev_lines_of_file file = 
+  let chan = open_in file in
+  let rec loop acc = 
+    match input_line chan with
+    | line -> loop (line :: acc)
+    | exception End_of_file -> close_in chan ; acc in
+  loop []
+
+
+let rec filter_map (f: 'a -> 'b option) xs = 
+  match xs with 
+  | [] -> []
+  | y :: ys -> 
+      begin match f y with 
+      | None -> filter_map f ys
+      | Some z -> z :: filter_map f ys
+      end
+
+
+(** on 32 bit , there are 16M limitation *)
+let load_file f =
+  let ic = open_in f in
+  let n = in_channel_length ic in
+  let s = Bytes.create n in
+  really_input ic s 0 n;
+  close_in ic;
+  Bytes.unsafe_to_string s
+
+let (@>) (b, v) acc = 
+  if b then 
+    v :: acc 
+  else
+      acc 
+
+
+let (//) = Filename.concat
+
+let rec process_line cwd filedir  line = 
+  let line = Ext_string.trim line in 
+  let len = String.length line in 
+  if len = 0 then []
+  else 
+    match line.[0] with 
+    | '#' -> []
+    | _ -> 
+      let segments = 
+        Ext_string.split_by ~keep_empty:false (fun x -> x = ' ' || x = '\t' ) line 
+      in
+
+      begin 
+        match segments with 
+        | ["include" ;  path ]
+          ->  
+          (* prerr_endline path;  *)
+          read_lines cwd  (filedir// path)
+        | [ x ]  -> 
+          let ml = filedir // x ^ ".ml" in 
+          let mli = filedir // x ^ ".mli" in 
+          let ml_exists, mli_exists = Sys.file_exists ml , Sys.file_exists mli in 
+          if not ml_exists && not mli_exists then 
+            begin 
+              prerr_endline (filedir //x ^ " not exists"); 
+              []
+            end
+          else 
+            (ml_exists, ml) @> (mli_exists , mli) @> []            
+
+        | _ 
+          ->  Ext_pervasives.failwithf "invalid line %s" line
+      end
+
+(* example 
+   {[ 
+     Line_process.read_lines "." "./tools/tools.mllib" 
+   ]} 
+
+   TODO: we can only concat (dir/file) not (dir/dir)
+   {[
+     Filename.concat "/bb/x/" "/bb/x/";;
+   ]}
+*)
+and read_lines cwd file = 
+
+  file 
+  |> rev_lines_of_file 
+  |> List.fold_left (fun acc f ->
+      let filedir  =   Filename.dirname file in
+      let extras = process_line  cwd filedir f in 
+      extras  @ acc       
+    ) []
+
+end
 module Depend : sig 
-#1 "../../ocaml/tools/depend.mli"
+#1 "depend.mli"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -27,7 +655,7 @@ val add_signature : StringSet.t -> Parsetree.signature -> unit
 val add_implementation : StringSet.t -> Parsetree.structure -> unit
 
 end = struct
-#1 "../../ocaml/tools/depend.ml"
+#1 "depend.ml"
 (***********************************************************************)
 (*                                                                     *)
 (*                                OCaml                                *)
@@ -535,14 +1163,6 @@ type ml_info = Parsetree.structure code_info
 
 type mli_info = Parsetree.signature code_info
 
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  let ic = open_in f in
-  let n = in_channel_length ic in
-  let s = Bytes.create n in
-  really_input ic s 0 n;
-  close_in ic;
-  Bytes.unsafe_to_string s
 
 let _loc = Location.none 
 
@@ -663,7 +1283,7 @@ let prepare arg_files =
   let ast_tbl = Hashtbl.create 31 in
   let files_set = Depend.StringSet.of_list @@ arg_files in
   let () = files_set |> Depend.StringSet.iter (fun name ->
-    let content = load_file name in  
+    let content = Line_process.load_file name in  
     let base = normalize name in
     if Filename.check_suffix name ".ml"
     then
@@ -731,86 +1351,6 @@ let process_as_string  arg_files  =
 (* end: *)
 
 end
-module Line_process : sig 
-#1 "line_process.mli"
-(** Given a filename return a list of modules *)
-val read_lines : string -> string list 
-
-end = struct
-#1 "line_process.ml"
-
-(* let lexer = Genlex.make_lexer [] (\* poor man *\) *)
-
-(* let rec to_list acc stream =  *)
-(*   match Stream.next stream with  *)
-(*   | exception _ -> List.rev acc  *)
-(*   | v -> to_list (v::acc) stream  *)
- 
-
-let rev_lines_of_file file = 
-  let chan = open_in file in
-  let rec loop acc = 
-    match input_line chan with
-    | line -> loop (line :: acc)
-    | exception End_of_file -> close_in chan ; acc in
-  loop []
-
-
-let rec filter_map (f: 'a -> 'b option) xs = 
-  match xs with 
-  | [] -> []
-  | y :: ys -> 
-      begin match f y with 
-      | None -> filter_map f ys
-      | Some z -> z :: filter_map f ys
-      end
-
-let trim s = 
-  let i = ref 0  in
-  let j = String.length s in 
-  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
-    incr i;
-  done;
-  let k = ref (j - 1)  in 
-  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
-    decr k ;
-  done;
-  String.sub s !i (!k - !i + 1)
-
-
-(* let process_line line =  *)
-(*   match to_list [] (lexer (Stream.of_string line)) with *)
-(*   | Ident "#" :: _ -> None *)
-(*   | (Ident v|Kwd v) :: _ -> Some v  *)
-(*   | (Int _ | Float _ | Char _ | String _ )  :: _ ->  *)
-(*       assert false  *)
-(*   | [] -> None  *)
-
-let process_line line = 
-  let line = trim line in 
-  let len = String.length line in 
-  if len = 0 then None
-  else 
-    match line.[0] with 
-    | '#' -> None
-    | _ -> Some line 
-
-let (@>) v acc = 
-  if Sys.file_exists v then 
-    v :: acc 
-  else acc 
-
-let read_lines file = 
-  file 
-  |> rev_lines_of_file 
-  |> List.fold_left (fun acc f -> 
-      match process_line f with 
-      | None -> acc 
-      | Some f -> 
-         (f ^ ".mli") @> (f ^ ".ml") @> acc
-    ) []
-
-end
 module Ocaml_pack_main : sig 
 #1 "ocaml_pack_main.mli"
 
@@ -844,7 +1384,7 @@ let _ =
   let argv = Sys.argv in
   let files = 
     if Array.length argv = 2 && Filename.check_suffix  argv.(1) "mllib" then 
-      Line_process.read_lines argv.(1)
+      Line_process.read_lines (Sys.getcwd ())argv.(1)
     else 
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
@@ -852,7 +1392,11 @@ let _ =
   let tasks = Ocaml_extract.process_as_string files in 
   let emit name = 
     output_string stdout "#1 \"";
-    output_string stdout name ;
+    (*Note here we do this is mostly to avoid leaking user's 
+      information, like private path, in the future, we can have 
+      a flag
+    *)
+    output_string stdout (Filename.basename name) ;
     output_string stdout "\"\n" 
   in
   tasks |> List.iter (fun t ->

@@ -26,7 +26,7 @@ let _ =
   let argv = Sys.argv in
   let files = 
     if Array.length argv = 2 && Filename.check_suffix  argv.(1) "mllib" then 
-      Line_process.read_lines argv.(1)
+      Line_process.read_lines (Sys.getcwd ())argv.(1)
     else 
       Array.to_list
         (Array.sub Sys.argv 1 (Array.length Sys.argv - 1)) 
@@ -34,7 +34,11 @@ let _ =
   let tasks = Ocaml_extract.process_as_string files in 
   let emit name = 
     output_string stdout "#1 \"";
-    output_string stdout name ;
+    (*Note here we do this is mostly to avoid leaking user's 
+      information, like private path, in the future, we can have 
+      a flag
+    *)
+    output_string stdout (Filename.basename name) ;
     output_string stdout "\"\n" 
   in
   tasks |> List.iter (fun t ->

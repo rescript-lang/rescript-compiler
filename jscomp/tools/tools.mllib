@@ -1,4 +1,10 @@
+include deps.mllib
+
+# ../ext_pervasives
+# ../ext_bytes
+# ../ext_string
+# ../../ocaml/tools/depend
+
 line_process
-../../ocaml/tools/depend
 ocaml_extract
 ocaml_pack_main
