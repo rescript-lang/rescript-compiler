@@ -76,8 +76,6 @@ fn.cmo :
 fn.cmx :
 js.cmo :
 js.cmx :
-js_error.cmo :
-js_error.cmx :
 js_primitive.cmo : js.cmo js_primitive.cmi
 js_primitive.cmx : js.cmx js_primitive.cmi
 typed_array.cmo :
@@ -136,8 +134,6 @@ fn.cmo :
 fn.cmj :
 js.cmo :
 js.cmj :
-js_error.cmo :
-js_error.cmj :
 js_primitive.cmo : js.cmo js_primitive.cmi
 js_primitive.cmj : js.cmj js_primitive.cmi
 typed_array.cmo :

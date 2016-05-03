@@ -21,7 +21,7 @@ function caml_get_public_method(obj, tag, cacheid) {
                 Caml_builtin_exceptions.assert_failure,
                 [
                   "caml_oo.ml",
-                  43,
+                  52,
                   20
                 ]
               ];

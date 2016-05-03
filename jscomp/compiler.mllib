@@ -55,7 +55,6 @@ lam_inline_util
 lam_module_ident
 lam_runtime
 lam_dce
-lam_register
 lam_analysis
 lam_group
 lam_current_unit

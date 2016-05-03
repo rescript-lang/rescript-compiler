@@ -84,7 +84,7 @@ function caml_hash(count, _, seed, obj) {
                   Caml_builtin_exceptions.assert_failure,
                   [
                     "caml_hash.ml",
-                    125,
+                    134,
                     8
                   ]
                 ];
