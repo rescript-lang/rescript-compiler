@@ -7,7 +7,7 @@ SOURCE_LIST := $(shell cat runtime.mllib)
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
 
-COMPFLAGS += $(MODULE_FLAGS) -w -40
+COMPFLAGS += $(MODULE_FLAGS) -w -40 
 
 
 

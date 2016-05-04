@@ -54,6 +54,25 @@ function split_by($staropt$star, is_delim, str) {
   };
 }
 
+function trim(s) {
+  var i = 0;
+  var j = s.length;
+  while(function () {
+        var u = s.charCodeAt(i);
+        return +(i < j && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
+      }()) {
+    i = i + 1 | 0;
+  };
+  var k = j - 1 | 0;
+  while(function () {
+        var u = s.charCodeAt(k);
+        return +(k >= i && (u === /* "\t" */9 || u === /* "\n" */10 || u === /* " " */32));
+      }()) {
+    k = k - 1 | 0;
+  };
+  return $$String.sub(s, i, (k - i | 0) + 1 | 0);
+}
+
 function split(keep_empty, str, on) {
   if (str === "") {
     return /* [] */0;
@@ -314,6 +333,7 @@ function starts_with_and_number(s, offset, beg) {
 }
 
 exports.split_by               = split_by;
+exports.trim                   = trim;
 exports.split                  = split;
 exports.starts_with            = starts_with;
 exports.ends_with              = ends_with;
