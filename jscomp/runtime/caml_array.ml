@@ -26,13 +26,6 @@
 
 
 
-
-
-
-
-
-
-
 let caml_array_sub (x : 'a array) (offset : int) (len : int) = 
   let result = Js.Array.new_uninitialized len  in
   let j = ref 0 and i = ref offset in

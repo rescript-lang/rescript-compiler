@@ -4988,7 +4988,7 @@ end = struct
 (* The main OCaml version string has moved to ../VERSION *)
 let version = Sys.ocaml_version
 
-let standard_library_default = "/usr/local/lib/ocaml"
+let standard_library_default = ""
 
 let standard_library =
   try
@@ -4999,19 +4999,19 @@ let standard_library =
   with Not_found ->
     standard_library_default
 
-let standard_runtime = "/usr/local/bin/ocamlrun"
-let ccomp_type = "cc"
-let bytecomp_c_compiler = "gcc -O -fno-defer-pop -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT -O -fPIC"
-let bytecomp_c_libraries = "-lm  -ldl -lcurses -lpthread"
-let native_c_compiler = "gcc -O -Wall -D_FILE_OFFSET_BITS=64 -D_REENTRANT"
-let native_c_libraries = "-lm  -ldl"
-let native_pack_linker = "ld -r  -o "
+let standard_runtime = ""
+let ccomp_type = ""
+let bytecomp_c_compiler = ""
+let bytecomp_c_libraries = ""
+let native_c_compiler = ""
+let native_c_libraries = ""
+let native_pack_linker = ""
 let ranlib = "ranlib"
 let ar = "ar"
-let cc_profile = "-pg"
-let mkdll = "gcc -shared"
-let mkexe = "gcc"
-let mkmaindll = "gcc -shared"
+let cc_profile = ""
+let mkdll = ""
+let mkexe = ""
+let mkmaindll = ""
 
 let exec_magic_number = "Caml1999X011"
 and cmi_magic_number = "Caml1999I017"
@@ -5039,9 +5039,9 @@ let stack_threshold = 256 (* see byterun/config.h *)
 
 let architecture = "amd64"
 let model = "default"
-let system = "linux"
+let system = ""
 
-let asm = "as"
+let asm = ""
 let asm_cfi_supported = true
 let with_frame_pointers = false
 
@@ -5050,8 +5050,8 @@ let ext_asm = ".s"
 let ext_lib = ".a"
 let ext_dll = ".so"
 
-let host = "x86_64-unknown-linux-gnu"
-let target = "x86_64-unknown-linux-gnu"
+let host = ""
+let target = ""
 
 let default_executable_name =
   match Sys.os_type with

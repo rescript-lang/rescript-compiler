@@ -42,7 +42,7 @@ external log : 'a -> unit = "js_dump"
 
 
 
-type any = Obj.t 
+type any = Obj.t
 
 external erase : 'a -> any = "%identity" 
 external cast : any -> 'a = "%identity" 
@@ -153,17 +153,17 @@ module Float = struct
 end
 
 module Caml_obj = struct 
-  external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
-  external set_length : Obj.t -> int -> unit = "js_obj_set_length"
-  external length : Obj.t -> int = "js_obj_length"
-  external tag : Obj.t -> int = "caml_obj_tag"
-  external set_tag : Obj.t -> int -> unit = "caml_obj_set_tag"
-  external uninitialized_object : int -> int -> Obj.t = "js_uninitialized_object"
-  external is_instance_array : Obj.t -> bool = 
+  external set_tag : any -> int -> unit = "caml_obj_set_tag"
+  external set_length : any -> int -> unit = "js_obj_set_length"
+  external length : any -> int = "js_obj_length"
+  external tag : any -> int = "caml_obj_tag"
+  external set_tag : any -> int -> unit = "caml_obj_set_tag"
+  external uninitialized_object : int -> int -> any = "js_uninitialized_object"
+  external is_instance_array : any -> bool = 
     "js_is_instance_array" (* use Array.isArray instead*)
-  external size_of_any : Obj.t -> 'a Def.t =
+  external size_of_any : any -> 'a Def.t =
     "length" [@@bs.get]
-  external tag_of_any : Obj.t -> 'a Def.t =
+  external tag_of_any : any -> 'a Def.t =
     "tag" [@@bs.get]
 end
 

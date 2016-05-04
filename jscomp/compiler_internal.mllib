@@ -6,7 +6,7 @@
 
 ../ocaml/utils/misc
 ../ocaml/utils/tbl
-../ocaml/utils/config
+# ../ocaml/utils/config
 ../ocaml/utils/clflags
 ../ocaml/utils/terminfo
 ../ocaml/utils/ccomp
@@ -84,6 +84,3 @@
 ../ocaml/bytecomp/bytepackager
 ../ocaml/driver/errors
 ../ocaml/driver/compile
-
-
-include compiler.mllib

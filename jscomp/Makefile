@@ -80,6 +80,23 @@ world:
 	cd stdlib && make all	
 	@echo "Making lib finished"
 
+big-world:bin/big_compiler.ml bin/big_compiler.mli
+	@echo "Making compiler"		
+	ocamlopt.opt -g -inline 100 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
+	@echo "Making compiler finished"		
+
+	@echo "Making runtime"
+	cd runtime && OCAMLIB=`ocamlc -where` make all
+	@echo "Making runtime finished"
+
+	@echo "Making stdlib"
+	cd lib && make all
+	@echo "Making stdlib finished"
+
+	@echo "Making lib"
+	cd stdlib && make all	
+	@echo "Making lib finished"
+
 world-test:
 	@echo "Making compiler"		
 	ocamlopt.opt -g -inline 100 -w -a -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
