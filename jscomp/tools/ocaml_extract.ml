@@ -101,14 +101,6 @@ type ml_info = Parsetree.structure code_info
 
 type mli_info = Parsetree.signature code_info
 
-(** on 32 bit , there are 16M limitation *)
-let load_file f =
-  let ic = open_in f in
-  let n = in_channel_length ic in
-  let s = Bytes.create n in
-  really_input ic s 0 n;
-  close_in ic;
-  Bytes.unsafe_to_string s
 
 let _loc = Location.none 
 
@@ -229,7 +221,7 @@ let prepare arg_files =
   let ast_tbl = Hashtbl.create 31 in
   let files_set = Depend.StringSet.of_list @@ arg_files in
   let () = files_set |> Depend.StringSet.iter (fun name ->
-    let content = load_file name in  
+    let content = Line_process.load_file name in  
     let base = normalize name in
     if Filename.check_suffix name ".ml"
     then

@@ -36,10 +36,12 @@ release:snapshot
 # TODO: should be done after we do the build
 # Carefully check the stored data if it is platform independent
 
-snapshot:snapshotcmj
+./bin/ocaml_pack: ./bin/ocaml_pack.mli ./bin/ocaml_pack.ml 
+	ocamlopt.opt -w -a -I bin -I +compiler-libs ocamlcommon.cmxa $^ -o $@
+
+snapshot: ./bin/ocaml_pack snapshotcmj
 	@echo "Snapshot"
-	cd tools && ./pack.sh && cd ..
-	./tools/ocaml_pack compiler.mllib > bin/compiler.ml
+	$< compiler.mllib > bin/compiler.ml
 
 snapshotcmj:
 	@echo "Collecting cmj files"

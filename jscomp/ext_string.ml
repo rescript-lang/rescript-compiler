@@ -46,6 +46,18 @@ let split_by ?(keep_empty=false) is_delim str =
   in
   loop [] len (len - 1)
 
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
+
 let split ?keep_empty  str on = 
   if str = "" then [] else 
   split_by ?keep_empty (fun x -> (x : char) = on) str  ;;

@@ -32,6 +32,8 @@
    [nativeint] behaves as js  numbers 
  *)
 
+(* TODO: see GPR#333 
+   the encoding of nativeint is platform dependent *)
 open Nativeint
 
 let (>>>) = Nativeint.shift_right_logical
@@ -47,7 +49,7 @@ type t = {  hi : nativeint; lo : nativeint ;  }
 let to_unsigned (x : nativeint) = 
    x >>> 0
 
-let mk ~lo ~hi = {lo =  (* lo >>> 0 *) to_unsigned lo ; hi}
+let mk ~lo ~hi = {lo = to_unsigned lo ; hi}
 
 let min_int =  mk  ~lo: 0n ~hi:(-0x80000000n)
 

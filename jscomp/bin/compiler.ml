@@ -1,24 +1,33 @@
 module Literals : sig 
 #1 "literals.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 val js_array_ctor : string 
 val js_type_number : string
@@ -45,25 +54,34 @@ val imul : string
 
 end = struct
 #1 "literals.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 let js_array_ctor = "Array"
@@ -94,25 +112,34 @@ module
 Js_op
 = struct
 #1 "js_op.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -342,25 +369,34 @@ type code_info =
 end
 module Ext_format : sig 
 #1 "ext_format.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -402,25 +438,34 @@ val flush : t -> unit -> unit
 
 end = struct
 #1 "ext_format.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -500,25 +545,34 @@ let list = pp_print_list
 end
 module Ident_set : sig 
 #1 "ident_set.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -535,25 +589,34 @@ val print : Ext_format.t -> t -> unit
 
 end = struct
 #1 "ident_set.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -575,25 +638,34 @@ let print ppf v =
 end
 module Ext_list : sig 
 #1 "ext_list.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -657,25 +729,34 @@ val split_map : ('a -> 'b * 'c) -> 'a list -> 'b list * 'c list
 
 end = struct
 #1 "ext_list.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -888,25 +969,34 @@ let split_map
 end
 module Js_fun_env : sig 
 #1 "js_fun_env.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -943,25 +1033,34 @@ val get_length : t -> int
 
 end = struct
 #1 "js_fun_env.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1048,25 +1147,34 @@ let is_empty t = Ident_set.is_empty t.bound
 end
 module Js_closure : sig 
 #1 "js_closure.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1086,25 +1194,34 @@ val set_lexical_scope : t -> Ident_set.t -> unit
 
 end = struct
 #1 "js_closure.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1123,25 +1240,34 @@ let get_lexical_scope t = t.outer_loop_mutable_values
 end
 module Js_call_info : sig 
 #1 "js_call_info.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1175,25 +1301,34 @@ val ml_full_call : t
 
 end = struct
 #1 "js_call_info.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1227,25 +1362,34 @@ module
 J
 = struct
 #1 "j.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1617,25 +1761,34 @@ and deps_program =
 end
 module Lam_module_ident : sig 
 #1 "lam_module_ident.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1661,25 +1814,34 @@ val of_runtime : Ident.t -> t
 
 end = struct
 #1 "lam_module_ident.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1707,25 +1869,34 @@ type module_property = bool
 end
 module Hash_set : sig 
 #1 "hash_set.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1751,25 +1922,34 @@ val elements : 'a hashset -> 'a list
 
 end = struct
 #1 "hash_set.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1791,25 +1971,34 @@ let elements set =
 end
 module Lam_stats : sig 
 #1 "lam_stats.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -1905,25 +2094,34 @@ type meta = {
 
 end = struct
 #1 "lam_stats.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -2032,25 +2230,34 @@ type meta = {
 end
 module Lam_current_unit : sig 
 #1 "lam_current_unit.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 val set_file : string -> unit 
 val get_file : unit -> string
@@ -2064,25 +2271,34 @@ val is_same_file : unit -> bool
 
 end = struct
 #1 "lam_current_unit.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 let file = ref ""
@@ -2103,26 +2319,34 @@ let is_same_file () =
 end
 module Lam_comb : sig 
 #1 "lam_comb.mli"
-
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (* BuckleScript compiler
  * Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2153,26 +2377,34 @@ val stringswitch : t -> (string * t) list -> t option -> t
 
 end = struct
 #1 "lam_comb.ml"
-
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 type t = Lambda.lambda
 
 let if_ a (b : t) c = 
@@ -2218,25 +2450,34 @@ module
 Ident_map
 = struct
 #1 "ident_map.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -2268,25 +2509,34 @@ let merge_disjoint m1 m2 =
 end
 module Lam_analysis : sig 
 #1 "lam_analysis.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** A module which provides some basic analysis over lambda expression *)
 
@@ -2342,25 +2592,34 @@ val safe_to_inline : Lambda.lambda -> bool
 
 end = struct
 #1 "lam_analysis.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let rec no_side_effects (lam : Lambda.lambda) : bool = 
   match lam with 
@@ -2839,24 +3098,34 @@ module
 Js_fold
 = struct
 #1 "js_fold.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-(* Author: Hongbo Zhang  *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
 (** GENERATED CODE for fold visitor patten of JS IR  *)
 open J
   
@@ -3307,25 +3576,34 @@ class virtual fold =
 end
 module String_set : sig 
 #1 "string_set.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -3333,25 +3611,34 @@ include Set.S with type elt = string
 
 end = struct
 #1 "string_set.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -3360,25 +3647,34 @@ include Set.Make(String)
 end
 module Ext_bytes : sig 
 #1 "ext_bytes.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 (** Port the {!Bytes.escaped} from trunk to make it not locale sensitive *)
@@ -3387,25 +3683,34 @@ val escaped : bytes -> bytes
 
 end = struct
 #1 "ext_bytes.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -3455,29 +3760,41 @@ let escaped s =
 end
 module Ext_string : sig 
 #1 "ext_string.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
 (** Extension to the standard library [String] module, avoid locale sensitivity *) 
+
+
+val trim : string -> string 
 
 val split_by : ?keep_empty:bool -> (char -> bool) -> string -> string list
 (** default is false *)
@@ -3511,25 +3828,34 @@ val starts_with_and_number : string -> offset:int -> string -> int
 
 end = struct
 #1 "ext_string.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -3549,6 +3875,18 @@ let split_by ?(keep_empty=false) is_delim str =
     else loop acc last_pos (pos - 1)
   in
   loop [] len (len - 1)
+
+let trim s = 
+  let i = ref 0  in
+  let j = String.length s in 
+  while !i < j &&  let u = s.[!i] in u = '\t' || u = '\n' || u = ' ' do 
+    incr i;
+  done;
+  let k = ref (j - 1)  in 
+  while !k >= !i && let u = s.[!k] in u = '\t' || u = '\n' || u = ' ' do 
+    decr k ;
+  done;
+  String.sub s !i (!k - !i + 1)
 
 let split ?keep_empty  str on = 
   if str = "" then [] else 
@@ -3711,25 +4049,34 @@ let starts_with_and_number s ~offset beg =
 end
 module Js_config : sig 
 #1 "js_config.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type env = 
   | Browser
@@ -3776,25 +4123,34 @@ val js_primitive : string
 
 end = struct
 #1 "js_config.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 type env = 
@@ -3956,25 +4312,34 @@ let runtime_set =
 end
 module Ext_ident : sig 
 #1 "ext_ident.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4008,25 +4373,34 @@ val nil : Ident.t
 
 end = struct
 #1 "ext_ident.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4259,25 +4633,34 @@ let nil = create_js "null"
 end
 module Js_fold_basic : sig 
 #1 "js_fold_basic.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4289,25 +4672,34 @@ val calculate_hard_dependencies : J.block -> Lam_module_ident.t Hash_set.hashset
 
 end = struct
 #1 "js_fold_basic.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4394,25 +4786,34 @@ let depends_j (lam : J.expression) (variables : Ident_set.t) =
 end
 module Ext_pervasives : sig 
 #1 "ext_pervasives.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4432,25 +4833,34 @@ val failwithf : ('a, unit, string, 'b) format4 -> 'a
 
 end = struct
 #1 "ext_pervasives.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 external reraise: exn -> 'a = "%reraise"
 
@@ -4491,25 +4901,34 @@ let failwithf fmt = Format.ksprintf failwith fmt
 end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4537,25 +4956,34 @@ val resolve : cwd:string -> string -> string
 
 end = struct
 #1 "ext_filename.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4679,25 +5107,34 @@ let  resolve ~cwd module_name =
 end
 module Lam_util : sig 
 #1 "lam_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -4760,26 +5197,34 @@ val js_is_nil_undef_primitive : Lambda.primitive
 
 end = struct
 #1 "lam_util.ml"
-
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5191,25 +5636,34 @@ let js_is_nil_undef_primitive =
 end
 module Js_number : sig 
 #1 "js_number.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 type t  = float 
@@ -5222,25 +5676,34 @@ val caml_float_literal_to_js_string : string -> string
 
 end = struct
 #1 "js_number.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type t = float 
 
@@ -5319,25 +5782,34 @@ let caml_float_literal_to_js_string v =
 end
 module Lam_group : sig 
 #1 "lam_group.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type t = 
   | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
@@ -5356,25 +5828,34 @@ val pp_group : Env.t -> Format.formatter -> t -> unit
 
 end = struct
 #1 "lam_group.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type t = 
   | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
@@ -5707,25 +6188,34 @@ let deep_flatten
 end
 module Ext_log : sig 
 #1 "ext_log.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5752,25 +6242,34 @@ val iinfo : bool -> string -> 'a logging
 
 end = struct
 #1 "ext_log.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5818,25 +6317,34 @@ let iinfo b str f  =
 end
 module Idents_analysis : sig 
 #1 "idents_analysis.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5851,25 +6359,34 @@ val calculate_used_idents :
 
 end = struct
 #1 "idents_analysis.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5915,25 +6432,34 @@ let calculate_used_idents
 end
 module Lam_dce : sig 
 #1 "lam_dce.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -5945,25 +6471,34 @@ val remove : Ident.t list -> Lam_group.t list -> Lam_group.t list
 
 end = struct
 #1 "lam_dce.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6024,25 +6559,34 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
 end
 module Type_util : sig 
 #1 "type_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6068,25 +6612,34 @@ val is_unit : Types.type_desc -> bool
 
 end = struct
 #1 "type_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6192,25 +6745,34 @@ let is_unit (x : Types.type_desc) =
 end
 module String_map : sig 
 #1 "string_map.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6220,25 +6782,34 @@ val of_list : (key * 'a) list -> 'a t
 
 end = struct
 #1 "string_map.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6250,25 +6821,34 @@ let of_list (xs : ('a * 'b) list ) =
 end
 module Lam_compile_util : sig 
 #1 "lam_compile_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6283,25 +6863,34 @@ val comment_of_pointer_info : Lambda.pointer_info -> string option
 
 end = struct
 #1 "lam_compile_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6338,25 +6927,34 @@ let comment_of_pointer_info (x :  Lambda.pointer_info)=
 end
 module Js_op_util : sig 
 #1 "js_op_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6380,25 +6978,34 @@ val of_lam_mutable_flag : Asttypes.mutable_flag -> Js_op.mutable_flag
 
 end = struct
 #1 "js_op_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6522,25 +7129,34 @@ let of_lam_mutable_flag (x : Asttypes.mutable_flag)  : Js_op.mutable_flag =
 end
 module Js_analyzer : sig 
 #1 "js_analyzer.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6591,25 +7207,34 @@ val is_constant : J.expression -> bool
 
 end = struct
 #1 "js_analyzer.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -6836,25 +7461,34 @@ let rec is_constant (x : J.expression)  =
 end
 module Js_exp_make : sig 
 #1 "js_exp_make.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -7103,25 +7737,34 @@ val not_implemented : ?comment:string -> string -> t
 
 end = struct
 #1 "js_exp_make.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let no_side_effect = Js_analyzer.no_side_effect_expression
 
@@ -8277,25 +8920,34 @@ let not_implemented ?comment (s : string) =
 end
 module Js_stmt_make : sig 
 #1 "js_stmt_make.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -8380,25 +9032,34 @@ val debugger :  t
 
 end = struct
 #1 "js_stmt_make.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make 
 
@@ -8740,25 +9401,34 @@ let debugger : t =
 end
 module Lam_compile_defs : sig 
 #1 "lam_compile_defs.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -8825,25 +9495,34 @@ val add_jmps :
 
 end = struct
 #1 "lam_compile_defs.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -8923,25 +9602,34 @@ let add_jmps (exit_id, code_table)
 end
 module Int_map : sig 
 #1 "int_map.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -8949,25 +9637,34 @@ include Map.S with type key = int
 
 end = struct
 #1 "int_map.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -8979,25 +9676,34 @@ end)
 end
 module Ext_pp_scope : sig 
 #1 "ext_pp_scope.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -9023,25 +9729,34 @@ val print : Format.formatter -> t -> unit
 
 end = struct
 #1 "ext_pp_scope.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -9103,25 +9818,34 @@ let sub_scope (scope : t) ident_collection : t =
 end
 module Ext_pp : sig 
 #1 "ext_pp.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -9182,25 +9906,34 @@ val flush : t -> unit -> unit
 
 end = struct
 #1 "ext_pp.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11055,25 +11788,34 @@ let string_of_expression e =
 end
 module Js_output : sig 
 #1 "js_output.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11130,25 +11872,34 @@ val to_string : t -> string
 
 end = struct
 #1 "js_output.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11304,25 +12055,34 @@ let to_string x   =
 end
 module Js_cmj_format : sig 
 #1 "js_cmj_format.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11374,25 +12134,34 @@ val to_file : string -> cmj_table -> unit
 
 end = struct
 #1 "js_cmj_format.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11523,7 +12292,7 @@ let cmj_data_sets = String_map.of_list [
   ("block.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\175\000\000\0003\000\000\000\165\000\000\000\161\176\208@\"__\160\176@\160\160B\144\160\176\001\003\241#tag@\160\176\001\003\242%block@@@@\144\179@\004\b\173\166\155\2400caml_obj_set_tagBA @@\144\176\193 \176\179\144\176\001\003\240!t@@\144@\002\005\245\225\000\001\003\020\176\193\004\t\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\023\176\179\144\176F$unit@@\144@\002\005\245\225\000\001\003\026@\002\005\245\225\000\001\003\029@\002\005\245\225\000\001\003\030\160\144\004$\160\144\004)@\144\004'@A@@"));
   ("caml_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\230\000\000\000>\000\000\000\210\000\000\000\200\176\208\208\208@/caml_array_blit\160\176A\160\160E\144\160\176\001\004\022\"a1@\160\176\001\004\023\"i1@\160\176\001\004\024\"a2@\160\176\001\004\025\"i2@\160\176\001\004\026#len@@@@@@A1caml_array_concat\160\176@\160\160A\144\160\176\001\004\006!l@@@@@@B.caml_array_sub\160\176@\160\160C\144\160\176\001\003\241!x@\160\176\001\003\242&offset@\160\176\001\003\243#len@@@@@\208@.caml_make_vect\160\176@\160\160B\144\160\176\001\004\017#len@\160\176\001\004\018$init@@@@@@AC@@"));
   ("caml_backtrace.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\144\000\000\000\028\000\000\000g\000\000\000[\176\208@?caml_convert_raw_backtrace_slot\160\176A\160\160A\144\160\176\001\003\241%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t-caml_convert_raw_backtrace_slot unimplemented@@@@A@@"));
-  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\001\143\000\000\000\129\000\000\001\160\000\000\001\145\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\254!x@\160\176\001\003\255!y@@@@\144\179@\004\b\166\181@\160\"::A@\160\144\004\r\160\144\004\012@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\004\001!x@@@@\144\179@\004\005\188\144\004\006\166\155\240%false@A @\160\160\160&bs.val\176\192%js.ml\000G\001\bl\001\b\147\192\004\002\000G\001\bl\001\b\153@\144@@\144\176\179\144\176\001\004\b'boolean@@\144@\002\005\245\225\000\001\004\015@\166\155\240$true@A\004\021@\160\160\160&bs.val\176\192\004\020\000F\001\b?\001\bd\192\004\021\000F\001\b?\001\bj@\144@@\144\176\179\004\019@\144@\002\005\245\225\000\001\004\012@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\179@\004\005\188\144\004\006\166\155\0042@\166\155\004\031@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\179@\004\005\166\181@\160$SomeA@\160\144\004\n@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@@"));
+  ("caml_basic.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\001\143\000\000\000\129\000\000\001\160\000\000\001\145\176\208\208\208@$cons\160\176A\160\160B\144\160\176\001\003\254!x@\160\176\001\003\255!y@@@@\144\179@\004\b\166\181@\160\"::A@\160\144\004\r\160\144\004\012@\208@-is_list_empty\160\176@\160\160A\144\160\176\001\004\001!x@@@@\144\179@\004\005\188\144\004\006\166\155\240%false@A @\160\160\160&bs.val\176\192%js.ml\000P\001\n%\001\nL\192\004\002\000P\001\n%\001\nR@\144@@\144\176\179\144\176\001\004\b'boolean@@\144@\002\005\245\225\000\001\004\015@\166\155\240$true@A\004\021@\160\160\160&bs.val\176\192\004\020\000O\001\t\248\001\n\029\192\004\021\000O\001\t\248\001\n#@\144@@\144\176\179\004\019@\144@\002\005\245\225\000\001\004\012@@AB'is_none\160\176@\160\160A\144\160\176\001\003\244!x@@@@\144\179@\004\005\188\144\004\006\166\155\0042@\166\155\004\031@@C$none\160@\144\145\161@\144$None\208@$some\160\176A\160\160A\144\160\176\001\003\242!x@@@@\144\179@\004\005\166\181@\160$SomeA@\160\144\004\n@\208@&to_def\160\176@\160\160A\144\160\176\001\003\246!x@@@@@@ABD@@"));
   ("caml_builtin_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\250\000\000\000%\000\000\000\172\000\000\000\151\176\208\208\208\208@.assert_failure\160@@@A0division_by_zero\160@@@B+end_of_file\160@@\208@'failure\160@@@AC0invalid_argument\160@@\208\208\208@-match_failure\160@@@A)not_found\160@@@B-out_of_memory\160@@\208\208@.stack_overflow\160@@\208@.sys_blocked_io\160@@@AB)sys_error\160@@\208@:undefined_recursive_module\160@@@ACDE@@"));
   ("caml_exceptions.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000i\000\000\000\031\000\000\000j\000\000\000e\176\208@.caml_set_oo_id\160\176@\160\160A\144\160\176\001\003\242!b@@@@@\208\208@&create\160\176@\160\160A\144\160\176\001\003\245#str@@@@@@A&get_id\160\176@\160\160A\144\160\176\001\003\247%param@@@@@@BC@@"));
   ("caml_float.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\001\197\000\000\000g\000\000\001\129\000\000\001g\176\208\208\208\208@3caml_classify_float\160\176A\160\160A\144\160\176\001\004\022!x@@@@@@A3caml_copysign_float\160\176@\160\160B\144\160\176\001\004'!x@\160\176\001\004(!y@@@@@\208\208@0caml_expm1_float\160\176@\160\160A\144\160\176\001\004,!x@@@@@@A2caml_float_compare\160\176A\160\160B\144\160\176\001\004$!x@\160\176\001\004%!y@@@@@@BC0caml_frexp_float\160\176@\160\160A@@@@\208\208@0caml_hypot_float\160\176@\160\160B@@@@@A8caml_int32_bits_of_float\160\176@\160\160A\144\160\176\001\004\019!x@@@@@@BD8caml_int32_float_of_bits\160\176@\160\160A\144\160\176\001\004\003!x@@@@@\208\208@0caml_ldexp_float\160\176@\160\160B@@@@\208@0caml_log10_float\160\176@\160\160A@@@@@AB/caml_modf_float\160\176A\160\160A\144\160\176\001\004\024!x@@@@@@CE\1440caml_ldexp_float@"));
@@ -11533,21 +12302,20 @@ let cmj_data_sets = String_map.of_list [
   ("caml_int32.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\199\000\000\000:\000\000\000\202\000\000\000\191\176\208\208@,caml_bswap16\160\176A\160\160A\144\160\176\001\003\247!x@@@@@\208@0caml_int32_bswap\160\176A\160\160A\144\160\176\001\003\249!x@@@@@\208@4caml_nativeint_bswap\160\004\n@@ABC$idiv\160\176A\160\160B\144\160\176\001\003\241!x@\160\176\001\003\242!y@@@@@\208@$imod\160\176A\160\160B\144\160\176\001\003\244!x@\160\176\001\003\245!y@@@@@\208@$imul\160\176@\160\160B@@@@@ABD\144$imul@"));
   ("caml_int64.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\004f\000\000\001n\000\000\004\186\000\000\004\146\176\208\208\208\208\208@#add\160\176A\160\160B\144\160\176\001\004\225%param@\160\176\001\004\226%param@@@@@@A$asr_\160\176@\160\160B\144\160\176\001\004)!x@\160\176\001\004*'numBits@@@@@\208\208\208@-bits_of_float\160\176A\160\160A\144\160\176\001\004\170!x@@@@@@A'compare\160\176@\160\160B\144\160\176\001\004w$self@\160\176\001\004x%other@@@@@\208@,discard_sign\160\176A\160\160A\144\160\176\001\004\133!x@@@@@@AB#div\160\176@\160\160B\144\160\176\001\004`$self@\160\176\001\004a%other@@@@@\208\208@'div_mod\160\176A\160\160B\144\160\176\001\004s$self@\160\176\001\004t%other@@@@@@A\"eq\160\176A\160\160B\144\160\176\001\004\018!x@\160\176\001\004\019!y@@@@@\208@-float_of_bits\160\176@\160\160A\144\160\176\001\004\153!x@@@@@@ABCD\"ge\160\176A\160\160B\144\160\176\001\004\204\004j@\160\176\001\004\205\004i@@@@@\208\208\208@%get64\160\176A\160\160B\144\160\176\001\004\176!s@\160\176\001\004\177!i@@@@@@A\"gt\160\176A\160\160B\144\160\176\001\004R!x@\160\176\001\004S!y@@@@@@B'is_zero\160\176A\160\160A\144\160\176\001\004\219\004\140@@@@@\208@\"le\160\176A\160\160B\144\160\176\001\004U!x@\160\176\001\004V!y@@@@@@ACE$lsl_\160\176@\160\160B\144\160\176\001\004\030!x@\160\176\001\004\031'numBits@@@@@\208\208@$lsr_\160\176@\160\160B\144\160\176\001\004#!x@\160\176\001\004$'numBits@@@@@\208@\"lt\160\176A\160\160B\144\160\176\001\004O!x@\160\176\001\004P!y@@@@@@AB'max_int\160@@@CF'min_int\160@@\208\208\208\208\208@$mod_\160\176A\160\160B\144\160\176\001\004p$self@\160\176\001\004q%other@@@@@@A#mul\160\176@\160\160B\144\160\176\001\004-$this@\160\176\001\004.%other@@@@@@B#neg\160\176@\160\160A\144\160\176\001\004\023!x@@@@@\208@#neq\160\176A\160\160B\144\160\176\001\004L!x@\160\176\001\004M!y@@@@@@AC#not\160\176A\160\160A\144\160\176\001\004\224\004\255@@@@@\208\208@(of_float\160\176@\160\160A\144\160\176\001\004^!x@@@@@@A(of_int32\160\176A\160\160A\144\160\176\001\004{\"lo@@@@@@BD#one\160@@\208\208\208@#sub\160\176A\160\160B\144\160\176\001\004\025!x@\160\176\001\004\026!y@@@@@@A$swap\160\176A\160\160A\144\160\176\001\004\206\005\001,@@@@@\208@(to_float\160\176@\160\160A\144\160\176\001\004\203\005\0015@@@@@\208@&to_hex\160\176@\160\160A\144\160\176\001\004\127!x@@@@@@ABC(to_int32\160\176A\160\160A\144\160\176\001\004}!x@@@@\144\179@\004\005\166\b\000\000\004!@\160\166\166A\144\"lo\160\144\004\r@\160\145\144\150\018_n\000\001\000\000\000\000@\208@$zero\160@@@ADEG\144.two_ptr_32_dbl@"));
   ("caml_io.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\003\b\000\000\000\179\000\000\002u\000\000\002D\176\208\208\208\208@-caml_ml_flush\160\176A\160\160A\144\160\176\001\004\004\"oc@@@@@@A-caml_ml_input\160\176A\160\160D\144\160\176\001\004\023\"ic@\160\176\001\004\024%bytes@\160\176\001\004\025&offset@\160\176\001\004\026#len@@@A\144\179@\004\014\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t caml_ml_input ic not implemented@@@\208\208@2caml_ml_input_char\160\176A\160\160A\144\160\176\001\004\028\"ic@@@A\144\179@\004\005\166\004\028\160\166\004\027\160\166\147\004\026@\160\145\144\162\t!caml_ml_input_char not implemnted@@@@A:caml_ml_open_descriptor_in\160\176A\160\160A\144\160\176\001\004\000!i@@@A\144\179@\004\005\166\156@\160\166\0042\160\166\147\0041@\160\145\144\162\t*caml_ml_open_descriptor_in not implemented@@@@BC;caml_ml_open_descriptor_out\160\176A\160\160A\144\160\176\001\004\002!i@@@A\144\179@\004\005\166\156@\160\166\004I\160\166\147\004H@\160\145\144\162\t+caml_ml_open_descriptor_out not implemented@@@\208\208\208@9caml_ml_out_channels_list\160\176A\160\160A\144\160\176\001\0040%param@@@@@@A.caml_ml_output\160\176@\160\160D\144\160\176\001\004\t\"oc@\160\176\001\004\n#str@\160\176\001\004\011&offset@\160\176\001\004\012#len@@@@@\208@3caml_ml_output_char\160\176@\160\160B\144\160\176\001\004\020\"oc@\160\176\001\004\021$char@@@@@@AB/node_std_output\160\176@\160\160A@@@@@CD&stderr\160\176A@@@\208@%stdin\160\176@@@@\208@&stdout\160\004\b@@ABE\144%stdin@"));
-  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\003.\000\000\000\189\000\000\002\140\000\000\002o\176\208\208@/caml_lex_engine\160@\144\179@\160\176\001\003\251$prim@\160\176\001\003\250\004\003@\160\176\001\003\249\004\005@@\166\155\240 CA @\160\160\160'bs.call\176\192-caml_lexer.ml\001\001I\001+\150\001+\153\192\004\002\001\001I\001+\150\001+\160@\144\160\160\160\176\145\1621$$caml_lex_engine@\176\192\004\012\001\001I\001+\150\001+\161\192\004\r\001\001I\001+\150\001+\180@@@\004\003@\160\160\160(bs.local\176\192\004\019\001\001I\001+\150\001+\185\192\004\020\001\001I\001+\150\001+\193@\144@@\144\176\193 \176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003|\176\193\004\011\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\127\176\193\004\019\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\130\176\179\004\016@\144@\002\005\245\225\000\001\003\133@\002\005\245\225\000\001\003\136@\002\005\245\225\000\001\003\137@\002\005\245\225\000\001\003\138\160\144\004I\160\144\004H\160\144\004H@\208@3caml_new_lex_engine\160@\144\179@\160\176\001\003\248\004S@\160\176\001\003\247\004U@\160\176\001\003\246\004W@@\166\155\240 CA\004R@\160\160\160'bs.call\176\192\004Q\001\001M\001,\027\001,\030\192\004R\001\001M\001,\027\001,%@\144\160\160\160\176\145\1625$$caml_new_lex_engine@\176\192\004\\\001\001M\001,\027\001,&\192\004]\001\001M\001,\027\001,=@@@\004\003@\160\160\160(bs.local\176\192\004c\001\001M\001,\027\001,B\192\004d\001\001M\001,\027\001,J@\144@@\144\176\193\004P\176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003\139\176\193\004Z\176\179\004O@\144@\002\005\245\225\000\001\003\142\176\193\004_\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\145\176\179\004\\@\144@\002\005\245\225\000\001\003\148@\002\005\245\225\000\001\003\151@\002\005\245\225\000\001\003\152@\002\005\245\225\000\001\003\153\160\144\004B\160\144\004B\160\144\004B@@AB$fail\160\176A\160\160A\144\160\176\001\003\252%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 @"));
+  ("caml_lexer.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\003.\000\000\000\189\000\000\002\140\000\000\002o\176\208\208@/caml_lex_engine\160@\144\179@\160\176\001\003\251$prim@\160\176\001\003\250\004\003@\160\176\001\003\249\004\005@@\166\155\240 CA @\160\160\160'bs.call\176\192-caml_lexer.ml\001\001R\001-O\001-R\192\004\002\001\001R\001-O\001-Y@\144\160\160\160\176\145\1621$$caml_lex_engine@\176\192\004\012\001\001R\001-O\001-Z\192\004\r\001\001R\001-O\001-m@@@\004\003@\160\160\160(bs.local\176\192\004\019\001\001R\001-O\001-r\192\004\020\001\001R\001-O\001-z@\144@@\144\176\193 \176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003|\176\193\004\011\176\179\144\176A#int@@\144@\002\005\245\225\000\001\003\127\176\193\004\019\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\130\176\179\004\016@\144@\002\005\245\225\000\001\003\133@\002\005\245\225\000\001\003\136@\002\005\245\225\000\001\003\137@\002\005\245\225\000\001\003\138\160\144\004I\160\144\004H\160\144\004H@\208@3caml_new_lex_engine\160@\144\179@\160\176\001\003\248\004S@\160\176\001\003\247\004U@\160\176\001\003\246\004W@@\166\155\240 CA\004R@\160\160\160'bs.call\176\192\004Q\001\001V\001-\212\001-\215\192\004R\001\001V\001-\212\001-\222@\144\160\160\160\176\145\1625$$caml_new_lex_engine@\176\192\004\\\001\001V\001-\212\001-\223\192\004]\001\001V\001-\212\001-\246@@@\004\003@\160\160\160(bs.local\176\192\004c\001\001V\001-\212\001-\251\192\004d\001\001V\001-\212\001.\003@\144@@\144\176\193\004P\176\179\177\144\176@&LexingA*lex_tables\000\255@\144@\002\005\245\225\000\001\003\139\176\193\004Z\176\179\004O@\144@\002\005\245\225\000\001\003\142\176\193\004_\176\179\177\144\176@&LexingA&lexbuf\000\255@\144@\002\005\245\225\000\001\003\145\176\179\004\\@\144@\002\005\245\225\000\001\003\148@\002\005\245\225\000\001\003\151@\002\005\245\225\000\001\003\152@\002\005\245\225\000\001\003\153\160\144\004B\160\144\004B\160\144\004B@@AB$fail\160\176A\160\160A\144\160\176\001\003\252%param@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\1623lexing: empty token@@@@C\144 @"));
   ("caml_md5.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000@\000\000\000\017\000\000\000:\000\000\0007\176\208@/caml_md5_string\160\176@\160\160C\144\160\176\001\004-!s@\160\176\001\004.%start@\160\176\001\004/#len@@@@@@A@@"));
   ("caml_obj.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\002j\000\000\000\163\000\000\002;\000\000\002\029\176\208\208\208\208@,caml_compare\160\176@\160\160B\144\160\176\001\004\011!a@\160\176\001\004\012!b@@@@@@A*caml_equal\160\176@\160\160B\144\160\176\001\004#!a@\160\176\001\004$!b@@@@@\208@1caml_greaterequal\160\176A\160\160B\144\160\176\001\0043!a@\160\176\001\0044!b@@@@@\208@0caml_greaterthan\160\176A\160\160B\144\160\176\001\0046!a@\160\176\001\0047!b@@@@@@ABC2caml_int32_compare\160\176A\160\160B\144\160\176\001\004\002!x@\160\176\001\004\003!y@@@@@\208@0caml_int_compare\160\004\r@@AD6caml_lazy_make_forward\160\176A\160\160A\144\160\176\001\003\251!x@@@@\144\179@\004\005\166\181\001\000\250B@\160\144\004\b@\208\208\208\208@.caml_lessequal\160\176A\160\160B\144\160\176\001\0049!a@\160\176\001\004:!b@@@@@@A-caml_lessthan\160\176A\160\160B\144\160\176\001\004<!a@\160\176\001\004=!b@@@@@@B6caml_nativeint_compare\160\004:@\208@-caml_notequal\160\176A\160\160B\144\160\176\001\004.!a@\160\176\001\004/!b@@@@@@AC,caml_obj_dup\160\176@\160\160A\144\160\176\001\003\241!x@@@@@\208@1caml_obj_truncate\160\176@\160\160B\144\160\176\001\003\246!x@\160\176\001\003\247(new_size@@@@@\208@1caml_update_dummy\160\176@\160\160B\144\160\176\001\003\253!x@\160\176\001\003\254!y@@@@@@ABDE@@"));
   ("caml_oo.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000K\000\000\000\017\000\000\000<\000\000\0008\176\208@6caml_get_public_method\160\176A\160\160C\144\160\176\001\003\243#obj@\160\176\001\003\244#tag@\160\176\001\003\245'cacheid@@@@@@A@@"));
-  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\001 \000\000\000=\000\000\000\220\000\000\000\206\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\179@\160\176\001\003\245$prim@@\166\155\240 AA @\160\160\160'bs.call\176\192.caml_parser.ml\001\001\130\0015\221\0015\224\192\004\002\001\001\130\0015\221\0015\231@\144\160\160\160\176\145\1627$$caml_set_parser_trace@\176\192\004\012\001\001\130\0015\221\0015\232\192\004\r\001\001\130\0015\221\0016\001@@@\004\003@\160\160\160(bs.local\176\192\004\019\001\001\130\0015\221\0016\006\192\004\020\001\001\130\0015\221\0016\014@\144@@\144\176\193 \176\179\144\176E$bool@@\144@\002\005\245\225\000\001\003\195\176\179\004\006@\144@\002\005\245\225\000\001\003\198@\002\005\245\225\000\001\003\201\160\144\0041@@AB\144 @"));
+  ("caml_parser.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\001 \000\000\000=\000\000\000\220\000\000\000\206\176\208@1caml_parse_engine\160@@\208@5caml_set_parser_trace\160@\144\179@\160\176\001\003\245$prim@@\166\155\240 AA @\160\160\160'bs.call\176\192.caml_parser.ml\001\001\139\0017\150\0017\153\192\004\002\001\001\139\0017\150\0017\160@\144\160\160\160\176\145\1627$$caml_set_parser_trace@\176\192\004\012\001\001\139\0017\150\0017\161\192\004\r\001\001\139\0017\150\0017\186@@@\004\003@\160\160\160(bs.local\176\192\004\019\001\001\139\0017\150\0017\191\192\004\020\001\001\139\0017\150\0017\199@\144@@\144\176\193 \176\179\144\176E$bool@@\144@\002\005\245\225\000\001\003\195\176\179\004\006@\144@\002\005\245\225\000\001\003\198@\002\005\245\225\000\001\003\201\160\144\0041@@AB\144 @"));
   ("caml_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@"));
   ("caml_queue.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\199\000\000\000K\000\000\000\230\000\000\000\222\176\208@&create\160\176A\160\160A\144\160\176\001\004\006%param@@@@\144\179@\004\005\166\181@\146\160&length$tailA\160\145\144\144@\160\145\161@\144$None@\208\208@(is_empty\160\176A\160\160A\144\160\176\001\004\003!q@@@@\144\179@\004\005\166\157@\160\166\166@\144\004\030\160\144\004\012@\160\145\144\144@@@A$push\160\176A\160\160B\144\160\176\001\003\248!x@\160\176\001\003\249!q@@@@@\208@*unsafe_pop\160\176@\160\160A\144\160\176\001\003\255!q@@@@@@ABC@@"));
-  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\003\182\000\000\000\245\000\000\003K\000\000\003&\176\208\208\208@#add\160\176@\160\160B\144\160\176\001\0045$prim@\160\176\001\0044\004\003@@@@\144\179@\004\007\166\155\2400js_string_appendBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\004w\176\193\004\t\176\179\004\b@\144@\002\005\245\225\000\001\004z\176\179\004\011@\144@\002\005\245\225\000\001\004}@\002\005\245\225\000\001\004\128@\002\005\245\225\000\001\004\129\160\144\004\031\160\144\004\030@@A/bytes_of_string\160\176@\160\160A\144\160\176\001\004\021!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\144\160\176\001\004$!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\011\"s1@\160\176\001\004\012\"i1@\160\176\001\004\r\"s2@\160\176\001\004\014\"i2@\160\176\001\004\015#len@@@@@@AB0caml_blit_string\160\176A\160\160E\144\160\176\001\004\001\"s1@\160\176\001\004\002\"i1@\160\176\001\004\003\"s2@\160\176\001\004\004\"i2@\160\176\001\004\005#len@@@@@\208@2caml_create_string\160\176@\160\160A\144\160\176\001\003\246#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\003\251!s@\160\176\001\003\252!i@\160\176\001\003\253!l@\160\176\001\003\254!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\144\160\176\001\004+!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\248\"s1@\160\176\001\003\249\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\243!s@\160\176\001\003\244!i@@@@@@B1caml_string_get16\160\176A\160\160B\144\160\176\001\004.!s@\160\176\001\004/!i@@@@@\208\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0041!s@\160\176\001\0042!i@@@@@@A9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004&%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\0046\004\204@@@@\144\179@\004\004\166\155\2403String.fromCharCodeAA\004\201@\160\160\160'bs.call\176\192%js.ml\000W\001\n\186\001\n\195\192\004\002\000W\001\n\186\001\n\202@\144@@\144\176\193\004\209\176\179\144\176B$char@@\144@\002\005\245\225\000\001\004.\176\179\004\214@\144@\002\005\245\225\000\001\0041@\002\005\245\225\000\001\0044\160\144\004\030@@ABCE@@"));
-  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\002B\000\000\000\141\000\000\001\233\000\000\001\200\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\006%param@@@A\144\179@\004\005\166\156@\160\166\147\176T)Not_foundC@@\208@/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\002\004\019@@@@\144\179@\004\004\145\144\162!/@@AB/caml_sys_getenv\160@\144\179@\160\176\001\004\000$prim@@\166\155\2401$$caml_sys_getenvAA @\160\160\160'bs.call\176\192+caml_sys.mle\001\004\216\001\004\221\192\004\002e\001\004\216\001\004\228@\144@\160\160\160(bs.local\176\192\004\te\001\004\216\001\004\234\192\004\ne\001\004\216\001\004\242@\144@@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\t\176\179\004\006@\144@\002\005\245\225\000\001\003\012@\002\005\245\225\000\001\003\015\160\144\004'@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\255\"_s@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\004\004j@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\003\004s@@@@\144\179@\004\004\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\005\004\128@@@@@@CD\144 @"));
+  ("caml_string.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\003\182\000\000\000\245\000\000\003K\000\000\003&\176\208\208\208@#add\160\176@\160\160B\144\160\176\001\0045$prim@\160\176\001\0044\004\003@@@@\144\179@\004\007\166\155\2400js_string_appendBA @@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\004w\176\193\004\t\176\179\004\b@\144@\002\005\245\225\000\001\004z\176\179\004\011@\144@\002\005\245\225\000\001\004}@\002\005\245\225\000\001\004\128@\002\005\245\225\000\001\004\129\160\144\004\031\160\144\004\030@@A/bytes_of_string\160\176@\160\160A\144\160\176\001\004\021!s@@@@@\208\208@/bytes_to_string\160\176@\160\160A\144\160\176\001\004$!a@@@@@\208@/caml_blit_bytes\160\176A\160\160E\144\160\176\001\004\011\"s1@\160\176\001\004\012\"i1@\160\176\001\004\r\"s2@\160\176\001\004\014\"i2@\160\176\001\004\015#len@@@@@@AB0caml_blit_string\160\176A\160\160E\144\160\176\001\004\001\"s1@\160\176\001\004\002\"i1@\160\176\001\004\003\"s2@\160\176\001\004\004\"i2@\160\176\001\004\005#len@@@@@\208@2caml_create_string\160\176@\160\160A\144\160\176\001\003\246#len@@@@@\208@0caml_fill_string\160\176A\160\160D\144\160\176\001\003\251!s@\160\176\001\003\252!i@\160\176\001\003\253!l@\160\176\001\003\254!c@@@@@@ABCD1caml_is_printable\160\176A\160\160A\144\160\176\001\004+!c@@@@@\208\208\208@3caml_string_compare\160\176A\160\160B\144\160\176\001\003\248\"s1@\160\176\001\003\249\"s2@@@@@@A/caml_string_get\160\176A\160\160B\144\160\176\001\003\243!s@\160\176\001\003\244!i@@@@@@B1caml_string_get16\160\176A\160\160B\144\160\176\001\004.!s@\160\176\001\004/!i@@@@@\208\208@1caml_string_get32\160\176A\160\160B\144\160\176\001\0041!s@\160\176\001\0042!i@@@@@@A9caml_string_of_char_array\160\176@\160\160A\144\160\176\001\004&%chars@@@@@\208@1js_string_of_char\160\176@\160\160A\144\160\176\001\0046\004\204@@@@\144\179@\004\004\166\155\2403String.fromCharCodeAA\004\201@\160\160\160'bs.call\176\192%js.ml\000`\001\012s\001\012|\192\004\002\000`\001\012s\001\012\131@\144@@\144\176\193\004\209\176\179\144\176B$char@@\144@\002\005\245\225\000\001\004.\176\179\004\214@\144@\002\005\245\225\000\001\0041@\002\005\245\225\000\001\0044\160\144\004\030@@ABCE@@"));
+  ("caml_sys.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\002B\000\000\000\141\000\000\001\233\000\000\001\200\176\208\208@4caml_raise_not_found\160\176A\160\160A\144\160\176\001\004\006%param@@@A\144\179@\004\005\166\156@\160\166\147\176T)Not_foundC@@\208@/caml_sys_getcwd\160\176A\160\160A\144\160\176\001\004\002\004\019@@@@\144\179@\004\004\145\144\162!/@@AB/caml_sys_getenv\160@\144\179@\160\176\001\004\000$prim@@\166\155\2401$$caml_sys_getenvAA @\160\160\160'bs.call\176\192+caml_sys.mln\001\006\145\001\006\150\192\004\002n\001\006\145\001\006\157@\144@\160\160\160(bs.local\176\192\004\tn\001\006\145\001\006\163\192\004\nn\001\006\145\001\006\171@\144@@\144\176\193 \176\179\144\176C&string@@\144@\002\005\245\225\000\001\003\t\176\179\004\006@\144@\002\005\245\225\000\001\003\012@\002\005\245\225\000\001\003\015\160\144\004'@\208\208\208@5caml_sys_is_directory\160\176A\160\160A\144\160\176\001\003\255\"_s@@@A\144\179@\004\005\166\156@\160\166\181@B@\160\166\147\176S'FailureC@\160\145\144\162\t%caml_sys_is_directory not implemented@@@@A4caml_sys_random_seed\160\176A\160\160A\144\160\176\001\004\004\004j@@@@@\208@7caml_sys_system_command\160\176A\160\160A\144\160\176\001\004\003\004s@@@@\144\179@\004\004\145\144\144\000\127@AB-caml_sys_time\160\176A\160\160A\144\160\176\001\004\005\004\128@@@@@@CD\144 @"));
   ("caml_utils.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\031\000\000\000\t\000\000\000\031\000\000\000\029\176\208@&repeat\160\176@\160\160B@@@@@A\144&repeat@"));
   ("caml_weak.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\002(\000\000\000\156\000\000\001\252\000\000\001\235\176\208\208\208\208@.caml_weak_blit\160\176A\160\160E\144\160\176\001\004\022\"a1@\160\176\001\004\023\"i1@\160\176\001\004\024\"a2@\160\176\001\004\025\"i2@\160\176\001\004\026#len@@@@@@A/caml_weak_check\160\176A\160\160B\144\160\176\001\004\005\"xs@\160\176\001\004\006!i@@@@@@B0caml_weak_create\160\176@\160\160A\144\160\176\001\003\247!n@@@@\144\179@\004\005\166\155\240/js_create_arrayAA @@\144\176\193 \176\179\144\176A#int@@\144@\002\005\245\225\000\001\004\172\176\179\144\176H%array@\160\176\150\176\144\144!a\002\005\245\225\000\001\004\183\001\004\028\001\004\175@\144@\002\005\245\225\000\001\004\177@\002\005\245\225\000\001\004\181\160\144\004\"@@C-caml_weak_get\160\176@\160\160B\144\160\176\001\003\254\"xs@\160\176\001\003\255!i@@@@\144\179@\004\b\166\155\240+js_from_defAA\004,@@\144\176\193\004+\176\179\144\176\001\003\252!t@\160\176\150\176\144\144!a\002\005\245\225\000\001\003\192\001\003\253\001\003\179@\144@\002\005\245\225\000\001\003\181\176\179\144\176J&option@\160\004\r@\144@\002\005\245\225\000\001\003\186@\002\005\245\225\000\001\003\190\160\166\b\000\000\004\021@\160\144\004'\160\144\004&@@\208\208@2caml_weak_get_copy\160\176A\160\160B\144\160\176\001\004\001\"xs@\160\176\001\004\002!i@@@@@@A-caml_weak_set\160\176A\160\160C\144\160\176\001\003\249\"xs@\160\176\001\003\250!i@\160\176\001\003\251!v@@@@@@BD@@"));
   ("curry.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\005O\000\000\001\193\000\000\005\128\000\000\005j\176\208\208\208\208@\"_1\160\176@\160\160B\144\160\176\001\004\t!o@\160\176\001\004\n!x@@@@@@A\"_2\160\176@\160\160C\144\160\176\001\004\r!o@\160\176\001\004\014!x@\160\176\001\004\015!y@@@@@@B\"_3\160\176@\160\160D\144\160\176\001\004\018!o@\160\176\001\004\019\"a0@\160\176\001\004\020\"a1@\160\176\001\004\021\"a2@@@@@\208\208@\"_4\160\176@\160\160E\144\160\176\001\004\024!o@\160\176\001\004\025\"a0@\160\176\001\004\026\"a1@\160\176\001\004\027\"a2@\160\176\001\004\028\"a3@@@@@@A\"_5\160\176@\160\160F\144\160\176\001\004\031!o@\160\176\001\004 \"a0@\160\176\001\004!\"a1@\160\176\001\004\"\"a2@\160\176\001\004#\"a3@\160\176\001\004$\"a4@@@@@@BC\"_6\160\176@\160\160G\144\160\176\001\004'!o@\160\176\001\004(\"a0@\160\176\001\004)\"a1@\160\176\001\004*\"a2@\160\176\001\004+\"a3@\160\176\001\004,\"a4@\160\176\001\004-\"a5@@@@@\208\208\208@\"_7\160\176@\160\160H\144\160\176\001\0040!o@\160\176\001\0041\"a0@\160\176\001\0042\"a1@\160\176\001\0043\"a2@\160\176\001\0044\"a3@\160\176\001\0045\"a4@\160\176\001\0046\"a5@\160\176\001\0047\"a6@@@@@\208@\"_8\160\176@\160\160I\144\160\176\001\004:!o@\160\176\001\004;\"a0@\160\176\001\004<\"a1@\160\176\001\004=\"a2@\160\176\001\004>\"a3@\160\176\001\004?\"a4@\160\176\001\004@\"a5@\160\176\001\004A\"a6@\160\176\001\004B\"a7@@@@@@AB#app\160\176@\160\160B\144\160\176\001\003\252!f@\160\176\001\003\253$args@@@@@\208\208@&curry1\160\176@\160\160C\144\160\176\001\004\004!o@\160\176\001\004\005!x@\160\176\001\004\006%arity@@@@@@A\"js\160\176@\160\160D\144\160\176\001\004E%label@\160\176\001\004F'cacheid@\160\176\001\004G#obj@\160\176\001\004H$args@@@@@\208@#js1\160\176@\160\160C\144\160\176\001\004K%label@\160\176\001\004L'cacheid@\160\176\001\004M#obj@@@@@@ABC#js2\160\176@\160\160D\144\160\176\001\004P%label@\160\176\001\004Q'cacheid@\160\176\001\004R#obj@\160\176\001\004S\"a1@@@@@\208\208@#js3\160\176@\160\160E\144\160\176\001\004V%label@\160\176\001\004W'cacheid@\160\176\001\004X#obj@\160\176\001\004Y\"a1@\160\176\001\004Z\"a2@@@@@@A#js4\160\176@\160\160F\144\160\176\001\004]%label@\160\176\001\004^'cacheid@\160\176\001\004_#obj@\160\176\001\004`\"a1@\160\176\001\004a\"a2@\160\176\001\004b\"a3@@@@@\208\208@#js5\160\176@\160\160G\144\160\176\001\004e%label@\160\176\001\004f'cacheid@\160\176\001\004g#obj@\160\176\001\004h\"a1@\160\176\001\004i\"a2@\160\176\001\004j\"a3@\160\176\001\004k\"a4@@@@@@A#js6\160\176@\160\160H\144\160\176\001\004n%label@\160\176\001\004o'cacheid@\160\176\001\004p#obj@\160\176\001\004q\"a1@\160\176\001\004r\"a2@\160\176\001\004s\"a3@\160\176\001\004t\"a4@\160\176\001\004u\"a5@@@@@\208@#js7\160\176@\160\160I\144\160\176\001\004x%label@\160\176\001\004y'cacheid@\160\176\001\004z#obj@\160\176\001\004{\"a1@\160\176\001\004|\"a2@\160\176\001\004}\"a3@\160\176\001\004~\"a4@\160\176\001\004\127\"a5@\160\176\001\004\128\"a6@@@@@\208@#js8\160\176@\160\160J\144\160\176\001\004\131%label@\160\176\001\004\132'cacheid@\160\176\001\004\133#obj@\160\176\001\004\134\"a1@\160\176\001\004\135\"a2@\160\176\001\004\136\"a3@\160\176\001\004\137\"a4@\160\176\001\004\138\"a5@\160\176\001\004\139\"a6@\160\176\001\004\140\"a7@@@@@@ABCDEF@@"));
   ("fn.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@"));
   ("js.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000y\000\000\000\028\000\000\000r\000\000\000j\176\208\208\208\208@%Array\160@@@A%Bytes\160@@\208\208@*Caml_int64\160@@@A(Caml_obj\160@@@BC#Def\160@@\208@%Float\160@@@AD$Null\160@@\208@(Null_def\160@@\208@&String\160@@@ABE@@"));
-  ("js_error.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000\004\000\000\000\001\000\000\000\004\000\000\000\004\176@@@"));
   ("js_primitive.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000U\000\000\000\021\000\000\000L\000\000\000G\176\208\208@4js_from_nullable_def\160\176A\160\160A\144\160\176\001\003\243!x@@@@@@A/js_is_nil_undef\160\176A\160\160A\144\160\176\001\003\241!x@@@@@@B@@"));
   ("typed_array.cmj",lazy (Js_cmj_format.from_string "BUCKLE20160310\132\149\166\190\000\000\000>\000\000\000\n\000\000\000-\000\000\000(\176\208\208\208@-Float32_array\160@@@A-Float64_array\160@@@B+Int32_array\160@@@C@@"));
   
@@ -11555,25 +12323,34 @@ let cmj_data_sets = String_map.of_list [
 end
 module Config_util : sig 
 #1 "config_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11590,25 +12367,34 @@ val find_cmj : string -> Js_cmj_format.cmj_table
 
 end = struct
 #1 "config_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11653,25 +12439,34 @@ let find_cmj file =
 end
 module Lam_compile_env : sig 
 #1 "lam_compile_env.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11749,25 +12544,34 @@ val get_requried_modules :
 
 end = struct
 #1 "lam_compile_env.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -11991,25 +12795,34 @@ let get_requried_modules env (extras : module_id list ) (hard_dependencies
 end
 module Js_of_lam_option : sig 
 #1 "js_of_lam_option.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val get : J.expression -> J.expression
@@ -12020,25 +12833,34 @@ val some : J.expression -> J.expression
 
 end = struct
 #1 "js_of_lam_option.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make 
  
@@ -12062,25 +12884,34 @@ let some x : J.expression =
 end
 module Ext_marshal : sig 
 #1 "ext_marshal.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12093,25 +12924,34 @@ val from_file : string -> 'a
 
 end = struct
 #1 "ext_marshal.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12131,25 +12971,34 @@ let from_file filename =
 end
 module Lam_methname : sig 
 #1 "lam_methname.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type t = 
   | Js_read_index
@@ -12174,25 +13023,34 @@ val process : string -> t * string
 
 end = struct
 #1 "lam_methname.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12306,50 +13164,68 @@ let process ( x : string) : t * string =
 end
 module Lam_exit_code : sig 
 #1 "lam_exit_code.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val has_exit_code : (int -> bool ) -> Lambda.lambda -> bool 
 
 end = struct
 #1 "lam_exit_code.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let rec has_exit_code exits  (lam : Lambda.lambda)  : bool = 
   match lam with
@@ -12424,25 +13300,34 @@ and has_exit_code_lam_switch exits (lam_switch : Lambda.lambda_switch) =
 end
 module Js_of_lam_module : sig 
 #1 "js_of_lam_module.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 val make :
   ?comment:string ->
@@ -12453,25 +13338,34 @@ val is_empty_shape :
 
 end = struct
 #1 "js_of_lam_module.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make 
 
@@ -12493,25 +13387,34 @@ let is_empty_shape (shape : J.expression) =
 end
 module Js_of_lam_exception : sig 
 #1 "js_of_lam_exception.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
   
 val get_builtin_by_name : string -> J.expression
@@ -12522,25 +13425,34 @@ val caml_set_oo_id : J.expression list -> J.expression
 
 end = struct
 #1 "js_of_lam_exception.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** An pattern match on {!caml_set_oo_id args}
     Note that in the trunk, it is immutable by default now 
@@ -12595,25 +13507,34 @@ let caml_set_oo_id args =
 end
 module Lam_compile_global : sig 
 #1 "lam_compile_global.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12627,25 +13548,34 @@ val query_lambda : Ident.t -> Env.t -> Lambda.lambda
 
 end = struct
 #1 "lam_compile_global.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12703,25 +13633,34 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
 end
 module Parsetree_util : sig 
 #1 "parsetree_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12739,25 +13678,34 @@ val attr_attribute_from_type : Parsetree.core_type -> Parsetree.attribute
 
 end = struct
 #1 "parsetree_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12832,25 +13780,34 @@ let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute =
 end
 module Js_of_lam_tuple : sig 
 #1 "js_of_lam_tuple.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12860,25 +13817,34 @@ val make : J.expression list -> J.expression
 
 end = struct
 #1 "js_of_lam_tuple.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12891,25 +13857,34 @@ let make (args : J.expression list) =
 end
 module Js_of_lam_array : sig 
 #1 "js_of_lam_array.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12927,25 +13902,34 @@ val ref_array :  J.expression -> J.expression -> J.expression
 
 end = struct
 #1 "js_of_lam_array.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -12991,25 +13975,34 @@ let ref_array  e e0 =
 end
 module Js_long : sig 
 #1 "js_long.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 type int64_call = J.expression list -> J.expression  
 
@@ -13047,25 +14040,34 @@ val get64 : int64_call
 
 end = struct
 #1 "js_long.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make
 type int64_call = J.expression list -> J.expression  
@@ -13220,25 +14222,34 @@ let to_float (args : J.expression list ) =
 end
 module Lam_dispatch_primitive : sig 
 #1 "lam_dispatch_primitive.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -13255,25 +14266,34 @@ val query :
 
 end = struct
 #1 "lam_dispatch_primitive.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -14277,25 +15297,34 @@ let query (prim : Lam_compile_env.primitive_description)
 end
 module Js_array : sig 
 #1 "js_array.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val set_array : J.expression -> J.expression -> J.expression -> J.expression
@@ -14304,25 +15333,34 @@ val ref_array : J.expression -> J.expression -> J.expression
 
 end = struct
 #1 "js_array.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make
  
@@ -14335,25 +15373,34 @@ let ref_array  e e0 =
 end
 module Lam_compile_external_call : sig 
 #1 "lam_compile_external_call.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -14379,25 +15426,34 @@ val translate :
 
 end = struct
 #1 "lam_compile_external_call.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -14881,25 +15937,34 @@ let translate
 end
 module Js_of_lam_string : sig 
 #1 "js_of_lam_string.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -14927,25 +15992,34 @@ val bytes_of_string : J.expression -> J.expression
 
 end = struct
 #1 "js_of_lam_string.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -15061,25 +16135,34 @@ include B
 end
 module Js_of_lam_record : sig 
 #1 "js_of_lam_record.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** Utilities for compiling lambda record into JS IR *)
 
@@ -15092,25 +16175,34 @@ val copy : Js_exp_make.unary_op
 
 end = struct
 #1 "js_of_lam_record.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -15145,25 +16237,34 @@ let copy  = E.array_copy
 end
 module Js_of_lam_float_record : sig 
 #1 "js_of_lam_float_record.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** Compile a special representation in OCaml when all fields are of type [float] 
     check the invariant in {!Js_of_lam_array.make_array}
@@ -15180,25 +16281,34 @@ val get_double_feild :
 
 end = struct
 #1 "js_of_lam_float_record.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make 
 
@@ -15225,25 +16335,34 @@ let set_double_field field_info e  i e0 =
 end
 module Js_of_lam_block : sig 
 #1 "js_of_lam_block.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -15262,25 +16381,34 @@ val set_field :
 
 end = struct
 #1 "js_of_lam_block.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -15329,25 +16457,34 @@ let set_field field_info e i e0 =
 end
 module Lam_compile_primitive : sig 
 #1 "lam_compile_primitive.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -15362,25 +16499,34 @@ val translate :
 
 end = struct
 #1 "lam_compile_primitive.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16037,25 +17183,34 @@ let translate
 end
 module Lam_compile_const : sig 
 #1 "lam_compile_const.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16065,25 +17220,34 @@ val translate : Lambda.structured_constant -> J.expression
 
 end = struct
 #1 "lam_compile_const.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16153,25 +17317,34 @@ let rec translate (x : Lambda.structured_constant ) : J.expression =
 end
 module Lam_beta_reduce_util : sig 
 #1 "lam_beta_reduce_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val simple_beta_reduce : 
@@ -16179,25 +17352,34 @@ val simple_beta_reduce :
 
 end = struct
 #1 "lam_beta_reduce_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (* 
    Principle: since in ocaml, the apply order is not specified 
@@ -16290,25 +17472,34 @@ let simple_beta_reduce params body args =
 end
 module Ext_hashtbl : sig 
 #1 "ext_hashtbl.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val of_list : ('a * 'b) list -> ('a, 'b) Hashtbl.t
@@ -16321,25 +17512,34 @@ val add_list2 :  ('a, 'b) Hashtbl.t -> 'a list -> 'b list -> unit
 
 end = struct
 #1 "ext_hashtbl.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let of_list kvs = 
   let map = Hashtbl.create 51 in 
@@ -16361,25 +17561,34 @@ let add_list2 map ks vs =
 end
 module Lam_beta_reduce : sig 
 #1 "lam_beta_reduce.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16441,25 +17650,34 @@ val propogate_beta_reduce_with_map :
 
 end = struct
 #1 "lam_beta_reduce.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16751,25 +17969,34 @@ let beta_reduce params body args =
 end
 module Js_ast_util : sig 
 #1 "js_ast_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 val named_expression : 
@@ -16777,25 +18004,34 @@ val named_expression :
 
 end = struct
 #1 "js_ast_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module E = Js_exp_make 
 
@@ -16819,25 +18055,34 @@ let named_expression (e : J.expression)
 end
 module Lam_compile : sig 
 #1 "lam_compile.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -16856,25 +18101,34 @@ val compile_lambda : Lam_compile_defs.cxt -> Lambda.lambda -> Js_output.t
 
 end = struct
 #1 "lam_compile.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18484,25 +19738,34 @@ and
 end
 module Lam_stats_util : sig 
 #1 "lam_stats_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18520,25 +19783,34 @@ val get_arity : Lam_stats.meta -> Lambda.lambda -> Lam_stats.function_arities
 
 end = struct
 #1 "lam_stats_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18745,25 +20017,34 @@ let dump_exports_arities (meta : Lam_stats.meta ) =
 end
 module Lam_inline_util : sig 
 #1 "lam_inline_util.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18775,25 +20056,34 @@ val should_be_functor : string -> Lambda.lambda -> bool
 
 end = struct
 #1 "lam_inline_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18837,25 +20127,34 @@ let app_definitely_inlined (body : Lambda.lambda) =
 end
 module Ext_option : sig 
 #1 "ext_option.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18865,25 +20164,34 @@ val bind : 'a option -> ('a -> 'b) -> 'b option
 
 end = struct
 #1 "ext_option.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -18895,25 +20203,34 @@ let bind v f =
 end
 module Lam_stats_export : sig 
 #1 "lam_stats_export.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 val export_to_cmj : 
   Lam_stats.meta ->
@@ -18924,25 +20241,34 @@ val export_to_cmj :
 
 end = struct
 #1 "lam_stats_export.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let pp = Format.fprintf 
 (* we should exclude meaninglist names and do the convert as well *)
@@ -19080,25 +20406,34 @@ let export_to_cmj
 end
 module Lam_pass_remove_alias : sig 
 #1 "lam_pass_remove_alias.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -19122,25 +20457,34 @@ val simplify_alias :
 
 end = struct
 #1 "lam_pass_remove_alias.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20213,25 +21557,34 @@ let simplify_exits (lam : Lambda.lambda) =
 end
 module Lam_pass_collect : sig 
 #1 "lam_pass_collect.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20293,25 +21646,34 @@ val count_alias_globals :
 
 end = struct
 #1 "lam_pass_collect.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20492,25 +21854,34 @@ let count_alias_globals
 end
 module Lam_pass_alpha_conversion : sig 
 #1 "lam_pass_alpha_conversion.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20520,25 +21891,34 @@ val alpha_conversion : Lam_stats.meta -> Lambda.lambda  -> Lambda.lambda
 
 end = struct
 #1 "lam_pass_alpha_conversion.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20638,25 +22018,34 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
 end
 module Js_shake : sig 
 #1 "js_shake.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20669,25 +22058,34 @@ val shake_program : J.program -> J.program
 
 end = struct
 #1 "js_shake.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20787,25 +22185,34 @@ let shake_program (program : J.program) =
 end
 module Js_program_loader : sig 
 #1 "js_program_loader.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20830,25 +22237,34 @@ val string_of_module_id : Lam_module_ident.t -> string
 
 end = struct
 #1 "js_program_loader.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -20959,24 +22375,34 @@ module
 Js_map
 = struct
 #1 "js_map.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-(* Author: Hongbo Zhang  *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
 (** GENERATED CODE, map visitor for JS IR  *)
 open J
   
@@ -21480,25 +22906,34 @@ class virtual map =
 end
 module Js_pass_tailcall_inline : sig 
 #1 "js_pass_tailcall_inline.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -21519,25 +22954,34 @@ val tailcall_inline : J.program -> J.program
 
 end = struct
 #1 "js_pass_tailcall_inline.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (* When we inline a function call, if we don't do a beta-reduction immediately, there is 
    a chance that it is ignored, (we can not assume that each pass is robust enough)
@@ -21753,25 +23197,34 @@ let tailcall_inline (program : J.program) =
 end
 module Js_pass_scope : sig 
 #1 "js_pass_scope.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -21781,25 +23234,34 @@ val program : J.program ->  Ident_set.t
 
 end = struct
 #1 "js_pass_scope.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22097,25 +23559,34 @@ let program js =
 end
 module Js_pass_flatten_and_mark_dead : sig 
 #1 "js_pass_flatten_and_mark_dead.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22125,25 +23596,34 @@ val program :  J.program -> J.program
 
 end = struct
 #1 "js_pass_flatten_and_mark_dead.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22433,25 +23913,34 @@ let program  (js : J.program) =
 end
 module Js_pass_flatten : sig 
 #1 "js_pass_flatten.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22470,25 +23959,34 @@ val program : J.program -> J.program
 
 end = struct
 #1 "js_pass_flatten.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22559,49 +24057,67 @@ let program ( x : J.program) = flatten_map # program x
 end
 module Js_pass_debug : sig 
 #1 "js_pass_debug.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 val dump : string  -> J.program -> J.program 
 
 end = struct
 #1 "js_pass_debug.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 let log_counter = ref 0 
 
@@ -22627,25 +24143,34 @@ let dump name (prog : J.program) =
 end
 module Lam_compile_group : sig 
 #1 "lam_compile_group.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -22671,25 +24196,34 @@ val lambda_as_module :
 
 end = struct
 #1 "lam_compile_group.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -23097,25 +24631,34 @@ let lambda_as_module
 end
 module Ext_map : sig 
 #1 "ext_map.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 module Make(Ord : Map.OrderedType) :  
 sig
@@ -23127,6 +24670,36 @@ end
 
 end = struct
 #1 "ext_map.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
 module Make( S : Map.OrderedType) = struct
   include Map.Make(S)
   let of_list (xs : ('a * 'b) list ) = 
@@ -23134,40 +24707,38 @@ module Make( S : Map.OrderedType) = struct
 end
 
 end
-module Lam_register : sig 
-#1 "lam_register.mli"
-(** *)
-
-end = struct
-#1 "lam_register.ml"
-let () = 
-  Printlambda.serialize_raw_js := Lam_compile_group.lambda_as_module;
-;;
-
-end
 module 
 Ident_util
 = struct
 #1 "ident_util.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -23179,48 +24750,66 @@ let print_identset set =
 end
 module Lam_runtime : sig 
 #1 "lam_runtime.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 end = struct
 #1 "lam_runtime.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -23256,25 +24845,34 @@ module
 Ppx_entry
 = struct
 #1 "ppx_entry.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (* When we design a ppx, we should keep it simple, and also think about 
    how it would work with other tools like merlin and ocamldep  *)
@@ -23440,25 +25038,34 @@ let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref =
 end
 module Js_implementation : sig 
 #1 "js_implementation.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 
@@ -23488,8 +25095,7 @@ end = struct
 (*                                                                     *)
 (***********************************************************************)
 
-(* Author: Hongbo Zhang, adapted from [driver/compile.ml] for convenience 
-*)
+(* adapted by bucklescript from [driver/compile.ml] for convenience    *)
 
 open Format
 open Typedtree
@@ -23802,25 +25408,34 @@ let _ = main ()
 end
 module Lam_mk : sig 
 #1 "lam_mk.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** A module prepared for smart constructors of {!Lambda.lambda}*)
 
@@ -23829,25 +25444,34 @@ val lfunction :
 
 end = struct
 #1 "lam_mk.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 (* Note this function could change the arity of an lambda, 
@@ -23867,25 +25491,34 @@ let lfunction kind params (body : Lambda.lambda) =
 end
 module Ext_array : sig 
 #1 "ext_array.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** Some utilities for {!Array} operations *)
 
@@ -23902,25 +25535,34 @@ val map2i : (int -> 'a -> 'b -> 'c ) -> 'a array -> 'b array -> 'c array
 
 end = struct
 #1 "ext_array.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 let reverse_in_place a =
@@ -23988,49 +25630,67 @@ let map2i f a b =
 end
 module Js_pass_beta : sig 
 #1 "js_pass_beta.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** *)
 
 end = struct
 #1 "js_pass_beta.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (* When we inline a function call, if we don't do a beta-reduction immediately, there is 
    a chance that it is ignored, (we can not assume that each pass is robust enough)
@@ -24141,25 +25801,34 @@ let pass_beta =
 end
 module Ext_char : sig 
 #1 "ext_char.mli"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 (** Extension to Standard char module, avoid locale sensitivity *)
 
@@ -24167,25 +25836,34 @@ val escaped : char -> string
 
 end = struct
 #1 "ext_char.ml"
-(* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-(* Author: Hongbo Zhang  *)
+
+
+
+
 
 
 external string_unsafe_set : string -> int -> char -> unit
