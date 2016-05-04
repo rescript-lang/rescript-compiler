@@ -1,5 +1,7 @@
 # [BuckleScript](http://bloomberg.github.io/bucklescript/)
 
+[![Coverage Status](https://coveralls.io/repos/github/bloomberg/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bloomberg/bucklescript?branch=master)
+
 ## Introduction
 BuckleScript is a JavaScript backend for [the OCaml compiler](https://ocaml.org/).
 
