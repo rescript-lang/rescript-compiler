@@ -82,7 +82,7 @@ world:
 
 big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 100 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
