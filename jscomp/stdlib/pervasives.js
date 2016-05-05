@@ -57,9 +57,7 @@ function lnot(x) {
   return x ^ -1;
 }
 
-var max_int = 2147483647;
-
-var min_int = max_int + 1 | 0;
+var min_int = -2147483648;
 
 function $caret(a, b) {
   return a + b;
@@ -546,6 +544,8 @@ function exit() {
             throw "caml_sys_exit not implemented by bucklescript yet\n";
           }();
 }
+
+var max_int = 2147483647;
 
 var infinity = Infinity;
 

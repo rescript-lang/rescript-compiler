@@ -43,11 +43,9 @@ function getId(bdd) {
   }
 }
 
-var initSize_1 = 8191;
-
 var nodeC = [1];
 
-var sz_1 = [initSize_1];
+var sz_1 = [8191];
 
 var htab = [Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0)];
 
@@ -120,7 +118,7 @@ function insert(idl, idh, v, ind, bucket, newNode) {
 }
 
 function resetUnique() {
-  sz_1[0] = initSize_1;
+  sz_1[0] = 8191;
   htab[0] = Caml_array.caml_make_vect(sz_1[0] + 1 | 0, /* [] */0);
   n_items[0] = 0;
   nodeC[0] = 1;
@@ -430,6 +428,8 @@ function main() {
 }
 
 main(/* () */0);
+
+var initSize_1 = 8191;
 
 var zero = /* Zero */1;
 

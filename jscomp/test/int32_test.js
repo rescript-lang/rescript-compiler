@@ -151,8 +151,6 @@ var shift_left_tests = /* tuple */[
   shift_left_tests_001
 ];
 
-var test_div = 30;
-
 var $star$tilde = Caml_int32.imul
 
 Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
@@ -241,6 +239,8 @@ Mt.from_pair_suites("int32_test.ml", Pervasives.$at(/* :: */[
                                   }
                                 ];
                         }, shift_left_tests_000, shift_left_tests_001))))));
+
+var test_div = 30;
 
 exports.f                         = f;
 exports.shift_right_logical_tests = shift_right_logical_tests;

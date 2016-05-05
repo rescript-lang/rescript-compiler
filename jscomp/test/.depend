@@ -283,6 +283,8 @@ libarg_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/arg.cmx
 libqueue_test.cmo : ../stdlib/queue.cmi ../stdlib/list.cmi
 libqueue_test.cmx : ../stdlib/queue.cmx ../stdlib/list.cmx
+limits_test.cmo : mt.cmi ../stdlib/int32.cmi
+limits_test.cmx : mt.cmx ../stdlib/int32.cmx
 list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmx : ../stdlib/pervasives.cmx mt.cmx ../stdlib/list.cmx \
@@ -427,6 +429,8 @@ test_common.cmo :
 test_common.cmx :
 test_const_elim.cmo :
 test_const_elim.cmx :
+test_const_propogate.cmo :
+test_const_propogate.cmx :
 test_cps.cmo : ../stdlib/array.cmi
 test_cps.cmx : ../stdlib/array.cmx
 test_demo.cmo : ../stdlib/list.cmi
@@ -891,6 +895,8 @@ libarg_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/arg.cmj
 libqueue_test.cmo : ../stdlib/queue.cmi ../stdlib/list.cmi
 libqueue_test.cmj : ../stdlib/queue.cmj ../stdlib/list.cmj
+limits_test.cmo : mt.cmi ../stdlib/int32.cmi
+limits_test.cmj : mt.cmj ../stdlib/int32.cmj
 list_test.cmo : ../stdlib/pervasives.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/array.cmi
 list_test.cmj : ../stdlib/pervasives.cmj mt.cmj ../stdlib/list.cmj \
@@ -1035,6 +1041,8 @@ test_common.cmo :
 test_common.cmj :
 test_const_elim.cmo :
 test_const_elim.cmj :
+test_const_propogate.cmo :
+test_const_propogate.cmj :
 test_cps.cmo : ../stdlib/array.cmi
 test_cps.cmj : ../stdlib/array.cmj
 test_demo.cmo : ../stdlib/list.cmi

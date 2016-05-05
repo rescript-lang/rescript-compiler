@@ -1708,9 +1708,8 @@ function elfgen(outf) {
   Curry._1(symitr, patchloc);
   var strtab = opos[0];
   opos[0] = opos[0] + 1 | 0;
-  var dllen = 37;
-  $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], dllen);
-  opos[0] = (opos[0] + dllen | 0) + 1 | 0;
+  $$String.blit("/lib64/ld-linux-x86-64.so.2\0libc.so.6", 0, obuf, opos[0], 37);
+  opos[0] = (opos[0] + 37 | 0) + 1 | 0;
   itr(function (s, sl, _) {
         $$String.blit(s, 0, obuf, opos[0], sl);
         opos[0] = (opos[0] + sl | 0) + 1 | 0;
@@ -1718,7 +1717,7 @@ function elfgen(outf) {
       });
   opos[0] = opos[0] + 7 & -8;
   var symtab = opos[0];
-  var n = [dllen + 2 | 0];
+  var n = [39];
   opos[0] = opos[0] + 24 | 0;
   itr(function (_, sl, _$1) {
         le(32, n[0]);

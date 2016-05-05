@@ -39,16 +39,13 @@ open Js_output.Ops
  *)
 
 
-(* TODO: add module into taginfo*)
-(* let len = List.length sigs in  *)
-(* TODO: could be optimized *)
 
 let query_lambda id env = 
   Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature = sigs; _} -> 
-        Lam_comb.prim (Pmakeblock(0, Blk_na, Immutable))  
+        Lam_comb.prim (Pmakeblock(0, Blk_module None, Immutable))  
                       (List.mapi (fun i _ -> 
                            Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
                              [Lam_comb.prim (Pgetglobal id) [] ])

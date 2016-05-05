@@ -6,8 +6,7 @@ var Block = require("../runtime/block");
 var Curry = require("../runtime/curry");
 
 function f(h, _) {
-  var u = 3;
-  console.log(u);
+  console.log(3);
   return function (x, y) {
     return Curry._2(h, x, y);
   };

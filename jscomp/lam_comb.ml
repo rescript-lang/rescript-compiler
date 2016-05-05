@@ -34,6 +34,42 @@ type triop = t -> t -> t -> t
 
 type unop = t -> t 
 
+
+
+module Prim = struct 
+  type t = Lambda.primitive
+  let js_is_nil : t = 
+    Lambda.Pccall{ prim_name = "js_is_nil";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_undef : t = 
+    Lambda.Pccall{ prim_name = "js_is_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_nil_undef : t  = 
+    Lambda.Pccall{ prim_name = "js_is_nil_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+end
+
 let if_ (a : t) (b : t) c = 
   match a with
   | Lconst v ->
@@ -115,41 +151,81 @@ let staticcatch  a b c : t = Lstaticcatch(a,b,c)
 
 let staticraise a b : t = Lstaticraise(a,b)
 
-let prim prim ll : t = Lprim(prim,ll)
+let comparison (cmp : Lambda.comparison) a b : bool = 
+  match cmp with 
+  | Ceq -> a = b 
+  | Cneq -> a <> b 
+  | Cgt -> a > b 
+  | Cle -> a <= b 
+  | Clt -> a < b 
+  | Cge -> a >= b 
+
+let int i : t =
+  Lconst (Const_base (Const_int i))
+
+
+let int32 i : t =
+  Lconst (Const_base (Const_int32 i))
+
+let lift_bool b = if b then true_ else false_
+
+let prim (prim : Prim.t) (ll : t list) : t = 
+  let default () : t = Lprim(prim,ll) in 
+  match ll with 
+  | [Lconst a] -> 
+    begin match prim, a  with 
+      | Pnegint, (Const_base (Const_int a))
+        -> int (- a)
+      | _ -> default ()
+    end
+  | [Lconst a ; Lconst b] -> 
+    begin match prim, a, b  with 
+      | Pbintcomp(_, cmp), Const_base (Const_int32 a), Const_base (Const_int32 b)
+        -> lift_bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_int64 a), Const_base (Const_int64 b)
+        -> lift_bool (comparison cmp a b)
+      | Pbintcomp(_, cmp), Const_base (Const_nativeint a), Const_base (Const_nativeint b)
+        -> lift_bool (comparison cmp a b)
+      | (Paddint
+        | Psubint
+        | Pmulint
+        | Pdivint
+        | Pmodint
+        | Pandint
+        | Porint
+        | Pxorint
+        | Plslint
+        | Plsrint
+        | Pasrint | Pintcomp _), _, _ 
+        ->
+        begin match a, b with 
+          | Const_base (Const_int a),  Const_base (Const_int b)
+            -> 
+            (* WE SHOULD keep it as [int], to preserve types *)
+            let aa,bb = Int32.of_int a, Int32.of_int  b in 
+            let int_ v = int (Int32.to_int v ) in 
+            begin match prim with 
+              | Paddint -> int_ (Int32.add aa bb)
+              | Psubint -> int_ (Int32.sub aa bb)
+              | Pmulint -> int_ (Int32.mul aa  bb)
+              | Pdivint -> int_ (Int32.div aa  bb)
+              | Pmodint -> int_ (Int32.rem aa  bb)
+              | Pandint -> int_ (Int32.logand aa bb)
+              | Porint -> int_ (Int32.logor aa bb)
+              | Pxorint -> int_ (Int32.logxor aa bb)
+              | Plslint -> int_ (Int32.shift_left  aa b )
+              | Plsrint -> int_ (Int32.shift_right_logical aa  b)
+              | Pasrint -> int_ (Int32.shift_right aa b)
+              | Pintcomp cmp 
+                -> lift_bool (comparison cmp a b)
+              | _ -> default ()
+            end
+          | _ -> default ()
+        end 
+      | _ -> default ()
+    end
+  | _ -> default ()
+
 
 let not x : t = 
   prim Pnot [x]
-
-module Prim = struct 
-  type t = Lambda.primitive
-  let js_is_nil : t = 
-    Lambda.Pccall{ prim_name = "js_is_nil";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-  let js_is_undef : t = 
-    Lambda.Pccall{ prim_name = "js_is_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-  let js_is_nil_undef : t  = 
-    Lambda.Pccall{ prim_name = "js_is_nil_undef";
-                   prim_arity = 1 ;
-                   prim_alloc = false;
-                   prim_native_name = "js_is_nil_undef";
-                   prim_native_float = false;
-                   prim_attributes = [];
-                   prim_ty = None
-                 }
-
-end

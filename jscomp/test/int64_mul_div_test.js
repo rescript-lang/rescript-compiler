@@ -875,62 +875,14 @@ var to_floats = Caml_obj.caml_obj_dup(/* array */[
     ]);
 
 var check_complete_compare = /* int array */[
-  Caml_int64.ge(/* int64 */[
-        /* hi */0,
-        /* lo */3
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */2
-      ]),
-  Caml_int64.ge(/* int64 */[
-        /* hi */0,
-        /* lo */3
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */3
-      ]),
-  Caml_int64.eq(/* int64 */[
-        /* hi */0,
-        /* lo */3
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */3
-      ]),
-  Caml_int64.eq(/* int64 */[
-        /* hi */0,
-        /* lo */2
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */2
-      ]),
-  Caml_int64.lt(/* int64 */[
-        /* hi */0,
-        /* lo */2
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */3
-      ]),
-  Caml_int64.gt(/* int64 */[
-        /* hi */0,
-        /* lo */3
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */2
-      ]),
-  Caml_int64.le(/* int64 */[
-        /* hi */0,
-        /* lo */2
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */3
-      ]),
-  Caml_int64.le(/* int64 */[
-        /* hi */0,
-        /* lo */3
-      ], /* int64 */[
-        /* hi */0,
-        /* lo */3
-      ])
+  /* true */1,
+  /* true */1,
+  /* true */1,
+  /* true */1,
+  /* true */1,
+  /* true */1,
+  /* true */1,
+  /* true */1
 ];
 
 var of_float_pairs = Caml_obj.caml_obj_dup(/* array */[
