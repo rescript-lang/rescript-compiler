@@ -68,9 +68,7 @@ val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
 val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
 
-val lam_true : Lambda.lambda
-val lam_false : Lambda.lambda
-val lam_unit : Lambda.lambda 
+
 
 val not_function : Lambda.lambda -> bool 
 val is_function : Lambda.lambda -> bool 
@@ -82,6 +80,3 @@ val eta_conversion :
 
 val default_apply_info : Lambda.apply_info
 
-val js_is_nil_primitive : Lambda.primitive
-val js_is_undef_primitive : Lambda.primitive
-val js_is_nil_undef_primitive : Lambda.primitive

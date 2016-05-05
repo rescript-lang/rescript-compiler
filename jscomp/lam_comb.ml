@@ -27,7 +27,9 @@
 
 
 type t = Lambda.lambda
-
+type binop = t -> t -> t 
+type triop = t -> t -> t -> t 
+type unop = t -> t 
 let if_ a (b : t) c = 
   match a with
   | Lambda.Lconst v ->
@@ -65,3 +67,56 @@ let stringswitch lam cases default =
         end
     end
   | _ -> Lambda.Lstringswitch(lam, cases, default)
+
+
+let true_ : Lambda.lambda =
+  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
+
+let false_ : Lambda.lambda =
+  Lconst (Const_pointer( 0, Pt_constructor "false"))
+
+let unit : Lambda.lambda = 
+  Lconst (Const_pointer( 0, Pt_constructor "()"))
+
+let not x : t = 
+  Lambda.Lprim (Pnot, [x])
+
+(** [l || r ] *)
+let sequor l r = if_ l true_ r 
+
+(** [l && r ] *)
+let sequand l r = if_ l r false_
+
+module Prim = struct 
+  type t = Lambda.primitive
+  let js_is_nil : t = 
+    Lambda.Pccall{ prim_name = "js_is_nil";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_undef : t = 
+    Lambda.Pccall{ prim_name = "js_is_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+  let js_is_nil_undef : t  = 
+    Lambda.Pccall{ prim_name = "js_is_nil_undef";
+                   prim_arity = 1 ;
+                   prim_alloc = false;
+                   prim_native_name = "js_is_nil_undef";
+                   prim_native_float = false;
+                   prim_attributes = [];
+                   prim_ty = None
+                 }
+
+end

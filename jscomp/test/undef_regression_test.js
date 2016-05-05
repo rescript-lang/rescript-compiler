@@ -8,11 +8,11 @@ function f(obj) {
   }
   else {
     var size = obj.length;
-    if (size === undefined) {
+    if (size !== undefined) {
+      console.log(size);
       return /* () */0;
     }
     else {
-      console.log(size);
       return /* () */0;
     }
   }

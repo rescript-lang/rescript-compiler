@@ -33,7 +33,16 @@
 
 include Map.Make(struct 
   type t = Ident.t 
-  let compare  = Pervasives.compare (**TODO: fix me*)
+
+  let compare (x : t) (y : t) =
+    (* Can not overflow *)
+    let u = x.stamp - y.stamp in
+    if u = 0 then 
+      let u = String.compare x.name y.name in 
+      if u = 0 then 
+        x.flags - y.flags 
+      else  u 
+    else u 
 end)
 
 let of_list lst = 
