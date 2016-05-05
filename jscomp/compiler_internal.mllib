@@ -17,8 +17,8 @@
 ../ocaml/parsing/docstrings
 ../ocaml/parsing/ast_helper
 ../ocaml/parsing/syntaxerr
-../ocaml/parsing/parser
-../ocaml/parsing/lexer
+# ../ocaml/parsing/parser
+# ../ocaml/parsing/lexer
 ../ocaml/parsing/parse
 ../ocaml/parsing/printast
 ../ocaml/parsing/pprintast
@@ -63,24 +63,24 @@
 ../ocaml/bytecomp/translclass
 ../ocaml/bytecomp/translmod
 ../ocaml/bytecomp/simplif
-../ocaml/bytecomp/runtimedef
+# ../ocaml/bytecomp/runtimedef
 ../ocaml/driver/pparse
 ../ocaml/driver/main_args
 ../ocaml/driver/compenv
 ../ocaml/driver/compmisc
 
 
-../ocaml/bytecomp/meta
-../ocaml/bytecomp/instruct
-../ocaml/bytecomp/bytegen
-../ocaml/bytecomp/printinstr
-../ocaml/bytecomp/opcodes
-../ocaml/bytecomp/emitcode
-../ocaml/bytecomp/bytesections
-../ocaml/bytecomp/dll
-../ocaml/bytecomp/symtable
-../ocaml/bytecomp/bytelink
-../ocaml/bytecomp/bytelibrarian
-../ocaml/bytecomp/bytepackager
+# ../ocaml/bytecomp/meta
+# ../ocaml/bytecomp/instruct
+# ../ocaml/bytecomp/bytegen
+# ../ocaml/bytecomp/printinstr
+# ../ocaml/bytecomp/opcodes
+# ../ocaml/bytecomp/emitcode
+# ../ocaml/bytecomp/bytesections
+# ../ocaml/bytecomp/dll
+# ../ocaml/bytecomp/symtable
+# ../ocaml/bytecomp/bytelink
+# ../ocaml/bytecomp/bytelibrarian
+# ../ocaml/bytecomp/bytepackager
 ../ocaml/driver/errors
-../ocaml/driver/compile
+# ../ocaml/driver/compile

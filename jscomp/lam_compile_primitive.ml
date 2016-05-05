@@ -442,7 +442,7 @@ let translate
   | Pstringsetu 
   | Pstringsets ->
     begin
-      Ext_log.err __LOC__ "string is immutable, %s is not available" "string.unsafe_get" ;     
+      Ext_log.err __LOC__ "string is immutable, %s is not available" "string.unsafe_set" ;     
       assert false (* string is immutable *)  
     end
 

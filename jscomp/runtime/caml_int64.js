@@ -79,8 +79,8 @@ function sub(x, y) {
 }
 
 function lsl_(x, numBits) {
+  var lo = x[/* lo */1];
   if (numBits) {
-    var lo = x[/* lo */1];
     if (numBits >= 32) {
       return /* record */[
               /* hi */(lo << (numBits - 32 | 0)),
@@ -101,8 +101,8 @@ function lsl_(x, numBits) {
 }
 
 function lsr_(x, numBits) {
+  var hi = x[/* hi */0];
   if (numBits) {
-    var hi = x[/* hi */0];
     var offset = numBits - 32 | 0;
     if (offset) {
       if (offset > 0) {
@@ -134,8 +134,8 @@ function lsr_(x, numBits) {
 }
 
 function asr_(x, numBits) {
+  var hi = x[/* hi */0];
   if (numBits) {
-    var hi = x[/* hi */0];
     if (numBits < 32) {
       var hi$1 = (hi >> numBits);
       var lo = (hi << (32 - numBits | 0)) | (x[/* lo */1] >>> numBits);

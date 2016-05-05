@@ -6,7 +6,7 @@ SOURCE_LIST := $(shell cat lib.mllib)
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
 
-INCLUDES := -I ../runtime
+INCLUDES := -I ../runtime -I ../stdlib
 
 COMPFLAGS = $(MODULE_FLAGS)
 

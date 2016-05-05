@@ -54,8 +54,8 @@ caml_md5.cmo : js.cmo caml_md5.cmi
 caml_md5.cmx : js.cmx caml_md5.cmi
 caml_obj.cmo : js.cmo caml_obj.cmi
 caml_obj.cmx : js.cmx caml_obj.cmi
-caml_oo.cmo : caml_oo.cmi
-caml_oo.cmx : caml_oo.cmi
+caml_oo.cmo : js.cmo caml_oo.cmi
+caml_oo.cmx : js.cmx caml_oo.cmi
 caml_parser.cmo : caml_parser.cmi
 caml_parser.cmx : caml_parser.cmi
 caml_primitive.cmo : caml_primitive.cmi
@@ -112,8 +112,8 @@ caml_md5.cmo : js.cmo caml_md5.cmi
 caml_md5.cmj : js.cmj caml_md5.cmi
 caml_obj.cmo : js.cmo caml_obj.cmi
 caml_obj.cmj : js.cmj caml_obj.cmi
-caml_oo.cmo : caml_oo.cmi
-caml_oo.cmj : caml_oo.cmi
+caml_oo.cmo : js.cmo caml_oo.cmi
+caml_oo.cmj : js.cmj caml_oo.cmi
 caml_parser.cmo : caml_parser.cmi
 caml_parser.cmj : caml_parser.cmi
 caml_primitive.cmo : caml_primitive.cmi
