@@ -38,18 +38,22 @@ open Js_output.Ops
    Make(S), S can not be an exception
  *)
 
+
+(* TODO: add module into taginfo*)
+(* let len = List.length sigs in  *)
+(* TODO: could be optimized *)
+
 let query_lambda id env = 
   Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature = sigs; _} -> 
-        (* TODO: add module into taginfo*)
-        (* let len = List.length sigs in  *)
-        (* TODO: could be optimized *)
-        Lambda.Lprim (Pmakeblock(0, Blk_na, Immutable) , 
+        Lam_comb.prim (Pmakeblock(0, Blk_na, Immutable))  
                       (List.mapi (fun i _ -> 
-                           Lambda.Lprim(Pfield (i, Lambda.Fld_na), [Lprim(Pgetglobal id,[])])))
-                        sigs))
+                           Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
+                             [Lam_comb.prim (Pgetglobal id) [] ])
+                        sigs)
+      )
 
 
 (* Given an module name and position, find its corresponding name  *)  

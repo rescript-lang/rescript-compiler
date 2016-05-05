@@ -6,4 +6,4 @@ cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild 
 
 export PATH=$(pwd)/bin:$PATH
 
-cd jscomp && make world-test
+cd jscomp && make travis-world-test

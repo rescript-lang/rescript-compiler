@@ -43,25 +43,25 @@ let should_be_functor (name : string) lam =
  *)
 
 (* HONGBO .. doe snot look like this function is used (not in .mli) *) 
-let app_definitely_inlined (body : Lambda.lambda) = 
-  match body with 
-  | Lvar _ 
-  | Lconst _
-  | Lprim _ 
-  | Lapply _ -> true 
-  | Llet _ 
-  | Lletrec  _
-  | Lstringswitch _ 
-  | Lswitch _ 
-  | Lstaticraise _
-  | Lfunction _ 
-  | Lstaticcatch _ 
-  | Ltrywith _ 
-  | Lifthenelse _ 
-  | Lsequence _ 
-  | Lwhile _
-  | Lfor _ 
-  | Lassign _ 
-  | Lsend _ 
-  | Levent _
-  | Lifused _ -> false
+(* let app_definitely_inlined (body : Lambda.lambda) =  *)
+(*   match body with  *)
+(*   | Lvar _  *)
+(*   | Lconst _ *)
+(*   | Lprim _  *)
+(*   | Lapply _ -> true  *)
+(*   | Llet _  *)
+(*   | Lletrec  _ *)
+(*   | Lstringswitch _  *)
+(*   | Lswitch _  *)
+(*   | Lstaticraise _ *)
+(*   | Lfunction _  *)
+(*   | Lstaticcatch _  *)
+(*   | Ltrywith _  *)
+(*   | Lifthenelse _  *)
+(*   | Lsequence _  *)
+(*   | Lwhile _ *)
+(*   | Lfor _  *)
+(*   | Lassign _  *)
+(*   | Lsend _  *)
+(*   | Levent _ *)
+(*   | Lifused _ -> false *)

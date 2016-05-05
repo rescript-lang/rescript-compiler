@@ -42,6 +42,28 @@ val unit : t
 val sequor : binop
 val sequand : binop
 val not : unop
+val seq : binop
+val while_ : binop
+val event : t -> Lambda.lambda_event -> t  
+val try_ : t -> Ident.t -> t  -> t 
+val ifused : Ident.t -> t -> t
+val assign : Ident.t -> t -> t 
+
+val send : 
+  Lambda.meth_kind ->
+  t -> t -> t list -> 
+  Location.t -> t 
+val prim : Lambda.primitive -> t list -> t
+val staticcatch : 
+  t -> int * Ident.t list -> t -> t
+
+val staticraise : 
+  int -> t list -> t
+
+val for_ : 
+  Ident.t ->
+  t  ->
+  t -> Asttypes.direction_flag -> t -> t 
 
 module Prim : sig 
   type t = Lambda.primitive

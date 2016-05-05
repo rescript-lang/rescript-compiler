@@ -79,8 +79,8 @@ let simple_beta_reduce params body args =
       let result = 
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
-              Lambda.Lsequence(lambda, code)
-            else code) param_hash (Lambda.Lprim (primitive, us)) in 
+              Lam_comb.seq lambda code
+            else code) param_hash (Lam_comb.prim primitive us) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
@@ -104,7 +104,7 @@ let simple_beta_reduce params body args =
           Hashtbl.fold 
             (fun _param {lambda; used} code -> 
                if not used then 
-                 Lambda.Lsequence(lambda, code)
+                 Lam_comb.seq lambda code
                else code )
             param_hash (Lambda.Lapply ( f, us , info)) in
         Hashtbl.clear param_hash;

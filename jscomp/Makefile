@@ -120,7 +120,14 @@ world-test:
 	@echo "Making test"
 	cd test && make all
 	@echo "Making test finsihed"
- 
+
+travis-world-test:./bin/ocaml_pack
+	@echo "Generating the compiler"
+	rm -f bin/compiler.ml 	
+	./bin/ocaml_pack ./compiler.mllib > bin/compiler.ml
+	@echo "Generating the compiler finished"	
+	make world-test
+
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
 

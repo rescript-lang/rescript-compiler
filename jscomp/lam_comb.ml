@@ -27,14 +27,18 @@
 
 
 type t = Lambda.lambda
+
 type binop = t -> t -> t 
+
 type triop = t -> t -> t -> t 
+
 type unop = t -> t 
-let if_ a (b : t) c = 
+
+let if_ (a : t) (b : t) c = 
   match a with
-  | Lambda.Lconst v ->
+  | Lconst v ->
     begin match v with
-    | Const_pointer (x, _)  | Lambda.Const_base(Const_int x)
+    | Const_pointer (x, _)  | Const_base(Const_int x)
       ->
       if x <> 0 then b else c
     | Const_base (Const_char x) ->
@@ -50,14 +54,14 @@ let if_ a (b : t) c =
     | Const_float_array _
     | Const_immstring _ -> b
     end
-  | _ ->  Lambda.Lifthenelse (a,b,c)
+  | _ ->  Lifthenelse (a,b,c)
 
-let switch lam lam_switch = 
-  Lambda.Lswitch(lam,lam_switch)
+let switch lam lam_switch : t = 
+  Lswitch(lam,lam_switch)
 
-let stringswitch lam cases default = 
+let stringswitch (lam : t) cases default : t = 
   match lam with
-  | Lambda.Lconst (Lambda.Const_base (Const_string (a,_))) ->
+  | Lconst (Const_base (Const_string (a,_))) ->
     begin
       try List.assoc a cases with Not_found ->
         begin
@@ -66,26 +70,55 @@ let stringswitch lam cases default =
           | None -> assert false
         end
     end
-  | _ -> Lambda.Lstringswitch(lam, cases, default)
+  | _ -> Lstringswitch(lam, cases, default)
 
 
-let true_ : Lambda.lambda =
+let true_ : t =
   Lconst (Const_pointer ( 1, Pt_constructor "true")) 
 
-let false_ : Lambda.lambda =
+let false_ : t =
   Lconst (Const_pointer( 0, Pt_constructor "false"))
 
-let unit : Lambda.lambda = 
+let unit : t = 
   Lconst (Const_pointer( 0, Pt_constructor "()"))
 
-let not x : t = 
-  Lambda.Lprim (Pnot, [x])
 
 (** [l || r ] *)
 let sequor l r = if_ l true_ r 
 
 (** [l && r ] *)
 let sequand l r = if_ l r false_
+
+let seq a b : t = 
+  Lsequence (a, b)
+
+let while_ a b : t  = 
+  Lwhile(a,b)
+
+let try_  body id  handler : t = 
+  Ltrywith(body,id,handler)
+
+let for_ v e1 e2 dir e3 : t  = 
+  Lfor(v,e1,e2,dir,e3)
+
+let event l (_event : Lambda.lambda_event) = l 
+
+let ifused v l : t  = 
+  Lifused (v,l)
+
+let assign v l : t = Lassign(v,l)
+
+let send u m o ll v : t = 
+  Lsend(u, m, o, ll, v)
+
+let staticcatch  a b c : t = Lstaticcatch(a,b,c)
+
+let staticraise a b : t = Lstaticraise(a,b)
+
+let prim prim ll : t = Lprim(prim,ll)
+
+let not x : t = 
+  prim Pnot [x]
 
 module Prim = struct 
   type t = Lambda.primitive
