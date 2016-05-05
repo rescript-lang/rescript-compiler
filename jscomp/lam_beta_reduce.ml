@@ -109,17 +109,17 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l1 = aux l1 in
       let xs = List.map rebind xs in
       let l2 = aux l2 in
-      Lstaticcatch(l1, (i,xs), l2)
+      Lam_comb.staticcatch l1 (i,xs) l2
     | Lfor(ident, l1, l2, dir, l3) ->
       let ident = rebind ident in 
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lfor(ident,aux  l1,  l2, dir,  l3)
+      Lam_comb.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
     | Lprim(prim, ll) ->
       (* here it makes sure that global vars are not rebound *)      
-      Lprim(prim, List.map aux  ll)
+      Lam_comb.prim prim (List.map aux  ll)
     | Lapply(fn, args, info) ->
       let fn = aux fn in       
       let args = List.map aux  args in 
@@ -131,25 +131,26 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
                   sw_numconsts;
                  }) ->
       let l = aux l in
-      Lswitch(l,
+      Lam_comb.switch l
               {sw_consts = 
                  List.map (fun (v, l) -> v, aux  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
                sw_numconsts = sw_numconsts;
                sw_numblocks = sw_numblocks;
                sw_failaction =  option_map sw_failaction
-              })
+              }
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
       Lam_comb.stringswitch l 
                      (List.map (fun (i, l) -> i,aux  l) sw)
                      (option_map d)
-    | Lstaticraise (i,ls) -> Lstaticraise(i, List.map aux  ls)
+    | Lstaticraise (i,ls) 
+      -> Lam_comb.staticraise i (List.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
       let l2 = aux l2 in
-      Ltrywith(l1,v, l2)
+      Lam_comb.try_ l1 v l2
     | Lifthenelse(l1, l2, l3) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
@@ -158,23 +159,25 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     | Lsequence(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lsequence(  l1,   l2)
+      Lam_comb.seq l1 l2
     | Lwhile(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lwhile(  l1,  l2)
-    | Lassign(v, l) -> Lassign(v,aux  l)
+      Lam_comb.while_  l1  l2
+    | Lassign(v, l) 
+      -> Lam_comb.assign v (aux  l)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
       let ll = List.map aux ll in
-      Lsend(u,  m,  o,  ll,v)
+      Lam_comb.send u  m  o  ll v
     | Levent(l, event) ->
       let l = aux l in
-      Levent(  l, event)
+      Lam_comb.event  l event
     | Lifused(v, l) -> 
       let l = aux l in 
-      Lifused(v,  l) in 
+      Lam_comb.ifused v  l
+  in 
   aux lam
 
 

@@ -74,7 +74,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lletrec (bindings, simpl body) 
-    | Lprim (prim, ll) -> Lprim(prim, List.map simpl  ll)
+    | Lprim (prim, ll) -> Lam_comb.prim prim (List.map simpl  ll)
     | Lfunction (kind, params, l) ->
       (* Lam_mk.lfunction kind params (simpl l) *)
       Lfunction (kind, params , simpl  l)
@@ -84,7 +84,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                   sw_numblocks;
                   sw_numconsts;
                  }) ->
-      Lswitch (simpl  l,
+      Lam_comb.switch (simpl  l)
               {sw_consts = 
                  List.map (fun (v, l) -> v, simpl  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
@@ -95,7 +95,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                    match sw_failaction with 
                    | None -> None
                    | Some x -> Some (simpl x)
-                 end})
+                 end}
     | Lstringswitch (l, sw, d) ->
       Lam_comb.stringswitch (simpl  l)
                     (List.map (fun (i, l) -> i,simpl  l) sw)
@@ -103,20 +103,29 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                       | Some d -> Some (simpl d )
                       | None -> None)
                     
-    | Lstaticraise (i,ls) -> Lstaticraise(i, List.map (simpl ) ls)
-    | Lstaticcatch (l1, (i,x), l2) -> Lstaticcatch(simpl  l1, (i,x), simpl  l2)
-    | Ltrywith (l1, v, l2) -> Ltrywith(simpl  l1,v, simpl  l2)
+    | Lstaticraise (i,ls) ->
+      Lam_comb.staticraise i (List.map simpl  ls)
+    | Lstaticcatch (l1, ids, l2) 
+      -> 
+      Lam_comb.staticcatch (simpl  l1) ids (simpl  l2)
+    | Ltrywith (l1, v, l2) 
+      -> 
+      Lam_comb.try_ (simpl  l1) v (simpl  l2)
     | Lifthenelse (l1, l2, l3) -> 
       Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
-    | Lsequence (l1, l2) -> Lsequence(simpl  l1, simpl  l2)
-    | Lwhile (l1, l2) -> Lwhile(simpl  l1, simpl l2)
-    | Lfor (flag, l1, l2, dir, l3) -> Lfor(flag,simpl  l1, simpl  l2, dir, simpl  l3)
+    | Lsequence (l1, l2) 
+      -> Lam_comb.seq (simpl  l1) (simpl  l2)
+    | Lwhile (l1, l2)
+      -> Lam_comb.while_ (simpl  l1) (simpl l2)
+    | Lfor (flag, l1, l2, dir, l3)
+      -> Lam_comb.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
     | Lassign (v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
-      Lassign (v,simpl  l)
-    | Lsend (u, m, o, ll, v) -> Lsend(u, simpl m, simpl o, List.map simpl ll,v)
-    | Levent (l, event) -> Levent (simpl  l, event)
+      Lam_comb.assign v (simpl  l)
+    | Lsend (u, m, o, ll, v) -> 
+      Lam_comb.send u (simpl m) (simpl o) (List.map simpl ll) v
+    | Levent (l, event) -> Lam_comb.event (simpl  l) event
     | Lifused (v, l) -> Lifused (v,simpl  l)
   in 
 

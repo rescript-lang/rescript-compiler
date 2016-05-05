@@ -96,27 +96,36 @@ let subst_lambda s lam =
     | Lfunction(kind, params, body) -> Lfunction(kind, params, subst body)
     | Llet(str, id, arg, body) -> Llet(str, id, subst arg, subst body)
     | Lletrec(decl, body) -> Lletrec(List.map subst_decl decl, subst body)
-    | Lprim(p, args) -> Lprim(p, List.map subst args)
+    | Lprim(p, args) -> Lam_comb.prim p (List.map subst args)
     | Lswitch(arg, sw) ->
-      Lswitch(subst arg,
-              {sw with sw_consts = List.map subst_case sw.sw_consts;
-                       sw_blocks = List.map subst_case sw.sw_blocks;
-                       sw_failaction = subst_opt  sw.sw_failaction; })
+      Lam_comb.switch (subst arg)
+        {sw with sw_consts = List.map subst_case sw.sw_consts;
+                 sw_blocks = List.map subst_case sw.sw_blocks;
+                 sw_failaction = subst_opt  sw.sw_failaction; }
     | Lstringswitch (arg,cases,default) ->
       Lam_comb.stringswitch
         (subst arg) (List.map subst_strcase cases) (subst_opt default)
-    | Lstaticraise (i,args) ->  Lstaticraise (i, List.map subst args)
-    | Lstaticcatch(e1, io, e2) -> Lstaticcatch(subst e1, io, subst e2)
-    | Ltrywith(e1, exn, e2) -> Ltrywith(subst e1, exn, subst e2)
-    | Lifthenelse(e1, e2, e3) -> Lam_comb.if_ (subst e1) (subst e2) (subst e3)
-    | Lsequence(e1, e2) -> Lsequence(subst e1, subst e2)
-    | Lwhile(e1, e2) -> Lwhile(subst e1, subst e2)
-    | Lfor(v, e1, e2, dir, e3) -> Lfor(v, subst e1, subst e2, dir, subst e3)
-    | Lassign(id, e) -> Lassign(id, subst e)
+    | Lstaticraise (i,args)
+      ->  Lam_comb.staticraise i (List.map subst args)
+    | Lstaticcatch(e1, io, e2)
+      -> Lam_comb.staticcatch (subst e1) io (subst e2)
+    | Ltrywith(e1, exn, e2)
+      -> Lam_comb.try_ (subst e1) exn (subst e2)
+    | Lifthenelse(e1, e2, e3)
+      -> Lam_comb.if_ (subst e1) (subst e2) (subst e3)
+    | Lsequence(e1, e2)
+      -> Lam_comb.seq (subst e1) (subst e2)
+    | Lwhile(e1, e2) 
+      -> Lam_comb.while_ (subst e1) (subst e2)
+    | Lfor(v, e1, e2, dir, e3) 
+      -> Lam_comb.for_ v (subst e1) (subst e2) dir (subst e3)
+    | Lassign(id, e) -> 
+      Lam_comb.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
-      Lsend (k, subst met, subst obj, List.map subst args, loc)
-    | Levent (lam, evt) -> Levent (subst lam, evt)
-    | Lifused (v, e) -> Lifused (v, subst e)
+      Lam_comb.send k (subst met) (subst obj) (List.map subst args) loc
+    | Levent (lam, evt)
+      -> Lam_comb.event (subst lam) evt
+    | Lifused (v, e) -> Lam_comb.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
   and subst_strcase (key, case) = (key, subst case)
@@ -142,7 +151,7 @@ let refine_let
   | _, _, Lprim (fn, [Lvar w]) when Ident.same w param 
                                  &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) fn
     (* don't inline inside a block *)
-    ->  Lprim(fn, [arg])
+    ->  Lam_comb.prim fn [arg]
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -269,7 +278,8 @@ let kind_of_lambda_block kind (xs : Lambda.lambda list) : Lam_stats.kind =
 let get lam v i tbl : Lambda.lambda =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lprim (Pfield (i, Lambda.Fld_na), [Lprim(Pgetglobal g, [])])
+    Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
+      [Lam_comb.prim (Pgetglobal g) []]
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
