@@ -20,7 +20,7 @@ open Compenv
 
 let fprintf = Format.fprintf
 
-let tool_name = "bucklescript"
+let tool_name = "BuckleScript"
 
 let print_if ppf flag printer arg =
   if !flag then fprintf ppf "%a@." printer arg;

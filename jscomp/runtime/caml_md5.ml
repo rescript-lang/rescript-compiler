@@ -153,7 +153,7 @@ let md5blk = [|
 
 let caml_md5_string s start len = 
   let s = Js.String.slice   s start len in
-  let n = String.length s in
+  let n =Js.String.length s in
   let () = 
     state.(0) <- seed_a; 
     state.(1) <- seed_b; 
@@ -181,7 +181,7 @@ let caml_md5_string s start len =
   for kk = 0 to 15 do 
     md5blk.(kk) <- 0l 
   done ;
-  let i_end = String.length s_tail - 1 in
+  let i_end =Js.String.length s_tail - 1 in
   for i = 0 to  i_end do 
     md5blk.(i / 4 ) <- 
       Int32.logor md5blk.(i / 4)  (Int32.of_int (Char.code s_tail.[i]) << ((i mod 4) lsl 3))

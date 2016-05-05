@@ -109,18 +109,41 @@ module String = struct
   external lastIndexOf : string -> string -> int = "lastIndexOf"
       [@@bs.send]    
   external of_any : 'a -> string = "js_anything_to_string"
+
+
+  (***********************)
+  (* replaced primitives *)
+  external length : string -> int = "%string_length"
+  external get : string -> int -> char = "%string_safe_get"
+  external create : int -> bytes = "caml_create_string"
+  external unsafe_get : string -> int -> char = "%string_unsafe_get"
+  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+  external unsafe_blit : string -> int ->  bytes -> int -> int -> unit
+    = "caml_blit_string" "noalloc"
+  external unsafe_fill : bytes -> int -> int -> char -> unit
+    = "caml_fill_string" "noalloc"
+
 end
 
 module Array = struct 
   external new_uninitialized : int -> 'a array = "js_create_array"
   external append : 'a array -> 'a array -> 'a array = "js_array_append"
-
+  external make: int -> 'a -> 'a array = "caml_make_vect"
 end
 module Bytes = struct 
   external to_int_array : bytes -> int array = "%identity"
   external of_int_array : int array -> bytes = "%identity"
   external new_uninitialized : int -> bytes = "js_create_array" 
 
+  (***********************)
+  (* replaced primitives *)
+  (* Note that we explicitly define [unsafe_set] instead of 
+     using {!Bytes.unsafe_set} since for some standard libraries, 
+     it might point to ["%string_unsafe_set"]
+  *)
+  external unsafe_set : bytes -> int -> char -> unit = "%bytes_unsafe_set"
+  external unsafe_get : bytes -> int -> char = "%bytes_unsafe_get"
+  external length : bytes -> int = "%bytes_length"
 end
 module Float = struct 
   external nan : float = "NaN"
@@ -165,6 +188,7 @@ module Caml_obj = struct
     "length" [@@bs.get]
   external tag_of_any : any -> 'a Def.t =
     "tag" [@@bs.get]
+  external magic : 'a -> 'b = "%identity"
 end
 
 module Caml_int64 = struct

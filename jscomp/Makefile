@@ -65,7 +65,7 @@ stdlib:
 
 world:
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
@@ -80,13 +80,15 @@ world:
 	cd stdlib && make all	
 	@echo "Making lib finished"
 
+TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
+
 big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making compiler"		
 	ocamlopt.opt -g -inline 100 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
-	cd runtime && OCAMLIB=`ocamlc -where` make all
+	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) make all
 	@echo "Making runtime finished"
 
 	@echo "Making stdlib"
@@ -96,6 +98,7 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making lib"
 	cd stdlib && make all	
 	@echo "Making lib finished"
+
 
 world-test:
 	@echo "Making compiler"		

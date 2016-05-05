@@ -68,3 +68,6 @@ coverage
 *.g.js
 dist/
 
+bin/
+lib/
+man/

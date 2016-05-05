@@ -42,7 +42,7 @@ type out_channel  = {
 let stdout = {
   buffer = "";
   output = (fun _ s ->
-    let v = String.length s - 1 in
+    let v =Js.String.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
       ([%bs.raw{| process.stdout.write |} ] : string -> unit) s
     else
@@ -54,7 +54,7 @@ let stdout = {
 let stderr = {
   buffer = "";
   output = fun _ s ->
-    let v = String.length s - 1 in     
+    let v =Js.String.length s - 1 in     
     if s.[v] = '\n' then
       Js.log (Js.String.slice s 0 v) (* TODO: change to Js.error*)
     else Js.log s        
@@ -82,7 +82,7 @@ let node_std_output  : string -> bool = [%bs.raw{|function (s){
 *)
 let caml_ml_output (oc : out_channel) (str : string) offset len  =
   let str =
-    if offset = 0 && len = String.length str then str    
+    if offset = 0 && len =Js.String.length str then str    
     else Js.String.slice str offset len in
   if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then

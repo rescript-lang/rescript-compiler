@@ -1,9 +1,10 @@
 language: node_js
+env:
+  - OCAML=4.02.3
 node_js:
-  - "5"
-  - "5.1"
-  - "4"
-  - "4.2"
-  - "4.1"
   - "4.0"
+
+before_script: bash -ex .travis-ci-before-script.sh
+
 script: npm run coveralls
+

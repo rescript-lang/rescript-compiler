@@ -31,7 +31,7 @@ let process_file ppf name =
   end
   else if Filename.check_suffix name !Config.interface_suffix then begin
     let opref = output_prefix name in
-    Compile.interface ppf name opref;
+    Js_implementation.interface ppf name opref;
     if !make_package then objfiles := (opref ^ ".cmi") :: !objfiles
   end
   (* else if Filename.check_suffix name ".cmo"  *)
@@ -157,7 +157,9 @@ let buckle_script_flags =
     " set will generate `.d.ts` file for typescript (experimental)")
   :: Options.list 
 
-let () = Clflags.unsafe_string := false
+let () = 
+  Clflags.unsafe_string := false;
+  Clflags.debug := true
 
 let main () =
   try
@@ -173,42 +175,6 @@ let main () =
         fatal "Option -i is incompatible with -pack, -a, -output-obj"
       else
         fatal "Please specify at most one of -pack, -a, -c, -output-obj";
-    if !make_archive then begin
-      Compmisc.init_path false;
-
-      Bytelibrarian.create_archive ppf  (Compenv.get_objfiles ())
-                                   (extract_output !output_name);
-      Warnings.check_fatal ();
-    end
-    else if !make_package then begin
-      (* Compmisc.init_path false; *)
-      (* let extracted_output = extract_output !output_name in *)
-      (* let revd = get_objfiles () in *)
-      (* Bytepackager.package_files ppf (Compmisc.initial_env ()) *)
-      (*   revd (extracted_output); *)
-      (* Warnings.check_fatal (); *)
-    end
-    else if not !compile_only && !objfiles <> [] then begin
-      (* let target = *)
-      (*   if !output_c_object then *)
-      (*     let s = extract_output !output_name in *)
-      (*     if (Filename.check_suffix s Config.ext_obj *)
-      (*       || Filename.check_suffix s Config.ext_dll *)
-      (*       || Filename.check_suffix s ".c") *)
-      (*     then s *)
-      (*     else *)
-      (*       fatal *)
-      (*         (Printf.sprintf *)
-      (*            "The extension of the output file must be .c, %s or %s" *)
-      (*            Config.ext_obj Config.ext_dll *)
-      (*         ) *)
-      (*   else *)
-      (*     default_output !output_name *)
-      (* in *)
-      (* Compmisc.init_path false; *)
-      (* Bytelink.link ppf (get_objfiles ()) target; *)
-      (* Warnings.check_fatal (); *)
-    end;
     exit 0
   with x ->
     Location.report_exception ppf x;

@@ -89,7 +89,7 @@ let caml_int_of_string s =
   let i, sign, hbase = parse_sign_and_base s in
   let base  = Nativeint.of_int @@ int_of_string_base hbase in
   let threshold = (-1n >>> 0) in 
-  let len = String.length s in  
+  let len =Js.String.length s in  
   let c = if i < len then s.[i] else '\000' in
   let d = to_nat @@ parse_digit c in
   let () =
@@ -133,7 +133,7 @@ let caml_int64_of_string s =
     | Bin ->
       9223372036854775807L
   in 
-  let len = String.length s in  
+  let len =Js.String.length s in  
   let c = if i < len then s.[i] else '\000' in
   let d = Int64.of_int @@ parse_digit c in
   let () =
@@ -192,7 +192,7 @@ let lowercase c =
   else c
 
 let parse_format fmt = 
-  let len = String.length fmt in 
+  let len =Js.String.length fmt in 
   if len > 31 then 
     raise @@ Invalid_argument "format_int: format too long" ;
   let rec aux (f : fmt) i : fmt = 
@@ -359,7 +359,7 @@ let aux f (i : nativeint)  =
   if f.prec >= 0 then 
     begin 
       f.filter <- " ";
-      let n = f.prec - String.length !s in 
+      let n = f.prec -Js.String.length !s in 
       if n > 0 then
         s :=  repeat n "0"  ^ !s
     end
@@ -483,7 +483,7 @@ let caml_int64_format fmt x =
   if f.prec >= 0 then
     begin
       f.filter <- " ";
-      let n = f.prec - String.length !s in
+      let n = f.prec -Js.String.length !s in
       if n > 0 then
         s := repeat n "0" ^ !s
     end;
@@ -518,7 +518,7 @@ let caml_format_float fmt x =
                3.3e+00
            ]}
         *)
-        let  i = String.length !s in 
+        let  i =Js.String.length !s in 
         if !s.[i-3] = 'e' then
           begin 
             s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1)
@@ -533,7 +533,7 @@ let caml_format_float fmt x =
         s := Js.Float.to_exponential x (prec - 1);
         let j = Js.String.index_of !s "e" in 
         let  exp = Js.to_number @@ Js.String.slice_rest !s (j + 1)  in 
-        if exp < -4 || x >= 1e21 || String.length (Js.Float.to_fixed x 0) > prec then 
+        if exp < -4 || x >= 1e21 ||Js.String.length (Js.Float.to_fixed x 0) > prec then 
           let i = ref (j - 1)  in
           while !s.[!i] = '0' do 
             decr i 
@@ -541,7 +541,7 @@ let caml_format_float fmt x =
           if !s.[!i] = '.' then 
             decr i ;
           s := Js.String.slice !s 0 (!i+1) ^ Js.String.slice_rest !s j ;
-          let i = String.length !s in 
+          let i =Js.String.length !s in 
           if !s.[i - 3] = 'e' then 
             s := Js.String.slice !s 0 (i - 1) ^ "0" ^ Js.String.slice_rest !s (i - 1) 
           else ()
@@ -553,11 +553,11 @@ let caml_format_float fmt x =
               s := Js.Float.to_fixed x !p 
             end
           else 
-            while (s := Js.Float.to_fixed x !p; String.length !s > prec + 1) do 
+            while (s := Js.Float.to_fixed x !p;Js.String.length !s > prec + 1) do 
               decr p
             done ;
           if !p <> 0 then 
-            let k = ref @@ String.length !s - 1 in 
+            let k = ref @@Js.String.length !s - 1 in 
             while !s.[!k] = '0' do 
               decr k
             done ;

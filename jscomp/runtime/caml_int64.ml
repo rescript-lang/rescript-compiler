@@ -381,7 +381,7 @@ let to_hex x =
   | 0n, _ -> aux x.lo
   | _, _ ->
     let lo =  aux x.lo in
-    let pad = 8 - String.length lo in
+    let pad = 8 -Js.String.length lo in
     if pad <= 0 then             
       aux x.hi ^ lo
     else
