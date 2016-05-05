@@ -12,7 +12,7 @@ function u(v) {
   return v;
 }
 
-var s = [
+var s = /* module */[
   $$String.make,
   $$String.init,
   $$String.copy,
