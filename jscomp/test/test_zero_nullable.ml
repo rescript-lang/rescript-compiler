@@ -1,3 +1,9 @@
+let suites :  Mt.pair_suites ref  = ref []
+let test_id = ref 0
+let eq loc x y = 
+  incr test_id ; 
+  suites := 
+    (loc ^" id " ^ (string_of_int !test_id), (fun _ -> Mt.Eq(x,y))) :: !suites
 
 
 module Test_null = struct 
@@ -215,3 +221,18 @@ module Test_null_def = struct
   let f11 =  (test @@ return 3)
 
 end
+
+let () = 
+  begin 
+    eq __LOC__ (Test_null_def.f1 (Js.Null_def.return 0 )) 1 ;
+    eq __LOC__ (Test_null_def.f1 ([%bs.raw "null"])) 3 ;
+    eq __LOC__ (Test_null_def.f1 ([%bs.raw "undefined"])) 3 ;
+
+    eq __LOC__ (Test_null.f1 (Js.Null.return 0 )) 1 ;
+    eq __LOC__ (Test_null.f1 ([%bs.raw "null"])) 3 ;
+
+    eq __LOC__ (Test_def.f1 (Js.Def.return 0 )) 1 ;
+    eq __LOC__ (Test_def.f1 ([%bs.raw "undefined"])) 3 ;
+  end
+
+let () = Mt.from_pair_suites __FILE__ !suites

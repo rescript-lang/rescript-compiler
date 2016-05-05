@@ -30,11 +30,11 @@ function caml_weak_get(xs, i) {
 
 function caml_weak_get_copy(xs, i) {
   var match = xs[i];
-  if (match === undefined) {
-    return /* None */0;
+  if (match !== undefined) {
+    return /* Some */[Caml_obj.caml_obj_dup(match)];
   }
   else {
-    return /* Some */[Caml_obj.caml_obj_dup(match)];
+    return /* None */0;
   }
 }
 

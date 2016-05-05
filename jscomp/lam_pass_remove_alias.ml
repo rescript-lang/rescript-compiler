@@ -67,29 +67,20 @@ let simplify_alias
         -> simpl l2 
       | ImmutableBlock ( [| SimpleForm l |]  , x) 
         -> 
-        begin match x with 
-        | Null 
-          -> 
-          Lam_comb.if_ 
-            ( Lprim (Lam_util.js_is_nil_primitive, [l])) 
-            (simpl l3)  
-            (simpl l2)
-        | Undefined 
-          -> 
-          Lam_comb.if_ 
-            (Lprim (Lam_util.js_is_undef_primitive, [l]))
-            (simpl l3)
-            (simpl l2)
-        | Null_undefined (* TODO: fix me*)
-          -> 
-          Lam_comb.if_ 
-            ( Lprim (Pintcomp Ceq, [l; Lvar Ext_ident.nil])) 
-            (simpl l3)  
-            (simpl l2)
-
-        | Normal -> 
-          Lam_comb.if_ l1 (simpl l2) (simpl l3)
-        end
+        let l1 = 
+          match x with 
+          | Null 
+            -> Lam_comb.not ( Lprim (Lam_comb.Prim.js_is_nil, [l])) 
+          | Undefined 
+            -> 
+            Lam_comb.not (Lprim (Lam_comb.Prim.js_is_undef, [l]))
+          | Null_undefined
+            -> 
+            Lam_comb.not
+              ( Lprim (Lam_comb.Prim.js_is_nil_undef,  [l])) 
+          | Normal ->  l1 
+        in 
+        Lam_comb.if_ l1 (simpl l2) (simpl l3)
       | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
 
       | exception Not_found -> Lam_comb.if_ l1 (simpl l2) (simpl l3)

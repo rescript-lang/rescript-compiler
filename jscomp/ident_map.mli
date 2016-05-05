@@ -22,30 +22,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+include Map.S with type key = Ident.t 
 
-type t = Lambda.lambda 
+val of_list  : (key * 'a) list -> 'a t
 
-type binop = t -> t -> t 
+val keys : 'a t -> key list
 
-type triop = t -> t -> t -> t 
+val add_if_not_exist : key -> 'a -> 'a t -> 'a t
 
-type unop = t ->  t
-
-val if_ : triop
-val switch : t -> Lambda.lambda_switch  -> t 
-val stringswitch : t -> (string * t) list -> t option -> t 
-
-val true_ : t 
-val false_ : t 
-val unit : t 
-
-val sequor : binop
-val sequand : binop
-val not : unop
-
-module Prim : sig 
-  type t = Lambda.primitive
-  val js_is_nil : t 
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+val merge_disjoint : 'a t -> 'a t -> 'a t

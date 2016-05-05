@@ -593,8 +593,8 @@ test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmx : ../stdlib/array.cmx
 test_while_side_effect.cmo :
 test_while_side_effect.cmx :
-test_zero_nullable.cmo : ../lib/js.cmo
-test_zero_nullable.cmx : ../lib/js.cmx
+test_zero_nullable.cmo : mt.cmi ../lib/js.cmo
+test_zero_nullable.cmx : mt.cmx ../lib/js.cmx
 testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmx : ../stdlib/scanf.cmx ../stdlib/printf.cmx testing.cmi
 tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \
@@ -1201,8 +1201,8 @@ test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmj : ../stdlib/array.cmj
 test_while_side_effect.cmo :
 test_while_side_effect.cmj :
-test_zero_nullable.cmo : ../lib/js.cmo
-test_zero_nullable.cmj : ../lib/js.cmj
+test_zero_nullable.cmo : mt.cmi ../lib/js.cmo
+test_zero_nullable.cmj : mt.cmj ../lib/js.cmj
 testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmj : ../stdlib/scanf.cmj ../stdlib/printf.cmj testing.cmi
 tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \

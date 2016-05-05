@@ -324,14 +324,6 @@ let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
   { apply_loc = loc; apply_status }
 
 
-let lam_true : Lambda.lambda =
-  Lconst (Const_pointer ( 1, Pt_constructor "true")) 
-
-let lam_false : Lambda.lambda =
-  Lconst (Const_pointer( 0, Pt_constructor "false"))
-
-let lam_unit : Lambda.lambda = 
-  Lconst (Const_pointer( 0, Pt_constructor "()"))
 
 let is_function (lam : Lambda.lambda) = 
   match lam with 
@@ -404,32 +396,3 @@ let eta_conversion n info fn args =
 let default_apply_info : Lambda.apply_info = 
   { apply_status = App_na ; apply_loc = Location.none }
 
-let js_is_nil_primitive = 
-  Lambda.Pccall{ prim_name = "js_is_nil";
-    prim_arity = 1 ;
-    prim_alloc = false;
-    prim_native_name = "js_is_nil";
-    prim_native_float = false;
-    prim_attributes = [];
-    prim_ty = None
-  }
-
-let js_is_undef_primitive = 
-  Lambda.Pccall{ prim_name = "js_is_undef";
-    prim_arity = 1 ;
-    prim_alloc = false;
-    prim_native_name = "js_is_undef";
-    prim_native_float = false;
-    prim_attributes = [];
-    prim_ty = None
-  }
-
-let js_is_nil_undef_primitive = 
-  Lambda.Pccall{ prim_name = "js_is_nil_undef";
-    prim_arity = 1 ;
-    prim_alloc = false;
-    prim_native_name = "js_is_nil_undef";
-    prim_native_float = false;
-    prim_attributes = [];
-    prim_ty = None
-  }
