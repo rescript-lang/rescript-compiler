@@ -1777,13 +1777,10 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                     "div_rem_0",
                                     function () {
                                       return /* Eq */Block.__(0, [
-                                                Caml_int64.div(/* int64 */[
-                                                      /* hi */-1,
-                                                      /* lo */4294967295
-                                                    ], /* int64 */[
-                                                      /* hi */0,
-                                                      /* lo */16
-                                                    ]),
+                                                /* int64 */[
+                                                  /* hi */0,
+                                                  /* lo */0
+                                                ],
                                                 /* int64 */[
                                                   /* hi */0,
                                                   /* lo */0
@@ -1796,13 +1793,10 @@ Mt.from_pair_suites("int64_mul_div_test.ml", Pervasives.$at(from_pairs("random",
                                       "div_rem_1",
                                       function () {
                                         return /* Eq */Block.__(0, [
-                                                  Caml_int64.mod_(/* int64 */[
-                                                        /* hi */-1,
-                                                        /* lo */4294967295
-                                                      ], /* int64 */[
-                                                        /* hi */0,
-                                                        /* lo */16
-                                                      ]),
+                                                  /* int64 */[
+                                                    /* hi */-1,
+                                                    /* lo */4294967295
+                                                  ],
                                                   /* int64 */[
                                                     /* hi */-1,
                                                     /* lo */4294967295
