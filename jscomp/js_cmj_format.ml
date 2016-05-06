@@ -42,9 +42,10 @@ type t = {
   values : cmj_value String_map.t;
   effect : effect;
   goog_package : string option;
+  npm_package_path : string option ;
 }
 
-let cmj_magic_number =  "BUCKLE20160310"
+let cmj_magic_number =  "BUCKLE20160506"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -52,14 +53,16 @@ let pure_dummy =
   {
     values = String_map.empty;
     effect = None;
-    goog_package = None
+    goog_package = None;
+    npm_package_path = None;
   }
 
 let no_pure_dummy = 
   {
     values = String_map.empty;
     effect = (Some "");
-    goog_package = None 
+    goog_package = None;
+    npm_package_path = None;  
   }
 
 

@@ -37,6 +37,8 @@ val get_env : unit -> env
 val get_ext : unit -> string
 
 val get_goog_package_name : unit -> string option
+val get_npm_package_path : unit -> string option
+
 val set_env : env -> unit
 val cmd_set_module : string -> unit  
 val default_gen_tds : bool ref

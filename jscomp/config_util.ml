@@ -66,8 +66,5 @@ let find_cmj file =
         Ext_log.warn __LOC__ "@[%s not found @]" file ;
         Js_cmj_format.no_pure_dummy 
     else 
-      begin 
-        Ext_log.warn __LOC__ "@[%s not found @]" file ;
-        Js_cmj_format.no_pure_dummy 
-      end
+      Ext_pervasives.failwithf "@[in %s,  %s not found @]"  __LOC__ file 
 

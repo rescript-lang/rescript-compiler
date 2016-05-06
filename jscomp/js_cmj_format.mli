@@ -64,6 +64,7 @@ type t = {
   values : cmj_value String_map.t;
   effect : effect;
   goog_package : string option;
+  npm_package_path : string option;
 }
 
 val pure_dummy : t

@@ -157,5 +157,9 @@ let export_to_cmj
     | Some _ -> maybe_pure
 
   in
-  {values; effect ; goog_package = Js_config.get_goog_package_name ()}
+  {values; 
+   effect ; 
+   goog_package = Js_config.get_goog_package_name ();
+   npm_package_path = Js_config.get_npm_package_path ();
+  }
 
