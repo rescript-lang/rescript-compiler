@@ -30,5 +30,5 @@ clean::
 -include .libdepend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmx/.cmj/g' > .libdepend
-
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .libdepend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.runtimedepend

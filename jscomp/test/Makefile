@@ -42,6 +42,6 @@ simple_lexer_test.ml: simple_lexer_test.mll
 -include .depend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .libdepend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.runtimedepend
 

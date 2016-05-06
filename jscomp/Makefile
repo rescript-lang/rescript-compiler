@@ -22,7 +22,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 
 ./bin/bsc: _build/compiler.cmxa
 	echo "Linking"
-	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa ocamlbytecomp.cmxa $^  2>>build.compile
+	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
 # The motivation is to save compilation time and in the future, more freedom to add new
 # compilation flags (since we don't need bytecode anymore)
@@ -50,7 +50,7 @@ snapshotcmj:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 stdlib:
 	cd stdlib && ./build.sh
@@ -102,7 +102,7 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 
 world-test:
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -w -a -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa ocamlbytecomp.cmxa bin/compiler.mli bin/compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 100 -w -a -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"

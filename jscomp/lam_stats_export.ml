@@ -71,7 +71,7 @@ let export_to_cmj
     external_ids 
     export_map
 
-  : Js_cmj_format.cmj_table = 
+  : Js_cmj_format.t = 
   let values = 
 
     List.fold_left

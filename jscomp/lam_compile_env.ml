@@ -36,7 +36,7 @@ type module_id = Lam_module_ident.t
 
 type ml_module_info = { 
   signatures : Types.signature ;
-  cmj_table : Js_cmj_format.cmj_table
+  cmj_table : Js_cmj_format.t
 }
 
 type env_value = 
@@ -141,7 +141,7 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
    [Runtime] 
    and [externals]*)
 type _ t = 
-  | No_env :  Js_cmj_format.cmj_table t 
+  | No_env :  Js_cmj_format.t t 
   | Has_env : Env.t  -> module_info t 
 
 

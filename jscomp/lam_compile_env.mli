@@ -57,7 +57,7 @@ type module_info = {
 }
 
 type _ t = 
-  | No_env :  Js_cmj_format.cmj_table t 
+  | No_env :  Js_cmj_format.t t 
   | Has_env : Env.t  -> module_info t 
 
 val find_and_add_if_not_exist : 

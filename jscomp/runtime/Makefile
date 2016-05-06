@@ -30,6 +30,6 @@ clean::
 -include .runtimedepend
 
 depend:
-	$(CAMLDEP) $(INCLUDES) *.mli *.ml > .runtimedepend
+	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .runtimedepend
 	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.runtimedepend
 

@@ -38,7 +38,7 @@ type cmj_value = {
 
 type effect = string option
 
-type cmj_table = {
+type t = {
   values : cmj_value String_map.t;
   effect : effect;
   goog_package : string option;
@@ -64,7 +64,7 @@ let no_pure_dummy =
 
 
 
-let from_file name : cmj_table =
+let from_file name : t =
   let ic = open_in_bin name in 
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
@@ -72,12 +72,12 @@ let from_file name : cmj_table =
       ("cmj files have incompatible versions, please rebuilt using the new compiler : " 
        ^ __LOC__)
   else 
-    let v  : cmj_table = input_value ic in 
+    let v  : t = input_value ic in 
     close_in ic ;
     v 
 
 
-let from_string s : cmj_table = 
+let from_string s : t = 
   let magic_number = String.sub s 0 cmj_magic_number_length in 
   if magic_number = cmj_magic_number then 
     Marshal.from_string s  cmj_magic_number_length
@@ -86,7 +86,7 @@ let from_string s : cmj_table =
       ("cmj files have incompatible versions, please rebuilt using the new compiler : "
        ^ __LOC__)
 
-let to_file name (v : cmj_table) = 
+let to_file name (v : t) = 
   let oc = open_out_bin name in 
   output_string oc cmj_magic_number;
   output_value oc v;

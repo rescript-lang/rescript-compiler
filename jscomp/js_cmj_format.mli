@@ -60,17 +60,17 @@ type cmj_value = {
 
 type effect = string option
 
-type cmj_table = {
+type t = {
   values : cmj_value String_map.t;
   effect : effect;
-  goog_package : string option
+  goog_package : string option;
 }
 
-val pure_dummy : cmj_table
-val no_pure_dummy : cmj_table
+val pure_dummy : t
+val no_pure_dummy : t
 
 
-val from_file : string -> cmj_table
-val from_string : string -> cmj_table
+val from_file : string -> t
+val from_string : string -> t
 
-val to_file : string -> cmj_table -> unit
+val to_file : string -> t -> unit
