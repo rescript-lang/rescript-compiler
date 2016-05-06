@@ -923,13 +923,10 @@ var suites = Pervasives.$at(/* :: */[
                           /* hi */0,
                           /* lo */0
                         ],
-                        Caml_int64.add(/* int64 */[
-                              /* hi */0,
-                              /* lo */0
-                            ], /* int64 */[
-                              /* hi */0,
-                              /* lo */0
-                            ])
+                        /* int64 */[
+                          /* hi */0,
+                          /* lo */0
+                        ]
                       ]);
             }
           ],
@@ -1108,7 +1105,7 @@ var suites = Pervasives.$at(/* :: */[
                                                 ],
                                                 /* int64 */[
                                                   /* hi */-1,
-                                                  /* lo */((/* lo */2 ^ /* lo */4294967295) >>> 0)
+                                                  /* lo */4294967293
                                                 ]
                                               ]);
                                     }
@@ -1122,10 +1119,10 @@ var suites = Pervasives.$at(/* :: */[
                                                     /* hi */-1,
                                                     /* lo */4294967294
                                                   ],
-                                                  Caml_int64.neg(/* int64 */[
-                                                        /* hi */0,
-                                                        /* lo */2
-                                                      ])
+                                                  /* int64 */[
+                                                    /* hi */-1,
+                                                    /* lo */4294967294
+                                                  ]
                                                 ]);
                                       }
                                     ],
@@ -1138,13 +1135,10 @@ var suites = Pervasives.$at(/* :: */[
                                                       /* hi */0,
                                                       /* lo */2
                                                     ],
-                                                    Caml_int64.sub(/* int64 */[
-                                                          /* hi */0,
-                                                          /* lo */3
-                                                        ], /* int64 */[
-                                                          /* hi */0,
-                                                          /* lo */1
-                                                        ])
+                                                    /* int64 */[
+                                                      /* hi */0,
+                                                      /* lo */2
+                                                    ]
                                                   ]);
                                         }
                                       ],
@@ -1156,7 +1150,7 @@ var suites = Pervasives.$at(/* :: */[
                                                       /* tuple */[
                                                         /* int64 */[
                                                           /* hi */0,
-                                                          /* lo */((/* lo */4009750271 ^ /* lo */4293853166) >>> 0)
+                                                          /* lo */286331153
                                                         ],
                                                         /* int64 */[
                                                           /* hi *//* hi */0 ^ /* hi */0,
@@ -1183,7 +1177,7 @@ var suites = Pervasives.$at(/* :: */[
                                               return /* Eq */Block.__(0, [
                                                         /* int64 */[
                                                           /* hi */0,
-                                                          /* lo */((/* lo */4009750271 | /* lo */4293853166) >>> 0)
+                                                          /* lo */4294967295
                                                         ],
                                                         /* int64 */[
                                                           /* hi */0,
@@ -1198,8 +1192,8 @@ var suites = Pervasives.$at(/* :: */[
                                               function () {
                                                 return /* Eq */Block.__(0, [
                                                           /* int64 */[
-                                                            /* hi *//* hi */0 & /* hi */0,
-                                                            /* lo */((/* lo */4009750271 & /* lo */4293853166) >>> 0)
+                                                            /* hi */0,
+                                                            /* lo */4008636142
                                                           ],
                                                           /* int64 */[
                                                             /* hi */0,
@@ -2039,13 +2033,10 @@ var suites = Pervasives.$at(/* :: */[
                                                                     /* hi */0,
                                                                     /* lo */6
                                                                   ],
-                                                                  Caml_int64.mul(/* int64 */[
-                                                                        /* hi */0,
-                                                                        /* lo */3
-                                                                      ], /* int64 */[
-                                                                        /* hi */0,
-                                                                        /* lo */2
-                                                                      ])
+                                                                  /* int64 */[
+                                                                    /* hi */0,
+                                                                    /* lo */6
+                                                                  ]
                                                                 ]);
                                                       }
                                                     ],
@@ -2174,16 +2165,10 @@ var suites = Pervasives.$at(/* :: */[
                                                                                   /* hi */0,
                                                                                   /* lo */4294967295
                                                                                 ],
-                                                                                Caml_int64.add(Caml_int64.add(/* int64 */[
-                                                                                          /* hi */0,
-                                                                                          /* lo */2147483647
-                                                                                        ], /* int64 */[
-                                                                                          /* hi */0,
-                                                                                          /* lo */2147483647
-                                                                                        ]), /* int64 */[
-                                                                                      /* hi */0,
-                                                                                      /* lo */1
-                                                                                    ])
+                                                                                /* int64 */[
+                                                                                  /* hi */0,
+                                                                                  /* lo */4294967295
+                                                                                ]
                                                                               ]);
                                                                     }
                                                                   ],
@@ -2208,10 +2193,10 @@ var suites = Pervasives.$at(/* :: */[
                                                                         "shift_left",
                                                                         function () {
                                                                           return /* Eq */Block.__(0, [
-                                                                                    Caml_int64.lsl_(/* int64 */[
-                                                                                          /* hi */0,
-                                                                                          /* lo */16777215
-                                                                                        ], 8),
+                                                                                    /* int64 */[
+                                                                                      /* hi */0,
+                                                                                      /* lo */4294967040
+                                                                                    ],
                                                                                     /* int64 */[
                                                                                       /* hi */0,
                                                                                       /* lo */4294967040

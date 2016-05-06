@@ -39,8 +39,6 @@ var s = /* module */[
 
 var N = /* module */[/* s */s];
 
-var v0 = 1;
-
 function v(x) {
   return x.length;
 }
@@ -50,7 +48,7 @@ var suites_000 = /* tuple */[
   function () {
     return /* Eq */Block.__(0, [
               1,
-              v0
+              1
             ]);
   }
 ];
@@ -74,6 +72,8 @@ var suites = /* :: */[
 ];
 
 Mt.from_pair_suites("module_parameter_test.ml", suites);
+
+var v0 = 1;
 
 exports.u      = u;
 exports.N      = N;

@@ -268,7 +268,7 @@ Mt.from_pair_suites("float_test.ml", Pervasives.$at(/* :: */[
                   "int_of_float",
                   function () {
                     return /* Eq */Block.__(0, [
-                              3.2 | 0,
+                              3,
                               3
                             ]);
                   }

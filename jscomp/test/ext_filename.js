@@ -130,8 +130,6 @@ function relative_path(file1, file2) {
 
 var node_modules = "node_modules";
 
-var node_modules_length = 12;
-
 function node_relative_path(path1, path2) {
   var v = Ext_string.find(/* None */0, node_modules, path2);
   var len = path2.length;
@@ -159,7 +157,7 @@ function node_relative_path(path1, path2) {
         }
       };
     };
-    return Ext_string.tail_from(path2, skip(v + node_modules_length | 0));
+    return Ext_string.tail_from(path2, skip(v + 12 | 0));
   }
   else {
     return relative_path(try_chop_extension(absolute_path(path2)), try_chop_extension(absolute_path(path1))) + (node_sep + try_chop_extension(Curry._1(Filename.basename, path2)));
@@ -201,6 +199,8 @@ function resolve(cwd, module_name) {
     }
   };
 }
+
+var node_modules_length = 12;
 
 exports.node_sep            = node_sep;
 exports.node_parent         = node_parent;
