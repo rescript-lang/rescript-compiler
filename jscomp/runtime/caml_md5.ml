@@ -34,18 +34,18 @@ let (>>>) = Int32.shift_right_logical
 let (>>) = Int32.shift_right
 let (&) = Int32.logand  
 let (^) = Int32.logxor 
-
+let lognot n = Int32.logxor n (-1l)
 let cmn q a b x s t = 
     let a = a +~ q +~ x +~ t in
     Int32.logor (a << s)  (a >>> (32 - s)) +~  b
 
 
 let  f a b c d x s t = 
-  cmn (Int32.logor (b & c)  ((Int32.lognot b) & d)) a b x s t
+  cmn (Int32.logor (b & c)  (lognot b & d)) a b x s t
 
 
 let g a b c d x s t =
-  cmn (Int32.logor (b & d)  (c & (Int32.lognot d))) a b x s t
+  cmn (Int32.logor (b & d)  (c & (lognot d))) a b x s t
 
 ;;
 let h a b c d x s t = 
@@ -53,7 +53,7 @@ let h a b c d x s t =
 ;;
 
 let i a b c d x s t = 
-  cmn (c ^ (Int32.logor b  (Int32.lognot d))) a b x s t
+  cmn (c ^ (Int32.logor b  (lognot d))) a b x s t
 
 let cycle (x : int32 array)  (k : int32 array) = 
     let a = ref x.(0) in 

@@ -29,7 +29,7 @@
 
 
 
-
+let (^) = Js.String.append
 let stdin = Js.Def.empty
 
 let stderr = Js.Def.empty

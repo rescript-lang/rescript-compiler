@@ -4,6 +4,10 @@
 var Caml_builtin_exceptions = require("./caml_builtin_exceptions");
 var Curry                   = require("./curry");
 
+function $caret(prim, prim$1) {
+  return prim + prim$1;
+}
+
 var stdin = undefined;
 
 var stdout = /* record */[
@@ -117,6 +121,7 @@ function caml_ml_out_channels_list() {
         ];
 }
 
+exports.$caret                      = $caret;
 exports.stdin                       = stdin;
 exports.stdout                      = stdout;
 exports.stderr                      = stderr;

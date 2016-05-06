@@ -38,4 +38,4 @@ val find : string -> string
 (** [find filename] Input is a file name, output is absolute path *)
 
 
-val find_cmj : string -> Js_cmj_format.cmj_table
+val find_cmj : string -> Js_cmj_format.t

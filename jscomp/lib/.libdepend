@@ -1,10 +1,4 @@
-bench.cmo : js.cmo
-bench.cmj : js.cmj
-fn.cmo :
 fn.cmj :
-js.cmo :
-js.cmj :
-js_date.cmo :
-js_date.cmj :
-js_intf.cmo :
-js_intf.cmj :
+fn.cmx :
+js.cmj : ../stdlib/obj.cmi
+js.cmx : ../stdlib/obj.cmx

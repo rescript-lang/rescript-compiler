@@ -1,1 +1,1 @@
-val cmj_data_sets : Js_cmj_format.cmj_table Lazy.t String_map.t
+val cmj_data_sets : Js_cmj_format.t Lazy.t String_map.t

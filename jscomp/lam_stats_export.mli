@@ -31,5 +31,5 @@ val export_to_cmj :
   Lam_stats.meta ->
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
-  Lambda.lambda Ident_map.t -> Js_cmj_format.cmj_table
+  Lambda.lambda Ident_map.t -> Js_cmj_format.t
 

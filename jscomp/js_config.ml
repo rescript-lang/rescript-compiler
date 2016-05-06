@@ -74,6 +74,8 @@ let get_goog_package_name () =
   | AmdJS
   | NodeJS -> None
 
+let get_npm_package_path () = None
+
 let default_gen_tds = ref false
      
 let stdlib_set = String_set.of_list [

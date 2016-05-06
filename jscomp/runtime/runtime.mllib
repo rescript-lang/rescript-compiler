@@ -15,7 +15,7 @@ caml_lexer
 caml_parser
 caml_primitive
 caml_format
-# caml_bigarray
+
 caml_md5
 caml_queue
 caml_hash
@@ -26,7 +26,7 @@ caml_gc
 typed_array
 js
 fn
-js_error
+
 curry
 block
 js_primitive

@@ -36,6 +36,8 @@
    the encoding of nativeint is platform dependent *)
 open Nativeint
 
+let (^) = Js.String.append 
+
 let (>>>) = Nativeint.shift_right_logical
 let (>>) = Nativeint.shift_right
 let ( +~ ) = Nativeint.add 

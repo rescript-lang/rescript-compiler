@@ -32,7 +32,7 @@
 let repeat = Caml_utils.repeat
 let caml_failwith s = raise (Failure  s)
 let caml_invalid_argument s= raise (Invalid_argument s )
-
+let (^) = Js.String.append
 let (>>>) = Nativeint.shift_right_logical
 
 let to_nat x = Nativeint.of_int x 

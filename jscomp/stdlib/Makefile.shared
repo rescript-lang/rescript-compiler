@@ -119,6 +119,6 @@ clean::
 include .depend
 
 depend:
-	$(CAMLDEP) *.mli *.ml > .depend
+	$(CAMLDEP) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .depend
 	$(CAMLDEP) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
 	# $(CAMLDEP) *.ml | sed -e 's/\.cmx/.p.cmj/g' >>.depend
