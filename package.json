@@ -14,10 +14,14 @@
     "uglify-js": "^2.6.1"
   },
   "scripts": {
-    "test": "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js' ",
-    "wtest": "node ./node_modules/mocha/bin/mocha './jscomp/test/**/*_test.js'  -R spec -w",
-    "cover": "node ./node_modules/istanbul/lib/cli.js cover --report html ./node_modules/.bin/_mocha --   jscomp/test/*test.js",
-    "coverage": "`npm bin`/istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './jscomp/test/**/*_test.js' -R spec",
+    "test":
+      "node ./node_modules/mocha/bin/mocha './lib/js/test/*_test.js' ",
+    "wtest": 
+      "node ./node_modules/mocha/bin/mocha './lib/js/test/*_test.js'  -R spec -w",
+    "cover":
+      "node ./node_modules/istanbul/lib/cli.js cover --report html ./node_modules/.bin/_mocha --   ./lib/js/test/*test.js",
+    "coverage": 
+      "`npm bin`/istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './lib/js/test/*test.js' -R spec",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info"
   }
 }

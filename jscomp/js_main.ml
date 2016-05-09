@@ -34,25 +34,10 @@ let process_file ppf name =
     Js_implementation.interface ppf name opref;
     if !make_package then objfiles := (opref ^ ".cmi") :: !objfiles
   end
-  (* else if Filename.check_suffix name ".cmo"  *)
-  (*      || Filename.check_suffix name ".cma" then *)
-  (*   objfiles := name :: !objfiles *)
-  (* else if Filename.check_suffix name ".cmi" && !make_package then *)
-  (*   objfiles := name :: !objfiles *)
-  (* else if Filename.check_suffix name ext_obj *)
-  (*      || Filename.check_suffix name ext_lib then *)
-  (*   ccobjs := name :: !ccobjs *)
-  (* else if Filename.check_suffix name ext_dll then *)
-  (*   dllibs := name :: !dllibs *)
-  (* else if Filename.check_suffix name ".c" then begin *)
-  (*   Compile.c_file name; *)
-  (*   ccobjs := (Filename.chop_suffix (Filename.basename name) ".c" ^ ext_obj) *)
-  (*             :: !ccobjs *)
-  (* end *)
   else
     raise(Arg.Bad("don't know what to do with " ^ name))
 
-let usage = "Usage: ocamlc <options> <files>\nOptions are:"
+let usage = "Usage: bsc <options> <files>\nOptions are:"
 
 let ppf = Format.err_formatter
 
@@ -145,10 +130,15 @@ module Options = Main_args.Make_bytecomp_options (struct
 end)
 
 let add_include_path s = 
-  let path = Ext_filename.resolve (Sys.getcwd ()) s  in 
+  let path = 
+    Ext_filename.resolve 
+      (Lazy.force Ext_filename.cwd) s  in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 let buckle_script_flags = 
+  ("-js-npm-output-path", Arg.String Js_config.set_npm_package_path, 
+   " set npm-output-path, for example `lib/js`")
+  ::
   ("-npm-package", Arg.String add_include_path, 
    " set package names, for example bs-platform "  )
   :: ("-js-module", Arg.String Js_config.cmd_set_module, 
@@ -165,16 +155,6 @@ let main () =
   try
     readenv ppf Before_args;
     Arg.parse buckle_script_flags anonymous usage;
-    readenv ppf Before_link;
-    if
-      List.length (List.filter (fun x -> !x)
-                      [make_archive;make_package;compile_only;output_c_object])
-        > 1
-    then
-      if !print_types then
-        fatal "Option -i is incompatible with -pack, -a, -output-obj"
-      else
-        fatal "Please specify at most one of -pack, -a, -c, -output-obj";
     exit 0
   with x ->
     Location.report_exception ppf x;

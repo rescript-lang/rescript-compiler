@@ -8,6 +8,7 @@ SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
+COMPFLAGS+=  -js-npm-output-path lib/js/test/
 
 
 $(TESTS): $(CAMLC)
@@ -43,5 +44,6 @@ simple_lexer_test.ml: simple_lexer_test.mll
 
 depend:
 	$(CAMLDEP) $(INCLUDES) *.mli *.ml | sed -e 's/\.cmo/.cmj/g' > .depend
-	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >>.depend
+	$(CAMLDEP) $(INCLUDES) *.ml | sed -e 's/\.cmx/.cmj/g' >> .depend
+
 

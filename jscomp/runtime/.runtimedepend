@@ -44,8 +44,10 @@ caml_hash.cmj : js.cmj caml_queue.cmi caml_hash.cmi
 caml_hash.cmx : js.cmx caml_queue.cmx caml_hash.cmi
 caml_int32.cmj : caml_int32.cmi
 caml_int32.cmx : caml_int32.cmi
-caml_int64.cmj : typed_array.cmj js.cmj caml_utils.cmi caml_int64.cmi
-caml_int64.cmx : typed_array.cmx js.cmx caml_utils.cmx caml_int64.cmi
+caml_int64.cmj : typed_array.cmj js.cmj caml_utils.cmi caml_int32.cmi \
+    caml_int64.cmi
+caml_int64.cmx : typed_array.cmx js.cmx caml_utils.cmx caml_int32.cmx \
+    caml_int64.cmi
 caml_io.cmj : js.cmj
 caml_io.cmx : js.cmx
 caml_lexer.cmj : caml_lexer.cmi
@@ -102,8 +104,10 @@ caml_hash.cmo : js.cmo caml_queue.cmi caml_hash.cmi
 caml_hash.cmj : js.cmj caml_queue.cmj caml_hash.cmi
 caml_int32.cmo : caml_int32.cmi
 caml_int32.cmj : caml_int32.cmi
-caml_int64.cmo : typed_array.cmo js.cmo caml_utils.cmi caml_int64.cmi
-caml_int64.cmj : typed_array.cmj js.cmj caml_utils.cmj caml_int64.cmi
+caml_int64.cmo : typed_array.cmo js.cmo caml_utils.cmi caml_int32.cmi \
+    caml_int64.cmi
+caml_int64.cmj : typed_array.cmj js.cmj caml_utils.cmj caml_int32.cmj \
+    caml_int64.cmi
 caml_io.cmo : js.cmo
 caml_io.cmj : js.cmj
 caml_lexer.cmo : caml_lexer.cmi

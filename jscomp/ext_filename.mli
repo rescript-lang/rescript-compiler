@@ -26,8 +26,17 @@
 
 
 
+(* TODO:
+   Change the module name, this code is not really an extension of the standard 
+    library but rather specific to JS Module name convention. 
+*)
 
+type t = 
+  [ `File of string 
+  | `Dir of string ]
 
+val combine : string -> string -> string 
+val path_as_directory : string -> string
 
 (** An extension module to calculate relative path follow node/npm style. 
     TODO : this short name will have to change upon renaming the file.
@@ -41,12 +50,14 @@
     just treat it as a library instead
  *)
 
-val node_relative_path : string -> string -> string
-(** TODO Change the module name, this code is not really an extension of the standard 
-    library but rather specific to JS Module name convention. 
-  *)
+val node_relative_path : t -> [`File of string] -> string
 
 val chop_extension : ?loc:string -> string -> string
 
 
 val resolve : cwd:string -> string -> string
+
+val resolve_package : string -> string 
+
+val cwd : string Lazy.t
+val package_dir : string Lazy.t

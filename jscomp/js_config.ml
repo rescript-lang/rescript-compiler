@@ -74,8 +74,36 @@ let get_goog_package_name () =
   | AmdJS
   | NodeJS -> None
 
-let get_npm_package_path () = None
+let npm_package_path = ref None 
+let set_npm_package_path s = npm_package_path := Some s
+let get_npm_package_path () = !npm_package_path
 
+let (//) = Filename.concat 
+(* for a single pass compilation, [output_dir] 
+   can be cached 
+*)
+let get_output_dir filename =
+  match get_npm_package_path () with 
+  | None -> 
+    if Filename.is_relative filename then
+      Lazy.force Ext_filename.cwd //
+      Filename.dirname filename
+    else 
+      Filename.dirname filename
+  | Some x -> 
+    Lazy.force Ext_filename.package_dir // x
+    
+
+
+(* Note that we can have different [basename] when passed 
+   to many files
+*)
+let get_output_file filename = 
+  let basename = Filename.basename filename in  
+  Filename.concat (get_output_dir filename)
+    (Ext_filename.chop_extension ~loc:__LOC__ basename ^  get_ext())
+    
+      
 let default_gen_tds = ref false
      
 let stdlib_set = String_set.of_list [
@@ -88,10 +116,10 @@ let stdlib_set = String_set.of_list [
     "arrayLabels";
     "hashtbl";
     "queue";
-    "buffer";			
+    "buffer"; 
     "int32";
     "random";
-    "bytes";			
+    "bytes"; 
     "int64";
     "scanf";
     "bytesLabels";

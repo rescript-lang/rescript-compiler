@@ -34,23 +34,57 @@ let node_sep = "/"
 let node_parent = ".."
 let node_current = "."
 
+type t = 
+  [ `File of string 
+  | `Dir of string ]
+
+let cwd = lazy (Sys.getcwd ())
+
+let (//) = Filename.concat 
+
+let combine path1 path2 =
+  if path1 = "" then
+    path2
+  else if path2 = "" then path1
+  else 
+  if Filename.is_relative path2 then
+     path1// path2 
+  else
+    path2
+
+(* Note that [.//] is the same as [./] *)
+let path_as_directory x =
+  if x = "" then x
+  else
+  if Ext_string.ends_with x  Filename.dir_sep then
+    x 
+  else 
+    x ^ Filename.dir_sep
+
 let absolute_path s = 
-  let s = if Filename.is_relative s then Filename.concat (Sys.getcwd ()) s else s in
-  (* Now simplify . and .. components *)
-  let rec aux s =
-    let base = Filename.basename s in
-    let dir = Filename.dirname s in
-    if dir = s then dir
-    else if base = Filename.current_dir_name then aux dir
-    else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
-    else Filename.concat (aux dir) base
-  in
-  aux s
+  let process s = 
+    let s = 
+      if Filename.is_relative s then
+        Lazy.force cwd // s 
+      else s in
+    (* Now simplify . and .. components *)
+    let rec aux s =
+      let base,dir  = Filename.basename s, Filename.dirname s  in
+      if dir = s then dir
+      else if base = Filename.current_dir_name then aux dir
+      else if base = Filename.parent_dir_name then Filename.dirname (aux dir)
+      else aux dir // base
+    in aux s  in 
+  match s with 
+  | `File x -> `File (process x )
+  | `Dir x -> `Dir (process x)
+
 
 let chop_extension ?(loc="") name =
   try Filename.chop_extension name 
   with Invalid_argument _ -> 
-    invalid_arg ("Filename.chop_extension (" ^ loc ^ ":" ^ name ^ ")")
+    Ext_pervasives.invalid_argf 
+      "Filename.chop_extension ( %s : %s )"  loc name
 
 let try_chop_extension s = try Filename.chop_extension s with _ -> s 
 
@@ -74,9 +108,18 @@ let try_chop_extension s = try Filename.chop_extension s with _ -> s
     /c/d
     ]}
  *)
-let relative_path file1 file2 = 
-  let dir1 = Ext_string.split (Filename.dirname file1) (Filename.dir_sep.[0])  in
-  let dir2 = Ext_string.split (Filename.dirname file2) (Filename.dir_sep.[0])  in
+let relative_path file_or_dir_1 file_or_dir_2 = 
+  let sep_char = Filename.dir_sep.[0] in
+  let relevant_dir1 = 
+    (match file_or_dir_1 with 
+    | `Dir x -> x 
+    | `File file1 ->  Filename.dirname file1) in
+  let relevant_dir2 = 
+    (match file_or_dir_2 with 
+    |`Dir x -> x 
+    |`File file2 -> Filename.dirname file2 ) in
+  let dir1 = Ext_string.split relevant_dir1 sep_char   in
+  let dir2 = Ext_string.split relevant_dir2 sep_char  in
   let rec go (dir1 : string list) (dir2 : string list) = 
     match dir1, dir2 with 
     | x::xs , y :: ys when x = y
@@ -95,20 +138,29 @@ let relative_path file1 file2 =
 
 let node_modules = "node_modules"
 let node_modules_length = String.length "node_modules"
+let package_json = "package.json"
+
+
+
+
 (** path2: a/b 
     path1: a 
     result:  ./b 
     TODO: [Filename.concat] with care
+
+    [file1] is currently compilation file 
+    [file2] is the dependency
  *)
-let node_relative_path path1 path2 = 
-  let v = Ext_string.find  path2 ~sub:node_modules in 
-  let len = String.length path2 in 
+let node_relative_path (file1 : t) 
+    (`File file2 as dep_file : [`File of string]) = 
+  let v = Ext_string.find  file2 ~sub:node_modules in 
+  let len = String.length file2 in 
   if v >= 0 then 
     let rec skip  i =       
       if i >= len then
-        failwith ("invalid path: " ^ path2)
+        Ext_pervasives.failwithf "invalid path: %s"  file2
       else 
-        match path2.[i] with 
+        match file2.[i] with 
         | '/'
         | '.' ->  skip (i + 1) 
         | _ -> i
@@ -121,21 +173,22 @@ let node_relative_path path1 path2 =
            This seems weird though
         *)
     in 
-    Ext_string.tail_from path2
+    Ext_string.tail_from file2
       (skip (v + node_modules_length)) 
   else 
-    (relative_path 
-       (try_chop_extension (absolute_path path2))
-       (try_chop_extension (absolute_path path1))
-    ) ^ node_sep ^
-    (try_chop_extension (Filename.basename path2))
+    relative_path 
+       (absolute_path dep_file)
+       (absolute_path file1)
+     ^ node_sep ^
+    try_chop_extension (Filename.basename file2)
+
 
 
 (** [resolve cwd module_name], [cwd] is current working directory, absolute path
 *)
 let  resolve ~cwd module_name = 
   let rec aux origin cwd module_name = 
-    let v = Filename.concat (Filename.concat cwd node_modules) module_name 
+    let v = ( cwd // node_modules) // module_name 
     in 
     if Sys.is_directory v then v 
     else 
@@ -145,3 +198,18 @@ let  resolve ~cwd module_name =
       else Ext_pervasives.failwithf "%s not found in %s" module_name origin 
   in
   aux cwd cwd module_name
+
+
+let resolve_package cwd  = 
+  let rec aux cwd  = 
+    if Sys.file_exists (cwd // package_json) then cwd
+    else 
+      let cwd' = Filename.dirname cwd in 
+      if String.length cwd' < String.length cwd then  
+        aux cwd'
+      else 
+	Ext_pervasives.failwithf "package.json not found from %s" cwd
+  in
+  aux cwd 
+
+let package_dir = lazy (resolve_package (Lazy.force cwd))

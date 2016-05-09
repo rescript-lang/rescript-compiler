@@ -36,6 +36,8 @@ module S = Js_stmt_make
 
 open Js_output.Ops
 
+let (//) = Filename.concat 
+
 let string_of_module_id (x : Lam_module_ident.t) : string =           
   match x.kind  with 
   | Runtime  
@@ -54,6 +56,35 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
             base 
           | Some v -> v ^ "." ^ base 
         end
+      | AmdJS
+      | NodeJS -> 
+        let rebase dep =
+          Ext_filename.node_relative_path 
+            (`Dir (Js_config.get_output_dir !Location.input_name)) dep 
+        in 
+        begin match Lam_compile_env.get_npm_package_path x with
+          | Some x -> 
+            let filename = String.uncapitalize id.name in
+            rebase (`File (Lazy.force Ext_filename.package_dir // x // filename))
+          | None -> 
+            begin match Config_util.find file with   
+              (* maybe from third party library*)
+              (* Check: be consistent when generating js files
+                 A.ml -> a.js
+                 a.ml -> a.js
+                 check generated [js] file if it's capital or not
+                 Actually, we can not tell its original name just from [id], 
+                 so we just always general litte_case.js
+              *)
+              | file ->
+                rebase (`File file)
+              (* for some primitive files, no cmj support *)
+              | exception Not_found ->
+                Ext_pervasives.failwithf 
+                  "@[%s not found in search path - while compiling %s @] "
+                  file !Location.input_name 
+            end
+        end
       | Browser 
         (* In browser *)
         ->  
@@ -62,43 +93,6 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
           "./runtime/" ^  target
         else
           "./stdlib/" ^ target 
-      | AmdJS
-      | NodeJS -> 
-        let filename = String.uncapitalize id.name in
-        begin match Config_util.find file with   
-          (* for some primitive files, no cmj support *)
-          | exception Not_found ->
-            if String_set.mem filename Js_config.runtime_set  then 
-              let path = 
-                (* For the runtime, only [JS] files are needed, and 
-                   unlike the stdlib, [bsc] have some pre-built knowledge 
-                   about where it is, since in general, [runtime] 
-                   is *transparent* to the user
-                *)        
-                Filename.concat 
-                  (Filename.dirname (Filename.dirname Sys.executable_name))
-                  "runtime"
-              in
-              Ext_filename.node_relative_path !Location.input_name
-                (Filename.concat path filename)        
-            else
-              begin 
-                Ext_log.warn __LOC__ "@[%s not found in search path - while compiling %s @] "
-                  file !Location.input_name ;
-                Printf.sprintf "%s" 
-                  (String.uncapitalize id.name) 
-              end
-          (* maybe from third party library*)
-          (* Check: be consistent when generating js files
-             A.ml -> a.js
-             a.ml -> a.js
-             check generated [js] file if it's capital or not
-             Actually, we can not tell its original name just from [id], 
-             so we just always general litte_case.js
-          *)
-          | path ->
-            Ext_filename.node_relative_path !Location.input_name path
-        end
     end
   | External name -> name
 

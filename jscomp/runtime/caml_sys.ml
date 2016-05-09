@@ -72,3 +72,6 @@ let caml_sys_getcwd () = "/"
 
 let caml_sys_is_directory _s = 
   raise @@ Failure "caml_sys_is_directory not implemented"
+
+let caml_sys_file_exists _s = 
+  raise @@ Failure "caml_sys_file_exists not implemented"

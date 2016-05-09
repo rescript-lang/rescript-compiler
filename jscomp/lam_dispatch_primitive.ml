@@ -464,6 +464,7 @@ let query (prim : Lam_compile_env.primitive_description)
   | "caml_sys_system_command" 
   | "caml_sys_getcwd" (* check browser or nodejs *)
   | "caml_sys_is_directory"
+  | "caml_sys_file_exists"
     -> 
     call Js_config.sys
   | "caml_lex_engine"
