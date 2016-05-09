@@ -14,10 +14,11 @@ export OCAMLRUNPARAM=b
 # it can be minimal
 cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
 
-if [ ! $BS_TRAVIS_CI ]
-then 
-    cd ocaml && git clean -dfx && cd ..
-fi
+# we should not rely on git
+# if [ ! $BS_TRAVIS_CI ]
+# then 
+#     cd ocaml && git clean -dfx && cd ..
+# fi
 
 export PATH=$(pwd)/bin:$PATH
 
