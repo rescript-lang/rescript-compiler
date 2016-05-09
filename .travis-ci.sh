@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-if [ $TRAVIS_CI ]
+if [ $BS_TRAVIS_CI ]
 then 
     git submodule update --init --recursive
 fi 
@@ -14,7 +14,7 @@ export OCAMLRUNPARAM=b
 # it can be minimal
 cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
 
-if [ ! $TRAVIS_CI ]
+if [ ! $BS_TRAVIS_CI ]
 then 
     cd ocaml && git clean -dfx && cd ..
 fi
