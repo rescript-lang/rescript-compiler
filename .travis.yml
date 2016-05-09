@@ -1,6 +1,5 @@
 language: node_js
 env:
-  - OCAML=4.02.3
   - BS_TRAVIS_CI=1
 node_js:
   - "4.0"
