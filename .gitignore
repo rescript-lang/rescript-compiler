@@ -69,5 +69,4 @@ coverage
 dist/
 
 bin/
-lib/
 man/

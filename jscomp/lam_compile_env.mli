@@ -92,6 +92,8 @@ val reset : unit -> unit
 
 val is_pure : Lam_module_ident.t -> bool
 val get_goog_package_name : Lam_module_ident.t -> string option
+val get_npm_package_path : Lam_module_ident.t -> string option 
+
 (* The second argument is mostly from [runtime] modules 
     will change the input [hard_dependencies]
 *)

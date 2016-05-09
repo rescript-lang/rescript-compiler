@@ -62,3 +62,5 @@ let  is_pos_pow n =
   try aux 0 n  with M.E -> -1
 
 let failwithf fmt = Format.ksprintf failwith fmt
+
+let invalid_argf fmt = Format.ksprintf invalid_arg fmt

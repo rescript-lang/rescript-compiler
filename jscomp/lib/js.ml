@@ -128,7 +128,7 @@ end
 module Array = struct 
   external new_uninitialized : int -> 'a array = "js_create_array"
   external append : 'a array -> 'a array -> 'a array = "js_array_append"
-  external make: int -> 'a -> 'a array = "caml_make_vect"
+  external make : int -> 'a -> 'a array = "caml_make_vect"
 end
 module Bytes = struct 
   external to_int_array : bytes -> int array = "%identity"

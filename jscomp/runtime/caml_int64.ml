@@ -205,10 +205,11 @@ let rec mul this
       end
 
 
-external bswap32: nativeint -> nativeint = "%bswap_int32"
+
 
 let swap {lo ; hi } = 
-  mk ~lo:( bswap32 hi) ~hi:( bswap32 lo)
+  mk ~lo:( Caml_int32.caml_int32_bswap hi)
+    ~hi:( Caml_int32.caml_int32_bswap lo)
 
 (* Dispatched by the compiler, idea: should we do maximum sharing 
 *)

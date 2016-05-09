@@ -36,7 +36,11 @@ type env =
 val get_env : unit -> env
 val get_ext : unit -> string
 
+val get_output_dir : string -> string 
+val get_output_file : string -> string
 val get_goog_package_name : unit -> string option
+
+val set_npm_package_path : string -> unit 
 val get_npm_package_path : unit -> string option
 
 val set_env : env -> unit

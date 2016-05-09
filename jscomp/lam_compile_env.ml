@@ -41,11 +41,13 @@ type ml_module_info = {
 
 type env_value = 
   | Visit of ml_module_info
-  | Runtime  of bool (** A built in module probably from our runtime primitives, 
-                         so it does not have any [signature]
-                      *)
-  | External         (** Also a js file, but this belong to third party 
-                      *)
+  | Runtime  of bool * Js_cmj_format.t
+  (** A built in module probably from our runtime primitives, 
+      so it does not have any [signature]
+  *)
+  | External  
+  (** Also a js file, but this belong to third party 
+  *)
 
 type module_info = {
   signature :  Types.signature ;
@@ -152,26 +154,15 @@ let query_and_add_if_not_exist (type u)
   | exception Not_found -> 
     begin match oid.kind with
       | Runtime  -> 
-        add_cached_tbl oid (Runtime true) ; 
+        let cmj_table = 
+          Config_util.find_cmj (Lam_module_ident.name oid ^ ".cmj") in           
+        add_cached_tbl oid (Runtime (true,cmj_table)) ; 
         begin match env with 
         | Has_env _ -> 
           found {signature = []; pure = true}
         | No_env -> 
-          found (Js_cmj_format.pure_dummy)
+          found cmj_table
         end
-      | External _  -> 
-        add_cached_tbl oid External;
-        (** This might be wrong, if we happen to expand  an js module
-            we should assert false (but this in general should not happen)
-        *)
-        begin match env with 
-        | Has_env _ 
-          -> 
-          found {signature = []; pure = false}
-        | No_env -> 
-          found (Js_cmj_format.no_pure_dummy)
-        end
-
       | Ml 
         -> 
         let cmj_table = 
@@ -188,6 +179,20 @@ let query_and_add_if_not_exist (type u)
           | No_env -> 
             found cmj_table
         end
+
+      | External _  -> 
+        add_cached_tbl oid External;
+        (** This might be wrong, if we happen to expand  an js module
+            we should assert false (but this in general should not happen)
+        *)
+        begin match env with 
+        | Has_env _ 
+          -> 
+          found {signature = []; pure = false}
+        | No_env -> 
+          found (Js_cmj_format.no_pure_dummy)
+        end
+
     end
   | Visit {signatures  ; cmj_table =  cmj_table; _} -> 
     begin match env with 
@@ -196,14 +201,12 @@ let query_and_add_if_not_exist (type u)
       | No_env  -> found cmj_table
     end
 
-  | Runtime pure -> 
+  | Runtime (pure, cmj_table) -> 
     begin match env with 
       | Has_env _ -> 
         found {signature = []  ; pure }
       | No_env -> 
-        found (if pure then Js_cmj_format.pure_dummy 
-               else Js_cmj_format.no_pure_dummy
-              )
+        found cmj_table
     end
   | External -> 
     begin match env with 
@@ -219,14 +222,15 @@ let is_pure id  =
     ~found:(fun x -> x.effect = None)
 
 let get_goog_package_name ({ kind; _} as id : Lam_module_ident.t) = 
-  match kind with 
-  | Runtime -> 
-    Some "buckle.runtime" (* Invariant check with the build system *)
-  | Ml 
-  | External _ -> 
-      query_and_add_if_not_exist id No_env
+  query_and_add_if_not_exist id No_env
     ~not_found:(fun _ -> None) 
     ~found:(fun x -> x.goog_package)
+    
+
+let get_npm_package_path ( id : Lam_module_ident.t) = 
+  query_and_add_if_not_exist id No_env
+    ~not_found:(fun _ -> None) 
+    ~found:(fun x -> x.npm_package_path)
 
 
 (* TODO: [env] is not hard dependency *)

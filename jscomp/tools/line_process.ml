@@ -83,7 +83,7 @@ let rec process_line cwd filedir  line =
      Line_process.read_lines "." "./tools/tools.mllib" 
    ]} 
 
-   TODO: we can only concat (dir/file) not (dir/dir)
+   FIXME: we can only concat (dir/file) not (dir/dir)
    {[
      Filename.concat "/bb/x/" "/bb/x/";;
    ]}

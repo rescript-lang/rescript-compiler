@@ -71,9 +71,9 @@ let from_file name : t =
   let ic = open_in_bin name in 
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
-    failwith 
-      ("cmj files have incompatible versions, please rebuilt using the new compiler : " 
-       ^ __LOC__)
+    Ext_pervasives.failwithf 
+      "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
+        __LOC__
   else 
     let v  : t = input_value ic in 
     close_in ic ;

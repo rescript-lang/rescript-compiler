@@ -148,9 +148,11 @@ ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmj : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/filename.cmi ext_string.cmj ext_pervasives.cmi
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmj \
+    ext_pervasives.cmi
 ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/filename.cmx ext_string.cmx ext_pervasives.cmx
+    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_string.cmx \
+    ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmi
@@ -760,9 +762,11 @@ ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/filename.cmi ext_string.cmo ext_pervasives.cmi
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmo \
+    ext_pervasives.cmi
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/filename.cmj ext_string.cmj ext_pervasives.cmj
+    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_string.cmj \
+    ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : lam_current_unit.cmo ../stdlib/format.cmi
