@@ -27,8 +27,6 @@ ocaml_pack
 *~
 stdlib/c.js
 *.map
-*.zip
-*.gz
 *#
 qcc/
 .#*
@@ -38,15 +36,12 @@ oxml
 
 *.rawlambda
 *.lambda
-ocaml/*.js
-ocaml/*/*/*.js
-ocaml/*.js
+
+
+ocaml/
 
 
 test.json
-ocaml/bin
-ocaml/lib
-ocaml/man
 *~
 *.annot
 *.mj
