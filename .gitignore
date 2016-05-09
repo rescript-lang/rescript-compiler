@@ -9,7 +9,10 @@ _build
 *.cmx
 *.cmt
 *.cmti
-jslambda
+*.cma
+*.a
+*.cmxa
+
 
 exports.js
 *.lambda
@@ -70,3 +73,16 @@ dist/
 
 bin/
 man/
+lib/ocaml/*.ml
+lib/ocaml/*.mli
+lib/ocaml/caml
+lib/ocaml/VERSION
+lib/ocaml/camlheader
+lib/ocaml/camlheader_ur
+lib/ocaml/expunge
+lib/ocaml/ld.conf
+lib/ocaml/objinfo_helper
+lib/ocaml/vmthreads/
+lib/ocaml/Makefile.config
+lib/ocaml/extract_crc
+

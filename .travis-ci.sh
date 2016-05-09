@@ -1,12 +1,18 @@
 #!/bin/sh
 set -e
 
-git submodule update --init --recursive
+if [ $TRAVIS_CI ]
+then 
+    git submodule update --init --recursive
+fi 
 
 export OCAMLPARAM='_,bin-annot=1' 
 export OCAMLRUNPARAM=b
 
-cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild && make -j9 world.opt && make install  && cd ..
+# we encoruage people to install from opam 
+# for our own local installation 
+# it can be minimal
+cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
 
 export PATH=$(pwd)/bin:$PATH
 
