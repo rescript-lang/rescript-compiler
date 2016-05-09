@@ -1,7 +1,5 @@
 {
   "devDependencies": {
-    "babel": "^6.3.13",
-    "babel-cli": "^6.3.17",
     "benchmark": "^2.1.0",
     "coveralls": "^2.11.9",
     "istanbul": "^0.4.2",
