@@ -21,12 +21,11 @@
     "coverage": 
       "`npm bin`/istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './lib/js/test/*test.js' -R spec",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
-      "postinstall" : "./.travis-ci.sh"
-
+      "postinstall" : "./scripts/postinstall.sh"
   },
 
     "name": "bs-platform",
-    "version": "0.2.0",
+    "version": "0.2.4",
     "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
 
     "repository": {

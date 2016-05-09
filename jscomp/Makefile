@@ -80,7 +80,16 @@ world:
 	cd stdlib && make all	
 	@echo "Making lib finished"
 
+# no depend on ./bin/ocaml_pack ./bin/bsc
+# since in npm mode, they are generated from a single file
+install:
+	cp  ./bin/bsc ../bin/
+	cp ./runtime/*.cmt* ../lib/ocaml/
+	cp ./runtime/*.cmj* ../lib/ocaml/
+	cp ./stdlib/*.cm* ../lib/ocaml/
+
 TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
+
 
 big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making compiler"		
@@ -98,7 +107,6 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making lib"
 	cd stdlib && make all	
 	@echo "Making lib finished"
-
 
 world-test:
 	@echo "Making compiler"		
@@ -128,13 +136,6 @@ travis-world-test:./bin/ocaml_pack
 	@echo "Generating the compiler finished"	
 	make world-test
 
-# no depend on ./bin/ocaml_pack ./bin/bsc
-# since in npm mode, they are generated from a single file
-install:
-	cp ./bin/ocaml_pack ./bin/bsc ../bin/
-	cp ./runtime/*.cmt* ../lib/ocaml/
-	cp ./runtime/*.cmj* ../lib/ocaml/
-	cp ./stdlib/*.cm* ../lib/ocaml/
 
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
