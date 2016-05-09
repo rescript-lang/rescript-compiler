@@ -128,6 +128,11 @@ travis-world-test:./bin/ocaml_pack
 	@echo "Generating the compiler finished"	
 	make world-test
 
+install:./bin/ocaml_pack ./bin/bsc
+	cp ./bin/ocaml_pack ./bin/bsc ../bin
+	cp ./runtime/*.cmt* ../lib/ocaml
+	cp ./stdlib/*.cm* ../lib/ocaml
+
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
 
