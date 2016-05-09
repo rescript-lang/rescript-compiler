@@ -128,6 +128,14 @@ travis-world-test:./bin/ocaml_pack
 	@echo "Generating the compiler finished"	
 	make world-test
 
+# no depend on ./bin/ocaml_pack ./bin/bsc
+# since in npm mode, they are generated from a single file
+install:
+	cp ./bin/ocaml_pack ./bin/bsc ../bin/
+	cp ./runtime/*.cmt* ../lib/ocaml/
+	cp ./runtime/*.cmj* ../lib/ocaml/
+	cp ./stdlib/*.cm* ../lib/ocaml/
+
 .PHONY: stdlib
 .PHONY: test  quicktest release snapshot snapshotcmj
 
