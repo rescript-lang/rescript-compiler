@@ -4,7 +4,7 @@ env:
 node_js:
   - "4.0"
 
-before_script: bash -ex .travis-ci-before-script.sh
+# before_script: bash -ex .travis-ci-before-script.sh
 
 script: npm run coveralls
 

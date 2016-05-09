@@ -23,7 +23,7 @@
     "coverage": 
       "`npm bin`/istanbul cover ./node_modules/.bin/_mocha --report lcovonly --  './lib/js/test/*test.js' -R spec",
     "coveralls": "npm run-script coverage && node ./node_modules/.bin/coveralls < coverage/lcov.info",
-      "preinstall" : "./.travis-ci-before-script.sh"
+      "postinstall" : "./.travis-ci-before-script.sh"
 
   },
 
