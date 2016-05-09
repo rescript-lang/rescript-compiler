@@ -15,6 +15,7 @@ export OCAMLRUNPARAM=b
 cd ocaml &&  ./configure -prefix $(dirname $(pwd))  -no-ocamldoc -no-ocamlbuild -no-shared-libs -no-curses -no-graph -no-pthread -no-debugger  && make -j9 world.opt && make install  && cd ..
 
 # we should not rely on git
+# it will break `npm postinstall`
 # if [ ! $BS_TRAVIS_CI ]
 # then 
 #     cd ocaml && git clean -dfx && cd ..
