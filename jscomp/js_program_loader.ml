@@ -69,10 +69,14 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
             begin match Js_config.get_npm_package_path () with 
             | None 
               -> 
-              (*TODO: decide which default is better later *)              
-              rebase (`File (
-                  Lazy.force Ext_filename.package_dir // x // filename))
-
+              (* decide which default is better later 
+                 we want the experience of 
+                 {[
+                   `npm bin`/bsc -c hello.ml
+                 ]}
+                 better 
+              *)              
+              package_name // x // filename
             | Some (current_package, path) ->
               if current_package <> package_name then 
                 (*TODO: fix platform specific issue *)

@@ -4498,6 +4498,65 @@ let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
 
 
 end
+module Ext_sys : sig 
+#1 "ext_sys.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val is_directory_no_exn : string -> bool
+
+end = struct
+#1 "ext_sys.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+let is_directory_no_exn f = 
+  try Sys.is_directory f with _ -> false 
+
+end
 module Ext_filename : sig 
 #1 "ext_filename.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -4756,9 +4815,9 @@ let node_relative_path (file1 : t)
 *)
 let  resolve ~cwd module_name = 
   let rec aux origin cwd module_name = 
-    let v = ( cwd // node_modules) // module_name 
+    let v =  cwd // node_modules // module_name 
     in 
-    if Sys.is_directory v then v 
+    if Ext_sys.is_directory_no_exn v then v 
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
@@ -22792,10 +22851,14 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
             begin match Js_config.get_npm_package_path () with 
             | None 
               -> 
-              (*TODO: decide which default is better later *)              
-              rebase (`File (
-                  Lazy.force Ext_filename.package_dir // x // filename))
-
+              (* decide which default is better later 
+                 we want the experience of 
+                 {[
+                   `npm bin`/bsc -c hello.ml
+                 ]}
+                 better 
+              *)              
+              package_name // x // filename
             | Some (current_package, path) ->
               if current_package <> package_name then 
                 (*TODO: fix platform specific issue *)
