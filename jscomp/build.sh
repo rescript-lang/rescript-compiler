@@ -1,7 +1,12 @@
 #!/bin/sh
 
 set -e
-. ./env.sh
+
+export OCAMLPARAM='_,bin-annot=1,annot=1' 
+export OCAMLRUNPARAM=b
+export OCAMLBUILD_CFLAGS=-g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs
+export npm_package_name=bs-platform
+
 
 ## Only make sense for dev 
 make js_map.ml js_fold.ml  >> build.compile
@@ -28,9 +33,6 @@ echo "Remaking standard library" >> build.compile
 cd ./stdlib; ./build.sh ; cd ../
 echo "Remaking standard library Finished" >> build.compile
 
-echo "Remaking thirdparty library" >> build.compile
-cd ./lib; ./build.sh ; cd ../
-echo "Remaking thirdparty library Finished" >> build.compile
 
 TARGET=a
 

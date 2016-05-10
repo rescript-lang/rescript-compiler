@@ -25,13 +25,16 @@
   },
 
     "name": "bs-platform",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "bucklescript compiler, ocaml standard libary by bucklescript and its required runtime support",
 
     "repository": {
         "type": "git",
         "url": "git+https://github.com/bloomberg/bucklescript.git"
     },
+    "bin" : {
+        "bsc" : "./bin/bsc"
+    } ,
     "keywords": [
         "ocaml",
         "bucklescript",

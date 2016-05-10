@@ -6,6 +6,7 @@ basic_module_test.cmi :
 const_block_test.cmi :
 demo_int_map.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
+ext_sys.cmi :
 float_record.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
@@ -73,9 +74,9 @@ caml_format_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/int64.cmx \
     ../stdlib/format.cmx ../stdlib/buffer.cmx ../stdlib/array.cmx
-class3_test.cmj : mt.cmi ../stdlib/list.cmi ../lib/js.cmj \
+class3_test.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj \
     ../stdlib/array.cmi
-class3_test.cmx : mt.cmx ../stdlib/list.cmx ../lib/js.cmx \
+class3_test.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx \
     ../stdlib/array.cmx
 class4_test.cmj : mt.cmi
 class4_test.cmx : mt.cmx
@@ -91,8 +92,8 @@ class_repr.cmj : ../stdlib/oo.cmi
 class_repr.cmx : ../stdlib/oo.cmx
 class_test.cmj : mt.cmi
 class_test.cmx : mt.cmx
-class_type_ffi_test.cmj : ../lib/js.cmj
-class_type_ffi_test.cmx : ../lib/js.cmx
+class_type_ffi_test.cmj : ../runtime/js.cmj
+class_type_ffi_test.cmx : ../runtime/js.cmx
 complex_if_test.cmj : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmx : mt.cmx ../stdlib/bytes.cmx
 complex_test.cmj : mt.cmi ../stdlib/complex.cmi
@@ -115,8 +116,8 @@ cross_module_inline_test.cmj :
 cross_module_inline_test.cmx :
 debug_keep_test.cmj :
 debug_keep_test.cmx :
-debugger_test.cmj : ../lib/js.cmj
-debugger_test.cmx : ../lib/js.cmx
+debugger_test.cmj : ../runtime/js.cmj
+debugger_test.cmx : ../runtime/js.cmx
 demo.cmj :
 demo.cmx :
 demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
@@ -137,8 +138,8 @@ equal_test.cmj :
 equal_test.cmx :
 es6_module_test.cmj : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmx : mt.cmx ../stdlib/list.cmx
-event_ffi.cmj : ../lib/js.cmj ../lib/fn.cmj
-event_ffi.cmx : ../lib/js.cmx ../lib/fn.cmx
+event_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj
+event_ffi.cmx : ../runtime/js.cmx ../runtime/fn.cmx
 exception_raise_test.cmj : mt.cmi
 exception_raise_test.cmx : mt.cmx
 exception_value_test.cmj :
@@ -148,33 +149,35 @@ ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmj : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmj \
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmj \
     ext_pervasives.cmi
 ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_string.cmx \
+    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_sys.cmx ext_string.cmx \
     ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmi
 ext_log.cmx : lam_current_unit.cmx ../stdlib/format.cmx
 ext_pervasives.cmj : ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ext_pervasives.cmi
+    ../stdlib/arg.cmi ext_pervasives.cmi
 ext_pervasives.cmx : ../stdlib/int32.cmx ../stdlib/format.cmx \
-    ext_pervasives.cmi
+    ../stdlib/arg.cmx ext_pervasives.cmi
 ext_string.cmj : ../stdlib/string.cmi ext_bytes.cmj ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/char.cmx \
     ../stdlib/bytes.cmx
+ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
+ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
 extensible_variant_test.cmj : mt.cmi
 extensible_variant_test.cmx : mt.cmx
 fail_comp.cmj :
 fail_comp.cmx :
-ffi_arity_test.cmj : mt.cmi ../lib/fn.cmj
-ffi_arity_test.cmx : mt.cmx ../lib/fn.cmx
+ffi_arity_test.cmj : mt.cmi ../runtime/fn.cmj
+ffi_arity_test.cmx : mt.cmx ../runtime/fn.cmx
 ffi_js.cmj :
 ffi_js.cmx :
-ffi_test.cmj : ../lib/js.cmj
-ffi_test.cmx : ../lib/js.cmx
+ffi_test.cmj : ../runtime/js.cmj
+ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
 fib.cmx :
 float_array.cmj :
@@ -186,9 +189,9 @@ float_of_bits_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
 float_record.cmj : float_record.cmi
 float_record.cmx : float_record.cmi
 float_test.cmj : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../lib/js.cmj ../stdlib/int64.cmi ../stdlib/array.cmi
+    mt.cmi ../runtime/js.cmj ../stdlib/int64.cmi ../stdlib/array.cmi
 float_test.cmx : ../stdlib/printf.cmx ../stdlib/pervasives.cmx mt_global.cmx \
-    mt.cmx ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
+    mt.cmx ../runtime/js.cmx ../stdlib/int64.cmx ../stdlib/array.cmx
 for_loop_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/array.cmx
 for_side_effect_test.cmj : mt.cmi
@@ -236,10 +239,10 @@ int64_mul_div_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
 int64_mul_div_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/int64.cmx ../stdlib/array.cmx
 int64_test.cmj : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
-    ../lib/js.cmj ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../runtime/js.cmj ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/format.cmi ext_array.cmj ../stdlib/array.cmi
 int64_test.cmx : ../stdlib/pervasives.cmx ../stdlib/nativeint.cmx mt.cmx \
-    ../lib/js.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
+    ../runtime/js.cmx ../stdlib/int64.cmx ../stdlib/int32.cmx \
     ../stdlib/format.cmx ext_array.cmx ../stdlib/array.cmx
 int_hashtbl_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
@@ -251,10 +254,10 @@ int_overflow_test.cmj : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmx : ../stdlib/string.cmx mt.cmx ../stdlib/int32.cmx \
     ../stdlib/char.cmx
-io_test.cmj : ../lib/js.cmj
-io_test.cmx : ../lib/js.cmx
-js_bool_test.cmj : mt.cmi ../lib/js.cmj
-js_bool_test.cmx : mt.cmx ../lib/js.cmx
+io_test.cmj : ../runtime/js.cmj
+io_test.cmx : ../runtime/js.cmx
+js_bool_test.cmj : mt.cmi ../runtime/js.cmj
+js_bool_test.cmx : mt.cmx ../runtime/js.cmx
 js_date.cmj :
 js_date.cmx :
 js_date_test.cmj : mt.cmi js_date.cmj
@@ -277,8 +280,8 @@ lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
 lexer_test.cmx : number_lexer.cmx mt.cmx ../stdlib/list.cmx \
     ../stdlib/lexing.cmx arith_syntax.cmx arith_parser.cmx arith_lexer.cmx
-lib_js_test.cmj : mt.cmi ../lib/js.cmj
-lib_js_test.cmx : mt.cmx ../lib/js.cmx
+lib_js_test.cmj : mt.cmi ../runtime/js.cmj
+lib_js_test.cmx : mt.cmx ../runtime/js.cmx
 libarg_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
 libarg_test.cmx : ../stdlib/printf.cmx mt.cmx ../stdlib/list.cmx \
@@ -303,8 +306,8 @@ map_test.cmj : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
     ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
-mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../lib/js.cmj
-mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../lib/js.cmx
+mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj
+mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx
 module_alias.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
 module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
@@ -331,8 +334,8 @@ pr_regression_test.cmj : mt.cmi
 pr_regression_test.cmx : mt.cmx
 primitive_reg_test.cmj :
 primitive_reg_test.cmx :
-print_alpha_test.cmj : mt.cmi ../lib/js.cmj
-print_alpha_test.cmx : mt.cmx ../lib/js.cmx
+print_alpha_test.cmj : mt.cmi ../runtime/js.cmj
+print_alpha_test.cmx : mt.cmx ../runtime/js.cmx
 printf_sim.cmj : ../stdlib/printf.cmi
 printf_sim.cmx : ../stdlib/printf.cmx
 printf_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
@@ -473,8 +476,8 @@ test_generative_module.cmj :
 test_generative_module.cmx :
 test_global_print.cmj : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
-test_google_closure.cmj : ../lib/js.cmj ../stdlib/array.cmi
-test_google_closure.cmx : ../lib/js.cmx ../stdlib/array.cmx
+test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmi
+test_google_closure.cmx : ../runtime/js.cmx ../stdlib/array.cmx
 test_include.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -599,8 +602,8 @@ test_while_closure.cmj : ../stdlib/array.cmi
 test_while_closure.cmx : ../stdlib/array.cmx
 test_while_side_effect.cmj :
 test_while_side_effect.cmx :
-test_zero_nullable.cmj : mt.cmi ../lib/js.cmj
-test_zero_nullable.cmx : mt.cmx ../lib/js.cmx
+test_zero_nullable.cmj : mt.cmi ../runtime/js.cmj
+test_zero_nullable.cmx : mt.cmx ../runtime/js.cmx
 testing.cmj : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmx : ../stdlib/scanf.cmx ../stdlib/printf.cmx testing.cmi
 tfloat_record_test.cmj : mt_global.cmi mt.cmi ../stdlib/format.cmi \
@@ -623,10 +626,10 @@ tscanf_test.cmx : testing.cmx ../stdlib/string.cmx ../stdlib/scanf.cmx \
     ../stdlib/buffer.cmx
 tuple_alloc.cmj :
 tuple_alloc.cmx :
-typeof_test.cmj : mt.cmi ../lib/js.cmj
-typeof_test.cmx : mt.cmx ../lib/js.cmx
-undef_regression_test.cmj : ../lib/js.cmj
-undef_regression_test.cmx : ../lib/js.cmx
+typeof_test.cmj : mt.cmi ../runtime/js.cmj
+typeof_test.cmx : mt.cmx ../runtime/js.cmx
+undef_regression_test.cmj : ../runtime/js.cmj
+undef_regression_test.cmx : ../runtime/js.cmx
 unitest_string.cmj :
 unitest_string.cmx :
 unsafe_ppx_test.cmj : mt.cmi ffi_js.cmj
@@ -687,9 +690,9 @@ caml_format_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/int64.cmi \
     ../stdlib/format.cmi ../stdlib/buffer.cmi ../stdlib/array.cmi
 caml_format_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/int64.cmj \
     ../stdlib/format.cmj ../stdlib/buffer.cmj ../stdlib/array.cmj
-class3_test.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo \
+class3_test.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo \
     ../stdlib/array.cmi
-class3_test.cmj : mt.cmj ../stdlib/list.cmj ../lib/js.cmj \
+class3_test.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj \
     ../stdlib/array.cmj
 class4_test.cmo : mt.cmi
 class4_test.cmj : mt.cmj
@@ -705,8 +708,8 @@ class_repr.cmo : ../stdlib/oo.cmi
 class_repr.cmj : ../stdlib/oo.cmj
 class_test.cmo : mt.cmi
 class_test.cmj : mt.cmj
-class_type_ffi_test.cmo : ../lib/js.cmo
-class_type_ffi_test.cmj : ../lib/js.cmj
+class_type_ffi_test.cmo : ../runtime/js.cmo
+class_type_ffi_test.cmj : ../runtime/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
 complex_if_test.cmj : mt.cmj ../stdlib/bytes.cmj
 complex_test.cmo : mt.cmi ../stdlib/complex.cmi
@@ -729,8 +732,8 @@ cross_module_inline_test.cmo :
 cross_module_inline_test.cmj :
 debug_keep_test.cmo :
 debug_keep_test.cmj :
-debugger_test.cmo : ../lib/js.cmo
-debugger_test.cmj : ../lib/js.cmj
+debugger_test.cmo : ../runtime/js.cmo
+debugger_test.cmj : ../runtime/js.cmj
 demo.cmo :
 demo.cmj :
 demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
@@ -751,8 +754,8 @@ equal_test.cmo :
 equal_test.cmj :
 es6_module_test.cmo : mt.cmi ../stdlib/list.cmi
 es6_module_test.cmj : mt.cmj ../stdlib/list.cmj
-event_ffi.cmo : ../lib/js.cmo ../lib/fn.cmo
-event_ffi.cmj : ../lib/js.cmj ../lib/fn.cmj
+event_ffi.cmo : ../runtime/js.cmo ../runtime/fn.cmo
+event_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj
 exception_raise_test.cmo : mt.cmi
 exception_raise_test.cmj : mt.cmj
 exception_value_test.cmo :
@@ -762,33 +765,35 @@ ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmo \
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmo \
     ext_pervasives.cmi
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_string.cmj \
+    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_sys.cmj ext_string.cmj \
     ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_log.cmo : lam_current_unit.cmo ../stdlib/format.cmi
 ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmj
 ext_pervasives.cmo : ../stdlib/int32.cmi ../stdlib/format.cmi \
-    ext_pervasives.cmi
+    ../stdlib/arg.cmi ext_pervasives.cmi
 ext_pervasives.cmj : ../stdlib/int32.cmj ../stdlib/format.cmj \
-    ext_pervasives.cmi
+    ../stdlib/arg.cmj ext_pervasives.cmi
 ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/char.cmj \
     ../stdlib/bytes.cmj
+ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
+ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
 fail_comp.cmo :
 fail_comp.cmj :
-ffi_arity_test.cmo : mt.cmi ../lib/fn.cmo
-ffi_arity_test.cmj : mt.cmj ../lib/fn.cmj
+ffi_arity_test.cmo : mt.cmi ../runtime/fn.cmo
+ffi_arity_test.cmj : mt.cmj ../runtime/fn.cmj
 ffi_js.cmo :
 ffi_js.cmj :
-ffi_test.cmo : ../lib/js.cmo
-ffi_test.cmj : ../lib/js.cmj
+ffi_test.cmo : ../runtime/js.cmo
+ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :
 fib.cmj :
 float_array.cmo :
@@ -800,9 +805,9 @@ float_of_bits_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
 float_record.cmo : float_record.cmi
 float_record.cmj : float_record.cmi
 float_test.cmo : ../stdlib/printf.cmi ../stdlib/pervasives.cmi mt_global.cmi \
-    mt.cmi ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
+    mt.cmi ../runtime/js.cmo ../stdlib/int64.cmi ../stdlib/array.cmi
 float_test.cmj : ../stdlib/printf.cmj ../stdlib/pervasives.cmj mt_global.cmj \
-    mt.cmj ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
+    mt.cmj ../runtime/js.cmj ../stdlib/int64.cmj ../stdlib/array.cmj
 for_loop_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/array.cmi
 for_loop_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/array.cmj
 for_side_effect_test.cmo : mt.cmi
@@ -850,10 +855,10 @@ int64_mul_div_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
 int64_mul_div_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/int64.cmj ../stdlib/array.cmj
 int64_test.cmo : ../stdlib/pervasives.cmi ../stdlib/nativeint.cmi mt.cmi \
-    ../lib/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
+    ../runtime/js.cmo ../stdlib/int64.cmi ../stdlib/int32.cmi \
     ../stdlib/format.cmi ext_array.cmo ../stdlib/array.cmi
 int64_test.cmj : ../stdlib/pervasives.cmj ../stdlib/nativeint.cmj mt.cmj \
-    ../lib/js.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
+    ../runtime/js.cmj ../stdlib/int64.cmj ../stdlib/int32.cmj \
     ../stdlib/format.cmj ext_array.cmj ../stdlib/array.cmj
 int_hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
     ../stdlib/array.cmi
@@ -865,10 +870,10 @@ int_overflow_test.cmo : ../stdlib/string.cmi mt.cmi ../stdlib/int32.cmi \
     ../stdlib/char.cmi
 int_overflow_test.cmj : ../stdlib/string.cmj mt.cmj ../stdlib/int32.cmj \
     ../stdlib/char.cmj
-io_test.cmo : ../lib/js.cmo
-io_test.cmj : ../lib/js.cmj
-js_bool_test.cmo : mt.cmi ../lib/js.cmo
-js_bool_test.cmj : mt.cmj ../lib/js.cmj
+io_test.cmo : ../runtime/js.cmo
+io_test.cmj : ../runtime/js.cmj
+js_bool_test.cmo : mt.cmi ../runtime/js.cmo
+js_bool_test.cmj : mt.cmj ../runtime/js.cmj
 js_date.cmo :
 js_date.cmj :
 js_date_test.cmo : mt.cmi js_date.cmo
@@ -891,8 +896,8 @@ lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
     ../stdlib/lexing.cmi arith_syntax.cmo arith_parser.cmo arith_lexer.cmo
 lexer_test.cmj : number_lexer.cmj mt.cmj ../stdlib/list.cmj \
     ../stdlib/lexing.cmj arith_syntax.cmj arith_parser.cmj arith_lexer.cmj
-lib_js_test.cmo : mt.cmi ../lib/js.cmo
-lib_js_test.cmj : mt.cmj ../lib/js.cmj
+lib_js_test.cmo : mt.cmi ../runtime/js.cmo
+lib_js_test.cmj : mt.cmj ../runtime/js.cmj
 libarg_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/arg.cmi
 libarg_test.cmj : ../stdlib/printf.cmj mt.cmj ../stdlib/list.cmj \
@@ -917,8 +922,8 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
-mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../lib/js.cmo
-mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../lib/js.cmj
+mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo
+mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
@@ -945,8 +950,8 @@ pr_regression_test.cmo : mt.cmi
 pr_regression_test.cmj : mt.cmj
 primitive_reg_test.cmo :
 primitive_reg_test.cmj :
-print_alpha_test.cmo : mt.cmi ../lib/js.cmo
-print_alpha_test.cmj : mt.cmj ../lib/js.cmj
+print_alpha_test.cmo : mt.cmi ../runtime/js.cmo
+print_alpha_test.cmj : mt.cmj ../runtime/js.cmj
 printf_sim.cmo : ../stdlib/printf.cmi
 printf_sim.cmj : ../stdlib/printf.cmj
 printf_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/format.cmi
@@ -1087,8 +1092,8 @@ test_generative_module.cmo :
 test_generative_module.cmj :
 test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
-test_google_closure.cmo : ../lib/js.cmo ../stdlib/array.cmi
-test_google_closure.cmj : ../lib/js.cmj ../stdlib/array.cmj
+test_google_closure.cmo : ../runtime/js.cmo ../stdlib/array.cmi
+test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmj
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -1213,8 +1218,8 @@ test_while_closure.cmo : ../stdlib/array.cmi
 test_while_closure.cmj : ../stdlib/array.cmj
 test_while_side_effect.cmo :
 test_while_side_effect.cmj :
-test_zero_nullable.cmo : mt.cmi ../lib/js.cmo
-test_zero_nullable.cmj : mt.cmj ../lib/js.cmj
+test_zero_nullable.cmo : mt.cmi ../runtime/js.cmo
+test_zero_nullable.cmj : mt.cmj ../runtime/js.cmj
 testing.cmo : ../stdlib/scanf.cmi ../stdlib/printf.cmi testing.cmi
 testing.cmj : ../stdlib/scanf.cmj ../stdlib/printf.cmj testing.cmi
 tfloat_record_test.cmo : mt_global.cmi mt.cmi ../stdlib/format.cmi \
@@ -1237,10 +1242,10 @@ tscanf_test.cmj : testing.cmj ../stdlib/string.cmj ../stdlib/scanf.cmj \
     ../stdlib/buffer.cmj
 tuple_alloc.cmo :
 tuple_alloc.cmj :
-typeof_test.cmo : mt.cmi ../lib/js.cmo
-typeof_test.cmj : mt.cmj ../lib/js.cmj
-undef_regression_test.cmo : ../lib/js.cmo
-undef_regression_test.cmj : ../lib/js.cmj
+typeof_test.cmo : mt.cmi ../runtime/js.cmo
+typeof_test.cmj : mt.cmj ../runtime/js.cmj
+undef_regression_test.cmo : ../runtime/js.cmo
+undef_regression_test.cmj : ../runtime/js.cmj
 unitest_string.cmo :
 unitest_string.cmj :
 unsafe_ppx_test.cmo : mt.cmi ffi_js.cmo

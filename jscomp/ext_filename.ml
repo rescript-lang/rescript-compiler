@@ -188,9 +188,9 @@ let node_relative_path (file1 : t)
 *)
 let  resolve ~cwd module_name = 
   let rec aux origin cwd module_name = 
-    let v = ( cwd // node_modules) // module_name 
+    let v =  cwd // node_modules // module_name 
     in 
-    if Sys.is_directory v then v 
+    if Ext_sys.is_directory_no_exn v then v 
     else 
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  

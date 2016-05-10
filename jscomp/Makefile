@@ -72,13 +72,10 @@ world:
 	cd runtime && make all
 	@echo "Making runtime finished"
 
-	@echo "Making stdlib"
-	cd lib && make all
-	@echo "Making stdlib finished"
 
-	@echo "Making lib"
+	@echo "Making stdlib"
 	cd stdlib && make all	
-	@echo "Making lib finished"
+	@echo "Making stdlib finished"
 
 # no depend on ./bin/ocaml_pack ./bin/bsc
 # since in npm mode, they are generated from a single file
@@ -86,6 +83,7 @@ install:
 	cp  ./bin/bsc ../bin/
 	cp ./runtime/*.cmt* ../lib/ocaml/
 	cp ./runtime/*.cmj* ../lib/ocaml/
+	cp ./runtime/js.cmi ./runtime/fn.cmi ../lib/ocaml/	
 	cp ./stdlib/*.cm* ../lib/ocaml/
 
 TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
@@ -101,12 +99,8 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making runtime finished"
 
 	@echo "Making stdlib"
-	cd lib && make all
-	@echo "Making stdlib finished"
-
-	@echo "Making lib"
 	cd stdlib && make all	
-	@echo "Making lib finished"
+	@echo "Making stdlib finished"
 
 world-test:
 	@echo "Making compiler"		
@@ -118,12 +112,8 @@ world-test:
 	@echo "Making runtime finished"
 
 	@echo "Making stdlib"
-	cd lib && make all
+	cd stdlib && make all
 	@echo "Making stdlib finished"
-
-	@echo "Making lib"
-	cd stdlib && make all	
-	@echo "Making lib finished"
 
 	@echo "Making test"
 	cd test && make all

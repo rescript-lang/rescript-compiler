@@ -62,10 +62,30 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
           Ext_filename.node_relative_path 
             (`Dir (Js_config.get_output_dir !Location.input_name)) dep 
         in 
-        begin match Lam_compile_env.get_npm_package_path x with
-          | Some x -> 
-            let filename = String.uncapitalize id.name in
-            rebase (`File (Lazy.force Ext_filename.package_dir // x // filename))
+        begin match Lam_compile_env.get_npm_package_path x
+                     with
+          | Some (package_name, x) -> 
+              let filename = String.uncapitalize id.name in
+            begin match Js_config.get_npm_package_path () with 
+            | None 
+              -> 
+              (* decide which default is better later 
+                 we want the experience of 
+                 {[
+                   `npm bin`/bsc -c hello.ml
+                 ]}
+                 better 
+              *)              
+              package_name // x // filename
+            | Some (current_package, path) ->
+              if current_package <> package_name then 
+                (*TODO: fix platform specific issue *)
+                package_name // x // filename
+              else               
+                rebase (`File (
+                    Lazy.force Ext_filename.package_dir // x // filename))
+
+            end
           | None -> 
             begin match Config_util.find file with   
               (* maybe from third party library*)
