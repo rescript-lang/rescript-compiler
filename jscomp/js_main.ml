@@ -131,6 +131,7 @@ end)
 
 let add_include_path s = 
   let (//) = Filename.concat in
+  (*TODO: check its existence *)
   let path = 
     Ext_filename.resolve 
       (Lazy.force Ext_filename.cwd) s // "lib"// "ocaml"  in 
