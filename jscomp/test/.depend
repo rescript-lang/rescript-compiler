@@ -6,6 +6,7 @@ basic_module_test.cmi :
 const_block_test.cmi :
 demo_int_map.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
+ext_sys.cmi :
 float_record.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
@@ -148,10 +149,10 @@ ext_array.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
 ext_bytes.cmj : ../stdlib/bytes.cmi
 ext_bytes.cmx : ../stdlib/bytes.cmx
 ext_filename.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmj \
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmj \
     ext_pervasives.cmi
 ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
-    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_string.cmx \
+    ../stdlib/lazy.cmx ../stdlib/filename.cmx ext_sys.cmx ext_string.cmx \
     ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
@@ -165,6 +166,8 @@ ext_string.cmj : ../stdlib/string.cmi ext_bytes.cmj ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmx : ../stdlib/string.cmx ext_bytes.cmx ../stdlib/char.cmx \
     ../stdlib/bytes.cmx
+ext_sys.cmj : ../stdlib/sys.cmi ext_sys.cmi
+ext_sys.cmx : ../stdlib/sys.cmx ext_sys.cmi
 extensible_variant_test.cmj : mt.cmi
 extensible_variant_test.cmx : mt.cmx
 fail_comp.cmj :
@@ -762,10 +765,10 @@ ext_array.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
 ext_bytes.cmo : ../stdlib/bytes.cmi
 ext_bytes.cmj : ../stdlib/bytes.cmj
 ext_filename.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi ../stdlib/list.cmi \
-    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_string.cmo \
+    ../stdlib/lazy.cmi ../stdlib/filename.cmi ext_sys.cmi ext_string.cmo \
     ext_pervasives.cmi
 ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
-    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_string.cmj \
+    ../stdlib/lazy.cmj ../stdlib/filename.cmj ext_sys.cmj ext_string.cmj \
     ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
@@ -779,6 +782,8 @@ ext_string.cmo : ../stdlib/string.cmi ext_bytes.cmo ../stdlib/char.cmi \
     ../stdlib/bytes.cmi
 ext_string.cmj : ../stdlib/string.cmj ext_bytes.cmj ../stdlib/char.cmj \
     ../stdlib/bytes.cmj
+ext_sys.cmo : ../stdlib/sys.cmi ext_sys.cmi
+ext_sys.cmj : ../stdlib/sys.cmj ext_sys.cmi
 extensible_variant_test.cmo : mt.cmi
 extensible_variant_test.cmj : mt.cmj
 fail_comp.cmo :

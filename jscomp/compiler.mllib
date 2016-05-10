@@ -26,6 +26,8 @@ ext_array
 ext_bytes
 ext_map
 ext_hashtbl
+ext_sys
+
 
 lam_mk
 lam_comb
