@@ -1,4 +1,4 @@
-# [BuckleScript](http://bloomberg.github.io/bucklescript/)
+# BuckleScript
 [![Build Status](https://travis-ci.org/bloomberg/bucklescript.svg?branch=master)](https://travis-ci.org/bloomberg/bucklescript)
 [![Coverage Status](https://coveralls.io/repos/github/bloomberg/bucklescript/badge.svg?branch=master)](https://coveralls.io/github/bloomberg/bucklescript?branch=master)
 
