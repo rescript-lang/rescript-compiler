@@ -63,9 +63,10 @@ let cmd_set_module str =
           ext := ".g.js";
         end
       else 
-        raise (Arg.Bad (Printf.sprintf "invalid module system %s" str))
+        Ext_pervasives.bad_argf "invalid module system %s" str
     else
-      raise (Arg.Bad (Printf.sprintf "invalid module system %s" str))
+        Ext_pervasives.bad_argf "invalid module system %s" str
+
 
 let get_goog_package_name () = 
   match !default_env with 
@@ -75,8 +76,21 @@ let get_goog_package_name () =
   | NodeJS -> None
 
 let npm_package_path = ref None 
-let set_npm_package_path s = npm_package_path := Some s
+
+let set_npm_package_path s = 
+  match Ext_string.split ~keep_empty:false s ':' with 
+  | [ package_name; path]  -> 
+    if String.length package_name = 0 then   
+    (* TODO: check more [package_name] if it is a valid package name *)
+
+      Ext_pervasives.bad_argf "invalid npm package path: %s" s
+    else 
+      npm_package_path := Some (package_name, path)
+  | _ -> 
+    Ext_pervasives.bad_argf "invalid npm package path: %s" s
+
 let get_npm_package_path () = !npm_package_path
+
 
 let (//) = Filename.concat 
 (* for a single pass compilation, [output_dir] 
@@ -90,7 +104,7 @@ let get_output_dir filename =
       Filename.dirname filename
     else 
       Filename.dirname filename
-  | Some x -> 
+  | Some (_package_name, x) -> 
     Lazy.force Ext_filename.package_dir // x
     
 

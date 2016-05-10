@@ -8,7 +8,7 @@ SOURCE_LIST := $(shell cat test.mllib)
 TESTS := $(addsuffix .cmj, $(SOURCE_LIST) )
 
 COMPFLAGS+=  $(MODULE_FLAGS) -w -40 
-COMPFLAGS+=  -js-npm-output-path lib/js/test/
+COMPFLAGS+=  -js-npm-output-path $(npm_package_name):lib/js/test/
 
 
 $(TESTS): $(CAMLC)

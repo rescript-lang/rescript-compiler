@@ -38,14 +38,16 @@ type cmj_value = {
 
 type effect = string option
 
+type npm_package_path = string * string 
+
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
   goog_package : string option;
-  npm_package_path : string option ;
+  npm_package_path :  npm_package_path option ;
 }
 
-let cmj_magic_number =  "BUCKLE20160506"
+let cmj_magic_number =  "BUCKLE20160510"
 let cmj_magic_number_length = 
   String.length cmj_magic_number
 
@@ -60,7 +62,7 @@ let pure_dummy =
 let no_pure_dummy = 
   {
     values = String_map.empty;
-    effect = (Some "");
+    effect = Some "";
     goog_package = None;
     npm_package_path = None;  
   }
@@ -85,9 +87,9 @@ let from_string s : t =
   if magic_number = cmj_magic_number then 
     Marshal.from_string s  cmj_magic_number_length
   else 
-    failwith 
-      ("cmj files have incompatible versions, please rebuilt using the new compiler : "
-       ^ __LOC__)
+    Ext_pervasives.failwithf 
+      "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
+        __LOC__
 
 let to_file name (v : t) = 
   let oc = open_out_bin name in 

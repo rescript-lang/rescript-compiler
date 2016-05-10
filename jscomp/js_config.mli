@@ -41,7 +41,7 @@ val get_output_file : string -> string
 val get_goog_package_name : unit -> string option
 
 val set_npm_package_path : string -> unit 
-val get_npm_package_path : unit -> string option
+val get_npm_package_path : unit -> (string * string) option
 
 val set_env : env -> unit
 val cmd_set_module : string -> unit  

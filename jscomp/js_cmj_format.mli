@@ -60,11 +60,13 @@ type cmj_value = {
 
 type effect = string option
 
+type npm_package_path = string * string 
+
 type t = {
   values : cmj_value String_map.t;
   effect : effect;
   goog_package : string option;
-  npm_package_path : string option;
+  npm_package_path : npm_package_path option;
 }
 
 val pure_dummy : t

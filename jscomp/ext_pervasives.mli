@@ -44,3 +44,5 @@ val is_pos_pow : Int32.t -> int
 val failwithf : ('a, unit, string, 'b) format4 -> 'a
 
 val invalid_argf : ('a, unit, string, 'b) format4 -> 'a
+
+val bad_argf : ('a, unit, string, 'b) format4 -> 'a

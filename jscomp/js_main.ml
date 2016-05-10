@@ -130,16 +130,17 @@ module Options = Main_args.Make_bytecomp_options (struct
 end)
 
 let add_include_path s = 
+  let (//) = Filename.concat in
   let path = 
     Ext_filename.resolve 
-      (Lazy.force Ext_filename.cwd) s  in 
+      (Lazy.force Ext_filename.cwd) s // "lib"// "ocaml"  in 
   Clflags.include_dirs := path :: ! Clflags.include_dirs
 
 let buckle_script_flags = 
   ("-js-npm-output-path", Arg.String Js_config.set_npm_package_path, 
-   " set npm-output-path, for example `lib/js`")
+   " set npm-output-path: package-name:path, for example `bs-platform:lib/js`")
   ::
-  ("-npm-package", Arg.String add_include_path, 
+  ("-js-npm-package-include", Arg.String add_include_path, 
    " set package names, for example bs-platform "  )
   :: ("-js-module", Arg.String Js_config.cmd_set_module, 
     " set module system: commonjs (default), amdjs, google:package_name")

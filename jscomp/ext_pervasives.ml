@@ -64,3 +64,6 @@ let  is_pos_pow n =
 let failwithf fmt = Format.ksprintf failwith fmt
 
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
+
+let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
+

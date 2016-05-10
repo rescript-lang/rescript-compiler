@@ -44,7 +44,7 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
             | "caml_set_oo_id" 
             | "caml_is_js"
             | "caml_int64_float_of_bits"
-            (* more safe to check if arguments are constant *)
+             (* more safe to check if arguments are constant *)
             (* non-observable side effect *)    
             | "caml_sys_get_config"
             | "caml_sys_get_argv" (* should be fine *)
