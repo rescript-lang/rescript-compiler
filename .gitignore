@@ -31,7 +31,6 @@ _build
 *.lambda
 *.zip
 *.gz
-!ocaml.tar.gz
 # special file 
 ocaml_pack
 bsc
@@ -52,4 +51,7 @@ dist/
 man/
 lib/ocaml
 bin/*
+
+# for npm publish
 !bin/bsc
+!ocaml.tar.gz
