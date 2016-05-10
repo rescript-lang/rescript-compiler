@@ -1,4 +1,0 @@
-fn.cmj :
-fn.cmx :
-js.cmj : ../stdlib/obj.cmi
-js.cmx : ../stdlib/obj.cmx
