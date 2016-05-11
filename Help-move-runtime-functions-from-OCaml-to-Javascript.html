@@ -70,6 +70,7 @@
 </ul>
 <p><strong>Contributions</strong></p>
 <ul>
+<li><a href="https://github.com/bloomberg/bucklescript">Github Link</a></li>
 <li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
 <li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
 </ul>
@@ -90,7 +91,17 @@
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
+
                     <div class="col-lg-12">
+                      <a  class="btn btn-default"
+                      id="menu-toggle" 
+                         >Toggle Menu</a>
+
+                      <a  href="https://github.com/bloomberg/bucklescript/tree/master/docs/Help-move-runtime-functions-from-OCaml-to-Javascript.md" class="btn btn-default"
+                      style="position: absolute; top: 0; right: 0;
+                      border: 0;"
+                         >Edit on Github</a>
+
                       <p>BuckleScript runtime implementation is currently a mix of OCaml and JavaScript. (jscomp/runtime directory). The JavaScript code is defined in the <code>.ml</code> file using the <code>bs.raw</code> syntax extension. </p>
 <p>The goal is to implement the runtime <strong>purely in OCaml</strong> and you can help contribute. </p>
 <p>Each new PR should include appropriate testing. </p>
@@ -131,7 +142,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="js/start.js"></script>
+
 
 </body>
 
