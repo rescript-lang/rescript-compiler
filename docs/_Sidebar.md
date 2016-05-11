@@ -1,4 +1,4 @@
-**[Home](./Home.md)**
+**[Home](./index.md)**
 
 **Get Started**
 * [Installation](./Installation.md)
