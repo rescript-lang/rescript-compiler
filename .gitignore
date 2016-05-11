@@ -47,7 +47,7 @@ boot
 *.dump
 coverage
 *.g.js
-dist/
+
 man/
 lib/ocaml
 bin/*
