@@ -496,7 +496,7 @@ let scan_int_list ib =
 ;;
 
 let test22 () =
-  (* [%bs.debug]; *)
+  (* [%bs.debugger]; *)
   scan_int_list (Scanning.from_string "[]") = [] &&
   scan_int_list (Scanning.from_string "[ ]") = [] &&
   scan_int_list (Scanning.from_string "[1]") = [1] &&
