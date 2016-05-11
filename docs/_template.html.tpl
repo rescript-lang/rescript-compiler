@@ -47,7 +47,17 @@
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
+
                     <div class="col-lg-12">
+                      <a  class="btn btn-default"
+                      id="menu-toggle" 
+                         >Toggle Menu</a>
+
+                      <a  href="{{github_link}}" class="btn btn-default"
+                      style="position: absolute; top: 0; right: 0;
+                      border: 0;"
+                         >Edit on Github</a>
+
                       {{{content}}}
                     </div>
                 </div>
@@ -61,7 +71,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="js/start.js"></script>
+
 
 </body>
 
