@@ -5,16 +5,16 @@ let f x y =
 
 let g () =
   ignore @@ f 1 2; 
-  [%bs.debug ] ;
+  [%bs.debugger ] ;
   ignore @@ f 1 2; 
-  [%bs.debug];
+  [%bs.debugger];
   3
 
 
 let exterme_g () =
   ignore @@ f 1 2; 
-  let v = [%bs.debug ] in
+  let v = [%bs.debugger ] in
   Js.log v ;  
   ignore @@ f 1 2; 
-  [%bs.debug];
+  [%bs.debugger];
   3

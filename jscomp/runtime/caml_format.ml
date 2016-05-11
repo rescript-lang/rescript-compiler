@@ -95,7 +95,7 @@ let caml_int_of_string s =
   let () =
     if d < 0n || d >=  base then
       caml_failwith "int_of_string" in
-  (* let () = [%bs.debug]  in *)
+  (* let () = [%bs.debugger]  in *)
   let rec aux acc k = 
     if k = len then acc 
     else 

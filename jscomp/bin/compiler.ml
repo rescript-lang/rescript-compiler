@@ -25530,7 +25530,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
               -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
-        | Pexp_extension ({txt = "bs.debug"; loc} , payload)
+        | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           ->
           begin
             match payload with
