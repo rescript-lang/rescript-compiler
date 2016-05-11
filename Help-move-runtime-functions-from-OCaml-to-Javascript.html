@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p>BuckleScript runtime implementation is currently a mix of OCaml and JavaScript. (jscomp/runtime directory). The JavaScript code is defined in the <code>.ml</code> file using the <code>bs.raw</code> syntax extension. </p>
+<p>The goal is to implement the runtime <strong>purely in OCaml</strong> and you can help contribute. </p>
+<p>Each new PR should include appropriate testing. </p>
+<p>Currently all tests are in <code>jscomp/test</code> directory and you should either add a new test file or modify an existing test which covers the part of the compiler you modified.</p>
+<ul>
+<li><p>Add the filename in <code>jscomp/test/test.mllib</code></p>
+</li>
+<li><p>Add a  suite test</p>
+<p> The specification is in <code>jscomp/test/mt.ml</code></p>
+<p> For example a simple tests would be like</p>
+<pre><code class="lang-ocaml"> let suites : _ Mt.pair_suites = Mt.[
+     &quot;hey&quot;, (fun _ -&gt; Eq(true, 3 &gt; 2));
+     &quot;hi&quot;, (fun _ -&gt;  Neq(2,3);
+     &quot;hello&quot;, (fun _ -&gt; Approx(3.0, 3.0));
+     &quot;throw&quot;, (fun _ -&gt; ThrowAny(fun _ -&gt; raise 3)) 
+  ]
+ let () = Mt.from_pair_suites __FILE__ suites
+</code></pre>
+</li>
+<li><p>Run the test</p>
+<p> Suppose you have mocha installed, if not, try <code>npm install mocha</code></p>
+<pre><code> mocha -R list jscomp/test/your_test_file.js
+</code></pre></li>
+<li><p>See the coverage</p>
+<pre><code> npm run cover
+</code></pre></li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p><strong>Disclaimer:</strong> This post is opinionated, please take it with a grain of
+salt and make your own judgement call.</p>
+<h3 id="why-should-i-care-about-bucklescript-">Why should I care about BuckleScript?</h3>
+<p>BuckleScript is designed for large scale programming under JavaScript
+platform.</p>
+<p>Its goal is not just running OCaml programs under JavaScript
+platform, but also to try to bring all Javascript developer tools to the OCaml
+ecosystem, while bringing the type safety and expressiveness of OCaml
+languages to the Javascript developer community.</p>
+<p>If you are interested in compilation-time cost that existing Javascript
+transpilers (<a href="https://babeljs.io/">babel</a>, <a href="http://buble.surge.sh/">buble</a> or <a href="https://github.com/google/traceur-compiler">traceur</a>) suffer from or projects like
+<a href="https://www.typescriptlang.org/">typescript</a>,
+<a href="http://elm-lang.org/">Elm</a>, or <a href="http://www.purescript.org/">Purescript</a> we think you will probably be interested in BuckleScript as well.</p>
+<p>Bucklescript is not a new language. It reuses the existing <a href="https://ocaml.org/">OCaml programming language</a> while still delivering debug-able and performant JavaScript code. We think it&#39;s better to reuse than having to invent a new language.</p>
+<p>We think it&#39;s important that BuckleScript compiles <strong>much faster</strong> than existing
+transpilers, generates <strong>more efficient code</strong> while keeping its Javascript
+output <strong>readable</strong>.</p>
+<p>When in production mode, BuckleScript will aggressively eliminate dead code
+at the module level - more than just <a href="http://www.2ality.com/2015/12/webpack-tree-shaking.html">tree-shaking</a>, it will analyze the program to do a <a href="https://en.wikipedia.org/wiki/Pure_function">purity</a> analysis and eliminate anything that doesn&#39;t have side-effects. On the global level, it produces code that is readily optimized by linker/bundlers such as the <a href="https://developers.google.com/closure/compiler/">Google Closure Compiler</a>.</p>
+<p>Unlike most transpiled languages, BuckleScript generates <strong>much smaller
+code</strong> than hand-written Javascript, eliminating the need to split your
+libraries into small pieces like as done in <a href="https://github.com/lodash/lodash">lodash</a> - we think this should be the compiler and linker&#39;s job.</p>
+<h3 id="how-does-it-compare-with-other-transpilers-">How does it compare with other transpilers?</h3>
+<ol>
+<li><p>It&#39;s OCaml, and we think Ocaml is awesome. The OCaml language is actually, <strong>really close</strong> to JavaScript after <a href="https://en.wikipedia.org/wiki/Type_erasure">type-erasure</a>. Take <a href="http://www.purescript.org/">purescript</a> which is designed to generate readable Javascript for example, it&#39;s essentially <a href="https://www.haskell.org/">Haskell</a> with strict evaluation semantics. If we just use OCaml instead, we don&#39;t need invent a new language, since it already offers many of the benefits of Haskell, and has a strict evaluation order by default (one of the key differences from Haskell). Moreover, as alluded to, by its full name -- Objective Caml, OCaml provides built-in support for Object Oriented programming. OCaml&#39;s <a href="https://en.wikipedia.org/wiki/Structural_type_system">structual typing</a> and   <a href="https://www.cl.cam.ac.uk/teaching/1415/L28/rows.pdf">row-polymorphism</a> captures the flexibility of Javascript programs very well -- structural typing is a formalized way of duck-typing. As opposed to Haskell, OCaml does not have an (in our opinion) abstruse way of <a href="http://stackoverflow.com/questions/2488646/why-are-side-effects-modeled-as-monads-in-haskell">supporting side-effects</a>, in fact, while it encourages functional programming in general, it natively supports straightforward imperative programming and Object-Oriented programming when you really need it. As a practical programmers, we find this to be a big deal: While we prefer programming in a functional style in general, we realize there are some cases that an imperative style makes perfect sense.</p>
+</li>
+<li><p>Bucklescript is not just OCaml, but the whole OCaml ecosystem</p>
+<p>The OCaml compiler implementation(s) are famous for blazing fast compile times, and as programmer, we think compile times really matter and are a very important feature of a compiled language.</p>
+<p> <a href="./images/compile-time.png">images/compile-time.png</a></p>
+<p>The above picture compares OCaml compilation-times with
+other languages: S for Scala, K for Koltin, TS for TypeScript.</p>
+<p>Bucklescript reuses most of the OCaml compiler (parsing/type
+checking and pattern match compilation), its type checker
+<a href="http://okmij.org/ftp/ML/generalization.html">was well engineered</a>
+and written in an imperative style to make it fast.</p>
+<p>Before BuckleScript, there already existed an
+<a href="Difference-from-js_of_ocaml.html">OCaml to JS compiler</a>. BuckleScript
+stands on the shoulders of such excellent tools. For example, from the very beginning, much like Js_of_ocaml,
+BuckleScript has an assembly backend, which we use for the best performance in our development
+environment and our
+<a href="http://bloomberg.github.io/bucklescript/js-demo/">playground</a> to
+deliver the software to more people without installation - compared with Elm, Purescript, or typescript, none of which support both an ASM backend and a JS backend.</p>
+</li>
+<li><p>Bucklescript is an optimizing compiler and will do much more in the future.</p>
+<p>Since OCaml has a sound type system, and functional languages are
+generally easier to optimize, unlike typescript, we&#39;ve already done lots of
+optimizations for efficient Javascript output, and envision much more in the future.</p>
+</li>
+</ol>
+<p>Here&#39;s a naive example to demonstrate the capabilities of BuckleScript:</p>
+<p>The following OCaml code:</p>
+<pre><code class="lang-OCaml">let test () =
+  let m = ref IntMap.empty in
+  let count = 1000000 in
+  for i = 0 to count do
+    m := IntMap.add i i !m
+  done;
+  for i = 0 to count  do
+    ignore (IntMap.find i !m)
+  done
+
+let () = test()
+</code></pre>
+<p>Generates the following output code:</p>
+<pre><code class="lang-js">function test() {
+  var m = /* Empty */0;
+  for(var i = 0; i&lt;= 1000000; ++i){
+    m = add(i, i, m);
+  }
+  for(var i$1 = 0; i$1&lt;= 1000000; ++i$1){
+    find(i$1, m);
+  }
+  return /* () */0;
+}
+
+test(/* () */0);
+</code></pre>
+<p>We re-wrote the example using using Facebook&#39;s
+<a href="http://facebook.github.io/immutable-js/">immutable</a> library for JavaScript</p>
+<pre><code class="lang-js">&#39;use strict&#39;;
+var Immutable = require(&#39;immutable&#39;);
+var Map = Immutable.Map;
+var m = new Map();
+var test = function() {
+  var count = 1000000;
+  for(var i = 0; i &lt; count; ++i) {
+    m = m.set(i, i);
+   }
+  for(var j = 0; j &lt; count; ++j) {
+    m.get(j);
+    }
+}
+
+test();
+</code></pre>
+<p>Now we compare the runtime performance:</p>
+<ul>
+<li>BuckleScript Immutable Map: 1186ms</li>
+<li>Facebook Immutable Map: 3415ms</li>
+</ul>
+<p>We also compare code Size:</p>
+<ul>
+<li>BuckleScript (Prod mode): 899 Bytes</li>
+<li>Facebook Immutable: 55.3K Bytes</li>
+</ul>
+<h3 id="how-is-it-faster-than-hand-written-js-code-">How is it faster than hand-written JS code?</h3>
+<p>It&#39;s hard to explain JS performances in general, however, we will 
+explain some of the optimizations we&#39;ve done. For example, in OCaml, <code>Map</code>
+is like C++ templates, i.e. it will be instantiated by a comparison
+function, like below:</p>
+<pre><code class="lang-ocaml">module IntMap = Map.Make(struct
+  type t = int
+  let compare (x : int) y = compare x y
+  end
+)
+</code></pre>
+<p>In BuckleScript, this instantiation happens at compile time instead of
+at runtime, thereby improving the performance. Moreover, the data representation or encoding of types is also optimized for speed. Consider the following example:</p>
+<pre><code class="lang-OCaml">(** Map.t *)
+type &#39;a t =
+  | Empty
+  | Node of &#39;a t * key * &#39;a * &#39;a t * int
+</code></pre>
+<p>Since there are only two branches in this
+<a href="https://en.wikipedia.org/wiki/Algebraic_data_type">algebraic data type</a>,
+<code>Empty</code> will be simply encoded as <code>0 /* Empty */</code> (with comments for readable
+output) and <code>Node(l, x, data, r, height)</code> will be encoded as
+<code>/*Node*/ [l,x,data,r,height]</code>. Arrays are <a href="http://stackoverflow.com/questions/17295056/array-vs-object-efficiency-in-javascript">faster</a> for most operations when compared to objects.</p>
+<p>Other optimizations like <a href="http://stackoverflow.com/questions/310974/what-is-tail-call-optimization">tail call conversion</a>, inline and <a href="https://en.wikipedia.org/wiki/Constant_folding">constant
+propagation</a> are also introduced.</p>
+<h2 id="how-does-it-reduce-generated-code-size-">How does it reduce generated code size?</h2>
+<p>We do three levels of dead code elimination. At the module and function levels,
+BuckleScript will try to find dead code and remove unused values and side-effect free expressions (local variables and functions). At
+the linker/bundler level, BuckleScript can make use of existing bundlers and even Google Closure Compiler or any existing bundler
+to do the global analysis, because we produce code that conforms to the standard.</p>
+<p>Even bucklescript runtime is written in OCaml itself, this means such
+runtime can also benefit from dead code elimination.</p>
+<p>There are other factors count, mostly code organized in functional
+style are much easier to do the tree shaking while harder to remove
+for OO style, OCaml&#39;s standard library and runtime are organized in an
+independent style, which also helps dead code removal.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

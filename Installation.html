@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h2 id="introduction">Introduction</h2>
+<p>To use BuckleScript, you need both, a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install both of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.</p>
+<h2 id="installing-the-bucklescript-ocaml-compiler">Installing the BuckleScript OCaml compiler</h2>
+<h3 id="1-using-opam">1. Using opam</h3>
+<p>You can use the vanilla <a href="https://opam.ocaml.org">opam</a> package manager, available <a href="https://opam.ocaml.org/doc/Install.html">here</a>, to access the OCaml compiler version necessary to use BuckleScript.
+Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our version of the compiler:</p>
+<pre><code class="lang-sh">opam update
+opam switch ocaml-4.02.3+buckle-1
+</code></pre>
+<h3 id="2-building-from-source">2. Building from source</h3>
+<p>To build OCaml compiler from source, download the compiler source <a href="https://github.com/bloomberg/ocaml/releases">here</a> (version 4.02.3+buckle-1):</p>
+<p>For detailed build instructions, follow the directions in the <a href="https://github.com/bloomberg/ocaml">repo</a>. A simple build would look something like this:</p>
+<pre><code class="lang-sh">cd ocaml
+./configure -prefix `pwd` # put your preferred directory
+make world.opt
+make install
+</code></pre>
+<p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
+directory. To start using it temporarily, check if <code>ocamlc.opt</code> and <code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location to your <code>$(PATH)</code> (e.g. - <code>PATH=$(pwd)/bin:$PATH</code>).</p>
+<h2 id="installing-bucklescript">Installing BuckleScript</h2>
+<p>The following directions assume you already have the correct version of <code>ocamlopt.opt</code> in your <code>$PATH</code>, having followed the process described in the previous section.</p>
+<h3 id="1-using-npm">1. Using npm</h3>
+<p>The standard npm package management tool can be used to install BuckleScript. If you don&#39;t already have npm installed, follow the directions listed <a href="https://docs.npmjs.com/getting-started/installing-node">here</a>. Once npm is installed, run the following command:</p>
+<pre><code class="lang-sh">npm install --save bs-platform
+</code></pre>
+<h3 id="2-building-from-source">2. Building from source</h3>
+<p>Download the source from the <a href="https://github.com/bloomberg/bucklescript/releases">repository</a>. Then run the following commands:</p>
+<pre><code class="lang-sh">cd ./jscomp
+make world
+</code></pre>
+<hr>
+<p>At the end, you should have a binary called <code>bsc</code> under <code>jscomp/bin</code> directory,
+which you can add to your <code>$PATH</code>. You could also set an environment variable
+pointing to the stdlib, e.g. <code>BSC_LIB=/path/to/jscomp/stdlib</code> for ease of use.</p>
+<p>Note that by default, <code>bsc</code> will generate <code>commonjs</code> modules, you can
+override such behavior by picking up your own module system:</p>
+<pre><code class="lang-sh">MODULE_FLAGS=&#39;-js-module amdjs&#39; make world
+MODULE_FLAGS=&#39;-js-module commonjs&#39; make world
+MODULE_FLAGS=&#39;-js-module goog:buckle&#39; make world
+</code></pre>
+<p>Also see <a href="Create-a-simple-example-with-npm.html">Create a simple example with npm</a></p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

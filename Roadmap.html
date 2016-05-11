@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p>Alpha release</p>
+<ul>
+<li>[x] Support format module and all currying</li>
+<li>[x] Int32</li>
+<li>[x] Int64 support</li>
+<li>[x] Documentation about the Run-time encoding</li>
+<li>[x] Stabilize non-object part of FFI</li>
+<li>[x] Document non-object part of FFI</li>
+<li>[x] All files in run-time are ml files</li>
+<li>[x] Recursive module</li>
+<li>[x] Lazy values</li>
+<li>[x] Create a package for opam for the patched compiler, so user can use bucklescript with other ocaml tool chains like 
+merlin</li>
+<li>[x] Document difference from ocaml native backend</li>
+<li>[x] Document difference from Js_of_ocaml</li>
+<li>[x] Support goog.module</li>
+</ul>
+<p>Beta release:</p>
+<ul>
+<li>[ ] Object part of FFI(we have a working solution, the name mangling is not ideal)</li>
+<li>[ ] Compile local module as dictionary</li>
+<li>[ ] Customer formatter in debug mode</li>
+<li>[ ] Improving Runtime library (no unsafe code)</li>
+<li>[ ] Support es6 module (rollup format) (we current support commonjs and amdjs)</li>
+</ul>
+<p>Release:</p>
+<ul>
+<li>[ ] Bindings to Dom and React</li>
+<li>[ ] Bigarray/Bignum support</li>
+<li>[ ] Native JS regex suport</li>
+<li>[ ] Improve curry performance</li>
+<li>[ ] Google closure compiler advanced mode</li>
+<li>[ ] Source map support</li>
+<li>[ ] Catch up with the new release of ocaml compiler</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

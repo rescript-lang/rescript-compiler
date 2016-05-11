@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p>Below is a description of how OCaml values are encoded in JavaScript, 
+the <strong>internal</strong> description means <strong>users should not rely on its actual
+encoding (and it is subject to change)</strong>. We recommend that you write setter/getter functions 
+to manipulate safely OCaml values from JavaScript. </p>
+<p>For example, users should not rely on how OCaml <code>list</code> is encoded in JavaScript; instead,
+the OCaml stdlib provide three functions: <code>List.cons</code>, <code>List.hd</code> and <code>List.tl</code>. JavaScript
+code should only rely on such three functions.</p>
+<h1 id="ocaml-type">OCaml type</h1>
+<h2 id="int">int</h2>
+<ul>
+<li>JavaScript type : number</li>
+</ul>
+<h2 id="nativeint">nativeint</h2>
+<ul>
+<li>JavaScript type : number</li>
+</ul>
+<h2 id="int32">int32</h2>
+<ul>
+<li>JavaScript type : number</li>
+</ul>
+<h2 id="int64">int64</h2>
+<ul>
+<li>JavaScript type : an array of two numbers</li>
+</ul>
+<h2 id="float">float</h2>
+<ul>
+<li>JavaScript type : number</li>
+</ul>
+<h2 id="bool">bool</h2>
+<ul>
+<li>true  -&gt; 1 </li>
+<li>false -&gt; 0</li>
+</ul>
+<h2 id="char">char</h2>
+<ul>
+<li>JavaScript type : number
+for example, <code>&#39;a&#39;</code> is encoded as its ascii code <code>97</code></li>
+</ul>
+<h2 id="string">string</h2>
+<ul>
+<li>JavaScript type : string</li>
+</ul>
+<h2 id="bytes">bytes</h2>
+<ul>
+<li>JavaScript type : Number Array </li>
+</ul>
+<blockquote>
+<p>TODO: investigate if we can encode it as buffer when in NodeJS.</p>
+</blockquote>
+<h2 id="array">array</h2>
+<ul>
+<li>JavaScript type : Array. </li>
+</ul>
+<h2 id="record-internal-">record <em>internal</em></h2>
+<ul>
+<li>javascript type: object
+For instance:<pre><code class="lang-ocaml">type t = { x : int; y : int }
+let v = {x = 1;  y = 2}
+</code></pre>
+<code>v</code> is encoded as `[1,2]</li>
+</ul>
+<h2 id="tuple">tuple</h2>
+<ul>
+<li>JavaScript type: Array
+for example, <code>(a,b)</code> is encoded as <code>[a,b]</code></li>
+</ul>
+<h2 id="-a-option-internal-"><code>&#39;a option</code> <em>internal</em></h2>
+<ul>
+<li><code>None</code> -&gt;  <code>0</code></li>
+<li><code>Some a</code> -&gt; <code>[a]</code></li>
+</ul>
+<h2 id="-a-list-internal-"><code>&#39;a list</code> <em>internal</em></h2>
+<ul>
+<li><code>[]</code> -&gt; <code>0</code></li>
+<li><code>x::y</code> -&gt; <code>[x,y]</code></li>
+</ul>
+<h2 id="variant-internal-">Variant <em>internal</em></h2>
+<ul>
+<li>javascript type: object (for non nullary constructor)</li>
+<li><p>javascript type: number (for nullary constructor)</p>
+<pre><code class="lang-ocaml">type t = 
+     | A
+     | B of int * int 
+     | C of int * int 
+     | D
+</code></pre>
+<p>Here <code>A</code> is encoded as <code>0</code>, <code>D</code> is encoded as <code>1</code>.
+<code>B (1,2)</code> is encoded as <code>[1,2]</code> with property <code>tag</code> which is <code>0</code>
+you can imagine it is encoded as</p>
+<pre><code class="lang-js">Object.defineProperty([1,2], &#39;tag&#39;, { &#39;value&#39; : 0 })
+</code></pre>
+<p><code>C (1,2)</code> is encoded as below</p>
+<pre><code class="lang-js">Object.defineProperty([1,2], &#39;tag&#39;, { &#39;value&#39; : 1 })
+</code></pre>
+<p>As we clarified before, the internal representation should not be relied upon, for example, 
+we might change the name of <code>tag</code> in the future.</p>
+<p>We are working to provide a ppx extension as below:</p>
+<pre><code class="lang-ocaml"> type t = 
+    | A
+    | B of int * int 
+    | C of int * int 
+    | D [@@bs.export]
+</code></pre>
+<p>So that it will a automatically provide <code>constructing</code> and <code>destructing</code> function</p>
+<pre><code>val a : t 
+val b : int -&gt; int -&gt; t 
+val c : int -&gt; int -&gt; t 
+val d : int 
+
+val a_of_t : t -&gt; bool
+val d_of_t : t -&gt; bool   
+val b_of_t : t -&gt; (int * int ) Js.opt
+val c_of_t : t -&gt; (int * int ) Js.opt
+</code></pre></li>
+</ul>
+<h2 id="polymorphic-variant-internal-">Polymorphic variant <em>internal</em></h2>
+<ul>
+<li>javascript type: number (nullary constructor) </li>
+<li><p>javascript type: object (non-nullary constructor)</p>
+<pre><code class="lang-ocaml">type t = 
+   | `A
+   | `B of int * int 
+   | `C of int
+   | D [@@bb.export]
+</code></pre>
+<p>For nullary constructor, <code>`A</code>, it is encoded as a hash function, <strong>users should not rely
+on how the hash function work</strong>. 
+For documentation purpose, <code>`A</code> is encoded as number <code>65</code></p>
+<p><code>`B(1,2)</code> is encoded as <code>[66, [1,2] ]</code></p>
+<p><code>`C 3</code> is encoded as <code>[67, 3]</code></p>
+</li>
+</ul>
+<h2 id="exception-internal-">exception <em>internal</em></h2>
+<h2 id="extension-internal-">extension <em>internal</em></h2>
+<h2 id="object-internal-">object <em>internal</em></h2>
+<h1 id="javascript-type-exposed-to-ocaml">JavaScript type exposed to OCaml</h1>
+<p>BuckleScript exposes type safe interface to JavaScript native types. Those can be found in the <code>Js</code> module. </p>
+<h2 id="-js-boolean-"><code>Js.boolean</code></h2>
+<ul>
+<li>javascript type: boolean   </li>
+<li>Js.true_ -&gt; true</li>
+<li><p>Js.false_ -&gt; false
+We also provide a function <code>Js.to_bool</code> to convert <code>Js.boolean</code> to ocaml <code>bool</code></p>
+<pre><code class="lang-ocaml">val to_bool : Js.boolean -&gt; bool
+</code></pre>
+</li>
+</ul>
+<h2 id="-a-js-opt-"><code>&#39;a Js.opt</code></h2>
+<ul>
+<li><p>either <code>&#39;a</code> or <code>null</code><br>We provide several functions in <code>Js</code> module for constructing and destructing:  </p>
+<pre><code class="lang-ocaml">val from_opt : &#39;a opt -&gt; &#39;a option
+val to_opt : &#39;a -&gt; &#39;a opt
+val is_nil : &#39;a opt -&gt; bool
+</code></pre>
+<p>It&#39;s more efficient than <code>&#39;a option</code> since it is unboxed, when user 
+want to get the value, he can write code as below</p>
+<pre><code class="lang-ocaml">match Js.from_opt x with
+| Some x -&gt; 
+  (* non null branch *)
+  begin
+  (* ... *) 
+  end
+| None -&gt;
+  (* null *)
+  begin
+  (* ... *) 
+  end
+</code></pre>
+<p>Note that <code>Js.from_opt</code> is in generally optimized, so that it will 
+not be boxed when converted to <code>&#39;a option</code> and destructured immediately.</p>
+</li>
+</ul>
+<h2 id="-a-js-def-"><code>&#39;a Js.def</code></h2>
+<ul>
+<li><p>either <code>&#39;a&#39;</code> or <code>undefined</code></p>
+<p>We provide several functions in <code>Js</code> module for constructing and destructing:  </p>
+<pre><code class="lang-ocaml">val from_def : &#39;a def -&gt; &#39;a option
+val to_def : &#39;a -&gt; &#39;a opt
+val is_undef : &#39;a def -&gt; bool
+</code></pre>
+</li>
+</ul>
+<blockquote>
+<p>Note in the future, we will have a <em>debug</em> mode, which means, in such mode, the 
+corresponding js encoding will be instrumented with more information using <code>Object.defineProperty</code></p>
+</blockquote>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

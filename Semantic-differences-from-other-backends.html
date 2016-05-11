@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p>This section describe the semantic difference between BuckleScript generated code and other backend. This is particularly important when porting an existing application to JavaScript.</p>
+<h1 id="custom-data-type">Custom data type</h1>
+<p>   In OCaml, the C FFI allows user to  define a custom data type and customize <code>caml_compare</code>, <code>caml_hash</code> behavior, etc.   This is not available in our backend (since we have no C FFI)</p>
+<h1 id="physical-in-equality">Physical (in)equality</h1>
+<p>   In general, you should only use physical equality as an optimization technique, but not rely on its correctness, since it is hardly coupled with the runtime.</p>
+<h1 id="string-char-range">String char range</h1>
+<p>   Currently, BuckleScript assumes that the char ranges is <code>0-255</code>, user should be careful when they pass JavaScript string to OCaml side. Note that we are working on a solution for this problem.</p>
+<h1 id="weak-map">Weak map</h1>
+<p>  OCaml&#39;s weak map is not available in BuckleScript. The weak pointer is replaced by a strict pointer.</p>
+<h1 id="integers">Integers</h1>
+<p>OCaml has <code>int</code>, <code>int32</code>, <code>nativeint</code> and <code>int64</code> types. Both <code>int32</code> and <code>int64</code> have the exact same semantic.</p>
+<ul>
+<li><p><code>int</code>
+<code>int</code> in BuckleScript is the same as <code>int32</code> while it&#39;s platform dependent.</p>
+</li>
+<li><p><code>nativeint</code>
+Treated as JavaScript float, except for division, for example, <code>Nativeint.div a b</code> will be translated into <code>a /b | 0</code>. </p>
+</li>
+</ul>
+<blockquote>
+<p>Note there is a subtle difference that <code>Nativeint.shift_right_logical x 0</code> is different from <code>Int32.shift_right_local x 0</code>, the former is literally translated into <code>x &gt;&gt;&gt; 0</code> (translated into an unsigned int), while the latter is <code>x | 0</code>.</p>
+</blockquote>
+<ul>
+<li><p><code>Printf.printf</code>
+<code>Printf.print</code> implementation in BuckleScript requires a newline (<code>\n</code>) to trigger the printing. This behavior is not consistent with the buffered behavior of native OCaml. The only potential problem we foresee is that if the program terminates with no newline character, the text will never be printed.</p>
+</li>
+<li><p><code>Obj</code> module
+We do our best to mimic the native compiler but we have no guarantee and there are differences.</p>
+</li>
+<li><p><code>Hashtbl</code>
+BuckleScript uses the same algorithm as native OCaml but the output is different due to runtime representation of int/int64/int32 and float.</p>
+</li>
+<li><p><code>Marshall</code>
+Marshall module is not supported.</p>
+</li>
+<li><p><code>Sys.argv</code>
+Command line argument are always empty.</p>
+</li>
+</ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

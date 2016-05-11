@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h2 id="high-level-compiler-workflow">High Level compiler workflow</h2>
+<p>The high level architecture is illustrated as below:</p>
+<pre><code>Source Language
+  |
+  | (Reuse OCaml Parser)
+  v
+Surface Syntax Tree
+  |
+  | (built in Syntax tree transformation)
+  v
+Surface Syntax Tree
+  |
+  | (Reuse OCaml Type checker)
+  v
+Typedtree
+  |
+  | (Reuse OCaml pattern match compiler and erase types)
+  v
+Lambda IR (OCaml compiler libs) ---+
+  |   ^                            |                      
+  |   |                     Lambda Passes (lam_* files) 
+  |   |             Optimization/inlining/dead code elimination
+  |   \                            |
+  |    \ --------------------------+ 
+  |
+  |  Self tail call elimination
+  |  Constant folding + propagation
+  V
+JS IR (J.ml)  ---------------------+
+  |   ^                            |
+  |   |                     JS Passes (js_* files)
+  |   |            Optimization/inlining/dead code elimination
+  |   \                            |
+  |    \  -------------------------+
+  |        
+  |  Smart printer includes scope analysis 
+  |
+  V
+Javascript Code
+</code></pre><h2 id="design-principles">Design Principles</h2>
+<p>The current design of BuckleScript follows several high level principles. While those principles might change in the future, there are enforced today and can explain certain technical limitations BuckleScript has. </p>
+<p><strong>Lambda Representation</strong> </p>
+<p>As pictured in the diagram above BuckleScript is primarily based on the Lambda representation of the OCaml compiler. While this representation is quite rich, some information is lost from upstream representation. The patch to the OCaml compiler tries to enrich this representation in a non-intrusive way (see next section). </p>
+<p><strong>Minimal Patch to the OCaml compiler</strong></p>
+<p>BuckleScript requires patches to the OCaml compiler. One of the main reason is to enrich the Lambda representation so that the generated code is as nice as possible. A design goal is to keep those patches minimal and useful for the OCaml compiler in general so that they can later be integrated. </p>
+<blockquote>
+<p>A common question is to wonder why BuckleScript transpiles OCaml record value to JavaScript array while a more intuitive representation would be a JavaScript object. This technical decision is a direct consequence of the above 2 design principles: the Lambda layer assumes in a lot of places that a record value is an array and such modification would be too large of a change to OCaml compiler.</p>
+</blockquote>
+<p><strong>Soundness</strong></p>
+<p>BuckleScript preserves the soundness of the OCaml language. Assuming the FFI is correctly implemented, the type safety is preserved. </p>
+<p><strong>Minimal new symbol creation</strong> </p>
+<p>In order to make the JavaScript generated code as close as possible to the original OCaml core we thrive to introduce as little new symbols as possible. </p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

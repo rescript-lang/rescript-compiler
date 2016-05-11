@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="js/highlight.pack.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="index.html">Home</a></strong></p>
+<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h2 id="ffi-to-js-functions">FFI to js functions</h2>
+<p>This part is similar to <a href="http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html">traditional FFI</a>, 
+syntax is described as below:</p>
+<pre><code class="lang-OCaml">external value-name :  typexpr =  external-declaration  attributes
+external-declaration :=     string-literal
+</code></pre>
+<p>Users need declare types of the foreign function (JS function here) and 
+gives it a type and customized attributes</p>
+<h3 id="attributes">attributes</h3>
+<ul>
+<li><p><code>bs.call</code></p>
+<p>Example </p>
+<pre><code class="lang-ocaml">external imul : int -&gt; int -&gt; int = &quot;Math.imul&quot; [@@bs.call]
+</code></pre>
+<blockquote>
+<p>Note that if you want to make a single FFI for both c functions and JavaScript functions, you can 
+give JavaScript foreign function different name</p>
+</blockquote>
+<pre><code class="lang-ocaml">external imul : int -&gt; int -&gt; int = &quot;c_imul&quot; [@@bs.call &quot;Math.imul&quot;]
+</code></pre>
+</li>
+<li><p><code>bs.new</code></p>
+<p>This attribute is to help user create a JavaScript object
+example:</p>
+<pre><code class="lang-ocaml">external create_date : unit -&gt; t = &quot;Date&quot; [@@bs.new]
+</code></pre>
+</li>
+<li><p><code>bs.val</code> </p>
+<p> Bind to a JavaScript value</p>
+<pre><code class="lang-OCaml"> type dom 
+    (* Abstract type for the DOM *)
+
+ external dom : dome = &quot;document&quot; [@@bs.val]
+</code></pre>
+</li>
+<li><p><code>bs.send</code></p>
+<p>This attribute is to help user send a message to js object</p>
+<pre><code class="lang-OCaml">type id 
+  (** Abstract type for id object *)
+external get_by_id : dom -&gt; string -&gt; id = &quot;getElementById&quot; [@@bs.send]
+</code></pre>
+<p>The object is always the first argument and arguments follow.</p>
+<pre><code class="lang-OCaml">getElementById dom &quot;xx&quot;
+</code></pre>
+<p>will be compiled as </p>
+<pre><code class="lang-js">dom.getElementById(&quot;xx&quot;)
+</code></pre>
+</li>
+<li><p><code>bs.get</code>, <code>bs.set</code>
+This attribute help get and set the property of a JavaScript object.</p>
+<pre><code class="lang-OCaml">type textarea
+external set_name : textarea -&gt; string -&gt; unit = &quot;name&quot; [@@bs.set]
+external get_name : textarea -&gt; string = &quot;name&quot; [@@bs.get]
+</code></pre>
+</li>
+<li><p><code>bs.set_index</code> <code>bs.get_index</code></p>
+<p>This attribute help dynamic access to JavaScript property</p>
+<pre><code class="lang-OCaml">module Int32Array = struct
+  type t
+  external create : int -&gt; t = &quot;Int32Array&quot; [@@bs.new]
+  external get : t -&gt; int -&gt; int = &quot;&quot; [@@bs.get_index]
+  external set : t -&gt; int -&gt; int -&gt; unit = &quot;&quot; [@@bs.set_index]
+end
+</code></pre>
+</li>
+<li><p><code>bs.obj</code></p>
+<p>This attribute helps create JavaScript object literal</p>
+<p>A simple example:</p>
+<pre><code class="lang-OCaml">external make_config : hi:int -&gt; lo:int -&gt; unit -&gt; t [@@bs.obj]
+let v = make_config ~hi:2 ~lo:3
+</code></pre>
+<p>will be compiled as </p>
+<pre><code class="lang-js">let v = { hi:2, lo:3}
+</code></pre>
+<p>You can use optional as well</p>
+<pre><code class="lang-ocaml">external make_config : hi:int -&gt; ?lo:int -&gt; unit -&gt; t = &quot;&quot; [@@bs.obj]
+let u = make_config ~hi:3 ()
+let v = make_config ~hi:3 ~lo:2 ()
+</code></pre>
+<p>Will generate</p>
+<pre><code class="lang-js">let u = {hi : 3}
+let v = {hi : 3 , lo: 2}
+</code></pre>
+</li>
+<li><p><code>bs.module</code></p>
+<p> Qualify the JavaScript value by a module name</p>
+<pre><code class="lang-OCaml"> external add : int -&gt; int -&gt; int = &quot;add&quot; [@@bs.call] [@@bs.module &quot;x&quot;]
+ let f = add 3 4
+</code></pre>
+<p> will be compiled as </p>
+<pre><code class="lang-js"> var X = require(&quot;x&quot;)
+ var f = X.add(3,4)
+</code></pre>
+<pre><code class="lang-OCaml"> external add : int -&gt; int -&gt; int = &quot;add&quot; [@@bs.call] [@@bs.module &quot;x&quot; &quot;U&quot;]
+ let f = add 3 4
+</code></pre>
+<p> Will be compiled as</p>
+<pre><code class="lang-js"> var U = require(&quot;x&quot;)
+ var f = U.add(3,4)
+</code></pre>
+</li>
+</ul>
+<h2 id="a-simple-example-binding-to-mocha-unit-test-library">A simple example: binding to mocha unit test library</h2>
+<p>   If we want to provide bindings to the <a href="https://mochajs.org/">mochajs</a> unit test framework, 
+   below is an example</p>
+<pre><code class="lang-OCaml">   external describe : string -&gt; (unit -&gt; unit) -&gt; unit = &quot;describe&quot; [@@bs.call]
+   external it : string -&gt; (unit -&gt; unit) -&gt; unit = &quot;it&quot; [@@bs.call &quot;it&quot;]
+</code></pre>
+<p>   Since, <code>mochajs</code> is a test framework, we also need some assertion
+   test, we can also describe the bindings to <code>assert.deepEqual</code> from
+   nodejs <code>assert</code> library:</p>
+<pre><code class="lang-ocaml">   external eq : &#39;a -&gt; &#39;a -&gt; unit = &quot;deepEqual&quot;  [@@bs.call] [@@bs.module &quot;assert&quot;]
+</code></pre>
+<p>On top of this we can write normal OCaml functions, for example:</p>
+<pre><code class="lang-OCaml">   let assert_equal = eq
+   let from_suites name suite  = 
+       describe name (fun _ -&gt; 
+         List.iter (fun (name, code) -&gt; it name code) suite)
+</code></pre>
+<p>   The compiler would generate code as below:</p>
+<pre><code class="lang-js">   var Assert = require(&quot;assert&quot;);
+   var List = require(&quot;../stdlib/list&quot;);
+
+   function assert_equal(prim, prim$1) {
+     return Assert.deepEqual(prim, prim$1);
+   }
+
+   function from_suites(name, suite) {
+      return describe(name, function () {
+              return List.iter(function (param) {
+                          return it(param[0], param[1]);
+                        }, suite);
+            });
+    }
+</code></pre>
+<h2 id="ffi-to-objects-experimental-">FFI to objects <em>experimental</em></h2>
+<p>Note we will support using OCaml style&#39;s objects for FFI in the next release</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>

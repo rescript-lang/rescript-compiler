@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>BuckleScript</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="css/simple-sidebar.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+        <div id="sidebar-wrapper">
+            <ul class="sidebar-nav">
+              <p><strong><a href="Home.html">Home</a></strong></p>
+<p><strong>Get Started</strong></p>
+<ul>
+<li><a href="Installation.html">Installation</a></li>
+<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+</ul>
+<p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><a href="FAQ.html">FAQ</a></li>
+<li><a href="https://ocaml.org/">About OCaml</a></li>
+<li><a href="Compiler-options.html">Compiler options</a></li>
+<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
+<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
+<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
+<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
+</ul>
+<p><strong>BuckleScript Overview</strong></p>
+<ul>
+<li><a href="Compiler-overview.html">Compiler overview</a></li>
+</ul>
+<p><strong>BuckleScript FFI</strong></p>
+<ul>
+<li><a href="Runtime-representation.html">Runtime representation</a></li>
+<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
+<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
+<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
+<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
+<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
+</ul>
+<p><strong>Contributions</strong></p>
+<ul>
+<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
+<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
+</ul>
+<p><strong>Roadmap</strong></p>
+<ul>
+<li><a href="Roadmap.html">Roadmap</a></li>
+</ul>
+<p><strong>Comparisons</strong></p>
+<ul>
+<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
+</ul>
+
+            </ul>
+        </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <p><strong>BuckleScript Basics</strong></p>
+<ul>
+<li><p><a href="FAQ.html">FAQ</a></p>
+</li>
+<li><p><a href="https://ocaml.org/">About OCaml</a></p>
+</li>
+<li><p><a href="Compiler-options.html">Compiler options</a></p>
+</li>
+<li><p><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></p>
+</li>
+<li><p><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></p>
+</li>
+<li><p><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></p>
+</li>
+</ul>
+<h1 id="why-javascript-">Why JavaScript?</h1>
+<p>JavaScript is not just <em><em>the</em></em> browser language, it&#39;s also
+the <strong>only</strong> existing cross platform language. It is truly
+everywhere: users don&#39;t need to install binaries or use package managers to access software, just a link will work.</p>
+<p>Another important factor is that the JavaScript VM is quite fast and keeps getting faster. 
+The JavaScript platform is therefore increasingly capable of supporting large applications.</p>
+<h1 id="why-ocaml-">Why OCaml?</h1>
+<p>BuckleScript is mainly designed to solve the problems of large scale JavaScript programming:</p>
+<ol>
+<li><p><strong>Lack of type-safety:</strong> OCaml offers an industrial-strength state-of-the-art type system and provides type inference (i.e. No verbose type annotation required), which proves <a href="http:/programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system.html">invaluable</a> in managing large projects.</p>
+</li>
+<li><p><strong>Dead code:</strong> A large amount of web-development relies on inclusion of code dependencies by copying or referencing CDNs (the very thing that makes JavaScript highly accessible), but this also introduces a lot of <a href="https:/en.wikipedia.org/wiki/Dead_code.html">dead code</a>. This impacts performance adversely when the JavaScript VM has to interpret code that will never be invoked. BuckleScript provides powerful dead-code elimination at all levels. Function and module level elimination is facilitated by the sophistication of the type-system of OCaml, and at the global level BuckleScript generates code ready for dead-code elimination done by bundling tools such as the <a href="https:/developers.google.com/closure/compiler.html">Google closure-compiler</a>.</p>
+</li>
+<li><p><strong>Lack of offline optimizations:</strong> JavaScript is a dynamic language, it takes a performance-hit for the VM to optimize code at runtime. While some JS engines circumvent the problem to some extent by <a href="http://v8project.blogspot.com/2015/07/code-caching.html">caching</a>, this is not available to all environments, and lack of a strong type system also limits the level of optimizations possible. Again, BuckleScript, using features of the OCaml type-system and compiler implementation is able to provide many optimizations during offline compilation, allowing the runtime code to be extremely fast.</p>
+</li>
+</ol>
+<p>While a strong type-system helps in countering these problems, at the same time we hope to avoid some of the problems faced in using other offline <a href="https:/github.com/jashkenas/coffeescript/wiki/list-of-languages-that-compile-to-js.html">transpilation</a> systems:</p>
+<ol>
+<li><p><strong>Slow compilation:</strong>
+OCaml bytecode compilation is known to be fast (one or two orders of magnitude faster
+than other similar langauges: <a href="http://www.scala-lang.org/">Scala</a>
+or <a href="https://www.haskell.org/">Haskell</a>), BuckleScript shares the same
+property. See the speeds at work in the <a href="http:/bloomberg.github.io/bucklescript/js-demo.html">playground</a>.</p>
+</li>
+<li><p><strong>Un-readable JS Code:</strong>
+In compiling to JavaScript, many systems generate code, that while syntactically and semantically correct is
+not human-readable and very difficult to debug. Our BuckleScript implementation and the multi-pass compilation
+strategy of OCaml, allows us to avoid <a href="https:/en.wikipedia.org/wiki/Name_mangling.html">name-mangling</a>, and produce JavaScript code that is human-readable and easier to debug and maintain.</p>
+</li>
+<li><p><strong>Loss of code-structure:</strong>
+Many systems generate JavaScript code that is essentially a <a href="https:/en.wikipedia.org/wiki/Big_ball_of_mud.html">big ball of mud</a>. We try to keep the original structure of the code by mapping mapping one OCaml module to one JS module.</p>
+</li>
+</ol>
+<h1 id="resources-for-learning-ocaml">Resources for Learning OCaml</h1>
+<p>The offical <a href="https://ocaml.org/">ocaml</a> website has a comprehensive list of tutorials about the OCaml language, targeted at both developers new to functional programming and type-systems, and developers already familiar with these concepts.</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+</body>
+
+</html>
