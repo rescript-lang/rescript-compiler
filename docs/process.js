@@ -29,7 +29,8 @@ glob.sync("*.md").forEach(x=>{
         console.log(`processing ${x}`)
 
         var content = marked(fs.readFileSync(x,'utf8'),{renderer});
-        let output = template({content, index})
+        var github_link = `https://github.com/bloomberg/bucklescript/tree/master/docs/${x}`
+        let output = template({content, index, github_link})
         fs.writeFileSync(
             "dist/" + path.basename(x,".md")+".html",
             output,'utf8')
