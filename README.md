@@ -55,12 +55,32 @@ This project has been released to exchange ideas and collect feedback from the O
 It is in an *pre-alpha* stage and we encourage you to try it and share
 your feedback.
 
-## [Link to wiki Documentation](https://github.com/bloomberg/bucklescript/wiki)
+## Documentation
+
+See http://bloomberg.github.io/bucklescript/, if you want to contribute documentation, the source is [here](./docs)
 
 ## Build
 
 
 ### Linux and Mac OSX
+
+#### Build from package manager
+
+1. opam switch (Recommended, but optional)
+   
+  ```
+  opam switch ocaml-4.02.3+buckle-1
+  ```
+  With this switch, you can install all OCaml tools which is compatible with BuckleScript
+  
+2. npm install
+
+  ```
+  npm install  bs-platform
+  ```
+   
+
+#### Build from source
 
 1. Clone the bucklescript repo
 
