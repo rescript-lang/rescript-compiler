@@ -286,3 +286,4 @@ test_const_propogate
 limits_test
 
 ext_sys
+test_unsafe_obj_ffi

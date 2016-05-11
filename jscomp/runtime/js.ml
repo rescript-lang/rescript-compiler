@@ -24,8 +24,12 @@
 
 
 
+type +'a t (** Js object type *)
 
-
+module Unsafe = struct 
+  external (!)  : 'a t -> 'a = 
+    "js_unsafe_downgrade"
+end 
 
 (** This file will also be exported to external users 
     Attention: it should not have any code, all its code will be inlined so that 

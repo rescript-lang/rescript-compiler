@@ -721,6 +721,74 @@ and
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
 
+    | Lsend(meth_kind, _label, 
+            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
+                         [obj]), [] , loc) -> 
+      begin 
+        let property = 
+          match meth_kind with 
+          | Public (Some name ) -> name
+          | _ -> assert false  
+        in 
+        match 
+          compile_lambda {cxt with st = NeedValue; should_return = False} obj
+        with 
+        | {block; value = Some b } -> 
+          (* TODO: if [b] contains computation, compute it first *)
+          let cont obj_code = 
+            Js_output.handle_block_return st should_return lam 
+              (match obj_code with None -> block | Some x -> x :: block)
+          in 
+
+          begin match Js_ast_util.named_expression  b with 
+          | None -> cont None (E.dot b property)
+          | Some (obj_code, b)
+             -> cont  (Some obj_code) (E.dot (E.var b) property)
+          end
+        | _ -> assert false 
+      end
+    | Lsend(meth_kind, _label, 
+            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
+                         [obj]), [value] , loc) -> 
+      begin 
+        let property = 
+          match meth_kind with 
+          | Public (Some name ) -> 
+            assert (Ext_string.starts_with name "_set_");
+            String.sub name 5 (String.length name - 5)
+          | _ -> assert false  
+        in 
+        let obj_block = 
+          compile_lambda {cxt with st = NeedValue; should_return = False} obj
+        in 
+        let value_block = 
+          compile_lambda {cxt with st = NeedValue; should_return = False} value 
+        in 
+        match 
+          obj_block, value_block
+        with 
+        | {block = block0; value = Some obj }, 
+          {block = block1; value = Some value} -> 
+          (* TODO: if [b] contains computation, compute it first *)
+          let cont obj_code = 
+            Js_output.handle_block_return st should_return lam 
+              (let block = block0 @ block1 in 
+               match obj_code with
+               | None -> block
+               | Some x -> x :: block)
+          in 
+
+          begin match Js_ast_util.named_expression  obj with 
+          | None -> 
+            cont None (E.assign (E.dot obj property) value)
+          | Some (obj_code, obj)
+             -> 
+             cont  (Some obj_code) 
+               (E.assign (E.dot (E.var obj) property) value)
+          end
+        | _ -> assert false 
+      end
+
     | Lprim (prim, args_lambda)  ->
       let cont args_code exp = 
         Js_output.handle_block_return st should_return lam args_code exp  in 
