@@ -1,5 +1,7 @@
 **[Home](./index.md)**
 
+**[Playground](https://bloomberg.github.io/bucklescript/js-demo)**
+
 **Get Started**
 * [Installation](./Installation.md)
 * [Create a simple example with NPM](./Create-a-simple-example-with-NPM.md)

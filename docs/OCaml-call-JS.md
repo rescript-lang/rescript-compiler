@@ -138,7 +138,8 @@ gives it a type and customized attributes
    let f = add 3 4
    ```
    Will be compiled as
-   ```OCaml
+
+   ```js
    var U = require("x")
    var f = U.add(3,4)
    ```
@@ -173,7 +174,7 @@ On top of this we can write normal OCaml functions, for example:
 
    The compiler would generate code as below:
 
-   ```ocaml
+   ```js
    var Assert = require("assert");
    var List = require("../stdlib/list");
 
