@@ -16,6 +16,7 @@ mt_global.cmi : mt.cmi
 scanf_reference_error_regression_test.cmi :
 test_for_map2.cmi :
 test_is_js.cmi :
+test_unsafe_obj_ffi.cmi : ../runtime/js.cmj ../runtime/fn.cmj
 testing.cmi :
 ui_defs.cmi :
 a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
@@ -596,6 +597,10 @@ test_type_based_arity.cmj : abstract_type.cmi
 test_type_based_arity.cmx : abstract_type.cmx
 test_u.cmj :
 test_u.cmx :
+test_unsafe_obj_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj \
+    test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi.cmx : ../runtime/js.cmx ../runtime/fn.cmx \
+    test_unsafe_obj_ffi.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmx : ../stdlib/bytes.cmx
 test_while_closure.cmj : ../stdlib/array.cmi
@@ -1212,6 +1217,10 @@ test_type_based_arity.cmo : abstract_type.cmi
 test_type_based_arity.cmj : abstract_type.cmj
 test_u.cmo :
 test_u.cmj :
+test_unsafe_obj_ffi.cmo : ../runtime/js.cmo ../runtime/fn.cmo \
+    test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj \
+    test_unsafe_obj_ffi.cmi
 test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmj
 test_while_closure.cmo : ../stdlib/array.cmi
