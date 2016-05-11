@@ -1,13 +1,32 @@
 
-Assume you have the required OCaml compiler installed, see [Installation](./Installation).
 
 Create a temporary directory called `npm_test`
 
 ```sh
+mkdir npm_test
 cd npm_test
 echo "{}" > package.json
-npm install --save bs-platform
+```
+
+First, Install BuckleScript.
+(For more advacned settings, please read
+[Installation](./Installation))
+
+
+
+```sh
+npm install bs-platform --save 
+```
+
+Second, create a file called `hello.ml`, 
+
+```js
 echo 'let _ = Js.log "hello bucklescript!"' > hello.ml
-./node_modules/.bin/bsc -I ./node_modules/bs-platform/ -c hello.ml
+```
+
+Third, build and run 
+
+```
+`npm bin`/bsc -c hello.ml
 node hello.js
 ```

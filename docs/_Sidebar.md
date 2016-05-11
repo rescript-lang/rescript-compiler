@@ -5,6 +5,7 @@
 **Get Started**
 * [Installation](./Installation.md)
 * [Create a simple example with NPM](./Create-a-simple-example-with-NPM.md)
+* [NPM Support](./NPM-Support.md)
 
 **BuckleScript Basics**
 * [FAQ](./FAQ.md)
