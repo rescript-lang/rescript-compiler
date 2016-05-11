@@ -98,38 +98,41 @@
                       id="menu-toggle" 
                          >Toggle Menu</a>
 
-                      <a  href="https://github.com/bloomberg/bucklescript/tree/master/docs/Compiler-options.md" class="btn btn-default"
+                      <a  href="https://github.com/bloomberg/bucklescript/tree/master/docs/NPM-Support.md" class="btn btn-default"
                       style="position: absolute; top: 0; right: 0;
                       border: 0;"
                          >Edit on Github</a>
 
-                      <p>BuckleScript inherits the command line arguments of the <a href="http://caml.inria.fr/pub/docs/manual-ocaml/comp.html">OCaml compiler</a>. It also adds several flags:</p>
-<ul>
-<li>-js-module</li>
-</ul>
-<p>Specify the JavaScript module system to use in the generated JavaScript code. Supported values are <code>commonjs</code>, <code>amdjs</code> and <code>goog:&lt;namespace&gt;</code></p>
-<p>When you want to use <code>goog</code> module system, you can do things like this:</p>
-<pre><code class="lang-bash">bsc -js-module goog xx.ml 
-  # no namespace
-
-bsc -js-module goog:bloomberg.buckle.test xx.ml 
-  # namespace is bloomberg.buckle.test
+                      <p>BuckleScript extends OCaml compiler options with several flags to
+provide better experience for NPM users.</p>
+<h2 id="to-deploy-your-ocaml-library-as-a-npm-package">To deploy your OCaml library as a npm package</h2>
+<p>In general, you are expected to deploy two kinds of artifacts, the
+generated JS files and meta data which your OCaml dependents relies
+on.</p>
+<p>Since CommonJS has no namespaces, to allow JS files live in different
+directories, we have a flag</p>
+<pre><code class="lang-sh">bsc -js-npm-output-path $npm_package_name:path/to/your/js/dir -c a.ml
 </code></pre>
-<p>You would then need a bundler for different the different module systems: <code>webpack</code> supports <code>commonjs</code> and <code>amdjs</code> while <code>google closure compiler</code> supports all.</p>
-<ul>
-<li>-js-gen-tds</li>
-</ul>
-<p>Trigger the generation of TypeScript <code>.d.ts</code> files.</p>
-<h2 id="hello-world">Hello world</h2>
-<p>Currently, <code>BuckleScript</code> shares the same command line options as <code>ocamlc</code>
-bytecode compiler.</p>
-<p>Create a file called <code>hello.ml</code> as below</p>
-<pre><code class="lang-sh">echo &#39;print_endline &quot;hello world&quot;&#39; &gt; hello.ml
-</code></pre>
-<pre><code class="lang-sh">bsc -c hello.ml
-</code></pre>
-<p>If everything goes well, you should have <code>hello.js</code></p>
-<pre><code>console.log(&#39;hello world&#39;)
+<p>By passing this flag, <code>bsc</code> will store your <code>package_name</code> and
+relative path to <code>package.json</code> in <code>.cmj</code> files, it will also generate
+JS files in the directory you specified, you can and are encouraged
+to store js files in a hierarchical directory.</p>
+<p>For the binary artifacts, (Note that this is not necessary if you only
+want your libraries to be consumed by JS developers, and it has
+benefit since end users don&#39;t need these binary data any more), the
+convention
+is to store all <code>*.cm</code> data in a <em>single</em> directory
+<code>package.json/lib/ocaml</code>
+and js files in a <em>hierachical</em> directory
+<code>package.json/lib/js</code></p>
+<h2 id="to-use-ocaml-library-as-a-npm-package">To use OCaml library as a npm package</h2>
+<p>If you follow the layout convention above, use ocaml package is pretty
+straightforward</p>
+<pre><code>bsc -js-npm-package-include ocaml-library -c a.ml
+</code></pre><h2 id="conclusion">Conclusion</h2>
+<p>Your command line would be like this</p>
+<pre><code>bsc -js-npm-package-include ocaml-library1 -js-npm-package-include
+ocaml-library2 -js-npm-output-path -c $npm_package_name:lib/js/ -c a.ml
 </code></pre>
                     </div>
                 </div>

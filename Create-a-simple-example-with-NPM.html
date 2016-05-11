@@ -44,6 +44,7 @@
 <ul>
 <li><a href="Installation.html">Installation</a></li>
 <li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
+<li><a href="NPM-Support.html">NPM Support</a></li>
 </ul>
 <p><strong>BuckleScript Basics</strong></p>
 <ul>
@@ -102,16 +103,23 @@
                       border: 0;"
                          >Edit on Github</a>
 
-                      <p>Assume you have the required OCaml compiler installed, see <a href="./Installation">Installation</a>.</p>
-<p>Create a temporary directory called <code>npm_test</code></p>
-<pre><code class="lang-sh">cd npm_test
+                      <p>Create a temporary directory called <code>npm_test</code></p>
+<pre><code class="lang-sh">mkdir npm_test
+cd npm_test
 echo &quot;{}&quot; &gt; package.json
-npm install --save bs-platform
-echo &#39;let _ = Js.log &quot;hello bucklescript!&quot;&#39; &gt; hello.ml
-./node_modules/.bin/bsc -I ./node_modules/bs-platform/ -c hello.ml
+</code></pre>
+<p>First, Install BuckleScript.
+(For more advacned settings, please read
+<a href="./Installation">Installation</a>)</p>
+<pre><code class="lang-sh">npm install bs-platform --save
+</code></pre>
+<p>Second, create a file called <code>hello.ml</code>, </p>
+<pre><code class="lang-js">echo &#39;let _ = Js.log &quot;hello bucklescript!&quot;&#39; &gt; hello.ml
+</code></pre>
+<p>Third, build and run </p>
+<pre><code>`npm bin`/bsc -c hello.ml
 node hello.js
 </code></pre>
-
                     </div>
                 </div>
             </div>
