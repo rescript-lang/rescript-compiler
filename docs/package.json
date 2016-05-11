@@ -3,6 +3,7 @@
     "marked": "^0.3.5"
   },
   "devDependencies": {
+
     "glob": "^7.0.3",
     "handlebars": "^4.0.5",
     "marked": "^0.3.5"
