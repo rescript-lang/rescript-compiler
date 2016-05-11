@@ -8,7 +8,7 @@ var path = require('path')
 var oldrender = new marked.Renderer()
 renderer.link = function(href,title,text){
     var ext = path.extname(href)
-    if(!title && (ext === ".md" || ext  === "")){
+    if(!title && (ext === ".md" )){
         return `<a href="${path.join(path.dirname(href),path.basename(href,".md"))+'.html'}">${text}</a>` 
     } else{
         return oldrender.link(href,title,text);
