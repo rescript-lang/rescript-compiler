@@ -54,4 +54,17 @@ bin/*
 
 # for npm publish
 !bin/bsc
+!bin/ocaml
+!bin/ocamldep
+!bin/ocamldep.opt
+!bin/ocamlyacc
+!bin/ocamllex.opt
+!bin/ocamllex
+!bin/ocamlobjinfo
+!bin/ocamlopt
+!bin/ocamlopt.opt
+!bin/ocamlrun
+!bin/ocamlc
+!bin/ocamlc.opt
+
 !ocaml.tar.gz
