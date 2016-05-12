@@ -5,8 +5,6 @@
 One of the main BuckleScript goal is to generate readable JavaScript code. From the start we believed developers using BuckleScript for JavaScript development will look at the generated code an order of magnitude more than an OCaml developer will look at the assembly one. Part of our intent is to make it easier for a JavaScript developer to transition to the OCaml language. Furthermore looking at existing transpilers for JavaScript:  [coffescript](http://coffeescript.org/), [babel](https://babeljs.io/) and [typescript](https://github.com/Microsoft/TypeScript), the most widely adopted ones are the one that favors code readability.
 The generated code by BuckleScript is pretty close to the JavaScript code one might write by hand, especially if you use mostly the language features which are shared between JavaScript and OCaml. Indeed if you use OCaml language constructs which are specific to OCaml the generated code will differ a lot more but should still be readable. Such examples includes complex pattern matching for which OCaml offers a succint and powerful syntax while JavaScript code will most likely results in nested `if`.  
 
-`js_of_ocaml` produces code with mangled names, which is typically not a concern, except when the code is used as a primary backend and must be extensively debugged and maintained. Developers can use  [Source Map](https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit?hl=en_US&pli=1&pli=1) which is currently available for `js_of_ocaml`.
-
 One of the major use case we anticipate (especially at early stages of adoption) is that developers will use BuckleScript to implement a component of their JavaScript application (maybe do gradual replacement of modules). The main application will therefore still be JavaScript and we therefore believe readable output should improve that use case.
 
 ## Runtime Representations && FFI
@@ -26,7 +24,7 @@ Some example of differences are:
 
 Regarding the FFI, BuckleScript favors using only [attributes](http://caml.inria.fr/pub/docs/manual-ocaml/extn.html#sec245); one drawback that we plan to address on the future is that it lacks some expressiveness. 
 
-`js_of_ocaml` introduces a very sophisticated and expressive syntax extension, which works great most of the time, but can sometimes generate confusing compiler errors, and be difficult to integrate with existing IDEs and build systems. 
+`js_of_ocaml` introduces a very sophisticated and expressive syntax extension, which works great most of the time, but can sometimes generate confusing compiler errors. 
 
 The introduction of [gen_js_api](https://github.com/LexiFi/gen_js_api) tool as an alternative FFI makes it easier to write FFI with `js_of_ocaml`. `gen_js_api` could be a nice way to implement FFIs to support both `BuckleScript` and `js_of_ocaml`.
 
