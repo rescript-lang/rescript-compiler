@@ -12,7 +12,7 @@ Once you have `opam` installed, ask `opam` to switch to using our version of the
 
 ```sh
 opam update
-opam switch ocaml-4.02.3+buckle-1
+opam switch 4.02.3+buckle-1
 eval `opam config env` 
 ```
 
