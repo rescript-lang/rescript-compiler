@@ -48,5 +48,5 @@ Your command line would be like this
 
 ```
 bsc -js-npm-package-include ocaml-library1 -js-npm-package-include
-ocaml-library2 -js-npm-output-path -c $npm_package_name:lib/js/ -c a.ml
+ocaml-library2 -js-npm-output-path $npm_package_name:lib/js/ -c a.ml
 ```
