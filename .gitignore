@@ -48,6 +48,7 @@ boot
 coverage
 *.g.js
 ppx_tools/
+ocaml/
 man/
 lib/ocaml
 bin/*
