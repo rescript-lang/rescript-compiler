@@ -12,7 +12,31 @@
 
 open Config
 open Clflags
-open Compenv
+(* open Compenv *)
+
+let output_prefix = Compenv.output_prefix
+let readenv = Compenv.readenv
+let first_ccopts = Compenv.first_ccopts
+let first_ppx = Compenv.first_ppx
+
+let bs_version_string = 
+  "BuckleScript " ^ Js_config.version ^
+  " (Using OCaml" ^ Config.version ^ " )"
+
+let print_version_and_library compiler =
+  Printf.printf "The OCaml %s, version " compiler;
+  print_string bs_version_string; print_newline();
+  print_string "Standard library directory: ";
+  print_string Config.standard_library; print_newline();
+  exit 0
+
+let print_standard_library = Compenv.print_standard_library
+
+let print_version_string () = 
+  print_string bs_version_string;
+  print_newline (); 
+  exit 0 
+
 
 
 let process_interface_file ppf name =
@@ -131,11 +155,14 @@ end)
 
 let add_include_path s = 
   let (//) = Filename.concat in
-  (*TODO: check its existence *)
   let path = 
     Ext_filename.resolve 
       (Lazy.force Ext_filename.cwd) s // "lib"// "ocaml"  in 
-  Clflags.include_dirs := path :: ! Clflags.include_dirs
+  if Ext_sys.is_directory_no_exn path then 
+    Clflags.include_dirs := path :: ! Clflags.include_dirs
+  else 
+    Ext_pervasives.failwithf "%s is not a directory" s 
+
 
 let buckle_script_flags = 
   ("-js-npm-output-path", Arg.String Js_config.set_npm_package_path, 
