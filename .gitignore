@@ -47,7 +47,7 @@ boot
 *.dump
 coverage
 *.g.js
-
+ppx_tools/
 man/
 lib/ocaml
 bin/*
