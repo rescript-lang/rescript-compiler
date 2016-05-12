@@ -105,15 +105,25 @@
 
                       <h2 id="introduction">Introduction</h2>
 <p>To use BuckleScript, you need both, a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install both of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.</p>
-<h2 id="installing-the-bucklescript-ocaml-compiler">Installing the BuckleScript OCaml compiler</h2>
-<h3 id="1-using-opam">1. Using opam</h3>
-<p>You can use the vanilla <a href="https://opam.ocaml.org">opam</a> package manager, available <a href="https://opam.ocaml.org/doc/Install.html">here</a>, to access the OCaml compiler version necessary to use BuckleScript.
-Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our version of the compiler:</p>
+<h2 id="default-installation-procedure-using-package-managers-">Default installation procedure (using package managers)</h2>
+<h3 id="1-ocaml-compiler-from-opam-optional-">1. OCaml compiler from opam (optional)</h3>
+<p>When working with OCaml we recommend using <a href="https://opam.ocaml.org">opam</a> package manager, available <a href="https://opam.ocaml.org/doc/Install.html">here</a>. You will benefit from the existing OCaml ecosystem. </p>
+<p>Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our version of the compiler:</p>
 <pre><code class="lang-sh">opam update
 opam switch ocaml-4.02.3+buckle-1
+eval `opam config env`
 </code></pre>
-<h3 id="2-building-from-source">2. Building from source</h3>
-<p>To build OCaml compiler from source, download the compiler source <a href="https://github.com/bloomberg/ocaml/releases">here</a> (version 4.02.3+buckle-1):</p>
+<blockquote>
+<p>This step is optional. npm installation will build the compiler from source if not installed from opam</p>
+</blockquote>
+<h3 id="2-bucklescript-from-npm-required-">2. BuckleScript from npm (required)</h3>
+<p>The standard npm package management tool can be used to install BuckleScript. If you don&#39;t already have npm installed, follow the directions listed <a href="https://docs.npmjs.com/getting-started/installing-node">here</a>. Once npm is installed, run the following command:</p>
+<pre><code class="lang-sh">npm install --save bs-platform
+</code></pre>
+<h2 id="advanced-installation-procedure-from-source-">Advanced installation procedure (from source)</h2>
+<p>BuckleScript has very little dependencies and building from source can easily be done.</p>
+<h3 id="1-ocaml-compiler">1. OCaml compiler</h3>
+<p>To build OCaml compiler from source, download the modified OCaml compiler source <a href="https://github.com/bloomberg/ocaml/releases">here</a> (version 4.02.3+buckle-1):</p>
 <p>For detailed build instructions, follow the directions in the <a href="https://github.com/bloomberg/ocaml">repo</a>. A simple build would look something like this:</p>
 <pre><code class="lang-sh">cd ocaml
 ./configure -prefix `pwd` # put your preferred directory
@@ -122,13 +132,8 @@ make install
 </code></pre>
 <p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
 directory. To start using it temporarily, check if <code>ocamlc.opt</code> and <code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location to your <code>$(PATH)</code> (e.g. - <code>PATH=$(pwd)/bin:$PATH</code>).</p>
-<h2 id="installing-bucklescript">Installing BuckleScript</h2>
+<h3 id="2-installing-bucklescript">2. Installing BuckleScript</h3>
 <p>The following directions assume you already have the correct version of <code>ocamlopt.opt</code> in your <code>$PATH</code>, having followed the process described in the previous section.</p>
-<h3 id="1-using-npm">1. Using npm</h3>
-<p>The standard npm package management tool can be used to install BuckleScript. If you don&#39;t already have npm installed, follow the directions listed <a href="https://docs.npmjs.com/getting-started/installing-node">here</a>. Once npm is installed, run the following command:</p>
-<pre><code class="lang-sh">npm install --save bs-platform
-</code></pre>
-<h3 id="2-building-from-source">2. Building from source</h3>
 <p>Download the source from the <a href="https://github.com/bloomberg/bucklescript/releases">repository</a>. Then run the following commands:</p>
 <pre><code class="lang-sh">cd ./jscomp
 make world
