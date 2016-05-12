@@ -32,7 +32,7 @@ let interface ppf sourcefile outputprefix =
   Env.set_unit_name modulename;
   let initial_env = Compmisc.initial_env () in
   let ast = Pparse.parse_interface ~tool_name ppf sourcefile in
-  let ast = !Ppx_entry.rewrite_signature ast in
+  let ast = if !Js_config.no_builtin_ppx_mli then ast else  !Ppx_entry.rewrite_signature ast in
   if !Clflags.dump_parsetree then fprintf ppf "%a@." Printast.interface ast;
   if !Clflags.dump_source then fprintf ppf "%a@." Pprintast.signature ast;
   let tsg = Typemod.type_interface initial_env ast in
@@ -60,7 +60,7 @@ let implementation ppf sourcefile outputprefix =
     let (typedtree, coercion, finalenv, current_signature) =
       Pparse.parse_implementation ~tool_name ppf sourcefile
       |> print_if ppf Clflags.dump_parsetree Printast.implementation
-      |> !Ppx_entry.rewrite_implementation
+      |> (fun x -> if !Js_config.no_builtin_ppx_ml then x else  !Ppx_entry.rewrite_implementation x )
       |> print_if ppf Clflags.dump_source Pprintast.structure
       |> Typemod.type_implementation_more sourcefile outputprefix modulename env 
       |> print_if ppf Clflags.dump_typedtree

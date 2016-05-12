@@ -287,5 +287,12 @@ limits_test
 
 ext_sys
 test_unsafe_obj_ffi
+
 module_missing_conversion
 ocaml_proto_test
+
+
+test_unsafe_obj_ffi_ppx
+
+ppx_apply_test
+test_http_server

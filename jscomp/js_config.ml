@@ -120,6 +120,9 @@ let get_output_file filename =
       
 let default_gen_tds = ref false
      
+let no_builtin_ppx_ml = ref false
+let no_builtin_ppx_mli = ref false
+
 let stdlib_set = String_set.of_list [
     "arg";
     "gc";

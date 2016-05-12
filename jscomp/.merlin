@@ -1,7 +1,7 @@
 S .
 B _build
-S lib
-B lib 
+S runtime
+B runtime
 S stdlib
 B stdlib
 S test

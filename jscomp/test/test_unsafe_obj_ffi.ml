@@ -10,8 +10,8 @@ let g x : unit  =
   Fn.run2 !x # method2 3 3
 
 let h x : unit  = 
-   !x # _set_height 3 ;
-   !x # _set_width 3 
+   !x # height__set 3 ;
+   !x # width__set 3 
 
 (**
 imagine you have 

@@ -45,6 +45,8 @@ external log : 'a -> unit = "js_dump"
 
 
 
+type 'a set = 'a -> unit 
+(* TODO: in theory: it should be {[ 'a -> 'a]} *) 
 
 type any = Obj.t
 
