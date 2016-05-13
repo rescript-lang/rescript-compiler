@@ -217,10 +217,10 @@ hash_test.cmj : ../stdlib/string.cmi mt_global.cmi mt.cmi \
     ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
 hash_test.cmx : ../stdlib/string.cmx mt_global.cmx mt.cmx \
     ../stdlib/hashtbl.cmx ../stdlib/char.cmx ../stdlib/array.cmx
-hashtbl_test.cmj : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    ../stdlib/array.cmi
-hashtbl_test.cmx : mt.cmx ../stdlib/list.cmx ../stdlib/hashtbl.cmx \
-    ../stdlib/array.cmx
+hashtbl_test.cmj : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
+    ../stdlib/hashtbl.cmi ../stdlib/array.cmi
+hashtbl_test.cmx : mt.cmx ../stdlib/moreLabels.cmx ../stdlib/list.cmx \
+    ../stdlib/hashtbl.cmx ../stdlib/array.cmx
 inline_edge_cases.cmj : inline_edge_cases.cmi
 inline_edge_cases.cmx : inline_edge_cases.cmi
 inline_map2_test.cmj : mt.cmi ../stdlib/list.cmi
@@ -311,6 +311,10 @@ mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj
 mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx
 module_alias.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
+module_missing_conversion.cmj : ../stdlib/string.cmi \
+    ../stdlib/moreLabels.cmi ../stdlib/hashtbl.cmi ../stdlib/array.cmi
+module_missing_conversion.cmx : ../stdlib/string.cmx \
+    ../stdlib/moreLabels.cmx ../stdlib/hashtbl.cmx ../stdlib/array.cmx
 module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmj : ../stdlib/list.cmi mt.cmi
@@ -837,10 +841,10 @@ hash_test.cmo : ../stdlib/string.cmi mt_global.cmi mt.cmi \
     ../stdlib/hashtbl.cmi ../stdlib/char.cmi ../stdlib/array.cmi
 hash_test.cmj : ../stdlib/string.cmj mt_global.cmj mt.cmj \
     ../stdlib/hashtbl.cmj ../stdlib/char.cmj ../stdlib/array.cmj
-hashtbl_test.cmo : mt.cmi ../stdlib/list.cmi ../stdlib/hashtbl.cmi \
-    ../stdlib/array.cmi
-hashtbl_test.cmj : mt.cmj ../stdlib/list.cmj ../stdlib/hashtbl.cmj \
-    ../stdlib/array.cmj
+hashtbl_test.cmo : mt.cmi ../stdlib/moreLabels.cmi ../stdlib/list.cmi \
+    ../stdlib/hashtbl.cmi ../stdlib/array.cmi
+hashtbl_test.cmj : mt.cmj ../stdlib/moreLabels.cmj ../stdlib/list.cmj \
+    ../stdlib/hashtbl.cmj ../stdlib/array.cmj
 inline_edge_cases.cmo : inline_edge_cases.cmi
 inline_edge_cases.cmj : inline_edge_cases.cmi
 inline_map2_test.cmo : mt.cmi ../stdlib/list.cmi
@@ -931,6 +935,10 @@ mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
+module_missing_conversion.cmo : ../stdlib/string.cmi \
+    ../stdlib/moreLabels.cmi ../stdlib/hashtbl.cmi ../stdlib/array.cmi
+module_missing_conversion.cmj : ../stdlib/string.cmj \
+    ../stdlib/moreLabels.cmj ../stdlib/hashtbl.cmj ../stdlib/array.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi mt.cmi
