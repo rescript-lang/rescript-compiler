@@ -287,3 +287,4 @@ limits_test
 
 ext_sys
 test_unsafe_obj_ffi
+module_missing_conversion

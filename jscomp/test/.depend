@@ -311,6 +311,8 @@ mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj
 mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx
 module_alias.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmx : ../stdlib/pervasives.cmx ../stdlib/list.cmx
+module_missing_conversion.cmj : ../stdlib/string.cmi ../stdlib/array.cmi
+module_missing_conversion.cmx : ../stdlib/string.cmx ../stdlib/array.cmx
 module_parameter_test.cmj : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmx : ../stdlib/string.cmx mt.cmx
 mt.cmj : ../stdlib/list.cmi mt.cmi
@@ -931,6 +933,8 @@ mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi
 module_alias.cmj : ../stdlib/pervasives.cmj ../stdlib/list.cmj
+module_missing_conversion.cmo : ../stdlib/string.cmi ../stdlib/array.cmi
+module_missing_conversion.cmj : ../stdlib/string.cmj ../stdlib/array.cmj
 module_parameter_test.cmo : ../stdlib/string.cmi mt.cmi
 module_parameter_test.cmj : ../stdlib/string.cmj mt.cmj
 mt.cmo : ../stdlib/list.cmi mt.cmi
