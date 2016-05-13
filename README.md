@@ -55,7 +55,7 @@ As you can see, there is no name mangling in the generated code, so if this modu
 
 This project has been released to exchange ideas and collect feedback from the OCaml and JavaScript communities.
 
-It is in an *pre-alpha* stage and we encourage you to try it and share
+It is in an *alpha* stage and we encourage you to try it and share
 your feedback.
 
 ## Documentation
@@ -145,7 +145,7 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 
   Then compile it with `bsc`.
   ```sh
-  bsc -I . -I $BSC_LIB -c hello.ml
+  bsc -I . -c hello.ml
   ```
 
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js:
