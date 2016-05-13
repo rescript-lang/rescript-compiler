@@ -72,7 +72,7 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 1. opam switch (Recommended, but optional)
    
   ```
-  opam switch ocaml-4.02.3+buckle-1
+  opam switch 4.02.3+buckle-1
   ```
   With this switch, you can install all OCaml tools which is compatible with BuckleScript
   
