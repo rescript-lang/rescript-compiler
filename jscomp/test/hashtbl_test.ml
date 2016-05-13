@@ -28,7 +28,12 @@ let suites = Mt.[
   "more_iterations", 
   (fun _ -> 
     let count = 1000 in
-    Eq( Array.init (count + 1) (fun i -> (2 * i, string_of_int i) ), g count))
+    Eq( Array.init (count + 1) (fun i -> (2 * i, string_of_int i) ), g count));
+  "More_labels_regressionfix_374",(fun _ -> 
+      let tbl : (int, int) Hashtbl.t  = MoreLabels.Hashtbl.create 30 in 
+      Hashtbl.add tbl 3 3 ;
+      Eq (Hashtbl.length tbl, 1 )
+    )
 ]
     
 ;; Mt.from_pair_suites __FILE__ suites
