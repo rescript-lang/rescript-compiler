@@ -13,6 +13,7 @@ inline_map_test.cmi :
 map_test.cmi :
 mt.cmi :
 mt_global.cmi : mt.cmi
+ocaml_proto_test.cmi :
 scanf_reference_error_regression_test.cmi :
 test_for_map2.cmi :
 test_is_js.cmi :
@@ -327,6 +328,16 @@ obj_magic_test.cmj : ../stdlib/obj.cmi mt.cmi
 obj_magic_test.cmx : ../stdlib/obj.cmx mt.cmx
 obj_test.cmj : mt.cmi
 obj_test.cmx : mt.cmx
+ocaml_proto_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
+    ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \
+    ../stdlib/lexing.cmi ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
+    ../stdlib/char.cmi ocaml_proto_test.cmi
+ocaml_proto_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx \
+    ../stdlib/printexc.cmx ../stdlib/pervasives.cmx ../stdlib/parsing.cmx \
+    ../stdlib/obj.cmx mt.cmx ../stdlib/map.cmx ../stdlib/list.cmx \
+    ../stdlib/lexing.cmx ../stdlib/hashtbl.cmx ../stdlib/filename.cmx \
+    ../stdlib/char.cmx ocaml_proto_test.cmi
 of_string_test.cmj : mt.cmi
 of_string_test.cmx : mt.cmx
 offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
@@ -951,6 +962,16 @@ obj_magic_test.cmo : ../stdlib/obj.cmi mt.cmi
 obj_magic_test.cmj : ../stdlib/obj.cmj mt.cmj
 obj_test.cmo : mt.cmi
 obj_test.cmj : mt.cmj
+ocaml_proto_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi \
+    ../stdlib/printexc.cmi ../stdlib/pervasives.cmi ../stdlib/parsing.cmi \
+    ../stdlib/obj.cmi mt.cmi ../stdlib/map.cmi ../stdlib/list.cmi \
+    ../stdlib/lexing.cmi ../stdlib/hashtbl.cmi ../stdlib/filename.cmi \
+    ../stdlib/char.cmi ocaml_proto_test.cmi
+ocaml_proto_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj \
+    ../stdlib/printexc.cmj ../stdlib/pervasives.cmj ../stdlib/parsing.cmj \
+    ../stdlib/obj.cmj mt.cmj ../stdlib/map.cmj ../stdlib/list.cmj \
+    ../stdlib/lexing.cmj ../stdlib/hashtbl.cmj ../stdlib/filename.cmj \
+    ../stdlib/char.cmj ocaml_proto_test.cmi
 of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
 offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
