@@ -69,7 +69,7 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 
 #### Build from package manager
 
-1. opam switch (Recommended, but optional)
+1. opam switch (Recommended, but *optional*)
    
   ```
   opam switch 4.02.3+buckle-1
@@ -115,12 +115,11 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 
   ```sh
   cd ./jscomp
-  make world
+  npm_package_name=bs-platform make world
   ```
 
   Now you have a binary called `bsc` under `jscomp/bin` directory,
-  put it in your `PATH`. You could also set an environment variable
-  pointing to the stdlib, like `BSC_LIB=/path/to/jscomp/stdlib`
+  put it in your `PATH`.
 
 
   Note by default, `bsc` will generate `commonjs` modules, you can
