@@ -71,28 +71,41 @@ let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string
       _}] -> `Single name 
   | _ -> `None
 
+let lift_int ?loc ?attrs x = 
+  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
 
 let has_arity (attrs : Parsetree.attributes) = 
   Ext_list.find_opt (fun (attr : Parsetree.attribute)  -> 
       match attr with 
       | {txt = "arity"; _ }, 
-        PStr [ { pstr_desc = Pstr_eval ( {pexp_desc = Pexp_constant (Const_int i)},_attr); _}]
-        -> Some i
+        PStr [ { pstr_desc = Pstr_eval 
+                     ( {pexp_desc = Pexp_constant (Const_int i)},_attr);
+                 _}]
+        -> 
+        if i >= 0 then 
+          Some i
+        else None
       | _ -> None 
     ) attrs  
 
 
-let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute = 
+
+let arity_from_core_type (x : Parsetree.core_type) = 
   let rec aux acc (x : Parsetree.core_type) = 
     match x.ptyp_desc with 
     | Ptyp_arrow (_,_,r) -> 
       (* 'a -> ('b -> ('c -> 'd )) *)
       aux (acc + 1) r 
     | _ -> acc  in 
-  let n  = aux 0 x  in 
+  aux 0 x
+
+
+
+let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute = 
+  let n = arity_from_core_type x in 
   let loc = x.ptyp_loc in
   {txt = "arity"; loc},
   PStr ([ {pstr_desc = 
-             Pstr_eval ({pexp_desc = Pexp_constant (Const_int n); pexp_loc = loc; pexp_attributes = []},[]);
+             Pstr_eval (lift_int n,[]);
            pstr_loc = loc
           }])

@@ -8,4 +8,4 @@ val g :
   Js.t -> unit
 
 val h :
-  < _set_height : int -> 'a; _set_width : int -> unit; .. > Js.t -> unit
+  < height__set : int -> 'a; width__set : int -> unit; .. > Js.t -> unit

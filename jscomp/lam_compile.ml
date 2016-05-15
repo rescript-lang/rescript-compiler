@@ -724,10 +724,17 @@ and
     | Lsend(meth_kind, _label, 
             Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
                          [obj]), [] , loc) -> 
+      (**
+         either a getter {[ x #. height ]} or {[ x ## method_call ]}
+      *)
       begin 
         let property = 
           match meth_kind with 
-          | Public (Some name ) -> name
+          | Public (Some name ) -> 
+            let i = Ext_string.rfind ~sub:"__" name  in 
+            if i < 0 then 
+              name
+            else String.sub name 0 i 
           | _ -> assert false  
         in 
         match 
@@ -750,12 +757,14 @@ and
     | Lsend(meth_kind, _label, 
             Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
                          [obj]), [value] , loc) -> 
+      (* setter {[ x ## height__set ]}*)
       begin 
         let property = 
           match meth_kind with 
           | Public (Some name ) -> 
-            assert (Ext_string.starts_with name "_set_");
-            String.sub name 5 (String.length name - 5)
+
+            assert (Ext_string.ends_with name Literals.setter_suffix);
+            String.sub name 0 (String.length name - Literals.setter_suffix_len)
           | _ -> assert false  
         in 
         let obj_block = 
@@ -836,13 +845,27 @@ and
                 as a special case -- 
                 if we do an optimization before compiling
                 into lambda
+
+                {[Fn.mk0]} is not intended for use by normal users
+
+                so we assume [Fn.mk0] is only used in such cases
+                {[
+                  Fn.mk0 (fun _ -> .. )
+                ]}
+                when it is passed as a function directly
              *)
-              compile_lambda cxt 
-                  (Lfunction (Lambda.Curried, [], 
-                              Lambda.Lapply(fn, 
-                                            [Lam_comb.unit],
-                                            Lam_util.default_apply_info 
-                                           )))
+              begin 
+                match fn with 
+                | Lfunction (_, [_], body)
+                  -> compile_lambda cxt (Lfunction (Curried, [], body))
+                | _ -> 
+                  compile_lambda cxt  
+                    (Lfunction (Lambda.Curried, [],
+                                Lambda.Lapply(fn,
+                                              [Lam_comb.unit],
+                                              Lam_util.default_apply_info
+                                             )))
+              end
             else 
               begin match fn with
                 | Lambda.Lfunction(kind,args, body) 

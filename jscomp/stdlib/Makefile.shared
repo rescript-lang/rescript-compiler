@@ -22,7 +22,7 @@ CAMLC=$(CAMLRUN) $(COMPILER)
 #COMPFLAGS=-strict-sequence -w +33..39 -g -warn-error A -bin-annot -nostdlib \
 #          -safe-string
 COMPFLAGS= $(MODULE_FLAGS) -strict-sequence -w +33..39 -g -warn-error A  -nostdlib \
-          -safe-string -I ../runtime -js-npm-output-path $(npm_package_name):lib/js
+          -safe-string -I ../runtime -js-npm-output-path $(npm_package_name):lib/js -js-no-builtin-ppx-ml -js-no-builtin-ppx-mli
 
 
 # OPTCOMPILER=ocamlopt.opt
@@ -47,6 +47,8 @@ OTHERS=array.cmo list.cmo char.cmo bytes.cmo string.cmo sys.cmo \
   stringLabels.cmo moreLabels.cmo stdLabels.cmo \
   unix.cmo unixLabels.cmo \
   bigarray.cmo
+
+allcmis:$(OBJS:.cmo=.cmi) std_exit.cmi $(COMPILER)
 
 all: $(OBJS:.cmo=.cmj) std_exit.cmj $(COMPILER)
 # all: stdlib.cma std_exit.cmo 

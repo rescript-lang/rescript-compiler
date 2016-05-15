@@ -65,8 +65,12 @@ stdlib:
 
 world:
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
+
+	@echo "Making stdlib cmis"
+	cd stdlib && make allcmis
+	@echo "Making stdlib finished"
 
 	@echo "Making runtime"
 	cd runtime && make all
@@ -76,6 +80,12 @@ world:
 	@echo "Making stdlib"
 	cd stdlib && make all	
 	@echo "Making stdlib finished"
+
+world-test:
+	make world 	
+	@echo "Making test"
+	cd test && make all
+	@echo "Making test finsihed"
 
 # no depend on ./bin/ocaml_pack ./bin/bsc
 # since in npm mode, they are generated from a single file
@@ -102,22 +112,6 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 	cd stdlib && make all	
 	@echo "Making stdlib finished"
 
-world-test:
-	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -w -a -linkall  -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
-	@echo "Making compiler finished"		
-
-	@echo "Making runtime"
-	cd runtime && make all
-	@echo "Making runtime finished"
-
-	@echo "Making stdlib"
-	cd stdlib && make all
-	@echo "Making stdlib finished"
-
-	@echo "Making test"
-	cd test && make all
-	@echo "Making test finsihed"
 
 travis-world-test:./bin/ocaml_pack
 	@echo "Generating the compiler"

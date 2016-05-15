@@ -16,8 +16,10 @@ mt_global.cmi : mt.cmi
 ocaml_proto_test.cmi :
 scanf_reference_error_regression_test.cmi :
 test_for_map2.cmi :
+test_http_server.cmi : ../runtime/js.cmj
 test_is_js.cmi :
 test_unsafe_obj_ffi.cmi : ../runtime/js.cmj ../runtime/fn.cmj
+test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
 a.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
@@ -342,6 +344,8 @@ of_string_test.cmj : mt.cmi
 of_string_test.cmx : mt.cmx
 offset.cmj : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmx : ../stdlib/string.cmx ../stdlib/set.cmx
+ppx_apply_test.cmj : mt.cmi
+ppx_apply_test.cmx : mt.cmx
 pq_test.cmj :
 pq_test.cmx :
 pr6726.cmj :
@@ -494,6 +498,8 @@ test_global_print.cmj : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmi
 test_google_closure.cmx : ../runtime/js.cmx ../stdlib/array.cmx
+test_http_server.cmj : ../runtime/js.cmj test_http_server.cmi
+test_http_server.cmx : ../runtime/js.cmx test_http_server.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -616,6 +622,8 @@ test_unsafe_obj_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj \
     test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmx : ../runtime/js.cmx ../runtime/fn.cmx \
     test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi_ppx.cmj : test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmx : test_unsafe_obj_ffi_ppx.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmx : ../stdlib/bytes.cmx
 test_while_closure.cmj : ../stdlib/array.cmi
@@ -976,6 +984,8 @@ of_string_test.cmo : mt.cmi
 of_string_test.cmj : mt.cmj
 offset.cmo : ../stdlib/string.cmi ../stdlib/set.cmi
 offset.cmj : ../stdlib/string.cmj ../stdlib/set.cmj
+ppx_apply_test.cmo : mt.cmi
+ppx_apply_test.cmj : mt.cmj
 pq_test.cmo :
 pq_test.cmj :
 pr6726.cmo :
@@ -1128,6 +1138,8 @@ test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
 test_google_closure.cmo : ../runtime/js.cmo ../stdlib/array.cmi
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmj
+test_http_server.cmo : ../runtime/js.cmo test_http_server.cmi
+test_http_server.cmj : ../runtime/js.cmj test_http_server.cmi
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -1250,6 +1262,8 @@ test_unsafe_obj_ffi.cmo : ../runtime/js.cmo ../runtime/fn.cmo \
     test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmj : ../runtime/js.cmj ../runtime/fn.cmj \
     test_unsafe_obj_ffi.cmi
+test_unsafe_obj_ffi_ppx.cmo : test_unsafe_obj_ffi_ppx.cmi
+test_unsafe_obj_ffi_ppx.cmj : test_unsafe_obj_ffi_ppx.cmi
 test_unsupported_primitive.cmo : ../stdlib/bytes.cmi
 test_unsupported_primitive.cmj : ../stdlib/bytes.cmj
 test_while_closure.cmo : ../stdlib/array.cmi

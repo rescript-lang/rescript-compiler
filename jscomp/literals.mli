@@ -49,3 +49,6 @@ val app_array : string
 val runtime : string
 val stdlib : string
 val imul : string
+
+val setter_suffix : string
+val setter_suffix_len : int
