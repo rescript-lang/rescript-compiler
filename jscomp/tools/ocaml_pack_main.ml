@@ -41,34 +41,43 @@ let _ =
     output_string stdout (Filename.basename name) ;
     output_string stdout "\"\n" 
   in
-  tasks |> List.iter (fun t ->
-      match t with
-      | `All (base, ml_content,ml_name, mli_content, mli_name) -> 
-        let base = String.capitalize base in 
-        output_string stdout "module ";
-        output_string stdout base ; 
-        output_string stdout " : sig \n";
+  begin 
+    let local_time = Unix.(localtime (gettimeofday ())) in 
+    output_string stdout 
+      (Printf.sprintf {|(** Bundled by ocaml_pack %02d/%02d-%02d:%02d *)|}
+         local_time.tm_mon local_time.tm_mday 
+         local_time.tm_hour local_time.tm_min 
+                         );
+    output_string stdout "\n";
+    tasks |> List.iter (fun t ->
+        match t with
+        | `All (base, ml_content,ml_name, mli_content, mli_name) -> 
+          let base = String.capitalize base in 
+          output_string stdout "module ";
+          output_string stdout base ; 
+          output_string stdout " : sig \n";
 
-        emit mli_name ;
-        output_string stdout mli_content;
+          emit mli_name ;
+          output_string stdout mli_content;
 
-        output_string stdout "\nend = struct\n";
-        emit ml_name ;
-        output_string stdout ml_content;
-        output_string stdout "\nend\n"
+          output_string stdout "\nend = struct\n";
+          emit ml_name ;
+          output_string stdout ml_content;
+          output_string stdout "\nend\n"
 
-      | `Ml (base, ml_content, ml_name) -> 
-        let base = String.capitalize base in 
-        output_string stdout "module \n";
-        output_string stdout base ; 
-        output_string stdout "\n= struct\n";
+        | `Ml (base, ml_content, ml_name) -> 
+          let base = String.capitalize base in 
+          output_string stdout "module \n";
+          output_string stdout base ; 
+          output_string stdout "\n= struct\n";
 
-        emit ml_name;
-        output_string stdout ml_content;
+          emit ml_name;
+          output_string stdout ml_content;
 
-        output_string stdout "\nend\n"
+          output_string stdout "\nend\n"
 
-    )
+      )
+  end
 
 (* local variables: *)
 (* compile-command: "ocamlbuild -no-hygiene -cflags -annot -use-ocamlfind -pkg compiler-libs.common ocaml_pack_main.byte " *)
