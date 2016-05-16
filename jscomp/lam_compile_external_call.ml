@@ -80,7 +80,7 @@ type js_send = {
   name : string 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global = { 
+type js_val = { 
   name : string ;
   external_module_name : external_module_name option;
   
@@ -92,7 +92,8 @@ type js_get = { name : string }
 
 type ffi = 
   | Obj_create 
-  | Js_global of js_global 
+  | Js_global of js_val 
+  | Js_global_as_var of  external_module_name
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_new external_module
@@ -104,17 +105,19 @@ type ffi =
   (* When it's normal, it is handled as normal c functional ffi call *)
 type prim = Types.type_expr option Primitive.description
 
-let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t option * ffi  = 
+let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Location.t option * ffi  = 
   let qualifiers = ref [] in
   let call_name = ref None in
   let external_module_name  = ref None in
   let is_obj =  ref false in
-  let js_global = ref `None in
+  let js_val = ref `None in
+  let js_val_of_module = ref `None in 
   let js_send = ref `None in
   let js_set = ref `None in
   let js_get = ref `None in
   let js_set_index = ref false in 
   let js_get_index = ref false in
+
   let js_splice = ref false in
   let start_loc : Location.t option ref = ref None in
   let finish_loc = ref None in
@@ -130,7 +133,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
          | "bs.val"
            (* can be generalized into 
               {[
-                [@@bs.value]
+                [@@bs.val]
               ]}
               and combined with 
               {[
@@ -140,10 +143,20 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
            -> 
            begin  match is_single_string pay_load with
              | Some name -> 
-               js_global := `Value name 
+               js_val := `Value name 
              | None -> 
-               js_global := `Value _prim.prim_name
+               js_val := `Value _prim.prim_name
                 (* we can report error here ... *)
+           end
+         | "bs.val_of_module" 
+           (* {[ [@@bs.val_of_module]]}
+           *)
+           -> 
+           begin match is_single_string pay_load with 
+           | Some name ->
+             js_val_of_module := `Value(Bind (name, prim_name))
+           | None -> 
+             js_val_of_module := `Value (Single prim_name)
            end
          |"bs.splice"
            -> 
@@ -182,19 +195,9 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
              | `Single name -> external_module_name:= Some (Single name)
              | `Some [a;b] -> external_module_name := Some (Bind (a,b))
              | `Some _ -> ()
-             | `None -> () 
+             | `None -> () (* should emit a warning instead *)
            end
-         (* -- no scope -- could have 
-            [@@bs.module "./react.js"]
-            [@@bs.module "react-dom" "React"]
-         *)
-         (* | "bs.scope" *)
-         (*   ->  *)
-         (*   begin match is_string_or_strings pay_load with  *)
-         (*     | `None -> () *)
-         (*     | `Single name -> qualifiers := [name] *)
-         (*     | `Some vs -> qualifiers := List.rev vs  *)
-         (*   end *)
+
          | "bs.new" -> 
            begin match is_single_string pay_load with 
              | Some x -> js_new := Some x 
@@ -221,7 +224,10 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
     else if !js_set_index then 
       Js_set_index
     else 
-      begin match !call_name, !js_global, !js_send, !js_new, !js_set, !js_get  with 
+    begin match !js_val_of_module with 
+    | `Value v -> Js_global_as_var v 
+    | `None -> 
+      begin match !call_name, !js_val, !js_send, !js_new, !js_set, !js_get  with 
       | Some (_,fn),
         `None, `None, _, `None, `None -> 
           Js_call { txt = { splice = !js_splice; qualifiers = !qualifiers; name = fn};
@@ -241,7 +247,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
       | _ -> 
           Location.raise_errorf ?loc "Ill defined attribute"
       end
-
+    end
     (* Given label, type and the argument --> encode it into 
        javascript meaningful value 
        -- check whether splice or not for the last element
@@ -397,6 +403,12 @@ let translate
             E.call ~info:{arity=Full; call_info = Call_na} fn args
         | None -> assert false 
       end
+    | Js_global_as_var module_name -> 
+      begin match handle_external (Some module_name) with 
+        | Some (id, name) -> 
+          E.external_var_dot id name None
+        | None -> assert false 
+      end
     | Js_new { external_module_name = module_name; 
                txt = { name = fn};
              } -> 
@@ -409,7 +421,7 @@ let translate
           let fn =  
             match handle_external module_name with 
             | Some (id,name) ->  
-              E.external_var_dot id name fn
+              E.external_var_dot id name (Some fn)
 
             | None -> 
               (** TODO: check, no [@@bs.module], 
@@ -449,7 +461,7 @@ let translate
         | "null", None -> E.nil 
         | "undefined", None -> E.undefined
         | _, Some(id,mod_name)
-          -> E.external_var_dot id mod_name name
+          -> E.external_var_dot id mod_name (Some name)
         | _, None -> 
 
           E.var (Ext_ident.create_js name)
