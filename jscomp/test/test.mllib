@@ -297,3 +297,5 @@ test_unsafe_obj_ffi_ppx
 ppx_apply_test
 test_http_server
 http_types
+
+ignore_test

@@ -129,9 +129,10 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
       (* Integer to external pointer *)
       | Pint_as_pointer
       | Poffsetint _
+      | Pignore 
         -> true
 
-      | Pignore 
+
       | Prevapply _
       | Pdirapply _
 

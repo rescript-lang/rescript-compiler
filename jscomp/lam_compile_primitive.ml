@@ -468,7 +468,7 @@ let translate
   | Pignore -> 
       begin 
         match args with 
-        | [e] -> e
+        | [e] -> E.seq e E.unit
         | _ -> assert false 
       end
   | Pgetglobal i   -> 
