@@ -18,10 +18,10 @@ caml_format.cmj caml_io.cmj: curry.cmj
 
 $(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj fn.cmj
 
-RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST))
+RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 
 
-COMPFLAGS += $(MODULE_FLAGS) -I ../stdlib -w -40 -js-npm-output-path $(npm_package_name):lib/js -js-no-builtin-ppx-mli
+COMPFLAGS += $(MODULE_FLAGS) -I ../stdlib -nostdlib -nopervasives -open Pervasives -w -40 -js-npm-output-path $(npm_package_name):lib/js -js-no-builtin-ppx-mli
 
 
 

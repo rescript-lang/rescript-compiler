@@ -1120,6 +1120,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
   | Block [] -> 
       ipp_comment f  L.empty_block; (* debugging*)
       cxt
+  | Exp {expression_desc = Var _;}
+    -> (* Does it make sense to optimize here? *)
+      semi f; cxt 
 
   | Block b -> (* No braces needed here *)
       ipp_comment f L.start_block;
@@ -1128,8 +1131,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       cxt
   | Variable l ->
       variable_declaration top cxt  f l
-  | Exp {expression_desc = Var _;}-> (* Does it make sense to optimize here? *)
-      semi f; cxt 
   | Exp e ->
     (* Parentheses are required when the expression
        starts syntactically with "{" or "function" 
@@ -1205,7 +1206,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       block cxt f s1
     in
     begin match s2 with 
-     | None | (Some []) |Some [{statement_desc = Block []; }]
+     | None | (Some []) 
+     | Some [{statement_desc = (Block [] | Exp {expression_desc = Var _;} ); }]
        -> P.newline f; cxt
      | Some [{statement_desc = If _} as nest]
      | Some [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
