@@ -19,84 +19,87 @@
    here [split] and [split(undefined)] behaves the same
 *)
 type number = float
-class type t = 
+
+class type date = 
   object
-    method toDateString__0 : string
-    method toTimeString__0 : string
-    method toLocaleString__0 : string
-    method toLocaleDateString__0 : string
-    method toLocaleTimeString__0 : string
-    method valueOf__0 : number
-    method getTime__0 : number
-    method getFullYear__0 : number
-    method getUTCFullYear__0 : number
-    method getMonth__0 : number
-    method getUTCMonth__0 : number
-    method getDate__0 : number
-    method getUTCDate__0 : number
-    method getDay__0 : number
-    method getUTCDay__0 : number
-    method getHours__0 : number
-    method getUTCHours__0 : number
-    method getMinutes__0 :  number
-    method getUTCMinutes__0 : number
-    method getSeconds__0 : number
-    method getUTCSeconds__0 : number
-    method getMilliseconds__0 : number
-    method getUTCMilliseconds__0 : number
-    method getTimezoneOffset__0 : number
-    method setTime__1  : number ->  number
+    method toDateString : unit -> string [@uncurry]
+    method toTimeString : unit -> string [@uncurry]
+    method toLocaleString : unit -> string [@uncurry]
+    method toLocaleDateString : unit -> string [@uncurry]
+    method toLocaleTimeString : unit -> string [@uncurry]
+    method valueOf : unit -> number [@uncurry]
+    method getTime : unit ->  number [@uncurry]
+    method getFullYear : unit ->  number [@uncurry]
+    method getUTCFullYear : unit ->  number [@uncurry]
+    method getMonth : unit -> number [@uncurry]
+    method getUTCMonth : unit -> number[@uncurry]
+    method getDate : unit -> number [@uncurry]
+    method getUTCDate : unit -> number [@uncurry]
+    method getDay : unit -> number [@uncurry]
+    method getUTCDay : unit -> number [@uncurry]
+    method getHours :  unit -> number [@uncurry]
+    method getUTCHours :  unit -> number [@uncurry]
+    method getMinutes :    unit -> number [@uncurry]
+    method getUTCMinutes :  unit -> number [@uncurry]
+    method getSeconds :  unit -> number [@uncurry]
+    method getUTCSeconds :  unit -> number [@uncurry]
+    method getMilliseconds : unit -> number [@uncurry]
+    method getUTCMilliseconds : unit -> number [@uncurry]
+    method getTimezoneOffset : unit -> number [@uncurry]
+    method setTime  : number ->  number [@uncurry]
 
-    method setMilliseconds__1 : number ->  number
-    method setUTCMilliseconds__1 : number ->  number
+    method setMilliseconds : number ->  number [@uncurry]
+    method setUTCMilliseconds : number ->  number [@uncurry]
 
-    method setSeconds__1 : number -> number
-    method setSeconds__2 :  number -> number ->  number
+    method setSeconds : number -> number[@uncurry]
+    method setSeconds__2 :  number -> number ->  number[@uncurry]
 
-    method setUTCSeconds__1 : number -> number
-    method setUTCSeconds__2 : number -> number -> number
+    method setUTCSeconds : number -> number[@uncurry]
+    method setUTCSeconds__2 : number -> number -> number[@uncurry]
 
-    method setMinutes__1 : number -> number
-    method setMinutes__2 : number -> number -> number
-    method setMinutes__3 : number -> number -> number -> number
+    method setMinutes : number -> number[@uncurry]
+    method setMinutes__2 : number -> number -> number[@uncurry]
+    method setMinutes__3 : number -> number -> number -> number[@uncurry]
 
-    method setUTCMinutes__1 : number -> number
-    method setUTCMinutes__2 : number -> number -> number
-    method setUTCMinutes__3 : number -> number -> number -> number
+    method setUTCMinutes : number -> number[@uncurry]
+    method setUTCMinutes__2 : number -> number -> number[@uncurry]
+    method setUTCMinutes__3 : number -> number -> number -> number[@uncurry]
 
-    method setHours__1 : number -> number
-    method setHours__2 : number -> number -> number
-    method setHours__3 : number -> number -> number -> number
-    method setHours__4 : number -> number -> number -> number -> number
+    method setHours : number -> number[@uncurry]
+    method setHours__2 : number -> number -> number[@uncurry]
+    method setHours__3 : number -> number -> number -> number[@uncurry]
+    method setHours__4 : number -> number -> number -> number -> number[@uncurry]
 
-    method setUTCHours__1 : number -> number
-    method setUTCHours__2 : number -> number -> number
-    method setUTCHours__3 : number -> number -> number -> number
-    method setUTCHours__4 : number -> number -> number -> number -> number
-
-
-
-    method setDate__1 :  number ->  number
-    method setUTCDate__1 : number ->  number 
-    method setMonth__1 : number -> number
-    method setMonth__2 : number -> number -> number
-    method setUTCMonth__1 : number -> number
-    method setUTCMonth__2 : number -> number -> number
+    method setUTCHours : number -> number[@uncurry]
+    method setUTCHours__2 : number -> number -> number[@uncurry]
+    method setUTCHours__3 : number -> number -> number -> number[@uncurry]
+    method setUTCHours__4 : number -> number -> number -> number -> number[@uncurry]
 
 
-    method setFullYear__1 : number -> number
-    method setFullYear__2 : number -> number -> number
-    method setFullYear__3 : number -> number -> number -> number
 
-    method setUTCFullYear__1 : number -> number
-    method setUTCFullYear__2 : number -> number -> number
-    method setUTCFullYear__3 : number -> number -> number -> number
+    method setDate :  number ->  number[@uncurry]
+    method setUTCDate : number ->  number [@uncurry]
+    method setMonth : number -> number[@uncurry]
+    method setMonth__2 : number -> number -> number[@uncurry]
+    method setUTCMonth : number -> number[@uncurry]
+    method setUTCMonth__2 : number -> number -> number[@uncurry]
 
-    method toUTCString__ : string
-    method toISOString__ : string
-    method toJSON__ : string 
-    method toJSON__1 : 'a -> string
+
+    method setFullYear : number -> number[@uncurry]
+    method setFullYear__2 : number -> number -> number[@uncurry]
+    method setFullYear__3 : number -> number -> number -> number[@uncurry]
+
+    method setUTCFullYear : number -> number[@uncurry]
+    method setUTCFullYear__2 : number -> number -> number[@uncurry]
+    method setUTCFullYear__3 : number -> number -> number -> number[@uncurry]
+
+    method toUTCString : unit -> string[@uncurry]
+    method toISOString : unit -> string[@uncurry]
+    method toJSON__ : unit -> string [@uncurry]
+    method toJSON__1 : 'a -> string[@uncurry]
   end
+
+type t = date Js.t 
 
 external current_date_as_string : unit -> string = "" 
   [@@bs.call "Date"] [@@bs.nullary]

@@ -3,21 +3,26 @@
 
 type html_element 
 
-class type doc = 
+class type document = 
   object
-    method getElementById : string -> html_element
+    method getElementById : string -> html_element [@uncurry]
   end
-external doc :  doc = "doc" [@@bs.val ]
 
-class type console = 
+type doc = document Js.t 
+external doc :  doc  = "doc" [@@bs.val ]
+
+class type con = 
     object 
-        method log : 'a -> unit
+        method log : 'a -> unit [@uncurry]
     end
+
+type console = con Js.t 
 external console : console  = "console" [@@bs.val ]
 
-let v = console#log "hey";;
+let v = console##log "hey";;
 let u = console
-let v = doc#getElementById "haha"
+let v = doc##getElementById "haha"
+
 external log : 'a -> unit = "" [@@bs.call "console.log"]
 let v = log 32
 type t 
