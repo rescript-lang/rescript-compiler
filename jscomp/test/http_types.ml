@@ -14,7 +14,7 @@
 
 type req 
 type resp = <
-   statusCode__set : int Js.set ;
+   statusCode__set : int -> unit [@uncurry] ;
    setHeader : string * string -> unit [@uncurry];
    end__ : string ->  unit [@uncurry]
 >

@@ -2,7 +2,9 @@
 
 val f : < length : float; width : float; .. > Js.t -> float
 
-val h : < height__set : int -> unit; width__set : int -> unit; .. > Js.t -> unit
+val h : < height__set : int -> unit [@uncurry];
+          width__set : int -> unit [@uncurry];
+          .. > Js.t -> unit
 
 val chain : < element : < length : int; .. > Js.t; .. > Js.t -> int
 

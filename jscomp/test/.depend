@@ -18,7 +18,7 @@ scanf_reference_error_regression_test.cmi :
 test_for_map2.cmi :
 test_http_server.cmi :
 test_is_js.cmi :
-test_unsafe_obj_ffi.cmi : ../runtime/js.cmj ../runtime/fn.cmj
+test_unsafe_obj_ffi.cmi : ../runtime/js.cmj
 test_unsafe_obj_ffi_ppx.cmi : ../runtime/js.cmj
 testing.cmi :
 ui_defs.cmi :
@@ -512,6 +512,8 @@ test_incomplete.cmj :
 test_incomplete.cmx :
 test_incr_ref.cmj :
 test_incr_ref.cmx :
+test_index.cmj : ../runtime/js.cmj
+test_index.cmx : ../runtime/js.cmx
 test_int_map_find.cmj : ../stdlib/map.cmi ../stdlib/list.cmi
 test_int_map_find.cmx : ../stdlib/map.cmx ../stdlib/list.cmx
 test_internalOO.cmj : ../stdlib/sys.cmi ../stdlib/string.cmi \
@@ -1156,6 +1158,8 @@ test_incomplete.cmo :
 test_incomplete.cmj :
 test_incr_ref.cmo :
 test_incr_ref.cmj :
+test_index.cmo : ../runtime/js.cmo
+test_index.cmj : ../runtime/js.cmj
 test_int_map_find.cmo : ../stdlib/map.cmi ../stdlib/list.cmi
 test_int_map_find.cmj : ../stdlib/map.cmj ../stdlib/list.cmj
 test_internalOO.cmo : ../stdlib/sys.cmi ../stdlib/string.cmi \

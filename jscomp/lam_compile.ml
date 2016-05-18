@@ -716,29 +716,36 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
+    | Lprim (Pccall {prim_name = "js_debugger"; _}, _) 
+      -> 
+      (* [%bs.debugger] guarantees that the expression does not matter 
+         TODO: make it even safer      *)
+      let cont args_code exp = 
+        Js_output.handle_block_return st should_return lam args_code exp  in 
+
+      cont [S.debugger] E.unit 
+
     (* TODO: 
        check the arity of fn before wrapping it 
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
 
-    | Lsend(meth_kind, _label, 
+    | Lsend(Public (Some name), _label, 
             Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [] , loc) -> 
+                         [obj]), [] , loc) 
+      when not (Ext_string.ends_with name Literals.setter_suffix) 
+      (* TODO: more not a setter/case/case_setter *)
+      -> 
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
+      let property = 
+        let i = Ext_string.rfind ~sub:"__" name  in 
+        if i < 0 then 
+          name
+        else String.sub name 0 i in 
       begin 
-        let property = 
-          match meth_kind with 
-          | Public (Some name ) -> 
-            let i = Ext_string.rfind ~sub:"__" name  in 
-            if i < 0 then 
-              name
-            else String.sub name 0 i 
-          | _ -> assert false  
-        in 
-        match 
-          compile_lambda {cxt with st = NeedValue; should_return = False} obj
+        match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
         | {block; value = Some b } -> 
           (* TODO: if [b] contains computation, compute it first *)
@@ -748,93 +755,131 @@ and
           in 
 
           begin match Js_ast_util.named_expression  b with 
-          | None -> cont None (E.dot b property)
-          | Some (obj_code, b)
-             -> cont  (Some obj_code) (E.dot (E.var b) property)
+            | None -> cont None (E.dot b property)
+            | Some (obj_code, b)
+              -> cont  (Some obj_code) (E.dot (E.var b) property)
           end
         | _ -> assert false 
       end
-    | Lsend(meth_kind, _label, 
-            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [value] , loc) -> 
-      (* setter {[ x ## height__set ]}*)
-      begin 
-        let property = 
-          match meth_kind with 
-          | Public (Some name ) -> 
+    | Lprim (Pccall {prim_name; _}, args_lambda) 
+      when Ext_string.starts_with prim_name "js_fn_" ->
+      let arity, kind  = 
+        let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
+        if mk < 0 then 
+          let run = Ext_string.starts_with_and_number prim_name ~offset:6 "run_" in 
+          run , `Run
+        else mk, `Mk
+      in 
 
-            assert (Ext_string.ends_with name Literals.setter_suffix);
-            String.sub name 0 (String.length name - Literals.setter_suffix_len)
-          | _ -> assert false  
-        in 
-        let obj_block = 
-          compile_lambda {cxt with st = NeedValue; should_return = False} obj
-        in 
-        let value_block = 
-          compile_lambda {cxt with st = NeedValue; should_return = False} value 
-        in 
-        match 
-          obj_block, value_block
-        with 
-        | {block = block0; value = Some obj }, 
-          {block = block1; value = Some value} -> 
-          (* TODO: if [b] contains computation, compute it first *)
-          let cont obj_code = 
-            Js_output.handle_block_return st should_return lam 
-              (let block = block0 @ block1 in 
-               match obj_code with
-               | None -> block
-               | Some x -> x :: block)
-          in 
+      (* 1. prevent eta-conversion
+         by using [App_js_full]
+         2. invariant: `external` declaration will guarantee
+         the function application is saturated
+         3. we need a location for Pccall in the call site
+      *)
+      if kind = `Run then 
+        match args_lambda with  
+        | [Lsend(Public (Some "case__set"), _label,
+                 Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _},
+                       [obj]), [] , loc) ; key ;  value] ->
+          let obj_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} obj
+          in
+          let key_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} key
+          in
+          let value_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} value
+          in
+          begin match obj_block, key_block, value_block with
+            | {block = block0; value = Some obj },
 
-          begin match Js_ast_util.named_expression  obj with 
-          | None -> 
-            cont None (E.assign (E.dot obj property) value)
-          | Some (obj_code, obj)
-             -> 
-             cont  (Some obj_code) 
-               (E.assign (E.dot (E.var obj) property) value)
+              {block = block1; value = Some key},
+              {block = block2; value = Some value}
+              ->
+              (* TODO: if [b] contains computation, compute it first *)
+              let cont obj_code =
+                Js_output.handle_block_return st should_return lam
+                  (let block = block0 @ block1 @ block2 in (* TODO: check evaluation order*)
+                   match obj_code with
+                   | None -> block
+                   | Some x -> x :: block)
+              in
+
+              begin match Js_ast_util.named_expression  obj with
+                | None ->
+                  cont None (E.assign (E.access obj key) value)
+                | Some (obj_code, obj)
+                  ->
+                  cont  (Some obj_code)
+                    (E.assign (E.access (E.var obj) key) value)
+              end
+            | _ -> assert false
           end
+
+        | [(Lsend(meth_kind, _label, 
+                  Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
+                        [obj]), [] , loc) as fn);
+           arg]
+          -> 
+          begin 
+            let obj_block = 
+              compile_lambda {cxt with st = NeedValue; should_return = False} obj
+            in 
+            let value_block = 
+              compile_lambda {cxt with st = NeedValue; should_return = False} arg
+            in 
+            let cont block0 block1 obj_code = 
+              Js_output.handle_block_return st should_return lam 
+                (let block = block0 @ block1 in 
+                 match obj_code with
+                 | None -> block
+                 | Some x -> x :: block)
+            in 
+            match 
+              obj_block, value_block, meth_kind
+            with 
+            | {block = block0; value = Some obj }, 
+              {block = block1; value = Some value}, Public (Some "case" ) -> 
+              (* TODO: if [b] contains computation, compute it first *)
+
+              begin match Js_ast_util.named_expression  obj with 
+                | None -> 
+                  cont block0 block1 None (E.access obj value)
+                | Some (obj_code, obj)
+                  -> 
+                  cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
+              end
+            | {block = block0; value = Some obj }, 
+              {block = block1; value = Some value}, Public (Some setter) 
+              ->
+              if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
+                compile_lambda cxt @@ Lapply (fn, [arg] , 
+                                              {apply_loc = Location.none;
+                                               apply_status = App_js_full})
+              else 
+                let property =
+                  String.sub setter 0 
+                    (String.length setter - Literals.setter_suffix_len) in 
+                begin match Js_ast_util.named_expression  obj with
+                  | None ->
+                    cont block0 block1 None (E.assign (E.dot obj property) value)
+                  | Some (obj_code, obj)
+                    ->
+                    cont block0 block1 (Some obj_code)
+                      (E.assign (E.dot (E.var obj) property) value)
+                end
+            | _ -> 
+              assert false 
+          end
+
+        | fn :: rest -> 
+          compile_lambda cxt @@ 
+          Lambda.Lapply (fn, rest , 
+                         {apply_loc = Location.none;
+                          apply_status = App_js_full})
         | _ -> assert false 
-      end
-
-    | Lprim (prim, args_lambda)  ->
-      let cont args_code exp = 
-        Js_output.handle_block_return st should_return lam args_code exp  in 
-      begin match prim with 
-      | Pccall {prim_name = "js_debugger"; _} 
-        -> 
-        (* [%bs.debugger] guarantees that the expression does not matter 
-         TODO: make it even safer
-         *)
-        cont [S.debugger] E.unit 
-      | Pccall {prim_name = name}
-        when Ext_string.starts_with name "js_fn_"
-      -> 
-        let arity, kind  = 
-          let mk =  Ext_string.starts_with_and_number name ~offset:6 "mk_" in 
-          if mk < 0 then 
-            let run = Ext_string.starts_with_and_number name ~offset:6 "run_" in 
-            run , `Run
-          else mk, `Mk
-        in 
-        
-        (* 1. prevent eta-conversion
-           by using [App_js_full]
-           2. invariant: `external` declaration will guarantee
-           the function application is saturated
-           3. we need a location for Pccall in the call site
-        *)
-
-        if kind = `Run then 
-          match args_lambda with 
-          | fn :: rest -> 
-            compile_lambda cxt @@ 
-            Lambda.Lapply (fn, rest , 
-                           {apply_loc = Location.none;
-                            apply_status = App_js_full})
-          | _ -> assert false 
-        else 
+      else 
         begin match args_lambda with 
           | [fn] -> 
             if arity = 0 then 
@@ -846,14 +891,14 @@ and
                 if we do an optimization before compiling
                 into lambda
 
-                {[Fn.mk0]} is not intended for use by normal users
+                 {[Fn.mk0]} is not intended for use by normal users
 
-                so we assume [Fn.mk0] is only used in such cases
-                {[
-                  Fn.mk0 (fun _ -> .. )
-                ]}
-                when it is passed as a function directly
-             *)
+                 so we assume [Fn.mk0] is only used in such cases
+                 {[
+                   Fn.mk0 (fun _ -> .. )
+                 ]}
+                 when it is passed as a function directly
+              *)
               begin 
                 match fn with 
                 | Lfunction (_, [_], body)
@@ -903,20 +948,21 @@ and
               end
           | _ -> assert false 
         end
-      | _ -> 
-        let args_block, args_expr =
-          Ext_list.split_map (fun (x : Lambda.lambda) ->
-              match compile_lambda {cxt with st = NeedValue; should_return = False} x 
-              with 
-              | {block = a; value = Some b} -> a,b
-              | _ -> assert false ) args_lambda 
-            
-        in
-        let args_code  = List.concat args_block in
-        let exp  =  (* TODO: all can be done in [compile_primitive] *)
-          Lam_compile_primitive.translate cxt prim args_expr in
-        cont  args_code exp 
-      end
+    | Lprim(prim, args_lambda) -> 
+      let args_block, args_expr =
+        Ext_list.split_map (fun (x : Lambda.lambda) ->
+            match compile_lambda {cxt with st = NeedValue; should_return = False} x 
+            with 
+            | {block = a; value = Some b} -> a,b
+            | _ -> assert false ) args_lambda 
+
+      in
+      let args_code  = List.concat args_block in
+      let exp  =  (* TODO: all can be done in [compile_primitive] *)
+        Lam_compile_primitive.translate cxt prim args_expr in
+      Js_output.handle_block_return st should_return lam args_code exp  
+
+
     | Lsequence (l1,l2) ->
       let output_l1 = 
         compile_lambda {cxt with st = EffectCall; should_return =  False} l1 in
