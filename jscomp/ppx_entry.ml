@@ -118,6 +118,7 @@ let handle_raw ?ty loc e attrs  =
     | None -> predef_any_type))
     
 
+(** TODO: Should remove all [uncurry] attributes *)
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
   let rec aux (attrs : Parsetree.attributes) acc = 
     match attrs with 
