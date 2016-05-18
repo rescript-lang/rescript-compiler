@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 04/16-11:05 *)
+(** Bundled by ocaml_pack 04/18-14:50 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -55,6 +55,9 @@ val imul : string
 
 val setter_suffix : string
 val setter_suffix_len : int
+
+val case : string 
+val case_set : string 
 
 end = struct
 #1 "literals.ml"
@@ -113,6 +116,11 @@ let imul = "imul" (* signed int32 mul *)
 
 let setter_suffix = "__set"
 let setter_suffix_len = String.length setter_suffix
+
+let case = "case"
+let case_set = "case__set"
+
+
 
 end
 module 
@@ -3056,9 +3064,10 @@ let rec no_side_effects (lam : Lambda.lambda) : bool =
       (* Integer to external pointer *)
       | Pint_as_pointer
       | Poffsetint _
+      | Pignore 
         -> true
 
-      | Pignore 
+
       | Prevapply _
       | Pdirapply _
 
@@ -3432,34 +3441,24 @@ module
 Js_fold
 = struct
 #1 "js_fold.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+(* BuckleScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+(* Author: Hongbo Zhang  *)
 (** GENERATED CODE for fold visitor patten of JS IR  *)
 open J
   
@@ -3518,24 +3517,29 @@ class virtual fold =
           let o =
             o#list
               (fun o ->
-                 (* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+                 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-                 (* Author: Hongbo Zhang  *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
                  (** Javascript IR
   
     It's a subset of Javascript AST specialized for OCaml lambda backend
@@ -8056,7 +8060,9 @@ val runtime_var_vid : string -> string -> J.vident
 
 val ml_var_dot : ?comment:string -> Ident.t -> string -> t
 
-val external_var_dot : ?comment:string -> Ident.t -> string -> string -> t
+val external_var_dot : ?comment:string -> Ident.t -> string -> string option -> t
+
+
 
 val ml_var : ?comment:string -> Ident.t -> t
 
@@ -8337,7 +8343,16 @@ let ml_var_dot ?comment ( id  : Ident.t) e : J.expression =
   {expression_desc = Var (Qualified(id, Ml, Some e)); comment }
 
 let external_var_dot ?comment (id : Ident.t) name fn : t = 
-  {expression_desc = Var (Qualified(id, External name, Some fn)); comment }
+  {expression_desc = Var (Qualified(id, External name,  fn)); comment }
+
+(** 
+  module as a value 
+   {[
+     var http = require("http")
+   ]}
+*)
+let external_module_as_var ?comment (id : Ident.t) name : t = 
+  {expression_desc = Var (Qualified(id, External name, None)); comment }
 
 let ml_var ?comment (id : Ident.t) : t  = 
   {expression_desc = Var (Qualified (id, Ml, None)); comment}
@@ -9031,23 +9046,19 @@ let bind ?comment fn obj  : t =
 
 let public_method_call meth_name obj label cache args = 
   let len = List.length args in 
-  (** FIXME: not caml object *)
+  (* econd (int_equal (tag obj ) obj_int_tag_literal) *)
+  if len <= 7 then          
+    runtime_call Js_config.curry 
+      ("js" ^ string_of_int (len + 1) )
+      (label:: ( int cache) :: obj::args)
+  else 
+    runtime_call Js_config.curry "js"
+      [label; 
+       int cache;
+       obj ;  
+       arr NA (obj::args)
+      ]
 
-
-  econd (int_equal (tag obj ) obj_int_tag_literal)
-    (
-      if len <= 7 then          
-        runtime_call Js_config.curry 
-          ("js" ^ string_of_int (len + 1) )
-          (label:: ( int cache) :: obj::args)
-      else 
-        runtime_call Js_config.curry "js"
-          [label; 
-           int cache;
-           obj ;  
-           arr NA (obj::args)
-          ]
-    )
     (* TODO: handle arbitrary length of args .. 
        we can reduce part of the overhead by using
        `__js` -- a easy ppx {{ x ##.hh }} 
@@ -9055,28 +9066,28 @@ let public_method_call meth_name obj label cache args =
        for object part, also need encode arity..
        how about x#|getElementById|2|
     *)
-    (
-      let fn = bind (dot obj meth_name) obj in
-      if len = 0 then 
-        dot obj meth_name
-        (* Note that when no args supplied, 
-           it is not necessarily a function, [bind]
-           is dangerous
-           so if user write such code
-           {[
-             let  u = x # say in
-             u 3              
-           ]}    
-           It's reasonable to drop [this] support       
-        *)
-      else if len <=8 then 
-        let len_str = string_of_int len in
-        runtime_call Js_config.curry (Literals.app ^len_str) 
-          (fn ::  args)
-      else 
-        runtime_call Js_config.curry Literals.app_array           
-          [fn  ; arr NA args ]            
-    )
+    (* ( *)
+    (*   let fn = bind (dot obj meth_name) obj in *)
+    (*   if len = 0 then  *)
+    (*     dot obj meth_name *)
+    (*     (\* Note that when no args supplied,  *)
+    (*        it is not necessarily a function, [bind] *)
+    (*        is dangerous *)
+    (*        so if user write such code *)
+    (*        {[ *)
+    (*          let  u = x # say in *)
+    (*          u 3               *)
+    (*        ]}     *)
+    (*        It's reasonable to drop [this] support        *)
+    (*     *\) *)
+    (*   else if len <=8 then  *)
+    (*     let len_str = string_of_int len in *)
+    (*     runtime_call Js_config.curry (Literals.app ^len_str)  *)
+    (*       (fn ::  args) *)
+    (*   else  *)
+    (*     runtime_call Js_config.curry Literals.app_array            *)
+    (*       [fn  ; arr NA args ]             *)
+    (* ) *)
 
 let set_tag ?comment e tag : t = 
   seq {expression_desc = Caml_block_set_tag (e,tag); comment } unit 
@@ -11757,6 +11768,9 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
   | Block [] -> 
       ipp_comment f  L.empty_block; (* debugging*)
       cxt
+  | Exp {expression_desc = Var _;}
+    -> (* Does it make sense to optimize here? *)
+      semi f; cxt 
 
   | Block b -> (* No braces needed here *)
       ipp_comment f L.start_block;
@@ -11765,8 +11779,6 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       cxt
   | Variable l ->
       variable_declaration top cxt  f l
-  | Exp {expression_desc = Var _;}-> (* Does it make sense to optimize here? *)
-      semi f; cxt 
   | Exp e ->
     (* Parentheses are required when the expression
        starts syntactically with "{" or "function" 
@@ -11842,7 +11854,8 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       block cxt f s1
     in
     begin match s2 with 
-     | None | (Some []) |Some [{statement_desc = Block []; }]
+     | None | (Some []) 
+     | Some [{statement_desc = (Block [] | Exp {expression_desc = Var _;} ); }]
        -> P.newline f; cxt
      | Some [{statement_desc = If _} as nest]
      | Some [{statement_desc = Block [ {statement_desc = If _ ; _} as nest] ; _}]
@@ -13503,199 +13516,6 @@ let from_file filename =
   
 
 end
-module Lam_methname : sig 
-#1 "lam_methname.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-type t = 
-  | Js_read_index
-  (* index__js
-     {[ x[i] ]}
-  *)
-  | Js_write_index 
-  (* set_index__js 
-     {[ x[i]= 3 ]}     
-  *)
-  | Js_write
-  (* __set
-     {[ x.h ]}
-  *)
-  | Js_read
-
-  | Js of int option
-  | Ml of int option
-  | Unknown of int option 
-
-val process : string -> t * string 
-
-end = struct
-#1 "lam_methname.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(**
-
-Note that js object support gettter, setter
-
-{[ 
-  var obj = {
-    get latest () {
-    if (log.length == 0) return undefined;
-    return log[log.length - 1]
-    }
-  } 
-]}
-
-If it's getter then the [.length] property does not make sense, 
-we should avoid using it which means when branch to js, if there is no 
-args, we should not do 
-{{ Curry.app0(obj.name) }} 
-*)
-type t = 
-  | Js_read_index
-  (* index__js
-     {[ x[i] ]}
-  *)
-  | Js_write_index 
-  (* set_index__js 
-     {[ x[i]= 3 ]}     
-  *)
-  | Js_write
-  (* __set
-     {[ x.h = 3 ]}
-  *)
-  | Js_read
-
-  | Js of int option
-  | Ml of int option
-  | Unknown of int option 
-
-let process ( x : string) : t * string =
-
-  match x with
-  | "index__unsafe_r"
-  (* TODO: [unsafe] should be allowed to overloaded in general  *)
-  | "index__r_unsafe"
-  | "index__r" 
-  | "index__" 
-    -> (Js_read_index, "index")
-  | "index__w_unsafe" 
-  | "index__w" 
-  | "index__w_js_unsafe" 
-  | "index__w_js" 
-    -> (Js_write_index, "index")
-  | _ -> 
-    let sub = "__" in
-    let v = Ext_string.rfind ~sub x  in
-    if  v < 0 then 
-      (Unknown None  , x)
-    else 
-      let len_sub = String.length sub in
-      let indicator = Ext_string.tail_from x (v + len_sub) in 
-      let normal_name  = String.sub x 0 v in 
-      match indicator with 
-      | "r" -> Js_read, normal_name
-      | "w" -> Js_write, normal_name
-      | _ -> 
-        let props = Ext_string.split indicator '_' in 
-        let kind = ref None in 
-        let arity = ref None in 
-        let fail l = 
-          let error = "invalid indicator" ^ indicator  ^ "in method name " ^ 
-                      x ^ ":" ^ Lam_current_unit.get_file () in
-          Ext_log.err l "%s" error ; 
-          failwith error in
-        let update_ref r k = 
-          match !r with 
-          | None -> r := Some k 
-          | Some x -> if x <> k then fail __LOC__ in
-        List.iter (fun  x -> 
-          match x with 
-          | "js" 
-            -> update_ref kind `Js
-          | "ml"
-            -> update_ref kind  `Ml
-          | "gen" 
-            -> update_ref kind `Unknown
-          | "unsafe"
-            -> 
-            (* allow unsafe to be overloaded, but don't do anything yet *)
-            ()
-          | _ -> 
-            match int_of_string x with 
-            | exception _ -> fail __LOC__
-            | v -> 
-              update_ref arity v
-        ) props ;
-      (
-        let arity  = !arity in
-      begin match  !kind with 
-      | Some  `Js 
-      | None 
-        -> Js arity
-      | Some `Ml -> Ml arity
-      | Some `Unknown -> Unknown arity
-
-      end, normal_name
-      )
-
-
-end
 module Lam_exit_code : sig 
 #1 "lam_exit_code.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -14324,6 +14144,8 @@ let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute =
              Pstr_eval (lift_int n,[]);
            pstr_loc = loc
           }])
+
+
 
 end
 module Js_of_lam_tuple : sig 
@@ -16057,7 +15879,7 @@ type js_send = {
   name : string 
 } (* we know it is a js send, but what will happen if you pass an ocaml objct *)
 
-type js_global = { 
+type js_val = { 
   name : string ;
   external_module_name : external_module_name option;
   
@@ -16069,7 +15891,8 @@ type js_get = { name : string }
 
 type ffi = 
   | Obj_create 
-  | Js_global of js_global 
+  | Js_global of js_val 
+  | Js_global_as_var of  external_module_name
   | Js_call of js_call external_module
   | Js_send of js_send
   | Js_new of js_new external_module
@@ -16081,17 +15904,19 @@ type ffi =
   (* When it's normal, it is handled as normal c functional ffi call *)
 type prim = Types.type_expr option Primitive.description
 
-let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t option * ffi  = 
+let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Location.t option * ffi  = 
   let qualifiers = ref [] in
   let call_name = ref None in
   let external_module_name  = ref None in
   let is_obj =  ref false in
-  let js_global = ref `None in
+  let js_val = ref `None in
+  let js_val_of_module = ref `None in 
   let js_send = ref `None in
   let js_set = ref `None in
   let js_get = ref `None in
   let js_set_index = ref false in 
   let js_get_index = ref false in
+
   let js_splice = ref false in
   let start_loc : Location.t option ref = ref None in
   let finish_loc = ref None in
@@ -16107,7 +15932,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
          | "bs.val"
            (* can be generalized into 
               {[
-                [@@bs.value]
+                [@@bs.val]
               ]}
               and combined with 
               {[
@@ -16117,10 +15942,20 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
            -> 
            begin  match is_single_string pay_load with
              | Some name -> 
-               js_global := `Value name 
+               js_val := `Value name 
              | None -> 
-               js_global := `Value _prim.prim_name
+               js_val := `Value _prim.prim_name
                 (* we can report error here ... *)
+           end
+         | "bs.val_of_module" 
+           (* {[ [@@bs.val_of_module]]}
+           *)
+           -> 
+           begin match is_single_string pay_load with 
+           | Some name ->
+             js_val_of_module := `Value(Bind (name, prim_name))
+           | None -> 
+             js_val_of_module := `Value (Single prim_name)
            end
          |"bs.splice"
            -> 
@@ -16159,19 +15994,9 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
              | `Single name -> external_module_name:= Some (Single name)
              | `Some [a;b] -> external_module_name := Some (Bind (a,b))
              | `Some _ -> ()
-             | `None -> () 
+             | `None -> () (* should emit a warning instead *)
            end
-         (* -- no scope -- could have 
-            [@@bs.module "./react.js"]
-            [@@bs.module "react-dom" "React"]
-         *)
-         (* | "bs.scope" *)
-         (*   ->  *)
-         (*   begin match is_string_or_strings pay_load with  *)
-         (*     | `None -> () *)
-         (*     | `Single name -> qualifiers := [name] *)
-         (*     | `Some vs -> qualifiers := List.rev vs  *)
-         (*   end *)
+
          | "bs.new" -> 
            begin match is_single_string pay_load with 
              | Some x -> js_new := Some x 
@@ -16198,7 +16023,10 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
     else if !js_set_index then 
       Js_set_index
     else 
-      begin match !call_name, !js_global, !js_send, !js_new, !js_set, !js_get  with 
+    begin match !js_val_of_module with 
+    | `Value v -> Js_global_as_var v 
+    | `None -> 
+      begin match !call_name, !js_val, !js_send, !js_new, !js_set, !js_get  with 
       | Some (_,fn),
         `None, `None, _, `None, `None -> 
           Js_call { txt = { splice = !js_splice; qualifiers = !qualifiers; name = fn};
@@ -16218,7 +16046,7 @@ let handle_attributes ({prim_attributes ; } as _prim  : prim ) : Location.t opti
       | _ -> 
           Location.raise_errorf ?loc "Ill defined attribute"
       end
-
+    end
     (* Given label, type and the argument --> encode it into 
        javascript meaningful value 
        -- check whether splice or not for the last element
@@ -16374,6 +16202,12 @@ let translate
             E.call ~info:{arity=Full; call_info = Call_na} fn args
         | None -> assert false 
       end
+    | Js_global_as_var module_name -> 
+      begin match handle_external (Some module_name) with 
+        | Some (id, name) -> 
+          E.external_var_dot id name None
+        | None -> assert false 
+      end
     | Js_new { external_module_name = module_name; 
                txt = { name = fn};
              } -> 
@@ -16386,7 +16220,7 @@ let translate
           let fn =  
             match handle_external module_name with 
             | Some (id,name) ->  
-              E.external_var_dot id name fn
+              E.external_var_dot id name (Some fn)
 
             | None -> 
               (** TODO: check, no [@@bs.module], 
@@ -16426,7 +16260,7 @@ let translate
         | "null", None -> E.nil 
         | "undefined", None -> E.undefined
         | _, Some(id,mod_name)
-          -> E.external_var_dot id mod_name name
+          -> E.external_var_dot id mod_name (Some name)
         | _, None -> 
 
           E.var (Ext_ident.create_js name)
@@ -17518,7 +17352,7 @@ let translate
   | Pignore -> 
       begin 
         match args with 
-        | [e] -> e
+        | [e] -> E.seq e E.unit
         | _ -> assert false 
       end
   | Pgetglobal i   -> 
@@ -19371,29 +19205,35 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
+    | Lprim (Pccall {prim_name = "js_debugger"; _}, _) 
+      -> 
+      (* [%bs.debugger] guarantees that the expression does not matter 
+         TODO: make it even safer      *)
+        Js_output.handle_block_return st should_return lam [S.debugger] E.unit
+
+
+
     (* TODO: 
        check the arity of fn before wrapping it 
        we need mark something that such eta-conversion can not be simplified in some cases 
     *)
 
-    | Lsend(meth_kind, _label, 
+    | Lsend(Public (Some name), _label, 
             Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [] , loc) -> 
+                         [obj]), [] , loc) 
+      when not (Ext_string.ends_with name Literals.setter_suffix) 
+      (* TODO: more not a setter/case/case_setter *)
+      -> 
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
+      let property = 
+        let i = Ext_string.rfind ~sub:"__" name  in 
+        if i < 0 then 
+          name
+        else String.sub name 0 i in 
       begin 
-        let property = 
-          match meth_kind with 
-          | Public (Some name ) -> 
-            let i = Ext_string.rfind ~sub:"__" name  in 
-            if i < 0 then 
-              name
-            else String.sub name 0 i 
-          | _ -> assert false  
-        in 
-        match 
-          compile_lambda {cxt with st = NeedValue; should_return = False} obj
+        match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
         | {block; value = Some b } -> 
           (* TODO: if [b] contains computation, compute it first *)
@@ -19403,93 +19243,133 @@ and
           in 
 
           begin match Js_ast_util.named_expression  b with 
-          | None -> cont None (E.dot b property)
-          | Some (obj_code, b)
-             -> cont  (Some obj_code) (E.dot (E.var b) property)
+            | None -> cont None (E.dot b property)
+            | Some (obj_code, b)
+              -> cont  (Some obj_code) (E.dot (E.var b) property)
           end
         | _ -> assert false 
       end
-    | Lsend(meth_kind, _label, 
-            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [value] , loc) -> 
-      (* setter {[ x ## height__set ]}*)
-      begin 
-        let property = 
-          match meth_kind with 
-          | Public (Some name ) -> 
+    | Lprim (Pccall {prim_name; _}, args_lambda) 
+      when Ext_string.starts_with prim_name "js_fn_" ->
+      let arity, kind  = 
+        let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
+        if mk < 0 then 
+          let run = Ext_string.starts_with_and_number prim_name ~offset:6 "run_" in 
+          run , `Run
+        else mk, `Mk
+      in 
 
-            assert (Ext_string.ends_with name Literals.setter_suffix);
-            String.sub name 0 (String.length name - Literals.setter_suffix_len)
-          | _ -> assert false  
-        in 
-        let obj_block = 
-          compile_lambda {cxt with st = NeedValue; should_return = False} obj
-        in 
-        let value_block = 
-          compile_lambda {cxt with st = NeedValue; should_return = False} value 
-        in 
-        match 
-          obj_block, value_block
-        with 
-        | {block = block0; value = Some obj }, 
-          {block = block1; value = Some value} -> 
-          (* TODO: if [b] contains computation, compute it first *)
-          let cont obj_code = 
-            Js_output.handle_block_return st should_return lam 
-              (let block = block0 @ block1 in 
-               match obj_code with
-               | None -> block
-               | Some x -> x :: block)
-          in 
+      (* 1. prevent eta-conversion
+         by using [App_js_full]
+         2. invariant: `external` declaration will guarantee
+         the function application is saturated
+         3. we need a location for Pccall in the call site
+      *)
+      if kind = `Run then 
+        match args_lambda with  
+        | [Lsend(Public (Some "case__set"), _label,
+                 Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _},
+                       [obj]), [] , loc) ; key ;  value] ->
+          let obj_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} obj
+          in
+          let key_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} key
+          in
+          let value_block =
+            compile_lambda {cxt with st = NeedValue; should_return = False} value
+          in
+          begin match obj_block, key_block, value_block with
+            | {block = block0; value = Some obj },
 
-          begin match Js_ast_util.named_expression  obj with 
-          | None -> 
-            cont None (E.assign (E.dot obj property) value)
-          | Some (obj_code, obj)
-             -> 
-             cont  (Some obj_code) 
-               (E.assign (E.dot (E.var obj) property) value)
+              {block = block1; value = Some key},
+              {block = block2; value = Some value}
+              ->
+              (* TODO: if [b] contains computation, compute it first *)
+              let cont obj_code =
+                Js_output.handle_block_return st should_return lam
+                  (
+                    match obj_code with
+                    | None -> block0 @ block1 @ block2
+                    | Some obj_code -> block0 @ obj_code :: block1 @ block2)
+              in
+
+              begin match Js_ast_util.named_expression  obj with
+                | None ->
+                  cont None (E.assign (E.access obj key) value)
+                | Some (obj_code, obj)
+                  ->
+                  cont  (Some obj_code)
+                    (E.assign (E.access (E.var obj) key) value)
+              end
+            | _ -> assert false
           end
+
+        | [(Lsend(meth_kind, _label, 
+                  Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
+                        [obj]), [] , loc) as fn);
+           arg]
+          -> 
+          begin 
+            let obj_block = 
+              compile_lambda {cxt with st = NeedValue; should_return = False} obj
+            in 
+            let value_block = 
+              compile_lambda {cxt with st = NeedValue; should_return = False} arg
+            in 
+            let cont block0 block1 obj_code = 
+              Js_output.handle_block_return st should_return lam 
+                (
+                 match obj_code with
+                 | None -> block0 @ block1
+                 | Some obj_code -> block0 @ obj_code :: block1
+                )
+            in 
+            match 
+              obj_block, value_block, meth_kind
+            with 
+            | {block = block0; value = Some obj }, 
+              {block = block1; value = Some value}, 
+              Public (Some method_name )
+              when method_name = "case" || Ext_string.starts_with method_name "case__" -> 
+              (* TODO: if [b] contains computation, compute it first *)
+              begin match Js_ast_util.named_expression  obj with 
+                | None -> 
+                  cont block0 block1 None (E.access obj value)
+                | Some (obj_code, obj)
+                  -> 
+                  cont  block0 block1 (Some obj_code) (E.access (E.var obj) value)
+              end
+            | {block = block0; value = Some obj }, 
+              {block = block1; value = Some value}, Public (Some setter) 
+              ->
+              if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
+                compile_lambda cxt @@ Lapply (fn, [arg] , 
+                                              {apply_loc = Location.none;
+                                               apply_status = App_js_full})
+              else 
+                let property =
+                  String.sub setter 0 
+                    (String.length setter - Literals.setter_suffix_len) in 
+                begin match Js_ast_util.named_expression  obj with
+                  | None ->
+                    cont block0 block1 None (E.assign (E.dot obj property) value)
+                  | Some (obj_code, obj)
+                    ->
+                    cont block0 block1 (Some obj_code)
+                      (E.assign (E.dot (E.var obj) property) value)
+                end
+            | _ -> 
+              assert false 
+          end
+
+        | fn :: rest -> 
+          compile_lambda cxt @@ 
+          Lambda.Lapply (fn, rest , 
+                         {apply_loc = Location.none;
+                          apply_status = App_js_full})
         | _ -> assert false 
-      end
-
-    | Lprim (prim, args_lambda)  ->
-      let cont args_code exp = 
-        Js_output.handle_block_return st should_return lam args_code exp  in 
-      begin match prim with 
-      | Pccall {prim_name = "js_debugger"; _} 
-        -> 
-        (* [%bs.debugger] guarantees that the expression does not matter 
-         TODO: make it even safer
-         *)
-        cont [S.debugger] E.unit 
-      | Pccall {prim_name = name}
-        when Ext_string.starts_with name "js_fn_"
-      -> 
-        let arity, kind  = 
-          let mk =  Ext_string.starts_with_and_number name ~offset:6 "mk_" in 
-          if mk < 0 then 
-            let run = Ext_string.starts_with_and_number name ~offset:6 "run_" in 
-            run , `Run
-          else mk, `Mk
-        in 
-        
-        (* 1. prevent eta-conversion
-           by using [App_js_full]
-           2. invariant: `external` declaration will guarantee
-           the function application is saturated
-           3. we need a location for Pccall in the call site
-        *)
-
-        if kind = `Run then 
-          match args_lambda with 
-          | fn :: rest -> 
-            compile_lambda cxt @@ 
-            Lambda.Lapply (fn, rest , 
-                           {apply_loc = Location.none;
-                            apply_status = App_js_full})
-          | _ -> assert false 
-        else 
+      else 
         begin match args_lambda with 
           | [fn] -> 
             if arity = 0 then 
@@ -19501,14 +19381,14 @@ and
                 if we do an optimization before compiling
                 into lambda
 
-                {[Fn.mk0]} is not intended for use by normal users
+                 {[Fn.mk0]} is not intended for use by normal users
 
-                so we assume [Fn.mk0] is only used in such cases
-                {[
-                  Fn.mk0 (fun _ -> .. )
-                ]}
-                when it is passed as a function directly
-             *)
+                 so we assume [Fn.mk0] is only used in such cases
+                 {[
+                   Fn.mk0 (fun _ -> .. )
+                 ]}
+                 when it is passed as a function directly
+              *)
               begin 
                 match fn with 
                 | Lfunction (_, [_], body)
@@ -19558,20 +19438,21 @@ and
               end
           | _ -> assert false 
         end
-      | _ -> 
-        let args_block, args_expr =
-          Ext_list.split_map (fun (x : Lambda.lambda) ->
-              match compile_lambda {cxt with st = NeedValue; should_return = False} x 
-              with 
-              | {block = a; value = Some b} -> a,b
-              | _ -> assert false ) args_lambda 
-            
-        in
-        let args_code  = List.concat args_block in
-        let exp  =  (* TODO: all can be done in [compile_primitive] *)
-          Lam_compile_primitive.translate cxt prim args_expr in
-        cont  args_code exp 
-      end
+    | Lprim(prim, args_lambda) -> 
+      let args_block, args_expr =
+        Ext_list.split_map (fun (x : Lambda.lambda) ->
+            match compile_lambda {cxt with st = NeedValue; should_return = False} x 
+            with 
+            | {block = a; value = Some b} -> a,b
+            | _ -> assert false ) args_lambda 
+
+      in
+      let args_code  = List.concat args_block in
+      let exp  =  (* TODO: all can be done in [compile_primitive] *)
+        Lam_compile_primitive.translate cxt prim args_expr in
+      Js_output.handle_block_return st should_return lam args_code exp  
+
+
     | Lsequence (l1,l2) ->
       let output_l1 = 
         compile_lambda {cxt with st = EffectCall; should_return =  False} l1 in
@@ -19579,13 +19460,6 @@ and
         compile_lambda cxt l2  in
        output_l1 ++ output_l2
 
-
-    (* begin
-       match cxt.st, cxt.should_return with  *)
-    (* | NeedValue, False  ->  *)
-    (*     Js_output.append_need_value output_l1 output_l2  *)
-    (* | _ -> output_l1 ++ output_l2  *)
-    (* end *)
 
     | Lifthenelse(p,t_br,f_br) ->
       (*
@@ -20207,18 +20081,19 @@ and
       | _, ([] | [_]) -> assert false
       | (args_code, label::obj'::args) 
         -> 
-        let cont =
-          Js_output.handle_block_return 
-            st should_return lam (List.concat args_code)
-        in
-        let cont2 obj_code v = 
-          Js_output.handle_block_return 
-            st should_return lam 
-            (obj_code :: List.concat args_code) v in 
         let cont3 obj' k = 
           match Js_ast_util.named_expression obj' with 
-          | None -> cont (k obj')
+          | None -> 
+            let cont =
+              Js_output.handle_block_return 
+                st should_return lam (List.concat args_code)
+            in
+            cont (k obj')
           | Some (obj_code, v) -> 
+            let cont2 obj_code v = 
+              Js_output.handle_block_return 
+                st should_return lam 
+                (obj_code :: List.concat args_code) v in 
             let obj' = E.var v in 
             cont2 obj_code (k obj') 
         in
@@ -20248,123 +20123,12 @@ and
 
 
           | Public (Some name) -> 
+            let cache = !method_cache_id in
+            incr method_cache_id ;
+            cont3 obj' 
+              (fun obj' -> E.public_method_call name obj' label 
+                  (Int32.of_int cache) args )
 
-
-            let js_no_arity obj' name = 
-              match args with 
-                | [] -> cont @@  E.dot obj' name 
-                | _ -> cont3 obj' (fun obj' -> E.bind_call obj' name args)
-            in 
-            begin
-              match Lam_methname.process name, obj with
-              | (Js_read_index, _name), _  ->
-                begin match args with
-                  | [] ->
-                    let i = Ext_ident.create "i" in
-                    cont3 obj' @@ fun obj' ->  
-                    E.fun_ [i]
-                      S.[return 
-                           (Js_array.ref_array obj' (E.var i)) ]
-                  | [x] -> 
-                    cont @@ Js_array.ref_array obj' x 
-                  |  x :: rest  ->
-                    cont @@
-                    E.call ~info:Js_call_info.dummy 
-                      (Js_array.ref_array obj' x ) 
-                      rest 
-                end
-              | (Js_write_index, _name), _  ->
-                  begin match args with
-                  | [] ->
-                    let i = Ext_ident.create "i" in
-                    let v = Ext_ident.create "v" in 
-                    cont3 obj' @@ fun obj' -> E.fun_ [i; v ]
-                      S.[return (E.seq 
-                                   (Js_array.set_array
-                                      obj' 
-                                      (E.var i) 
-                                      (E.var v))
-                                   E.unit) 
-                        ]
-                  | [ i ]
-                    -> 
-                    let v = Ext_ident.create "v" in 
-                    cont3 obj' @@ fun obj' -> E.fun_ [v]
-                      S.[return 
-                           (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
-                  | [x; y] -> 
-                    cont @@ Js_array.set_array obj' x y 
-                  |  x :: y:: rest  ->
-                    cont @@  E.call ~info:Js_call_info.dummy
-                      (Js_array.set_array obj' x y ) rest 
-                  end
-              | (Js_write, name), _ -> 
-
-                  begin match args with
-                  | [] ->
-                    let v = Ext_ident.create "v" in
-                    cont3 obj' @@ fun obj' -> E.fun_ [v]
-                      S.[return (E.assign (E.dot obj' name) (E.var v)) ]
-                  | [v] ->
-                    cont @@ E.assign (E.dot obj' name)  v
-                  |  _ :: _  -> 
-                    (* TODO: better error message *)
-                    assert false
-                  end
-              | (Js_read, name), _ -> 
-                cont @@ E.dot obj' name              
-              | (Js (Some arity), name), _  -> 
-
-                let args, n, rest = 
-                  Ext_list.try_take arity args  in
-                if n = arity then 
-                  match rest with
-                  | [] -> 
-                    cont @@ E.call ~info:{arity=Full; call_info = Call_na}
-                      (E.dot obj' name) args 
-                  | _ ->  
-                    cont @@ E.call ~info:Js_call_info.dummy 
-                      (E.call 
-                         ~info:{arity=Full; call_info = Call_na}
-                         (E.dot obj' name) args )
-                      rest 
-                else 
-                  let rest = Ext_list.init 
-                      (arity - n) (fun i -> Ext_ident.create Literals.prim) in
-                  cont3 obj' @@ fun obj' -> E.fun_ rest 
-                    S.[return 
-                         (E.call 
-                            ~info:{arity=Full; call_info = Call_na }
-                            (E.dot obj' name)
-                            (args @ List.map E.var rest )                               
-                         ) ]                  
-              | (Js None, p_name), _  -> 
-                js_no_arity obj' p_name 
-              | _ , Lprim (Pccall {prim_name = _; _}, []) ->
-                (* we know obj is a truly js object,
-                    shall it always be global?
-                    shall it introduce dependency?
-                *)
-                js_no_arity obj' name 
-
-              (*TODO: if js has such variable -- all ocaml variables should be aliased *)
-              | _, Lvar id 
-                when Ext_ident.is_js_object id
-              (*TODO#11: check alias table as well,
-                here we do flow analysis
-                TODO#22: we can also track whether it's an ocaml object
-              *)->
-                js_no_arity obj' name 
-              | ((Ml _ | Unknown _), _), _  ->
-                (* For [Ml] or [Unknown]  the name is untouched *)
-                let cache = !method_cache_id in
-                incr method_cache_id ;
-                cont3 obj' 
-                  (fun obj' -> E.public_method_call name obj' label 
-                      (Int32.of_int cache) args )
-
-
-            end
         end
       end
     (* TODO: object layer *)
@@ -23050,34 +22814,24 @@ module
 Js_map
 = struct
 #1 "js_map.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+(* BuckleScript compiler
+ * Copyright (C) 2015-2016 Bloomberg Finance L.P.
  *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, with linking exception;
+ * either version 2.1 of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *)
+(* Author: Hongbo Zhang  *)
 (** GENERATED CODE, map visitor for JS IR  *)
 open J
   
@@ -23149,24 +22903,29 @@ class virtual map =
           let _x_i1 =
             o#list
               (fun o ->
-                 (* BuckleScript compiler
- * Copyright (C) 2015-2016 Bloomberg Finance L.P.
- *
- * This program is free software; you can redistribute it and/or modify
+                 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, with linking exception;
- * either version 2.1 of the License, or (at your option) any later version.
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- *)
-                 (* Author: Hongbo Zhang  *)
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
                  (** Javascript IR
   
     It's a subset of Javascript AST specialized for OCaml lambda backend
@@ -25619,6 +25378,33 @@ let prim = "js_pure_expr"
 let prim_stmt = "js_pure_stmt"
 let prim_debugger = "js_debugger"
 
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+let discard_js_value loc e  : Parsetree.expression = 
+  {pexp_desc = 
+     Pexp_apply
+       ({pexp_desc = 
+           Pexp_ident {txt = Ldot (Lident "Pervasives", "ignore") ; loc};
+         pexp_attributes = [];
+         pexp_loc = loc},
+        [("",
+          {pexp_desc =
+             Pexp_constraint (e,
+                              {ptyp_desc = Ptyp_constr ({txt = Lident "unit"; loc}, []);
+                               ptyp_loc = loc;
+                               ptyp_attributes = []});
+           pexp_loc = loc;
+           pexp_attributes = []
+          })]
+       );
+   pexp_loc = loc;
+   pexp_attributes = [] 
+  }
+
 
 let handle_raw ?ty loc e attrs  = 
   let attrs = 
@@ -25706,6 +25492,234 @@ let handle_typ (super : Ast_mapper.mapper)
       
   | _ -> super.typ self ty
 
+let handle_debugger loc payload = 
+  match payload with
+  | Parsetree.PStr ( [])
+    ->
+    Ast_helper.Exp.letmodule
+      {txt = tmp_module_name; loc }
+      (Ast_helper.Mod.structure [
+          Ast_helper.Str.primitive
+            (Ast_helper.Val.mk {loc ; txt = tmp_fn}
+               ~prim:[prim_debugger]
+               (Ast_helper.Typ.arrow "" predef_unit_type predef_unit_type)
+            )])
+      (Ast_helper.Exp.apply
+         (Ast_helper.Exp.ident 
+            {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
+         [("",  predef_val_unit)])
+  | Parsetree.PTyp _
+  | Parsetree.PPat (_,_)
+  | Parsetree.PStr _
+    ->
+    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+(** TODO: Future 
+    {[ fun%bs this (a,b,c) -> 
+    ]}
+
+    [function] can only take one argument, that is the reason we did not adopt it
+*)
+let handle_uncurry_generation  loc 
+    (pat : Parsetree.pattern)
+    (body : Parsetree.expression) 
+    (e : Parsetree.expression) (mapper : Ast_mapper.mapper) = 
+  let args = 
+    match pat with 
+    | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
+      [arg]
+    | {ppat_desc = Ppat_tuple args; _} -> args
+    | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+  in
+  let len = List.length args in 
+  let mk = "mk" ^ string_of_int len in 
+  let body = mapper.expr mapper body in 
+  begin match args with 
+    | [] -> 
+      {e with pexp_desc =
+                Pexp_apply (
+                  {pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
+                   pexp_loc = loc; 
+                   pexp_attributes = []
+                  },
+                  [("",
+                    {pexp_desc =
+                       Pexp_fun ("", None,
+                                 {ppat_desc = 
+                                    Ppat_construct ({txt = Lident "()"; loc}, None);
+                                  ppat_loc = loc ; 
+                                  ppat_attributes = []},
+                                 body);
+                     pexp_loc = loc ;
+                     pexp_attributes = []})])}
+    | _ -> 
+      let fun_ = 
+        List.fold_right (fun arg body -> 
+            let arg = mapper.pat mapper arg in 
+            {Parsetree.
+              pexp_loc = loc ; 
+              pexp_desc = Pexp_fun ("", None, arg, body);
+              pexp_attributes = []}) args body in
+      { e  with 
+        pexp_desc = 
+          Pexp_apply ({pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
+                       pexp_loc = loc ; 
+                       pexp_attributes = []},
+                      [("",
+                        fun_)])
+      }
+  end
+
+let handle_uncurry_application 
+    (self : Ast_mapper.mapper) 
+    loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
+  : Parsetree.expression = 
+  let args = 
+    match pat with 
+    | {Parsetree.pexp_desc = 
+         Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]
+      ; _} -> 
+      [arg]
+    | {pexp_desc = Pexp_tuple args; _} -> args
+    | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
+    | v -> [v]
+  in
+
+  let fn = self.expr self fn in 
+  let args = List.map (self.expr self) args in 
+  let len = List.length args in 
+  let run = "run" ^ string_of_int len in 
+  { e with
+    Parsetree.pexp_desc =
+      Pexp_apply (
+        {pexp_desc = 
+           Pexp_ident {txt = Ldot (Lident "Fn", run) ;
+                       loc ; };
+         pexp_loc = loc ;
+         pexp_attributes = []
+        },
+        (("", fn) :: List.map (fun x -> "", x) args))
+  }
+
+let handle_obj_property loc obj name e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
+  let obj = mapper.expr mapper obj in 
+  { e with pexp_desc =
+     Pexp_send
+               ({pexp_desc =
+                   Pexp_apply
+                     ({pexp_desc =
+                         Pexp_ident {txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
+                                     loc};
+                       pexp_loc = loc;
+                       pexp_attributes = []},
+                      [("", obj)]);
+                 pexp_loc = loc;
+                 pexp_attributes = []},
+                name);
+  }
+
+let handle_obj_method loc (obj : Parsetree.expression) 
+    name (value : Parsetree.expression) e 
+    (mapper : Ast_mapper.mapper) : Parsetree.expression = 
+  let is_setter = 
+    name <> Literals.case_set && 
+    Ext_string.ends_with name Literals.setter_suffix in
+  let args = 
+    if  is_setter then 
+      [value]
+    else 
+      match value with 
+      | {pexp_desc = 
+           Pexp_tuple 
+             [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
+         _} -> 
+        [arg]
+      | {pexp_desc = Pexp_tuple args; _} -> args
+      | {pexp_desc = 
+           Pexp_construct ({txt = Lident "()"}, None);
+         _} -> []
+      | v -> [v]
+  in
+  let len = List.length args in 
+  let obj = mapper.expr mapper obj in 
+  let args = List.map (mapper.expr mapper ) args in 
+  (* TODO: in the future, dynamically create the c externs, 
+     so it can handle arbitrary large number
+  *)
+  let run = "run" ^ string_of_int len in 
+  { e with
+    pexp_desc =
+      Pexp_apply (
+        {pexp_desc = 
+           Pexp_ident {txt = Ldot (Lident "Fn", run) ;
+                       loc ; };
+         pexp_loc = loc ;
+         pexp_attributes = []
+        },
+        (("",
+          {pexp_desc =
+             Pexp_send
+               ({pexp_desc =
+                   Pexp_apply
+                     ({pexp_desc =
+                         Pexp_ident {
+                           txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
+                           loc };
+                       pexp_loc = loc ; 
+                       pexp_attributes = []},
+                      [("", obj)]);
+                 pexp_loc = loc ;
+                 pexp_attributes = []},
+                name);
+           pexp_loc = loc ; 
+           pexp_attributes = [] }) :: 
+         List.map (fun x -> "", x) args
+        ))
+  }
+        (** TODO: 
+            More syntax sanity check for [case__set] 
+            case__set: arity 2
+            __set : arity 1            
+            case:
+        *)
+
+
+(** object 
+    for setter : we can push more into [Lsend] and enclose it with a unit type
+
+    for getter :
+
+    (* Invariant: we expect the typechecker & lambda emitter  
+       will not do agressive inlining
+       Worst things could happen
+    {[
+      let x = y## case 3  in 
+      x 2
+    ]}
+       in normal case, it should be compiled into Lambda
+    {[
+      let x = Lsend(y,case, [3]) in 
+      Lapp(x,2)
+    ]}
+
+       worst:
+    {[ Lsend(y, case, [3,2])
+    ]}               
+       for setter(include case setter), this could 
+       be prevented by type system, for getter.
+
+       solution: we can prevent this by rewrite into 
+    {[
+      Fn.run1  (!x# case) v 
+      ]}
+       *)
+
+      *)
+
+
 let rec unsafe_mapper : Ast_mapper.mapper =   
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
@@ -25737,36 +25751,9 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
-          ->
-          begin
-            match payload with
-            | Parsetree.PStr ( [])
-              ->
-              Ast_helper.Exp.letmodule
-                {txt = tmp_module_name; loc }
-                (Ast_helper.Mod.structure [
-                    Ast_helper.Str.primitive
-                      (Ast_helper.Val.mk {loc ; txt = tmp_fn}
-                         ~prim:[prim_debugger]
-                         (Ast_helper.Typ.arrow "" predef_unit_type predef_unit_type)
-                      )])
-                (Ast_helper.Exp.apply
-                   (Ast_helper.Exp.ident 
-                      {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
-                   [("",  predef_val_unit)])
-            | Parsetree.PTyp _
-            | Parsetree.PPat (_,_)
-            | Parsetree.PStr _
-              ->
-              Location.raise_errorf ~loc "bs.raw can only be applied to a string"
-          end
-        |   (** Future 
-                                 {| fun%bs this (a,b,c) -> |}
-                                 function can only take one argument
-                             *)
-               Pexp_extension
+          -> handle_debugger loc payload
+        | Pexp_extension
                  ({txt = "uncurry";loc},
                   PStr
                     [{pstr_desc =
@@ -25776,105 +25763,24 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                         body)},
                            _)}])
           -> 
-          let args = 
-            match pat with 
-            | {ppat_desc = Ppat_tuple [arg ; {ppat_desc = Ppat_var{txt = "__"}} ]; _} -> 
-              [arg]
-            | {ppat_desc = Ppat_tuple args; _} -> args
-            | {ppat_desc = Ppat_construct ({txt = Lident "()"}, None); _} -> []
-            | v -> [v]
-          in
-          let len = List.length args in 
-          let mk = "mk" ^ string_of_int len in 
-          let body = mapper.expr mapper body in 
-          begin match args with 
-            | [] -> 
-              {e with pexp_desc =
-                 Pexp_apply (
-                   {pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
-                    pexp_loc = loc; 
-                    pexp_attributes = []
-                   },
-                   [("",
-                     {pexp_desc =
-                        Pexp_fun ("", None,
-                                  {ppat_desc = 
-                                     Ppat_construct ({txt = Lident "()"; loc}, None);
-                                   ppat_loc = loc ; 
-                                   ppat_attributes = []},
-                                  body);
-                      pexp_loc = loc ;
-                      pexp_attributes = []})])}
-            | _ -> 
-              let fun_ = 
-                List.fold_right (fun arg body -> 
-                    let arg = mapper.pat mapper arg in 
-                    {Parsetree.
-                      pexp_loc = loc ; 
-                      pexp_desc = Pexp_fun ("", None, arg, body);
-                      pexp_attributes = []}) args body in
-              { e  with 
-                pexp_desc = 
-                  Pexp_apply ({pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
-                               pexp_loc = loc ; 
-                               pexp_attributes = []},
-                              [("",
-                                fun_)])
-              }
-          end
-
-        | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident "#." ; loc} ; _},
-                      [("", obj) ;
-                       ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                      ])
-          ->
-          (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
-          let obj = mapper.expr mapper obj in 
-          {pexp_desc =
-             Pexp_send
-               ({pexp_desc =
-                   Pexp_apply
-                     ({pexp_desc =
-                         Pexp_ident {txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
-                                     loc};
-                       pexp_loc = loc;
-                       pexp_attributes = []},
-                      [("", obj)]);
-                 pexp_loc = loc;
-                 pexp_attributes = []},
-                name);
-           pexp_loc = loc ; 
-           pexp_attributes = []}
-
+          handle_uncurry_generation loc pat body e mapper
         | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
                       [("", fn);
                        ("", pat)])
           -> 
-          let args = 
-            match pat with 
-            | {pexp_desc = Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]; _} -> 
-              [arg]
-            | {pexp_desc = Pexp_tuple args; _} -> args
-            | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-            | v -> [v]
-          in
+          handle_uncurry_application  mapper loc fn pat e
 
-          let fn = mapper.expr mapper fn in 
-          let args = List.map (mapper.expr mapper) args in 
-          let len = List.length args in 
-          let run = "run" ^ string_of_int len in 
-          { e with
-            pexp_desc =
-              Pexp_apply (
-                {pexp_desc = 
-                   Pexp_ident {txt = Ldot (Lident "Fn", run) ;
-                               loc ; };
-                 pexp_loc = loc ;
-                 pexp_attributes = []
-                },
-                (("", fn) :: List.map (fun x -> "", x) args))
-          }
+        | Pexp_apply ({pexp_desc = 
+                         Pexp_ident  {txt = Lident "#." ; loc} ; _},
+                      [("", obj) ;
+                       ("", 
+                        ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
+                        |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
+                        ) ) (* TODO: design: shall we allow 
+                               {[ x #.Capital ]}
+                            *)
+                      ])
+          -> handle_obj_property loc obj name e mapper
         | Pexp_apply
             ({pexp_desc = 
                Pexp_apply ({pexp_desc = 
@@ -25885,71 +25791,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
              _
             }, [ "", value]  )
           -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
-          if Ext_string.ends_with name Literals.setter_suffix then 
-            let obj = mapper.expr mapper obj in 
-            let value = mapper.expr mapper value in 
-            {e with pexp_desc = Pexp_apply 
-              ({pexp_desc =
-               Pexp_send
-                 ({pexp_desc =
-                     Pexp_apply
-                       ({pexp_desc =
-                           Pexp_ident {txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
-                                       loc};
-                         pexp_loc = loc;
-                         pexp_attributes = []},
-                        [("", obj)]);
-                   pexp_loc = loc;
-                   pexp_attributes = []},
-                  name);
-             pexp_loc = loc ; 
-             pexp_attributes = []}, ["", value] )}
-          else 
-          let args = 
-            match value with 
-            | {pexp_desc = Pexp_tuple [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ]; _} -> 
-              [arg]
-            | {pexp_desc = Pexp_tuple args; _} -> args
-            | {pexp_desc = Pexp_construct ({txt = Lident "()"}, None); _} -> []
-            | v -> [v]
-          in
-          let len = List.length args in 
-          let obj = mapper.expr mapper obj in 
-          let args = List.map (mapper.expr mapper ) args in 
-          (* TODO: in the future, dynamically create the c externs, 
-             so it can handle arbitrary large number
-          *)
-          let run = "run" ^ string_of_int len in 
-          { e with
-            pexp_desc =
-              Pexp_apply (
-                {pexp_desc = 
-                   Pexp_ident {txt = Ldot (Lident "Fn", run) ;
-                               loc ; };
-                 pexp_loc = loc ;
-                 pexp_attributes = []
-                },
-                (("",
-                  {pexp_desc =
-                     Pexp_send
-                       ({pexp_desc =
-                           Pexp_apply
-                             ({pexp_desc =
-                                 Pexp_ident {
-                                   txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
-                                   loc };
-                               pexp_loc = loc ; 
-                               pexp_attributes = []},
-                              [("", obj)]);
-                         pexp_loc = loc ;
-                         pexp_attributes = []},
-                        name);
-                   pexp_loc = loc ; 
-                   pexp_attributes = [] }) :: 
-                 List.map (fun x -> "", x) args
-                ))
-          }
-
+          handle_obj_method loc obj name value e mapper
+          
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
@@ -26564,6 +26407,199 @@ let map2i f a b =
     invalid_arg "Ext_array.map2i"  
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
+
+
+end
+module Lam_methname : sig 
+#1 "lam_methname.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+type t = 
+  | Js_read_index
+  (* index__js
+     {[ x[i] ]}
+  *)
+  | Js_write_index 
+  (* set_index__js 
+     {[ x[i]= 3 ]}     
+  *)
+  | Js_write
+  (* __set
+     {[ x.h ]}
+  *)
+  | Js_read
+
+  | Js of int option
+  | Ml of int option
+  | Unknown of int option 
+
+val process : string -> t * string 
+
+end = struct
+#1 "lam_methname.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(**
+
+Note that js object support gettter, setter
+
+{[ 
+  var obj = {
+    get latest () {
+    if (log.length == 0) return undefined;
+    return log[log.length - 1]
+    }
+  } 
+]}
+
+If it's getter then the [.length] property does not make sense, 
+we should avoid using it which means when branch to js, if there is no 
+args, we should not do 
+{{ Curry.app0(obj.name) }} 
+*)
+type t = 
+  | Js_read_index
+  (* index__js
+     {[ x[i] ]}
+  *)
+  | Js_write_index 
+  (* set_index__js 
+     {[ x[i]= 3 ]}     
+  *)
+  | Js_write
+  (* __set
+     {[ x.h = 3 ]}
+  *)
+  | Js_read
+
+  | Js of int option
+  | Ml of int option
+  | Unknown of int option 
+
+let process ( x : string) : t * string =
+
+  match x with
+  | "index__unsafe_r"
+  (* TODO: [unsafe] should be allowed to overloaded in general  *)
+  | "index__r_unsafe"
+  | "index__r" 
+  | "index__" 
+    -> (Js_read_index, "index")
+  | "index__w_unsafe" 
+  | "index__w" 
+  | "index__w_js_unsafe" 
+  | "index__w_js" 
+    -> (Js_write_index, "index")
+  | _ -> 
+    let sub = "__" in
+    let v = Ext_string.rfind ~sub x  in
+    if  v < 0 then 
+      (Unknown None  , x)
+    else 
+      let len_sub = String.length sub in
+      let indicator = Ext_string.tail_from x (v + len_sub) in 
+      let normal_name  = String.sub x 0 v in 
+      match indicator with 
+      | "r" -> Js_read, normal_name
+      | "w" -> Js_write, normal_name
+      | _ -> 
+        let props = Ext_string.split indicator '_' in 
+        let kind = ref None in 
+        let arity = ref None in 
+        let fail l = 
+          let error = "invalid indicator" ^ indicator  ^ "in method name " ^ 
+                      x ^ ":" ^ Lam_current_unit.get_file () in
+          Ext_log.err l "%s" error ; 
+          failwith error in
+        let update_ref r k = 
+          match !r with 
+          | None -> r := Some k 
+          | Some x -> if x <> k then fail __LOC__ in
+        List.iter (fun  x -> 
+          match x with 
+          | "js" 
+            -> update_ref kind `Js
+          | "ml"
+            -> update_ref kind  `Ml
+          | "gen" 
+            -> update_ref kind `Unknown
+          | "unsafe"
+            -> 
+            (* allow unsafe to be overloaded, but don't do anything yet *)
+            ()
+          | _ -> 
+            match int_of_string x with 
+            | exception _ -> fail __LOC__
+            | v -> 
+              update_ref arity v
+        ) props ;
+      (
+        let arity  = !arity in
+      begin match  !kind with 
+      | Some  `Js 
+      | None 
+        -> Js arity
+      | Some `Ml -> Ml arity
+      | Some `Unknown -> Unknown arity
+
+      end, normal_name
+      )
 
 
 end
