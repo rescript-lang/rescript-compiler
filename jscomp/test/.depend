@@ -122,8 +122,8 @@ debug_keep_test.cmj :
 debug_keep_test.cmx :
 debugger_test.cmj : ../runtime/js.cmj
 debugger_test.cmx : ../runtime/js.cmx
-demo.cmj :
-demo.cmx :
+demo.cmj : ../runtime/js.cmj
+demo.cmx : ../runtime/js.cmx
 demo_int_map.cmj : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmx : ../stdlib/map.cmx demo_int_map.cmi
 demo_page.cmj :
@@ -266,8 +266,8 @@ io_test.cmj : ../runtime/js.cmj
 io_test.cmx : ../runtime/js.cmx
 js_bool_test.cmj : mt.cmi ../runtime/js.cmj
 js_bool_test.cmx : mt.cmx ../runtime/js.cmx
-js_date.cmj :
-js_date.cmx :
+js_date.cmj : ../runtime/js.cmj
+js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
 js_obj_test.cmj : mt.cmi
@@ -570,8 +570,8 @@ test_primitive.cmx : ../stdlib/string.cmx ../stdlib/lazy.cmx \
     ../stdlib/array.cmx
 test_ramification.cmj :
 test_ramification.cmx :
-test_react.cmj :
-test_react.cmx :
+test_react.cmj : ../runtime/js.cmj
+test_react.cmx : ../runtime/js.cmx
 test_react_case.cmj :
 test_react_case.cmx :
 test_runtime_encoding.cmj : ../stdlib/array.cmi
@@ -768,8 +768,8 @@ debug_keep_test.cmo :
 debug_keep_test.cmj :
 debugger_test.cmo : ../runtime/js.cmo
 debugger_test.cmj : ../runtime/js.cmj
-demo.cmo :
-demo.cmj :
+demo.cmo : ../runtime/js.cmo
+demo.cmj : ../runtime/js.cmj
 demo_int_map.cmo : ../stdlib/map.cmi demo_int_map.cmi
 demo_int_map.cmj : ../stdlib/map.cmj demo_int_map.cmi
 demo_page.cmo :
@@ -912,8 +912,8 @@ io_test.cmo : ../runtime/js.cmo
 io_test.cmj : ../runtime/js.cmj
 js_bool_test.cmo : mt.cmi ../runtime/js.cmo
 js_bool_test.cmj : mt.cmj ../runtime/js.cmj
-js_date.cmo :
-js_date.cmj :
+js_date.cmo : ../runtime/js.cmo
+js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
 js_obj_test.cmo : mt.cmi
@@ -1216,8 +1216,8 @@ test_primitive.cmj : ../stdlib/string.cmj ../stdlib/lazy.cmj \
     ../stdlib/array.cmj
 test_ramification.cmo :
 test_ramification.cmj :
-test_react.cmo :
-test_react.cmj :
+test_react.cmo : ../runtime/js.cmo
+test_react.cmj : ../runtime/js.cmj
 test_react_case.cmo :
 test_react_case.cmj :
 test_runtime_encoding.cmo : ../stdlib/array.cmi

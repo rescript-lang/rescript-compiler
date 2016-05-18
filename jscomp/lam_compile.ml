@@ -720,10 +720,9 @@ and
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
-      let cont args_code exp = 
-        Js_output.handle_block_return st should_return lam args_code exp  in 
+        Js_output.handle_block_return st should_return lam [S.debugger] E.unit
 
-      cont [S.debugger] E.unit 
+
 
     (* TODO: 
        check the arity of fn before wrapping it 
@@ -800,10 +799,10 @@ and
               (* TODO: if [b] contains computation, compute it first *)
               let cont obj_code =
                 Js_output.handle_block_return st should_return lam
-                  (let block = block0 @ block1 @ block2 in (* TODO: check evaluation order*)
-                   match obj_code with
-                   | None -> block
-                   | Some x -> x :: block)
+                  (
+                    match obj_code with
+                    | None -> block0 @ block1 @ block2
+                    | Some obj_code -> block0 @ obj_code :: block1 @ block2)
               in
 
               begin match Js_ast_util.named_expression  obj with
@@ -831,18 +830,20 @@ and
             in 
             let cont block0 block1 obj_code = 
               Js_output.handle_block_return st should_return lam 
-                (let block = block0 @ block1 in 
+                (
                  match obj_code with
-                 | None -> block
-                 | Some x -> x :: block)
+                 | None -> block0 @ block1
+                 | Some obj_code -> block0 @ obj_code :: block1
+                )
             in 
             match 
               obj_block, value_block, meth_kind
             with 
             | {block = block0; value = Some obj }, 
-              {block = block1; value = Some value}, Public (Some "case" ) -> 
+              {block = block1; value = Some value}, 
+              Public (Some method_name )
+              when method_name = "case" || Ext_string.starts_with method_name "case__" -> 
               (* TODO: if [b] contains computation, compute it first *)
-
               begin match Js_ast_util.named_expression  obj with 
                 | None -> 
                   cont block0 block1 None (E.access obj value)
@@ -970,13 +971,6 @@ and
         compile_lambda cxt l2  in
        output_l1 ++ output_l2
 
-
-    (* begin
-       match cxt.st, cxt.should_return with  *)
-    (* | NeedValue, False  ->  *)
-    (*     Js_output.append_need_value output_l1 output_l2  *)
-    (* | _ -> output_l1 ++ output_l2  *)
-    (* end *)
 
     | Lifthenelse(p,t_br,f_br) ->
       (*
@@ -1598,18 +1592,19 @@ and
       | _, ([] | [_]) -> assert false
       | (args_code, label::obj'::args) 
         -> 
-        let cont =
-          Js_output.handle_block_return 
-            st should_return lam (List.concat args_code)
-        in
-        let cont2 obj_code v = 
-          Js_output.handle_block_return 
-            st should_return lam 
-            (obj_code :: List.concat args_code) v in 
         let cont3 obj' k = 
           match Js_ast_util.named_expression obj' with 
-          | None -> cont (k obj')
+          | None -> 
+            let cont =
+              Js_output.handle_block_return 
+                st should_return lam (List.concat args_code)
+            in
+            cont (k obj')
           | Some (obj_code, v) -> 
+            let cont2 obj_code v = 
+              Js_output.handle_block_return 
+                st should_return lam 
+                (obj_code :: List.concat args_code) v in 
             let obj' = E.var v in 
             cont2 obj_code (k obj') 
         in
@@ -1639,123 +1634,12 @@ and
 
 
           | Public (Some name) -> 
+            let cache = !method_cache_id in
+            incr method_cache_id ;
+            cont3 obj' 
+              (fun obj' -> E.public_method_call name obj' label 
+                  (Int32.of_int cache) args )
 
-
-            let js_no_arity obj' name = 
-              match args with 
-                | [] -> cont @@  E.dot obj' name 
-                | _ -> cont3 obj' (fun obj' -> E.bind_call obj' name args)
-            in 
-            begin
-              match Lam_methname.process name, obj with
-              | (Js_read_index, _name), _  ->
-                begin match args with
-                  | [] ->
-                    let i = Ext_ident.create "i" in
-                    cont3 obj' @@ fun obj' ->  
-                    E.fun_ [i]
-                      S.[return 
-                           (Js_array.ref_array obj' (E.var i)) ]
-                  | [x] -> 
-                    cont @@ Js_array.ref_array obj' x 
-                  |  x :: rest  ->
-                    cont @@
-                    E.call ~info:Js_call_info.dummy 
-                      (Js_array.ref_array obj' x ) 
-                      rest 
-                end
-              | (Js_write_index, _name), _  ->
-                  begin match args with
-                  | [] ->
-                    let i = Ext_ident.create "i" in
-                    let v = Ext_ident.create "v" in 
-                    cont3 obj' @@ fun obj' -> E.fun_ [i; v ]
-                      S.[return (E.seq 
-                                   (Js_array.set_array
-                                      obj' 
-                                      (E.var i) 
-                                      (E.var v))
-                                   E.unit) 
-                        ]
-                  | [ i ]
-                    -> 
-                    let v = Ext_ident.create "v" in 
-                    cont3 obj' @@ fun obj' -> E.fun_ [v]
-                      S.[return 
-                           (E.seq (Js_array.set_array obj' i (E.var v))  E.unit )]
-                  | [x; y] -> 
-                    cont @@ Js_array.set_array obj' x y 
-                  |  x :: y:: rest  ->
-                    cont @@  E.call ~info:Js_call_info.dummy
-                      (Js_array.set_array obj' x y ) rest 
-                  end
-              | (Js_write, name), _ -> 
-
-                  begin match args with
-                  | [] ->
-                    let v = Ext_ident.create "v" in
-                    cont3 obj' @@ fun obj' -> E.fun_ [v]
-                      S.[return (E.assign (E.dot obj' name) (E.var v)) ]
-                  | [v] ->
-                    cont @@ E.assign (E.dot obj' name)  v
-                  |  _ :: _  -> 
-                    (* TODO: better error message *)
-                    assert false
-                  end
-              | (Js_read, name), _ -> 
-                cont @@ E.dot obj' name              
-              | (Js (Some arity), name), _  -> 
-
-                let args, n, rest = 
-                  Ext_list.try_take arity args  in
-                if n = arity then 
-                  match rest with
-                  | [] -> 
-                    cont @@ E.call ~info:{arity=Full; call_info = Call_na}
-                      (E.dot obj' name) args 
-                  | _ ->  
-                    cont @@ E.call ~info:Js_call_info.dummy 
-                      (E.call 
-                         ~info:{arity=Full; call_info = Call_na}
-                         (E.dot obj' name) args )
-                      rest 
-                else 
-                  let rest = Ext_list.init 
-                      (arity - n) (fun i -> Ext_ident.create Literals.prim) in
-                  cont3 obj' @@ fun obj' -> E.fun_ rest 
-                    S.[return 
-                         (E.call 
-                            ~info:{arity=Full; call_info = Call_na }
-                            (E.dot obj' name)
-                            (args @ List.map E.var rest )                               
-                         ) ]                  
-              | (Js None, p_name), _  -> 
-                js_no_arity obj' p_name 
-              | _ , Lprim (Pccall {prim_name = _; _}, []) ->
-                (* we know obj is a truly js object,
-                    shall it always be global?
-                    shall it introduce dependency?
-                *)
-                js_no_arity obj' name 
-
-              (*TODO: if js has such variable -- all ocaml variables should be aliased *)
-              | _, Lvar id 
-                when Ext_ident.is_js_object id
-              (*TODO#11: check alias table as well,
-                here we do flow analysis
-                TODO#22: we can also track whether it's an ocaml object
-              *)->
-                js_no_arity obj' name 
-              | ((Ml _ | Unknown _), _), _  ->
-                (* For [Ml] or [Unknown]  the name is untouched *)
-                let cache = !method_cache_id in
-                incr method_cache_id ;
-                cont3 obj' 
-                  (fun obj' -> E.public_method_call name obj' label 
-                      (Int32.of_int cache) args )
-
-
-            end
         end
       end
     (* TODO: object layer *)
