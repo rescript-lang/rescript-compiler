@@ -270,8 +270,8 @@ js_date.cmj : ../runtime/js.cmj
 js_date.cmx : ../runtime/js.cmx
 js_date_test.cmj : mt.cmi js_date.cmj
 js_date_test.cmx : mt.cmx js_date.cmx
-js_obj_test.cmj : mt.cmi
-js_obj_test.cmx : mt.cmx
+js_obj_test.cmj : mt.cmi ../runtime/js.cmj
+js_obj_test.cmx : mt.cmx ../runtime/js.cmx
 js_val.cmj :
 js_val.cmx :
 lam_current_unit.cmj : ../stdlib/string.cmi ../stdlib/filename.cmi
@@ -916,8 +916,8 @@ js_date.cmo : ../runtime/js.cmo
 js_date.cmj : ../runtime/js.cmj
 js_date_test.cmo : mt.cmi js_date.cmo
 js_date_test.cmj : mt.cmj js_date.cmj
-js_obj_test.cmo : mt.cmi
-js_obj_test.cmj : mt.cmj
+js_obj_test.cmo : mt.cmi ../runtime/js.cmo
+js_obj_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmo :
 js_val.cmj :
 lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
