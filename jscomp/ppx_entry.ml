@@ -118,6 +118,7 @@ let handle_raw ?ty loc e attrs  =
     | None -> predef_any_type))
     
 
+(** TODO: Should remove all [uncurry] attributes *)
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
   let rec aux (attrs : Parsetree.attributes) acc = 
     match attrs with 
@@ -132,7 +133,36 @@ let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) =
 let uncurry_attr loc  : Parsetree.attribute = 
   {txt = "uncurry"; loc}, PStr []
 
-let handle_typ (super : Ast_mapper.mapper) 
+
+let uncurry_fn_type loc ty ptyp_attributes
+    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
+  let open Parsetree in 
+  let fn_type : Parsetree.core_type =
+    match args with
+    | {ptyp_desc = 
+         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+      ->
+      { Parsetree.ptyp_loc = loc; 
+        ptyp_desc = Ptyp_tuple [ arg ; body];
+        ptyp_attributes}
+    | {ptyp_desc = Ptyp_tuple args; _} ->
+      {ptyp_desc = Ptyp_tuple (List.rev (body :: List.rev args));
+       ptyp_loc = loc;
+       ptyp_attributes 
+      }
+    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
+    | v -> {ptyp_desc = Ptyp_tuple [v ; body];
+            ptyp_loc = loc ; 
+            ptyp_attributes }
+  in
+  { ty with ptyp_desc =
+              Ptyp_constr ({txt = Ldot (Lident "Fn", "t") ; loc},
+                           [ fn_type]);
+            ptyp_attributes = []
+  }
+
+let handle_typ 
+    (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
@@ -144,29 +174,7 @@ let handle_typ (super : Ast_mapper.mapper)
       | Some (ptyp_attributes, _) ->
         let args = self.typ self args in
         let body = self.typ self body in
-        let fn_type : Parsetree.core_type =
-          match args with
-          | {ptyp_desc = Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
-            ->
-            { ptyp_loc = loc; 
-              ptyp_desc = Ptyp_tuple [ arg ; body];
-              ptyp_attributes}
-          | {ptyp_desc = Ptyp_tuple args; _} ->
-            {ptyp_desc = Ptyp_tuple (List.rev (body :: List.rev args));
-             ptyp_loc = loc;
-             ptyp_attributes 
-            }
-          | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
-          | v -> {ptyp_desc = Ptyp_tuple [v ; body];
-                  ptyp_loc = loc ; 
-                  ptyp_attributes }
-        in
-        { ty with ptyp_desc =
-                    Ptyp_constr ({txt = Ldot (Lident "Fn", "t") ; loc},
-                                 [ fn_type]);
-                  ptyp_attributes = []
-        }
-
+        uncurry_fn_type loc ty ptyp_attributes args body 
       | None -> super.typ self ty
     end
   | {ptyp_desc =  Ptyp_object ( methods, closed_flag) } -> 
@@ -261,8 +269,8 @@ let handle_uncurry_generation  loc
   end
 
 let handle_uncurry_application 
-    (self : Ast_mapper.mapper) 
     loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
+    (self : Ast_mapper.mapper) 
   : Parsetree.expression = 
   let args = 
     match pat with 
@@ -310,27 +318,38 @@ let handle_obj_property loc obj name e
                 name);
   }
 
+
+type method_kind = 
+  | Case_setter
+  | Setter
+  | Normal of string 
 let handle_obj_method loc (obj : Parsetree.expression) 
     name (value : Parsetree.expression) e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let is_setter = 
-    name <> Literals.case_set && 
-    Ext_string.ends_with name Literals.setter_suffix in
+  let method_kind = 
+    if name = Literals.case_set then Case_setter
+    else if Ext_string.ends_with name Literals.setter_suffix then Setter
+    else Normal name in 
   let args = 
-    if  is_setter then 
+    match method_kind with 
+    | Setter -> 
       [value]
-    else 
-      match value with 
-      | {pexp_desc = 
-           Pexp_tuple 
-             [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
-         _} -> 
-        [arg]
-      | {pexp_desc = Pexp_tuple args; _} -> args
-      | {pexp_desc = 
-           Pexp_construct ({txt = Lident "()"}, None);
-         _} -> []
-      | v -> [v]
+    | (Case_setter | Normal _) -> 
+      let arity, args = 
+        match value with 
+        | {pexp_desc = 
+             Pexp_tuple 
+               [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
+           _} -> 
+          1, [arg]
+        | {pexp_desc = Pexp_tuple args; _} -> List.length args, args
+        | {pexp_desc = 
+             Pexp_construct ({txt = Lident "()"}, None);
+           _} -> 0, []
+        | v -> 1, [v] in 
+      if method_kind = Case_setter && arity <> 2 then 
+        Location.raise_errorf "case__set would expect arity of 2 "
+      else  args 
   in
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
@@ -413,6 +432,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
         match e.pexp_desc with 
+        (** Begin rewriting [bs.raw], its output should not be rewritten anymore
+        *)        
         | Pexp_extension (
             {txt = "bs.raw"; loc} ,
             PStr 
@@ -440,12 +461,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+        (** End rewriting [bs.raw] *)
+
+        (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> handle_debugger loc payload
+        (** End rewriting *)
+
         | Pexp_extension
                  ({txt = "uncurry";loc},
                   PStr
-                    [{pstr_desc =
+                    [{
+                      pstr_desc =
                         Pstr_eval
                           ({pexp_desc =
                               Pexp_fun ("", None, pat ,
@@ -457,31 +485,39 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                       [("", fn);
                        ("", pat)])
           -> 
-          handle_uncurry_application  mapper loc fn pat e
+          handle_uncurry_application loc fn pat e mapper
 
+        | Pexp_apply
+            ({pexp_desc = 
+               Pexp_apply (
+                 {pexp_desc = 
+                    Pexp_ident  {txt = Lident "##" ; loc} ; _},
+                 [("", obj) ;
+                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                 ]);
+              _
+             }, args  )
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
+          begin match args with 
+          | [ "", value] -> 
+              handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object ## expect only one argument when it is a method "
+          end
+        (* TODO: design: shall we allow 
+                               {[ x #.Capital ]}
+        *)
         | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident "#." ; loc} ; _},
+                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
                       [("", obj) ;
                        ("", 
                         ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
                         |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
-                        ) ) (* TODO: design: shall we allow 
-                               {[ x #.Capital ]}
-                            *)
+                        ) )
                       ])
           -> handle_obj_property loc obj name e mapper
-        | Pexp_apply
-            ({pexp_desc = 
-               Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident "##" ; loc} ; _},
-                      [("", obj) ;
-                       ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                      ]);
-             _
-            }, [ "", value]  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
-          handle_obj_method loc obj name value e mapper
-          
+
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
