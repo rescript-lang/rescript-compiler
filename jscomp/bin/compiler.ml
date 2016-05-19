@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 04/18-15:44 *)
+(** Bundled by ocaml_pack 04/19-15:20 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -690,6 +690,8 @@ module Ext_list : sig
 
 val filter_map : ('a -> 'b option) -> 'a list -> 'b list 
 
+val excludes : ('a -> bool) -> 'a list -> bool * 'a list
+val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
 val same_length : 'a list -> 'b list -> bool
 
 val init : int -> (int -> 'a) -> 'a list
@@ -783,6 +785,36 @@ let rec filter_map (f: 'a -> 'b option) xs =
       | None -> filter_map f ys
       | Some z -> z :: filter_map f ys
       end
+
+let excludes p l =
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
 
 let rec same_length xs ys = 
   match xs, ys with 
@@ -25276,6 +25308,72 @@ let builtin_modules =
  ]
 
 end
+module Ext_ref : sig 
+#1 "ext_ref.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val protect : 'a ref -> 'a -> (unit -> 'b) -> 'b
+
+end = struct
+#1 "ext_ref.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let protect r v body =
+  let old = !r in
+  try
+    r := v;
+    let res = body() in
+    r := old;
+    res
+  with x ->
+    r := old;
+    raise x
+
+end
 module Ppx_entry : sig 
 #1 "ppx_entry.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25429,62 +25527,86 @@ let handle_raw ?ty loc e attrs  =
     | None -> predef_any_type))
     
 
+
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  let rec aux (attrs : Parsetree.attributes) acc = 
-    match attrs with 
-    | [({txt = "uncurry"}, _) as v ]  -> Some (List.rev acc, v)
-    | ({txt = "uncurry"}, _) as v :: rest -> 
-      Some ((List.rev acc @ rest)  , v)
-    | non_uncurry :: rest -> aux rest  (non_uncurry :: acc) 
-    | [] -> None 
-  in 
-  aux attrs []
+  Ext_list.exclude_with_fact (function 
+    | ({Location.txt  = "uncurry"}, _) -> true 
+    | _ -> false ) attrs 
+
 
 let uncurry_attr loc  : Parsetree.attribute = 
   {txt = "uncurry"; loc}, PStr []
 
-let handle_typ (super : Ast_mapper.mapper) 
+
+let uncurry_fn_type loc ty ptyp_attributes
+    (args : Parsetree.core_type ) body  : Parsetree.core_type = 
+  let open Parsetree in 
+  let fn_type : Parsetree.core_type =
+    match args with
+    | {ptyp_desc = 
+         Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
+      ->
+      { Parsetree.ptyp_loc = loc; 
+        ptyp_desc = Ptyp_tuple [ arg ; body];
+        ptyp_attributes}
+    | {ptyp_desc = Ptyp_tuple args; _} ->
+      {ptyp_desc = Ptyp_tuple (List.rev (body :: List.rev args));
+       ptyp_loc = loc;
+       ptyp_attributes 
+      }
+    | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
+    | v -> {ptyp_desc = Ptyp_tuple [v ; body];
+            ptyp_loc = loc ; 
+            ptyp_attributes }
+  in
+  { ty with ptyp_desc =
+              Ptyp_constr ({txt = Ldot (Lident "Fn", "t") ; loc},
+                           [ fn_type]);
+            ptyp_attributes = []
+  }
+
+let uncurry = ref false 
+
+(*
+  Attributes are very hard to attribute
+  (since ptyp_attributes could happen in so many places), 
+  and write ppx extensions correctly, 
+  we can only use it locally
+*)
+
+let handle_typ 
+    (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
+  | {ptyp_desc = 
+       Ptyp_extension({txt = "uncurry"}, 
+                      PTyp ty )}
+    -> 
+    Ext_ref.protect uncurry true begin fun () -> 
+      self.typ self  ty 
+    end
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
-    } ->
+   } ->
     begin match  find_uncurry_attrs_and_remove ptyp_attributes with 
-      | Some (ptyp_attributes, _) ->
+    | Some _, ptyp_attributes ->
         let args = self.typ self args in
         let body = self.typ self body in
-        let fn_type : Parsetree.core_type =
-          match args with
-          | {ptyp_desc = Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
-            ->
-            { ptyp_loc = loc; 
-              ptyp_desc = Ptyp_tuple [ arg ; body];
-              ptyp_attributes}
-          | {ptyp_desc = Ptyp_tuple args; _} ->
-            {ptyp_desc = Ptyp_tuple (List.rev (body :: List.rev args));
-             ptyp_loc = loc;
-             ptyp_attributes 
-            }
-          | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
-          | v -> {ptyp_desc = Ptyp_tuple [v ; body];
-                  ptyp_loc = loc ; 
-                  ptyp_attributes }
-        in
-        { ty with ptyp_desc =
-                    Ptyp_constr ({txt = Ldot (Lident "Fn", "t") ; loc},
-                                 [ fn_type]);
-                  ptyp_attributes = []
-        }
-
-      | None -> super.typ self ty
+        uncurry_fn_type loc ty ptyp_attributes args body 
+    | None, _ -> 
+        let args = self.typ self args in
+        let body = self.typ self body in
+        if !uncurry then 
+          uncurry_fn_type loc ty ptyp_attributes args body 
+        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
     end
   | {ptyp_desc =  Ptyp_object ( methods, closed_flag) } -> 
     let methods = List.map (fun (label, ptyp_attrs, core_type ) -> 
         match find_uncurry_attrs_and_remove ptyp_attrs with 
-        | None -> label, ptyp_attrs , self.typ self core_type
-        | Some (ptyp_attrs, v) -> 
+        | None, _ -> label, ptyp_attrs , self.typ self core_type
+        | Some v, ptyp_attrs -> 
           label , ptyp_attrs, self.typ self 
             { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
       ) methods in           
@@ -25572,8 +25694,8 @@ let handle_uncurry_generation  loc
   end
 
 let handle_uncurry_application 
-    (self : Ast_mapper.mapper) 
     loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
+    (self : Ast_mapper.mapper) 
   : Parsetree.expression = 
   let args = 
     match pat with 
@@ -25621,27 +25743,38 @@ let handle_obj_property loc obj name e
                 name);
   }
 
+
+type method_kind = 
+  | Case_setter
+  | Setter
+  | Normal of string 
 let handle_obj_method loc (obj : Parsetree.expression) 
     name (value : Parsetree.expression) e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
-  let is_setter = 
-    name <> Literals.case_set && 
-    Ext_string.ends_with name Literals.setter_suffix in
+  let method_kind = 
+    if name = Literals.case_set then Case_setter
+    else if Ext_string.ends_with name Literals.setter_suffix then Setter
+    else Normal name in 
   let args = 
-    if  is_setter then 
+    match method_kind with 
+    | Setter -> 
       [value]
-    else 
-      match value with 
-      | {pexp_desc = 
-           Pexp_tuple 
-             [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
-         _} -> 
-        [arg]
-      | {pexp_desc = Pexp_tuple args; _} -> args
-      | {pexp_desc = 
-           Pexp_construct ({txt = Lident "()"}, None);
-         _} -> []
-      | v -> [v]
+    | (Case_setter | Normal _) -> 
+      let arity, args = 
+        match value with 
+        | {pexp_desc = 
+             Pexp_tuple 
+               [arg ; {pexp_desc = Pexp_ident{txt = Lident "__"; _}} ];
+           _} -> 
+          1, [arg]
+        | {pexp_desc = Pexp_tuple args; _} -> List.length args, args
+        | {pexp_desc = 
+             Pexp_construct ({txt = Lident "()"}, None);
+           _} -> 0, []
+        | v -> 1, [v] in 
+      if method_kind = Case_setter && arity <> 2 then 
+        Location.raise_errorf "case__set would expect arity of 2 "
+      else  args 
   in
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
@@ -25724,6 +25857,8 @@ let rec unsafe_mapper : Ast_mapper.mapper =
   { Ast_mapper.default_mapper with 
     expr = (fun mapper e -> 
         match e.pexp_desc with 
+        (** Begin rewriting [bs.raw], its output should not be rewritten anymore
+        *)        
         | Pexp_extension (
             {txt = "bs.raw"; loc} ,
             PStr 
@@ -25751,12 +25886,19 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+
+        (** End rewriting [bs.raw] *)
+
+        (** Begin rewriting [bs.debugger], its output should not be rewritten any more*)
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> handle_debugger loc payload
+        (** End rewriting *)
+
         | Pexp_extension
                  ({txt = "uncurry";loc},
                   PStr
-                    [{pstr_desc =
+                    [{
+                      pstr_desc =
                         Pstr_eval
                           ({pexp_desc =
                               Pexp_fun ("", None, pat ,
@@ -25768,31 +25910,39 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                       [("", fn);
                        ("", pat)])
           -> 
-          handle_uncurry_application  mapper loc fn pat e
+          handle_uncurry_application loc fn pat e mapper
 
+        | Pexp_apply
+            ({pexp_desc = 
+               Pexp_apply (
+                 {pexp_desc = 
+                    Pexp_ident  {txt = Lident "##" ; loc} ; _},
+                 [("", obj) ;
+                  ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
+                 ]);
+              _
+             }, args  )
+          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
+          begin match args with 
+          | [ "", value] -> 
+              handle_obj_method loc obj name value e mapper
+          | _ -> 
+            Location.raise_errorf 
+              "Js object ## expect only one argument when it is a method "
+          end
+        (* TODO: design: shall we allow 
+                               {[ x #.Capital ]}
+        *)
         | Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident "#." ; loc} ; _},
+                         Pexp_ident  {txt = Lident ("#." | "##") ; loc} ; _},
                       [("", obj) ;
                        ("", 
                         ({pexp_desc = Pexp_ident {txt = Lident name;_ } ; _}
                         |{pexp_desc = Pexp_construct ({txt = Lident name;_ }, None) ; _}
-                        ) ) (* TODO: design: shall we allow 
-                               {[ x #.Capital ]}
-                            *)
+                        ) )
                       ])
           -> handle_obj_property loc obj name e mapper
-        | Pexp_apply
-            ({pexp_desc = 
-               Pexp_apply ({pexp_desc = 
-                         Pexp_ident  {txt = Lident "##" ; loc} ; _},
-                      [("", obj) ;
-                       ("", {pexp_desc = Pexp_ident {txt = Lident name;_ } ; _} )
-                      ]);
-             _
-            }, [ "", value]  )
-          -> (** f ## xx a b -->  (f ## x a ) b -- we just pick the first one *)
-          handle_obj_method loc obj name value e mapper
-          
+
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
