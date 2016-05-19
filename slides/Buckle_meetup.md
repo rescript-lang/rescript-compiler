@@ -58,24 +58,24 @@ test()
 ```
 
 ```js
-// Generated CODE, PLEASE EDIT WITH CARE
 
 "use strict";
 var Int_map=require("./int_map.js");
-var
- test=
-  function()
-   {var m=Int_map.empty;
 
-    var count=1000000;
+function test() {
+  var m = /* Empty */0;
+  for(var i = 0; i <= 1000000; ++i){
+    m = add(i, i, m);
+  }
+  for(var j = 0; j <= 1000000; ++j){
+    find(j, m);
+  }
+  return /* () */0;
+}
 
-    for(var i=0;i<=count;++i){m=Int_map.add(i,i,m);}
-
-    for(var j=0;j<=count;++j){Int_map.find(j,m);}
-    return /* () */ 0;};
-
-test(/* () */);
+test(/* () */0);
 ```
+
 ---
 
 # Comparison with hand-written JS
@@ -179,27 +179,32 @@ function create_server(http) {
 
 ```ocaml
 (** Bindings for NodeJS [Http_binding.ml] *)
+
 type req 
-type resp = <
-   statusCode__set : int Js.set ;
-   setHeader : string * string -> unit [@uncurry];
-   end__ : string ->  unit [@uncurry]
->
 
-type server = <
-   listen :
-     int * string *  (unit -> unit  [@uncurry]) -> unit [@uncurry]
->
+type resp = [%uncurry: <
+   statusCode__set : int -> unit  ;
+   setHeader : string * string -> unit ;
+   end__ : string ->  unit 
+> Js.t ]
+
+type server = [%uncurry: <
+   listen : int * string *  (unit -> unit) -> unit 
+> Js.t]
 
 
-type http = <
-   createServer : (req Js.t * resp Js.t -> unit [@uncurry]) ->  server Js.t [@uncurry]
->
 
-external http : http Js.t = "http" [@@bs.module_as_val "http"]
+type http = [%uncurry:<
+   createServer : (req  * resp  -> unit ) ->  server
+> Js.t ]
+
+
+external http : http  = "http"  [@@bs.val_of_module ]
+
 ```
 
-*Pure types, no Code generated*
+*Pure types, no Code generated*, like *tsd*, but it is just plain
+ OCaml program.
 
 ---
 
