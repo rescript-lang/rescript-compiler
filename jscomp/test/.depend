@@ -96,8 +96,6 @@ class_repr.cmj : ../stdlib/oo.cmi
 class_repr.cmx : ../stdlib/oo.cmx
 class_test.cmj : mt.cmi
 class_test.cmx : mt.cmx
-class_type_ext.cmj :
-class_type_ext.cmx :
 class_type_ffi_test.cmj : ../runtime/js.cmj
 class_type_ffi_test.cmx : ../runtime/js.cmx
 complex_if_test.cmj : mt.cmi ../stdlib/bytes.cmi
@@ -744,8 +742,6 @@ class_repr.cmo : ../stdlib/oo.cmi
 class_repr.cmj : ../stdlib/oo.cmj
 class_test.cmo : mt.cmi
 class_test.cmj : mt.cmj
-class_type_ext.cmo :
-class_type_ext.cmj :
 class_type_ffi_test.cmo : ../runtime/js.cmo
 class_type_ffi_test.cmj : ../runtime/js.cmj
 complex_if_test.cmo : mt.cmi ../stdlib/bytes.cmi
