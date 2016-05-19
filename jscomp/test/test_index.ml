@@ -26,3 +26,23 @@ let ff (x : int case  Js.t)
 let h (x : (< case : (int ->  (int -> 'a [@uncurry]) [@uncurry]); .. > as 'b) Js.t) = 
   let a = x##case 3 in 
   a #@ 2   
+
+
+type x_obj = [%uncurry: < 
+       case : int ->  int ; 
+       case__set : int * int -> unit ;
+>  Js.t ]
+
+let f_ext 
+    (x : x_obj)
+ = 
+  x ## case__set (3, 2) ;
+  x ## case 3 
+
+type 'a h_obj = [%uncurry: < 
+ case : int ->  (int -> 'a)
+> Js.t ]
+
+let h_ext  (x : 'a h_obj) = 
+  let  a = x ##case 3 in 
+  a #@ 2 

@@ -13,21 +13,22 @@
 
 
 type req 
-type resp = <
-   statusCode__set : int -> unit [@uncurry] ;
-   setHeader : string * string -> unit [@uncurry];
-   end__ : string ->  unit [@uncurry]
->
 
-type server = <
-   listen : int * string *  (unit -> unit  [@uncurry]) -> unit [@uncurry]
->
+type resp = [%uncurry: <
+   statusCode__set : int -> unit  ;
+   setHeader : string * string -> unit ;
+   end__ : string ->  unit 
+> Js.t ]
 
-
-
-type http = <
-   createServer : (req Js.t * resp Js.t -> unit [@uncurry]) ->  server Js.t [@uncurry]
->
+type server = [%uncurry: <
+   listen : int * string *  (unit -> unit) -> unit 
+> Js.t]
 
 
-external http : http Js.t = "http"  [@@bs.val_of_module ]
+
+type http = [%uncurry:<
+   createServer : (req  * resp  -> unit ) ->  server
+> Js.t ]
+
+
+external http : http  = "http"  [@@bs.val_of_module ]
