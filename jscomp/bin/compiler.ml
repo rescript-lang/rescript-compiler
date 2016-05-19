@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 04/19-15:20 *)
+(** Bundled by ocaml_pack 04/19-15:43 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5175,7 +5175,7 @@ let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
-let version = "0.4.1"
+let version = "0.4.2"
 let runtime_set = 
   [
     js_primitive;
