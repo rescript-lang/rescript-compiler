@@ -118,17 +118,12 @@ let handle_raw ?ty loc e attrs  =
     | None -> predef_any_type))
     
 
-(** TODO: Should remove all [uncurry] attributes *)
+
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
-  let rec aux (attrs : Parsetree.attributes) acc = 
-    match attrs with 
-    | [({txt = "uncurry"}, _) as v ]  -> Some (List.rev acc, v)
-    | ({txt = "uncurry"}, _) as v :: rest -> 
-      Some ((List.rev acc @ rest)  , v)
-    | non_uncurry :: rest -> aux rest  (non_uncurry :: acc) 
-    | [] -> None 
-  in 
-  aux attrs []
+  Ext_list.exclude_with_fact (function 
+    | ({Location.txt  = "uncurry"}, _) -> true 
+    | _ -> false ) attrs 
+
 
 let uncurry_attr loc  : Parsetree.attribute = 
   {txt = "uncurry"; loc}, PStr []
@@ -161,27 +156,48 @@ let uncurry_fn_type loc ty ptyp_attributes
             ptyp_attributes = []
   }
 
+let uncurry = ref false 
+
+(*
+  Attributes are very hard to attribute
+  (since ptyp_attributes could happen in so many places), 
+  and write ppx extensions correctly, 
+  we can only use it locally
+*)
+
 let handle_typ 
     (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
+  | {ptyp_desc = 
+       Ptyp_extension({txt = "uncurry"}, 
+                      PTyp ty )}
+    -> 
+    Ext_ref.protect uncurry true begin fun () -> 
+      self.typ self  ty 
+    end
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
-    } ->
+   } ->
     begin match  find_uncurry_attrs_and_remove ptyp_attributes with 
-      | Some (ptyp_attributes, _) ->
+    | Some _, ptyp_attributes ->
         let args = self.typ self args in
         let body = self.typ self body in
         uncurry_fn_type loc ty ptyp_attributes args body 
-      | None -> super.typ self ty
+    | None, _ -> 
+        let args = self.typ self args in
+        let body = self.typ self body in
+        if !uncurry then 
+          uncurry_fn_type loc ty ptyp_attributes args body 
+        else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
     end
   | {ptyp_desc =  Ptyp_object ( methods, closed_flag) } -> 
     let methods = List.map (fun (label, ptyp_attrs, core_type ) -> 
         match find_uncurry_attrs_and_remove ptyp_attrs with 
-        | None -> label, ptyp_attrs , self.typ self core_type
-        | Some (ptyp_attrs, v) -> 
+        | None, _ -> label, ptyp_attrs , self.typ self core_type
+        | Some v, ptyp_attrs -> 
           label , ptyp_attrs, self.typ self 
             { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
       ) methods in           

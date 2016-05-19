@@ -15,6 +15,7 @@ ext_ident
 ext_pp
 ext_option
 ext_list
+ext_ref
 ext_string
 ext_char
 ext_format

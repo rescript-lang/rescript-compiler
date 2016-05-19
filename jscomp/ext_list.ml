@@ -38,6 +38,36 @@ let rec filter_map (f: 'a -> 'b option) xs =
       | Some z -> z :: filter_map f ys
       end
 
+let excludes p l =
+  let excluded = ref false in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := true ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  if !excluded then true, v else false,l
+
+let exclude_with_fact p l =
+  let excluded = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p x then 
+      begin 
+        excluded := Some x ;
+        aux accu l
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded , if !excluded <> None then v else l 
+
+
+
 let rec same_length xs ys = 
   match xs, ys with 
   | [], [] -> true
