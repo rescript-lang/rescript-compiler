@@ -1,10 +1,9 @@
 {
-  "dependencies": {
-    "marked": "^0.3.5"
+  "scripts": {
+    "build": "gitbook install && gitbook build",
+    "watch": "gitbook install && gitbook serve"
   },
   "devDependencies": {
-    "glob": "^7.0.3",
-    "handlebars": "^4.0.5",
-    "marked": "^0.3.5"
+    "gitbook-cli": "^2.1.3"
   }
 }
