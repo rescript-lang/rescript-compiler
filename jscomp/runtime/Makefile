@@ -10,13 +10,13 @@ OTHERS= caml_array caml_string \
 	caml_backtrace caml_int32 caml_gc typed_array \
 	js_primitive caml_basic caml_oo curry
 
-SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js fn 
+SOURCE_LIST= $(OTHERS) caml_builtin_exceptions  block  js 
 
 caml_oo.cmj : caml_array.cmj
 caml_format.cmj caml_io.cmj: curry.cmj
 
 
-$(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj fn.cmj
+$(addsuffix .cmj, $(OTHERS)): caml_builtin_exceptions.cmj  block.cmj js.cmj 
 
 RUNTIME := $(addsuffix .cmj, $(SOURCE_LIST)) 
 

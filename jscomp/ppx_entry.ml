@@ -66,7 +66,9 @@ let predef_val_unit  =
 let prim = "js_pure_expr"
 let prim_stmt = "js_pure_stmt"
 let prim_debugger = "js_debugger"
-
+let curry_type_id = Longident.Ldot (Lident "Js", "fn")
+let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+let js_unsafe_downgrade_id = Longident.Ldot (Ldot (Lident "Js", "Unsafe"), "!")
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
    the js value  maybe not be of type [unit] and 
@@ -77,7 +79,7 @@ let discard_js_value loc e  : Parsetree.expression =
   {pexp_desc = 
      Pexp_apply
        ({pexp_desc = 
-           Pexp_ident {txt = Ldot (Lident "Pervasives", "ignore") ; loc};
+           Pexp_ident {txt = ignore_id ; loc};
          pexp_attributes = [];
          pexp_loc = loc},
         [("",
@@ -93,6 +95,135 @@ let discard_js_value loc e  : Parsetree.expression =
    pexp_loc = loc;
    pexp_attributes = [] 
   }
+
+
+let gen_fn_run loc arity args  : Parsetree.expression_desc = 
+  let open Parsetree in 
+  let ptyp_attributes = [] in 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
+  let tyvars =
+        (Ext_list.init (arity + 1) (fun i -> 
+             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
+              ptyp_attributes ;
+              ptyp_loc = loc})) in
+  let tuple_type_desc = 
+    if arity = 0 then 
+      (List.hd tyvars).ptyp_desc
+      (* avoid single tuple *)
+    else 
+      Parsetree.Ptyp_tuple tyvars
+  in 
+  let uncurry_fn = 
+    {ptyp_desc =
+       Ptyp_constr ({txt = curry_type_id; loc},
+                    [{ptyp_desc = tuple_type_desc ;
+                      ptyp_attributes;
+                      ptyp_loc = loc  }]);
+     ptyp_attributes;
+     ptyp_loc = loc} in 
+  let arrow a b = 
+    {ptyp_desc =
+       Ptyp_arrow ("", a, b);
+     ptyp_attributes ;
+     ptyp_loc = loc} in 
+  (** could be optimized *)
+  let pval_type = 
+    Ext_list.reduce_from_right arrow (uncurry_fn :: tyvars) in 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes = []};
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
+  let open Parsetree in 
+  let ptyp_attributes = [] in 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "mk" in 
+  let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
+  let tyvars =
+        (Ext_list.init (arity + 1) (fun i -> 
+             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
+              ptyp_attributes ;
+              ptyp_loc = loc})) in
+  let tuple_type_desc = 
+    if arity = 0 then 
+      (List.hd tyvars).ptyp_desc
+      (* avoid single tuple *)
+    else 
+      Parsetree.Ptyp_tuple tyvars
+  in 
+  let uncurry_fn = 
+    {ptyp_desc =
+       Ptyp_constr ({txt = curry_type_id; loc},
+                    [{ptyp_desc = tuple_type_desc ;
+                      ptyp_attributes;
+                      ptyp_loc = loc  }]);
+     ptyp_attributes;
+     ptyp_loc = loc} in 
+  let arrow a b = 
+    {ptyp_desc =
+       Ptyp_arrow ("", a, b);
+     ptyp_attributes ;
+     ptyp_loc = loc} in 
+  (** could be optimized *)
+  let pval_type = 
+    if arity = 0 then 
+      arrow (arrow predef_unit_type (List.hd tyvars) ) uncurry_fn
+    else 
+      arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
+
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes = []};
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+        
+
 
 
 let handle_raw ?ty loc e attrs  = 
@@ -151,7 +282,7 @@ let uncurry_fn_type loc ty ptyp_attributes
             ptyp_attributes }
   in
   { ty with ptyp_desc =
-              Ptyp_constr ({txt = Ldot (Lident "Fn", "t") ; loc},
+              Ptyp_constr ({txt = curry_type_id ; loc},
                            [ fn_type]);
             ptyp_attributes = []
   }
@@ -246,44 +377,26 @@ let handle_uncurry_generation  loc
     | v -> [v]
   in
   let len = List.length args in 
-  let mk = "mk" ^ string_of_int len in 
   let body = mapper.expr mapper body in 
-  begin match args with 
-    | [] -> 
-      {e with pexp_desc =
-                Pexp_apply (
-                  {pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
-                   pexp_loc = loc; 
-                   pexp_attributes = []
-                  },
-                  [("",
-                    {pexp_desc =
-                       Pexp_fun ("", None,
-                                 {ppat_desc = 
-                                    Ppat_construct ({txt = Lident "()"; loc}, None);
-                                  ppat_loc = loc ; 
-                                  ppat_attributes = []},
-                                 body);
-                     pexp_loc = loc ;
-                     pexp_attributes = []})])}
-    | _ -> 
-      let fun_ = 
-        List.fold_right (fun arg body -> 
-            let arg = mapper.pat mapper arg in 
-            {Parsetree.
-              pexp_loc = loc ; 
-              pexp_desc = Pexp_fun ("", None, arg, body);
-              pexp_attributes = []}) args body in
-      { e  with 
-        pexp_desc = 
-          Pexp_apply ({pexp_desc = Pexp_ident {txt = Ldot (Lident "Fn", mk); loc};
-                       pexp_loc = loc ; 
-                       pexp_attributes = []},
-                      [("",
-                        fun_)])
-      }
-  end
-
+  let fun_ = 
+    if len = 0 then 
+      {Parsetree.pexp_desc =
+         Pexp_fun ("", None,
+                   {ppat_desc = 
+                      Ppat_construct ({txt = Lident "()"; loc}, None);
+                    ppat_loc = loc ; 
+                    ppat_attributes = []},
+                   body);
+       pexp_loc = loc ;
+       pexp_attributes = []}
+    else 
+      List.fold_right (fun arg body -> 
+          let arg = mapper.pat mapper arg in 
+          {Parsetree.
+            pexp_loc = loc ; 
+            pexp_desc = Pexp_fun ("", None, arg, body);
+            pexp_attributes = []}) args body in
+  {e with pexp_desc = gen_fn_mk loc len [("", fun_)]}
 let handle_uncurry_application 
     loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
     (self : Ast_mapper.mapper) 
@@ -302,18 +415,7 @@ let handle_uncurry_application
   let fn = self.expr self fn in 
   let args = List.map (self.expr self) args in 
   let len = List.length args in 
-  let run = "run" ^ string_of_int len in 
-  { e with
-    Parsetree.pexp_desc =
-      Pexp_apply (
-        {pexp_desc = 
-           Pexp_ident {txt = Ldot (Lident "Fn", run) ;
-                       loc ; };
-         pexp_loc = loc ;
-         pexp_attributes = []
-        },
-        (("", fn) :: List.map (fun x -> "", x) args))
-  }
+  { e with pexp_desc = gen_fn_run loc len (("", fn) :: List.map (fun x -> "", x) args)}
 
 let handle_obj_property loc obj name e 
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
@@ -324,7 +426,7 @@ let handle_obj_property loc obj name e
                ({pexp_desc =
                    Pexp_apply
                      ({pexp_desc =
-                         Pexp_ident {txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
+                         Pexp_ident {txt = js_unsafe_downgrade_id;
                                      loc};
                        pexp_loc = loc;
                        pexp_attributes = []},
@@ -370,39 +472,27 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-  (* TODO: in the future, dynamically create the c externs, 
-     so it can handle arbitrary large number
-  *)
-  let run = "run" ^ string_of_int len in 
-  { e with
-    pexp_desc =
-      Pexp_apply (
-        {pexp_desc = 
-           Pexp_ident {txt = Ldot (Lident "Fn", run) ;
-                       loc ; };
-         pexp_loc = loc ;
-         pexp_attributes = []
-        },
-        (("",
-          {pexp_desc =
-             Pexp_send
-               ({pexp_desc =
-                   Pexp_apply
-                     ({pexp_desc =
-                         Pexp_ident {
-                           txt = Ldot (Ldot (Lident "Js", "Unsafe"), "!");
-                           loc };
-                       pexp_loc = loc ; 
-                       pexp_attributes = []},
-                      [("", obj)]);
-                 pexp_loc = loc ;
-                 pexp_attributes = []},
-                name);
-           pexp_loc = loc ; 
-           pexp_attributes = [] }) :: 
-         List.map (fun x -> "", x) args
-        ))
-  }
+  
+  {e with pexp_desc = gen_fn_run loc len 
+    (("",
+      {pexp_desc =
+         Pexp_send
+           ({pexp_desc =
+               Pexp_apply
+                 ({pexp_desc =
+                     Pexp_ident {
+                       txt = js_unsafe_downgrade_id;
+                       loc };
+                   pexp_loc = loc ; 
+                   pexp_attributes = []},
+                  [("", obj)]);
+             pexp_loc = loc ;
+             pexp_attributes = []},
+            name);
+       pexp_loc = loc ; 
+       pexp_attributes = [] }) :: 
+     List.map (fun x -> "", x) args
+    )}
         (** TODO: 
             More syntax sanity check for [case__set] 
             case__set: arity 2

@@ -6,12 +6,12 @@ let f x =
   !x # height + !x # width 
 
 let g x : unit  = 
-  let () = Fn.run1 !x # method1 3 in
-  Fn.run2 !x # method2 3 3
+  let () = run1 !x # method1 3 in
+  run2 !x # method2 3 3
 
 let h x : unit  = 
-   Fn.run1 !x # height__set 3 ;
-   Fn.run1 !x # width__set 3 
+   run1 !x # height__set 3 ;
+   run1 !x # width__set 3 
 
 (**
 imagine you have 
@@ -26,7 +26,7 @@ the type should be
    ]}
 or 
    {[
-     < _set_height : (int, unit) Fn.t > Js.t
+     < _set_height : (int, unit) t > Js.t
    ]}   
 
 so {[
@@ -45,7 +45,7 @@ other edge cases
 so x will be of type 
    {[
      < _set_height : int -> unit ,
-       hey : (int * int * int * unit) Fn.t ;
+       hey : (int * int * int * unit) t ;
      ..     
      >     
    ]}
