@@ -1,130 +1,611 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html lang="en" >
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Curry and Uncurry functions | Why JavaScript?</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.6.7">
+        
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
 
-<head>
+        
+    
+    
+    <link rel="next" href="./JS-call-OCaml.html" />
+    
+    
+    <link rel="prev" href="./Runtime-representation.html" />
+    
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+        
+    </head>
+    <body>
+        
+        
+    <div class="book"
+        data-level="5.2"
+        data-chapter-title="Curry and Uncurry functions"
+        data-filepath="Curry-and-Uncurry-functions.md"
+        data-basepath="."
+        data-revision="Fri May 20 2016 13:10:16 GMT-0400 (EDT)"
+        data-innerlanguage="">
+    
 
-    <title>BuckleScript</title>
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
-    <script src="js/highlight.pack.js"></script>
-
-    <!-- Custom CSS -->
-    <link href="css/simple-sidebar.css" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <p><strong><a href="index.html">Home</a></strong></p>
-<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
-<p><strong>Get Started</strong></p>
-<ul>
-<li><a href="Installation.html">Installation</a></li>
-<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
-<li><a href="NPM-Support.html">NPM Support</a></li>
-</ul>
-<p><strong>BuckleScript Basics</strong></p>
-<ul>
-<li><a href="FAQ.html">FAQ</a></li>
-<li><a href="https://ocaml.org/">About OCaml</a></li>
-<li><a href="Compiler-options.html">Compiler options</a></li>
-<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
-<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
-<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
-<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
-</ul>
-<p><strong>BuckleScript Overview</strong></p>
-<ul>
-<li><a href="Compiler-overview.html">Compiler overview</a></li>
-</ul>
-<p><strong>BuckleScript FFI</strong></p>
-<ul>
-<li><a href="Runtime-representation.html">Runtime representation</a></li>
-<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
-<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
-<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
-<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
-<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
-</ul>
-<p><strong>Contributions</strong></p>
-<ul>
-<li><a href="https://github.com/bloomberg/bucklescript">Github Link</a></li>
-<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
-<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
-</ul>
-<p><strong>Roadmap</strong></p>
-<ul>
-<li><a href="Roadmap.html">Roadmap</a></li>
-</ul>
-<p><strong>Comparisons</strong></p>
-<ul>
-<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
-</ul>
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="./index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Home
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" >
+            
+                
+                    <a target="_blank" href="https:/bloomberg.github.io/bucklescript/js-demo">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                        Playground
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2" >
+            
+            <span><b>2.</b> Get Started</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1" data-path="Installation.html">
+            
+                
+                    <a href="./Installation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                        Installation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="Create-a-simple-example-with-NPM.html">
+            
+                
+                    <a href="./Create-a-simple-example-with-NPM.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.2.</b>
+                        
+                        Create a simple example with NPM
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="NPM-Support.html">
+            
+                
+                    <a href="./NPM-Support.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.3.</b>
+                        
+                        NPM Support
+                    </a>
+            
+            
+        </li>
+    
 
             </ul>
-        </div>
-        <!-- /#sidebar-wrapper -->
+            
+        </li>
+    
+        <li class="chapter " data-level="3" >
+            
+            <span><b>3.</b> BuckleScript Basics</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1" data-path="FAQ.html">
+            
+                
+                    <a href="./FAQ.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.1.</b>
+                        
+                        FAQ
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" >
+            
+                
+                    <a target="_blank" href="https:/ocaml.org/">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                        About OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.3" data-path="Compiler-options.html">
+            
+                
+                    <a href="./Compiler-options.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.3.</b>
+                        
+                        Compiler options
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="How-to-adapt-your-build-system.html">
+            
+                
+                    <a href="./How-to-adapt-your-build-system.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.4.</b>
+                        
+                        How to adapt your build system
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.5" data-path="Extensions-to-OCaml-Language.html">
+            
+                
+                    <a href="./Extensions-to-OCaml-Language.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.5.</b>
+                        
+                        Extensions to OCaml Language
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.6" data-path="Semantic-differences-from-other-backends.html">
+            
+                
+                    <a href="./Semantic-differences-from-other-backends.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.6.</b>
+                        
+                        Semantic differences from other backends
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.7" data-path="JavaScript-target-versions.html">
+            
+                
+                    <a href="./JavaScript-target-versions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.7.</b>
+                        
+                        JavaScript target versions
+                    </a>
+            
+            
+        </li>
+    
 
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4" >
+            
+            <span><b>4.</b> BuckleScript Overview</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1" data-path="Compiler-overview.html">
+            
+                
+                    <a href="./Compiler-overview.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.1.</b>
+                        
+                        Compiler overview
+                    </a>
+            
+            
+        </li>
+    
 
-                    <div class="col-lg-12">
-                      <a  class="btn btn-default"
-                      id="menu-toggle" 
-                         >Toggle Menu</a>
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="5" >
+            
+            <span><b>5.</b> BuckleScript FFI</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="5.1" data-path="Runtime-representation.html">
+            
+                
+                    <a href="./Runtime-representation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.1.</b>
+                        
+                        Runtime representation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter active" data-level="5.2" data-path="Curry-and-Uncurry-functions.html">
+            
+                
+                    <a href="./Curry-and-Uncurry-functions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.2.</b>
+                        
+                        Curry and Uncurry functions
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="JS-call-OCaml.html">
+            
+                
+                    <a href="./JS-call-OCaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.3.</b>
+                        
+                        JS call OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="OCaml-call-JS.html">
+            
+                
+                    <a href="./OCaml-call-JS.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        OCaml call JS
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.5" data-path="Experimental-support-of-typescript.html">
+            
+                
+                    <a href="./Experimental-support-of-typescript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.5.</b>
+                        
+                        Experimental support of typescript
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.6" data-path="Unsupported-IO-primitives.html">
+            
+                
+                    <a href="./Unsupported-IO-primitives.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.6.</b>
+                        
+                        Unsupported IO primitives
+                    </a>
+            
+            
+        </li>
+    
 
-                      <a  href="https://github.com/bloomberg/bucklescript/tree/master/docs/Curry-and-Uncurry-functions.md" class="btn btn-default"
-                      style="position: absolute; top: 0; right: 0;
-                      border: 0;"
-                         >Edit on Github</a>
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="6" >
+            
+            <span><b>6.</b> Contributions</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="6.1" >
+            
+                
+                    <a target="_blank" href="https:/github.com/bloomberg/bucklescript">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                        Github Link
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="6.2" data-path="Dev-mode-How-to.html">
+            
+                
+                    <a href="./Dev-mode-How-to.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
+                        
+                        Dev mode How to
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="6.3" data-path="Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+            
+                
+                    <a href="./Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.3.</b>
+                        
+                        Help move runtime functions from OCaml to Javascript
+                    </a>
+            
+            
+        </li>
+    
 
-                      <p>JavaScript functions are all <a href="https://en.wikipedia.org/wiki/Currying">uncurried</a>, while OCaml functions are curried by default. </p>
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="7" >
+            
+            <span><b>7.</b> Roadmap</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="7.1" data-path="Roadmap.html">
+            
+                
+                    <a href="./Roadmap.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.1.</b>
+                        
+                        Roadmap
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="8" >
+            
+            <span><b>8.</b> Comparisons</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="8.1" data-path="Differences-from-js_of_ocaml.html">
+            
+                
+                    <a href="./Differences-from-js_of_ocaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.1.</b>
+                        
+                        Differences from js_of_ocaml
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="./" >Why JavaScript?</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <p>JavaScript functions are all <a href="https://en.wikipedia.org/wiki/Currying" target="_blank">uncurried</a>, while OCaml functions are curried by default. </p>
 <p>A naive approach would be to Curry every OCaml functions but this has a non trivial cost and makes the generated code harder to read. Therefore BuckleScript will try its best to uncurry its function in both definition and call site.</p>
 <p>It is also possible to help BuckleScript perform the uncurrying by using using the runtime provided <code>Fn</code> module: </p>
-<pre><code class="lang-OCaml">let iter_f = Fn.mk1 my_function in 
-List.iter iter_f l
+<pre><code class="lang-OCaml"><span class="hljs-keyword">let</span> iter_f = <span class="hljs-type">Fn</span>.mk1 my_function <span class="hljs-keyword">in</span> 
+<span class="hljs-type">List</span>.iter iter_f l
 </code></pre>
 
-                    </div>
+                    
+                    </section>
+                
+                
                 </div>
             </div>
         </div>
-        <!-- /#page-content-wrapper -->
 
+        
+        <a href="./Runtime-representation.html" class="navigation navigation-prev " aria-label="Previous page: Runtime representation"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="./JS-call-OCaml.html" class="navigation navigation-next " aria-label="Next page: JS call OCaml"><i class="fa fa-angle-right"></i></a>
+        
     </div>
-    <!-- /#wrapper -->
+</div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="js/start.js"></script>
+        
+<script src="gitbook/app.js"></script>
 
+    
+    <script src="gitbook/plugins/gitbook-plugin-edit-link/plugin.js"></script>
+    
 
-</body>
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
 
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-sharing/buttons.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"edit-link":{"base":"https://github.com/bloomberg/bucklescript/tree/master/docs","label":"Edit This Page"},"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    gitbook.start(config);
+});
+</script>
+
+        
+    </body>
+    
 </html>
