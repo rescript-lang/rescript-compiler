@@ -305,3 +305,4 @@ ignore_test
 test_index
 
 obj_literal_ppx_test
+obj_literal_ppx
