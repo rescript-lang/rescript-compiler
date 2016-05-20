@@ -97,6 +97,41 @@ let discard_js_value loc e  : Parsetree.expression =
   }
 
 
+let create_local_external loc 
+     ~pval_prim
+     ~pval_type ~pval_attributes 
+     local_module_name 
+     local_fun_name
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+
 let gen_fn_run loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
@@ -131,32 +166,8 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
   (** could be optimized *)
   let pval_type = 
     Ext_list.reduce_from_right arrow (uncurry_fn :: tyvars) in 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes = []};
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
+  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
+    local_module_name local_fun_name args 
 
 let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
@@ -195,33 +206,8 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
       arrow (arrow predef_unit_type (List.hd tyvars) ) uncurry_fn
     else 
       arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes = []};
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
+  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
+    local_module_name local_fun_name args 
         
 
 
