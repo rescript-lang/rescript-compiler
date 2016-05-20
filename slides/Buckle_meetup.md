@@ -182,21 +182,21 @@ function create_server(http) {
 
 type req 
 
-type resp = [%uncurry: <
-   statusCode__set : int -> unit  ;
-   setHeader : string * string -> unit ;
-   end__ : string ->  unit 
-> Js.t ]
+type resp = <
+   statusCode__set : int -> unit [@uncurry] ;
+   setHeader : string * string -> unit [@uncurry] ;
+   end__ : string ->  unit [@uncurry]
+> Js.t 
 
-type server = [%uncurry: <
-   listen : int * string *  (unit -> unit) -> unit 
-> Js.t]
+type server =  <
+   listen : int * string *  (unit -> unit [@uncurry]) -> unit [@uncurry];
+> Js.t
 
 
 
-type http = [%uncurry:<
-   createServer : (req  * resp  -> unit ) ->  server
-> Js.t ]
+type http = <
+   createServer : (req  * resp  -> unit [@uncurry] ) ->  server [@uncurry]
+> Js.t 
 
 
 external http : http  = "http"  [@@bs.val_of_module ]
@@ -320,7 +320,11 @@ Leverage the (high-level, strongly typed) OCaml language tool-chain to generate 
 
 # [Comparison with  Js_of_ocaml](https://bloomberg.github.io/bucklescript/Differences-from-js_of_ocaml.html)
 
+---
 
+# Demo
+
+* [Code Repo](https://github.com/bobzhang/bucklescript-demo)
 
 ---
 
