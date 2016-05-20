@@ -74,8 +74,6 @@ caml_weak.cmj : js.cmj caml_array.cmi caml_weak.cmi
 caml_weak.cmx : js.cmx caml_array.cmx caml_weak.cmi
 curry.cmj : js.cmj caml_oo.cmi
 curry.cmx : js.cmx caml_oo.cmx
-fn.cmj :
-fn.cmx :
 js.cmj :
 js.cmx :
 js_primitive.cmj : js.cmj js_primitive.cmi
@@ -134,8 +132,6 @@ caml_weak.cmo : js.cmo caml_array.cmi caml_weak.cmi
 caml_weak.cmj : js.cmj caml_array.cmj caml_weak.cmi
 curry.cmo : js.cmo caml_oo.cmi
 curry.cmj : js.cmj caml_oo.cmj
-fn.cmo :
-fn.cmj :
 js.cmo :
 js.cmj :
 js_primitive.cmo : js.cmo js_primitive.cmi

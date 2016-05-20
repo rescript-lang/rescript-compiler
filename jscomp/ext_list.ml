@@ -264,3 +264,24 @@ let split_map
 
   aux [] [] xs 
 
+
+(*
+   {[
+     reduce_from_right (-) [1;2;3];;
+     - : int = 2
+               # reduce_from_right (-) [1;2;3; 4];;
+     - : int = -2
+                # reduce_from_right (-) [1];;
+     - : int = 1
+               # reduce_from_right (-) [1;2;3; 4; 5];;
+     - : int = 3
+   ]} 
+*)
+let reduce_from_right fn lst = 
+  begin match List.rev lst with
+    | last :: rest -> 
+      List.fold_left  (fun x y -> fn y x) last rest 
+    | _ -> invalid_arg "Ext_list.reduce" 
+  end
+
+
