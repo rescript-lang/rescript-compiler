@@ -2,18 +2,18 @@
 
 To use BuckleScript, you need both, a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install both of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.
 
-## Default installation procedure (using package managers) 
+## Default installation procedure (using package managers)
 
-### 1. OCaml compiler from opam (optional) 
+### 1. OCaml compiler from opam (optional)
 
-When working with OCaml we recommend using [opam](https://opam.ocaml.org) package manager, available [here](https://opam.ocaml.org/doc/Install.html). You will benefit from the existing OCaml ecosystem. 
+When working with OCaml we recommend using [opam](https://opam.ocaml.org) package manager, available [here](https://opam.ocaml.org/doc/Install.html). You will benefit from the existing OCaml ecosystem.
 
 Once you have `opam` installed, ask `opam` to switch to using our version of the compiler:
 
 ```sh
 opam update
 opam switch 4.02.3+buckle-1
-eval `opam config env` 
+eval `opam config env`
 ```
 
 > This step is optional. npm installation will build the compiler from source if not installed from opam
@@ -26,7 +26,7 @@ The standard npm package management tool can be used to install BuckleScript. If
 npm install --save bs-platform
 ```
 
-## Advanced installation procedure (from source) 
+## Advanced installation procedure (from source)
 
 BuckleScript has very little dependencies and building from source can easily be done.
 
@@ -71,4 +71,4 @@ MODULE_FLAGS='-js-module commonjs' make world
 MODULE_FLAGS='-js-module goog:buckle' make world
 ```
 
-Also see [Create a simple example with npm](./Create-a-simple-example-with-npm.md)
+Also see [Create a simple example with npm](./Create-a-simple-example-with-NPM.md)

@@ -37,18 +37,18 @@ libraries into small pieces like as done in [lodash](https://github.com/lodash/l
 
    The OCaml compiler implementation(s) are famous for blazing fast compile times, and as programmer, we think compile times really matter and are a very important feature of a compiled language.
 
-    [images/compile-time.png](./images/compile-time.png)
-    
+    ![./dist/images/compile-time.png](./dist/images/compile-time.png)
+
    The above picture compares OCaml compilation-times with
    other languages: S for Scala, K for Koltin, TS for TypeScript.
-   
+
    Bucklescript reuses most of the OCaml compiler (parsing/type
    checking and pattern match compilation), its type checker
    [was well engineered](http://okmij.org/ftp/ML/generalization.html)
    and written in an imperative style to make it fast.
 
    Before BuckleScript, there already existed an
-   [OCaml to JS compiler](./Difference-from-js_of_ocaml.md). BuckleScript
+   [OCaml to JS compiler](./Differences-from-js_of_ocaml.md). BuckleScript
    stands on the shoulders of such excellent tools. For example, from the very beginning, much like Js_of_ocaml,
    BuckleScript has an assembly backend, which we use for the best performance in our development
    environment and our
@@ -131,7 +131,7 @@ We also compare code Size:
 
 ### How is it faster than hand-written JS code?
 
-It's hard to explain JS performances in general, however, we will 
+It's hard to explain JS performances in general, however, we will
 explain some of the optimizations we've done. For example, in OCaml, `Map`
 is like C++ templates, i.e. it will be instantiated by a comparison
 function, like below:
@@ -177,7 +177,3 @@ There are other factors count, mostly code organized in functional
 style are much easier to do the tree shaking while harder to remove
 for OO style, OCaml's standard library and runtime are organized in an
 independent style, which also helps dead code removal.
-
-
-
-
