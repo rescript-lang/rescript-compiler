@@ -97,6 +97,89 @@ let discard_js_value loc e  : Parsetree.expression =
   }
 
 
+let create_local_external loc 
+     ~pval_prim
+     ~pval_type ~pval_attributes 
+     local_module_name 
+     local_fun_name
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+let handle_record_as_js_object 
+    loc 
+    attr
+    (label_exprs : (Longident.t Asttypes.loc * Parsetree.expression) list)
+    (mapper : Ast_mapper.mapper) : Parsetree.expression_desc = 
+  let labels, args = 
+    Ext_list.split_map (fun ({Location.txt ; loc}, e) -> 
+        match txt with
+        | Longident.Lident x -> (x, (x, mapper.expr mapper e))
+        | Ldot _ | Lapply _ ->  
+          Location.raise_errorf ~loc "invalid js label "
+  ) label_exprs in 
+  let pval_prim = "" in 
+  let pval_attributes = [attr] in 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  let arrow label a b = 
+    {Parsetree.ptyp_desc = Ptyp_arrow (label, a, b);
+     ptyp_attributes = [];
+     ptyp_loc = loc} in 
+
+  let pval_type = 
+    let arity = List.length labels in 
+    let tyvars = (Ext_list.init arity (fun i ->      
+        {Parsetree.ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
+         ptyp_attributes = [] ;
+         ptyp_loc = loc})) in 
+
+    let result_type = 
+      {Parsetree.ptyp_desc = 
+         Ptyp_constr ({txt = Ldot(Lident "Js", "t"); loc},
+                      [{ Parsetree.ptyp_desc = 
+                           Ptyp_object (List.map2 (fun x y -> x ,[], y) labels tyvars, Closed);
+                         ptyp_attributes = [];
+                         ptyp_loc = loc
+                       }]);
+       ptyp_loc = loc;
+       ptyp_attributes = []
+      } in 
+    List.fold_right2 
+      (fun label tyvar acc -> arrow label tyvar acc) labels tyvars  result_type
+  in 
+  create_local_external loc 
+    ~pval_prim
+    ~pval_type ~pval_attributes 
+    local_module_name 
+    local_fun_name
+    args 
+
 let gen_fn_run loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
@@ -131,32 +214,8 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
   (** could be optimized *)
   let pval_type = 
     Ext_list.reduce_from_right arrow (uncurry_fn :: tyvars) in 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes = []};
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
+  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
+    local_module_name local_fun_name args 
 
 let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
@@ -195,33 +254,8 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
       arrow (arrow predef_unit_type (List.hd tyvars) ) uncurry_fn
     else 
       arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes = []};
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
+  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
+    local_module_name local_fun_name args 
         
 
 
@@ -623,7 +657,20 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         ) )
                       ])
           -> handle_obj_property loc obj name e mapper
-
+        | Pexp_record (label_exprs, None)   -> 
+          begin match  (* exclude {[ u with ..]} syntax currently *)
+              Ext_list.exclude_with_fact 
+                (function({Location.txt  = "bs.obj"}, _)  -> true | _ -> false) 
+                e.pexp_attributes
+            with 
+          | Some attr, pexp_attributes -> 
+            { e with
+              pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+              pexp_attributes 
+            }
+          | None , _ -> 
+            Ast_mapper.default_mapper.expr  mapper e
+          end
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
