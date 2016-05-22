@@ -71,4 +71,20 @@ cd ./runtime; make all
 cd ./stdlib; make all
 ```
 
+# Sub directories
 
+## [stdlib](./stdlib)
+
+A copy of standard library from OCaml distribution(4.02) for fast development, 
+so that we don't need bootstrap compiler, everytime we deliver a new feature.
+
+- Files copied
+  - sources
+  - Makefile.shared Compflags .depend Makefile
+- Patches
+  Most in [Makefile.shared](./stdlib/Makefile.shared)
+
+
+## [test](./test)
+
+The directory containing unit-test files, some unit tests are copied from OCaml distribution(4.02)
