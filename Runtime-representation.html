@@ -1,109 +1,557 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html lang="en" >
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Runtime representation | Why JavaScript?</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.6.7">
+        
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
 
-<head>
+        
+    
+    
+    <link rel="next" href="./Curry-and-Uncurry-functions.html" />
+    
+    
+    <link rel="prev" href="./Compiler-overview.html" />
+    
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+        
+    </head>
+    <body>
+        
+        
+    <div class="book"
+        data-level="5.1"
+        data-chapter-title="Runtime representation"
+        data-filepath="Runtime-representation.md"
+        data-basepath="."
+        data-revision="Fri May 20 2016 13:10:16 GMT-0400 (EDT)"
+        data-innerlanguage="">
+    
 
-    <title>BuckleScript</title>
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+            
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
-    <script src="js/highlight.pack.js"></script>
-
-    <!-- Custom CSS -->
-    <link href="css/simple-sidebar.css" rel="stylesheet">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-</head>
-
-<body>
-
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <ul class="sidebar-nav">
-              <p><strong><a href="index.html">Home</a></strong></p>
-<p><strong><a href="https://bloomberg.github.io/bucklescript/js-demo">Playground</a></strong></p>
-<p><strong>Get Started</strong></p>
-<ul>
-<li><a href="Installation.html">Installation</a></li>
-<li><a href="Create-a-simple-example-with-NPM.html">Create a simple example with NPM</a></li>
-<li><a href="NPM-Support.html">NPM Support</a></li>
-</ul>
-<p><strong>BuckleScript Basics</strong></p>
-<ul>
-<li><a href="FAQ.html">FAQ</a></li>
-<li><a href="https://ocaml.org/">About OCaml</a></li>
-<li><a href="Compiler-options.html">Compiler options</a></li>
-<li><a href="How-to-adapt-your-build-system.html">How to adapt your build system</a></li>
-<li><a href="Extensions-to-OCaml-Language.html">Extensions to OCaml Language</a></li>
-<li><a href="Semantic-differences-from-other-backends.html">Semantic differences from other backends</a></li>
-<li><a href="JavaScript-target-versions.html">JavaScript target versions</a></li>
-</ul>
-<p><strong>BuckleScript Overview</strong></p>
-<ul>
-<li><a href="Compiler-overview.html">Compiler overview</a></li>
-</ul>
-<p><strong>BuckleScript FFI</strong></p>
-<ul>
-<li><a href="Runtime-representation.html">Runtime representation</a></li>
-<li><a href="Curry-and-Uncurry-functions.html">Curry and Uncurry functions</a></li>
-<li><a href="JS-call-OCaml.html">JS call OCaml</a></li>
-<li><a href="OCaml-call-JS.html">OCaml call JS</a></li>
-<li><a href="Experimental-support-of-typescript.html">Experimental support of typescript</a></li>
-<li><a href="Unsupported-IO-primitives.html">Unsupported IO primitives</a></li>
-</ul>
-<p><strong>Contributions</strong></p>
-<ul>
-<li><a href="https://github.com/bloomberg/bucklescript">Github Link</a></li>
-<li><a href="Dev-mode-How-to.html">Dev mode How to</a></li>
-<li><a href="Help-move-runtime-functions-from-OCaml-to-Javascript.html">Help move runtime functions from OCaml to Javascript</a></li>
-</ul>
-<p><strong>Roadmap</strong></p>
-<ul>
-<li><a href="Roadmap.html">Roadmap</a></li>
-</ul>
-<p><strong>Comparisons</strong></p>
-<ul>
-<li><a href="Differences-from-js_of_ocaml.html">Differences from js_of_ocaml</a></li>
-</ul>
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="./index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Home
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" >
+            
+                
+                    <a target="_blank" href="https:/bloomberg.github.io/bucklescript/js-demo">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                        Playground
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2" >
+            
+            <span><b>2.</b> Get Started</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="2.1" data-path="Installation.html">
+            
+                
+                    <a href="./Installation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.1.</b>
+                        
+                        Installation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="Create-a-simple-example-with-NPM.html">
+            
+                
+                    <a href="./Create-a-simple-example-with-NPM.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.2.</b>
+                        
+                        Create a simple example with NPM
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="NPM-Support.html">
+            
+                
+                    <a href="./NPM-Support.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.3.</b>
+                        
+                        NPM Support
+                    </a>
+            
+            
+        </li>
+    
 
             </ul>
-        </div>
-        <!-- /#sidebar-wrapper -->
+            
+        </li>
+    
+        <li class="chapter " data-level="3" >
+            
+            <span><b>3.</b> BuckleScript Basics</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="3.1" data-path="FAQ.html">
+            
+                
+                    <a href="./FAQ.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.1.</b>
+                        
+                        FAQ
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" >
+            
+                
+                    <a target="_blank" href="https:/ocaml.org/">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.2.</b>
+                        
+                        About OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.3" data-path="Compiler-options.html">
+            
+                
+                    <a href="./Compiler-options.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.3.</b>
+                        
+                        Compiler options
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="How-to-adapt-your-build-system.html">
+            
+                
+                    <a href="./How-to-adapt-your-build-system.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.4.</b>
+                        
+                        How to adapt your build system
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.5" data-path="Extensions-to-OCaml-Language.html">
+            
+                
+                    <a href="./Extensions-to-OCaml-Language.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.5.</b>
+                        
+                        Extensions to OCaml Language
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.6" data-path="Semantic-differences-from-other-backends.html">
+            
+                
+                    <a href="./Semantic-differences-from-other-backends.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.6.</b>
+                        
+                        Semantic differences from other backends
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3.7" data-path="JavaScript-target-versions.html">
+            
+                
+                    <a href="./JavaScript-target-versions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.7.</b>
+                        
+                        JavaScript target versions
+                    </a>
+            
+            
+        </li>
+    
 
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="4" >
+            
+            <span><b>4.</b> BuckleScript Overview</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="4.1" data-path="Compiler-overview.html">
+            
+                
+                    <a href="./Compiler-overview.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.1.</b>
+                        
+                        Compiler overview
+                    </a>
+            
+            
+        </li>
+    
 
-                    <div class="col-lg-12">
-                      <a  class="btn btn-default"
-                      id="menu-toggle" 
-                         >Toggle Menu</a>
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="5" >
+            
+            <span><b>5.</b> BuckleScript FFI</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="5.1" data-path="Runtime-representation.html">
+            
+                
+                    <a href="./Runtime-representation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.1.</b>
+                        
+                        Runtime representation
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.2" data-path="Curry-and-Uncurry-functions.html">
+            
+                
+                    <a href="./Curry-and-Uncurry-functions.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.2.</b>
+                        
+                        Curry and Uncurry functions
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="JS-call-OCaml.html">
+            
+                
+                    <a href="./JS-call-OCaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.3.</b>
+                        
+                        JS call OCaml
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="OCaml-call-JS.html">
+            
+                
+                    <a href="./OCaml-call-JS.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        OCaml call JS
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.5" data-path="Experimental-support-of-typescript.html">
+            
+                
+                    <a href="./Experimental-support-of-typescript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.5.</b>
+                        
+                        Experimental support of typescript
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.6" data-path="Unsupported-IO-primitives.html">
+            
+                
+                    <a href="./Unsupported-IO-primitives.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.6.</b>
+                        
+                        Unsupported IO primitives
+                    </a>
+            
+            
+        </li>
+    
 
-                      <a  href="https://github.com/bloomberg/bucklescript/tree/master/docs/Runtime-representation.md" class="btn btn-default"
-                      style="position: absolute; top: 0; right: 0;
-                      border: 0;"
-                         >Edit on Github</a>
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="6" >
+            
+            <span><b>6.</b> Contributions</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="6.1" >
+            
+                
+                    <a target="_blank" href="https:/github.com/bloomberg/bucklescript">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.1.</b>
+                        
+                        Github Link
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="6.2" data-path="Dev-mode-How-to.html">
+            
+                
+                    <a href="./Dev-mode-How-to.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.2.</b>
+                        
+                        Dev mode How to
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="6.3" data-path="Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+            
+                
+                    <a href="./Help-move-runtime-functions-from-OCaml-to-Javascript.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.3.</b>
+                        
+                        Help move runtime functions from OCaml to Javascript
+                    </a>
+            
+            
+        </li>
+    
 
-                      <p>Below is a description of how OCaml values are encoded in JavaScript, 
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="7" >
+            
+            <span><b>7.</b> Roadmap</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="7.1" data-path="Roadmap.html">
+            
+                
+                    <a href="./Roadmap.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.1.</b>
+                        
+                        Roadmap
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="8" >
+            
+            <span><b>8.</b> Comparisons</span>
+            
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="8.1" data-path="Differences-from-js_of_ocaml.html">
+            
+                
+                    <a href="./Differences-from-js_of_ocaml.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.1.</b>
+                        
+                        Differences from js_of_ocaml
+                    </a>
+            
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="./" >Why JavaScript?</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <p>Below is a description of how OCaml values are encoded in JavaScript, 
 the <strong>internal</strong> description means <strong>users should not rely on its actual
 encoding (and it is subject to change)</strong>. We recommend that you write setter/getter functions 
 to manipulate safely OCaml values from JavaScript. </p>
@@ -139,7 +587,7 @@ code should only rely on such three functions.</p>
 <h2 id="char">char</h2>
 <ul>
 <li>JavaScript type : number
-for example, <code>&#39;a&#39;</code> is encoded as its ascii code <code>97</code></li>
+for example, <code>&apos;a&apos;</code> is encoded as its ascii code <code>97</code></li>
 </ul>
 <h2 id="string">string</h2>
 <ul>
@@ -156,11 +604,11 @@ for example, <code>&#39;a&#39;</code> is encoded as its ascii code <code>97</cod
 <ul>
 <li>JavaScript type : Array. </li>
 </ul>
-<h2 id="record-internal-">record <em>internal</em></h2>
+<h2 id="record-internal">record <em>internal</em></h2>
 <ul>
 <li>javascript type: object
-For instance:<pre><code class="lang-ocaml">type t = { x : int; y : int }
-let v = {x = 1;  y = 2}
+For instance:<pre><code class="lang-ocaml"><span class="hljs-keyword">type</span> t = { x : <span class="hljs-built_in">int</span>; y : <span class="hljs-built_in">int</span> }
+<span class="hljs-keyword">let</span> v = {x = <span class="hljs-number">1</span>;  y = <span class="hljs-number">2</span>}
 </code></pre>
 <code>v</code> is encoded as `[1,2]</li>
 </ul>
@@ -169,42 +617,42 @@ let v = {x = 1;  y = 2}
 <li>JavaScript type: Array
 for example, <code>(a,b)</code> is encoded as <code>[a,b]</code></li>
 </ul>
-<h2 id="-a-option-internal-"><code>&#39;a option</code> <em>internal</em></h2>
+<h2 id="a-option-internal"><code>&apos;a option</code> <em>internal</em></h2>
 <ul>
 <li><code>None</code> -&gt;  <code>0</code></li>
 <li><code>Some a</code> -&gt; <code>[a]</code></li>
 </ul>
-<h2 id="-a-list-internal-"><code>&#39;a list</code> <em>internal</em></h2>
+<h2 id="a-list-internal"><code>&apos;a list</code> <em>internal</em></h2>
 <ul>
 <li><code>[]</code> -&gt; <code>0</code></li>
 <li><code>x::y</code> -&gt; <code>[x,y]</code></li>
 </ul>
-<h2 id="variant-internal-">Variant <em>internal</em></h2>
+<h2 id="variant-internal">Variant <em>internal</em></h2>
 <ul>
 <li>javascript type: object (for non nullary constructor)</li>
 <li><p>javascript type: number (for nullary constructor)</p>
-<pre><code class="lang-ocaml">type t = 
-     | A
-     | B of int * int 
-     | C of int * int 
-     | D
+<pre><code class="lang-ocaml"><span class="hljs-keyword">type</span> t = 
+     | <span class="hljs-type">A</span>
+     | <span class="hljs-type">B</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> * <span class="hljs-built_in">int</span> 
+     | <span class="hljs-type">C</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> * <span class="hljs-built_in">int</span> 
+     | <span class="hljs-type">D</span>
 </code></pre>
 <p>Here <code>A</code> is encoded as <code>0</code>, <code>D</code> is encoded as <code>1</code>.
 <code>B (1,2)</code> is encoded as <code>[1,2]</code> with property <code>tag</code> which is <code>0</code>
 you can imagine it is encoded as</p>
-<pre><code class="lang-js">Object.defineProperty([1,2], &#39;tag&#39;, { &#39;value&#39; : 0 })
+<pre><code class="lang-js"><span class="hljs-built_in">Object</span>.defineProperty([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>], <span class="hljs-string">&apos;tag&apos;</span>, { <span class="hljs-string">&apos;value&apos;</span> : <span class="hljs-number">0</span> })
 </code></pre>
 <p><code>C (1,2)</code> is encoded as below</p>
-<pre><code class="lang-js">Object.defineProperty([1,2], &#39;tag&#39;, { &#39;value&#39; : 1 })
+<pre><code class="lang-js"><span class="hljs-built_in">Object</span>.defineProperty([<span class="hljs-number">1</span>,<span class="hljs-number">2</span>], <span class="hljs-string">&apos;tag&apos;</span>, { <span class="hljs-string">&apos;value&apos;</span> : <span class="hljs-number">1</span> })
 </code></pre>
 <p>As we clarified before, the internal representation should not be relied upon, for example, 
 we might change the name of <code>tag</code> in the future.</p>
 <p>We are working to provide a ppx extension as below:</p>
-<pre><code class="lang-ocaml"> type t = 
-    | A
-    | B of int * int 
-    | C of int * int 
-    | D [@@bs.export]
+<pre><code class="lang-ocaml"> <span class="hljs-keyword">type</span> t = 
+    | <span class="hljs-type">A</span>
+    | <span class="hljs-type">B</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> * <span class="hljs-built_in">int</span> 
+    | <span class="hljs-type">C</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> * <span class="hljs-built_in">int</span> 
+    | <span class="hljs-type">D</span> [@@bs.export]
 </code></pre>
 <p>So that it will a automatically provide <code>constructing</code> and <code>destructing</code> function</p>
 <pre><code>val a : t 
@@ -218,15 +666,15 @@ val b_of_t : t -&gt; (int * int ) Js.opt
 val c_of_t : t -&gt; (int * int ) Js.opt
 </code></pre></li>
 </ul>
-<h2 id="polymorphic-variant-internal-">Polymorphic variant <em>internal</em></h2>
+<h2 id="polymorphic-variant-internal">Polymorphic variant <em>internal</em></h2>
 <ul>
 <li>javascript type: number (nullary constructor) </li>
 <li><p>javascript type: object (non-nullary constructor)</p>
-<pre><code class="lang-ocaml">type t = 
-   | `A
-   | `B of int * int 
-   | `C of int
-   | D [@@bb.export]
+<pre><code class="lang-ocaml"><span class="hljs-keyword">type</span> t = 
+   | <span class="hljs-tag">`A</span>
+   | <span class="hljs-tag">`B</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span> * <span class="hljs-built_in">int</span> 
+   | <span class="hljs-tag">`C</span> <span class="hljs-keyword">of</span> <span class="hljs-built_in">int</span>
+   | <span class="hljs-type">D</span> [@@bb.export]
 </code></pre>
 <p>For nullary constructor, <code>`A</code>, it is encoded as a hash function, <strong>users should not rely
 on how the hash function work</strong>. 
@@ -235,53 +683,53 @@ For documentation purpose, <code>`A</code> is encoded as number <code>65</code><
 <p><code>`C 3</code> is encoded as <code>[67, 3]</code></p>
 </li>
 </ul>
-<h2 id="exception-internal-">exception <em>internal</em></h2>
-<h2 id="extension-internal-">extension <em>internal</em></h2>
-<h2 id="object-internal-">object <em>internal</em></h2>
+<h2 id="exception-internal">exception <em>internal</em></h2>
+<h2 id="extension-internal">extension <em>internal</em></h2>
+<h2 id="object-internal">object <em>internal</em></h2>
 <h1 id="javascript-type-exposed-to-ocaml">JavaScript type exposed to OCaml</h1>
 <p>BuckleScript exposes type safe interface to JavaScript native types. Those can be found in the <code>Js</code> module. </p>
-<h2 id="-js-boolean-"><code>Js.boolean</code></h2>
+<h2 id="jsboolean"><code>Js.boolean</code></h2>
 <ul>
 <li>javascript type: boolean   </li>
 <li>Js.true_ -&gt; true</li>
 <li><p>Js.false_ -&gt; false
 We also provide a function <code>Js.to_bool</code> to convert <code>Js.boolean</code> to ocaml <code>bool</code></p>
-<pre><code class="lang-ocaml">val to_bool : Js.boolean -&gt; bool
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> to_bool : <span class="hljs-type">Js</span>.boolean -&gt; <span class="hljs-built_in">bool</span>
 </code></pre>
 </li>
 </ul>
-<h2 id="-a-js-opt-"><code>&#39;a Js.opt</code></h2>
+<h2 id="a-jsopt"><code>&apos;a Js.opt</code></h2>
 <ul>
-<li><p>either <code>&#39;a</code> or <code>null</code><br>We provide several functions in <code>Js</code> module for constructing and destructing:  </p>
-<pre><code class="lang-ocaml">val from_opt : &#39;a opt -&gt; &#39;a option
-val to_opt : &#39;a -&gt; &#39;a opt
-val is_nil : &#39;a opt -&gt; bool
+<li><p>either <code>&apos;a</code> or <code>null</code><br>We provide several functions in <code>Js</code> module for constructing and destructing:  </p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> from_opt : <span class="hljs-symbol">&apos;a</span> opt -&gt; <span class="hljs-symbol">&apos;a</span> option
+<span class="hljs-keyword">val</span> to_opt : <span class="hljs-symbol">&apos;a</span> -&gt; <span class="hljs-symbol">&apos;a</span> opt
+<span class="hljs-keyword">val</span> is_nil : <span class="hljs-symbol">&apos;a</span> opt -&gt; <span class="hljs-built_in">bool</span>
 </code></pre>
-<p>It&#39;s more efficient than <code>&#39;a option</code> since it is unboxed, when user 
+<p>It&apos;s more efficient than <code>&apos;a option</code> since it is unboxed, when user 
 want to get the value, he can write code as below</p>
-<pre><code class="lang-ocaml">match Js.from_opt x with
-| Some x -&gt; 
-  (* non null branch *)
-  begin
-  (* ... *) 
-  end
-| None -&gt;
-  (* null *)
-  begin
-  (* ... *) 
-  end
+<pre><code class="lang-ocaml"><span class="hljs-keyword">match</span> <span class="hljs-type">Js</span>.from_opt x <span class="hljs-keyword">with</span>
+| <span class="hljs-type">Some</span> x -&gt; 
+  <span class="hljs-comment">(* non null branch *)</span>
+  <span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">(* ... *)</span> 
+  <span class="hljs-keyword">end</span>
+| <span class="hljs-type">None</span> -&gt;
+  <span class="hljs-comment">(* null *)</span>
+  <span class="hljs-keyword">begin</span>
+  <span class="hljs-comment">(* ... *)</span> 
+  <span class="hljs-keyword">end</span>
 </code></pre>
 <p>Note that <code>Js.from_opt</code> is in generally optimized, so that it will 
-not be boxed when converted to <code>&#39;a option</code> and destructured immediately.</p>
+not be boxed when converted to <code>&apos;a option</code> and destructured immediately.</p>
 </li>
 </ul>
-<h2 id="-a-js-def-"><code>&#39;a Js.def</code></h2>
+<h2 id="a-jsdef"><code>&apos;a Js.def</code></h2>
 <ul>
-<li><p>either <code>&#39;a&#39;</code> or <code>undefined</code></p>
+<li><p>either <code>&apos;a&apos;</code> or <code>undefined</code></p>
 <p>We provide several functions in <code>Js</code> module for constructing and destructing:  </p>
-<pre><code class="lang-ocaml">val from_def : &#39;a def -&gt; &#39;a option
-val to_def : &#39;a -&gt; &#39;a opt
-val is_undef : &#39;a def -&gt; bool
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> from_def : <span class="hljs-symbol">&apos;a</span> def -&gt; <span class="hljs-symbol">&apos;a</span> option
+<span class="hljs-keyword">val</span> to_def : <span class="hljs-symbol">&apos;a</span> -&gt; <span class="hljs-symbol">&apos;a</span> opt
+<span class="hljs-keyword">val</span> is_undef : <span class="hljs-symbol">&apos;a</span> def -&gt; <span class="hljs-built_in">bool</span>
 </code></pre>
 </li>
 </ul>
@@ -290,21 +738,54 @@ val is_undef : &#39;a def -&gt; bool
 corresponding js encoding will be instrumented with more information using <code>Object.defineProperty</code></p>
 </blockquote>
 
-                    </div>
+                    
+                    </section>
+                
+                
                 </div>
             </div>
         </div>
-        <!-- /#page-content-wrapper -->
 
+        
+        <a href="./Compiler-overview.html" class="navigation navigation-prev " aria-label="Previous page: Compiler overview"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="./Curry-and-Uncurry-functions.html" class="navigation navigation-next " aria-label="Next page: Curry and Uncurry functions"><i class="fa fa-angle-right"></i></a>
+        
     </div>
-    <!-- /#wrapper -->
+</div>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="js/start.js"></script>
+        
+<script src="gitbook/app.js"></script>
 
+    
+    <script src="gitbook/plugins/gitbook-plugin-edit-link/plugin.js"></script>
+    
 
-</body>
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
 
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-sharing/buttons.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"edit-link":{"base":"https://github.com/bloomberg/bucklescript/tree/master/docs","label":"Edit This Page"},"highlight":{},"search":{"maxIndexSize":1000000},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    gitbook.start(config);
+});
+</script>
+
+        
+    </body>
+    
 </html>
