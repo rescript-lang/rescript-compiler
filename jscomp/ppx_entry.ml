@@ -66,9 +66,15 @@ let predef_val_unit  =
 let prim = "js_pure_expr"
 let prim_stmt = "js_pure_stmt"
 let prim_debugger = "js_debugger"
-let curry_type_id = Longident.Ldot (Lident "Js", "fn")
+
+(* TODO should be renamed in to {!Js.fn} *)
+let curry_type_id = Longident.Ldot (Lident "Pervasives", "uncurry")
 let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
 let js_unsafe_downgrade_id = Longident.Ldot (Ldot (Lident "Js", "Unsafe"), "!")
+
+(* TODO should be moved into {!Js.t} Later *)
+let js_obj_type_id = Longident.Ldot (Lident "Pervasives", "js_obj") 
+
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
    the js value  maybe not be of type [unit] and 
@@ -161,7 +167,7 @@ let handle_record_as_js_object
 
     let result_type = 
       {Parsetree.ptyp_desc = 
-         Ptyp_constr ({txt = Ldot(Lident "Js", "t"); loc},
+         Ptyp_constr ({txt =  js_obj_type_id ; loc},
                       [{ Parsetree.ptyp_desc = 
                            Ptyp_object (List.map2 (fun x y -> x ,[], y) labels tyvars, Closed);
                          ptyp_attributes = [];
@@ -358,7 +364,11 @@ let handle_typ
           uncurry_fn_type loc ty ptyp_attributes args body 
         else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
     end
-  | {ptyp_desc =  Ptyp_object ( methods, closed_flag) } -> 
+  | {
+    ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
+    ptyp_attributes ;
+    ptyp_loc = loc 
+  } -> 
     let methods = List.map (fun (label, ptyp_attrs, core_type ) -> 
         match find_uncurry_attrs_and_remove ptyp_attrs with 
         | None, _ -> label, ptyp_attrs , self.typ self core_type
@@ -366,8 +376,19 @@ let handle_typ
           label , ptyp_attrs, self.typ self 
             { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
       ) methods in           
-    {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
-      
+    begin match Ext_list.exclude_with_fact (function 
+      | {Location.txt = "bs.obj" ; _}, _  -> true 
+      | _  -> false ) ptyp_attributes with 
+    |  None, _  ->
+      {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
+    | Some _, ptyp_attributes -> 
+      {ptyp_desc = 
+         Ptyp_constr ({ txt = js_obj_type_id ; loc},
+                      [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                                 ptyp_attributes }]);
+       ptyp_attributes = [];
+       ptyp_loc = loc }
+    end
   | _ -> super.typ self ty
 
 let handle_debugger loc payload = 
@@ -455,16 +476,29 @@ let handle_obj_property loc obj name e
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
   let obj = mapper.expr mapper obj in 
+
+  let down = create_local_external loc  
+    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_type:({ptyp_desc =
+                   Ptyp_arrow ("",
+                               {ptyp_desc =
+                                  Ptyp_constr ({txt = js_obj_type_id ; loc}, 
+                                               [{ptyp_desc = Ptyp_var "a" ;  
+                                                 ptyp_loc = loc; 
+                                                 ptyp_attributes = [] }]);
+                                ptyp_attributes = [];
+                               ptyp_loc = loc},
+                               {ptyp_desc = Ptyp_var "a"; 
+                                ptyp_loc = loc;
+                                ptyp_attributes = []});
+                 ptyp_loc = loc; 
+                 ptyp_attributes = []})
+      ~pval_attributes:[] 
+    "Tmp"
+    "cast" ["", obj] in 
   { e with pexp_desc =
      Pexp_send
-               ({pexp_desc =
-                   Pexp_apply
-                     ({pexp_desc =
-                         Pexp_ident {txt = js_unsafe_downgrade_id;
-                                     loc};
-                       pexp_loc = loc;
-                       pexp_attributes = []},
-                      [("", obj)]);
+               ({pexp_desc = down ;
                  pexp_loc = loc;
                  pexp_attributes = []},
                 name);
@@ -506,20 +540,30 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-  
+  let down = create_local_external loc  
+    ~pval_prim:"js_unsafe_downgrade"
+    ~pval_type:({ptyp_desc =
+                   Ptyp_arrow ("",
+                               {ptyp_desc =
+                                  Ptyp_constr ({txt = js_obj_type_id ; loc}, 
+                                               [{ptyp_desc = Ptyp_var "a" ;  
+                                                 ptyp_loc = loc; 
+                                                 ptyp_attributes = [] }]);
+                                ptyp_attributes = [];
+                               ptyp_loc = loc},
+                               {ptyp_desc = Ptyp_var "a"; 
+                                ptyp_loc = loc;
+                                ptyp_attributes = []});
+                 ptyp_loc = loc; 
+                 ptyp_attributes = []})
+      ~pval_attributes:[] 
+    "Tmp"
+    "cast" ["", obj] in 
   {e with pexp_desc = gen_fn_run loc len 
     (("",
       {pexp_desc =
          Pexp_send
-           ({pexp_desc =
-               Pexp_apply
-                 ({pexp_desc =
-                     Pexp_ident {
-                       txt = js_unsafe_downgrade_id;
-                       loc };
-                   pexp_loc = loc ; 
-                   pexp_attributes = []},
-                  [("", obj)]);
+           ({pexp_desc = down ;
              pexp_loc = loc ;
              pexp_attributes = []},
             name);
