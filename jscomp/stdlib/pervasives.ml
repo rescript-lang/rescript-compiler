@@ -488,3 +488,12 @@ let exit retcode =
   sys_exit retcode
 
 let _ = register_named_value "Pervasives.do_at_exit" do_at_exit
+
+
+(** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
+
+(** Mark Js object, please use {!Js.t} instead *)
+type + 'a js_obj 
+
+(** Mark uncurried function, please use {!Js.fn} instead *)
+type + 'a uncurry 

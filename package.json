@@ -1,7 +1,9 @@
 {
   "devDependencies": {
     "benchmark": "^2.1.0",
+    "colors": "^1.1.2",
     "coveralls": "^2.11.9",
+    "diff": "^2.2.2",
     "glob": "^7.0.3",
     "istanbul": "^0.4.2",
     "karma": "^0.13.9",

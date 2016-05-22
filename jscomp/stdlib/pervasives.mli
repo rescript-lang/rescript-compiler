@@ -1090,3 +1090,11 @@ val valid_float_lexem : string -> string
 val unsafe_really_input : in_channel -> bytes -> int -> int -> unit
 
 val do_at_exit : unit -> unit
+
+(** TEMPORARY CHANGES FOR PLAYGROUND, SHOULD BE REMOVED LATER *)
+
+(** Mark Js object, please use {!Js.t} instead *)
+type + 'a js_obj 
+
+(** Mark uncurried function, please use {!Js.fn} instead *)
+type + 'a uncurry 
