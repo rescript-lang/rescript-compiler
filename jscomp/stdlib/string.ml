@@ -73,7 +73,7 @@ let mapi f s =
    copy, but String.mli spells out some cases where we are not allowed
    to make a copy. *)
 
-external is_printable: char -> bool = "caml_is_printable"
+
 
 let is_space = function
   | ' ' | '\012' | '\n' | '\r' | '\t' -> true
@@ -90,7 +90,7 @@ let escaped s =
     if i >= length s then false else
       match unsafe_get s i with
       | '"' | '\\' | '\n' | '\t' | '\r' | '\b' -> true
-      | c when is_printable c -> needs_escape (i+1)
+      | ' ' .. '~' -> needs_escape (i + 1)
       | _ -> true
   in
   if needs_escape 0 then
