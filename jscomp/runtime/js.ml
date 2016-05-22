@@ -24,8 +24,8 @@
 
 
 
-type +'a t (** Js object type *)
-type +'a fn (** Js uncurried function *)
+type +'a t = 'a Pervasives.js_obj(** Js object type *)
+type +'a fn = 'a Pervasives.uncurry (** Js uncurried function *)
 
 module Unsafe = struct 
   external (!)  : 'a t -> 'a = "js_unsafe_downgrade"
