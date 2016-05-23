@@ -44,19 +44,17 @@ let process_interface_file ppf name =
 
 let process_implementation_file ppf name =
   let opref = output_prefix name in
-  Js_implementation.implementation ppf name opref;
-  objfiles := (opref ^ ".cmo") :: !objfiles
+  Js_implementation.implementation ppf name opref
+
 let process_file ppf name =
   if Filename.check_suffix name ".ml"
   || Filename.check_suffix name ".mlt" then begin
     let opref = output_prefix name in
-    Js_implementation.implementation ppf name opref;
-    objfiles := (opref ^ ".cmo") :: !objfiles
+    Js_implementation.implementation ppf name opref
   end
   else if Filename.check_suffix name !Config.interface_suffix then begin
     let opref = output_prefix name in
-    Js_implementation.interface ppf name opref;
-    if !make_package then objfiles := (opref ^ ".cmi") :: !objfiles
+    Js_implementation.interface ppf name opref
   end
   else
     raise(Arg.Bad("don't know what to do with " ^ name))

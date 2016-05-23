@@ -31,7 +31,7 @@ let get_files dir =
   let arr = 
     Sys.readdir dir 
     |> Ext_array.filter_map 
-        (fun  x -> if Ext_string.ends_with x ".cmj" then Some (Filename.concat dir x) else None )
+        (fun  x -> if Ext_string.ends_with x Js_config.cmj_ext then Some (Filename.concat dir x) else None )
   in
   (* Sort to guarantee it works the same across OSes *)
   Array.sort (fun (x : string) y -> Pervasives.compare x y ) arr;
