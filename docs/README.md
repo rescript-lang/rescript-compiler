@@ -9,8 +9,6 @@
 
 * [How to adapt your build system](./How-to-adapt-your-build-system.md)
 
-* [Extensions to OCaml Language](./Extensions-to-OCaml-Language.md)
-
 * [Semantic differences from other backends](./Semantic-differences-from-other-backends.md)
 
 

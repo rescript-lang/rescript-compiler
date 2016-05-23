@@ -75,67 +75,6 @@ improve the generated code.
    }
    ```
 
-## Native uncurried calling convention support
-
-Note that OCaml's calling convention is curried by default, while JS
-does not have native support. Curried and uncurried functions can be
-told from type signatures.
-
-For example
-
-```ocaml
-val f : int -> string -> int
-val f_uncurry : int * string -> int [@uncurry]
-```
-
-
-
-- How BuckleScript compiles function application
-
-To apply a function, you can do this
-
-```ocaml
-f 3 "x"
-f_uncurry #@ (3,"x")
-```
-For uncurried function applicaton, BuckleScript is guaranteed to
-compile it in the same way as JS code
-
-```js
-f_uncurry(3,"x")
-```
-
-However, for curried function application, it depends on how compiler
-optimizations goes, for most cases, when the compiler see the
-definition of `f`, it will compile it in the most efficient way, i.e,
-JS full aplication, if the compiler can not see the definition of `f`,
-it will do a runtime dispath, so there are two possible outputs:
-
-```js
-Curry._2(f, 3, "x") // compiler fails to optimize
-f(3, "x") // compiler optimized correctly
-```
-Both are correct code, but the second one is more efficient.
-
-- How BuckleScript handles function definition
-
-```ocaml
-let f = fun a b -> a + string_of_int b
-let f_uncurry = fun %uncurry a b -> a + string_of_int b 
-```
-
-- When is uncurried function recommended
-
-  1. For FFI to JS functions, all object methods are *strongly recommended*
-  to type it as uncurried function
-
-
-
-  2. When function is passed as a callback
-
-  This is mostly for performance issues, it is hard to optimize in
-  such scenario
-
 
 
 
@@ -230,33 +169,6 @@ gives it a type and customized attributes
   end
   ```
 
-* `bs.obj`
-
-  This attribute helps create JavaScript object literal
-
-  A simple example:
-
-  ```OCaml
-  external make_config : hi:int -> lo:int -> unit -> t [@@bs.obj]
-  let v = make_config ~hi:2 ~lo:3
-  ```
-  will be compiled as 
-
-  ```js
-  let v = { hi:2, lo:3}
-  ```
-  You can use optional as well
-
-  ```ocaml
-  external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj]
-  let u = make_config ~hi:3 ()
-  let v = make_config ~hi:3 ~lo:2 ()
-  ```
-  Will generate
-  ```js
-  let u = {hi : 3}
-  let v = {hi : 3 , lo: 2}
-  ```
 
 * `bs.module`
 
@@ -354,32 +266,60 @@ is inferred as type
 val f : < hi : ('a * 'b -> 'c [@uncurry] ;  .. > Js.t  -> 'a -> 'b -> 'c
 ```
 
-- Create JS object
+- `bs.obj`
+
+  This attribute helps create JavaScript object literal
 
 ```ocaml
-let a = f ({ hi = fun %uncurry (x,y) -> x + y}[@bs.obj]) 1 2 
-let b = f ({ hi = fun %uncurry (x,y) -> x +. y}[@bs.obj]) 1. 2.
-```
+  let a = f ({ hi = fun %uncurry (x,y) -> x + y}[@bs.obj]) 1 2 
+  let b = f ({ hi = fun %uncurry (x,y) -> x +. y}[@bs.obj]) 1. 2.
+  ```
 
-Generated code is like below 
+   Generated code is like below 
 
 
-```js
-function f(x, a, b) {
-  return x.hi(a, b);
-}
+   ```js
+   function f(x, a, b) {
+      return x.hi(a, b);
+   }
 
-var a = f({
+   var a = f({
       "hi": function (x, y) {
-        return x + y | 0;
+       return x + y | 0;
       }
     }, 1, 2);
 
-var b = f({
-      "hi": function (x, y) {
-        return x + y;
-      }
+   var b = f({
+     "hi": function (x, y) {
+     return x + y;
+    }
     }, 1, 2);
-```
+   ```
+
+  `bs.obj` can also be used in external declarations, like as below:
+
+  ```OCaml
+  external make_config : hi:int -> lo:int -> unit -> t [@@bs.obj]
+  let v = make_config ~hi:2 ~lo:3
+  ```
+  will be compiled as 
+
+  ```js
+  let v = { hi:2, lo:3}
+  ```
+  You can use optional as well
+
+  ```ocaml
+  external make_config : hi:int -> ?lo:int -> unit -> t = "" [@@bs.obj]
+  let u = make_config ~hi:3 ()
+  let v = make_config ~hi:3 ~lo:2 ()
+  ```
+  Will generate
+  ```js
+  let u = {hi : 3}
+  let v = {hi : 3 , lo: 2}
+  ```
+
+
 
 

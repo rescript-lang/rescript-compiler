@@ -12,7 +12,6 @@
   * [About OCaml](https://ocaml.org/)
   * [Compiler options](./Compiler-options.md)
   * [How to adapt your build system](./How-to-adapt-your-build-system.md)
-  * [Extensions to OCaml Language](./Extensions-to-OCaml-Language.md)
   * [Semantic differences from other backends](./Semantic-differences-from-other-backends.md)
   * [JavaScript target versions](./JavaScript-target-versions.md)
 
@@ -21,10 +20,11 @@
   * [Compiler overview](./Compiler-overview.md)
 
 * BuckleScript FFI
-  * [Runtime representation](./Runtime-representation.md)
+
   * [Curry and Uncurry functions](./Curry-and-Uncurry-functions.md)
   * [JS call OCaml](./JS-call-OCaml.md)
   * [OCaml call JS](./OCaml-call-JS.md)
+  * [Runtime representation](./Runtime-representation.md)
   * [Experimental support of typescript](./Experimental-support-of-typescript.md)
   * [Unsupported IO primitives](./Unsupported-IO-primitives.md)
 
