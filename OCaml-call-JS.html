@@ -37,7 +37,7 @@
         
     
     
-    <link rel="next" href="./Experimental-support-of-typescript.html" />
+    <link rel="next" href="./Runtime-representation.html" />
     
     
     <link rel="prev" href="./JS-call-OCaml.html" />
@@ -49,11 +49,11 @@
         
         
     <div class="book"
-        data-level="5.4"
+        data-level="5.3"
         data-chapter-title="OCaml call JS"
         data-filepath="OCaml-call-JS.md"
         data-basepath="."
-        data-revision="Fri May 20 2016 13:10:16 GMT-0400 (EDT)"
+        data-revision="Mon May 23 2016 11:05:32 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -223,29 +223,14 @@
             
         </li>
     
-        <li class="chapter " data-level="3.5" data-path="Extensions-to-OCaml-Language.html">
-            
-                
-                    <a href="./Extensions-to-OCaml-Language.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.5.</b>
-                        
-                        Extensions to OCaml Language
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.6" data-path="Semantic-differences-from-other-backends.html">
+        <li class="chapter " data-level="3.5" data-path="Semantic-differences-from-other-backends.html">
             
                 
                     <a href="./Semantic-differences-from-other-backends.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>3.6.</b>
+                            <b>3.5.</b>
                         
                         Semantic differences from other backends
                     </a>
@@ -253,14 +238,14 @@
             
         </li>
     
-        <li class="chapter " data-level="3.7" data-path="JavaScript-target-versions.html">
+        <li class="chapter " data-level="3.6" data-path="JavaScript-target-versions.html">
             
                 
                     <a href="./JavaScript-target-versions.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>3.7.</b>
+                            <b>3.6.</b>
                         
                         JavaScript target versions
                     </a>
@@ -309,29 +294,14 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="5.1" data-path="Runtime-representation.html">
-            
-                
-                    <a href="./Runtime-representation.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.1.</b>
-                        
-                        Runtime representation
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="5.2" data-path="Curry-and-Uncurry-functions.html">
+        <li class="chapter " data-level="5.1" data-path="Curry-and-Uncurry-functions.html">
             
                 
                     <a href="./Curry-and-Uncurry-functions.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.2.</b>
+                            <b>5.1.</b>
                         
                         Curry and Uncurry functions
                     </a>
@@ -339,14 +309,14 @@
             
         </li>
     
-        <li class="chapter " data-level="5.3" data-path="JS-call-OCaml.html">
+        <li class="chapter " data-level="5.2" data-path="JS-call-OCaml.html">
             
                 
                     <a href="./JS-call-OCaml.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.3.</b>
+                            <b>5.2.</b>
                         
                         JS call OCaml
                     </a>
@@ -354,16 +324,31 @@
             
         </li>
     
-        <li class="chapter active" data-level="5.4" data-path="OCaml-call-JS.html">
+        <li class="chapter active" data-level="5.3" data-path="OCaml-call-JS.html">
             
                 
                     <a href="./OCaml-call-JS.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.4.</b>
+                            <b>5.3.</b>
                         
                         OCaml call JS
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="Runtime-representation.html">
+            
+                
+                    <a href="./Runtime-representation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        Runtime representation
                     </a>
             
             
@@ -551,7 +536,67 @@
                 
                     <section class="normal" id="section-">
                     
-                        <h2 id="ffi-to-js-functions">FFI to js functions</h2>
+                        <p>To make OCaml work smoothly with Javascript, we introduced several
+extensions to OCaml language. Those BuckleScript extensions
+facilitates the integration of native JavaScript code as well as
+improve the generated code.</p>
+<blockquote>
+<p>Note that all those extension will be correctly ignored by the native OCaml compiler.</p>
+</blockquote>
+<h2 id="embedding-raw-javascript-code">Embedding raw Javascript code</h2>
+<ul>
+<li><p>extension <code>bs.raw</code></p>
+<p> It can be either <code>[%bs.raw{|  this_is_arbitrary_js_expression |}]</code> or <code>[%%bs.raw{| this is arbitrary_js_statement |}</code></p>
+<p> Use cases:
+ for example if you want to use a JavaScript string, you can write code like this</p>
+<pre><code class="lang-OCaml"> <span class="hljs-keyword">let</span> x  : <span class="hljs-built_in">string</span> = [%bs.raw{|<span class="hljs-string">&quot;\x01\x02&quot;</span>|}]
+</code></pre>
+<p> which will be compiled into </p>
+<pre><code class="lang-js"> <span class="hljs-keyword">var</span> x = <span class="hljs-string">&quot;\x01\x02&quot;</span>
+</code></pre>
+<pre><code class="lang-OCaml"> [%%bs.raw{|
+ // Math.imul polyfill
+ if (!Math.imul){
+     Math.imul = function (..) {..}
+  }
+ |}]
+</code></pre>
+<p> In the expression level, i.e, <code>[%bs.raw ...]</code> user can add a type annotation, the compiler would use such type annotation to deduce its arities. for example, the next three versions:</p>
+<pre><code class="lang-ocaml"> <span class="hljs-keyword">let</span> f = [%bs.raw (<span class="hljs-string">&quot;Math.max&quot;</span>  : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span>) ] <span class="hljs-number">3.0</span> 
+ <span class="hljs-keyword">let</span> f : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> = [%bs.raw <span class="hljs-string">&quot;Math.max&quot;</span> ] <span class="hljs-number">3.0</span>
+ <span class="hljs-keyword">let</span> f = ([%bs.raw <span class="hljs-string">&quot;Math.max&quot;</span>] : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> ) <span class="hljs-number">3.0</span>
+</code></pre>
+<p> will be translated into </p>
+<pre><code class="lang-js"> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params">prim</span>)</span>{
+   <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.max(<span class="hljs-number">3.0</span>,prim);
+ }
+</code></pre>
+<p> Caveat:</p>
+<ol>
+<li>So far we don&apos;t do any sanity check in the quoted text (syntax check is a long-term goal)</li>
+<li>You should not refer symbols in OCaml code, it is not guaranteed that the order is correct.
+You should avoid introducing new symbols in the raw code, if needed, use the <code>$$</code> prefix (ie <code>$$your_func_name</code>) </li>
+</ol>
+</li>
+</ul>
+<h2 id="debugger-support">Debugger support</h2>
+<ul>
+<li><p>extension <code>bs.debugger</code></p>
+<p> It can be <code>[%bs.debugger]</code></p>
+<p> use case</p>
+<pre><code class="lang-ocaml"> <span class="hljs-keyword">let</span> f x y = 
+    [%bs.debugger];
+    x + y
+</code></pre>
+<p> which will be compiled into </p>
+<pre><code class="lang-js"> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span> (<span class="hljs-params">x,y</span>) </span>{
+   <span class="hljs-keyword">debugger</span>; <span class="hljs-comment">// JavaScript developer tools will set an breakpoint and stop here</span>
+   x + y;
+ }
+</code></pre>
+</li>
+</ul>
+<h2 id="ffi-to-js-functions">FFI to js functions</h2>
 <p>This part is similar to <a href="http://caml.inria.fr/pub/docs/manual-ocaml-4.02/intfc.html" target="_blank">traditional FFI</a>, 
 syntax is described as below:</p>
 <pre><code class="lang-OCaml"><span class="hljs-keyword">external</span> <span class="hljs-keyword">value</span>-name :  typexpr =  <span class="hljs-keyword">external</span>-declaration  attributes
@@ -616,25 +661,8 @@ This attribute help get and set the property of a JavaScript object.</p>
 <span class="hljs-keyword">end</span>
 </code></pre>
 </li>
-<li><p><code>bs.obj</code></p>
-<p>This attribute helps create JavaScript object literal</p>
-<p>A simple example:</p>
-<pre><code class="lang-OCaml"><span class="hljs-keyword">external</span> make_config : hi:<span class="hljs-built_in">int</span> -&gt; lo:<span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">unit</span> -&gt; t [@@bs.obj]
-<span class="hljs-keyword">let</span> v = make_config ~hi:<span class="hljs-number">2</span> ~lo:<span class="hljs-number">3</span>
-</code></pre>
-<p>will be compiled as </p>
-<pre><code class="lang-js"><span class="hljs-keyword">let</span> v = { hi:<span class="hljs-number">2</span>, lo:<span class="hljs-number">3</span>}
-</code></pre>
-<p>You can use optional as well</p>
-<pre><code class="lang-ocaml"><span class="hljs-keyword">external</span> make_config : hi:<span class="hljs-built_in">int</span> -&gt; ?lo:<span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">unit</span> -&gt; t = <span class="hljs-string">&quot;&quot;</span> [@@bs.obj]
-<span class="hljs-keyword">let</span> u = make_config ~hi:<span class="hljs-number">3</span> <span class="hljs-literal">()</span>
-<span class="hljs-keyword">let</span> v = make_config ~hi:<span class="hljs-number">3</span> ~lo:<span class="hljs-number">2</span> <span class="hljs-literal">()</span>
-</code></pre>
-<p>Will generate</p>
-<pre><code class="lang-js"><span class="hljs-keyword">let</span> u = {hi : <span class="hljs-number">3</span>}
-<span class="hljs-keyword">let</span> v = {hi : <span class="hljs-number">3</span> , lo: <span class="hljs-number">2</span>}
-</code></pre>
-</li>
+</ul>
+<ul>
 <li><p><code>bs.module</code></p>
 <p> Qualify the JavaScript value by a module name</p>
 <pre><code class="lang-OCaml"> <span class="hljs-keyword">external</span> add : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">int</span> = <span class="hljs-string">&quot;add&quot;</span> [@@bs.call] [@@bs.<span class="hljs-keyword">module</span> <span class="hljs-string">&quot;x&quot;</span>]
@@ -656,8 +684,8 @@ This attribute help get and set the property of a JavaScript object.</p>
 <h2 id="a-simple-example-binding-to-mocha-unit-test-library">A simple example: binding to mocha unit test library</h2>
 <p>   If we want to provide bindings to the <a href="https://mochajs.org/" target="_blank">mochajs</a> unit test framework, 
    below is an example</p>
-<pre><code class="lang-OCaml">   <span class="hljs-keyword">external</span> describe : <span class="hljs-built_in">string</span> -&gt; (<span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">unit</span>) -&gt; <span class="hljs-built_in">unit</span> = <span class="hljs-string">&quot;describe&quot;</span> [@@bs.call]
-   <span class="hljs-keyword">external</span> it : <span class="hljs-built_in">string</span> -&gt; (<span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">unit</span>) -&gt; <span class="hljs-built_in">unit</span> = <span class="hljs-string">&quot;it&quot;</span> [@@bs.call <span class="hljs-string">&quot;it&quot;</span>]
+<pre><code class="lang-OCaml">   <span class="hljs-keyword">external</span> describe : <span class="hljs-built_in">string</span> -&gt; (<span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">unit</span> [@uncurry]) -&gt; <span class="hljs-built_in">unit</span> = <span class="hljs-string">&quot;describe&quot;</span> [@@bs.call]
+   <span class="hljs-keyword">external</span> it : <span class="hljs-built_in">string</span> -&gt; (<span class="hljs-built_in">unit</span> -&gt; <span class="hljs-built_in">unit</span> [@uncurry]) -&gt; <span class="hljs-built_in">unit</span> = <span class="hljs-string">&quot;it&quot;</span> [@@bs.call <span class="hljs-string">&quot;it&quot;</span>]
 </code></pre>
 <p>   Since, <code>mochajs</code> is a test framework, we also need some assertion
    test, we can also describe the bindings to <code>assert.deepEqual</code> from
@@ -667,7 +695,7 @@ This attribute help get and set the property of a JavaScript object.</p>
 <p>On top of this we can write normal OCaml functions, for example:</p>
 <pre><code class="lang-OCaml">   <span class="hljs-keyword">let</span> assert_equal = eq
    <span class="hljs-keyword">let</span> from_suites name suite  = 
-       describe name (<span class="hljs-keyword">fun</span> _ -&gt; 
+       describe name (<span class="hljs-keyword">fun</span>%uncurry <span class="hljs-literal">()</span> -&gt; 
          <span class="hljs-type">List</span>.iter (<span class="hljs-keyword">fun</span> (name, code) -&gt; it name code) suite)
 </code></pre>
 <p>   The compiler would generate code as below:</p>
@@ -686,8 +714,60 @@ This attribute help get and set the property of a JavaScript object.</p>
             });
     }
 </code></pre>
-<h2 id="ffi-to-objects-experimental">FFI to objects <em>experimental</em></h2>
-<p>Note we will support using OCaml style&apos;s objects for FFI in the next release</p>
+<h2 id="ffi-to-object">FFI to object</h2>
+<ul>
+<li>Js object calling 
+All JS object of type <code>a</code> are lifted to type <code>a Js.t</code> to avoid
+conflict with OCaml&apos;s own object system. <code>##</code> is used in JS&apos;s object
+method dispatch, while <code>#</code> is used in OCaml&apos;s object method dispatch.</li>
+</ul>
+<p>For example</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> f x a b = x ## hi (a,b)
+</code></pre>
+<p>is inferred as type</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> f : &lt; hi : (<span class="hljs-symbol">&apos;a</span> * <span class="hljs-symbol">&apos;b</span> -&gt; <span class="hljs-symbol">&apos;c</span> [@uncurry] ;  .. &gt; <span class="hljs-type">Js</span>.t  -&gt; <span class="hljs-symbol">&apos;a</span> -&gt; <span class="hljs-symbol">&apos;b</span> -&gt; <span class="hljs-symbol">&apos;c</span>
+</code></pre>
+<ul>
+<li><p><code>bs.obj</code></p>
+<p>This attribute helps create JavaScript object literal</p>
+</li>
+</ul>
+<pre><code class="lang-ocaml">  <span class="hljs-keyword">let</span> a = f ({ hi = <span class="hljs-keyword">fun</span> %uncurry (x,y) -&gt; x + y}[@bs.obj]) <span class="hljs-number">1</span> <span class="hljs-number">2</span> 
+  <span class="hljs-keyword">let</span> b = f ({ hi = <span class="hljs-keyword">fun</span> %uncurry (x,y) -&gt; x +. y}[@bs.obj]) <span class="hljs-number">1.</span> <span class="hljs-number">2.</span>
+</code></pre>
+<p>   Generated code is like below </p>
+<pre><code class="lang-js">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params">x, a, b</span>) </span>{
+      <span class="hljs-keyword">return</span> x.hi(a, b);
+   }
+
+   <span class="hljs-keyword">var</span> a = f({
+      <span class="hljs-string">&quot;hi&quot;</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>) </span>{
+       <span class="hljs-keyword">return</span> x + y | <span class="hljs-number">0</span>;
+      }
+    }, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+
+   <span class="hljs-keyword">var</span> b = f({
+     <span class="hljs-string">&quot;hi&quot;</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>) </span>{
+     <span class="hljs-keyword">return</span> x + y;
+    }
+    }, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+</code></pre>
+<p>  <code>bs.obj</code> can also be used in external declarations, like as below:</p>
+<pre><code class="lang-OCaml">  <span class="hljs-keyword">external</span> make_config : hi:<span class="hljs-built_in">int</span> -&gt; lo:<span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">unit</span> -&gt; t [@@bs.obj]
+  <span class="hljs-keyword">let</span> v = make_config ~hi:<span class="hljs-number">2</span> ~lo:<span class="hljs-number">3</span>
+</code></pre>
+<p>  will be compiled as </p>
+<pre><code class="lang-js">  <span class="hljs-keyword">let</span> v = { hi:<span class="hljs-number">2</span>, lo:<span class="hljs-number">3</span>}
+</code></pre>
+<p>  You can use optional as well</p>
+<pre><code class="lang-ocaml">  <span class="hljs-keyword">external</span> make_config : hi:<span class="hljs-built_in">int</span> -&gt; ?lo:<span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">unit</span> -&gt; t = <span class="hljs-string">&quot;&quot;</span> [@@bs.obj]
+  <span class="hljs-keyword">let</span> u = make_config ~hi:<span class="hljs-number">3</span> <span class="hljs-literal">()</span>
+  <span class="hljs-keyword">let</span> v = make_config ~hi:<span class="hljs-number">3</span> ~lo:<span class="hljs-number">2</span> <span class="hljs-literal">()</span>
+</code></pre>
+<p>  Will generate</p>
+<pre><code class="lang-js">  <span class="hljs-keyword">let</span> u = {hi : <span class="hljs-number">3</span>}
+  <span class="hljs-keyword">let</span> v = {hi : <span class="hljs-number">3</span> , lo: <span class="hljs-number">2</span>}
+</code></pre>
 
                     
                     </section>
@@ -701,7 +781,7 @@ This attribute help get and set the property of a JavaScript object.</p>
         <a href="./JS-call-OCaml.html" class="navigation navigation-prev " aria-label="Previous page: JS call OCaml"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="./Experimental-support-of-typescript.html" class="navigation navigation-next " aria-label="Next page: Experimental support of typescript"><i class="fa fa-angle-right"></i></a>
+        <a href="./Runtime-representation.html" class="navigation navigation-next " aria-label="Next page: Runtime representation"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>

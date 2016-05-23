@@ -40,7 +40,7 @@
     <link rel="next" href="./JS-call-OCaml.html" />
     
     
-    <link rel="prev" href="./Runtime-representation.html" />
+    <link rel="prev" href="./Compiler-overview.html" />
     
 
         
@@ -49,11 +49,11 @@
         
         
     <div class="book"
-        data-level="5.2"
+        data-level="5.1"
         data-chapter-title="Curry and Uncurry functions"
         data-filepath="Curry-and-Uncurry-functions.md"
         data-basepath="."
-        data-revision="Fri May 20 2016 13:10:16 GMT-0400 (EDT)"
+        data-revision="Mon May 23 2016 11:05:32 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -223,29 +223,14 @@
             
         </li>
     
-        <li class="chapter " data-level="3.5" data-path="Extensions-to-OCaml-Language.html">
-            
-                
-                    <a href="./Extensions-to-OCaml-Language.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>3.5.</b>
-                        
-                        Extensions to OCaml Language
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter " data-level="3.6" data-path="Semantic-differences-from-other-backends.html">
+        <li class="chapter " data-level="3.5" data-path="Semantic-differences-from-other-backends.html">
             
                 
                     <a href="./Semantic-differences-from-other-backends.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>3.6.</b>
+                            <b>3.5.</b>
                         
                         Semantic differences from other backends
                     </a>
@@ -253,14 +238,14 @@
             
         </li>
     
-        <li class="chapter " data-level="3.7" data-path="JavaScript-target-versions.html">
+        <li class="chapter " data-level="3.6" data-path="JavaScript-target-versions.html">
             
                 
                     <a href="./JavaScript-target-versions.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>3.7.</b>
+                            <b>3.6.</b>
                         
                         JavaScript target versions
                     </a>
@@ -309,29 +294,14 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="5.1" data-path="Runtime-representation.html">
-            
-                
-                    <a href="./Runtime-representation.html">
-                
-                        <i class="fa fa-check"></i>
-                        
-                            <b>5.1.</b>
-                        
-                        Runtime representation
-                    </a>
-            
-            
-        </li>
-    
-        <li class="chapter active" data-level="5.2" data-path="Curry-and-Uncurry-functions.html">
+        <li class="chapter active" data-level="5.1" data-path="Curry-and-Uncurry-functions.html">
             
                 
                     <a href="./Curry-and-Uncurry-functions.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.2.</b>
+                            <b>5.1.</b>
                         
                         Curry and Uncurry functions
                     </a>
@@ -339,14 +309,14 @@
             
         </li>
     
-        <li class="chapter " data-level="5.3" data-path="JS-call-OCaml.html">
+        <li class="chapter " data-level="5.2" data-path="JS-call-OCaml.html">
             
                 
                     <a href="./JS-call-OCaml.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.3.</b>
+                            <b>5.2.</b>
                         
                         JS call OCaml
                     </a>
@@ -354,16 +324,31 @@
             
         </li>
     
-        <li class="chapter " data-level="5.4" data-path="OCaml-call-JS.html">
+        <li class="chapter " data-level="5.3" data-path="OCaml-call-JS.html">
             
                 
                     <a href="./OCaml-call-JS.html">
                 
                         <i class="fa fa-check"></i>
                         
-                            <b>5.4.</b>
+                            <b>5.3.</b>
                         
                         OCaml call JS
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="Runtime-representation.html">
+            
+                
+                    <a href="./Runtime-representation.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.4.</b>
+                        
+                        Runtime representation
                     </a>
             
             
@@ -551,12 +536,53 @@
                 
                     <section class="normal" id="section-">
                     
-                        <p>JavaScript functions are all <a href="https://en.wikipedia.org/wiki/Currying" target="_blank">uncurried</a>, while OCaml functions are curried by default. </p>
-<p>A naive approach would be to Curry every OCaml functions but this has a non trivial cost and makes the generated code harder to read. Therefore BuckleScript will try its best to uncurry its function in both definition and call site.</p>
-<p>It is also possible to help BuckleScript perform the uncurrying by using using the runtime provided <code>Fn</code> module: </p>
-<pre><code class="lang-OCaml"><span class="hljs-keyword">let</span> iter_f = <span class="hljs-type">Fn</span>.mk1 my_function <span class="hljs-keyword">in</span> 
-<span class="hljs-type">List</span>.iter iter_f l
+                        <p>Note that OCaml&apos;s calling convention is curried by default, while JS
+does not have native support. Curried and uncurried functions can be
+told from type signatures.</p>
+<p>For example</p>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">val</span> f : <span class="hljs-built_in">int</span> -&gt; <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span>
+<span class="hljs-keyword">val</span> f_uncurry : <span class="hljs-built_in">int</span> * <span class="hljs-built_in">string</span> -&gt; <span class="hljs-built_in">int</span> [@uncurry]
 </code></pre>
+<ul>
+<li>How BuckleScript compiles function application</li>
+</ul>
+<p>To apply a function, you can do this</p>
+<pre><code class="lang-ocaml">f <span class="hljs-number">3</span> <span class="hljs-string">&quot;x&quot;</span>
+f_uncurry #@ (<span class="hljs-number">3</span>,<span class="hljs-string">&quot;x&quot;</span>)
+</code></pre>
+<p>For uncurried function applicaton, BuckleScript is guaranteed to
+compile it in the same way as JS code</p>
+<pre><code class="lang-js">f_uncurry(<span class="hljs-number">3</span>,<span class="hljs-string">&quot;x&quot;</span>)
+</code></pre>
+<p>However, for curried function application, it depends on how compiler
+optimizations goes, for most cases, when the compiler see the
+definition of <code>f</code>, it will compile it in the most efficient way, i.e,
+JS full aplication, if the compiler can not see the definition of <code>f</code>,
+it will do a runtime dispath, so there are two possible outputs:</p>
+<pre><code class="lang-js">Curry._2(f, <span class="hljs-number">3</span>, <span class="hljs-string">&quot;x&quot;</span>) <span class="hljs-comment">// compiler fails to optimize</span>
+f(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;x&quot;</span>) <span class="hljs-comment">// compiler optimized correctly</span>
+</code></pre>
+<p>Both are correct code, but the second one is more efficient.</p>
+<ul>
+<li>How BuckleScript handles function definition</li>
+</ul>
+<pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> f = <span class="hljs-keyword">fun</span> a b -&gt; a + string_of_int b
+<span class="hljs-keyword">let</span> f_uncurry = <span class="hljs-keyword">fun</span> %uncurry a b -&gt; a + string_of_int b
+</code></pre>
+<ul>
+<li><p>When is uncurried function recommended</p>
+<ol>
+<li>For FFI to JS functions, all object methods are <em>strongly recommended</em>
+to type it as uncurried function</li>
+</ol>
+</li>
+</ul>
+<ol>
+<li><p>When function is passed as a callback</p>
+<p>This is mostly for performance issues, it is hard to optimize in
+such scenario</p>
+</li>
+</ol>
 
                     
                     </section>
@@ -567,7 +593,7 @@
         </div>
 
         
-        <a href="./Runtime-representation.html" class="navigation navigation-prev " aria-label="Previous page: Runtime representation"><i class="fa fa-angle-left"></i></a>
+        <a href="./Compiler-overview.html" class="navigation navigation-prev " aria-label="Previous page: Compiler overview"><i class="fa fa-angle-left"></i></a>
         
         
         <a href="./JS-call-OCaml.html" class="navigation navigation-next " aria-label="Next page: JS call OCaml"><i class="fa fa-angle-right"></i></a>

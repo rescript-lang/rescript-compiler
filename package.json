@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "gitbook install && gitbook build",
+    "build": "gitbook install && gitbook build && cp -r _book/* $BUCKLESCRIPT_DOC",
     "watch": "gitbook install && gitbook serve"
   },
   "devDependencies": {

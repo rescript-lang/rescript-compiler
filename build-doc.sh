@@ -1,4 +1,5 @@
 #!/bin/sh
 set -e
-node process.js
-cp -r dist/* $BUCKLESCRIPT_DOC
+# node process.js
+# gitbook build 
+# cp -r _book/* $BUCKLESCRIPT_DOC
