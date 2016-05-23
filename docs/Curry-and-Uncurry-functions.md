@@ -47,15 +47,13 @@ let f_uncurry = fun %uncurry a b -> a + string_of_int b
 
 - When is uncurried function recommended
 
-  1. For FFI to JS functions, all object methods are *strongly recommended*
-  to type it as uncurried function
+  - For FFI to JS functions, all object methods are *strongly recommended*
+     to type it as uncurried function.
 
+  - When function is passed as a callback
 
-
-  2. When function is passed as a callback
-
-  This is mostly for performance issues, it is hard to optimize in
-  such scenario
+    This is mostly for performance issues, it is hard to optimize in
+    such scenario.
 
 
 
