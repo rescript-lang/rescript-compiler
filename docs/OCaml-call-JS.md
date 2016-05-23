@@ -291,7 +291,7 @@ gives it a type and customized attributes
    below is an example
 
    ```OCaml
-   external describe : string -> (unit -> unit [@uncurr]) -> unit = "describe" [@@bs.call]
+   external describe : string -> (unit -> unit [@uncurry]) -> unit = "describe" [@@bs.call]
    external it : string -> (unit -> unit [@uncurry]) -> unit = "it" [@@bs.call "it"]
    ```
 
