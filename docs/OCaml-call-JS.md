@@ -1,3 +1,143 @@
+To make OCaml work smoothly with Javascript, we introduced several
+extensions to OCaml language. Those BuckleScript extensions
+facilitates the integration of native JavaScript code as well as
+improve the generated code.
+
+> Note that all those extension will be correctly ignored by the native OCaml compiler.
+
+
+## Embedding raw Javascript code
+
+- extension `bs.raw`
+  
+   It can be either `[%bs.raw{|  this_is_arbitrary_js_expression |}]` or `[%%bs.raw{| this is arbitrary_js_statement |}`
+   
+   Use cases:
+   for example if you want to use a JavaScript string, you can write code like this
+   
+   ```OCaml
+   let x  : string = [%bs.raw{|"\x01\x02"|}]
+   ```
+
+   which will be compiled into 
+
+   ```js
+   var x = "\x01\x02"
+   ``` 
+
+   ```OCaml
+   [%%bs.raw{|
+   // Math.imul polyfill
+   if (!Math.imul){
+       Math.imul = function (..) {..}
+    }
+   |}]
+   ```
+   In the expression level, i.e, `[%bs.raw ...]` user can add a type annotation, the compiler would use such type annotation to deduce its arities. for example, the next three versions:
+
+   ```ocaml
+   let f = [%bs.raw ("Math.max"  : float -> float -> float) ] 3.0 
+   let f : float -> float -> float = [%bs.raw "Math.max" ] 3.0
+   let f = ([%bs.raw "Math.max"] : float -> float -> float ) 3.0
+   ```
+   will be translated into 
+
+   ```js
+   function f(prim){
+     return Math.max(3.0,prim);
+   }
+   ```
+   Caveat:
+   1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
+   2. You should not refer symbols in OCaml code, it is not guaranteed that the order is correct.
+      You should avoid introducing new symbols in the raw code, if needed, use the `$$` prefix (ie `$$your_func_name`) 
+
+## Debugger support
+
+- extension `bs.debugger`
+
+   It can be `[%bs.debugger]`
+
+   use case
+
+   ```ocaml
+   let f x y = 
+      [%bs.debugger];
+      x + y
+   ```
+
+   which will be compiled into 
+
+   ```js
+   function f (x,y) {
+     debugger; // JavaScript developer tools will set an breakpoint and stop here
+     x + y;
+   }
+   ```
+
+## Native uncurried calling convention support
+
+Note that OCaml's calling convention is curried by default, while JS
+does not have native support. Curried and uncurried functions can be
+told from type signatures.
+
+For example
+
+```ocaml
+val f : int -> string -> int
+val f_uncurry : int * string -> int [@uncurry]
+```
+
+
+
+- How BuckleScript compiles function application
+
+To apply a function, you can do this
+
+```ocaml
+f 3 "x"
+f_uncurry #@ (3,"x")
+```
+For uncurried function applicaton, BuckleScript is guaranteed to
+compile it in the same way as JS code
+
+```js
+f_uncurry(3,"x")
+```
+
+However, for curried function application, it depends on how compiler
+optimizations goes, for most cases, when the compiler see the
+definition of `f`, it will compile it in the most efficient way, i.e,
+JS full aplication, if the compiler can not see the definition of `f`,
+it will do a runtime dispath, so there are two possible outputs:
+
+```js
+Curry._2(f, 3, "x") // compiler fails to optimize
+f(3, "x") // compiler optimized correctly
+```
+Both are correct code, but the second one is more efficient.
+
+- How BuckleScript handles function definition
+
+```ocaml
+let f = fun a b -> a + string_of_int b
+let f_uncurry = fun %uncurry a b -> a + string_of_int b 
+```
+
+- When is uncurried function recommended
+
+  1. For FFI to JS functions, all object methods are *strongly recommended*
+  to type it as uncurried function
+
+
+
+  2. When function is passed as a callback
+
+  This is mostly for performance issues, it is hard to optimize in
+  such scenario
+
+
+
 
 ## FFI to js functions
 
@@ -151,8 +291,8 @@ gives it a type and customized attributes
    below is an example
 
    ```OCaml
-   external describe : string -> (unit -> unit) -> unit = "describe" [@@bs.call]
-   external it : string -> (unit -> unit) -> unit = "it" [@@bs.call "it"]
+   external describe : string -> (unit -> unit [@uncurry]) -> unit = "describe" [@@bs.call]
+   external it : string -> (unit -> unit [@uncurry]) -> unit = "it" [@@bs.call "it"]
    ```
 
    Since, `mochajs` is a test framework, we also need some assertion
@@ -168,7 +308,7 @@ On top of this we can write normal OCaml functions, for example:
    ```OCaml
    let assert_equal = eq
    let from_suites name suite  = 
-       describe name (fun _ -> 
+       describe name (fun%uncurry () -> 
          List.iter (fun (name, code) -> it name code) suite)
    ```
 
@@ -193,6 +333,53 @@ On top of this we can write normal OCaml functions, for example:
 
 
 
-## FFI to objects *experimental*
+## FFI to object
 
-Note we will support using OCaml style's objects for FFI in the next release
+
+- Js object calling 
+All JS object of type `a` are lifted to type `a Js.t` to avoid
+conflict with OCaml's own object system. `##` is used in JS's object
+method dispatch, while `#` is used in OCaml's object method dispatch.
+
+
+For example
+
+```ocaml
+let f x a b = x ## hi (a,b)
+```
+
+is inferred as type
+
+```ocaml
+val f : < hi : ('a * 'b -> 'c [@uncurry] ;  .. > Js.t  -> 'a -> 'b -> 'c
+```
+
+- Create JS object
+
+```ocaml
+let a = f ({ hi = fun %uncurry (x,y) -> x + y}[@bs.obj]) 1 2 
+let b = f ({ hi = fun %uncurry (x,y) -> x +. y}[@bs.obj]) 1. 2.
+```
+
+Generated code is like below 
+
+
+```js
+function f(x, a, b) {
+  return x.hi(a, b);
+}
+
+var a = f({
+      "hi": function (x, y) {
+        return x + y | 0;
+      }
+    }, 1, 2);
+
+var b = f({
+      "hi": function (x, y) {
+        return x + y;
+      }
+    }, 1, 2);
+```
+
+
