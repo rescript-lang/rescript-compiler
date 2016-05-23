@@ -68,12 +68,25 @@ let prim_stmt = "js_pure_stmt"
 let prim_debugger = "js_debugger"
 
 (* TODO should be renamed in to {!Js.fn} *)
-let curry_type_id = Longident.Ldot (Lident "Pervasives", "uncurry")
-let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
-let js_unsafe_downgrade_id = Longident.Ldot (Ldot (Lident "Js", "Unsafe"), "!")
-
 (* TODO should be moved into {!Js.t} Later *)
-let js_obj_type_id = Longident.Ldot (Lident "Pervasives", "js_obj") 
+let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
+let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
+let js_obj = Longident.Ldot (Lident "Js", "t") 
+let js_fn = Longident.Ldot (Lident "Js", "fn")
+let js_obj_type_id () = 
+  if Js_config.get_env () = Browser then
+    pervasives_js_obj
+  else js_obj 
+    
+let curry_type_id () = 
+  if Js_config.get_env () = Browser then 
+    pervasives_uncurry
+  else 
+    js_fn 
+
+let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+
+
 
 (* note we first declare its type is [unit], 
    then [ignore] it, [ignore] is necessary since 
@@ -167,7 +180,7 @@ let handle_record_as_js_object
 
     let result_type = 
       {Parsetree.ptyp_desc = 
-         Ptyp_constr ({txt =  js_obj_type_id ; loc},
+         Ptyp_constr ({txt =  js_obj_type_id () ; loc},
                       [{ Parsetree.ptyp_desc = 
                            Ptyp_object (List.map2 (fun x y -> x ,[], y) labels tyvars, Closed);
                          ptyp_attributes = [];
@@ -206,7 +219,7 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
   in 
   let uncurry_fn = 
     {ptyp_desc =
-       Ptyp_constr ({txt = curry_type_id; loc},
+       Ptyp_constr ({txt = curry_type_id (); loc},
                     [{ptyp_desc = tuple_type_desc ;
                       ptyp_attributes;
                       ptyp_loc = loc  }]);
@@ -243,7 +256,7 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
   in 
   let uncurry_fn = 
     {ptyp_desc =
-       Ptyp_constr ({txt = curry_type_id; loc},
+       Ptyp_constr ({txt = curry_type_id (); loc},
                     [{ptyp_desc = tuple_type_desc ;
                       ptyp_attributes;
                       ptyp_loc = loc  }]);
@@ -322,7 +335,7 @@ let uncurry_fn_type loc ty ptyp_attributes
             ptyp_attributes }
   in
   { ty with ptyp_desc =
-              Ptyp_constr ({txt = curry_type_id ; loc},
+              Ptyp_constr ({txt = curry_type_id () ; loc},
                            [ fn_type]);
             ptyp_attributes = []
   }
@@ -383,7 +396,7 @@ let handle_typ
       {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
     | Some _, ptyp_attributes -> 
       {ptyp_desc = 
-         Ptyp_constr ({ txt = js_obj_type_id ; loc},
+         Ptyp_constr ({ txt = js_obj_type_id () ; loc},
                       [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
                                  ptyp_attributes }]);
        ptyp_attributes = [];
@@ -482,7 +495,7 @@ let handle_obj_property loc obj name e
     ~pval_type:({ptyp_desc =
                    Ptyp_arrow ("",
                                {ptyp_desc =
-                                  Ptyp_constr ({txt = js_obj_type_id ; loc}, 
+                                  Ptyp_constr ({txt = js_obj_type_id () ; loc}, 
                                                [{ptyp_desc = Ptyp_var "a" ;  
                                                  ptyp_loc = loc; 
                                                  ptyp_attributes = [] }]);
@@ -545,7 +558,7 @@ let handle_obj_method loc (obj : Parsetree.expression)
     ~pval_type:({ptyp_desc =
                    Ptyp_arrow ("",
                                {ptyp_desc =
-                                  Ptyp_constr ({txt = js_obj_type_id ; loc}, 
+                                  Ptyp_constr ({txt = js_obj_type_id () ; loc}, 
                                                [{ptyp_desc = Ptyp_var "a" ;  
                                                  ptyp_loc = loc; 
                                                  ptyp_attributes = [] }]);
