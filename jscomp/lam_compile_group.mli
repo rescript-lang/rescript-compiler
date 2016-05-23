@@ -39,6 +39,7 @@
  *)
 val compile :  
   filename : string -> 
+  string -> 
   bool -> 
   Env.t -> 
   Types.signature -> 
@@ -47,4 +48,5 @@ val compile :
 
 val lambda_as_module :  
   Env.t ->
-  Types.signature -> string -> Lambda.lambda -> unit
+  Types.signature -> string -> 
+  string  -> Lambda.lambda -> unit

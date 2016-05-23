@@ -177,7 +177,7 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     it's used or not 
     [non_export] is only used in playground
 *)
-let compile  ~filename non_export env _sigs lam   = 
+let compile  ~filename output_prefix non_export env _sigs lam   = 
   let export_idents = 
     if non_export then
       []    
@@ -401,7 +401,7 @@ let compile  ~filename non_export env _sigs lam   =
             in
             (if not @@ Ext_string.is_empty filename then
                Js_cmj_format.to_file 
-                 (Ext_filename.chop_extension ~loc:__LOC__  filename ^ ".cmj") v);
+                  (output_prefix ^ Js_config.cmj_ext) v);
             Js_program_loader.decorate_deps required_modules v.effect js
           )
         | _ -> raise Not_a_module
@@ -415,6 +415,7 @@ let lambda_as_module
     env 
     (sigs : Types.signature)
     (filename : string) 
+    (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
@@ -422,7 +423,7 @@ let lambda_as_module
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
       (fun chan -> Js_dump.dump_deps_program 
-	  (compile ~filename false env sigs lam) chan)
+	  (compile ~filename output_prefix false env sigs lam) chan)
   end
 (* We can use {!Env.current_unit = "Pervasives"} to tell if it is some specific module, 
     We need handle some definitions in standard libraries in a special way, most are io specific, 

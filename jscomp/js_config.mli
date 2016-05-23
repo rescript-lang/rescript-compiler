@@ -33,6 +33,7 @@ type env =
   | AmdJS
   | Goog of string option
 
+val cmj_ext : string 
 val get_env : unit -> env
 val get_ext : unit -> string
 

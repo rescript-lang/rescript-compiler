@@ -37,6 +37,7 @@ type env =
 let default_env = ref NodeJS 
 
 let ext = ref ".js"
+let cmj_ext = ".cmj"
 let get_ext () = !ext 
 let get_env () = !default_env
 

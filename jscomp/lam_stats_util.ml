@@ -215,7 +215,7 @@ and all_lambdas meta (xs : Lambda.lambda list) =
 let dump_exports_arities (meta : Lam_stats.meta ) = 
   let fmt = 
     if meta.filename != "" then 
-      let cmj_file = Ext_filename.chop_extension meta.filename ^ ".cmj" in
+      let cmj_file = Ext_filename.chop_extension meta.filename ^ Js_config.cmj_ext in
       let out = open_out cmj_file in   
       Format.formatter_of_out_channel out
     else 

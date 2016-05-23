@@ -76,7 +76,7 @@ let implementation ppf sourcefile outputprefix =
           match           
           Lam_compile_group.lambda_as_module
             finalenv current_signature 
-            sourcefile  lambda with
+            sourcefile  outputprefix lambda with
           | e -> e 
           | exception e -> 
             (* Save to a file instead so that it will not scare user *)            
