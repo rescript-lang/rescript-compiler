@@ -309,10 +309,6 @@ let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) =
     | _ -> false ) attrs 
 
 
-let uncurry_attr loc  : Parsetree.attribute = 
-  {txt = "uncurry"; loc}, PStr []
-
-
 let uncurry_fn_type loc ty ptyp_attributes
     (args : Parsetree.core_type ) body  : Parsetree.core_type = 
   let open Parsetree in 
@@ -677,7 +673,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                                         body)},
                            _)}])
           -> 
-          handle_uncurry_generation loc pat body e mapper
+          begin match body.pexp_desc with 
+          | Pexp_fun _ -> 
+            Location.raise_errorf ~loc 
+              "`fun %%uncurry (param0, param1) -> ` instead of `fun %%uncurry param0 param1 ->` "
+          | _ -> handle_uncurry_generation loc pat body e mapper
+          end
         | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
                       [("", fn);
                        ("", pat)])

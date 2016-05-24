@@ -22,5 +22,5 @@ module U = Make(Test_order)
 include N
 (* let v = "xhg" *)
 (* let () = v.[0] <- 'a' *)
-
+(* let u = fun %uncurry x y -> x + y *)
 end : sig end)
