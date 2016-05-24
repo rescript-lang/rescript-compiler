@@ -94,11 +94,9 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l2 = aux l2 in
       Llet(str, v,  l1,  l2 )
     | Lletrec(bindings, body) ->
-      let bindings = 
-        bindings |> List.map (fun (k,l) ->  
-            let k = rebind k in
-            (k, aux l)
-          )  in 
+      (*order matters see GPR #405*)
+      let vars = List.map (fun (k, _) -> rebind k) bindings in 
+      let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lletrec(bindings, body) 
     | Lfunction(kind, params, body) -> 

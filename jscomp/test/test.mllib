@@ -306,3 +306,4 @@ test_index
 
 obj_literal_ppx_test
 obj_literal_ppx
+gpr_405_test
