@@ -8,6 +8,7 @@ demo_int_map.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
 ext_sys.cmi :
 float_record.cmi :
+gpr_405_test.cmi :
 inline_edge_cases.cmi :
 inline_map_test.cmi :
 map_test.cmi :
@@ -210,6 +211,8 @@ global_exception_regression_test.cmj : mt.cmi
 global_exception_regression_test.cmx : mt.cmx
 google_closure_test.cmj : test_google_closure.cmj mt.cmi
 google_closure_test.cmx : test_google_closure.cmx mt.cmx
+gpr_405_test.cmj : ../stdlib/hashtbl.cmi gpr_405_test.cmi
+gpr_405_test.cmx : ../stdlib/hashtbl.cmx gpr_405_test.cmi
 guide_for_ext.cmj :
 guide_for_ext.cmx :
 hamming_test.cmj : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
@@ -858,6 +861,8 @@ global_exception_regression_test.cmo : mt.cmi
 global_exception_regression_test.cmj : mt.cmj
 google_closure_test.cmo : test_google_closure.cmo mt.cmi
 google_closure_test.cmj : test_google_closure.cmj mt.cmj
+gpr_405_test.cmo : ../stdlib/hashtbl.cmi gpr_405_test.cmi
+gpr_405_test.cmj : ../stdlib/hashtbl.cmj gpr_405_test.cmi
 guide_for_ext.cmo :
 guide_for_ext.cmj :
 hamming_test.cmo : ../stdlib/printf.cmi mt.cmi ../stdlib/lazy.cmi \
