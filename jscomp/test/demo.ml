@@ -1,8 +1,8 @@
-(* open Ui_defs  *)
+
 
 class type widget = 
-  object 
-      method on : string * (event -> unit [@uncurry]) -> unit [@uncurry]
+  object [@uncurry]
+      method on : string * (event -> unit ) -> unit 
   end
 and  event = 
   object 
@@ -12,57 +12,55 @@ and  event =
 
 
 class type title = 
-  object
-    method title__set : string -> unit [@uncurry]
+  object [@uncurry]
+    method title__set : string -> unit 
     method title : string
   end
 
 class type text = 
-    object
-      method text__set : string -> unit [@uncurry]
+    object [@uncurry]
+      method text__set : string -> unit 
       method text : string 
     end
 class type measure =
-    object
-      method minHeight__set : int -> unit [@uncurry]
+    object [@uncurry]
+      method minHeight__set : int -> unit 
       method minHeight : int
-      method minWidth__set : int -> unit [@uncurry]
+      method minWidth__set : int -> unit 
       method minWidth : int 
-      method maxHeight__set : int -> unit [@uncurry]
-      method maxHeight : int [@uncurry]
-      method maxWidth__set : int -> unit [@uncurry]
+      method maxHeight__set : int -> unit 
+      method maxHeight : int 
+      method maxWidth__set : int -> unit 
       method maxWidth : int 
-
     end
 
 class type layout = 
-    object 
-      method orientation__set : string -> unit  [@uncurry]
+    object [@uncurry]
+      method orientation__set : string -> unit  
       method orientation : string
     end
 
 class type applicationContext = 
-  object 
-      method exit : int -> unit [@uncurry]
-          (* exit'overloading : int -> string -> unit *)
+  object [@uncurry]
+      method exit : int -> unit 
   end
 class type contentable = 
-  object
-    method content__set : #widget Js.t -> unit [@uncurry]
-    method content : #widget Js.t [@uncurry]
+  object[@uncurry]
+    method content__set : #widget Js.t -> unit 
+    method content : #widget Js.t 
     method contentWidth : int  
-    method contentWidth__set : int -> unit [@uncurry]
+    method contentWidth__set : int -> unit 
   end
 
 class type hostedWindow =
-  object 
+  object [@uncurry]
     inherit widget 
     inherit title
     inherit contentable
-    method show : unit -> unit [@uncurry]
-    method hide : unit -> unit [@uncurry]
-    method focus : unit -> unit [@uncurry]
-    method appContext__set : applicationContext -> unit [@uncurry]
+    method show : unit -> unit 
+    method hide : unit -> unit 
+    method focus : unit -> unit 
+    method appContext__set : applicationContext -> unit 
   end
 
 class type hostedContent =
@@ -73,51 +71,31 @@ class type hostedContent =
 
 
 class type stackPanel = 
-  object 
+  object [@uncurry]
     inherit measure
     inherit layout 
     inherit widget
 
-    method addChild : #widget Js.t -> unit [@uncurry]
+    method addChild : #widget Js.t -> unit 
 
   end
-
-(* class type columns =  *)
-(*   object  *)
-(*       method width : int    *)
-(*   end *)
-class type any = 
-  object 
-  end
-
-type column 
-type titleRow 
-
-
-
-
-external mk_text : text: 'b -> <text : 'b>  = "" [@@bs.obj]
-external mk_label : label : 'a -> <label: 'a > = "" [@@bs.obj]
-external mk_width : width : 'a -> <width: 'a> = "" [@@bs.obj]
-external mk_column : width: int -> unit -> column = "" [@@bs.obj]
-external mk_titleRow : title: string -> unit ->  titleRow = "" [@@bs.obj]
 
 class type grid  = 
-  object
+  object [@uncurry]
     inherit widget
     inherit measure
-    method columns__set : <width : int; .. >  array -> unit [@uncurry]
+    method columns__set : <width : int; .. >  Js.t array -> unit 
     method titleRows__set : 
-      <label : <text : string; .. > ; ..>  array -> unit [@uncurry]
+      <label : <text : string; .. >  Js.t ; ..> Js.t   array -> unit 
     method dataSource__set :
-      <label : <text : string; .. > ; ..> array array -> unit  [@uncurry]
+      <label : <text : string; .. > Js.t  ; ..> Js.t  array array -> unit  
   end
 
-external set_interval : (unit -> unit [@uncurry]) -> float -> unit  = "" 
-    [@@bs.call "setInterval"] [@@bs.module "@runtime" "Runtime"]
-external set_grid_columns : grid -> column array -> unit = ""  [@@bs.call "set"]
-external set_grid_titleRows : grid -> string array -> unit = "" [@@bs.call "set"]
-external to_fixed : float -> int -> string = ""[@@bs.send "toFixed"]
+external set_interval : (unit -> unit [@uncurry]) -> float -> unit  =  "setInterval"
+    [@@bs.call] [@@bs.module "@runtime" "Runtime"]
+
+
+external to_fixed : float -> int -> string = "toFixed" [@@bs.send ]
 
 class type button = 
   object
@@ -209,8 +187,8 @@ let ui_layout
     stackPanel##addChild inputCode;
     stackPanel##addChild button;
 
-    let mk_titleRow = fun text -> (mk_label ~label:(mk_text ~text )) in
-    let u = mk_width 200 in
+    let mk_titleRow text = {label =  {text } [@bs.obj] }[@bs.obj] in
+    let u = {width =  200} [@bs.obj] in
     grid##minHeight__set 300;
     grid##titleRows__set
         [| mk_titleRow "Ticker";
