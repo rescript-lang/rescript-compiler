@@ -377,7 +377,7 @@ let handle_typ
     ptyp_desc =  Ptyp_object ( methods, closed_flag) ;
     ptyp_attributes ;
     ptyp_loc = loc 
-  } -> 
+    } -> 
     let methods = List.map (fun (label, ptyp_attrs, core_type ) -> 
         match find_uncurry_attrs_and_remove ptyp_attrs with 
         | None, _ -> label, ptyp_attrs , self.typ self core_type
@@ -399,6 +399,24 @@ let handle_typ
        ptyp_loc = loc }
     end
   | _ -> super.typ self ty
+
+let handle_ctyp 
+    (super : Ast_mapper.mapper) 
+    (self : Ast_mapper.mapper)
+    (ty : Parsetree.class_type) = 
+  match ty with
+  | {pcty_attributes ;
+     pcty_desc ; (* we won't have [ class type v = u -> object[@uncurry] ]*)
+     pcty_loc = loc
+   } ->
+    begin match  find_uncurry_attrs_and_remove pcty_attributes with 
+    | Some _, pcty_attributes' ->
+      Ext_ref.protect uncurry true begin fun () -> 
+        self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
+      end
+    | None, _ -> super.class_type self ty
+    end
+
 
 let handle_debugger loc payload = 
   match payload with
@@ -732,6 +750,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
+    class_type = (fun self ctyp -> handle_ctyp Ast_mapper.default_mapper self ctyp);
     structure_item = (fun mapper (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
