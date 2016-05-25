@@ -1,7 +1,7 @@
 
 let u = fun [@uncurry] (x,y) -> x + y 
 
-let h = u (1,2) [@uncurry] 
+(* let h = u (1,2) [@uncurry]  *)
 
 type u = < v : int ; y : int > [@uncurry]
 

@@ -19,7 +19,7 @@ let suites = Mt.[
       external mk : say:'a -> <say:'a> Js.t = ""[@@bs.obj] 
     end 
   in 
-  Eq(34, f_js (N.mk ~say:(fun %uncurry  x -> x + 2))))
+  Eq(34, f_js (N.mk ~say:(fun [@uncurry]  x -> x + 2))))
 ]
 
 ;; Mt.from_pair_suites __FILE__ suites

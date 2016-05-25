@@ -299,7 +299,7 @@ let handle_raw ?ty loc e attrs  =
        [("",e)])
     (match ty with 
     | Some ty -> ty
-    | None -> predef_any_type))
+    | None -> predef_any_type)) (* FIXME: use [create_local]*)
     
 
 
@@ -679,23 +679,42 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> handle_debugger loc payload
         (** End rewriting *)
+        (* | Pexp_extension *)
+        (*          ({txt = "uncurry";loc}, *)
+        (*           PStr *)
+        (*             [{ *)
+        (*               pstr_desc = *)
+        (*                 Pstr_eval *)
+        (*                   ({pexp_desc = *)
+        (*                       Pexp_fun ("", None, pat , *)
+        (*                                 body)}, *)
+        (*                    _)}]) *)
+        (*   ->  *)
+        (*   begin match body.pexp_desc with  *)
+        (*   | Pexp_fun _ ->  *)
+        (*     Location.raise_errorf ~loc  *)
+        (*       "`fun %%uncurry (param0, param1) -> ` instead of `fun %%uncurry param0 param1 ->` " *)
+        (*   | _ -> handle_uncurry_generation loc pat body e mapper *)
+        (*   end *)
+        | Pexp_fun ("", None, pat , body)
+          ->
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs 
+            -> 
+            begin match body.pexp_desc with 
+              | Pexp_fun _ -> 
+                Location.raise_errorf ~loc 
+                  {| `fun [@uncurry] (param0, param1) -> `
+                     instead of `fun [@uncurry] param0 param1 ->` |}
+                | _ -> 
+                  handle_uncurry_generation loc pat body 
+                    {e with pexp_attributes = attrs } mapper
+              end
 
-        | Pexp_extension
-                 ({txt = "uncurry";loc},
-                  PStr
-                    [{
-                      pstr_desc =
-                        Pstr_eval
-                          ({pexp_desc =
-                              Pexp_fun ("", None, pat ,
-                                        body)},
-                           _)}])
-          -> 
-          begin match body.pexp_desc with 
-          | Pexp_fun _ -> 
-            Location.raise_errorf ~loc 
-              "`fun %%uncurry (param0, param1) -> ` instead of `fun %%uncurry param0 param1 ->` "
-          | _ -> handle_uncurry_generation loc pat body e mapper
           end
         | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
                       [("", fn);

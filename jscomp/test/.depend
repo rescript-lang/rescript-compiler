@@ -511,8 +511,8 @@ test_global_print.cmj : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmi
 test_google_closure.cmx : ../runtime/js.cmx ../stdlib/array.cmx
-test_http_server.cmj : http_types.cmj test_http_server.cmi
-test_http_server.cmx : http_types.cmx test_http_server.cmi
+test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
+test_http_server.cmx : ../runtime/js.cmx http_types.cmx test_http_server.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -1163,8 +1163,8 @@ test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
 test_google_closure.cmo : ../runtime/js.cmo ../stdlib/array.cmi
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmj
-test_http_server.cmo : http_types.cmo test_http_server.cmi
-test_http_server.cmj : http_types.cmj test_http_server.cmi
+test_http_server.cmo : ../runtime/js.cmo http_types.cmo test_http_server.cmi
+test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
