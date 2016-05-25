@@ -150,6 +150,8 @@ let create_local_external loc
        pexp_loc = loc
      })
 
+let record_as_js_object = ref None (* otherwise has an attribute *)
+let obj_type_as_js_obj_type = ref false
 let handle_record_as_js_object 
     loc 
     attr
@@ -352,25 +354,48 @@ let handle_typ
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    let methods = List.map (fun (label, ptyp_attrs, core_type ) -> 
-        match find_uncurry_attrs_and_remove ptyp_attrs with 
-        | None, _ -> label, ptyp_attrs , self.typ self core_type
-        | Some v, ptyp_attrs -> 
-          label , ptyp_attrs, self.typ self 
-            { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-      ) methods in           
     begin match Ext_list.exclude_with_fact (function 
       | {Location.txt = "bs.obj" ; _}, _  -> true 
       | _  -> false ) ptyp_attributes with 
-    |  None, _  ->
-      {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
     | Some _, ptyp_attributes -> 
+      let methods = 
+        Ext_ref.protect obj_type_as_js_obj_type true begin fun _ -> 
+          List.map (fun (label, ptyp_attrs, core_type ) -> 
+              match find_uncurry_attrs_and_remove ptyp_attrs with 
+              | None, _ -> label, ptyp_attrs , self.typ self core_type
+              | Some v, ptyp_attrs -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+            ) methods 
+        end
+      in           
+
       {ptyp_desc = 
          Ptyp_constr ({ txt = js_obj_type_id () ; loc},
                       [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
                                  ptyp_attributes }]);
        ptyp_attributes = [];
        ptyp_loc = loc }
+    |  None, _  ->
+      let methods = 
+        List.map (fun (label, ptyp_attrs, core_type ) -> 
+            match find_uncurry_attrs_and_remove ptyp_attrs with 
+            | None, _ -> label, ptyp_attrs , self.typ self core_type
+            | Some v, ptyp_attrs -> 
+              label , ptyp_attrs, self.typ self 
+                { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+          ) methods 
+      in           
+      if !obj_type_as_js_obj_type then 
+        {ptyp_desc = 
+           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
+                        [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                                   ptyp_attributes }]);
+         ptyp_attributes = [];
+         ptyp_loc = loc }
+      else 
+        {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
+
     end
   | _ -> super.typ self ty
 
@@ -708,12 +733,22 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 e.pexp_attributes
             with 
           | Some attr, pexp_attributes -> 
-            { e with
-              pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
-              pexp_attributes 
-            }
+            Ext_ref.protect record_as_js_object (Some attr) begin fun () -> 
+              { e with
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+                pexp_attributes 
+              }
+            end
           | None , _ -> 
-            Ast_mapper.default_mapper.expr  mapper e
+            begin match !record_as_js_object with 
+            | Some attr 
+              -> 
+              { e with
+                pexp_desc =  handle_record_as_js_object e.pexp_loc attr label_exprs mapper;
+              }
+            | None -> 
+              Ast_mapper.default_mapper.expr  mapper e
+            end
           end
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
