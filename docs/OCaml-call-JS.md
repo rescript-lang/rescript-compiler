@@ -220,7 +220,7 @@ On top of this we can write normal OCaml functions, for example:
    ```OCaml
    let assert_equal = eq
    let from_suites name suite  = 
-       describe name (fun%uncurry () -> 
+       describe name (fun [@uncurry] () -> 
          List.iter (fun (name, code) -> it name code) suite)
    ```
 
@@ -271,8 +271,8 @@ val f : < hi : ('a * 'b -> 'c [@uncurry] ;  .. > Js.t  -> 'a -> 'b -> 'c
   This attribute helps create JavaScript object literal
 
 ```ocaml
-  let a = f ({ hi = fun %uncurry (x,y) -> x + y}[@bs.obj]) 1 2 
-  let b = f ({ hi = fun %uncurry (x,y) -> x +. y}[@bs.obj]) 1. 2.
+  let a = f ({ hi = fun [@uncurry] (x,y) -> x + y}[@bs.obj]) 1 2 
+  let b = f ({ hi = fun [@uncurry] (x,y) -> x +. y}[@bs.obj]) 1. 2.
   ```
 
    Generated code is like below 

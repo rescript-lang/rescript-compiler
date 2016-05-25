@@ -17,7 +17,7 @@ To apply a function, you can do this
 
 ```ocaml
 f 3 "x"
-f_uncurry #@ (3,"x")
+f_uncurry (3,"x") [@uncurry]
 ```
 For uncurried function applicaton, BuckleScript is guaranteed to
 compile it in the same way as JS code
@@ -42,7 +42,7 @@ Both are correct code, but the second one is more efficient.
 
 ```ocaml
 let f = fun a b -> a + string_of_int b
-let f_uncurry = fun %uncurry a b -> a + string_of_int b 
+let f_uncurry = fun [@uncurry] (a, b) -> a + string_of_int b 
 ```
 
 - When is uncurried function recommended
