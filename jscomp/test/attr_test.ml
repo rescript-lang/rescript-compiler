@@ -22,3 +22,7 @@ class type date =
   end
 
 
+let max2 : float * float -> float [@uncurry] = fun [@uncurry] (x,y) -> 
+  x +. y 
+
+let hh = max2 (1., 2.) [@uncurry]

@@ -44,7 +44,7 @@ let stdout = {
   output = (fun _ s ->
     let v =Js.String.length s - 1 in
     if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write|}] then
-      ([%bs.raw{| process.stdout.write |} ] : string -> unit) s
+      ([%bs.raw{| process.stdout.write |} ] : string -> unit [@uncurry]) s [@uncurry]
     else
     if s.[v] = '\n' then
       Js.log (Js.String.slice s 0 v)
@@ -86,10 +86,8 @@ let caml_ml_output (oc : out_channel) (str : string) offset len  =
     else Js.String.slice str offset len in
   if [%bs.raw{| (typeof process !== "undefined") && process.stdout && process.stdout.write |}] &&
      oc == stdout then
-    begin     
+    ([%bs.raw{| process.stdout.write |}] : string -> unit [@uncurry] ) str [@uncurry]
 
-      ([%bs.raw{| process.stdout.write |}] : string -> unit ) str
-    end        
   else
     begin     
 

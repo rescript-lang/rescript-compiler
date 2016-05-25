@@ -1,1 +1,1 @@
-let keys  = [%bs.raw  (" function (x){return Object.keys(x)}" : Obj.t -> string array)]
+let keys :  Obj.t -> string array [@uncurry] = [%bs.raw " function (x){return Object.keys(x)}" ]

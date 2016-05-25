@@ -177,7 +177,6 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
                  end
             ) args_lambda ([], []) in
 
-
         match closed_lambda with 
         | Some (Lfunction (_, params, body)) 
           when Ext_list.same_length params args_lambda -> 
@@ -204,13 +203,13 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              E.unit
            | {name = "CamlinternalMod"; _}, "init_mod" ,
              [ 
-                _ ;
-                shape  ;
-                (* Module []
-                   TODO: add a function [empty_shape]
-                   This pattern match is fragile, since it depends 
-                   on how we compile [Lconst]
-                *)
+               _ ;
+               shape  ;
+               (* Module []
+                  TODO: add a function [empty_shape]
+                  This pattern match is fragile, since it depends 
+                  on how we compile [Lconst]
+               *)
              ] when Js_of_lam_module.is_empty_shape shape
              ->
              E.dummy_obj () (* purely type definition*)
@@ -511,8 +510,11 @@ and
       compile_lambda  cxt  
         (Lapply (an, (args' @ args), (Lam_util.mk_apply_info App_na)))
     (* External function calll *)
-    | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,_info) ->
-
+    | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
+             {apply_status = App_na | App_ml_full}) ->
+      (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
+         this information, we should fix [get_exp_with_args]
+      *)
       get_exp_with_args cxt lam  args_lambda id n  env
 
 
@@ -875,10 +877,10 @@ and
           end
 
         | fn :: rest -> 
-          compile_lambda cxt @@ 
-          Lambda.Lapply (fn, rest , 
-                         {apply_loc = Location.none;
-                          apply_status = App_js_full})
+          compile_lambda cxt 
+            (Lapply (fn, rest , 
+                     {apply_loc = Location.none;
+                      apply_status = App_js_full}))
         | _ -> assert false 
       else 
         begin match args_lambda with 
