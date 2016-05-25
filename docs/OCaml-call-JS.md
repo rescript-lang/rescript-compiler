@@ -33,19 +33,18 @@ improve the generated code.
     }
    |}]
    ```
-   In the expression level, i.e, `[%bs.raw ...]` user can add a type annotation, the compiler would use such type annotation to deduce its arities. for example, the next three versions:
+   In the expression level, i.e, `[%bs.raw ...]` user can add a type
+   annotation, for example:
 
    ```ocaml
-   let f = [%bs.raw ("Math.max"  : float -> float -> float) ] 3.0 
-   let f : float -> float -> float = [%bs.raw "Math.max" ] 3.0
-   let f = ([%bs.raw "Math.max"] : float -> float -> float ) 3.0
+   let f : float * float -> float [@uncurry] = [%bs.raw "Math.max" ]
+   in f (3.0, 2.0) [@uncurry]
    ```
    will be translated into 
 
    ```js
-   function f(prim){
-     return Math.max(3.0,prim);
-   }
+   var f = Math.max ;
+   f(3.0,2.0)
    ```
    Caveat:
    1. So far we don't do any sanity check in the quoted text (syntax check is a long-term goal)
