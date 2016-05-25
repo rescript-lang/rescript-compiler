@@ -279,27 +279,18 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
 
 
 
-let handle_raw ?ty loc e attrs  = 
-  let attrs = 
-    match ty with 
-    | Some ty -> 
-      Parsetree_util.attr_attribute_from_type ty :: attrs  
-    | None -> attrs in 
+let handle_raw loc e   = 
   Ast_helper.Exp.letmodule 
     {txt = tmp_module_name; loc }
     (Ast_helper.Mod.structure [ 
         Ast_helper.Str.primitive 
-          (Ast_helper.Val.mk ~attrs {loc ; txt = tmp_fn} 
+          (Ast_helper.Val.mk  {loc ; txt = tmp_fn} 
              ~prim:[prim]
-             (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))]
-    )    
-  (Ast_helper.Exp.constraint_ ~loc  
+             (Ast_helper.Typ.arrow "" predef_string_type predef_any_type))])    
     (Ast_helper.Exp.apply 
        (Ast_helper.Exp.ident {txt= Ldot(Lident tmp_module_name, tmp_fn) ; loc})
        [("",e)])
-    (match ty with 
-    | Some ty -> ty
-    | None -> predef_any_type))
+
     
 
 
@@ -650,25 +641,10 @@ let rec unsafe_mapper : Ast_mapper.mapper =
             PStr 
               ( [{ pstr_desc = Pstr_eval ({ 
                    pexp_desc = Pexp_constant (Const_string (_, _)) ;
-                   pexp_attributes = attrs } as e ,
+                    } as e ,
                                                 _); pstr_loc = _ }]))
           -> 
-
-              handle_raw loc e attrs
-        | Pexp_extension( {txt = "bs.raw"; loc}, PStr 
-                ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                      pexp_desc = 
-                        Pexp_constraint (
-                          {pexp_desc = Pexp_constant (Const_string (_, _)) ; _}
-                          as e,
-                             ty)
-                      ; pexp_attributes = attrs} , _);  }]))
-        | Pexp_constraint({pexp_desc = Pexp_extension( {txt = "bs.raw"; loc}, PStr 
-                ( [{ pstr_desc = Pstr_eval ({ 
-                      pexp_desc = 
-                        Pexp_constant (Const_string (_, _)) 
-                      ; pexp_attributes = attrs} as e , _);  }]))}, ty)            
-              -> handle_raw ~ty loc e attrs
+              handle_raw loc e 
         | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
               -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
@@ -679,24 +655,26 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> handle_debugger loc payload
         (** End rewriting *)
-
-        | Pexp_extension
-                 ({txt = "uncurry";loc},
-                  PStr
-                    [{
-                      pstr_desc =
-                        Pstr_eval
-                          ({pexp_desc =
-                              Pexp_fun ("", None, pat ,
-                                        body)},
-                           _)}])
-          -> 
-          begin match body.pexp_desc with 
-          | Pexp_fun _ -> 
-            Location.raise_errorf ~loc 
-              "`fun %%uncurry (param0, param1) -> ` instead of `fun %%uncurry param0 param1 ->` "
-          | _ -> handle_uncurry_generation loc pat body e mapper
+        | Pexp_fun ("", None, pat , body)
+          ->
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs 
+            -> 
+            begin match body.pexp_desc with 
+              | Pexp_fun _ -> 
+                Location.raise_errorf ~loc 
+                  {| `fun [@uncurry] (param0, param1) -> `
+                     instead of `fun [@uncurry] param0 param1 ->` |}
+              | _ -> 
+                handle_uncurry_generation loc pat body 
+                  {e with pexp_attributes = attrs } mapper
+            end
           end
+
         | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
                       [("", fn);
                        ("", pat)])
@@ -733,6 +711,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         ) )
                       ])
           -> handle_obj_property loc obj name e mapper
+        | Pexp_apply (fn,
+                      [("", pat)]) -> 
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs -> 
+            handle_uncurry_application loc fn pat 
+              {e with pexp_attributes = attrs} mapper
+          end
+
         | Pexp_record (label_exprs, None)   -> 
           begin match  (* exclude {[ u with ..]} syntax currently *)
               Ext_list.exclude_with_fact 

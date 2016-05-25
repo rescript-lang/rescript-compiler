@@ -1,7 +1,7 @@
 
 let u = fun [@uncurry] (x,y) -> x + y 
 
-let h = u (1,2) [@uncurry] 
+let h = u (1,2) [@uncurry]
 
 type u = < v : int ; y : int > [@uncurry]
 
@@ -22,3 +22,7 @@ class type date =
   end
 
 
+let max2 : float * float -> float [@uncurry] = fun [@uncurry] (x,y) -> 
+  x +. y 
+
+let hh = max2 (1., 2.) [@uncurry]

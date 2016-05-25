@@ -181,8 +181,8 @@ fail_comp.cmj :
 fail_comp.cmx :
 ffi_arity_test.cmj : mt.cmi ../runtime/js.cmj
 ffi_arity_test.cmx : mt.cmx ../runtime/js.cmx
-ffi_js.cmj :
-ffi_js.cmx :
+ffi_js.cmj : ../stdlib/obj.cmi
+ffi_js.cmx : ../stdlib/obj.cmx
 ffi_test.cmj : ../runtime/js.cmj
 ffi_test.cmx : ../runtime/js.cmx
 fib.cmj :
@@ -511,8 +511,8 @@ test_global_print.cmj : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmx : ../stdlib/list.cmx ../stdlib/hashtbl.cmx
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmi
 test_google_closure.cmx : ../runtime/js.cmx ../stdlib/array.cmx
-test_http_server.cmj : http_types.cmj test_http_server.cmi
-test_http_server.cmx : http_types.cmx test_http_server.cmi
+test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
+test_http_server.cmx : ../runtime/js.cmx http_types.cmx test_http_server.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmx : test_order.cmx ../stdlib/string.cmx ../stdlib/set.cmx \
@@ -669,6 +669,8 @@ tuple_alloc.cmj :
 tuple_alloc.cmx :
 typeof_test.cmj : mt.cmi ../runtime/js.cmj
 typeof_test.cmx : mt.cmx ../runtime/js.cmx
+uncurry_glob_test.cmj : ../runtime/caml_utils.cmi
+uncurry_glob_test.cmx : ../runtime/caml_utils.cmx
 undef_regression_test.cmj : ../runtime/js.cmj
 undef_regression_test.cmx : ../runtime/js.cmx
 unitest_string.cmj :
@@ -833,8 +835,8 @@ fail_comp.cmo :
 fail_comp.cmj :
 ffi_arity_test.cmo : mt.cmi ../runtime/js.cmo
 ffi_arity_test.cmj : mt.cmj ../runtime/js.cmj
-ffi_js.cmo :
-ffi_js.cmj :
+ffi_js.cmo : ../stdlib/obj.cmi
+ffi_js.cmj : ../stdlib/obj.cmj
 ffi_test.cmo : ../runtime/js.cmo
 ffi_test.cmj : ../runtime/js.cmj
 fib.cmo :
@@ -1163,8 +1165,8 @@ test_global_print.cmo : ../stdlib/list.cmi ../stdlib/hashtbl.cmi
 test_global_print.cmj : ../stdlib/list.cmj ../stdlib/hashtbl.cmj
 test_google_closure.cmo : ../runtime/js.cmo ../stdlib/array.cmi
 test_google_closure.cmj : ../runtime/js.cmj ../stdlib/array.cmj
-test_http_server.cmo : http_types.cmo test_http_server.cmi
-test_http_server.cmj : http_types.cmj test_http_server.cmi
+test_http_server.cmo : ../runtime/js.cmo http_types.cmo test_http_server.cmi
+test_http_server.cmj : ../runtime/js.cmj http_types.cmj test_http_server.cmi
 test_include.cmo : test_order.cmo ../stdlib/string.cmi ../stdlib/set.cmi \
     ../stdlib/list.cmi
 test_include.cmj : test_order.cmj ../stdlib/string.cmj ../stdlib/set.cmj \
@@ -1321,6 +1323,8 @@ tuple_alloc.cmo :
 tuple_alloc.cmj :
 typeof_test.cmo : mt.cmi ../runtime/js.cmo
 typeof_test.cmj : mt.cmj ../runtime/js.cmj
+uncurry_glob_test.cmo : ../runtime/caml_utils.cmi
+uncurry_glob_test.cmj : ../runtime/caml_utils.cmj
 undef_regression_test.cmo : ../runtime/js.cmo
 undef_regression_test.cmj : ../runtime/js.cmj
 unitest_string.cmo :

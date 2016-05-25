@@ -29,4 +29,4 @@
 
 
 
-val repeat : int -> string -> string
+val repeat : int * string -> string [@uncurry]

@@ -361,9 +361,8 @@ let aux f (i : nativeint)  =
       f.filter <- " ";
       let n = f.prec -Js.String.length !s in 
       if n > 0 then
-        s :=  repeat n "0"  ^ !s
-    end
-  ;
+        s :=  repeat (n, "0")[@uncurry]  ^ !s
+    end ;
   finish_formatting f !s
 
 let caml_format_int fmt i = 
@@ -485,7 +484,7 @@ let caml_int64_format fmt x =
       f.filter <- " ";
       let n = f.prec -Js.String.length !s in
       if n > 0 then
-        s := repeat n "0" ^ !s
+        s := repeat (n, "0") [@uncurry] ^ !s
     end;
 
   finish_formatting f !s

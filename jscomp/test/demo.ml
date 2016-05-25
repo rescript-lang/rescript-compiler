@@ -202,16 +202,16 @@ let ui_layout
 
     button##text__set "update formula";
     button##minHeight__set 20;
-    button##on ("click", (fun %uncurry _event -> (* FIXME both [_] and () should work*)
+    button##on ("click", (fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode#.text in
         computeFunction := fun env ->  hot_function (fun key -> lookup env key) 
       with  e -> ()));
     let fmt v = to_fixed v 2 in
-    set_interval (fun %uncurry () -> 
+    set_interval (fun [@uncurry] () -> 
 
       grid##dataSource__set
-        ( array_map data (fun %uncurry {ticker; price } -> 
+        ( array_map data (fun [@uncurry] {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in
           let result = !computeFunction (mk_bid_ask ~bid ~ask ) in
