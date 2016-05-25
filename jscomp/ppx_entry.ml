@@ -679,23 +679,6 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | Pexp_extension ({txt = "bs.debugger"; loc} , payload)
           -> handle_debugger loc payload
         (** End rewriting *)
-        (* | Pexp_extension *)
-        (*          ({txt = "uncurry";loc}, *)
-        (*           PStr *)
-        (*             [{ *)
-        (*               pstr_desc = *)
-        (*                 Pstr_eval *)
-        (*                   ({pexp_desc = *)
-        (*                       Pexp_fun ("", None, pat , *)
-        (*                                 body)}, *)
-        (*                    _)}]) *)
-        (*   ->  *)
-        (*   begin match body.pexp_desc with  *)
-        (*   | Pexp_fun _ ->  *)
-        (*     Location.raise_errorf ~loc  *)
-        (*       "`fun %%uncurry (param0, param1) -> ` instead of `fun %%uncurry param0 param1 ->` " *)
-        (*   | _ -> handle_uncurry_generation loc pat body e mapper *)
-        (*   end *)
         | Pexp_fun ("", None, pat , body)
           ->
           let loc = e.pexp_loc in 
@@ -710,12 +693,12 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                 Location.raise_errorf ~loc 
                   {| `fun [@uncurry] (param0, param1) -> `
                      instead of `fun [@uncurry] param0 param1 ->` |}
-                | _ -> 
-                  handle_uncurry_generation loc pat body 
-                    {e with pexp_attributes = attrs } mapper
-              end
-
+              | _ -> 
+                handle_uncurry_generation loc pat body 
+                  {e with pexp_attributes = attrs } mapper
+            end
           end
+
         | Pexp_apply ({pexp_desc = Pexp_ident {txt = Lident "#@"; loc}},
                       [("", fn);
                        ("", pat)])
@@ -752,6 +735,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
                         ) )
                       ])
           -> handle_obj_property loc obj name e mapper
+        | Pexp_apply (fn,
+                      [("", pat)]) -> 
+          let loc = e.pexp_loc in 
+          begin match Ext_list.exclude_with_fact (function 
+              | {Location.txt = "uncurry"; _}, _ -> true 
+              | _ -> false) e.pexp_attributes with 
+          | None, _ -> Ast_mapper.default_mapper.expr mapper e 
+          | Some _, attrs -> 
+            handle_uncurry_application loc fn pat 
+              {e with pexp_attributes = attrs} mapper
+          end
+
         | Pexp_record (label_exprs, None)   -> 
           begin match  (* exclude {[ u with ..]} syntax currently *)
               Ext_list.exclude_with_fact 

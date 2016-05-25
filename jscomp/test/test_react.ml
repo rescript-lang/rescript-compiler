@@ -12,8 +12,8 @@ type doc = document Js.t
 external doc :  doc  = "doc" [@@bs.val ]
 
 class type con = 
-    object 
-        method log : 'a -> unit [@uncurry]
+    object [@uncurry]
+        method log : 'a -> unit 
     end
 
 type console = con Js.t 
