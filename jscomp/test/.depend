@@ -333,6 +333,10 @@ mt.cmj : ../stdlib/list.cmi mt.cmi
 mt.cmx : ../stdlib/list.cmx mt.cmi
 mt_global.cmj : mt.cmi mt_global.cmi
 mt_global.cmx : mt.cmx mt_global.cmi
+nested_obj_literal.cmj :
+nested_obj_literal.cmx :
+nested_obj_test.cmj :
+nested_obj_test.cmx :
 number_lexer.cmj : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmx : ../stdlib/sys.cmx ../stdlib/lexing.cmx
 obj_literal_ppx.cmj : ../stdlib/array.cmi
@@ -987,6 +991,10 @@ mt.cmo : ../stdlib/list.cmi mt.cmi
 mt.cmj : ../stdlib/list.cmj mt.cmi
 mt_global.cmo : mt.cmi mt_global.cmi
 mt_global.cmj : mt.cmj mt_global.cmi
+nested_obj_literal.cmo :
+nested_obj_literal.cmj :
+nested_obj_test.cmo :
+nested_obj_test.cmj :
 number_lexer.cmo : ../stdlib/sys.cmi ../stdlib/lexing.cmi
 number_lexer.cmj : ../stdlib/sys.cmj ../stdlib/lexing.cmj
 obj_literal_ppx.cmo : ../stdlib/array.cmi
