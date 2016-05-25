@@ -53,7 +53,7 @@
         data-chapter-title="OCaml call JS"
         data-filepath="OCaml-call-JS.md"
         data-basepath="."
-        data-revision="Mon May 23 2016 11:12:05 GMT-0400 (EDT)"
+        data-revision="Wed May 25 2016 15:05:18 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -561,15 +561,14 @@ improve the generated code.</p>
   }
  |}]
 </code></pre>
-<p> In the expression level, i.e, <code>[%bs.raw ...]</code> user can add a type annotation, the compiler would use such type annotation to deduce its arities. for example, the next three versions:</p>
-<pre><code class="lang-ocaml"> <span class="hljs-keyword">let</span> f = [%bs.raw (<span class="hljs-string">&quot;Math.max&quot;</span>  : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span>) ] <span class="hljs-number">3.0</span> 
- <span class="hljs-keyword">let</span> f : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> = [%bs.raw <span class="hljs-string">&quot;Math.max&quot;</span> ] <span class="hljs-number">3.0</span>
- <span class="hljs-keyword">let</span> f = ([%bs.raw <span class="hljs-string">&quot;Math.max&quot;</span>] : <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> ) <span class="hljs-number">3.0</span>
+<p> In the expression level, i.e, <code>[%bs.raw ...]</code> user can add a type
+ annotation, for example:</p>
+<pre><code class="lang-ocaml"> <span class="hljs-keyword">let</span> f : <span class="hljs-built_in">float</span> * <span class="hljs-built_in">float</span> -&gt; <span class="hljs-built_in">float</span> [@uncurry] = [%bs.raw <span class="hljs-string">&quot;Math.max&quot;</span> ]
+ <span class="hljs-keyword">in</span> f (<span class="hljs-number">3.0</span>, <span class="hljs-number">2.0</span>) [@uncurry]
 </code></pre>
 <p> will be translated into </p>
-<pre><code class="lang-js"> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params">prim</span>)</span>{
-   <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.max(<span class="hljs-number">3.0</span>,prim);
- }
+<pre><code class="lang-js"> <span class="hljs-keyword">var</span> f = <span class="hljs-built_in">Math</span>.max ;
+ f(<span class="hljs-number">3.0</span>,<span class="hljs-number">2.0</span>)
 </code></pre>
 <p> Caveat:</p>
 <ol>
@@ -695,7 +694,7 @@ This attribute help get and set the property of a JavaScript object.</p>
 <p>On top of this we can write normal OCaml functions, for example:</p>
 <pre><code class="lang-OCaml">   <span class="hljs-keyword">let</span> assert_equal = eq
    <span class="hljs-keyword">let</span> from_suites name suite  = 
-       describe name (<span class="hljs-keyword">fun</span>%uncurry <span class="hljs-literal">()</span> -&gt; 
+       describe name (<span class="hljs-keyword">fun</span> [@uncurry] <span class="hljs-literal">()</span> -&gt; 
          <span class="hljs-type">List</span>.iter (<span class="hljs-keyword">fun</span> (name, code) -&gt; it name code) suite)
 </code></pre>
 <p>   The compiler would generate code as below:</p>
@@ -732,8 +731,8 @@ method dispatch, while <code>#</code> is used in OCaml&apos;s object method disp
 <p>This attribute helps create JavaScript object literal</p>
 </li>
 </ul>
-<pre><code class="lang-ocaml">  <span class="hljs-keyword">let</span> a = f ({ hi = <span class="hljs-keyword">fun</span> %uncurry (x,y) -&gt; x + y}[@bs.obj]) <span class="hljs-number">1</span> <span class="hljs-number">2</span> 
-  <span class="hljs-keyword">let</span> b = f ({ hi = <span class="hljs-keyword">fun</span> %uncurry (x,y) -&gt; x +. y}[@bs.obj]) <span class="hljs-number">1.</span> <span class="hljs-number">2.</span>
+<pre><code class="lang-ocaml">  <span class="hljs-keyword">let</span> a = f ({ hi = <span class="hljs-keyword">fun</span> [@uncurry] (x,y) -&gt; x + y}[@bs.obj]) <span class="hljs-number">1</span> <span class="hljs-number">2</span> 
+  <span class="hljs-keyword">let</span> b = f ({ hi = <span class="hljs-keyword">fun</span> [@uncurry] (x,y) -&gt; x +. y}[@bs.obj]) <span class="hljs-number">1.</span> <span class="hljs-number">2.</span>
 </code></pre>
 <p>   Generated code is like below </p>
 <pre><code class="lang-js">   <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">f</span>(<span class="hljs-params">x, a, b</span>) </span>{

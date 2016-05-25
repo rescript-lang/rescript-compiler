@@ -53,7 +53,7 @@
         data-chapter-title="Curry and Uncurry functions"
         data-filepath="Curry-and-Uncurry-functions.md"
         data-basepath="."
-        data-revision="Mon May 23 2016 11:12:05 GMT-0400 (EDT)"
+        data-revision="Wed May 25 2016 15:05:18 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -548,7 +548,7 @@ told from type signatures.</p>
 </ul>
 <p>To apply a function, you can do this</p>
 <pre><code class="lang-ocaml">f <span class="hljs-number">3</span> <span class="hljs-string">&quot;x&quot;</span>
-f_uncurry #@ (<span class="hljs-number">3</span>,<span class="hljs-string">&quot;x&quot;</span>)
+f_uncurry (<span class="hljs-number">3</span>,<span class="hljs-string">&quot;x&quot;</span>) [@uncurry]
 </code></pre>
 <p>For uncurried function applicaton, BuckleScript is guaranteed to
 compile it in the same way as JS code</p>
@@ -567,7 +567,7 @@ f(<span class="hljs-number">3</span>, <span class="hljs-string">&quot;x&quot;</s
 <li>How BuckleScript handles function definition</li>
 </ul>
 <pre><code class="lang-ocaml"><span class="hljs-keyword">let</span> f = <span class="hljs-keyword">fun</span> a b -&gt; a + string_of_int b
-<span class="hljs-keyword">let</span> f_uncurry = <span class="hljs-keyword">fun</span> %uncurry a b -&gt; a + string_of_int b
+<span class="hljs-keyword">let</span> f_uncurry = <span class="hljs-keyword">fun</span> [@uncurry] (a, b) -&gt; a + string_of_int b
 </code></pre>
 <ul>
 <li><p>When is uncurried function recommended</p>
