@@ -14,21 +14,24 @@
 
 type req 
 
-type resp = [%uncurry: <
+type resp = 
+  <
    statusCode__set : int -> unit  ;
    setHeader : string * string -> unit ;
    end__ : string ->  unit 
-> Js.t ]
+  > [@bs.obj] [@uncurry]
 
-type server = [%uncurry: <
-   listen : int * string *  (unit -> unit) -> unit 
-> Js.t]
+type server = 
+  <
+    listen : int * string *  (unit -> unit) -> unit 
+  > [@bs.obj] [@uncurry]
 
 
 
-type http = [%uncurry:<
+type http = 
+  <
    createServer : (req  * resp  -> unit ) ->  server
-> Js.t ]
+  > [@bs.obj] [@uncurry]
 
 
 external http : http  = "http"  [@@bs.val_of_module ]

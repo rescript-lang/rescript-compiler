@@ -312,7 +312,7 @@ let uncurry_fn_type loc ty ptyp_attributes
             ptyp_attributes = []
   }
 
-let uncurry = ref false 
+let uncurry_type = ref false 
 
 (*
   Attributes are very hard to attribute
@@ -326,13 +326,6 @@ let handle_typ
     (self : Ast_mapper.mapper)
     (ty : Parsetree.core_type) = 
   match ty with
-  | {ptyp_desc = 
-       Ptyp_extension({txt = "uncurry"}, 
-                      PTyp ty )}
-    -> 
-    Ext_ref.protect uncurry true begin fun () -> 
-      self.typ self  ty 
-    end
   | {ptyp_attributes ;
      ptyp_desc = Ptyp_arrow ("", args, body);
      ptyp_loc = loc
@@ -345,7 +338,7 @@ let handle_typ
     | None, _ -> 
         let args = self.typ self args in
         let body = self.typ self body in
-        if !uncurry then 
+        if !uncurry_type then 
           uncurry_fn_type loc ty ptyp_attributes args body 
         else {ty with ptyp_desc = Ptyp_arrow("", args, body)}
     end
@@ -354,29 +347,15 @@ let handle_typ
     ptyp_attributes ;
     ptyp_loc = loc 
     } -> 
-    begin match Ext_list.exclude_with_fact (function 
-      | {Location.txt = "bs.obj" ; _}, _  -> true 
-      | _  -> false ) ptyp_attributes with 
-    | Some _, ptyp_attributes -> 
-      let methods = 
-        Ext_ref.protect obj_type_as_js_obj_type true begin fun _ -> 
-          List.map (fun (label, ptyp_attrs, core_type ) -> 
-              match find_uncurry_attrs_and_remove ptyp_attrs with 
-              | None, _ -> label, ptyp_attrs , self.typ self core_type
-              | Some v, ptyp_attrs -> 
-                label , ptyp_attrs, self.typ self 
-                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
-            ) methods 
-        end
-      in           
-
-      {ptyp_desc = 
-         Ptyp_constr ({ txt = js_obj_type_id () ; loc},
-                      [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                                 ptyp_attributes }]);
-       ptyp_attributes = [];
-       ptyp_loc = loc }
-    |  None, _  ->
+    begin match Ext_list.exclude_with_fact2 
+                  (function 
+                    | {Location.txt = "bs.obj" ; _}, _  -> true 
+                    | _  -> false ) 
+                  (function 
+                    | {Location.txt = "uncurry"; _}, _ -> true
+                    | _ -> false)
+                  ptyp_attributes with 
+    |  None, None, _  ->
       let methods = 
         List.map (fun (label, ptyp_attrs, core_type ) -> 
             match find_uncurry_attrs_and_remove ptyp_attrs with 
@@ -395,7 +374,33 @@ let handle_typ
          ptyp_loc = loc }
       else 
         {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
-
+    | fact1 , fact2,  ptyp_attributes -> 
+      let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
+      let uncurry_type_cxt  = fact2 <> None || !uncurry_type in 
+      let methods = 
+        Ext_ref.protect2
+          obj_type_as_js_obj_type
+          uncurry_type 
+          obj_type_as_js_obj_type_cxt 
+          uncurry_type_cxt begin fun _ -> 
+          List.map (fun (label, ptyp_attrs, core_type ) -> 
+              match find_uncurry_attrs_and_remove ptyp_attrs with 
+              | None, _ -> label, ptyp_attrs , self.typ self core_type
+              | Some v, ptyp_attrs -> 
+                label , ptyp_attrs, self.typ self 
+                  { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
+            ) methods 
+        end
+      in           
+      let inner_type = { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                                 ptyp_attributes } in
+      if obj_type_as_js_obj_type_cxt then       
+        {ptyp_desc = 
+           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
+                        [inner_type]);
+         ptyp_attributes = [];
+         ptyp_loc = loc }
+      else inner_type
     end
   | _ -> super.typ self ty
 
@@ -410,7 +415,7 @@ let handle_ctyp
    } ->
     begin match  find_uncurry_attrs_and_remove pcty_attributes with 
     | Some _, pcty_attributes' ->
-      Ext_ref.protect uncurry true begin fun () -> 
+      Ext_ref.protect uncurry_type true begin fun () -> 
         self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
       end
     | None, _ -> super.class_type self ty

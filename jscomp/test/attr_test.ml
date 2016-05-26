@@ -4,7 +4,13 @@ let u = fun [@uncurry] (x,y) -> x + y
 let h = u (1,2) [@uncurry]
 
 type u = < v : int ; y : int > [@uncurry]
+type ('a,'b) xx = 
+  (< case : (int ->  (int -> 'a [@uncurry]) [@uncurry]); .. >   as 'b) 
+type ('a,'b) xx_uncurry = 
+  (< case : int ->  (int -> 'a ); .. >  [@uncurry]) as 'b
 
+type yy_uncurry = < x : int > [@uncurry]
+type yy = < x : int > 
 type number = float
 
 class type date = 

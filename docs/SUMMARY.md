@@ -1,6 +1,8 @@
 * [Home](./README.md)
 
-* [Playground](https://bloomberg.github.io/bucklescript/js-demo)
+* Playground
+  * [OCaml Playground](https://bloomberg.github.io/bucklescript/js-demo)
+  * [Reason Playground](https://bloomberg.github.io/bucklescript/reason-demo)
 
 * Get Started
   * [Installation](./Installation.md)

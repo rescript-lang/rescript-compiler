@@ -3,8 +3,6 @@
 
 * [FAQ](./FAQ.md)
 
-* [About OCaml](https://ocaml.org/)
-
 * [Compiler options](./Compiler-options.md)
 
 * [How to adapt your build system](./How-to-adapt-your-build-system.md)
@@ -21,7 +19,7 @@ everywhere: users don't need to install binaries or use package managers to acce
 Another important factor is that the JavaScript VM is quite fast and keeps getting faster. 
 The JavaScript platform is therefore increasingly capable of supporting large applications.
 
-# Why OCaml?
+# Why [OCaml](https://ocaml.org/)?
 
 BuckleScript is mainly designed to solve the problems of large scale JavaScript programming:
 
