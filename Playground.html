@@ -5,7 +5,7 @@
         
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>Installation | Why JavaScript?</title>
+        <title>OCaml &amp; Reason Playgrounds | Why JavaScript?</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="generator" content="GitBook 2.6.7">
@@ -37,10 +37,10 @@
         
     
     
-    <link rel="next" href="./Create-a-simple-example-with-NPM.html" />
+    <link rel="next" href="./Installation.html" />
     
     
-    <link rel="prev" href="./Playground.html" />
+    <link rel="prev" href="./index.html" />
     
 
         
@@ -49,9 +49,9 @@
         
         
     <div class="book"
-        data-level="2.1"
-        data-chapter-title="Installation"
-        data-filepath="Installation.md"
+        data-level="1.1"
+        data-chapter-title="OCaml &amp; Reason Playgrounds"
+        data-filepath="Playground.md"
         data-basepath="."
         data-revision="Thu May 26 2016 12:08:03 GMT-0400 (EDT)"
         data-innerlanguage="">
@@ -90,7 +90,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter " data-level="1.1" data-path="Playground.html">
+        <li class="chapter active" data-level="1.1" data-path="Playground.html">
             
                 
                     <a href="./Playground.html">
@@ -118,7 +118,7 @@
             <ul class="articles">
                 
     
-        <li class="chapter active" data-level="2.1" data-path="Installation.html">
+        <li class="chapter " data-level="2.1" data-path="Installation.html">
             
                 
                     <a href="./Installation.html">
@@ -534,52 +534,12 @@
                 
                     <section class="normal" id="section-">
                     
-                        <h2 id="introduction">Introduction</h2>
-<p>To use BuckleScript, you need both, a specific version of the OCaml compiler (tweaked to make BuckleScript possible), and the BuckleScript software itself. The instructions below show how to install both of these using standard package managers as well as how to build from source for Unix/Linux systems. Build directions will be updated once Windows systems are supported.</p>
-<h2 id="default-installation-procedure-using-package-managers">Default installation procedure (using package managers)</h2>
-<h3 id="1-ocaml-compiler-from-opam-optional">1. OCaml compiler from opam (optional)</h3>
-<p>When working with OCaml we recommend using <a href="https://opam.ocaml.org" target="_blank">opam</a> package manager, available <a href="https://opam.ocaml.org/doc/Install.html" target="_blank">here</a>. You will benefit from the existing OCaml ecosystem.</p>
-<p>Once you have <code>opam</code> installed, ask <code>opam</code> to switch to using our version of the compiler:</p>
-<pre><code class="lang-sh">opam update
-opam switch <span class="hljs-number">4.02</span>.<span class="hljs-number">3</span>+buckle-<span class="hljs-number">1</span>
-<span class="hljs-built_in">eval</span> `opam config env`
-</code></pre>
-<blockquote>
-<p>This step is optional. npm installation will build the compiler from source if not installed from opam</p>
-</blockquote>
-<h3 id="2-bucklescript-from-npm-required">2. BuckleScript from npm (required)</h3>
-<p>The standard npm package management tool can be used to install BuckleScript. If you don&apos;t already have npm installed, follow the directions listed <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank">here</a>. Once npm is installed, run the following command:</p>
-<pre><code class="lang-sh">npm install --save bs-platform
-</code></pre>
-<h2 id="advanced-installation-procedure-from-source">Advanced installation procedure (from source)</h2>
-<p>BuckleScript has very little dependencies and building from source can easily be done.</p>
-<h3 id="1-ocaml-compiler">1. OCaml compiler</h3>
-<p>To build OCaml compiler from source, download the modified OCaml compiler source <a href="https://github.com/bloomberg/ocaml/releases" target="_blank">here</a> (version 4.02.3+buckle-1):</p>
-<p>For detailed build instructions, follow the directions in the <a href="https://github.com/bloomberg/ocaml" target="_blank">repo</a>. A simple build would look something like this:</p>
-<pre><code class="lang-sh"><span class="hljs-built_in">cd</span> ocaml
-./configure -prefix `<span class="hljs-built_in">pwd</span>` <span class="hljs-comment"># put your preferred directory</span>
-make world.opt
-make install
-</code></pre>
-<p>The patched compiler is installed locally into your <code>$(pwd)/bin</code>
-directory. To start using it temporarily, check if <code>ocamlc.opt</code> and <code>ocamlopt.opt</code> exist in <code>$(pwd)/bin</code>, and temporarily add the location to your <code>$(PATH)</code> (e.g. - <code>PATH=$(pwd)/bin:$PATH</code>).</p>
-<h3 id="2-installing-bucklescript">2. Installing BuckleScript</h3>
-<p>The following directions assume you already have the correct version of <code>ocamlopt.opt</code> in your <code>$PATH</code>, having followed the process described in the previous section.</p>
-<p>Download the source from the <a href="https://github.com/bloomberg/bucklescript/releases" target="_blank">repository</a>. Then run the following commands:</p>
-<pre><code class="lang-sh"><span class="hljs-built_in">cd</span> ./jscomp
-make world
-</code></pre>
-<hr>
-<p>At the end, you should have a binary called <code>bsc</code> under <code>jscomp/bin</code> directory,
-which you can add to your <code>$PATH</code>. You could also set an environment variable
-pointing to the stdlib, e.g. <code>BSC_LIB=/path/to/jscomp/stdlib</code> for ease of use.</p>
-<p>Note that by default, <code>bsc</code> will generate <code>commonjs</code> modules, you can
-override such behavior by picking up your own module system:</p>
-<pre><code class="lang-sh">MODULE_FLAGS=<span class="hljs-string">&apos;-js-module amdjs&apos;</span> make world
-MODULE_FLAGS=<span class="hljs-string">&apos;-js-module commonjs&apos;</span> make world
-MODULE_FLAGS=<span class="hljs-string">&apos;-js-module goog:buckle&apos;</span> make world
-</code></pre>
-<p>Also see <a href="Create-a-simple-example-with-NPM.html">Create a simple example with npm</a></p>
+                        <p>There are two Playgrounds, one for
+<a href="https:////bloomberg.github.io/bucklescript/js-demo" target="_blank">vanilla OCaml</a>,
+the other for
+<a href="https:////bloomberg.github.io/bucklescript/reason-demo" target="_blank">Facebook Reason</a></p>
+<p>Note that the playgrounds are only for demos, it might not be the latest,
+you should always use the command line as your production tools.</p>
 
                     
                     </section>
@@ -590,10 +550,10 @@ MODULE_FLAGS=<span class="hljs-string">&apos;-js-module goog:buckle&apos;</span>
         </div>
 
         
-        <a href="./Playground.html" class="navigation navigation-prev " aria-label="Previous page: OCaml &amp; Reason Playgrounds"><i class="fa fa-angle-left"></i></a>
+        <a href="./index.html" class="navigation navigation-prev " aria-label="Previous page: Home"><i class="fa fa-angle-left"></i></a>
         
         
-        <a href="./Create-a-simple-example-with-NPM.html" class="navigation navigation-next " aria-label="Next page: Create a simple example with NPM"><i class="fa fa-angle-right"></i></a>
+        <a href="./Installation.html" class="navigation navigation-next " aria-label="Next page: Installation"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>
