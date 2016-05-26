@@ -3,8 +3,6 @@
 
 * [FAQ](./FAQ.md)
 
-* [About OCaml](https://ocaml.org/)
-
 * [Compiler options](./Compiler-options.md)
 
 * [How to adapt your build system](./How-to-adapt-your-build-system.md)
@@ -21,11 +19,11 @@ everywhere: users don't need to install binaries or use package managers to acce
 Another important factor is that the JavaScript VM is quite fast and keeps getting faster. 
 The JavaScript platform is therefore increasingly capable of supporting large applications.
 
-# Why OCaml?
+# Why [BuckleScript](https://github.com/bloomberg/bucklescript)?
 
 BuckleScript is mainly designed to solve the problems of large scale JavaScript programming:
 
-1. **Lack of type-safety:** OCaml offers an industrial-strength state-of-the-art type system and provides type inference (i.e. No verbose type annotation required), which proves [invaluable](http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system) in managing large projects.
+1. **Lack of type-safety:** [OCaml]((https://ocaml.org/) offers an industrial-strength state-of-the-art type system and provides type inference (i.e. No verbose type annotation required), which proves [invaluable](http://programmers.stackexchange.com/questions/215482/what-are-the-safety-benefits-of-a-type-system) in managing large projects.
 
 2. **Dead code:** A large amount of web-development relies on inclusion of code dependencies by copying or referencing CDNs (the very thing that makes JavaScript highly accessible), but this also introduces a lot of [dead code](https://en.wikipedia.org/wiki/Dead_code). This impacts performance adversely when the JavaScript VM has to interpret code that will never be invoked. BuckleScript provides powerful dead-code elimination at all levels. Function and module level elimination is facilitated by the sophistication of the type-system of OCaml, and at the global level BuckleScript generates code ready for dead-code elimination done by bundling tools such as the [Google closure-compiler](https://developers.google.com/closure/compiler/).
 

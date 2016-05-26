@@ -67,6 +67,28 @@ let exclude_with_fact p l =
   !excluded , if !excluded <> None then v else l 
 
 
+(** Make sure [p2 x] and [p1 x] will not hold at the same time *)
+let exclude_with_fact2 p1 p2 l =
+  let excluded1 = ref None in 
+  let excluded2 = ref None in 
+  let rec aux accu = function
+  | [] -> List.rev accu
+  | x :: l -> 
+    if p1 x then 
+      begin 
+        excluded1 := Some x ;
+        aux accu l
+      end
+    else if p2 x then 
+      begin 
+        excluded2 := Some x ; 
+        aux accu l 
+      end
+    else aux (x :: accu) l in
+  let v = aux [] l in 
+  !excluded1, !excluded2 , if !excluded1 <> None && !excluded2 <> None then v else l 
+
+
 
 let rec same_length xs ys = 
   match xs, ys with 

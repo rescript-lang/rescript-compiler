@@ -37,6 +37,8 @@ val filter_map : ('a -> 'b option) -> 'a list -> 'b list
 
 val excludes : ('a -> bool) -> 'a list -> bool * 'a list
 val exclude_with_fact : ('a -> bool) -> 'a list -> 'a option * 'a list
+val exclude_with_fact2 : 
+  ('a -> bool) -> ('a -> bool) -> 'a list -> 'a option * 'a option * 'a list
 val same_length : 'a list -> 'b list -> bool
 
 val init : int -> (int -> 'a) -> 'a list

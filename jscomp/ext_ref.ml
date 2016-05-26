@@ -32,3 +32,19 @@ let protect r v body =
   with x ->
     r := old;
     raise x
+
+
+let protect2 r1 r2 v1 v2 body =
+  let old1 = !r1 in
+  let old2 = !r2 in  
+  try
+    r1 := v1;
+    r2 := v2;
+    let res = body() in
+    r1 := old1;
+    r2 := old2;
+    res
+  with x ->
+    r1 := old1;
+    r2 := old2;
+    raise x
