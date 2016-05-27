@@ -84,7 +84,9 @@ let implementation ppf sourcefile outputprefix =
             Ext_pervasives.with_file_as_chan file
               (fun ch -> output_string ch @@             
                 Printexc.raw_backtrace_to_string (Printexc.get_raw_backtrace ()));
-            Ext_log.err __LOC__ "Compilation fatal error, stacktrace saved into %s" file ;             
+            Ext_log.err __LOC__
+              "Compilation fatal error, stacktrace saved into %s when compiling %s"
+              file sourcefile;             
             raise e             
         );
     end;

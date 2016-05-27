@@ -148,9 +148,13 @@ let rec get_arity
             if tail then Determin(b, [], tail)
             else if not b then 
               NA
-            else
-              Ext_pervasives.failwithf ~loc:__LOC__ "%s"
-                (Lam_util.string_of_lambda lam)
+            else NA
+            (* Actually, you can not have truly deministic arities
+               for example [fun x -> x ]
+            *)
+              (* Ext_pervasives.failwithf ~loc:__LOC__ "%s %s" *)
+              (*   (Format.asprintf "%a" pp_arities fn)  *)
+              (*   (Lam_util.string_of_lambda lam) *)
         in
         take xs (List.length args) 
     end
