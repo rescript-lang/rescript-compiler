@@ -6,8 +6,8 @@ let  f x =
 let i () =  ()
 
 let h x : unit = 
-  x ## height__set 3 ;
-  i @@ x ## width__set 3 
+  x ## height_set 3 ;
+  i @@ x ## width_set 3 
 
 let chain x = 
   x #. element #. length + x #.element #. length

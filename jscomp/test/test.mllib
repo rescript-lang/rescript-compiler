@@ -314,3 +314,5 @@ uncurry_glob_test
 
 nested_obj_test
 nested_obj_literal
+
+method_name_test

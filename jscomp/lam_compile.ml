@@ -741,10 +741,14 @@ and
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
       let property = 
-        let i = Ext_string.rfind ~sub:"__" name  in 
-        if i < 0 then 
-          name
-        else String.sub name 0 i in 
+        let i = Ext_string.rfind ~sub:"_" name  in 
+        if name.[0] = '_' then 
+          if i <= 0 then 
+            String.sub name 1 (String.length name - 1) 
+          else String.sub name 1 (i - 1)
+        else if i > 0 then 
+          String.sub name 0 i 
+        else name in
       begin 
         match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
@@ -780,7 +784,7 @@ and
       *)
       if kind = `Run then 
         match args_lambda with  
-        | [Lsend(Public (Some "case__set"), _label,
+        | [Lsend(Public (Some "case_set"), _label,
                  Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _},
                        [obj]), [] , loc) ; key ;  value] ->
           let obj_block =
@@ -844,7 +848,9 @@ and
             | {block = block0; value = Some obj }, 
               {block = block1; value = Some value}, 
               Public (Some method_name )
-              when method_name = "case" || Ext_string.starts_with method_name "case__" -> 
+              when method_name = Literals.case 
+                || Ext_string.starts_with method_name 
+                     Literals.case_prefix -> 
               (* TODO: if [b] contains computation, compute it first *)
               begin match Js_ast_util.named_expression  obj with 
                 | None -> 

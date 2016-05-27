@@ -319,6 +319,8 @@ map_test.cmj : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmx : ../stdlib/string.cmx ../stdlib/pervasives.cmx mt.cmx \
     ../stdlib/map.cmx ../stdlib/list.cmx map_test.cmi
+method_name_test.cmj :
+method_name_test.cmx :
 mock_mt.cmj : mt.cmi ../stdlib/list.cmi ../runtime/js.cmj
 mock_mt.cmx : mt.cmx ../stdlib/list.cmx ../runtime/js.cmx
 module_alias.cmj : ../stdlib/pervasives.cmi ../stdlib/list.cmi
@@ -977,6 +979,8 @@ map_test.cmo : ../stdlib/string.cmi ../stdlib/pervasives.cmi mt.cmi \
     ../stdlib/map.cmi ../stdlib/list.cmi map_test.cmi
 map_test.cmj : ../stdlib/string.cmj ../stdlib/pervasives.cmj mt.cmj \
     ../stdlib/map.cmj ../stdlib/list.cmj map_test.cmi
+method_name_test.cmo :
+method_name_test.cmj :
 mock_mt.cmo : mt.cmi ../stdlib/list.cmi ../runtime/js.cmo
 mock_mt.cmj : mt.cmj ../stdlib/list.cmj ../runtime/js.cmj
 module_alias.cmo : ../stdlib/pervasives.cmi ../stdlib/list.cmi

@@ -51,10 +51,10 @@ let stdlib = "stdlib"
 
 let imul = "imul" (* signed int32 mul *)
 
-let setter_suffix = "__set"
+let setter_suffix = "_set"
 let setter_suffix_len = String.length setter_suffix
 
 let case = "case"
-let case_set = "case__set"
-
+let case_set = "case_set"
+let case_prefix = "case_"
 
