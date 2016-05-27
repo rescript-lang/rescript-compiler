@@ -53,7 +53,7 @@
         data-chapter-title="NPM Support"
         data-filepath="NPM-Support.md"
         data-basepath="."
-        data-revision="Thu May 26 2016 12:08:03 GMT-0400 (EDT)"
+        data-revision="Fri May 27 2016 14:23:27 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -542,7 +542,7 @@ generated JS files and meta data which your OCaml dependents relies
 on.</p>
 <p>Since CommonJS has no namespaces, to allow JS files live in different
 directories, we have a flag</p>
-<pre><code class="lang-sh">bsc -js-npm-output-path <span class="hljs-variable">$npm_package_name</span>:path/to/your/js/dir -c a.ml
+<pre><code class="lang-sh">bsc -bs-npm-output-path <span class="hljs-variable">$npm_package_name</span>:path/to/your/js/dir -c a.ml
 </code></pre>
 <p>By passing this flag, <code>bsc</code> will store your <code>package_name</code> and
 relative path to <code>package.json</code> in <code>.cmj</code> files, it will also generate
@@ -559,11 +559,11 @@ and js files in a <em>hierachical</em> directory
 <h2 id="to-use-ocaml-library-as-a-npm-package">To use OCaml library as a npm package</h2>
 <p>If you follow the layout convention above, use ocaml package is pretty
 straightforward</p>
-<pre><code>bsc -js-npm-package-include ocaml-library -c a.ml
+<pre><code>bsc -bs-npm-package-include ocaml-library -c a.ml
 </code></pre><h2 id="conclusion">Conclusion</h2>
 <p>Your command line would be like this</p>
-<pre><code>bsc -js-npm-package-include ocaml-library1 -js-npm-package-include
-ocaml-library2 -js-npm-output-path $npm_package_name:lib/js/ -c a.ml
+<pre><code>bsc -bs-npm-package-include ocaml-library1 -bs-npm-package-include
+ocaml-library2 -bs-npm-output-path $npm_package_name:lib/js/ -c a.ml
 </code></pre>
                     
                     </section>

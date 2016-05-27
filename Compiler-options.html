@@ -53,7 +53,7 @@
         data-chapter-title="Compiler options"
         data-filepath="Compiler-options.md"
         data-basepath="."
-        data-revision="Thu May 26 2016 12:08:03 GMT-0400 (EDT)"
+        data-revision="Fri May 27 2016 14:23:27 GMT-0400 (EDT)"
         data-innerlanguage="">
     
 
@@ -536,19 +536,19 @@
                     
                         <p>BuckleScript inherits the command line arguments of the <a href="http://caml.inria.fr/pub/docs/manual-ocaml/comp.html" target="_blank">OCaml compiler</a>. It also adds several flags:</p>
 <ul>
-<li>-js-module</li>
+<li>-bs-module</li>
 </ul>
 <p>Specify the JavaScript module system to use in the generated JavaScript code. Supported values are <code>commonjs</code>, <code>amdjs</code> and <code>goog:&lt;namespace&gt;</code></p>
 <p>When you want to use <code>goog</code> module system, you can do things like this:</p>
-<pre><code class="lang-bash">bsc -js-module goog xx.ml 
+<pre><code class="lang-bash">bsc -bs-module goog xx.ml 
   <span class="hljs-comment"># no namespace</span>
 
-bsc -js-module goog:bloomberg.buckle.test xx.ml 
+bsc -bs-module goog:bloomberg.buckle.test xx.ml 
   <span class="hljs-comment"># namespace is bloomberg.buckle.test</span>
 </code></pre>
 <p>You would then need a bundler for different the different module systems: <code>webpack</code> supports <code>commonjs</code> and <code>amdjs</code> while <code>google closure compiler</code> supports all.</p>
 <ul>
-<li>-js-gen-tds</li>
+<li>-bs-gen-tds</li>
 </ul>
 <p>Trigger the generation of TypeScript <code>.d.ts</code> files.</p>
 <h2 id="hello-world">Hello world</h2>
