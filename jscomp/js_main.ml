@@ -307,7 +307,7 @@ let add_include_path s =
   if Ext_sys.is_directory_no_exn path then 
     Clflags.include_dirs := path :: ! Clflags.include_dirs
   else 
-    Ext_pervasives.failwithf "%s is not a directory" s 
+    Ext_pervasives.failwithf ~loc:__LOC__ "%s is not a directory" s 
 
 
 let buckle_script_flags = 

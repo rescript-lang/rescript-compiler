@@ -61,8 +61,9 @@ let  is_pos_pow n =
     else raise M.E in 
   try aux 0 n  with M.E -> -1
 
-let failwithf fmt = Format.ksprintf failwith fmt
-
+let failwithf ~loc fmt = Format.ksprintf (fun s -> failwith (loc ^ s))
+    fmt
+    
 let invalid_argf fmt = Format.ksprintf invalid_arg fmt
 
 let bad_argf fmt = Format.ksprintf (fun x -> raise (Arg.Bad x ) ) fmt
