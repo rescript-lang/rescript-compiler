@@ -127,9 +127,9 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 
 
   ```sh
-  MODULE_FLAGS='-js-module amdjs' make world
-  MODULE_FLAGS='-js-module commonjs' make world
-  MODULE_FLAGS='-js-module goog:buckle' make world
+  MODULE_FLAGS='-bs-module amdjs' make world
+  MODULE_FLAGS='-bs-module commonjs' make world
+  MODULE_FLAGS='-bs-module goog:buckle' make world
   ```
   
 4. Test

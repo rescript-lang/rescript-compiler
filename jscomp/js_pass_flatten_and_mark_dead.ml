@@ -97,6 +97,7 @@ let mark_dead = object (self)
         (** check [camlinternlFormat,box_type] inlined twice 
             FIXME: seems we have redeclared identifiers
          *)
+      if Js_config.get_diagnose () then 
         Ext_log.warn __LOC__ "@[%s$%d in %s@]" ident.name ident.stamp name
         (* assert false *)
     | exception Not_found ->  (* First time *)

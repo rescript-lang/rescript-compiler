@@ -26668,18 +26668,18 @@ let add_include_path s =
 
 
 let buckle_script_flags = 
-  ("-js-npm-output-path", Arg.String Js_config.set_npm_package_path, 
+  ("-bs-npm-output-path", Arg.String Js_config.set_npm_package_path, 
    " set npm-output-path: package-name:path, for example `bs-platform:lib/js`")
   ::
-  ("-js-npm-package-include", Arg.String add_include_path, 
+  ("-bs-npm-package-include", Arg.String add_include_path, 
    " set package names, for example bs-platform "  )
-  :: ("-js-module", Arg.String Js_config.cmd_set_module, 
+  :: ("-bs-module", Arg.String Js_config.cmd_set_module, 
     " set module system: commonjs (default), amdjs, google:package_name")
-  :: ("-js-no-builtin-ppx-ml", Arg.Set Js_config.no_builtin_ppx_ml,
+  :: ("-bs-no-builtin-ppx-ml", Arg.Set Js_config.no_builtin_ppx_ml,
       "disable built-in ppx for ml files (internal use)")
-  :: ("-js-no-builtin-ppx-mli", Arg.Set Js_config.no_builtin_ppx_mli,
+  :: ("-bs-no-builtin-ppx-mli", Arg.Set Js_config.no_builtin_ppx_mli,
       "disable built-in ppx for mli files (internal use)")
-  :: ("-js-gen-tds", Arg.Set Js_config.default_gen_tds, 
+  :: ("-bs-gen-tds", Arg.Set Js_config.default_gen_tds, 
     " set will generate `.d.ts` file for typescript (experimental)")
   :: (
     let module F = struct
