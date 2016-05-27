@@ -9,4 +9,4 @@ val g :
   Js.t -> unit
 
 val h :
-  < height__set : int -> 'a [@uncurry]; width__set : int -> unit [@uncurry]; .. > Js.t -> unit
+  < height_set : int -> 'a [@uncurry]; width_set : int -> unit [@uncurry]; .. > Js.t -> unit

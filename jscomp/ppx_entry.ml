@@ -560,7 +560,7 @@ let handle_obj_method loc (obj : Parsetree.expression)
            _} -> 0, []
         | v -> 1, [v] in 
       if method_kind = Case_setter && arity <> 2 then 
-        Location.raise_errorf "case__set would expect arity of 2 "
+        Location.raise_errorf "case_set would expect arity of 2 "
       else  args 
   in
   let len = List.length args in 
@@ -598,9 +598,9 @@ let handle_obj_method loc (obj : Parsetree.expression)
      List.map (fun x -> "", x) args
     )}
         (** TODO: 
-            More syntax sanity check for [case__set] 
-            case__set: arity 2
-            __set : arity 1            
+            More syntax sanity check for [case_set] 
+            case_set: arity 2
+            _set : arity 1            
             case:
         *)
 

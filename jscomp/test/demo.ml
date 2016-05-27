@@ -13,30 +13,30 @@ and  event =
 
 class type title = 
   object [@uncurry]
-    method title__set : string -> unit 
+    method title_set : string -> unit 
     method title : string
   end
 
 class type text = 
     object [@uncurry]
-      method text__set : string -> unit 
+      method text_set : string -> unit 
       method text : string 
     end
 class type measure =
     object [@uncurry]
-      method minHeight__set : int -> unit 
+      method minHeight_set : int -> unit 
       method minHeight : int
-      method minWidth__set : int -> unit 
+      method minWidth_set : int -> unit 
       method minWidth : int 
-      method maxHeight__set : int -> unit 
+      method maxHeight_set : int -> unit 
       method maxHeight : int 
-      method maxWidth__set : int -> unit 
+      method maxWidth_set : int -> unit 
       method maxWidth : int 
     end
 
 class type layout = 
     object [@uncurry]
-      method orientation__set : string -> unit  
+      method orientation_set : string -> unit  
       method orientation : string
     end
 
@@ -46,10 +46,10 @@ class type applicationContext =
   end
 class type contentable = 
   object[@uncurry]
-    method content__set : #widget Js.t -> unit 
+    method content_set : #widget Js.t -> unit 
     method content : #widget Js.t 
     method contentWidth : int  
-    method contentWidth__set : int -> unit 
+    method contentWidth_set : int -> unit 
   end
 
 class type hostedWindow =
@@ -60,7 +60,7 @@ class type hostedWindow =
     method show : unit -> unit 
     method hide : unit -> unit 
     method focus : unit -> unit 
-    method appContext__set : applicationContext -> unit 
+    method appContext_set : applicationContext -> unit 
   end
 
 class type hostedContent =
@@ -84,10 +84,10 @@ class type grid  =
   object [@uncurry]
     inherit widget
     inherit measure
-    method columns__set : (<width : int; .. > [@bs.obj])  array -> unit 
-    method titleRows__set : 
+    method columns_set : (<width : int; .. > [@bs.obj])  array -> unit 
+    method titleRows_set : 
       (<label : <text : string; .. >   ; ..>  [@bs.obj])   array -> unit 
-    method dataSource__set :
+    method dataSource_set :
       (<label : <text : string; .. >   ; ..> [@bs.obj])  array array -> unit  
   end
 
@@ -171,17 +171,17 @@ let ui_layout
   let button = new_button () in
   let grid = new_grid () in
   begin 
-    hw1##appContext__set appContext;
-    hw1##title__set "Test Application From OCaml";
-    hw1##content__set hc;
+    hw1##appContext_set appContext;
+    hw1##title_set "Test Application From OCaml";
+    hw1##content_set hc;
 
 
-    hc##contentWidth__set 700;
-    hc##content__set stackPanel;
+    hc##contentWidth_set 700;
+    hc##content_set stackPanel;
 
-    stackPanel##orientation__set "vertical";
-    stackPanel##minHeight__set 10000; (* FIXME -> 1e4 *)
-    stackPanel##minWidth__set 4000;
+    stackPanel##orientation_set "vertical";
+    stackPanel##minHeight_set 10000; (* FIXME -> 1e4 *)
+    stackPanel##minWidth_set 4000;
 
     stackPanel##addChild grid;
     stackPanel##addChild inputCode;
@@ -191,19 +191,19 @@ let ui_layout
     *)
     let mk_titleRow text = {label =  {text }  }[@bs.obj] in
     let u = {width =  200} [@bs.obj] in
-    grid##minHeight__set 300;
-    grid##titleRows__set
+    grid##minHeight_set 300;
+    grid##titleRows_set
         [| mk_titleRow "Ticker";
            mk_titleRow "Bid";
            mk_titleRow "Ask";
            mk_titleRow "Result" |] ;
-    grid##columns__set [| u;u;u;u |];
+    grid##columns_set [| u;u;u;u |];
 
-    inputCode##text__set " bid - ask";
-    inputCode##minHeight__set 100;
+    inputCode##text_set " bid - ask";
+    inputCode##minHeight_set 100;
 
-    button##text__set "update formula";
-    button##minHeight__set 20;
+    button##text_set "update formula";
+    button##minHeight_set 20;
     button##on ("click", (fun [@uncurry] _event -> (* FIXME both [_] and () should work*)
       try 
         let hot_function = compile inputCode#.text in
@@ -212,7 +212,7 @@ let ui_layout
     let fmt v = to_fixed v 2 in
     set_interval (fun [@uncurry] () -> 
 
-      grid##dataSource__set
+      grid##dataSource_set
         ( array_map data (fun [@uncurry] {ticker; price } -> 
           let bid = price +. 20. *. random () in
           let ask = price +. 20. *. random () in

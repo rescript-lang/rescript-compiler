@@ -16,9 +16,9 @@ type req
 
 type resp = 
   <
-   statusCode__set : int -> unit  ;
+   statusCode_set : int -> unit  ;
    setHeader : string * string -> unit ;
-   end__ : string ->  unit 
+   end_ : string ->  unit 
   > [@bs.obj] [@uncurry]
 
 type server = 

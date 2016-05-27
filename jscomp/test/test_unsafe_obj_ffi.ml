@@ -10,8 +10,8 @@ let g x : unit  =
   run2 !x # method2 3 3
 
 let h x : unit  = 
-   run1 !x # height__set 3 ;
-   run1 !x # width__set 3 
+   run1 !x # height_set 3 ;
+   run1 !x # width_set 3 
 
 (**
 imagine you have 

@@ -57,7 +57,7 @@ type t =
      {[ x[i]= 3 ]}     
   *)
   | Js_write
-  (* __set
+  (* _set
      {[ x.h = 3 ]}
   *)
   | Js_read

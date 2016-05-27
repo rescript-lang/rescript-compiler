@@ -55,3 +55,4 @@ val setter_suffix_len : int
 
 val case : string 
 val case_set : string 
+val case_prefix : string
