@@ -322,6 +322,8 @@ let buckle_script_flags =
       "disable built-in ppx for ml files (internal use)")
   :: ("-js-no-builtin-ppx-mli", Arg.Set Js_config.no_builtin_ppx_mli,
       "disable built-in ppx for mli files (internal use)")
+  :: ("-js-cross-module-opt", Arg.Set Js_config.cross_module_inline, 
+      "enable cross module inlining, default(false)")
   :: ("-js-gen-tds", Arg.Set Js_config.default_gen_tds, 
     " set will generate `.d.ts` file for typescript (experimental)")
   :: (

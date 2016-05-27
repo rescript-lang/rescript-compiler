@@ -419,7 +419,7 @@ let lambda_as_module
     (lam : Lambda.lambda) = 
   begin 
     Lam_current_unit.set_file filename ;  
-    Lam_current_unit.iset_debug_file "tuple_alloc.ml";
+    Lam_current_unit.set_debug_file "rand.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
       (fun chan -> Js_dump.dump_deps_program 

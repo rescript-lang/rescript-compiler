@@ -92,6 +92,11 @@ let set_npm_package_path s =
 
 let get_npm_package_path () = !npm_package_path
 
+let cross_module_inline = ref false
+
+let get_cross_module_inline () = !cross_module_inline
+let set_cross_module_inline b = 
+  cross_module_inline := b
 
 let (//) = Filename.concat 
 (* for a single pass compilation, [output_dir] 
