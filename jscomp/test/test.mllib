@@ -315,6 +315,7 @@ uncurry_glob_test
 nested_obj_test
 nested_obj_literal
 
+
 method_name_test
 format_test
 
@@ -325,3 +326,8 @@ format_test
 
 config1_test
 config2_test
+
+dom
+dom_test
+json
+

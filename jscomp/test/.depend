@@ -140,6 +140,10 @@ digest_test.cmj : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
     ext_array.cmj ../stdlib/digest.cmi ../stdlib/array.cmi
 digest_test.cmx : ../stdlib/string.cmx ../stdlib/printf.cmx mt.cmx \
     ext_array.cmx ../stdlib/digest.cmx ../stdlib/array.cmx
+dom.cmj : ../runtime/js.cmj
+dom.cmx : ../runtime/js.cmx
+dom_test.cmj : ../runtime/js.cmj dom.cmj
+dom_test.cmx : ../runtime/js.cmx dom.cmx
 empty_obj.cmj :
 empty_obj.cmx :
 epsilon_test.cmj : mt.cmi
@@ -286,6 +290,8 @@ js_obj_test.cmj : mt.cmi ../runtime/js.cmj
 js_obj_test.cmx : mt.cmx ../runtime/js.cmx
 js_val.cmj :
 js_val.cmx :
+json.cmj : ../runtime/js.cmj
+json.cmx : ../runtime/js.cmx
 lazy_test.cmj : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmx : mt.cmx ../stdlib/lazy.cmx
 lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
@@ -798,6 +804,10 @@ digest_test.cmo : ../stdlib/string.cmi ../stdlib/printf.cmi mt.cmi \
     ext_array.cmo ../stdlib/digest.cmi ../stdlib/array.cmi
 digest_test.cmj : ../stdlib/string.cmj ../stdlib/printf.cmj mt.cmj \
     ext_array.cmj ../stdlib/digest.cmj ../stdlib/array.cmj
+dom.cmo : ../runtime/js.cmo
+dom.cmj : ../runtime/js.cmj
+dom_test.cmo : ../runtime/js.cmo dom.cmo
+dom_test.cmj : ../runtime/js.cmj dom.cmj
 empty_obj.cmo :
 empty_obj.cmj :
 epsilon_test.cmo : mt.cmi
@@ -944,6 +954,8 @@ js_obj_test.cmo : mt.cmi ../runtime/js.cmo
 js_obj_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmo :
 js_val.cmj :
+json.cmo : ../runtime/js.cmo
+json.cmj : ../runtime/js.cmj
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
