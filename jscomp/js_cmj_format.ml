@@ -73,7 +73,7 @@ let from_file name : t =
   let ic = open_in_bin name in 
   let buffer = really_input_string ic cmj_magic_number_length in 
   if buffer <> cmj_magic_number then
-    Ext_pervasives.failwithf 
+    Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s" 
         __LOC__
   else 
@@ -87,7 +87,7 @@ let from_string s : t =
   if magic_number = cmj_magic_number then 
     Marshal.from_string s  cmj_magic_number_length
   else 
-    Ext_pervasives.failwithf 
+    Ext_pervasives.failwithf ~loc:__LOC__ 
       "cmj files have incompatible versions, please rebuilt using the new compiler : %s"
         __LOC__
 

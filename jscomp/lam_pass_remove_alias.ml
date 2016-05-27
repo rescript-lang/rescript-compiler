@@ -150,8 +150,9 @@ let simplify_alias
           let lam_size = Lam_analysis.size body in            
           if Ext_list.same_length args params 
           then               
-            if Lam_inline_util.maybe_functor v.name  then 
-              (* && not (List.mem v meta.export_idents) *)
+            if Lam_inline_util.maybe_functor v.name  
+              (* && (Ident_set.mem v meta.export_idents) && false *)
+            then 
               (* TODO: check l1 if it is exported, 
                  if so, maybe not since in that case, 
                  we are going to have two copy?

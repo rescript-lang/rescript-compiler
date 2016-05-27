@@ -149,7 +149,8 @@ let rec get_arity
             else if not b then 
               NA
             else
-              failwith (Lam_util.string_of_lambda lam)
+              Ext_pervasives.failwithf ~loc:__LOC__ "%s"
+                (Lam_util.string_of_lambda lam)
         in
         take xs (List.length args) 
     end

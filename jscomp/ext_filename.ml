@@ -158,7 +158,7 @@ let node_relative_path (file1 : t)
   if v >= 0 then 
     let rec skip  i =       
       if i >= len then
-        Ext_pervasives.failwithf "invalid path: %s"  file2
+        Ext_pervasives.failwithf ~loc:__LOC__ "invalid path: %s"  file2
       else 
         match file2.[i] with 
         | '/'
@@ -195,7 +195,7 @@ let  resolve ~cwd module_name =
       let cwd' = Filename.dirname cwd in 
       if String.length cwd' < String.length cwd then  
         aux origin   cwd' module_name
-      else Ext_pervasives.failwithf "%s not found in %s" module_name origin 
+      else Ext_pervasives.failwithf ~loc:__LOC__ "%s not found in %s" module_name origin 
   in
   aux cwd cwd module_name
 
@@ -208,7 +208,7 @@ let resolve_package cwd  =
       if String.length cwd' < String.length cwd then  
         aux cwd'
       else 
-	Ext_pervasives.failwithf "package.json not found from %s" cwd
+	Ext_pervasives.failwithf ~loc:__LOC__ "package.json not found from %s" cwd
   in
   aux cwd 
 

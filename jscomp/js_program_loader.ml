@@ -100,7 +100,7 @@ let string_of_module_id (x : Lam_module_ident.t) : string =
                 rebase (`File file)
               (* for some primitive files, no cmj support *)
               | exception Not_found ->
-                Ext_pervasives.failwithf 
+                Ext_pervasives.failwithf ~loc:__LOC__ 
                   "@[%s not found in search path - while compiling %s @] "
                   file !Location.input_name 
             end
