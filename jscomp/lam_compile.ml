@@ -744,11 +744,21 @@ and
         let i = Ext_string.rfind ~sub:"_" name  in 
         if name.[0] = '_' then 
           if i <= 0 then 
-            String.sub name 1 (String.length name - 1) 
-          else String.sub name 1 (i - 1)
+            let len = (String.length name - 1) in 
+            if len = 0 then 
+              Location.raise_errorf "invalid label %s" name
+            else String.sub name 1 len
+          else 
+            let len = (i - 1) in
+            if len = 0 then 
+              Location.raise_errorf "invlid label %s" name 
+            else 
+              String.sub name 1 len
         else if i > 0 then 
           String.sub name 0 i 
-        else name in
+        else name 
+      in
+
       begin 
         match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 

@@ -12,6 +12,8 @@ let ff x i v =
   x##make_config_;
   x##make_config_set v ;
   x##case_unsafe i ;
+  x##__open_ 3;
+  (* x##__open 32; *)
   (* x##case_setUnsafe (i,v) *)
 (* do we need polymorphism over [case_set]
    I can only think of [case_set] will have one type
