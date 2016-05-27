@@ -12,7 +12,7 @@ Since CommonJS has no namespaces, to allow JS files live in different
 directories, we have a flag
 
 ```sh
-bsc -js-npm-output-path $npm_package_name:path/to/your/js/dir -c a.ml
+bsc -bs-npm-output-path $npm_package_name:path/to/your/js/dir -c a.ml
 ```
 
 By passing this flag, `bsc` will store your `package_name` and
@@ -37,7 +37,7 @@ If you follow the layout convention above, use ocaml package is pretty
 straightforward
 
 ```
-bsc -js-npm-package-include ocaml-library -c a.ml
+bsc -bs-npm-package-include ocaml-library -c a.ml
 ```
 
 
@@ -47,6 +47,6 @@ bsc -js-npm-package-include ocaml-library -c a.ml
 Your command line would be like this
 
 ```
-bsc -js-npm-package-include ocaml-library1 -js-npm-package-include
-ocaml-library2 -js-npm-output-path $npm_package_name:lib/js/ -c a.ml
+bsc -bs-npm-package-include ocaml-library1 -bs-npm-package-include
+ocaml-library2 -bs-npm-output-path $npm_package_name:lib/js/ -c a.ml
 ```

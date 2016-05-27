@@ -66,9 +66,9 @@ Note that by default, `bsc` will generate `commonjs` modules, you can
 override such behavior by picking up your own module system:
 
 ```sh
-MODULE_FLAGS='-js-module amdjs' make world
-MODULE_FLAGS='-js-module commonjs' make world
-MODULE_FLAGS='-js-module goog:buckle' make world
+MODULE_FLAGS='-bs-module amdjs' make world
+MODULE_FLAGS='-bs-module commonjs' make world
+MODULE_FLAGS='-bs-module goog:buckle' make world
 ```
 
 Also see [Create a simple example with npm](./Create-a-simple-example-with-NPM.md)

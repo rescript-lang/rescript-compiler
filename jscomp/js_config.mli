@@ -48,6 +48,10 @@ val cross_module_inline : bool ref
 val set_cross_module_inline : bool -> unit
 val get_cross_module_inline : unit -> bool
   
+val diagnose : bool ref 
+val get_diagnose : unit -> bool 
+val set_diagnose : bool -> unit 
+
 val set_env : env -> unit
 val cmd_set_module : string -> unit  
 val default_gen_tds : bool ref

@@ -98,6 +98,11 @@ let get_cross_module_inline () = !cross_module_inline
 let set_cross_module_inline b = 
   cross_module_inline := b
 
+
+let diagnose = ref false 
+let get_diagnose () = !diagnose
+let set_diagnose b = diagnose := b 
+
 let (//) = Filename.concat 
 (* for a single pass compilation, [output_dir] 
    can be cached 
