@@ -22,7 +22,7 @@ CAMLC=$(CAMLRUN) $(COMPILER)
 #COMPFLAGS=-strict-sequence -w +33..39 -g -warn-error A -bin-annot -nostdlib \
 #          -safe-string
 COMPFLAGS= $(MODULE_FLAGS) -strict-sequence -w +33..39 -g -warn-error A  -nostdlib \
-          -safe-string -I ../runtime -js-npm-output-path $(npm_package_name):lib/js -js-no-builtin-ppx-ml -js-no-builtin-ppx-mli
+          -safe-string -I ../runtime -js-npm-output-path $(npm_package_name):lib/js -js-no-builtin-ppx-ml -js-no-builtin-ppx-mli -js-cross-module-opt
 
 
 # OPTCOMPILER=ocamlopt.opt

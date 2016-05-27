@@ -148,7 +148,7 @@ let simplify_alias
                     _ }
           -> 
           let lam_size = Lam_analysis.size body in            
-          if Ext_list.same_length args params 
+          if Ext_list.same_length args params (* && false *)
           then               
             if Lam_inline_util.maybe_functor v.name  
               (* && (Ident_set.mem v meta.export_idents) && false *)

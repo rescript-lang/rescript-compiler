@@ -44,6 +44,10 @@ val get_goog_package_name : unit -> string option
 val set_npm_package_path : string -> unit 
 val get_npm_package_path : unit -> (string * string) option
 
+val cross_module_inline : bool ref
+val set_cross_module_inline : bool -> unit
+val get_cross_module_inline : unit -> bool
+  
 val set_env : env -> unit
 val cmd_set_module : string -> unit  
 val default_gen_tds : bool ref

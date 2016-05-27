@@ -90,7 +90,8 @@ let rec
               the compiler has to be the same running 
           *)
           ->  f (E.str Sys.os_type)
-        | _, _, Some lam when Lam_util.not_function lam
+        | _, _, Some lam 
+          when Lam_util.not_function lam
           (* since it's only for alias, there is no arguments, 
              we should not inline function definition here, even though
              it is very small             

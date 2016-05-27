@@ -117,7 +117,10 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
                name ;
                signatures = signature ;
                arity ;
-               closed_lambda
+               closed_lambda = 
+                 if Js_config.get_cross_module_inline () then
+                   closed_lambda
+                 else None
               }
       end
     | Visit { signatures = serializable_sigs ; cmj_table = { values ; _} }  -> 
@@ -125,13 +128,17 @@ let find_and_add_if_not_exist (id, pos) env ~not_found ~found =
       let arity , closed_lambda =  (
         match  String_map.find name values with
         | exception  Not_found -> (NA, None)
-        | {arity; closed_lambda;_} -> arity, closed_lambda 
+        | {arity; closed_lambda;_} -> 
+          arity, closed_lambda 
       ) in
       found { id;
               name; 
               signatures = serializable_sigs;
               arity;
-              closed_lambda
+              closed_lambda = 
+                if Js_config.get_cross_module_inline () then
+                  closed_lambda
+                else None
               (* TODO shall we cache the arity ?*) 
             } 
     | Runtime _ -> assert false
