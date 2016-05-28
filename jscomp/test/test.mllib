@@ -179,8 +179,8 @@ guide_for_ext
 local_exception_test
 js_obj_test
 extensible_variant_test
-lam_methname
-lam_methname_test
+# lam_methname
+# lam_methname_test
 ext_log
 lam_current_unit
 test_zero_nullable

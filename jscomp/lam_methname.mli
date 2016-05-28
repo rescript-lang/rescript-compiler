@@ -24,26 +24,4 @@
 
 
 
-
-
-
-type t = 
-  | Js_read_index
-  (* index__js
-     {[ x[i] ]}
-  *)
-  | Js_write_index 
-  (* set_index__js 
-     {[ x[i]= 3 ]}     
-  *)
-  | Js_write
-  (* __set
-     {[ x.h ]}
-  *)
-  | Js_read
-
-  | Js of int option
-  | Ml of int option
-  | Unknown of int option 
-
-val process : string -> t * string 
+val translate : ?loc:Location.t -> string -> string
