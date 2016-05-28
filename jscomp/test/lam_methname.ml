@@ -1,1 +1,0 @@
-../lam_methname.ml

@@ -330,31 +330,39 @@ let translate
         match prim_ty with 
         | Some ty -> 
           let _return_type, arg_types = Type_util.list_of_arrow ty in
+          let key loc label = 
+            Js_op.Key (Lam_methname.translate ?loc  label) in 
           let kvs : J.property_map = 
-            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) (arg : J.expression) -> 
+            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) 
+                                   ( arg : J.expression) -> 
                 match ty.desc, Type_util.label_name label with 
-                | Tconstr(p,_, _), _ when Path.same p Predef.path_unit -> None
-                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool -> 
+                | Tconstr(p,_, _), _ when Path.same p Predef.path_unit 
+                  -> None
+                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool 
+                  -> 
                   begin 
                     match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) ->  Some (Js_op.Key label ,E.caml_false)
-                    | Number _ -> Some (Js_op.Key label,E.caml_true)
-                    | _ -> Some (Js_op.Key label, (E.econd arg E.caml_true E.caml_false))
+                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) 
+                      -> 
+                      Some (key loc label ,E.caml_false)
+                    | Number _ -> 
+                      Some (key loc label,E.caml_true)
+                    | _ -> Some (key loc label, (E.econd arg E.caml_true E.caml_false))
                   end
 
                 | _, `Label label -> 
-                  Some (Js_op.Key label, arg)
+                  Some (key loc label, arg)
                 | _, `Optional label -> 
                   begin 
-                    match (arg.expression_desc) with 
+                    match arg.expression_desc with 
                     | Array ([x;y], _mutable_flag)  ->
-                      Some (Js_op.Key label, y) (*Invrariant: optional encoding*)
+                      Some (key loc label, y) (*Invrariant: optional encoding*)
                     | Number _ -> (*Invariant: None encoding*)
                       None
                     | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
                                is not a variable [Var ]
                                can only bd detected at runtime thing *)
-                      Some ( Key label, 
+                      Some ( key loc label, 
                              E.econd arg
                                (* (E.bin EqEqEq (E.typeof arg) *)
                                (*   (E.str "number")) *)
@@ -362,7 +370,6 @@ let translate
                                (Js_of_lam_option.get arg)
                                E.undefined
                            )
-
                   end)                   
               arg_types args 
               (* (Ext_list.exclude_tail arg_types) (Ext_list.exclude_tail args) *)

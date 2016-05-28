@@ -884,7 +884,7 @@ and
       | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el 
     end
   | Caml_uninitialized_obj (tag, size) 
-    -> 
+    ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])    
   | Caml_block( el, mutable_flag, tag, tag_info) 
     -> 

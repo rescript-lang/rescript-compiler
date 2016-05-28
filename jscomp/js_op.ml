@@ -145,7 +145,9 @@ type property = Lambda.let_kind =
   | StrictOpt 
   | Variable
 
-type property_name = 
+
+type property_name = (* private *)
+  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
   | Key of string
   | Int_key of int 
   | Tag 
