@@ -27,8 +27,8 @@
 
 
 
-val set_file : string -> unit 
-val get_file : unit -> string
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
 val get_module_name : unit -> string
 
 val iset_debug_file : string -> unit

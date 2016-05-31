@@ -1,33 +1,11 @@
-string_map
-int_map
-string_set
-hash_set
 type_util
 ident_map
-ident_set
+
 ident_util
 idents_analysis
 config_util
-parsetree_util
 
-ext_log
-ext_ident
-ext_pp
-ext_option
-ext_list
-ext_ref
-ext_string
-ext_char
-ext_format
-ext_filename
-ext_marshal
-ext_pervasives
-ext_pp_scope
-ext_array
-ext_bytes
-ext_map
-ext_hashtbl
-ext_sys
+
 
 
 lam_mk
@@ -60,12 +38,12 @@ lam_runtime
 lam_dce
 lam_analysis
 lam_group
-lam_current_unit
+
 lam_methname 
 
 j
 js_ast_util
-js_config
+
 js_array
 js_program_loader
 js_output
@@ -106,8 +84,5 @@ js_cmj_datasets
 js_main
 
 
-ppx_entry
-
-literals
 
 lam_exit_code

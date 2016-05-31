@@ -39,7 +39,7 @@ let dump name (prog : J.program) =
         begin
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_file()) ^
+            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in

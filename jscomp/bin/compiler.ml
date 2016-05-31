@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 05/27-14:24 *)
+(** Bundled by ocaml_pack 05/31-17:04 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -275,7 +275,9 @@ type property = Lambda.let_kind =
   | StrictOpt 
   | Variable
 
-type property_name = 
+
+type property_name = (* private *)
+  (* TODO: FIXME [caml_uninitialized_obj] seems to be a bug*)
   | Key of string
   | Int_key of int 
   | Tag 
@@ -2354,8 +2356,8 @@ module Lam_current_unit : sig
 
 
 
-val set_file : string -> unit 
-val get_file : unit -> string
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
 val get_module_name : unit -> string
 
 val iset_debug_file : string -> unit
@@ -2400,8 +2402,8 @@ end = struct
 let file = ref ""
 let debug_file = ref ""
 
-let set_file f  = file := f 
-let get_file () = !file
+let set_current_file f  = file := f 
+let get_current_file () = !file
 let get_module_name () = 
   Filename.chop_extension (String.uncapitalize !file)
 
@@ -6148,7 +6150,7 @@ let dump env ext  lam =
     Printlambda.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
-         (Lam_current_unit.get_file ()) ^ 
+         (Lam_current_unit.get_current_file ()) ^ 
        (Printf.sprintf ".%02d%s.lam" !log_counter ext)
       ) lam;
   lam
@@ -7039,7 +7041,7 @@ let calculate_used_idents
               begin match Hashtbl.find ident_free_vars id with 
                 | exception Not_found -> 
                   Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Lam_current_unit.get_file ()); 
+                    id.name id.stamp (Lam_current_unit.get_current_file ()); 
                   assert false 
                 | e -> e 
               end
@@ -11633,7 +11635,7 @@ and
       | _ -> P.bracket_vgroup f 1 @@ fun _ -> array_element_list  cxt f el 
     end
   | Caml_uninitialized_obj (tag, size) 
-    -> 
+    ->  (* FIXME *)
     expression_desc cxt l f (Object [Length, size ; Tag, tag])    
   | Caml_block( el, mutable_flag, tag, tag_info) 
     -> 
@@ -13065,7 +13067,7 @@ let find_cmj file =
           | exception _ 
             -> 
             Ext_log.warn __LOC__ 
-              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_file ())  ;
+              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_current_file ())  ;
             Js_cmj_format.no_pure_dummy; (* FIXME *)
           | v -> v 
         end
@@ -13621,6 +13623,92 @@ let from_file filename =
   close_in chan; 
   v 
   
+
+end
+module Lam_methname : sig 
+#1 "lam_methname.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+val translate : ?loc:Location.t -> string -> string
+
+end = struct
+#1 "lam_methname.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+(*TODO: 
+  what is the behavior for 
+  {[
+    { case : 
+        (fun [@uncurry] i -> 3);
+      case_set: 
+        (fun [@uncurry] (i,v) -> ..)
+    }
+  ]}
+*)
+let translate ?loc name = 
+  let i = Ext_string.rfind ~sub:"_" name  in 
+  if name.[0] = '_' then 
+    if i <= 0 then 
+      let len = (String.length name - 1) in 
+      if len = 0 then 
+        Location.raise_errorf ?loc "invalid label %s" name
+      else String.sub name 1 len
+    else 
+      let len = (i - 1) in
+      if len = 0 then 
+        Location.raise_errorf ?loc "invlid label %s" name 
+      else 
+        String.sub name 1 len
+  else if i > 0 then 
+    String.sub name 0 i 
+  else name 
 
 end
 module Lam_exit_code : sig 
@@ -15689,7 +15777,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -15700,7 +15788,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -15760,7 +15848,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
-        (Lam_current_unit.get_file ()) ;
+        (Lam_current_unit.get_current_file ()) ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
@@ -16236,31 +16324,39 @@ let translate
         match prim_ty with 
         | Some ty -> 
           let _return_type, arg_types = Type_util.list_of_arrow ty in
+          let key loc label = 
+            Js_op.Key (Lam_methname.translate ?loc  label) in 
           let kvs : J.property_map = 
-            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) (arg : J.expression) -> 
+            Ext_list.filter_map2 (fun (label, (ty : Types.type_expr)) 
+                                   ( arg : J.expression) -> 
                 match ty.desc, Type_util.label_name label with 
-                | Tconstr(p,_, _), _ when Path.same p Predef.path_unit -> None
-                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool -> 
+                | Tconstr(p,_, _), _ when Path.same p Predef.path_unit 
+                  -> None
+                | Tconstr(p,_,_), `Label label  when Path.same p Predef.path_bool 
+                  -> 
                   begin 
                     match arg.expression_desc with 
-                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) ->  Some (Js_op.Key label ,E.caml_false)
-                    | Number _ -> Some (Js_op.Key label,E.caml_true)
-                    | _ -> Some (Js_op.Key label, (E.econd arg E.caml_true E.caml_false))
+                    | Number ((* Float { f = "0."}| *) Int { i = 0l;_}) 
+                      -> 
+                      Some (key loc label ,E.caml_false)
+                    | Number _ -> 
+                      Some (key loc label,E.caml_true)
+                    | _ -> Some (key loc label, (E.econd arg E.caml_true E.caml_false))
                   end
 
                 | _, `Label label -> 
-                  Some (Js_op.Key label, arg)
+                  Some (key loc label, arg)
                 | _, `Optional label -> 
                   begin 
-                    match (arg.expression_desc) with 
+                    match arg.expression_desc with 
                     | Array ([x;y], _mutable_flag)  ->
-                      Some (Js_op.Key label, y) (*Invrariant: optional encoding*)
+                      Some (key loc label, y) (*Invrariant: optional encoding*)
                     | Number _ -> (*Invariant: None encoding*)
                       None
                     | _ ->  (* FIXME: avoid duplicate evlauation of [arg] when it
                                is not a variable [Var ]
                                can only bd detected at runtime thing *)
-                      Some ( Key label, 
+                      Some ( key loc label, 
                              E.econd arg
                                (* (E.bin EqEqEq (E.typeof arg) *)
                                (*   (E.str "number")) *)
@@ -16268,7 +16364,6 @@ let translate
                                (Js_of_lam_option.get arg)
                                E.undefined
                            )
-
                   end)                   
               arg_types args 
               (* (Ext_list.exclude_tail arg_types) (Ext_list.exclude_tail args) *)
@@ -19335,25 +19430,7 @@ and
       (**
          either a getter {[ x #. height ]} or {[ x ## method_call ]}
       *)
-      let property = 
-        let i = Ext_string.rfind ~sub:"_" name  in 
-        if name.[0] = '_' then 
-          if i <= 0 then 
-            let len = (String.length name - 1) in 
-            if len = 0 then 
-              Location.raise_errorf "invalid label %s" name
-            else String.sub name 1 len
-          else 
-            let len = (i - 1) in
-            if len = 0 then 
-              Location.raise_errorf "invlid label %s" name 
-            else 
-              String.sub name 1 len
-        else if i > 0 then 
-          String.sub name 0 i 
-        else name 
-      in
-
+      let property =  Lam_methname.translate ~loc name  in
       begin 
         match compile_lambda {cxt with st = NeedValue; should_return = False} obj
         with 
@@ -24696,7 +24773,7 @@ let dump name (prog : J.program) =
         begin
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_file()) ^
+            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in
@@ -25183,7 +25260,7 @@ let lambda_as_module
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
-    Lam_current_unit.set_file filename ;  
+    Lam_current_unit.set_current_file filename ;  
     Lam_current_unit.iset_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
@@ -27168,199 +27245,6 @@ let map2i f a b =
     invalid_arg "Ext_array.map2i"  
   else
     Array.mapi (fun i a -> f i  a ( Array.unsafe_get b i )) a 
-
-
-end
-module Lam_methname : sig 
-#1 "lam_methname.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-type t = 
-  | Js_read_index
-  (* index__js
-     {[ x[i] ]}
-  *)
-  | Js_write_index 
-  (* set_index__js 
-     {[ x[i]= 3 ]}     
-  *)
-  | Js_write
-  (* __set
-     {[ x.h ]}
-  *)
-  | Js_read
-
-  | Js of int option
-  | Ml of int option
-  | Unknown of int option 
-
-val process : string -> t * string 
-
-end = struct
-#1 "lam_methname.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(**
-
-Note that js object support gettter, setter
-
-{[ 
-  var obj = {
-    get latest () {
-    if (log.length == 0) return undefined;
-    return log[log.length - 1]
-    }
-  } 
-]}
-
-If it's getter then the [.length] property does not make sense, 
-we should avoid using it which means when branch to js, if there is no 
-args, we should not do 
-{{ Curry.app0(obj.name) }} 
-*)
-type t = 
-  | Js_read_index
-  (* index__js
-     {[ x[i] ]}
-  *)
-  | Js_write_index 
-  (* set_index__js 
-     {[ x[i]= 3 ]}     
-  *)
-  | Js_write
-  (* _set
-     {[ x.h = 3 ]}
-  *)
-  | Js_read
-
-  | Js of int option
-  | Ml of int option
-  | Unknown of int option 
-
-let process ( x : string) : t * string =
-
-  match x with
-  | "index__unsafe_r"
-  (* TODO: [unsafe] should be allowed to overloaded in general  *)
-  | "index__r_unsafe"
-  | "index__r" 
-  | "index__" 
-    -> (Js_read_index, "index")
-  | "index__w_unsafe" 
-  | "index__w" 
-  | "index__w_js_unsafe" 
-  | "index__w_js" 
-    -> (Js_write_index, "index")
-  | _ -> 
-    let sub = "__" in
-    let v = Ext_string.rfind ~sub x  in
-    if  v < 0 then 
-      (Unknown None  , x)
-    else 
-      let len_sub = String.length sub in
-      let indicator = Ext_string.tail_from x (v + len_sub) in 
-      let normal_name  = String.sub x 0 v in 
-      match indicator with 
-      | "r" -> Js_read, normal_name
-      | "w" -> Js_write, normal_name
-      | _ -> 
-        let props = Ext_string.split indicator '_' in 
-        let kind = ref None in 
-        let arity = ref None in 
-        let fail l = 
-          let error = "invalid indicator" ^ indicator  ^ "in method name " ^ 
-                      x ^ ":" ^ Lam_current_unit.get_file () in
-          Ext_log.err l "%s" error ; 
-          failwith error in
-        let update_ref r k = 
-          match !r with 
-          | None -> r := Some k 
-          | Some x -> if x <> k then fail __LOC__ in
-        List.iter (fun  x -> 
-          match x with 
-          | "js" 
-            -> update_ref kind `Js
-          | "ml"
-            -> update_ref kind  `Ml
-          | "gen" 
-            -> update_ref kind `Unknown
-          | "unsafe"
-            -> 
-            (* allow unsafe to be overloaded, but don't do anything yet *)
-            ()
-          | _ -> 
-            match int_of_string x with 
-            | exception _ -> fail __LOC__
-            | v -> 
-              update_ref arity v
-        ) props ;
-      (
-        let arity  = !arity in
-      begin match  !kind with 
-      | Some  `Js 
-      | None 
-        -> Js arity
-      | Some `Ml -> Ml arity
-      | Some `Unknown -> Unknown arity
-
-      end, normal_name
-      )
 
 
 end

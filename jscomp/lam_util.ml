@@ -311,7 +311,7 @@ let dump env ext  lam =
     Printlambda.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
-         (Lam_current_unit.get_file ()) ^ 
+         (Lam_current_unit.get_current_file ()) ^ 
        (Printf.sprintf ".%02d%s.lam" !log_counter ext)
       ) lam;
   lam

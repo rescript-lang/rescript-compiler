@@ -4,6 +4,7 @@ set -e
 
 export OCAMLPARAM='_,bin-annot=1,annot=1' 
 export OCAMLRUNPARAM=b
+# No support for -optflags
 export OCAMLBUILD_CFLAGS=-g,-w,-40-30,-warn-error,+a-40-30,-keep-locs,-I,+compiler-libs
 export npm_package_name=bs-platform
 
@@ -13,7 +14,7 @@ make js_map.ml js_fold.ml  >> build.compile
 # lam_map.ml lam_fold.ml
 ## Disable it when make a release 
 
-ocamlbuild  -cflags $OCAMLBUILD_CFLAGS compiler.cmxa > build.compile
+ocamlbuild -no-links -cflags $OCAMLBUILD_CFLAGS foo.otarget > build.compile
 
 make -r bin/bsc
 # TODO: this quick test is buggy, 

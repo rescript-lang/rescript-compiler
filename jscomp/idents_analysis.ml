@@ -55,7 +55,7 @@ let calculate_used_idents
               begin match Hashtbl.find ident_free_vars id with 
                 | exception Not_found -> 
                   Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Lam_current_unit.get_file ()); 
+                    id.name id.stamp (Lam_current_unit.get_current_file ()); 
                   assert false 
                 | e -> e 
               end

@@ -28,19 +28,18 @@
 
 
 
+let file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = file := f 
+let get_current_file () = !file
+let get_module_name () = 
+  Filename.chop_extension (String.uncapitalize !file)
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
 
 
-open Ocamlbuild_plugin
-open Command
-
-let () = 
-  dispatch begin function
-    | After_rules ->
-        begin
-          flag ["ocaml"; "compile"; "native"; "nocmx"] (S [A"-opaque"]);
-          ocaml_lib ~extern:true ~dir:"+compiler-libs" "ocamlcommon";
-          ocaml_lib ~extern:true ~dir:"+compiler-libs" "ocamlbytecomp"
-        end
-    | _ -> ()
-  end
-
+let is_same_file () = 
+  !debug_file <> "" &&  !debug_file = !file
