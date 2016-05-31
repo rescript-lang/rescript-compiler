@@ -1,4 +1,4 @@
 include ../ext/ext.mllib
 include ../common/common.mllib
 include ../syntax/syntax.mllib
-include ../compiler.mllib
+include ../core.mllib
