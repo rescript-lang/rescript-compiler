@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 05/31-16:04 *)
+(** Bundled by ocaml_pack 05/31-17:04 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -2356,8 +2356,8 @@ module Lam_current_unit : sig
 
 
 
-val set_file : string -> unit 
-val get_file : unit -> string
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
 val get_module_name : unit -> string
 
 val iset_debug_file : string -> unit
@@ -2402,8 +2402,8 @@ end = struct
 let file = ref ""
 let debug_file = ref ""
 
-let set_file f  = file := f 
-let get_file () = !file
+let set_current_file f  = file := f 
+let get_current_file () = !file
 let get_module_name () = 
   Filename.chop_extension (String.uncapitalize !file)
 
@@ -6150,7 +6150,7 @@ let dump env ext  lam =
     Printlambda.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
-         (Lam_current_unit.get_file ()) ^ 
+         (Lam_current_unit.get_current_file ()) ^ 
        (Printf.sprintf ".%02d%s.lam" !log_counter ext)
       ) lam;
   lam
@@ -7041,7 +7041,7 @@ let calculate_used_idents
               begin match Hashtbl.find ident_free_vars id with 
                 | exception Not_found -> 
                   Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Lam_current_unit.get_file ()); 
+                    id.name id.stamp (Lam_current_unit.get_current_file ()); 
                   assert false 
                 | e -> e 
               end
@@ -13067,7 +13067,7 @@ let find_cmj file =
           | exception _ 
             -> 
             Ext_log.warn __LOC__ 
-              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_file ())  ;
+              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_current_file ())  ;
             Js_cmj_format.no_pure_dummy; (* FIXME *)
           | v -> v 
         end
@@ -15777,7 +15777,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -15788,7 +15788,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -15848,7 +15848,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
-        (Lam_current_unit.get_file ()) ;
+        (Lam_current_unit.get_current_file ()) ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
@@ -24773,7 +24773,7 @@ let dump name (prog : J.program) =
         begin
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_file()) ^
+            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in
@@ -25260,7 +25260,7 @@ let lambda_as_module
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
-    Lam_current_unit.set_file filename ;  
+    Lam_current_unit.set_current_file filename ;  
     Lam_current_unit.iset_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
