@@ -944,7 +944,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -955,7 +955,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_file ())
+          (Lam_current_unit.get_current_file ())
         ;
         assert false
       end
@@ -1015,7 +1015,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
-        (Lam_current_unit.get_file ()) ;
+        (Lam_current_unit.get_current_file ()) ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE

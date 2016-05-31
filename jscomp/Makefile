@@ -20,7 +20,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 	@echo "Regenrating lambda_map.ml"
 	$(CAMLP4OF) -filter map -filter trash -impl $< -printer o > $@
 
-./bin/bsc: _build/compiler.cmxa
+./bin/bsc: _build/ext/ext.cmxa _build/common/common.cmxa _build/syntax/syntax.cmxa _build/core.cmxa
 	echo "Linking"
 	$(NATIVE) -g -linkall -o $@ -I +compiler-libs ocamlcommon.cmxa  $^  2>>build.compile
 # Note: we can remove main.cmx since we have js_main.cmx which use [js_implementation.implementation],
@@ -42,9 +42,9 @@ release:snapshot
 snapshot: ./bin/ocaml_pack snapshotcmj
 	make snapshotml
 
-snapshotml:./bin/ocaml_pack
+snapshotml:./bin/ocaml_pack ./bin/compiler.mllib
 	@echo "Snapshot ml"
-	$< compiler.mllib > bin/compiler.ml
+	$< bin/compiler.mllib > bin/compiler.ml
 snapshotcmj:
 	@echo "Collecting cmj files"
 	ocamlbuild -cflags $(OCAMLBUILD_CFLAGS)	 js_pack.native --
@@ -52,7 +52,7 @@ snapshotcmj:
 
 releasebuild:
 	@echo "Make release compiler"
-	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 
 stdlib:
 	cd stdlib && ./build.sh
@@ -67,7 +67,7 @@ stdlib:
 
 world:
 	@echo "Making compiler"		
-	$(NATIVE) -g -inline 100 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
+	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making stdlib cmis"
@@ -103,7 +103,7 @@ TMP_OCAMLLIB=$(shell ocamlopt.opt -where)
 
 big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making compiler"		
-	ocamlopt.opt -g -inline 100 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
+	ocamlopt.opt -g -inline 1000 -linkall  -w -a  -I bin  bin/big_compiler.mli bin/big_compiler.ml -o bin/bsc
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
@@ -118,7 +118,7 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 travis-world-test:./bin/ocaml_pack
 	@echo "Generating the compiler"
 	rm -f bin/compiler.ml 	
-	./bin/ocaml_pack ./compiler.mllib > bin/compiler.ml
+	./bin/ocaml_pack ./bin/compiler.mllib > bin/compiler.ml
 	@echo "Generating the compiler finished"	
 	make world-test
 

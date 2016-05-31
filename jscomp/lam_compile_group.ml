@@ -418,7 +418,7 @@ let lambda_as_module
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
-    Lam_current_unit.set_file filename ;  
+    Lam_current_unit.set_current_file filename ;  
     Lam_current_unit.iset_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)

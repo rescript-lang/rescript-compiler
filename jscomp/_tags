@@ -1,6 +1,8 @@
-# true: use_ocamlcommon
+# <**/*.{ml,mli}> : use_ocamlcommon
 # true: use_ocamlbytecomp
-true: nocmx
+<ext>:include
+<syntax>:include
+<common>:include
 true: warn(-40)
 true: debug
 true: -traverse

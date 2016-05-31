@@ -1,0 +1,4 @@
+common/common.cmxa
+ext/ext.cmxa
+syntax/syntax.cmxa
+core.cmxa
