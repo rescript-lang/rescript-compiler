@@ -317,7 +317,11 @@ nested_obj_literal
 
 method_name_test
 format_test
+
 # sig
 # delaunay
 # rand
 # builder
+
+config1_test
+config2_test

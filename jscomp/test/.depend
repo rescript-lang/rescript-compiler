@@ -3,6 +3,7 @@ abstract_type.cmi :
 ari_regress_test.cmi :
 array_test.cmi :
 basic_module_test.cmi :
+config2_test.cmi : ../runtime/js.cmj
 const_block_test.cmi :
 demo_int_map.cmi :
 ext_pervasives.cmi : ../stdlib/int32.cmi ../stdlib/format.cmi
@@ -107,6 +108,10 @@ complex_test.cmj : mt.cmi ../stdlib/complex.cmi
 complex_test.cmx : mt.cmx ../stdlib/complex.cmx
 complex_while_loop.cmj :
 complex_while_loop.cmx :
+config1_test.cmj :
+config1_test.cmx :
+config2_test.cmj : ../runtime/js.cmj config2_test.cmi
+config2_test.cmx : ../runtime/js.cmx config2_test.cmi
 const_block_test.cmj : mt.cmi ../stdlib/array.cmi const_block_test.cmi
 const_block_test.cmx : mt.cmx ../stdlib/array.cmx const_block_test.cmi
 const_defs.cmj :
@@ -761,6 +766,10 @@ complex_test.cmo : mt.cmi ../stdlib/complex.cmi
 complex_test.cmj : mt.cmj ../stdlib/complex.cmj
 complex_while_loop.cmo :
 complex_while_loop.cmj :
+config1_test.cmo :
+config1_test.cmj :
+config2_test.cmo : ../runtime/js.cmo config2_test.cmi
+config2_test.cmj : ../runtime/js.cmj config2_test.cmi
 const_block_test.cmo : mt.cmi ../stdlib/array.cmi const_block_test.cmi
 const_block_test.cmj : mt.cmj ../stdlib/array.cmj const_block_test.cmi
 const_defs.cmo :
