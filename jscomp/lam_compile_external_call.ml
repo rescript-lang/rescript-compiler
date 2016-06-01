@@ -31,7 +31,7 @@
 
 module E = Js_exp_make
 
-open Parsetree_util
+
 
 type external_module_name = 
   | Single of string 
@@ -141,7 +141,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
               ]}
            *)
            -> 
-           begin  match is_single_string pay_load with
+           begin  match Ast_payload.is_single_string pay_load with
              | Some name -> 
                js_val := `Value name 
              | None -> 
@@ -152,7 +152,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            (* {[ [@@bs.val_of_module]]}
            *)
            -> 
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
            | Some name ->
              js_val_of_module := `Value(Bind (name, prim_name))
            | None -> 
@@ -164,19 +164,19 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
 
          |"bs.send" 
            ->
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some name -> js_send := `Value name
              | None -> js_send := `Value _prim.prim_name
            end
          | "bs.set"
            ->
-           begin match is_single_string pay_load with
+           begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_set := `Value name
              | None -> js_set := `Value _prim.prim_name
            end
          | "bs.get"
            ->
-           begin match is_single_string pay_load with
+           begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_get := `Value name
              | None -> js_get := `Value _prim.prim_name
            end
@@ -186,12 +186,12 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
              [@@bs.call "xx"] [@@bs.call]
            *)
            ->
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some name -> call_name :=  Some (x.loc, name)
              | None -> call_name := Some(x.loc, _prim.prim_name)
            end
          | "bs.module" -> 
-           begin match is_string_or_strings pay_load with 
+           begin match Ast_payload.is_string_or_strings pay_load with 
              | `Single name -> external_module_name:= Some (Single name)
              | `Some [a;b] -> external_module_name := Some (Bind (a,b))
              | `Some _ -> ()
@@ -199,7 +199,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            end
 
          | "bs.new" -> 
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some x -> js_new := Some x 
              | None -> js_new := Some _prim.prim_name
            end

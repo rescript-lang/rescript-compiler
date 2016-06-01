@@ -22,21 +22,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(* A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI code
- *)
-
-val is_single_string : Parsetree.payload -> string option 
-
-val is_string_or_strings : Parsetree.payload -> [ `None | `Single of string | `Some of string list ]
-
-val has_arity : Parsetree.attributes -> int option
-
-val attr_attribute_from_type : Parsetree.core_type -> Parsetree.attribute
+val int : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes -> int -> Parsetree.expression

@@ -22,16 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Parsetree.payload
 
-
-
-
-
-
-
-let is_single_string (x : Parsetree.payload ) = 
+let is_single_string (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
-  | Parsetree.PStr [ {
+  | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
@@ -41,7 +36,25 @@ let is_single_string (x : Parsetree.payload ) =
       _}] -> Some name
   | _  -> None
 
-let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string | `Some of string list ] = 
+let as_string_exp (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (_,_));
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
+
+let as_empty_structure (x : t ) = 
+  match x with 
+  | PStr ([]) -> true
+  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+
+let is_string_or_strings (x : t) : 
+  [ `None | `Single of string | `Some of string list ] = 
   let module M = struct exception Not_str end  in 
   match x with 
   | PStr [ {pstr_desc =  
@@ -61,7 +74,7 @@ let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string
            | _ -> raise M.Not_str)))
 
      with M.Not_str -> `None )
-  |  Parsetree.PStr [ {
+  | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
@@ -70,44 +83,3 @@ let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string
            _},_);
       _}] -> `Single name 
   | _ -> `None
-
-let lift_int ?loc ?attrs x = 
-  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-
-let has_arity (attrs : Parsetree.attributes) = 
-  Ext_list.find_opt (fun (attr : Parsetree.attribute)  -> 
-      match attr with 
-      | {txt = "arity"; _ }, 
-        PStr [ { pstr_desc = Pstr_eval 
-                     ( {pexp_desc = Pexp_constant (Const_int i)},_attr);
-                 _}]
-        -> 
-        if i >= 0 then 
-          Some i
-        else None
-      | _ -> None 
-    ) attrs  
-
-
-
-let arity_from_core_type (x : Parsetree.core_type) = 
-  let rec aux acc (x : Parsetree.core_type) = 
-    match x.ptyp_desc with 
-    | Ptyp_arrow (_,_,r) -> 
-      (* 'a -> ('b -> ('c -> 'd )) *)
-      aux (acc + 1) r 
-    | _ -> acc  in 
-  aux 0 x
-
-
-
-let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute = 
-  let n = arity_from_core_type x in 
-  let loc = x.ptyp_loc in
-  {txt = "arity"; loc},
-  PStr ([ {pstr_desc = 
-             Pstr_eval (lift_int n,[]);
-           pstr_loc = loc
-          }])
-
-

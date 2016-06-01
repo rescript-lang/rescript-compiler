@@ -92,16 +92,16 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
-  | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes}, 
-           [Lconst (Const_base (Const_string (_str,_)))])
-    ->
-    (* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *)
-    begin match Parsetree_util.has_arity prim_attributes with
-      | Some arity -> 
-        (* Ext_log.dwarn __LOC__ "arity %d" arity; *)
-        Determin(false, [arity, None], false)
-      | None -> NA
-    end
+  (* | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes},  *)
+  (*          [Lconst (Const_base (Const_string (_str,_)))]) *)
+  (*   -> *)
+  (*   (\* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *\) *)
+  (*   begin match Parsetree_util.has_arity prim_attributes with *)
+  (*     | Some arity ->  *)
+  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
+  (*       Determin(false, [arity, None], false) *)
+  (*     | None -> NA *)
+  (*   end *)
   | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
