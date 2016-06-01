@@ -53,6 +53,25 @@ let as_empty_structure (x : t ) =
   | PStr ([]) -> true
   | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
 
+
+let as_record_and_process 
+    loc
+    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+  match  x with 
+  | PStr [ {pstr_desc = Pstr_eval
+                ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+            _
+           }]
+    -> 
+    begin match with_obj with
+    | None ->
+      List.iter action label_exprs
+    | Some _ -> 
+      Location.raise_errorf ~loc "with is not supported"
+    end
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
 let is_string_or_strings (x : t) : 
   [ `None | `Single of string | `Some of string list ] = 
   let module M = struct exception Not_str end  in 
@@ -83,3 +102,12 @@ let is_string_or_strings (x : t) :
            _},_);
       _}] -> `Single name 
   | _ -> `None
+
+let assert_bool_lit  (e : Parsetree.expression) = 
+  match e.pexp_desc with
+  | Pexp_construct ({txt = Lident "true" }, None)
+    -> true
+  | Pexp_construct ({txt = Lident "false" }, None)
+    -> false 
+  | _ ->
+    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
