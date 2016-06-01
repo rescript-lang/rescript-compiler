@@ -166,10 +166,8 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
       arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
     else 
       arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "mk" in 
   Ast_comb.create_local_external loc ~pval_prim ~pval_type 
-    ~local_module_name ~local_fun_name args 
+    args 
         
 
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
@@ -388,9 +386,7 @@ let handle_obj_property loc obj name e
     ~pval_type:(
       Ast_comb.arrow_no_label ~loc
         (lift_js_type ~loc var) var)
-        
-    ~local_module_name:"Tmp"
-    ~local_fun_name:"cast" ["", obj] in 
+    ["", obj] in 
   { e with pexp_desc =
      Pexp_send
                ({pexp_desc = down ;
