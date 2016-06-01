@@ -242,12 +242,19 @@ let handle_typ
                     | _ -> false)
                   ptyp_attributes with 
     |  None, None, _  ->
+      let check_auto_uncurry core_type = 
+        if  !obj_type_auto_uncurry then
+          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+        else self.typ self core_type in 
+  
       let methods = 
         List.map (fun (label, ptyp_attrs, core_type ) -> 
             match find_uncurry_attrs_and_remove ptyp_attrs with 
-            | None, _ -> label, ptyp_attrs , self.typ self core_type
+            | None, _ -> 
+              label, ptyp_attrs , check_auto_uncurry  core_type
             | Some v, ptyp_attrs -> 
-              label , ptyp_attrs, self.typ self 
+              label , ptyp_attrs, 
+              check_auto_uncurry
                 { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
           ) methods 
       in           
@@ -259,7 +266,7 @@ let handle_typ
         {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
     | fact1 , fact2,  ptyp_attributes -> 
       let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
-      let uncurry_type_cxt  = fact2 <> None || !uncurry_type in 
+      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
       let methods = 
         Ext_ref.protect2
           obj_type_as_js_obj_type
@@ -287,7 +294,7 @@ let handle_typ
     end
   | _ -> super.typ self ty
 
-let handle_ctyp 
+let handle_class_obj_typ 
     (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.class_type) = 
@@ -301,7 +308,13 @@ let handle_ctyp
       Ext_ref.protect uncurry_type true begin fun () -> 
         self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
       end
-    | None, _ -> super.class_type self ty
+    | None, _ -> 
+      if !obj_type_auto_uncurry then 
+        Ext_ref.protect uncurry_type true begin fun () -> 
+          super.class_type self ty
+        end
+      else 
+        super.class_type self ty
     end
 
 
@@ -431,15 +444,7 @@ let handle_obj_method loc (obj : Parsetree.expression)
     ~local_module_name:"Tmp"
     ~local_fun_name:"cast" ["", obj] in 
   {e with pexp_desc = gen_fn_run loc len 
-    (("",
-      {pexp_desc =
-         Pexp_send
-           ({pexp_desc = down ;
-             pexp_loc = loc ;
-             pexp_attributes = []},
-            name);
-       pexp_loc = loc ; 
-       pexp_attributes = [] }) :: 
+    (("", Exp.send ~loc (Exp.mk ~loc down) name) :: 
      List.map (fun x -> "", x) args
     )}
         (** TODO: 
@@ -607,7 +612,7 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
-    class_type = (fun self ctyp -> handle_ctyp Ast_mapper.default_mapper self ctyp);
+    class_type = (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
     structure_item = (fun mapper (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
@@ -638,7 +643,7 @@ let common_actions_table :
   (string *  (Parsetree.expression -> unit)) list = 
   [ "obj_type_auto_uncurry", 
     (fun e -> 
-       obj_type_as_js_obj_type := Ast_payload.assert_bool_lit e
+       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
     )
   ]
 
