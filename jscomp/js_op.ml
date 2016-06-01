@@ -247,7 +247,7 @@ type length_object =
   | Caml_block
 
 type code_info = 
-  | Exp of int option
+  | Exp (* of int option *)
   | Stmt
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)

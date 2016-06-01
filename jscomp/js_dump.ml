@@ -643,7 +643,7 @@ and
     pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
   | Raw_js_code (s,info) -> 
     begin match info with 
-    | Exp _ -> 
+    | Exp -> 
       P.string f "("; 
       P.string f s ; 
       P.string f ")";
@@ -1147,7 +1147,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
       | Caml_uninitialized_obj _ 
-      | Raw_js_code (_, Exp _) 
+      | Raw_js_code (_, Exp) 
       | Fun _ | Object _ -> true
       | Raw_js_code (_,Stmt)
       | Caml_block_set_tag _ 

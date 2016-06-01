@@ -24,16 +24,12 @@
 
 
 
+(** A utility module used when destructuring parsetree attributes, used for 
+    compiling FFI attributes and built-in ppx  *)
 
+type t = Parsetree.payload
 
+val is_single_string : t -> string option
 
-
-
-(* A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI code
- *)
-
-(* val is_single_string : Parsetree.payload -> string option  *)
-
-(* val is_string_or_strings : Parsetree.payload -> [ `None | `Single of string | `Some of string list ] *)
-
+val is_string_or_strings : 
+  t -> [ `None | `Single of string | `Some of string list ]

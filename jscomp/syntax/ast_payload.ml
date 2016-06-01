@@ -22,16 +22,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type t = Parsetree.payload
 
-
-
-
-
-
-
-let is_single_string (x : Parsetree.payload ) = 
+let is_single_string (x : t ) = 
   match x with  (** TODO also need detect empty phrase case *)
-  | Parsetree.PStr [ {
+  | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
@@ -41,7 +36,8 @@ let is_single_string (x : Parsetree.payload ) =
       _}] -> Some name
   | _  -> None
 
-let is_string_or_strings (x : Parsetree.payload ) : 
+
+let is_string_or_strings (x : t) : 
   [ `None | `Single of string | `Some of string list ] = 
   let module M = struct exception Not_str end  in 
   match x with 
@@ -62,7 +58,7 @@ let is_string_or_strings (x : Parsetree.payload ) :
            | _ -> raise M.Not_str)))
 
      with M.Not_str -> `None )
-  |  Parsetree.PStr [ {
+  | PStr [ {
       pstr_desc =  
         Pstr_eval (
           {pexp_desc = 
@@ -71,7 +67,3 @@ let is_string_or_strings (x : Parsetree.payload ) :
            _},_);
       _}] -> `Single name 
   | _ -> `None
-
-let lift_int ?loc ?attrs x = 
-  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-
