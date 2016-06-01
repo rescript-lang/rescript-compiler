@@ -22,15 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-(** A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI attributes and built-in ppx  *)
-
-type t = Parsetree.payload
-
-val is_single_string : t -> string option
-val as_string_exp : t -> Parsetree.expression option 
-
-val is_string_or_strings : 
-  t -> [ `None | `Single of string | `Some of string list ]
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc

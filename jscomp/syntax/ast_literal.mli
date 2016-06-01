@@ -23,17 +23,27 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val pervasives_js_obj : t 
+  val pervasives_uncurry : t 
+  val js_obj : t 
+  val js_fn : t 
+  val ignore_id : t 
+end
 
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
 
+val val_unit : expression_lit
 
+val type_unit : core_type_lit
 
+val type_string : core_type_lit
 
+val type_any : core_type_lit
 
-(* A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI code
- *)
-
-(* val is_single_string : Parsetree.payload -> string option  *)
-
-(* val is_string_or_strings : Parsetree.payload -> [ `None | `Single of string | `Some of string list ] *)
 

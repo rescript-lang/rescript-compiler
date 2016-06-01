@@ -22,56 +22,5 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-let is_single_string (x : Parsetree.payload ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | Parsetree.PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> Some name
-  | _  -> None
-
-let is_string_or_strings (x : Parsetree.payload ) : 
-  [ `None | `Single of string | `Some of string list ] = 
-  let module M = struct exception Not_str end  in 
-  match x with 
-  | PStr [ {pstr_desc =  
-              Pstr_eval (
-                {pexp_desc = 
-                   Pexp_apply
-                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
-                      args
-                     );
-                 _},_);
-            _}] ->
-    (try 
-       `Some (name :: (args |> List.map (fun (_label,e) ->
-           match (e : Parsetree.expression) with
-           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
-             name
-           | _ -> raise M.Not_str)))
-
-     with M.Not_str -> `None )
-  |  Parsetree.PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> `Single name 
-  | _ -> `None
-
-let lift_int ?loc ?attrs x = 
+let int ?loc ?attrs x = 
   Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-

@@ -55,36 +55,22 @@
 
 let tmp_module_name = "J"
 let tmp_fn = "unsafe_expr"
-let predef_string_type = 
-  Ast_helper.Typ.var "string" 
-let predef_any_type = 
-  Ast_helper.Typ.any ()
-let predef_unit_type = 
-  Ast_helper.Typ.var "unit"
-let predef_val_unit  = 
-  Ast_helper.Exp.construct {txt = Lident "()"; loc = Location.none }  None
-let prim = "js_pure_expr"
-let prim_stmt = "js_pure_stmt"
-let prim_debugger = "js_debugger"
 
-(* TODO should be renamed in to {!Js.fn} *)
-(* TODO should be moved into {!Js.t} Later *)
-let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
-let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
-let js_obj = Longident.Ldot (Lident "Js", "t") 
-let js_fn = Longident.Ldot (Lident "Js", "fn")
+let prim_stmt = "js_pure_stmt"
+
+
 let js_obj_type_id () = 
   if Js_config.get_env () = Browser then
-    pervasives_js_obj
-  else js_obj 
+    Ast_literal.Lid.pervasives_js_obj
+  else Ast_literal.Lid.js_obj 
     
 let curry_type_id () = 
   if Js_config.get_env () = Browser then 
-    pervasives_uncurry
+    Ast_literal.Lid.pervasives_uncurry
   else 
-    js_fn 
+    Ast_literal.Lid.js_fn 
 
-let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+
 
 let arrow = Ast_helper.Typ.arrow
 
@@ -98,7 +84,7 @@ let discard_js_value loc e  : Parsetree.expression =
   {pexp_desc = 
      Pexp_apply
        ({pexp_desc = 
-           Pexp_ident {txt = ignore_id ; loc};
+           Pexp_ident {txt = Ast_literal.Lid.ignore_id ; loc};
          pexp_attributes = [];
          pexp_loc = loc},
         [("",
@@ -116,40 +102,6 @@ let discard_js_value loc e  : Parsetree.expression =
   }
 
 
-let create_local_external loc 
-     ~pval_prim
-     ~pval_type ~pval_attributes 
-     local_module_name 
-     local_fun_name
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
-
 let record_as_js_object = ref None (* otherwise has an attribute *)
 let obj_type_as_js_obj_type = ref false
 let handle_record_as_js_object 
@@ -166,8 +118,6 @@ let handle_record_as_js_object
   ) label_exprs in 
   let pval_prim = "" in 
   let pval_attributes = [attr] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
   let pval_type = 
     let arity = List.length labels in 
     let tyvars = (Ext_list.init arity (fun i ->      
@@ -189,18 +139,18 @@ let handle_record_as_js_object
     List.fold_right2 
       (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
   in 
-  create_local_external loc 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
-    local_module_name 
-    local_fun_name
+    ~local_module_name 
+    ~local_fun_name
     args 
 
 let gen_fn_run loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
   let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
   let tyvars =
         (Ext_list.init (arity + 1) (fun i -> 
@@ -225,14 +175,14 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
   (** could be optimized *)
   let pval_type = 
     Ext_list.reduce_from_right (fun a b -> arrow ~loc "" a b) (uncurry_fn :: tyvars) in 
-  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
-    local_module_name local_fun_name args 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    ~local_module_name ~local_fun_name args 
 
 let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "mk" in 
   let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
   let tyvars =
         (Ext_list.init (arity + 1) (fun i -> 
@@ -258,23 +208,17 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
   (** could be optimized *)
   let pval_type = 
     if arity = 0 then 
-      arrow  (arrow  predef_unit_type (List.hd tyvars) ) uncurry_fn
+      arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
     else 
       arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
-    local_module_name local_fun_name args 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "mk" in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    ~local_module_name ~local_fun_name args 
         
 
 
 
-let handle_raw loc e   = 
-  create_local_external loc 
-    ~pval_prim:prim
-    ~pval_type:(arrow "" predef_string_type predef_any_type)
-    ~pval_attributes:[]
-    tmp_module_name
-    tmp_fn 
-    [("",e)]
 
     
 
@@ -426,13 +370,12 @@ let handle_debugger loc payload =
   match payload with
   | Parsetree.PStr ( [])
     ->
-    create_local_external loc 
-      ~pval_prim:prim_debugger
+    let predef_unit_type = Ast_literal.type_unit ~loc () in
+    let pval_prim = "js_debugger" in
+    Ast_comb.create_local_external loc 
+      ~pval_prim
       ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      ~pval_attributes:[]
-      tmp_module_name
-      tmp_fn 
-      [("",  predef_val_unit)]
+      [("",  Ast_literal.val_unit ~loc ())]
   | Parsetree.PTyp _
   | Parsetree.PPat (_,_)
   | Parsetree.PStr _
@@ -503,7 +446,7 @@ let handle_obj_property loc obj name e
   (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
   let obj = mapper.expr mapper obj in 
 
-  let down = create_local_external loc  
+  let down = Ast_comb.create_local_external loc  
     ~pval_prim:"js_unsafe_downgrade"
     ~pval_type:({ptyp_desc =
                    Ptyp_arrow ("",
@@ -519,9 +462,8 @@ let handle_obj_property loc obj name e
                                 ptyp_attributes = []});
                  ptyp_loc = loc; 
                  ptyp_attributes = []})
-      ~pval_attributes:[] 
-    "Tmp"
-    "cast" ["", obj] in 
+    ~local_module_name:"Tmp"
+    ~local_fun_name:"cast" ["", obj] in 
   { e with pexp_desc =
      Pexp_send
                ({pexp_desc = down ;
@@ -566,7 +508,7 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-  let down = create_local_external loc  
+  let down = Ast_comb.create_local_external loc  
     ~pval_prim:"js_unsafe_downgrade"
     ~pval_type:({ptyp_desc =
                    Ptyp_arrow ("",
@@ -582,9 +524,8 @@ let handle_obj_method loc (obj : Parsetree.expression)
                                 ptyp_attributes = []});
                  ptyp_loc = loc; 
                  ptyp_attributes = []})
-      ~pval_attributes:[] 
-    "Tmp"
-    "cast" ["", obj] in 
+    ~local_module_name:"Tmp"
+    ~local_fun_name:"cast" ["", obj] in 
   {e with pexp_desc = gen_fn_run loc len 
     (("",
       {pexp_desc =
@@ -645,17 +586,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** Begin rewriting [bs.raw], its output should not be rewritten anymore
         *)        
         | Pexp_extension (
-            {txt = "bs.raw"; loc} ,
-            PStr 
-              ( [{ pstr_desc = Pstr_eval ({ 
-                   pexp_desc = Pexp_constant (Const_string (_, _)) ;
-                    } as e ,
-                                                _); pstr_loc = _ }]))
+            {txt = "bs.raw"; loc} , payload)
           -> 
-              {e with pexp_desc = handle_raw loc e }
-        | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
-              -> 
+          begin match Ast_payload.as_string_exp payload with 
+            | None -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+            | Some exp -> 
+              let pval_prim = "js_pure_expr" in
+              { exp with pexp_desc = Ast_comb.create_local_external loc 
+                           ~pval_prim
+                           ~pval_type:(arrow "" 
+                                         (Ast_literal.type_string ~loc ()) 
+                                         (Ast_literal.type_any ~loc ()) )
+
+                           ["",exp]}
+          end
 
         (** End rewriting [bs.raw] *)
 
@@ -763,25 +708,18 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
-            begin match payload with 
-              | Parsetree.PStr 
-                  ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                        pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
-                        pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
+            begin match Ast_payload.as_string_exp payload with 
+              | Some exp 
                 -> 
                 Ast_helper.Str.eval 
-                  { e with pexp_desc =
-                             create_local_external loc 
+                  { exp with pexp_desc =
+                             Ast_comb.create_local_external loc 
                                ~pval_prim:prim_stmt 
                                ~pval_type:(arrow ""
-                                             predef_string_type predef_any_type)
-                               ~pval_attributes:[]
-                               tmp_module_name
-                               tmp_fn 
-                               [("",e)]}
-              | Parsetree.PTyp _ 
-              | Parsetree.PPat (_,_) 
-              | Parsetree.PStr _ 
+                                             (Ast_literal.type_string ~loc ())
+                                             (Ast_literal.type_any ~loc ()))
+                               ["",exp]}
+              | None
                 -> 
                 Location.raise_errorf ~loc "bs.raw can only be applied to a string"
             end

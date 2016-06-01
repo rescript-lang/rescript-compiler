@@ -36,6 +36,17 @@ let is_single_string (x : t ) =
       _}] -> Some name
   | _  -> None
 
+let as_string_exp (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (_,_));
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
 
 let is_string_or_strings (x : t) : 
   [ `None | `Single of string | `Some of string list ] = 
