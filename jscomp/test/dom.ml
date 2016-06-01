@@ -1,8 +1,8 @@
-[@@@bs.uncurry.object ]
+[@@@bs.config{obj_type_auto_uncurry  = true } ]
 
 open Js
 type 'a opt = 'a Null.t
-class type ['node] arrayLikeRead = object [@uncurry]
+class type ['node] arrayLikeRead = object 
   method case : int -> 'node t Null.t 
   method length : int
 end
@@ -24,7 +24,7 @@ type nodeType =
 (* https://developer.mozilla.org/en-US/docs/Web/API/Node/compareDocumentPosition *)
 type document_position = int 
 
-class type node = object [@uncurry]
+class type node = object 
   method nodeName : string 
   method nodeValue : string  opt 
   method nodeType : nodeType 
@@ -48,7 +48,7 @@ class type node = object [@uncurry]
 end
 
 (** Specification of [Attr] objects. *)
-class type attr = object [@uncurry]
+class type attr = object 
   inherit node
   method name : string 
   method specified : boolean
@@ -57,7 +57,7 @@ class type attr = object [@uncurry]
 end
 
 (** Specification of [NamedNodeMap] objects. *)
-and ['node] namedNodeMap = object [@uncurry]
+and ['node] namedNodeMap = object 
   method getNamedItem : string -> 'node t opt
   method setNamedItem : 'node t -> 'node t opt
   method removeNamedItem : string -> 'node t opt
@@ -66,11 +66,11 @@ and ['node] namedNodeMap = object [@uncurry]
 end
 
 (** Specification of [Element] objects. *)
-and element = object [@uncurry]
+and element = object 
   inherit node
   method tagName : string 
   method getAttribute : string -> string opt 
-  method setAttribute : string -> string -> unit 
+  method setAttribute : string * string -> unit 
   method removeAttribute : string -> unit 
   method hasAttribute : string -> bool t 
 
@@ -83,14 +83,14 @@ and element = object [@uncurry]
   method setAttributeNode : attr t -> attr t opt 
   method removeAttributeNode : attr t -> attr t 
 
-  method getAttributeNodeNS : string -> string -> attr t opt 
-  method setAttributeNodeNS : attr t -> attr t opt 
+  method getAttributeNodeNS : string * string -> attr t opt 
+  method setAttributeNodeNS : attr t * attr t opt 
 
   method getElementsByTagName : string -> element arrayLikeRead t 
   method attributes : attr namedNodeMap t 
 end
 
-class type characterData = object [@uncurry]
+class type characterData = object
   inherit node
   method data : string 
   method length : int 
@@ -107,7 +107,7 @@ class type text = characterData
 
 class type documentFragment = node
 
-class type ['element] document = object[@uncurry]
+class type ['element] document = object
   inherit node
   method documentElement : 'element t 
   method createDocumentFragment : documentFragment t 
@@ -124,8 +124,8 @@ end
 
 
 
-class type ['a] event = object [@uncurry]
-  method _type : string 
+class type ['a] event = object 
+  method type_ : string 
   method target : 'a t opt 
   method currentTarget : 'a t opt 
   method srcElement : 'a t opt 
