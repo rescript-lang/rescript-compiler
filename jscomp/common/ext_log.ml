@@ -55,7 +55,7 @@ let iwarn b str f  =
 
 (* TODO: add {[@.]} later for all *)
 let dwarn str f  = 
-  if Lam_current_unit.is_same_file () then   
+  if Js_config.is_same_file () then   
     Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
   else 
     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  

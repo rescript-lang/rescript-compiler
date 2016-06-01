@@ -316,7 +316,7 @@ nested_obj_test
 nested_obj_literal
 
 method_name_test
-
+format_test
 # sig
 # delaunay
 # rand
