@@ -241,3 +241,19 @@ let runtime_set =
     md5 ;
     weak ] |> 
   List.fold_left (fun acc x -> String_set.add (String.uncapitalize x) acc ) String_set.empty
+
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f 
+let get_current_file () = !current_file
+let get_module_name () = 
+  Filename.chop_extension (String.uncapitalize !current_file)
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () = 
+  !debug_file <> "" &&  !debug_file = !current_file

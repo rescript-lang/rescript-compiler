@@ -318,7 +318,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
           (* TODO: turn in on debug mode later*)
           let () =
-            if Lam_current_unit.is_same_file () then
+            if Js_config.is_same_file () then
               let f =
                 Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
               Ext_pervasives.with_file_as_pp f @@ fun fmt ->
@@ -418,8 +418,8 @@ let lambda_as_module
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
-    Lam_current_unit.set_current_file filename ;  
-    Lam_current_unit.iset_debug_file "tuple_alloc.ml";
+    Js_config.set_current_file filename ;  
+    Js_config.iset_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
       (fun chan -> Js_dump.dump_deps_program 

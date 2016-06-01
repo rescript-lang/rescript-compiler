@@ -163,8 +163,8 @@ ext_filename.cmx : ../stdlib/sys.cmx ../stdlib/string.cmx ../stdlib/list.cmx \
     ext_pervasives.cmx
 ext_list.cmj : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmx : ../stdlib/list.cmx ../stdlib/array.cmx
-ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmi
-ext_log.cmx : lam_current_unit.cmx ../stdlib/format.cmx
+ext_log.cmj : ../stdlib/format.cmi
+ext_log.cmx : ../stdlib/format.cmx
 ext_pervasives.cmj : ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/arg.cmi ext_pervasives.cmi
 ext_pervasives.cmx : ../stdlib/int32.cmx ../stdlib/format.cmx \
@@ -205,6 +205,8 @@ for_side_effect_test.cmj : mt.cmi
 for_side_effect_test.cmx : mt.cmx
 format_regression.cmj :
 format_regression.cmx :
+format_test.cmj : mt.cmi ../stdlib/format.cmi
+format_test.cmx : mt.cmx ../stdlib/format.cmx
 genlex_test.cmj : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmx : ../stdlib/stream.cmx mt.cmx ../stdlib/list.cmx \
@@ -279,8 +281,6 @@ js_obj_test.cmj : mt.cmi ../runtime/js.cmj
 js_obj_test.cmx : mt.cmx ../runtime/js.cmx
 js_val.cmj :
 js_val.cmx :
-lam_current_unit.cmj : ../stdlib/string.cmi ../stdlib/filename.cmi
-lam_current_unit.cmx : ../stdlib/string.cmx ../stdlib/filename.cmx
 lazy_test.cmj : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmx : mt.cmx ../stdlib/lazy.cmx
 lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
@@ -817,8 +817,8 @@ ext_filename.cmj : ../stdlib/sys.cmj ../stdlib/string.cmj ../stdlib/list.cmj \
     ext_pervasives.cmj
 ext_list.cmo : ../stdlib/list.cmi ../stdlib/array.cmi
 ext_list.cmj : ../stdlib/list.cmj ../stdlib/array.cmj
-ext_log.cmo : lam_current_unit.cmo ../stdlib/format.cmi
-ext_log.cmj : lam_current_unit.cmj ../stdlib/format.cmj
+ext_log.cmo : ../stdlib/format.cmi
+ext_log.cmj : ../stdlib/format.cmj
 ext_pervasives.cmo : ../stdlib/int32.cmi ../stdlib/format.cmi \
     ../stdlib/arg.cmi ext_pervasives.cmi
 ext_pervasives.cmj : ../stdlib/int32.cmj ../stdlib/format.cmj \
@@ -859,6 +859,8 @@ for_side_effect_test.cmo : mt.cmi
 for_side_effect_test.cmj : mt.cmj
 format_regression.cmo :
 format_regression.cmj :
+format_test.cmo : mt.cmi ../stdlib/format.cmi
+format_test.cmj : mt.cmj ../stdlib/format.cmj
 genlex_test.cmo : ../stdlib/stream.cmi mt.cmi ../stdlib/list.cmi \
     ../stdlib/genlex.cmi
 genlex_test.cmj : ../stdlib/stream.cmj mt.cmj ../stdlib/list.cmj \
@@ -933,8 +935,6 @@ js_obj_test.cmo : mt.cmi ../runtime/js.cmo
 js_obj_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmo :
 js_val.cmj :
-lam_current_unit.cmo : ../stdlib/string.cmi ../stdlib/filename.cmi
-lam_current_unit.cmj : ../stdlib/string.cmj ../stdlib/filename.cmj
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \

@@ -34,12 +34,12 @@ let dump name (prog : J.program) =
     let () = 
       if Js_config.get_env () <> Browser 
       (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
-      && Lam_current_unit.is_same_file ()
+      && Js_config.is_same_file ()
       then 
         begin
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_current_file()) ^
+            (Ext_filename.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in

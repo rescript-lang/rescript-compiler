@@ -1620,7 +1620,7 @@ let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) =
        end 
      | Goog opt -> 
        let goog_package = 
-         let v = Lam_current_unit.get_module_name () in
+         let v = Js_config.get_module_name () in
          match opt with 
          | None 
          | Some ""

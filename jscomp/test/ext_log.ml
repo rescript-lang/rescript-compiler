@@ -54,11 +54,11 @@ let iwarn b str f  =
     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f) str 
 
 (* TODO: add {[@.]} later for all *)
-let dwarn str f  = 
-  if Lam_current_unit.is_same_file () then   
-    Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
-  else 
-    Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
+(* let dwarn str f  =  *)
+(*   if Js_config.is_same_file () then    *)
+(*     Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str   *)
+(*   else  *)
+(*     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str   *)
 
 let info str f  =
   Format.fprintf Format.err_formatter ("INFO: %s " ^^ f) str  
