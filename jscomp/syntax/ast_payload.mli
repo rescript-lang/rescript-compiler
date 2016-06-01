@@ -31,6 +31,6 @@ type t = Parsetree.payload
 
 val is_single_string : t -> string option
 val as_string_exp : t -> Parsetree.expression option 
-
+val as_empty_structure :  t -> bool 
 val is_string_or_strings : 
   t -> [ `None | `Single of string | `Some of string list ]

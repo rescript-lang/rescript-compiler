@@ -48,6 +48,11 @@ let as_string_exp (x : t ) =
       _}] -> Some e
   | _  -> None
 
+let as_empty_structure (x : t ) = 
+  match x with 
+  | PStr ([]) -> true
+  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+
 let is_string_or_strings (x : t) : 
   [ `None | `Single of string | `Some of string list ] = 
   let module M = struct exception Not_str end  in 

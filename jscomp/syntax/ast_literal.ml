@@ -22,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+open Ast_helper
+
 module Lid = struct 
   type t = Longident.t 
   let val_unit : t = Lident "()"
@@ -47,11 +49,14 @@ module No_loc = struct
     Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
 
   let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
 end 
 
 type 'a  lit = ?loc: Location.t -> unit -> 'a
 type expression_lit = Parsetree.expression lit 
 type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
 let val_unit ?loc () = 
   match loc with 
   | None -> No_loc.val_unit
@@ -76,3 +81,9 @@ let type_any ?loc () =
   match loc with 
   | None -> No_loc.type_any
   | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None

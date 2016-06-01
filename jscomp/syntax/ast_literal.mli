@@ -37,6 +37,7 @@ end
 
 type expression_lit = Parsetree.expression lit 
 type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
 
 val val_unit : expression_lit
 
@@ -46,4 +47,4 @@ val type_string : core_type_lit
 
 val type_any : core_type_lit
 
-
+val pat_unit : pattern_lit
