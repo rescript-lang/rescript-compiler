@@ -213,7 +213,7 @@ let gc = "Caml_gc"
 let int32 = "Caml_int32"
 let block = "Block"
 let js_primitive = "Js_primitive"
-let version = "0.5.0"
+let version = "0.5.5"
 let runtime_set = 
   [
     js_primitive;
