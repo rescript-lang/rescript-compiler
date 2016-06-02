@@ -58,9 +58,13 @@ This project has been released to exchange ideas and collect feedback from the O
 It is in an *alpha* stage and we encourage you to try it and share
 your feedback.
 
-## Documentation
+## Documentation 
 
 See http://bloomberg.github.io/bucklescript/, if you want to contribute documentation, the source is [here](./docs)
+
+## More examples
+
+See https://github.com/bloomberg/bucklescript-addons
 
 ## Build
 
@@ -69,7 +73,7 @@ See http://bloomberg.github.io/bucklescript/, if you want to contribute document
 
 #### Build from package manager
 
-1. opam switch (Recommended, but *optional*)
+1. opam switch (*optional*, *recommended*)
    
   ```
   opam switch 4.02.3+buckle-1
