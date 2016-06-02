@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 05/31-17:04 *)
+(** Bundled by ocaml_pack 06/02-11:22 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -377,7 +377,7 @@ type length_object =
   | Caml_block
 
 type code_info = 
-  | Exp of int option
+  | Exp (* of int option *)
   | Stmt
 (** TODO: define constant - for better constant folding  *)
 (* type constant =  *)
@@ -2323,97 +2323,6 @@ type meta = {
   mutable required_modules : Lam_module_ident.t list ;
 }
 
-
-end
-module Lam_current_unit : sig 
-#1 "lam_current_unit.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-val set_current_file : string -> unit 
-val get_current_file : unit -> string
-val get_module_name : unit -> string
-
-val iset_debug_file : string -> unit
-val set_debug_file : string -> unit
-val get_debug_file : unit -> string
-
-val is_same_file : unit -> bool 
-
-
-end = struct
-#1 "lam_current_unit.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-let file = ref ""
-let debug_file = ref ""
-
-let set_current_file f  = file := f 
-let get_current_file () = !file
-let get_module_name () = 
-  Filename.chop_extension (String.uncapitalize !file)
-
-let iset_debug_file _ = ()
-let set_debug_file  f = debug_file := f
-let get_debug_file  () = !debug_file
-
-
-let is_same_file () = 
-  !debug_file <> "" &&  !debug_file = !file
 
 end
 module Lam_comb : sig 
@@ -5029,6 +4938,18 @@ val hash : string
 val weak : string
 val js_primitive : string
 
+
+(** Debugging utilies *)
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
 end = struct
 #1 "js_config.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -5274,6 +5195,22 @@ let runtime_set =
     md5 ;
     weak ] |> 
   List.fold_left (fun acc x -> String_set.add (String.uncapitalize x) acc ) String_set.empty
+
+let current_file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = current_file := f 
+let get_current_file () = !current_file
+let get_module_name () = 
+  Filename.chop_extension (String.uncapitalize !current_file)
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () = 
+  !debug_file <> "" &&  !debug_file = !current_file
 
 end
 module Ext_ident : sig 
@@ -5813,7 +5750,7 @@ val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
  *)
 
 
-(** [dump] when {!Lam_current_unit.is_same_file}*)
+(** [dump] when {!Js_config.is_same_file}*)
 val dump : Env.t   -> string -> Lambda.lambda -> Lambda.lambda
 
 val ident_set_of_list : Ident.t list -> Ident_set.t
@@ -6145,12 +6082,12 @@ let dump env ext  lam =
   incr log_counter ; 
   if Js_config.get_env () <> Browser 
   (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
-  && Lam_current_unit.is_same_file ()
+  && Js_config.is_same_file ()
   then 
     Printlambda.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
-         (Lam_current_unit.get_current_file ()) ^ 
+         (Js_config.get_current_file ()) ^ 
        (Printf.sprintf ".%02d%s.lam" !log_counter ext)
       ) lam;
   lam
@@ -6924,7 +6861,7 @@ let iwarn b str f  =
 
 (* TODO: add {[@.]} later for all *)
 let dwarn str f  = 
-  if Lam_current_unit.is_same_file () then   
+  if Js_config.is_same_file () then   
     Format.fprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
   else 
     Format.ifprintf Format.err_formatter ("WARN: %s " ^^ f ^^ "@.") str  
@@ -7041,7 +6978,7 @@ let calculate_used_idents
               begin match Hashtbl.find ident_free_vars id with 
                 | exception Not_found -> 
                   Ext_log.err __LOC__ "%s/%d when compiling %s" 
-                    id.name id.stamp (Lam_current_unit.get_current_file ()); 
+                    id.name id.stamp (Js_config.get_current_file ()); 
                   assert false 
                 | e -> e 
               end
@@ -11394,7 +11331,7 @@ and
     pp_string f (* ~utf:(kind = `Utf8) *) ~quote s; cxt 
   | Raw_js_code (s,info) -> 
     begin match info with 
-    | Exp _ -> 
+    | Exp -> 
       P.string f "("; 
       P.string f s ; 
       P.string f ")";
@@ -11898,7 +11835,7 @@ and statement_desc top cxt f (s : J.statement_desc) : Ext_pp_scope.t =
       match e.expression_desc with
       | Call ({expression_desc = Fun _; },_,_) -> true
       | Caml_uninitialized_obj _ 
-      | Raw_js_code (_, Exp _) 
+      | Raw_js_code (_, Exp) 
       | Fun _ | Object _ -> true
       | Raw_js_code (_,Stmt)
       | Caml_block_set_tag _ 
@@ -12371,7 +12308,7 @@ let pp_deps_program ( program  : J.deps_program) (f : Ext_pp.t) =
        end 
      | Goog opt -> 
        let goog_package = 
-         let v = Lam_current_unit.get_module_name () in
+         let v = Js_config.get_module_name () in
          match opt with 
          | None 
          | Some ""
@@ -13067,7 +13004,7 @@ let find_cmj file =
           | exception _ 
             -> 
             Ext_log.warn __LOC__ 
-              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Lam_current_unit.get_current_file ())  ;
+              "@[%s corrupted in database, when looking %s while compiling %s please update @]"           file target (Js_config.get_current_file ())  ;
             Js_cmj_format.no_pure_dummy; (* FIXME *)
           | v -> v 
         end
@@ -14178,168 +14115,6 @@ let get_exp (key : Lam_compile_env.key) : J.expression =
               E.ml_var id)
 
   
-
-
-end
-module Parsetree_util : sig 
-#1 "parsetree_util.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* A utility module used when destructuring parsetree attributes, used for 
-    compiling FFI code
- *)
-
-val is_single_string : Parsetree.payload -> string option 
-
-val is_string_or_strings : Parsetree.payload -> [ `None | `Single of string | `Some of string list ]
-
-val has_arity : Parsetree.attributes -> int option
-
-val attr_attribute_from_type : Parsetree.core_type -> Parsetree.attribute
-
-end = struct
-#1 "parsetree_util.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-let is_single_string (x : Parsetree.payload ) = 
-  match x with  (** TODO also need detect empty phrase case *)
-  | Parsetree.PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> Some name
-  | _  -> None
-
-let is_string_or_strings (x : Parsetree.payload ) :  [ `None | `Single of string | `Some of string list ] = 
-  let module M = struct exception Not_str end  in 
-  match x with 
-  | PStr [ {pstr_desc =  
-              Pstr_eval (
-                {pexp_desc = 
-                   Pexp_apply
-                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
-                      args
-                     );
-                 _},_);
-            _}] ->
-    (try 
-       `Some (name :: (args |> List.map (fun (_label,e) ->
-           match (e : Parsetree.expression) with
-           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
-             name
-           | _ -> raise M.Not_str)))
-
-     with M.Not_str -> `None )
-  |  Parsetree.PStr [ {
-      pstr_desc =  
-        Pstr_eval (
-          {pexp_desc = 
-             Pexp_constant 
-               (Const_string (name,_));
-           _},_);
-      _}] -> `Single name 
-  | _ -> `None
-
-let lift_int ?loc ?attrs x = 
-  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
-
-let has_arity (attrs : Parsetree.attributes) = 
-  Ext_list.find_opt (fun (attr : Parsetree.attribute)  -> 
-      match attr with 
-      | {txt = "arity"; _ }, 
-        PStr [ { pstr_desc = Pstr_eval 
-                     ( {pexp_desc = Pexp_constant (Const_int i)},_attr);
-                 _}]
-        -> 
-        if i >= 0 then 
-          Some i
-        else None
-      | _ -> None 
-    ) attrs  
-
-
-
-let arity_from_core_type (x : Parsetree.core_type) = 
-  let rec aux acc (x : Parsetree.core_type) = 
-    match x.ptyp_desc with 
-    | Ptyp_arrow (_,_,r) -> 
-      (* 'a -> ('b -> ('c -> 'd )) *)
-      aux (acc + 1) r 
-    | _ -> acc  in 
-  aux 0 x
-
-
-
-let attr_attribute_from_type (x : Parsetree.core_type) : Parsetree.attribute = 
-  let n = arity_from_core_type x in 
-  let loc = x.ptyp_loc in
-  {txt = "arity"; loc},
-  PStr ([ {pstr_desc = 
-             Pstr_eval (lift_int n,[]);
-           pstr_loc = loc
-          }])
-
 
 
 end
@@ -15773,11 +15548,11 @@ let query (prim : Lam_compile_env.primitive_description)
       -> 
       begin match args with 
       | [ { expression_desc = Str (_,s )}] -> 
-        E.raw_js_code (Exp (Parsetree_util.has_arity prim.prim_attributes)) s
+        E.raw_js_code Exp  s
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_current_file ())
+          (Js_config.get_current_file ())
         ;
         assert false
       end
@@ -15788,7 +15563,7 @@ let query (prim : Lam_compile_env.primitive_description)
       | _ -> 
         Ext_log.err __LOC__ 
           "JS.unsafe_js_expr is applied to an non literal string in %s"
-          (Lam_current_unit.get_current_file ())
+          (Js_config.get_current_file ())
         ;
         assert false
       end
@@ -15848,7 +15623,7 @@ let query (prim : Lam_compile_env.primitive_description)
 
       let comment = "Missing primitve" in       
       Ext_log.warn __LOC__  "%s: %s when compiling %s\n" comment prim_name 
-        (Lam_current_unit.get_current_file ()) ;
+        (Js_config.get_current_file ()) ;
       E.not_implemented prim_name
       (*we dont use [throw] here, since [throw] is an statement 
         so we wrap in IIFE
@@ -15935,6 +15710,167 @@ let set_array  e e0 e1 =
 
 let ref_array  e e0 = 
   E.access  e  e0
+
+end
+module Ast_payload : sig 
+#1 "ast_payload.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+(** A utility module used when destructuring parsetree attributes, used for 
+    compiling FFI attributes and built-in ppx  *)
+
+type t = Parsetree.payload
+
+val is_single_string : t -> string option
+val as_string_exp : t -> Parsetree.expression option 
+val as_empty_structure :  t -> bool 
+val is_string_or_strings : 
+  t -> [ `None | `Single of string | `Some of string list ]
+val as_record_and_process : 
+  Location.t ->
+  t -> (Longident.t Asttypes.loc * Parsetree.expression -> unit) -> unit
+
+val assert_bool_lit : Parsetree.expression -> bool
+
+end = struct
+#1 "ast_payload.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+type t = Parsetree.payload
+
+let is_single_string (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] -> Some name
+  | _  -> None
+
+let as_string_exp (x : t ) = 
+  match x with  (** TODO also need detect empty phrase case *)
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (_,_));
+           _} as e ,_);
+      _}] -> Some e
+  | _  -> None
+
+let as_empty_structure (x : t ) = 
+  match x with 
+  | PStr ([]) -> true
+  | PTyp _ | PPat _ | PStr (_ :: _ ) -> false 
+
+
+let as_record_and_process 
+    loc
+    ( x : t ) (action : Longident.t Asttypes.loc * Parsetree.expression -> unit ): unit= 
+  match  x with 
+  | PStr [ {pstr_desc = Pstr_eval
+                ({pexp_desc = Pexp_record (label_exprs, with_obj) ; pexp_loc = loc}, _); 
+            _
+           }]
+    -> 
+    begin match with_obj with
+    | None ->
+      List.iter action label_exprs
+    | Some _ -> 
+      Location.raise_errorf ~loc "with is not supported"
+    end
+  | _ -> 
+    Location.raise_errorf ~loc "this is not a valid record config"
+
+let is_string_or_strings (x : t) : 
+  [ `None | `Single of string | `Some of string list ] = 
+  let module M = struct exception Not_str end  in 
+  match x with 
+  | PStr [ {pstr_desc =  
+              Pstr_eval (
+                {pexp_desc = 
+                   Pexp_apply
+                     ({pexp_desc = Pexp_constant (Const_string (name,_)); _},
+                      args
+                     );
+                 _},_);
+            _}] ->
+    (try 
+       `Some (name :: (args |> List.map (fun (_label,e) ->
+           match (e : Parsetree.expression) with
+           | {pexp_desc = Pexp_constant (Const_string (name,_)); _} -> 
+             name
+           | _ -> raise M.Not_str)))
+
+     with M.Not_str -> `None )
+  | PStr [ {
+      pstr_desc =  
+        Pstr_eval (
+          {pexp_desc = 
+             Pexp_constant 
+               (Const_string (name,_));
+           _},_);
+      _}] -> `Single name 
+  | _ -> `None
+
+let assert_bool_lit  (e : Parsetree.expression) = 
+  match e.pexp_desc with
+  | Pexp_construct ({txt = Lident "true" }, None)
+    -> true
+  | Pexp_construct ({txt = Lident "false" }, None)
+    -> false 
+  | _ ->
+    Location.raise_errorf ~loc:e.pexp_loc "expect `true` or `false` in this field"
 
 end
 module Lam_compile_external_call : sig 
@@ -16025,7 +15961,7 @@ end = struct
 
 module E = Js_exp_make
 
-open Parsetree_util
+
 
 type external_module_name = 
   | Single of string 
@@ -16135,7 +16071,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
               ]}
            *)
            -> 
-           begin  match is_single_string pay_load with
+           begin  match Ast_payload.is_single_string pay_load with
              | Some name -> 
                js_val := `Value name 
              | None -> 
@@ -16146,7 +16082,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            (* {[ [@@bs.val_of_module]]}
            *)
            -> 
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
            | Some name ->
              js_val_of_module := `Value(Bind (name, prim_name))
            | None -> 
@@ -16158,19 +16094,19 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
 
          |"bs.send" 
            ->
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some name -> js_send := `Value name
              | None -> js_send := `Value _prim.prim_name
            end
          | "bs.set"
            ->
-           begin match is_single_string pay_load with
+           begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_set := `Value name
              | None -> js_set := `Value _prim.prim_name
            end
          | "bs.get"
            ->
-           begin match is_single_string pay_load with
+           begin match Ast_payload.is_single_string pay_load with
              | Some name -> js_get := `Value name
              | None -> js_get := `Value _prim.prim_name
            end
@@ -16180,12 +16116,12 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
              [@@bs.call "xx"] [@@bs.call]
            *)
            ->
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some name -> call_name :=  Some (x.loc, name)
              | None -> call_name := Some(x.loc, _prim.prim_name)
            end
          | "bs.module" -> 
-           begin match is_string_or_strings pay_load with 
+           begin match Ast_payload.is_string_or_strings pay_load with 
              | `Single name -> external_module_name:= Some (Single name)
              | `Some [a;b] -> external_module_name := Some (Bind (a,b))
              | `Some _ -> ()
@@ -16193,7 +16129,7 @@ let handle_attributes ({prim_attributes ; prim_name} as _prim  : prim ) : Locati
            end
 
          | "bs.new" -> 
-           begin match is_single_string pay_load with 
+           begin match Ast_payload.is_single_string pay_load with 
              | Some x -> js_new := Some x 
              | None -> js_new := Some _prim.prim_name
            end
@@ -20485,16 +20421,16 @@ let rec get_arity
 
     end
   | Llet(_,_,_, l ) -> get_arity meta l 
-  | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes}, 
-           [Lconst (Const_base (Const_string (_str,_)))])
-    ->
-    (* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *)
-    begin match Parsetree_util.has_arity prim_attributes with
-      | Some arity -> 
-        (* Ext_log.dwarn __LOC__ "arity %d" arity; *)
-        Determin(false, [arity, None], false)
-      | None -> NA
-    end
+  (* | Lprim (Pccall {prim_name = "js_pure_expr"; prim_attributes},  *)
+  (*          [Lconst (Const_base (Const_string (_str,_)))]) *)
+  (*   -> *)
+  (*   (\* Ext_log.dwarn __LOC__ "called %s %d" str (List.length prim_attributes ); *\) *)
+  (*   begin match Parsetree_util.has_arity prim_attributes with *)
+  (*     | Some arity ->  *)
+  (*       (\* Ext_log.dwarn __LOC__ "arity %d" arity; *\) *)
+  (*       Determin(false, [arity, None], false) *)
+  (*     | None -> NA *)
+  (*   end *)
   | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
@@ -24768,12 +24704,12 @@ let dump name (prog : J.program) =
     let () = 
       if Js_config.get_env () <> Browser 
       (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
-      && Lam_current_unit.is_same_file ()
+      && Js_config.is_same_file ()
       then 
         begin
           incr log_counter ; 
           Ext_pervasives.with_file_as_chan       
-            (Ext_filename.chop_extension ~loc:__LOC__ (Lam_current_unit.get_current_file()) ^
+            (Ext_filename.chop_extension ~loc:__LOC__ (Js_config.get_current_file()) ^
              (Printf.sprintf ".%02d.%s.jsx"  !log_counter name)
             ) (fun chan -> Js_dump.dump_program prog chan )
         end in
@@ -25160,7 +25096,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
           (* TODO: turn in on debug mode later*)
           let () =
-            if Lam_current_unit.is_same_file () then
+            if Js_config.is_same_file () then
               let f =
                 Ext_filename.chop_extension ~loc:__LOC__ filename ^ ".lambda" in
               Ext_pervasives.with_file_as_pp f @@ fun fmt ->
@@ -25260,8 +25196,8 @@ let lambda_as_module
     (output_prefix : string)
     (lam : Lambda.lambda) = 
   begin 
-    Lam_current_unit.set_current_file filename ;  
-    Lam_current_unit.iset_debug_file "tuple_alloc.ml";
+    Js_config.set_current_file filename ;  
+    Js_config.iset_debug_file "tuple_alloc.ml";
     Ext_pervasives.with_file_as_chan 
       (Js_config.get_output_file filename)
       (fun chan -> Js_dump.dump_deps_program 
@@ -25571,6 +25507,289 @@ let protect2 r1 r2 v1 v2 body =
     raise x
 
 end
+module Ast_literal : sig 
+#1 "ast_literal.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+module Lid : sig
+  type t = Longident.t 
+  val val_unit : t 
+  val type_unit : t 
+  val pervasives_js_obj : t 
+  val pervasives_uncurry : t 
+  val js_obj : t 
+  val js_fn : t 
+  val ignore_id : t 
+end
+
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+val val_unit : expression_lit
+
+val type_unit : core_type_lit
+
+val type_string : core_type_lit
+
+val type_any : core_type_lit
+
+val pat_unit : pattern_lit
+
+end = struct
+#1 "ast_literal.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+open Ast_helper
+
+module Lid = struct 
+  type t = Longident.t 
+  let val_unit : t = Lident "()"
+  let type_unit : t = Lident "unit"
+  let type_string : t = Lident "string"
+  (* TODO should be renamed in to {!Js.fn} *)
+  (* TODO should be moved into {!Js.t} Later *)
+  let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
+  let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
+  let js_obj = Longident.Ldot (Lident "Js", "t") 
+  let js_fn = Longident.Ldot (Lident "Js", "fn")
+  let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
+end
+
+module No_loc = struct 
+  let loc = Location.none
+  let val_unit = 
+    Ast_helper.Exp.construct {txt = Lid.val_unit; loc }  None
+  let type_unit =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+  let type_string =   
+    Ast_helper.Typ.mk  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+  let type_any = Ast_helper.Typ.any ()
+  let pat_unit = Pat.construct {txt = Lid.val_unit; loc} None
+end 
+
+type 'a  lit = ?loc: Location.t -> unit -> 'a
+type expression_lit = Parsetree.expression lit 
+type core_type_lit = Parsetree.core_type lit 
+type pattern_lit = Parsetree.pattern lit 
+
+let val_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.val_unit
+  | Some loc -> Ast_helper.Exp.construct {txt = Lid.val_unit; loc}  None
+
+
+let type_unit ?loc () = 
+  match loc with
+  | None ->     
+    No_loc.type_unit
+  | Some loc -> 
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_unit; loc}, []))
+
+
+let type_string ?loc () = 
+  match loc with 
+  | None -> No_loc.type_string 
+  | Some loc ->     
+    Ast_helper.Typ.mk ~loc  (Ptyp_constr ({ txt = Lid.type_string; loc}, []))
+
+let type_any ?loc () = 
+  match loc with 
+  | None -> No_loc.type_any
+  | Some loc -> Ast_helper.Typ.any ~loc ()
+
+let pat_unit ?loc () = 
+  match loc with 
+  | None -> No_loc.pat_unit
+  | Some loc -> 
+    Pat.construct ~loc {txt = Lid.val_unit; loc} None
+
+end
+module Ast_comb : sig 
+#1 "ast_comb.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val create_local_external : Location.t ->
+  ?pval_attributes:Parsetree.attributes ->
+  pval_prim:string ->
+  pval_type:Parsetree.core_type ->
+  ?local_module_name:string ->
+  ?local_fun_name:string ->
+  (Asttypes.label * Parsetree.expression) list -> Parsetree.expression_desc
+
+val exp_apply_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.expression -> Parsetree.expression list -> Parsetree.expression
+
+val fun_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.pattern -> Parsetree.expression -> Parsetree.expression
+
+val arrow_no_label : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes ->
+  Parsetree.core_type -> Parsetree.core_type -> Parsetree.core_type
+
+(* note we first declare its type is [unit], 
+   then [ignore] it, [ignore] is necessary since 
+   the js value  maybe not be of type [unit] and 
+   we can use [unit] value (though very little chance) 
+   sometimes
+*)
+val discard_exp_as_unit : 
+  Location.t -> Parsetree.expression -> Parsetree.expression
+
+end = struct
+#1 "ast_comb.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let create_local_external loc 
+     ?(pval_attributes=[])
+     ~pval_prim
+     ~pval_type 
+     ?(local_module_name = "J")
+     ?(local_fun_name = "unsafe_expr")
+     args
+  : Parsetree.expression_desc = 
+  Pexp_letmodule
+    ({txt = local_module_name; loc},
+     {pmod_desc =
+        Pmod_structure
+          [{pstr_desc =
+              Pstr_primitive
+                {pval_name = {txt = local_fun_name; loc};
+                 pval_type ;
+                 pval_loc = loc;
+                 pval_prim = [pval_prim];
+                 pval_attributes };
+            pstr_loc = loc;
+           }];
+      pmod_loc = loc;
+      pmod_attributes = []},
+     {
+       pexp_desc =
+         Pexp_apply
+           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
+                                      loc};
+              pexp_attributes = [] ;
+              pexp_loc = loc} : Parsetree.expression),
+            args);
+       pexp_attributes = [];
+       pexp_loc = loc
+     })
+
+open Ast_helper 
+
+let exp_apply_no_label ?loc ?attrs a b = 
+  Exp.apply ?loc ?attrs a (List.map (fun x -> "", x) b)
+
+let fun_no_label ?loc ?attrs  pat body = 
+  Exp.fun_ ?loc ?attrs "" None pat body
+
+let arrow_no_label ?loc ?attrs b c = 
+  Typ.arrow ?loc ?attrs "" b c 
+
+let discard_exp_as_unit loc e = 
+  exp_apply_no_label ~loc     
+    (Exp.ident ~loc {txt = Ast_literal.Lid.ignore_id; loc})
+    [Exp.constraint_ ~loc e 
+       (Ast_literal.type_unit ~loc ())]
+
+end
 module Ppx_entry : sig 
 #1 "ppx_entry.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -25659,105 +25878,35 @@ end = struct
 *)
 
 
-let tmp_module_name = "J"
-let tmp_fn = "unsafe_expr"
-let predef_string_type = 
-  Ast_helper.Typ.var "string" 
-let predef_any_type = 
-  Ast_helper.Typ.any ()
-let predef_unit_type = 
-  Ast_helper.Typ.var "unit"
-let predef_val_unit  = 
-  Ast_helper.Exp.construct {txt = Lident "()"; loc = Location.none }  None
-let prim = "js_pure_expr"
-let prim_stmt = "js_pure_stmt"
-let prim_debugger = "js_debugger"
 
-(* TODO should be renamed in to {!Js.fn} *)
-(* TODO should be moved into {!Js.t} Later *)
-let pervasives_js_obj = Longident.Ldot (Lident "Pervasives", "js_obj") 
-let pervasives_uncurry = Longident.Ldot (Lident "Pervasives", "uncurry")
-let js_obj = Longident.Ldot (Lident "Js", "t") 
-let js_fn = Longident.Ldot (Lident "Js", "fn")
+
+
+
+
+
 let js_obj_type_id () = 
   if Js_config.get_env () = Browser then
-    pervasives_js_obj
-  else js_obj 
+    Ast_literal.Lid.pervasives_js_obj
+  else Ast_literal.Lid.js_obj 
     
 let curry_type_id () = 
   if Js_config.get_env () = Browser then 
-    pervasives_uncurry
+    Ast_literal.Lid.pervasives_uncurry
   else 
-    js_fn 
+    Ast_literal.Lid.js_fn 
 
-let ignore_id = Longident.Ldot (Lident "Pervasives", "ignore")
 
+open Ast_helper 
 let arrow = Ast_helper.Typ.arrow
-
-(* note we first declare its type is [unit], 
-   then [ignore] it, [ignore] is necessary since 
-   the js value  maybe not be of type [unit] and 
-   we can use [unit] value (though very little chance) 
-   sometimes
-*)
-let discard_js_value loc e  : Parsetree.expression = 
-  {pexp_desc = 
-     Pexp_apply
-       ({pexp_desc = 
-           Pexp_ident {txt = ignore_id ; loc};
-         pexp_attributes = [];
-         pexp_loc = loc},
-        [("",
-          {pexp_desc =
-             Pexp_constraint (e,
-                              {ptyp_desc = Ptyp_constr ({txt = Lident "unit"; loc}, []);
-                               ptyp_loc = loc;
-                               ptyp_attributes = []});
-           pexp_loc = loc;
-           pexp_attributes = []
-          })]
-       );
-   pexp_loc = loc;
-   pexp_attributes = [] 
-  }
-
-
-let create_local_external loc 
-     ~pval_prim
-     ~pval_type ~pval_attributes 
-     local_module_name 
-     local_fun_name
-     args
-  : Parsetree.expression_desc = 
-  Pexp_letmodule
-    ({txt = local_module_name; loc},
-     {pmod_desc =
-        Pmod_structure
-          [{pstr_desc =
-              Pstr_primitive
-                {pval_name = {txt = local_fun_name; loc};
-                 pval_type ;
-                 pval_loc = loc;
-                 pval_prim = [pval_prim];
-                 pval_attributes };
-            pstr_loc = loc;
-           }];
-      pmod_loc = loc;
-      pmod_attributes = []},
-     {
-       pexp_desc =
-         Pexp_apply
-           (({pexp_desc = Pexp_ident {txt = Ldot (Lident local_module_name, local_fun_name); 
-                                      loc};
-              pexp_attributes = [] ;
-              pexp_loc = loc} : Parsetree.expression),
-            args);
-       pexp_attributes = [];
-       pexp_loc = loc
-     })
 
 let record_as_js_object = ref None (* otherwise has an attribute *)
 let obj_type_as_js_obj_type = ref false
+let uncurry_type = ref false 
+let obj_type_auto_uncurry =  ref false
+let non_export = ref false 
+let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
+let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
+
 let handle_record_as_js_object 
     loc 
     attr
@@ -25772,47 +25921,33 @@ let handle_record_as_js_object
   ) label_exprs in 
   let pval_prim = "" in 
   let pval_attributes = [attr] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
   let pval_type = 
     let arity = List.length labels in 
     let tyvars = (Ext_list.init arity (fun i ->      
-        {Parsetree.ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
-         ptyp_attributes = [] ;
-         ptyp_loc = loc})) in 
+        Typ.var ~loc ("a" ^ string_of_int i))) in 
 
-    let result_type = 
-      {Parsetree.ptyp_desc = 
-         Ptyp_constr ({txt =  js_obj_type_id () ; loc},
-                      [{ Parsetree.ptyp_desc = 
-                           Ptyp_object (List.map2 (fun x y -> x ,[], y) labels tyvars, Closed);
-                         ptyp_attributes = [];
-                         ptyp_loc = loc
-                       }]);
-       ptyp_loc = loc;
-       ptyp_attributes = []
-      } in 
+    let result_type =
+      lift_js_type ~loc  
+        @@ Typ.object_ ~loc (List.map2 (fun x y -> x ,[], y) labels tyvars) Closed
+
+    in 
     List.fold_right2 
       (fun label tyvar acc -> arrow ~loc label tyvar acc) labels tyvars  result_type
   in 
-  create_local_external loc 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc 
     ~pval_prim
     ~pval_type ~pval_attributes 
-    local_module_name 
-    local_fun_name
+    ~local_module_name 
+    ~local_fun_name
     args 
 
 let gen_fn_run loc arity args  : Parsetree.expression_desc = 
-  let open Parsetree in 
-  let ptyp_attributes = [] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "run" in 
   let pval_prim = Printf.sprintf "js_fn_run_%02d" arity  in
   let tyvars =
-        (Ext_list.init (arity + 1) (fun i -> 
-             {ptyp_desc = Ptyp_var ("a" ^ string_of_int i); 
-              ptyp_attributes ;
-              ptyp_loc = loc})) in
+    Ext_list.init (arity + 1) 
+      (fun i -> Typ.var ~loc ("a" ^ string_of_int i)) in
   let tuple_type_desc = 
     if arity = 0 then 
       (List.hd tyvars).ptyp_desc
@@ -25821,24 +25956,18 @@ let gen_fn_run loc arity args  : Parsetree.expression_desc =
       Parsetree.Ptyp_tuple tyvars
   in 
   let uncurry_fn = 
-    {ptyp_desc =
-       Ptyp_constr ({txt = curry_type_id (); loc},
-                    [{ptyp_desc = tuple_type_desc ;
-                      ptyp_attributes;
-                      ptyp_loc = loc  }]);
-     ptyp_attributes;
-     ptyp_loc = loc} in 
+    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc in
   (** could be optimized *)
   let pval_type = 
     Ext_list.reduce_from_right (fun a b -> arrow ~loc "" a b) (uncurry_fn :: tyvars) in 
-  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
-    local_module_name local_fun_name args 
+  let local_module_name = "Tmp" in 
+  let local_fun_name = "run" in 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    ~local_module_name ~local_fun_name args 
 
 let gen_fn_mk loc arity args  : Parsetree.expression_desc = 
   let open Parsetree in 
   let ptyp_attributes = [] in 
-  let local_module_name = "Tmp" in 
-  let local_fun_name = "mk" in 
   let pval_prim = Printf.sprintf "js_fn_mk_%02d" arity  in
   let tyvars =
         (Ext_list.init (arity + 1) (fun i -> 
@@ -25853,37 +25982,18 @@ let gen_fn_mk loc arity args  : Parsetree.expression_desc =
       Parsetree.Ptyp_tuple tyvars
   in 
   let uncurry_fn = 
-    {ptyp_desc =
-       Ptyp_constr ({txt = curry_type_id (); loc},
-                    [{ptyp_desc = tuple_type_desc ;
-                      ptyp_attributes;
-                      ptyp_loc = loc  }]);
-     ptyp_attributes;
-     ptyp_loc = loc} in 
+    lift_curry_type ~loc @@ Typ.mk ~loc tuple_type_desc
+  in 
   let arrow = arrow ~loc "" in
   (** could be optimized *)
   let pval_type = 
     if arity = 0 then 
-      arrow  (arrow  predef_unit_type (List.hd tyvars) ) uncurry_fn
+      arrow  (arrow  (Ast_literal.type_unit ~loc ()) (List.hd tyvars) ) uncurry_fn
     else 
       arrow (Ext_list.reduce_from_right arrow tyvars) uncurry_fn in 
-  create_local_external loc ~pval_prim ~pval_type ~pval_attributes:[] 
-    local_module_name local_fun_name args 
+  Ast_comb.create_local_external loc ~pval_prim ~pval_type 
+    args 
         
-
-
-
-let handle_raw loc e   = 
-  create_local_external loc 
-    ~pval_prim:prim
-    ~pval_type:(arrow "" predef_string_type predef_any_type)
-    ~pval_attributes:[]
-    tmp_module_name
-    tmp_fn 
-    [("",e)]
-
-    
-
 
 let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) = 
   Ext_list.exclude_with_fact (function 
@@ -25891,34 +26001,27 @@ let find_uncurry_attrs_and_remove (attrs : Parsetree.attributes ) =
     | _ -> false ) attrs 
 
 
-let uncurry_fn_type loc ty ptyp_attributes
+let uncurry_fn_type loc ty attrs
     (args : Parsetree.core_type ) body  : Parsetree.core_type = 
-  let open Parsetree in 
+
   let fn_type : Parsetree.core_type =
     match args with
     | {ptyp_desc = 
          Parsetree.Ptyp_tuple [arg ; {ptyp_desc = Ptyp_constr ({txt = Lident "__"}, [])} ]; _} 
       ->
-      { Parsetree.ptyp_loc = loc; 
-        ptyp_desc = Ptyp_tuple [ arg ; body];
-        ptyp_attributes}
+      Typ.tuple ~loc ~attrs [ arg ; body]
+      
     | {ptyp_desc = Ptyp_tuple args; _} ->
-      {ptyp_desc = Ptyp_tuple (List.rev (body :: List.rev args));
-       ptyp_loc = loc;
-       ptyp_attributes 
-      }
+      Typ.tuple ~loc ~attrs (List.rev (body :: List.rev args))
+      
     | {ptyp_desc = Ptyp_constr ({txt = Lident "unit"}, []); _} -> body
-    | v -> {ptyp_desc = Ptyp_tuple [v ; body];
-            ptyp_loc = loc ; 
-            ptyp_attributes }
+    | v -> 
+      Typ.tuple ~loc ~attrs [v ; body]
   in
-  { ty with ptyp_desc =
-              Ptyp_constr ({txt = curry_type_id () ; loc},
-                           [ fn_type]);
-            ptyp_attributes = []
-  }
+  lift_curry_type ~loc fn_type
 
-let uncurry_type = ref false 
+
+
 
 (*
   Attributes are very hard to attribute
@@ -25962,27 +26065,31 @@ let handle_typ
                     | _ -> false)
                   ptyp_attributes with 
     |  None, None, _  ->
+      let check_auto_uncurry core_type = 
+        if  !obj_type_auto_uncurry then
+          Ext_ref.protect uncurry_type true (fun _ -> self.typ self core_type  )          
+        else self.typ self core_type in 
+  
       let methods = 
         List.map (fun (label, ptyp_attrs, core_type ) -> 
             match find_uncurry_attrs_and_remove ptyp_attrs with 
-            | None, _ -> label, ptyp_attrs , self.typ self core_type
+            | None, _ -> 
+              label, ptyp_attrs , check_auto_uncurry  core_type
             | Some v, ptyp_attrs -> 
-              label , ptyp_attrs, self.typ self 
+              label , ptyp_attrs, 
+              check_auto_uncurry
                 { core_type with ptyp_attributes = v :: core_type.ptyp_attributes}
           ) methods 
       in           
       if !obj_type_as_js_obj_type then 
-        {ptyp_desc = 
-           Ptyp_constr ({ txt = js_obj_type_id () ; loc},
-                        [{ ty with ptyp_desc = Ptyp_object(methods, closed_flag);
-                                   ptyp_attributes }]);
-         ptyp_attributes = [];
-         ptyp_loc = loc }
+        lift_js_type ~loc { ty with ptyp_desc = Ptyp_object(methods, closed_flag);
+                               ptyp_attributes }
+
       else 
         {ty with ptyp_desc = Ptyp_object (methods, closed_flag)}
     | fact1 , fact2,  ptyp_attributes -> 
       let obj_type_as_js_obj_type_cxt =  fact1 <> None || !obj_type_as_js_obj_type in
-      let uncurry_type_cxt  = fact2 <> None || !uncurry_type in 
+      let uncurry_type_cxt  = fact2 <> None || !uncurry_type || !obj_type_auto_uncurry in 
       let methods = 
         Ext_ref.protect2
           obj_type_as_js_obj_type
@@ -26010,7 +26117,7 @@ let handle_typ
     end
   | _ -> super.typ self ty
 
-let handle_ctyp 
+let handle_class_obj_typ 
     (super : Ast_mapper.mapper) 
     (self : Ast_mapper.mapper)
     (ty : Parsetree.class_type) = 
@@ -26024,26 +26131,25 @@ let handle_ctyp
       Ext_ref.protect uncurry_type true begin fun () -> 
         self.class_type self  {ty with pcty_attributes = pcty_attributes'} 
       end
-    | None, _ -> super.class_type self ty
+    | None, _ -> 
+      if !obj_type_auto_uncurry then 
+        Ext_ref.protect uncurry_type true begin fun () -> 
+          super.class_type self ty
+        end
+      else 
+        super.class_type self ty
     end
 
 
 let handle_debugger loc payload = 
-  match payload with
-  | Parsetree.PStr ( [])
-    ->
-    create_local_external loc 
-      ~pval_prim:prim_debugger
+  if Ast_payload.as_empty_structure payload then
+    let predef_unit_type = Ast_literal.type_unit ~loc () in
+    let pval_prim = "js_debugger" in
+    Ast_comb.create_local_external loc 
+      ~pval_prim
       ~pval_type:(arrow "" predef_unit_type predef_unit_type)
-      ~pval_attributes:[]
-      tmp_module_name
-      tmp_fn 
-      [("",  predef_val_unit)]
-  | Parsetree.PTyp _
-  | Parsetree.PPat (_,_)
-  | Parsetree.PStr _
-    ->
-    Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+      [("",  Ast_literal.val_unit ~loc ())]
+  else Location.raise_errorf ~loc "bs.raw can only be applied to a string"
 
 (** TODO: Future 
     {[ fun%bs this (a,b,c) -> 
@@ -26067,22 +26173,12 @@ let handle_uncurry_generation  loc
   let body = mapper.expr mapper body in 
   let fun_ = 
     if len = 0 then 
-      {Parsetree.pexp_desc =
-         Pexp_fun ("", None,
-                   {ppat_desc = 
-                      Ppat_construct ({txt = Lident "()"; loc}, None);
-                    ppat_loc = loc ; 
-                    ppat_attributes = []},
-                   body);
-       pexp_loc = loc ;
-       pexp_attributes = []}
+      Ast_comb.fun_no_label ~loc (Ast_literal.pat_unit ~loc () ) body
     else 
       List.fold_right (fun arg body -> 
           let arg = mapper.pat mapper arg in 
-          {Parsetree.
-            pexp_loc = loc ; 
-            pexp_desc = Pexp_fun ("", None, arg, body);
-            pexp_attributes = []}) args body in
+          Ast_comb.fun_no_label ~loc arg body 
+          ) args body in
   {e with pexp_desc = gen_fn_mk loc len [("", fun_)]}
 let handle_uncurry_application 
     loc fn (pat : Parsetree.expression) (e : Parsetree.expression)
@@ -26108,26 +26204,14 @@ let handle_obj_property loc obj name e
     (mapper : Ast_mapper.mapper) : Parsetree.expression = 
   (* ./dumpast -e ' (Js.Unsafe.(!) obj) # property ' *)
   let obj = mapper.expr mapper obj in 
+  let var = Typ.var ~loc "a" in 
+  let down = Ast_comb.create_local_external loc  
 
-  let down = create_local_external loc  
     ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:({ptyp_desc =
-                   Ptyp_arrow ("",
-                               {ptyp_desc =
-                                  Ptyp_constr ({txt = js_obj_type_id () ; loc}, 
-                                               [{ptyp_desc = Ptyp_var "a" ;  
-                                                 ptyp_loc = loc; 
-                                                 ptyp_attributes = [] }]);
-                                ptyp_attributes = [];
-                               ptyp_loc = loc},
-                               {ptyp_desc = Ptyp_var "a"; 
-                                ptyp_loc = loc;
-                                ptyp_attributes = []});
-                 ptyp_loc = loc; 
-                 ptyp_attributes = []})
-      ~pval_attributes:[] 
-    "Tmp"
-    "cast" ["", obj] in 
+    ~pval_type:(
+      Ast_comb.arrow_no_label ~loc
+        (lift_js_type ~loc var) var)
+    ["", obj] in 
   { e with pexp_desc =
      Pexp_send
                ({pexp_desc = down ;
@@ -26172,35 +26256,16 @@ let handle_obj_method loc (obj : Parsetree.expression)
   let len = List.length args in 
   let obj = mapper.expr mapper obj in 
   let args = List.map (mapper.expr mapper ) args in 
-  let down = create_local_external loc  
+  let var = Typ.var ~loc "a" in 
+  let down = Ast_comb.create_local_external loc  
     ~pval_prim:"js_unsafe_downgrade"
-    ~pval_type:({ptyp_desc =
-                   Ptyp_arrow ("",
-                               {ptyp_desc =
-                                  Ptyp_constr ({txt = js_obj_type_id () ; loc}, 
-                                               [{ptyp_desc = Ptyp_var "a" ;  
-                                                 ptyp_loc = loc; 
-                                                 ptyp_attributes = [] }]);
-                                ptyp_attributes = [];
-                               ptyp_loc = loc},
-                               {ptyp_desc = Ptyp_var "a"; 
-                                ptyp_loc = loc;
-                                ptyp_attributes = []});
-                 ptyp_loc = loc; 
-                 ptyp_attributes = []})
-      ~pval_attributes:[] 
-    "Tmp"
-    "cast" ["", obj] in 
+    ~pval_type:(Ast_comb.arrow_no_label ~loc
+                  (lift_js_type ~loc var)
+                  var )
+    ~local_module_name:"Tmp"
+    ~local_fun_name:"cast" ["", obj] in 
   {e with pexp_desc = gen_fn_run loc len 
-    (("",
-      {pexp_desc =
-         Pexp_send
-           ({pexp_desc = down ;
-             pexp_loc = loc ;
-             pexp_attributes = []},
-            name);
-       pexp_loc = loc ; 
-       pexp_attributes = [] }) :: 
+    (("", Exp.send ~loc (Exp.mk ~loc down) name) :: 
      List.map (fun x -> "", x) args
     )}
         (** TODO: 
@@ -26251,17 +26316,21 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         (** Begin rewriting [bs.raw], its output should not be rewritten anymore
         *)        
         | Pexp_extension (
-            {txt = "bs.raw"; loc} ,
-            PStr 
-              ( [{ pstr_desc = Pstr_eval ({ 
-                   pexp_desc = Pexp_constant (Const_string (_, _)) ;
-                    } as e ,
-                                                _); pstr_loc = _ }]))
+            {txt = "bs.raw"; loc} , payload)
           -> 
-              {e with pexp_desc = handle_raw loc e }
-        | Pexp_extension({txt = "bs.raw"; loc}, (PTyp _ | PPat _ | PStr _))
-              -> 
+          begin match Ast_payload.as_string_exp payload with 
+            | None -> 
               Location.raise_errorf ~loc "bs.raw can only be applied to a string"
+            | Some exp -> 
+              let pval_prim = "js_pure_expr" in
+              { exp with pexp_desc = Ast_comb.create_local_external loc 
+                           ~pval_prim
+                           ~pval_type:(arrow "" 
+                                         (Ast_literal.type_string ~loc ()) 
+                                         (Ast_literal.type_any ~loc ()) )
+
+                           ["",exp]}
+          end
 
         (** End rewriting [bs.raw] *)
 
@@ -26364,30 +26433,24 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         | _ ->  Ast_mapper.default_mapper.expr  mapper e
       );
     typ = (fun self typ -> handle_typ Ast_mapper.default_mapper self typ);
-    class_type = (fun self ctyp -> handle_ctyp Ast_mapper.default_mapper self ctyp);
+    class_type = (fun self ctyp -> handle_class_obj_typ Ast_mapper.default_mapper self ctyp);
     structure_item = (fun mapper (str : Parsetree.structure_item) -> 
         begin match str.pstr_desc with 
         | Pstr_extension ( ({txt = "bs.raw"; loc}, payload), _attrs) 
           -> 
-            begin match payload with 
-              | Parsetree.PStr 
-                  ( [{ pstr_desc = Parsetree.Pstr_eval ({ 
-                        pexp_desc = Pexp_constant (Const_string (cont, opt_label)) ;
-                        pexp_loc; pexp_attributes } as e ,_); pstr_loc }])
+            begin match Ast_payload.as_string_exp payload with 
+              | Some exp 
                 -> 
+                let pval_prim = "js_pure_stmt" in 
                 Ast_helper.Str.eval 
-                  { e with pexp_desc =
-                             create_local_external loc 
-                               ~pval_prim:prim_stmt 
+                  { exp with pexp_desc =
+                             Ast_comb.create_local_external loc 
+                               ~pval_prim
                                ~pval_type:(arrow ""
-                                             predef_string_type predef_any_type)
-                               ~pval_attributes:[]
-                               tmp_module_name
-                               tmp_fn 
-                               [("",e)]}
-              | Parsetree.PTyp _ 
-              | Parsetree.PPat (_,_) 
-              | Parsetree.PStr _ 
+                                             (Ast_literal.type_string ~loc ())
+                                             (Ast_literal.type_any ~loc ()))
+                               ["",exp]}
+              | None
                 -> 
                 Location.raise_errorf ~loc "bs.raw can only be applied to a string"
             end
@@ -26395,13 +26458,72 @@ let rec unsafe_mapper : Ast_mapper.mapper =
         end
       )
   }
+
+
+let common_actions_table : 
+  (string *  (Parsetree.expression -> unit)) list = 
+  [ "obj_type_auto_uncurry", 
+    (fun e -> 
+       obj_type_auto_uncurry := Ast_payload.assert_bool_lit e
+    )
+  ]
+
+
+let structural_config_table  = 
+  String_map.of_list 
+    (( "non_export" , 
+      (fun e -> non_export := Ast_payload.assert_bool_lit e ))
+      :: common_actions_table)
+
+let signature_config_table = 
+  String_map.of_list common_actions_table
+
+
+let make_call_back table ((x : Longident.t Asttypes.loc) , y) = 
+  match x with 
+  | {txt = Lident name; loc  } -> 
+    begin match String_map.find name table with 
+    | fn -> fn y
+    | exception _ -> Location.raise_errorf ~loc "%s is not supported" name
+    end
+  | {loc} -> 
+    Location.raise_errorf ~loc "invalid label for config"
+
 let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
   ref (fun  x -> 
-      unsafe_mapper.signature  unsafe_mapper x
+      match (x : Parsetree.signature) with 
+      | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+        -> 
+        begin 
+          Ast_payload.as_record_and_process loc payload 
+            (make_call_back signature_config_table) ; 
+          unsafe_mapper.signature unsafe_mapper rest
+        end
+      | _ -> 
+        unsafe_mapper.signature  unsafe_mapper x
        )
 
 let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref = 
-  ref (fun x -> unsafe_mapper.structure  unsafe_mapper x )
+  ref (fun (x : Parsetree.structure) -> 
+      match x with 
+      | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+        -> 
+        begin 
+          Ast_payload.as_record_and_process loc payload 
+            (make_call_back structural_config_table) ; 
+          let rest = unsafe_mapper.structure unsafe_mapper rest in
+          if !non_export then
+            [Str.include_ ~loc  
+               (Incl.mk ~loc 
+                  (Mod.constraint_ ~loc
+                     (Mod.structure ~loc rest  )
+                     (Mty.signature ~loc [])
+                  ))]
+          else rest 
+
+        end
+      | _ -> 
+        unsafe_mapper.structure  unsafe_mapper x )
 
 
 end
@@ -27248,6 +27370,66 @@ let map2i f a b =
 
 
 end
+module Ast_lift : sig 
+#1 "ast_lift.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val int : 
+  ?loc:Location.t ->
+  ?attrs:Parsetree.attributes -> int -> Parsetree.expression
+
+end = struct
+#1 "ast_lift.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+let int ?loc ?attrs x = 
+  Ast_helper.Exp.constant ?loc ?attrs (Const_int x)
+
+end
 module Js_pass_beta : sig 
 #1 "js_pass_beta.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -27515,5 +27697,96 @@ let escaped = function
       string_unsafe_set s 2 (unsafe_chr (48 + (n / 10) mod 10));
       string_unsafe_set s 3 (unsafe_chr (48 + n mod 10));
       s
+
+end
+module Lam_current_unit : sig 
+#1 "lam_current_unit.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+val set_current_file : string -> unit 
+val get_current_file : unit -> string
+val get_module_name : unit -> string
+
+val iset_debug_file : string -> unit
+val set_debug_file : string -> unit
+val get_debug_file : unit -> string
+
+val is_same_file : unit -> bool 
+
+
+end = struct
+#1 "lam_current_unit.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+let file = ref ""
+let debug_file = ref ""
+
+let set_current_file f  = file := f 
+let get_current_file () = !file
+let get_module_name () = 
+  Filename.chop_extension (String.uncapitalize !file)
+
+let iset_debug_file _ = ()
+let set_debug_file  f = debug_file := f
+let get_debug_file  () = !debug_file
+
+
+let is_same_file () = 
+  !debug_file <> "" &&  !debug_file = !file
 
 end
