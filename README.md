@@ -1,4 +1,4 @@
-# [BuckleScript](http://bloomberg.github.io/bucklescript/) 
+# [BuckleScript](http://bloomberg.github.io/bucklescript/)
 
 [![NPM](https://nodei.co/npm/bs-platform.png?compact=true)](https://nodei.co/npm/bs-platform/)
 
@@ -58,7 +58,7 @@ This project has been released to exchange ideas and collect feedback from the O
 It is in an *alpha* stage and we encourage you to try it and share
 your feedback.
 
-## Documentation 
+## Documentation
 
 See http://bloomberg.github.io/bucklescript/, if you want to contribute documentation, the source is [here](./docs)
 
@@ -74,18 +74,18 @@ See https://github.com/bloomberg/bucklescript-addons
 #### Build from package manager
 
 1. opam switch (*optional*, *recommended*)
-   
+
   ```
   opam switch 4.02.3+buckle-1
   ```
   With this switch, you can install all OCaml tools which is compatible with BuckleScript
-  
+
 2. npm install
 
   ```
   npm install  bs-platform
   ```
-   
+
 
 #### Build from source
 
@@ -135,10 +135,10 @@ See https://github.com/bloomberg/bucklescript-addons
   MODULE_FLAGS='-bs-module commonjs' make world
   MODULE_FLAGS='-bs-module goog:buckle' make world
   ```
-  
+
 4. Test
 
-  In a separate directory, create a file called `hello.ml`:
+  Outside of a `bucklescript` directory create a separate directory with a file called `hello.ml`:
 
   ```sh
   mkdir tmp
@@ -148,7 +148,7 @@ See https://github.com/bloomberg/bucklescript-addons
 
   Then compile it with `bsc`.
   ```sh
-  bsc -I . -c hello.ml
+  bsc -I ../bucklescript/jscomp/runtime -I ../bucklescript/jscomp/stdlib -c hello.ml
   ```
 
   It should generate a file called `hello.js`, which can be executed with any JavaScript engine. In this example, we use Node.js:
