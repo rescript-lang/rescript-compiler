@@ -30,7 +30,7 @@ lam_fold.ml: lambda_fold.mlp lambda.mlp
 # continuing, in this case the user may occationally want bytecode/nativecode backend
 
 release:snapshot 
-	make releasebuild
+	$(MAKE) releasebuild
 # Note: this target also built bin/bsc which is used in release mode
 
 # TODO: should be done after we do the build
@@ -40,7 +40,7 @@ release:snapshot
 	$(NATIVE) -w -a -I bin -I +compiler-libs ocamlcommon.cmxa unix.cmxa  $^ -o $@
 
 snapshot: ./bin/ocaml_pack snapshotcmj
-	make snapshotml
+	$(MAKE) snapshotml
 
 snapshotml:./bin/ocaml_pack ./bin/compiler.mllib
 	@echo "Snapshot ml"
@@ -68,25 +68,25 @@ stdlib:
 world:
 	@echo "Making compiler"		
 	$(NATIVE) -g -inline 1000 -linkall  -w -a -I +compiler-libs -I bin ocamlcommon.cmxa  bin/compiler.mli bin/compiler.ml -o bin/bsc
-	@echo "Making compiler finished"		
+	@echo "Making compiler finished"
 
 	@echo "Making stdlib cmis"
-	cd stdlib && make allcmis
+	cd stdlib && $(MAKE) allcmis
 	@echo "Making stdlib finished"
 
 	@echo "Making runtime"
-	cd runtime && make all
+	cd runtime && $(MAKE) all
 	@echo "Making runtime finished"
 
 
 	@echo "Making stdlib"
-	cd stdlib && make all	
+	cd stdlib && $(MAKE) all
 	@echo "Making stdlib finished"
 
 world-test:
-	make world 	
+	$(MAKE) world
 	@echo "Making test"
-	cd test && make all
+	cd test && $(MAKE) all
 	@echo "Making test finsihed"
 
 # no depend on ./bin/ocaml_pack ./bin/bsc
@@ -107,11 +107,11 @@ big-world:bin/big_compiler.ml bin/big_compiler.mli
 	@echo "Making compiler finished"		
 
 	@echo "Making runtime"
-	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) make all
+	cd runtime && OCAMLLIB=$(TMP_OCAMLLIB) $(MAKE) all
 	@echo "Making runtime finished"
 
 	@echo "Making stdlib"
-	cd stdlib && make all	
+	cd stdlib && $(MAKE) all
 	@echo "Making stdlib finished"
 
 
@@ -120,7 +120,7 @@ travis-world-test:./bin/ocaml_pack
 	rm -f bin/compiler.ml 	
 	./bin/ocaml_pack ./bin/compiler.mllib > bin/compiler.ml
 	@echo "Generating the compiler finished"	
-	make world-test
+	$(MAKE) world-test
 
 
 .PHONY: stdlib
