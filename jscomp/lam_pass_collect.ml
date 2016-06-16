@@ -106,7 +106,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
            (* enven for not subsitution, it still propogate some properties *)
            (* else () *)
         )
-    | Lfunction(_, _, params,l)
+    | Lfunction{ params; body = l}
         (** TODO record parameters ident ?, but it will be broken after inlining *)  
       -> 
         (** TODO could be optimized in one pass? 
@@ -145,7 +145,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lvar _ -> ()
     | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
-    | Lfunction(_arity, _kind, params, l) -> (* functor ? *)
+    | Lfunction { params; body =  l} -> (* functor ? *)
         List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 

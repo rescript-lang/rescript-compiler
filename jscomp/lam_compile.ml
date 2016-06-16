@@ -179,7 +179,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
             ) args_lambda ([], []) in
 
         match closed_lambda with 
-        | Some (Lfunction (_, _, params, body)) 
+        | Some (Lfunction{ params; body; _}) 
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
@@ -263,7 +263,7 @@ and compile_recursive_let
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
-  |  Lfunction (_, kind, params, body)  -> 
+  |  Lfunction { kind; params; body; _}  -> 
     (* Invariant:  jmp_table can not across function boundary,
        here we share env *)
 
@@ -486,7 +486,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
-    | Lfunction(_, kind, params, body) ->
+    | Lfunction{ kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
         (E.fun_
            params
@@ -910,7 +910,7 @@ and
               *)
               begin 
                 match fn with 
-                | Lfunction (_, _, [_], body)
+                | Lfunction {params =  [_]; body}
                   -> compile_lambda cxt (Lam.function_ 0 Curried [] body)
                 | _ -> 
                   compile_lambda cxt  
@@ -923,7 +923,7 @@ and
               end
             else 
               begin match fn with
-                | Lam.Lfunction(len, kind,args, body) 
+                | Lam.Lfunction{arity = len; kind; params = args; body}
                   ->
                   if len = arity then
                     compile_lambda cxt fn 

@@ -39,11 +39,17 @@ and apply_info =
     loc : Location.t;
     status : Lambda.apply_status
   }
+and function_info = 
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
 and t = 
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
-  | Lfunction of int * Lambda.function_kind  * Ident.t list * t
+  | Lfunction of function_info
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
   | Lprim of prim_info
@@ -114,7 +120,7 @@ let apply fn args loc status : t =
   Lapply { fn; args;  loc  ;
            status }
 let function_ arity kind ids body : t = 
-  Lfunction(arity, kind, ids, body)
+  Lfunction { arity; kind; params = ids; body}
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -389,7 +395,7 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lapply (fn,args,info) 
     ->  apply (convert fn) (List.map convert args) 
           info.apply_loc info.apply_status
-  | Lfunction (kind,ids,body)
+  | Lfunction (kind,  ids,body)
     ->  function_ (List.length ids) kind ids (convert body)
   | Llet (kind,id,e,body) 
     -> Llet(kind,id,convert e, convert body)

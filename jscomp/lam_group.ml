@@ -321,7 +321,7 @@ let deep_flatten
           Lam.apply f [x] loc App_na
         | _ -> Lam.prim p ll
       end
-    | Lfunction(arity, kind, params, l) -> 
+    | Lfunction{arity; kind; params;  body = l} -> 
       Lam.function_ arity kind params  (aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 

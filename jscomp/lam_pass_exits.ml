@@ -84,7 +84,7 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
       end
     | Lvar _| Lconst _ -> ()
     | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
-    | Lfunction(_, _, _, l) -> count l
+    | Lfunction {body = l} -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
     | Lletrec(bindings, body) ->
@@ -251,7 +251,7 @@ let subst_helper (subst : subst_tbl) query lam =
     | Lvar _|Lconst _  -> lam
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
-    | Lfunction (arity, kind, params, l) -> 
+    | Lfunction {arity; kind; params; body =  l} -> 
       Lam.function_ arity kind params (simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)

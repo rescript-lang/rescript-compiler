@@ -42,11 +42,17 @@ and prim_info = private
   { primitive : primitive ; 
     args : t list ; 
   }
+and function_info = private
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
 and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
   | Lapply of apply_info
-  | Lfunction of int (* length *) * Lambda.function_kind * Ident.t list * t
+  | Lfunction of function_info
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
   | Lprim of prim_info

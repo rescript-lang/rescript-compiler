@@ -255,7 +255,7 @@ let rec size (lam : Lam.t) =
     | Lapply{ fn;
              args; _} -> size_lams (size fn) args
     (* | Lfunction(_, params, l) -> really_big () *)
-    | Lfunction(_, _ ,_params,body) -> size body 
+    | Lfunction {body} -> size body 
     | Lswitch(_, _) -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
@@ -409,7 +409,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       List.iter (iter top) args
-    | Lfunction(_, _kind, params, body) ->
+    | Lfunction{ params; body} ->
       local_add_list params;
       iter no_substitute body 
     | Llet(_let_kind, id, arg, body) ->

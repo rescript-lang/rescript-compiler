@@ -94,7 +94,7 @@ let subst_lambda s lam =
     | Lconst sc as l -> l
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst fn) (List.map subst args) loc status
-    | Lfunction(arity, kind, params, body) -> 
+    | Lfunction {arity; kind; params; body} -> 
       Lam.function_ arity kind  params (subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
@@ -433,7 +433,7 @@ let iter f l =
   | Lconst _ -> ()
   | Lapply{fn; args; _} ->
       f fn; List.iter f args
-  | Lfunction(_arity, kind, params, body) ->
+  | Lfunction{body;_} ->
       f body
   | Llet(str, id, arg, body) ->
       f arg; f body
@@ -480,7 +480,7 @@ let free_ids get (l : Lam.t) =
     iter free l;
     fv := List.fold_right Ident_set.add (get l) !fv;
     match l with
-    | Lfunction(_arity, kind, params, body) ->
+    | Lfunction{ params;} -> (* TODO: learn *)
         List.iter (fun param -> fv := Ident_set.remove param !fv) params
     | Llet(str, id, arg, body) ->
         fv := Ident_set.remove id !fv

@@ -99,7 +99,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction(arity, kind, params, body) -> 
+    | Lfunction{arity; kind; params; body} -> 
       let params =  List.map rebind params in
       let body = aux body in      
       Lam.function_ arity kind params body
