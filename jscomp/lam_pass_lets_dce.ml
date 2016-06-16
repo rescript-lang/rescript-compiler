@@ -22,8 +22,8 @@ let rec eliminate_ref id (lam : Lam.t) =
     if Ident.same v id then raise Real_reference else lam
   | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
     Lam.var id
-  | Lfunction(kind, params, body) as lam ->
-    if Lambda.IdentSet.mem id (Lam.free_variables  lam)
+  | Lfunction(_, kind, params, body) as lam ->
+    if Ident_set.mem id (Lam_util.free_variables  lam)
     then raise Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
@@ -216,10 +216,10 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       else simplif l2
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply(Lfunction(_, Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply(Lfunction(_, Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
@@ -228,8 +228,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
 
     | Lapply(l1, ll, loc) -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc
-    | Lfunction(kind, params, l) ->
-      Lam.function_ kind params (simplif l)
+    | Lfunction(arity, kind, params, l) ->
+      Lam.function_ arity kind params (simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
@@ -335,7 +335,7 @@ let collect_occurs  lam : occ_tbl =
 
   let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
-    | Lfunction(kind, params, l) ->
+    | Lfunction(_arity, kind, params, l) ->
       count Ident_map.empty l
     (** when entering a function local [bv] 
         is cleaned up, so that all closure variables will not be
@@ -368,10 +368,10 @@ let collect_occurs  lam : occ_tbl =
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
       count bv body
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply(Lfunction(_arity, Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply(Lfunction(_arity, Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
       when  Ext_list.same_length params  args ->
       count bv (Lam_beta_reduce.beta_reduce   params body args)
     | Lapply(l1, ll, _) ->

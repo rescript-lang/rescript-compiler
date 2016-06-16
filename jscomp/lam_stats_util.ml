@@ -102,13 +102,13 @@ let rec get_arity
   (*       Determin(false, [arity, None], false) *)
   (*     | None -> NA *)
   (*   end *)
-  | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[])]) ->
+  | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[],_)],_) ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
-  | Lprim (Pfield _, _ ) -> NA (** TODO *)
-  | Lprim (Praise _, _ ) -> Determin(true,[], true)
-  | Lprim (Pccall _, _) -> Determin(false, [], false)
+  | Lprim (Pfield _, _ , _) -> NA (** TODO *)
+  | Lprim (Praise _, _ , _) -> Determin(true,[], true)
+  | Lprim (Pccall _, _ , _) -> Determin(false, [], false)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 
       since we know all the information
@@ -158,9 +158,8 @@ let rec get_arity
         in
         take xs (List.length args) 
     end
-  | Lfunction(kind, params, l) -> 
-    let n = List.length params in 
-    merge (n, Some params)  (get_arity meta l)
+  | Lfunction(arity, kind, params, l) -> 
+    merge (arity, Some params)  (get_arity meta l)
   | Lswitch(l, {sw_failaction; 
                 sw_consts; 
                 sw_blocks;

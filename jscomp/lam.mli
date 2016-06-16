@@ -35,10 +35,10 @@ and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
   | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Lfunction of int (* length *) * Lambda.function_kind * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
+  | Lprim of primitive * t list * int (* length *)
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -71,7 +71,7 @@ type unop = t ->  t
 val var : Ident.t -> t
 val const : Lambda.structured_constant -> t
 val apply : t -> t list -> Lambda.apply_info -> t
-val function_ : Lambda.function_kind -> Ident.t list -> t -> t
+val function_ : int -> Lambda.function_kind -> Ident.t list -> t -> t
 val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
 val letrec : (Ident.t * t) list -> t -> t
 val if_ : triop
@@ -96,7 +96,9 @@ val send :
   Lambda.meth_kind ->
   t -> t -> t list -> 
   Location.t -> t 
-val prim : Lambda.primitive -> t list -> t
+
+val prim : Lambda.primitive -> t list -> int -> t
+
 val staticcatch : 
   t -> int * Ident.t list -> t -> t
 
@@ -108,7 +110,7 @@ val for_ :
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 
-val free_variables : t -> Lambda.IdentSet.t
+
 
 
 

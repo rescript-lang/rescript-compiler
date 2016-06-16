@@ -99,10 +99,10 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction(kind, params, body) -> 
+    | Lfunction(arity, kind, params, body) -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lam.function_ kind params body
+      Lam.function_ arity kind params body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in

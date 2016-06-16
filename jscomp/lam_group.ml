@@ -194,7 +194,7 @@ let deep_flatten
               fun n -> if n ==0  then true else odd (n - 1)
           ]}
       *)
-      let module Ident_set = Lambda.IdentSet in
+      (* let module Ident_set = Lambda.IdentSet in *)
       let rec iter bind_args acc =
         match bind_args with
         | [] ->   acc
@@ -245,7 +245,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
+              let variables = Lam_util.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -321,8 +321,8 @@ let deep_flatten
           Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         | _ -> Lam.prim p ll
       end
-    | Lfunction(kind, params, l) -> 
-      Lam.function_ kind params  (aux  l)
+    | Lfunction(arity, kind, params, l) -> 
+      Lam.function_ arity kind params  (aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

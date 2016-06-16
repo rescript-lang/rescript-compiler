@@ -94,13 +94,13 @@ let subst_lambda s lam =
     | Lconst sc as l -> l
     | Lapply(fn, args, loc) -> 
       Lam.apply (subst fn) (List.map subst args) loc
-    | Lfunction(kind, params, body) -> 
-      Lam.function_ kind  params (subst body)
+    | Lfunction(arity, kind, params, body) -> 
+      Lam.function_ arity kind  params (subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
-    | Lprim(p, args) -> Lam.prim p (List.map subst args)
+    | Lprim(p, args,len) -> Lam.prim p (List.map subst args) len
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -152,10 +152,10 @@ let refine_let
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
-  | _, _, Lprim (fn, [Lvar w]) when Ident.same w param 
+  | _, _, Lprim (fn, [Lvar w], _) when Ident.same w param 
                                  &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) fn
     (* don't inline inside a block *)
-    ->  Lam.prim fn [arg]
+    ->  Lam.prim fn [arg] 1 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -172,7 +172,7 @@ let refine_let
     *)
     Lam.apply fn [arg] info
   | (Some (Strict | StrictOpt ) | None ),
-    ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [])])) , _ ->
+    ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [],_)],_)) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
@@ -270,7 +270,7 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   match lam with 
   | Lvar _ 
   | Lconst _ 
-  | Lprim (Pfield _ , [ Lprim (Pgetglobal _, [])]) -> SimpleForm lam
+  | Lprim (Pfield _ , [ Lprim (Pgetglobal _, [],_)],_) -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
 
@@ -282,8 +282,9 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
 let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lam.prim (Pfield (i, Lambda.Fld_na)) 
-      [Lam.prim (Pgetglobal g) []]
+    Lam.prim 
+      (Pfield (i, Lambda.Fld_na)) 
+      [Lam.prim (Pgetglobal g) [] 0] 1
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
@@ -386,7 +387,7 @@ let eta_conversion n info fn args =
       match lam with
       | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
-      | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+      | Lprim (Pfield _, [Lprim (Pgetglobal _, _, _)],_ )
       | Lfunction _ 
         ->
         (lam :: acc, bind)
@@ -397,7 +398,7 @@ let eta_conversion n info fn args =
   | fn::args , bindings ->
 
     let rest : Lam.t = 
-      Lam.function_ Curried extra_args
+      Lam.function_ n Curried extra_args
                 (lapply fn (args @ extra_lambdas) info) in
     List.fold_left (fun lam (id,x) ->
         Lam.let_ Strict id x lam
@@ -410,3 +411,85 @@ let eta_conversion n info fn args =
 let default_apply_info : Lambda.apply_info = 
   { apply_status = App_na ; apply_loc = Location.none }
 
+
+
+
+let iter_opt f = function
+  | None -> ()
+  | Some e -> f e
+
+let iter f l = 
+  match (l : Lam.t) with 
+    Lvar _
+  | Lconst _ -> ()
+  | Lapply(fn, args, _) ->
+      f fn; List.iter f args
+  | Lfunction(_arity, kind, params, body) ->
+      f body
+  | Llet(str, id, arg, body) ->
+      f arg; f body
+  | Lletrec(decl, body) ->
+      f body;
+      List.iter (fun (id, exp) -> f exp) decl
+  | Lprim(p, args,_) ->
+      List.iter f args
+  | Lswitch(arg, sw) ->
+      f arg;
+      List.iter (fun (key, case) -> f case) sw.sw_consts;
+      List.iter (fun (key, case) -> f case) sw.sw_blocks;
+      iter_opt f sw.sw_failaction
+  | Lstringswitch (arg,cases,default) ->
+      f arg ;
+      List.iter (fun (_,act) -> f act) cases ;
+      iter_opt f default
+  | Lstaticraise (_,args) ->
+      List.iter f args
+  | Lstaticcatch(e1, (_,vars), e2) ->
+      f e1; f e2
+  | Ltrywith(e1, exn, e2) ->
+      f e1; f e2
+  | Lifthenelse(e1, e2, e3) ->
+      f e1; f e2; f e3
+  | Lsequence(e1, e2) ->
+      f e1; f e2
+  | Lwhile(e1, e2) ->
+      f e1; f e2
+  | Lfor(v, e1, e2, dir, e3) ->
+      f e1; f e2; f e3
+  | Lassign(id, e) ->
+      f e
+  | Lsend (k, met, obj, args, _) ->
+      List.iter f (met::obj::args)
+  | Levent (lam, evt) ->
+      f lam
+  | Lifused (v, e) ->
+      f e
+
+let free_ids get (l : Lam.t) =
+  let fv = ref Ident_set.empty in
+  let rec free l =
+    iter free l;
+    fv := List.fold_right Ident_set.add (get l) !fv;
+    match l with
+    | Lfunction(_arity, kind, params, body) ->
+        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+    | Llet(str, id, arg, body) ->
+        fv := Ident_set.remove id !fv
+    | Lletrec(decl, body) ->
+        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+    | Lstaticcatch(e1, (_,vars), e2) ->
+        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+    | Ltrywith(e1, exn, e2) ->
+        fv := Ident_set.remove exn !fv
+    | Lfor(v, e1, e2, dir, e3) ->
+        fv := Ident_set.remove v !fv
+    | Lassign(id, e) ->
+        fv := Ident_set.add id !fv
+    | Lvar _ | Lconst _ | Lapply _
+    | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
+    | Lifthenelse _ | Lsequence _ | Lwhile _
+    | Lsend _ | Levent _ | Lifused _ -> ()
+  in free l; !fv
+
+let free_variables l =
+  free_ids (function Lvar id -> [id] | _ -> []) l

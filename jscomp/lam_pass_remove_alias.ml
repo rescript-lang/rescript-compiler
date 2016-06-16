@@ -111,7 +111,7 @@ let simplify_alias
           ~not_found:(fun _ -> assert false)
           ~found:(fun i ->
               match i with
-              | {closed_lambda=Some Lfunction(Curried, params, body) } 
+              | {closed_lambda=Some Lfunction(_, Curried, params, body) } 
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
@@ -144,7 +144,7 @@ let simplify_alias
 
       begin 
         match Hashtbl.find meta.ident_tbl v with
-        | Function {lambda = (Lfunction(_, params, body) as _m);
+        | Function {lambda = (Lfunction(_, _, params, body) as _m);
                     rec_flag;                     
                     _ }
           -> 
@@ -219,10 +219,11 @@ let simplify_alias
           Lam.apply ( simpl l1) (List.map simpl args) info
       end
 
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply(Lfunction(_arity, Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply(Lfunction(_arity, Tupled, params, body), 
+             [Lprim(Pmakeblock _, args)], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
@@ -231,8 +232,8 @@ let simplify_alias
 
     | Lapply (l1, ll, info) ->
       Lam.apply (simpl  l1) (List.map simpl  ll) info
-    | Lfunction (kind, params, l) 
-      -> Lam.function_ kind params  (simpl  l)
+    | Lfunction (arity, kind, params, l) 
+      -> Lam.function_ arity kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

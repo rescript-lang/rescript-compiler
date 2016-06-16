@@ -23,20 +23,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type primitive = Lambda.primitive
-type switch = Lambda.lambda_switch = 
+type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
-and t = Lambda.lambda = 
+and t = 
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
   | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Lfunction of int * Lambda.function_kind  * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
+  | Lprim of primitive * t list * int 
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -101,8 +101,8 @@ type unop = t -> t
 let var id : t = Lvar id
 let const ct : t = Lconst ct 
 let apply fn args info : t = Lapply(fn,args, info)
-let function_ kind ids body : t = 
-  Lfunction(kind, ids, body)
+let function_ arity kind ids body : t = 
+  Lfunction(arity, kind, ids, body)
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -223,8 +223,8 @@ let lift_int32 b : t =
 let lift_int64 b : t =
   Lconst (Const_base (Const_int64 b))
 
-let prim (prim : Prim.t) (ll : t list) : t = 
-  let default () : t = Lprim(prim,ll) in 
+let prim (prim : Prim.t) (ll : t list) len : t = 
+  let default () : t = Lprim(prim,ll, len) in 
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
@@ -366,30 +366,26 @@ let prim (prim : Prim.t) (ll : t list) : t =
 
 
 let not x : t = 
-  prim Pnot [x]
-
-
-
-(* TODO; check {!Lam_analysis.free_variables} *)
-let free_variables  = Lambda.free_variables
-
-
+  prim Pnot [x] 1 
 
 
 let rec convert (lam : Lambda.lambda) : t = 
   match lam with 
   | Lvar x -> Lvar x 
-  | Lconst x -> Lconst x 
+  | Lconst x -> 
+    Lconst x 
   | Lapply (fn,args,info) 
     -> Lapply(convert fn,List.map convert args,info)
   | Lfunction (kind,ids,body)
-    -> Lfunction(kind,ids,convert body)
+    ->  function_ (List.length ids) kind ids (convert body)
   | Llet (kind,id,e,body) 
     -> Llet(kind,id,convert e, convert body)
   | Lletrec (bindings,body)
-    -> Lletrec(List.map (fun (id, e) -> id, convert e) bindings,body)
+    -> 
+    Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
   | Lprim (prim,args) 
-    -> Lprim (prim,List.map convert args)
+    -> 
+    Lprim (prim,List.map convert args, List.length args)
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
   | Lstringswitch (e, cases, default) -> 

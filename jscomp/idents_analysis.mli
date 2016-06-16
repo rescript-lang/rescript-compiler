@@ -36,4 +36,4 @@
  *)
 
 val calculate_used_idents :
-    (Ident.t, Lambda.IdentSet.t) Hashtbl.t -> Ident.t list -> Lambda.IdentSet.t
+    (Ident.t, Ident_set.t) Hashtbl.t -> Ident.t list -> Ident_set.t

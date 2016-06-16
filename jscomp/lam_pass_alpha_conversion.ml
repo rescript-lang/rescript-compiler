@@ -75,9 +75,9 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
       Lam.letrec bindings (simpl body) 
     | Lprim (prim, ll) -> Lam.prim prim (List.map simpl  ll)
-    | Lfunction (kind, params, l) ->
+    | Lfunction (arity, kind, params, l) ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lam.function_ kind params  (simpl  l)
+      Lam.function_ arity kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

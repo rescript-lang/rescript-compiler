@@ -347,7 +347,7 @@ let lambda use_env env ppf v  =
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
-  | Lfunction(kind, params, body) ->
+  | Lfunction(_, kind, params, body) ->
       let pr_params ppf params =
         match kind with
         | Curried ->
@@ -374,13 +374,15 @@ let lambda use_env env ppf v  =
       fprintf ppf
         "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
       fprintf ppf ")@ %a)@]"  lam body
-  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) when use_env ->
+  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[], _)], _) when use_env ->
       fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
 
-  | Lprim(Psetfield (n,_,_), [ Lprim(Pgetglobal id,[]) ;  e ]) when use_env  ->
+  | Lprim(Psetfield (n,_,_), 
+          [ Lprim(Pgetglobal id,[], _)
+          ;  e ], _) when use_env  ->
       fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
         lam e
-  | Lprim(prim, largs) ->
+  | Lprim(prim, largs, _) ->
       let lams ppf largs =
         List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
       fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
@@ -511,10 +513,10 @@ let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) =
 let lambda_as_module env  ppf (lam : Lam.t) = 
   try
   match lam with
-  | Lprim(Psetglobal(id), [biglambda])  (* might be wrong in toplevel *) ->
+  | Lprim(Psetglobal(id), [biglambda], _)  (* might be wrong in toplevel *) ->
       
       begin match flat [] biglambda  with 
-      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels)) :: rest ->
+      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels, _)) :: rest ->
           (* let spc = ref false in *)
           List.iter
             (fun (left, l) ->

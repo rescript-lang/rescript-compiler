@@ -286,6 +286,8 @@ js_obj_test.cmj : mt.cmi ../runtime/js.cmj
 js_obj_test.cmx : mt.cmx ../runtime/js.cmx
 js_val.cmj :
 js_val.cmx :
+largest_int_flow.cmj :
+largest_int_flow.cmx :
 lazy_test.cmj : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmx : mt.cmx ../stdlib/lazy.cmx
 lexer_test.cmj : number_lexer.cmj mt.cmi ../stdlib/list.cmi \
@@ -944,6 +946,8 @@ js_obj_test.cmo : mt.cmi ../runtime/js.cmo
 js_obj_test.cmj : mt.cmj ../runtime/js.cmj
 js_val.cmo :
 js_val.cmj :
+largest_int_flow.cmo :
+largest_int_flow.cmj :
 lazy_test.cmo : mt.cmi ../stdlib/lazy.cmi
 lazy_test.cmj : mt.cmj ../stdlib/lazy.cmj
 lexer_test.cmo : number_lexer.cmo mt.cmi ../stdlib/list.cmi \
