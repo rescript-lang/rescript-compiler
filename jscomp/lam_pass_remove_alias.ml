@@ -70,23 +70,23 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam_comb.not ( Lam_comb.prim Lam_comb.Prim.js_is_nil [l]) 
+            -> Lam.not ( Lam.prim Lam.Prim.js_is_nil [l]) 
           | Undefined 
             -> 
-            Lam_comb.not (Lam_comb.prim Lam_comb.Prim.js_is_undef [l])
+            Lam.not (Lam.prim Lam.Prim.js_is_undef [l])
           | Null_undefined
             -> 
-            Lam_comb.not
-              ( Lam_comb.prim Lam_comb.Prim.js_is_nil_undef  [l]) 
+            Lam.not
+              ( Lam.prim Lam.Prim.js_is_nil_undef  [l]) 
           | Normal ->  l1 
         in 
-        Lam_comb.if_ l1 (simpl l2) (simpl l3)
-      | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+        Lam.if_ l1 (simpl l2) (simpl l3)
+      | _ -> Lam.if_ l1 (simpl l2) (simpl l3)
 
-      | exception Not_found -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+      | exception Not_found -> Lam.if_ l1 (simpl l2) (simpl l3)
       end
     | Lifthenelse (l1, l2, l3) -> 
-        Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
+        Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
 
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
@@ -94,7 +94,7 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lletrec(bindings, simpl body) 
-    | Lprim(prim, ll) -> Lam_comb.prim prim (List.map simpl  ll)
+    | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
 
     (* complicated 
         1. inline this function
@@ -238,7 +238,7 @@ let simplify_alias
                    sw_numblocks;
                    sw_numconsts;
                   }) ->
-      Lam_comb.switch (simpl  l)
+      Lam.switch (simpl  l)
                {sw_consts = 
                   List.map (fun (v, l) -> v, simpl  l) sw_consts;
                 sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
@@ -251,37 +251,37 @@ let simplify_alias
                     | Some x -> Some (simpl x)
                   end}
     | Lstringswitch(l, sw, d) ->
-      Lam_comb.stringswitch (simpl  l )
+      Lam.stringswitch (simpl  l )
                     (List.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                      | Some d -> Some (simpl d )
                      | None -> None)
     | Lstaticraise (i,ls) -> 
-      Lam_comb.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (List.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) -> 
-      Lam_comb.staticcatch (simpl  l1) ids (simpl  l2)
-    | Ltrywith (l1, v, l2) -> Lam_comb.try_ (simpl  l1) v (simpl  l2)
+      Lam.staticcatch (simpl  l1) ids (simpl  l2)
+    | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
     | Lsequence (Lprim (Pgetglobal (id),[]), l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
       -> simpl l2
     | Lsequence(l1, l2)
-      -> Lam_comb.seq (simpl  l1) (simpl  l2)
+      -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)
-      -> Lam_comb.while_ (simpl  l1) (simpl l2)
+      -> Lam.while_ (simpl  l1) (simpl l2)
     | Lfor(flag, l1, l2, dir, l3)
       -> 
-      Lam_comb.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
+      Lam.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
     | Lassign(v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
-      Lam_comb.assign v (simpl  l)
+      Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) 
       -> 
-      Lam_comb.send u (simpl m) (simpl o) (List.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
     | Levent (l, event) 
       ->
-      Lam_comb.event (simpl  l) event
-    | Lifused (v, l) -> Lam_comb.ifused v (simpl  l)
+      Lam.event (simpl  l) event
+    | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam

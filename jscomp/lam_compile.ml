@@ -680,7 +680,7 @@ and
         | {should_return = True _ } 
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt (Lam_comb.sequand  l r )
+          compile_lambda cxt (Lam.sequand  l r )
         | _ -> 
           let l_block,l_expr = 
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with 
@@ -703,7 +703,7 @@ and
         | {should_return = True _ }
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt @@ Lam_comb.sequor l r
+          compile_lambda cxt @@ Lam.sequor l r
         | _ ->
           let l_block,l_expr =
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with
@@ -909,7 +909,7 @@ and
                   compile_lambda cxt  
                     (Lfunction (Lambda.Curried, [],
                                 Lambda.Lapply(fn,
-                                              [Lam_comb.unit],
+                                              [Lam.unit],
                                               Lam_util.default_apply_info
                                              )))
               end

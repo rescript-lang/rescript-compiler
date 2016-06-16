@@ -45,10 +45,10 @@ let query_lambda id env =
     (Has_env env)
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature = sigs; _} -> 
-        Lam_comb.prim (Pmakeblock(0, Blk_module None, Immutable))  
+        Lam.prim (Pmakeblock(0, Blk_module None, Immutable))  
                       (List.mapi (fun i _ -> 
-                           Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
-                             [Lam_comb.prim (Pgetglobal id) [] ])
+                           Lam.prim (Pfield (i, Lambda.Fld_na)) 
+                             [Lam.prim (Pgetglobal id) [] ])
                         sigs)
       )
 

@@ -22,7 +22,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
+type primitive = Lambda.primitive
 type t = Lambda.lambda = 
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
@@ -30,7 +30,7 @@ type t = Lambda.lambda =
   | Lfunction of Lambda.function_kind * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of Lambda.primitive * t list
+  | Lprim of primitive * t list
   | Lswitch of t * Lambda.lambda_switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -44,3 +44,53 @@ type t = Lambda.lambda =
   | Lsend of Lambda.meth_kind * t * t * t list * Location.t
   | Levent of t * Lambda.lambda_event
   | Lifused of Ident.t * t
+
+
+module Prim : sig 
+  type t = primitive
+  val js_is_nil : t
+  val js_is_undef : t 
+  val js_is_nil_undef : t 
+end
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t ->  t
+
+val if_ : triop
+val switch : t -> Lambda.lambda_switch  -> t 
+val stringswitch : t -> (string * t) list -> t option -> t 
+
+val true_ : t 
+val false_ : t 
+val unit : t 
+
+val sequor : binop
+val sequand : binop
+val not : unop
+val seq : binop
+val while_ : binop
+val event : t -> Lambda.lambda_event -> t  
+val try_ : t -> Ident.t -> t  -> t 
+val ifused : Ident.t -> t -> t
+val assign : Ident.t -> t -> t 
+
+val send : 
+  Lambda.meth_kind ->
+  t -> t -> t list -> 
+  Location.t -> t 
+val prim : Lambda.primitive -> t list -> t
+val staticcatch : 
+  t -> int * Ident.t list -> t -> t
+
+val staticraise : 
+  int -> t list -> t
+
+val for_ : 
+  Ident.t ->
+  t  ->
+  t -> Asttypes.direction_flag -> t -> t 
+

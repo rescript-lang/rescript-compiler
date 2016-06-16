@@ -267,7 +267,7 @@ let subst_helper (subst : subst_tbl) query lam =
         | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
           Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
         | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
-        | _ -> Lam_comb.prim p ll
+        | _ -> Lam.prim p ll
       end
     | Lswitch(l, sw) ->
       let new_l = simplif l
@@ -278,20 +278,20 @@ let subst_helper (subst : subst_tbl) query lam =
         (new_l,
          {sw with sw_consts = new_consts ; sw_blocks = new_blocks; sw_failaction = new_fail})
     | Lstringswitch(l,sw,d) ->
-      Lam_comb.stringswitch
+      Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
          (Misc.may_map simplif d)
     | Ltrywith (l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
     | Lifthenelse (l1, l2, l3) -> 
-      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
-    | Lsequence (l1, l2) -> Lam_comb.seq (simplif l1) (simplif l2)
-    | Lwhile (l1, l2) -> Lam_comb.while_ (simplif l1) (simplif l2)
+      Lam.if_ (simplif l1) (simplif l2) (simplif l3)
+    | Lsequence (l1, l2) -> Lam.seq (simplif l1) (simplif l2)
+    | Lwhile (l1, l2) -> Lam.while_ (simplif l1) (simplif l2)
     | Lfor (v, l1, l2, dir, l3) ->
-      Lam_comb.for_ v (simplif l1) (simplif l2) dir (simplif l3)
+      Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
     | Lassign (v, l) -> Lassign(v, simplif l)
     | Lsend (k, m, o, ll, loc) ->
       Lsend (k, simplif m, simplif o, List.map simplif ll, loc)
-    | Levent (l, ev) -> Lam_comb.event (simplif l) ev
+    | Levent (l, ev) -> Lam.event (simplif l) ev
     | Lifused (v, l) -> Lifused (v,simplif l)
   in 
   simplif lam 
