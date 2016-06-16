@@ -48,8 +48,8 @@ let query_lambda id env =
         Lam.prim (Pmakeblock(0, Blk_module None, Immutable))  
                       (List.mapi (fun i _ -> 
                            Lam.prim (Pfield (i, Lambda.Fld_na)) 
-                             [Lam.prim (Pgetglobal id) [] 0])
-                        sigs)
+                             [Lam.prim (Pgetglobal id) [] ]  )
+                        sigs) 
       )
 
 

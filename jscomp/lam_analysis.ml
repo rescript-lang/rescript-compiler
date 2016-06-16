@@ -32,7 +32,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lvar _ 
   | Lconst _ 
   | Lfunction _ -> true
-  | Lprim (primitive, args, _) -> 
+  | Lprim {primitive;  args; _} -> 
     List.for_all no_side_effects args && 
     (
       match primitive with 
@@ -186,11 +186,12 @@ let rec no_side_effects (lam : Lam.t) : bool =
       if it [Not_found], there are no other exceptions 
       can be thrown
   *)
-  | Ltrywith (Lprim(Pccall{prim_name = "caml_sys_getenv"}, 
-                    [Lconst _], _),exn,
-              Lifthenelse(Lprim(_, [Lvar exn1; 
-                                    Lprim(Pgetglobal ({name="Not_found"}),[],_)]
-                               , _),
+  | Ltrywith (Lprim { primitive = Pccall{prim_name = "caml_sys_getenv"};
+                    args = [Lconst _]; _},exn,
+              Lifthenelse(Lprim{args =  
+                                  [Lvar exn1; 
+                                   Lprim {primitive = Pgetglobal ({name="Not_found"}); args = []; _}]
+                               ; _},
                           then_, _)) when Ident.same exn1 exn
     (** we might put this in an optimization pass 
         also make sure when we wrap this in [js] we 
@@ -235,11 +236,13 @@ let rec size (lam : Lam.t) =
     | Lconst c -> size_constant c
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
-    | Lprim(Pfield _, [Lprim(Pgetglobal _, [  ], _)], _)
+    | Lprim{primitive = Pfield _; 
+            args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
+           ;  _}
       -> 1
-    | Lprim (Praise _, [l ], _) 
+    | Lprim {primitive = Praise _; args =  [l ];  _} 
       -> size l
-    | Lprim(_, ll, _) -> size_lams 1 ll
+    | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
         1. inline this function
@@ -299,8 +302,9 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
     id = id1 && List.for_all2 eq_lambda ls ls1 
   | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
   | Lletrec _, Lletrec _ -> false 
-  | Lprim (p,ls,len1), Lprim (p1,ls1,len2) -> 
-    len1 = len2 && eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
+  | Lprim {primitive = p; args = ls; } ,
+    Lprim {primitive = p1; args = ls1} -> 
+    eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
   | Lswitch _, Lswitch _ -> false  
   | Lstringswitch _ , Lstringswitch _ -> false 
   | Lstaticcatch _, Lstaticcatch _ -> false 
@@ -402,7 +406,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       iter top  fn; 
       let top = new_env fn top in
       List.iter (iter top ) args  
-    | Lprim(_p, args,_) -> 
+    | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       List.iter (iter top) args
     | Lfunction(_, _kind, params, body) ->

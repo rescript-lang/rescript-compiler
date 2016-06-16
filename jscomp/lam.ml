@@ -29,6 +29,10 @@ type switch =
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
+and prim_info = 
+  { primitive : primitive ; 
+    args : t list ; 
+  }
 and t = 
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
@@ -36,7 +40,7 @@ and t =
   | Lfunction of int * Lambda.function_kind  * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list * int 
+  | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -223,8 +227,8 @@ let lift_int32 b : t =
 let lift_int64 b : t =
   Lconst (Const_base (Const_int64 b))
 
-let prim (prim : Prim.t) (ll : t list) len : t = 
-  let default () : t = Lprim(prim,ll, len) in 
+let prim (prim : Prim.t) (ll : t list)  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll } in 
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
@@ -366,7 +370,7 @@ let prim (prim : Prim.t) (ll : t list) len : t =
 
 
 let not x : t = 
-  prim Pnot [x] 1 
+  prim Pnot [x] 
 
 
 let rec convert (lam : Lambda.lambda) : t = 
@@ -383,9 +387,9 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lletrec (bindings,body)
     -> 
     Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
-  | Lprim (prim,args) 
+  | Lprim (primitive,args) 
     -> 
-    Lprim (prim,List.map convert args, List.length args)
+    Lprim {primitive ; args = List.map convert args }
   | Lswitch (e,s) -> 
     Lswitch (convert e, convert_switch s)
   | Lstringswitch (e, cases, default) -> 

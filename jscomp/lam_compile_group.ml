@@ -251,7 +251,7 @@ let compile  ~filename output_prefix non_export env _sigs
 
   begin 
     match (lam : Lam.t) with
-    | Lprim(Psetglobal id, [biglambda])
+    | Lprim{primitive = Psetglobal id; args =  [biglambda]; _}
       -> 
       (* Invariant: The last one is always [exports]
          Compile definitions
@@ -264,7 +264,8 @@ let compile  ~filename output_prefix non_export env _sigs
 
       begin 
         match Lam_group.flatten [] biglambda with 
-        | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
+        | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
+          rest ->
           let coercion_groups, new_exports, new_export_set,  export_map = 
             if non_export then 
               [], [], Ident_set.empty, Ident_map.empty

@@ -90,7 +90,7 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
     | Lletrec(bindings, body) ->
       List.iter (fun (_, l) -> count l) bindings;
       count body
-    | Lprim(_, ll) -> List.iter count ll
+    | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
       count l;
@@ -259,7 +259,7 @@ let subst_helper (subst : subst_tbl) query lam =
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim (p, ll) -> 
+    | Lprim {primitive = p; args=  ll; _} -> 
       begin
         let ll = List.map simplif ll in
         match p, ll with

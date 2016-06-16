@@ -102,13 +102,14 @@ let rec get_arity
   (*       Determin(false, [arity, None], false) *)
   (*     | None -> NA *)
   (*   end *)
-  | Lprim (Pfield (n,_), [Lprim(Pgetglobal id,[],_)],_) ->
+  | Lprim {primitive = Pfield (n,_); 
+           args =  [Lprim {primitive = Pgetglobal id; args = []; _}]; _} ->
     Lam_compile_env.find_and_add_if_not_exist (id, n) meta.env
       ~not_found:(fun _ -> assert false)
       ~found:(fun x -> x.arity )
-  | Lprim (Pfield _, _ , _) -> NA (** TODO *)
-  | Lprim (Praise _, _ , _) -> Determin(true,[], true)
-  | Lprim (Pccall _, _ , _) -> Determin(false, [], false)
+  | Lprim {primitive = Pfield _; _} -> NA (** TODO *)
+  | Lprim {primitive = Praise _;  _} -> Determin(true,[], true)
+  | Lprim {primitive = Pccall _; _} -> Determin(false, [], false)
   | Lprim _  -> Determin(true,[] ,false)
   (* shall we handle primitive in a direct way, 
       since we know all the information

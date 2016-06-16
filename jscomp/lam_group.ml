@@ -121,21 +121,21 @@ let deep_flatten
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
-            (Lprim (Pccall 
+            (Lprim {primitive = Pccall 
                       {prim_name = 
                          ("js_from_nullable" 
                          | "js_from_def"
                          |"js_from_nullable_def"); _ }
-                   , [Lvar _]) as arg), body)
+                   ; args  =  [Lvar _]} as arg), body)
       -> 
       flatten (Single(str, id, (aux arg) ) :: acc) body
     | Llet (str, id, 
-            Lprim (Pccall 
+            Lprim {primitive = Pccall 
                      ({prim_name = 
                          ("js_from_nullable"
                          | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p ),
-                            [arg]), body)
+                         | "js_from_nullable_def"); _ } as p );
+                   args = [arg]}, body)
       -> 
       let id' = Ident.rename id in 
       flatten acc 
@@ -290,19 +290,19 @@ let deep_flatten
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim(Pidentity, [l]) -> l 
-    | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
+            args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-    | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
+             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim(p, ll)
+    | Lprim {primitive = p; args =  ll}
       -> 
       begin
         let ll = List.map aux ll in

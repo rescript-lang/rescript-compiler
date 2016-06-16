@@ -20,7 +20,7 @@ let rec eliminate_ref id (lam : Lam.t) =
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
-  | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
+  | Lprim {primitive = Pfield (0,_); args =  [Lvar v]} when Ident.same v id ->
     Lam.var id
   | Lfunction(_, kind, params, body) as lam ->
     if Ident_set.mem id (Lam_util.free_variables  lam)
@@ -49,9 +49,11 @@ let rec eliminate_ref id (lam : Lam.t) =
      TODO: we can refine analysis in later
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
-  | Lprim(Psetfield(0, _,_), [Lvar v; e]) when Ident.same v id ->
+  | Lprim {primitive = Psetfield(0, _,_); 
+           args =  [Lvar v; e]} when Ident.same v id ->
     Lam.assign id (eliminate_ref id e)
-  | Lprim(Poffsetref delta, [Lvar v]) when Ident.same v id ->
+  | Lprim {primitive = Poffsetref delta ; 
+           args =  [Lvar v]} when Ident.same v id ->
     Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
   | Lconst _  -> lam
   | Lapply(e1, el, loc) ->
@@ -62,7 +64,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.letrec
       (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
-  | Lprim(p, el) ->
+  | Lprim {primitive = p; args =  el} ->
     Lam.prim p (List.map (eliminate_ref id) el)
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
@@ -145,7 +147,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       Hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
-           v, (Lprim((Pmakeblock(0, tag_info, Mutable) as prim), [linit])), lbody)
+           v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) as prim); 
+                      args = [linit]}), lbody)
       ->
       let slinit = simplif linit in
       let slbody = simplif lbody in
@@ -172,7 +175,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
                      Const_int _ | Const_char _ | Const_float _ | Const_int32 _ 
                      | Const_nativeint _ )
                  | Lambda.Const_pointer _ ) (* could be poly-variant [`A] -> [65a]*)
-              | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
+              | Lprim {primitive = Pfield (_);
+                       args = [Lprim {primitive = Pgetglobal _;  _}]}
             ) 
           (* Const_int64 is no longer primitive
              Note for some constant which is not 
@@ -219,7 +223,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
     | Lapply(Lfunction(_, Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(_, Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply(Lfunction(_, Tupled, params, body), 
+             [Lprim {primitive = Pmakeblock _;  args; _}], _)
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
@@ -235,7 +240,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       Lam.letrec 
         (List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim(p, ll) -> Lam.prim p (List.map simplif ll)
+    | Lprim {primitive = p; args =  ll} -> Lam.prim p (List.map simplif ll)
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
@@ -363,7 +368,7 @@ let collect_occurs  lam : occ_tbl =
       (* If v is unused, l1 will be removed, so don't count its variables *)
       if kind = Strict || used v then count bv l1
 
-    | Lprim(_, ll) -> List.iter (count bv ) ll
+    | Lprim {args; _} -> List.iter (count bv ) args
 
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
@@ -371,7 +376,8 @@ let collect_occurs  lam : occ_tbl =
     | Lapply(Lfunction(_arity, Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(_arity, Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply(Lfunction(_arity, Tupled, params, body),
+             [Lprim {primitive = Pmakeblock _;  args; _}], _)
       when  Ext_list.same_length params  args ->
       count bv (Lam_beta_reduce.beta_reduce   params body args)
     | Lapply(l1, ll, _) ->

@@ -100,7 +100,8 @@ let subst_lambda s lam =
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
-    | Lprim(p, args,len) -> Lam.prim p (List.map subst args) len
+    | Lprim { primitive ; args; _} -> 
+      Lam.prim primitive (List.map subst args)
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -152,10 +153,10 @@ let refine_let
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
     -> arg (* TODO: optimize here -- it's safe to do substitution here *)
-  | _, _, Lprim (fn, [Lvar w], _) when Ident.same w param 
-                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) fn
+  | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
+                                 &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
-    ->  Lam.prim fn [arg] 1 
+    ->  Lam.prim primitive [arg] 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -172,7 +173,9 @@ let refine_let
     *)
     Lam.apply fn [arg] info
   | (Some (Strict | StrictOpt ) | None ),
-    ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [],_)],_)) , _ ->
+    ( Lvar _    | Lconst  _ | 
+      Lprim {primitive = Pfield _ ;  
+             args = [Lprim {primitive = Pgetglobal _ ; args =  []; _}]; _}) , _ ->
     (* (match arg with  *)
     (* | Lconst _ ->  *)
     (*     Ext_log.err "@[%a %s@]@."  *)
@@ -270,7 +273,9 @@ let element_of_lambda (lam : Lam.t) : Lam_stats.element =
   match lam with 
   | Lvar _ 
   | Lconst _ 
-  | Lprim (Pfield _ , [ Lprim (Pgetglobal _, [],_)],_) -> SimpleForm lam
+  | Lprim {primitive = Pfield _ ; 
+           args =  [ Lprim { primitive = Pgetglobal _; args =  []; _}];
+           _} -> SimpleForm lam
   (* | Lfunction _  *)
   | _ -> NA 
 
@@ -284,7 +289,7 @@ let get lam v i tbl : Lam.t =
   | Module g -> 
     Lam.prim 
       (Pfield (i, Lambda.Fld_na)) 
-      [Lam.prim (Pgetglobal g) [] 0] 1
+      [Lam.prim (Pgetglobal g) [] ]
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
@@ -387,7 +392,8 @@ let eta_conversion n info fn args =
       match lam with
       | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
-      | Lprim (Pfield _, [Lprim (Pgetglobal _, _, _)],_ )
+      | Lprim {primitive = Pfield _;
+               args =  [Lprim {primitive = Pgetglobal _; _}]; _ }
       | Lfunction _ 
         ->
         (lam :: acc, bind)
@@ -431,7 +437,7 @@ let iter f l =
   | Lletrec(decl, body) ->
       f body;
       List.iter (fun (id, exp) -> f exp) decl
-  | Lprim(p, args,_) ->
+  | Lprim {args; _} ->
       List.iter f args
   | Lswitch(arg, sw) ->
       f arg;

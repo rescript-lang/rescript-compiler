@@ -31,6 +31,10 @@ type switch  =
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
+and prim_info = private
+  { primitive : primitive ; 
+    args : t list ; 
+  }
 and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
@@ -38,7 +42,7 @@ and  t =  private
   | Lfunction of int (* length *) * Lambda.function_kind * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list * int (* length *)
+  | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -97,7 +101,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : Lambda.primitive -> t list -> int -> t
+val prim : Lambda.primitive -> t list ->  t
 
 val staticcatch : 
   t -> int * Ident.t list -> t -> t

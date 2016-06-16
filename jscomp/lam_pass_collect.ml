@@ -66,26 +66,29 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lconst v 
       -> 
       Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
-    | Lprim (Pmakeblock (_, _, Immutable ) , ls)
+    | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
 
-    | Lprim (Pccall {prim_name = "js_from_nullable"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
+             args = ([ Lvar _] as ls) ; _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
-    | Lprim (Pccall {prim_name = "js_from_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
+             args = ([ Lvar _] as ls); _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
-    | Lprim (Pccall {prim_name = "js_from_nullable_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
+             args = ([ Lvar _] as ls);}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
       
-    | Lprim (Pgetglobal v,[]) 
+    | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
       begin 
         Lam_util.alias meta  ident v (Module  v) kind; 
@@ -150,7 +153,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lletrec (bindings, body) -> 
         List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
-    | Lprim(_p, ll) -> List.iter collect  ll
+    | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
         collect  l;
         List.iter (fun (_, l) -> collect  l) sw_consts;
