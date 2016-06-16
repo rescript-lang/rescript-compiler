@@ -27,7 +27,7 @@
 
 
 
-let rec no_side_effects (lam : Lambda.lambda) : bool = 
+let rec no_side_effects (lam : Lam.t) : bool = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -227,7 +227,7 @@ let really_big () = raise Too_big_to_inline
 
 let big_lambda = 1000
 
-let rec size (lam : Lambda.lambda) = 
+let rec size (lam : Lam.t) = 
   try 
     match lam with 
     | Lvar _ ->  1
@@ -277,7 +277,7 @@ and size_constant x =
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
   | Const_float_array xs  -> List.length xs
 
-and size_lams acc (lams : Lambda.lambda list) = 
+and size_lams acc (lams : Lam.t list) = 
   List.fold_left (fun acc l -> acc  + size l ) acc lams
 
 let exit_inline_size = 7 
@@ -286,7 +286,7 @@ let small_inline_size = 5
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
-let rec eq_lambda (l1 : Lambda.lambda) (l2 : Lambda.lambda) =
+let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   match (l1, l2) with
   | Lvar i1, Lvar i2 -> Ident.same i1 i2
   | Lconst c1, Lconst c2 -> c1 = c2 (* *)
@@ -393,7 +393,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       else { env with top = false}
     else env      
   in    
-  let rec iter (top : env) (lam : Lambda.lambda) =
+  let rec iter (top : env) (lam : Lam.t) =
     match lam with 
     | Lvar v -> map_use top v 
     | Lconst _ -> ()
@@ -495,7 +495,7 @@ let is_closed_with_map exports params body =
 (* TODO:  We can relax this a bit later,
     but decide whether to inline it later in the call site
  *)
-let safe_to_inline (lam : Lambda.lambda) = 
+let safe_to_inline (lam : Lam.t) = 
   match lam with 
   | Lfunction _ ->  true
   | Lconst (Const_pointer _  | Const_immstring _ ) -> true

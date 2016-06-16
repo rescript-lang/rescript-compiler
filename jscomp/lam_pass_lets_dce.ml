@@ -16,14 +16,14 @@ open Asttypes
 
 exception Real_reference
 
-let rec eliminate_ref id (lam : Lambda.lambda) = 
+let rec eliminate_ref id (lam : Lam.t) = 
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
   | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
-    Lvar id
+    Lam.var id
   | Lfunction(kind, params, body) as lam ->
-    if Lambda.IdentSet.mem id (Lambda.free_variables lam)
+    if Lambda.IdentSet.mem id (Lam.free_variables  lam)
     then raise Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
@@ -50,21 +50,22 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
   | Lprim(Psetfield(0, _,_), [Lvar v; e]) when Ident.same v id ->
-    Lam_comb.assign id (eliminate_ref id e)
+    Lam.assign id (eliminate_ref id e)
   | Lprim(Poffsetref delta, [Lvar v]) when Ident.same v id ->
-    Lam_comb.assign id (Lprim(Poffsetint delta, [Lvar id]))
+    Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
   | Lconst _  -> lam
   | Lapply(e1, el, loc) ->
-    Lapply(eliminate_ref id e1, List.map (eliminate_ref id) el, loc)
+    Lam.apply (eliminate_ref id e1) (List.map (eliminate_ref id) el) loc
   | Llet(str, v, e1, e2) ->
-    Llet(str, v, eliminate_ref id e1, eliminate_ref id e2)
+    Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
-    Lletrec(List.map (fun (v, e) -> (v, eliminate_ref id e)) idel,
-            eliminate_ref id e2)
+    Lam.letrec
+      (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
+      (eliminate_ref id e2)
   | Lprim(p, el) ->
-    Lam_comb.prim p (List.map (eliminate_ref id) el)
+    Lam.prim p (List.map (eliminate_ref id) el)
   | Lswitch(e, sw) ->
-    Lswitch(eliminate_ref id e,
+    Lam.switch(eliminate_ref id e)
             {sw_numconsts = sw.sw_numconsts;
              sw_consts =
                List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
@@ -72,39 +73,40 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
              sw_blocks =
                List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
              sw_failaction =
-               Misc.may_map (eliminate_ref id) sw.sw_failaction; })
+               Misc.may_map (eliminate_ref id) sw.sw_failaction; }
   | Lstringswitch(e, sw, default) ->
-    Lstringswitch
-      (eliminate_ref id e,
-       List.map (fun (s, e) -> (s, eliminate_ref id e)) sw,
-       Misc.may_map (eliminate_ref id) default)
+    Lam.stringswitch
+      (eliminate_ref id e)
+      (List.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
+      (Misc.may_map (eliminate_ref id) default)
   | Lstaticraise (i,args) ->
-    Lstaticraise (i,List.map (eliminate_ref id) args)
+    Lam.staticraise i (List.map (eliminate_ref id) args)
   | Lstaticcatch(e1, i, e2) ->
-    Lstaticcatch(eliminate_ref id e1, i, eliminate_ref id e2)
+    Lam.staticcatch (eliminate_ref id e1) i (eliminate_ref id e2)
   | Ltrywith(e1, v, e2) ->
-    Ltrywith(eliminate_ref id e1, v, eliminate_ref id e2)
+    Lam.try_ (eliminate_ref id e1) v (eliminate_ref id e2)
   | Lifthenelse(e1, e2, e3) ->
-    Lam_comb.if_ (eliminate_ref id e1) (eliminate_ref id e2) (eliminate_ref id e3)
+    Lam.if_ (eliminate_ref id e1) (eliminate_ref id e2) (eliminate_ref id e3)
   | Lsequence(e1, e2) ->
-    Lam_comb.seq (eliminate_ref id e1) (eliminate_ref id e2)
+    Lam.seq (eliminate_ref id e1) (eliminate_ref id e2)
   | Lwhile(e1, e2) ->
-    Lam_comb.while_ (eliminate_ref id e1) (eliminate_ref id e2)
+    Lam.while_ (eliminate_ref id e1) (eliminate_ref id e2)
   | Lfor(v, e1, e2, dir, e3) ->
-    Lam_comb.for_ v
+    Lam.for_ v
       (eliminate_ref id e1) 
       (eliminate_ref id e2)
       dir
       (eliminate_ref id e3)
   | Lassign(v, e) ->
-    Lassign(v, eliminate_ref id e)
+    Lam.assign v (eliminate_ref id e)
   | Lsend(k, m, o, el, loc) ->
-    Lsend(k, eliminate_ref id m, eliminate_ref id o,
-          List.map (eliminate_ref id) el, loc)
+    Lam.send k 
+      (eliminate_ref id m) (eliminate_ref id o)
+      (List.map (eliminate_ref id) el) loc
   | Levent(l, ev) ->
-    Lam_comb.event (eliminate_ref id l) ev
+    Lam.event (eliminate_ref id l) ev
   | Lifused(v, e) ->
-    Lifused(v, eliminate_ref id e)
+    Lam.ifused v (eliminate_ref id e)
 
 (*A naive dead code elimination *)
 type used_info = { 
@@ -134,13 +136,13 @@ let absorb_info (x : used_info) (y : used_info) =
 let lets_helper (count_var : Ident.t -> used_info) lam = 
   let subst = Hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
-  let rec simplif (lam : Lambda.lambda) = 
+  let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lvar v  ->
       begin try Hashtbl.find subst v with Not_found -> lam end
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
-      Hashtbl.add subst v (simplif (Lvar w));
+      Hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
            v, (Lprim((Pmakeblock(0, tag_info, Mutable) as prim), [linit])), lbody)
@@ -153,7 +155,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
             ~kind:Variable v slinit (eliminate_ref v slbody)
         with Real_reference ->
           Lam_util.refine_let 
-            ~kind v (Lam_comb.prim prim [slinit])
+            ~kind v (Lam.prim prim [slinit])
             slbody
       end
     | Llet(Alias, v, l1, l2) ->
@@ -179,7 +181,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
           *)
           ->
           Hashtbl.add subst v (simplif l1); simplif l2
-        | _ -> Llet(Alias, v, simplif l1, simplif l2)
+        | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
       end
     | Llet(StrictOpt as kind, v, l1, l2) ->
       (** can not be inlined since [l1] depend on the store
@@ -201,18 +203,18 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
         let l2 = simplif l2 in
         if Lam_analysis.no_side_effects l1 
         then l2 
-        else Lam_comb.seq l1 l2
+        else Lam.seq l1 l2
       else Lam_util.refine_let ~kind v (simplif l1) (simplif l2)
 
     | Lifused(v, l) ->
       if used  v then
         simplif l
-      else Lambda.lambda_unit
+      else Lam.unit
     | Lsequence(Lifused(v, l1), l2) ->
       if used v 
-      then Lam_comb.seq (simplif l1) (simplif l2)
+      then Lam.seq (simplif l1) (simplif l2)
       else simplif l2
-    | Lsequence(l1, l2) -> Lam_comb.seq (simplif l1) (simplif l2)
+    | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
     | Lapply(Lfunction(Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
@@ -224,42 +226,46 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       when  Ext_list.same_length params  args ->
       simplif (Lam_beta_reduce.beta_reduce params body args)
 
-    | Lapply(l1, ll, loc) -> Lapply(simplif l1, List.map simplif ll, loc)
-    | Lfunction(kind, params, l) -> Lfunction(kind, params, simplif l)
+    | Lapply(l1, ll, loc) -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lfunction(kind, params, l) ->
+      Lam.function_ kind params (simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
-      Lletrec(List.map (fun (v, l) -> (v, simplif l)) bindings, simplif body)
-    | Lprim(p, ll) -> Lam_comb.prim p (List.map simplif ll)
+      Lam.letrec 
+        (List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (simplif body)
+    | Lprim(p, ll) -> Lam.prim p (List.map simplif ll)
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = Misc.may_map simplif sw.sw_failaction in
-      Lswitch
-        (new_l,
-         {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
-                  sw_failaction = new_fail})
+      Lam.switch
+        new_l
+        {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
+                 sw_failaction = new_fail}
     | Lstringswitch (l,sw,d) ->
-      Lam_comb.stringswitch
+      Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
          (Misc.may_map simplif d)
     | Lstaticraise (i,ls) ->
-      Lstaticraise (i, List.map simplif ls)
+      Lam.staticraise i (List.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->
-      Lstaticcatch (simplif l1, (i,args), simplif l2)
-    | Ltrywith(l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
+      Lam.staticcatch (simplif l1) (i,args) (simplif l2)
+    | Ltrywith(l1, v, l2) -> Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse(l1, l2, l3) -> 
-      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
+      Lam.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lwhile(l1, l2) 
       -> 
-      Lam_comb.while_ (simplif l1) (simplif l2)
+      Lam.while_ (simplif l1) (simplif l2)
     | Lfor(v, l1, l2, dir, l3) ->
-      Lam_comb.for_ v (simplif l1) (simplif l2) dir (simplif l3)
-    | Lassign(v, l) -> Lassign(v, simplif l)
+      Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
+    | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
-      Lsend(k, simplif m, simplif o, List.map simplif ll, loc)
+      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
     | Levent(l, ev) 
-      -> Lam_comb.event(simplif l) ev
+      -> Lam.event (simplif l) ev
   in simplif lam ;;
 
 
@@ -327,7 +333,7 @@ let collect_occurs  lam : occ_tbl =
         (* Not a let-bound variable, ignore *)
         () in
 
-  let rec count (bv : local_tbl) (lam : Lambda.lambda) = 
+  let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
     | Lfunction(kind, params, l) ->
       count Ident_map.empty l
@@ -427,6 +433,6 @@ let collect_occurs  lam : occ_tbl =
   count Ident_map.empty  lam;
   occ
 
-let simplify_lets  (lam : Lambda.lambda) = 
+let simplify_lets  (lam : Lam.t) = 
   let occ =  collect_occurs  lam in 
   apply_lets  occ   lam

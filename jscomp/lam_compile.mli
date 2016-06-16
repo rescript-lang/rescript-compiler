@@ -35,9 +35,9 @@ val compile_let :
   Lambda.let_kind ->
   Lam_compile_defs.cxt -> 
   J.ident -> 
-  Lambda.lambda -> 
+  Lam.t -> 
   Js_output.t
 
-val compile_recursive_lets : Lam_compile_defs.cxt -> (Ident.t * Lambda.lambda) list -> Js_output.t
+val compile_recursive_lets : Lam_compile_defs.cxt -> (Ident.t * Lam.t) list -> Js_output.t
 
-val compile_lambda : Lam_compile_defs.cxt -> Lambda.lambda -> Js_output.t
+val compile_lambda : Lam_compile_defs.cxt -> Lam.t -> Js_output.t

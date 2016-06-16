@@ -73,7 +73,7 @@ let merge
 *)
 let rec get_arity 
     (meta : Lam_stats.meta) 
-    (lam : Lambda.lambda) : 
+    (lam : Lam.t) : 
   Lam_stats.function_arities = 
   match lam with 
   | Lconst _ -> Determin (true,[], false)
@@ -189,11 +189,11 @@ let rec get_arity
   | Lfor _  
   | Lassign _ -> Determin(true,[], false)
 
-and all_lambdas meta (xs : Lambda.lambda list) = 
+and all_lambdas meta (xs : Lam.t list) = 
   match xs with 
   | y :: ys -> 
     let arity =  get_arity meta y in 
-    List.fold_left (fun exist (v : Lambda.lambda) -> 
+    List.fold_left (fun exist (v : Lam.t) -> 
         match (exist : Lam_stats.function_arities) with 
         | NA -> NA 
         | Determin (b, xs, tail) -> 

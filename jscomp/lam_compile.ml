@@ -39,8 +39,8 @@ let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
 
 (* assume outer is [Lstaticcatch] *)
-let rec flat_catches acc (x : Lambda.lambda)
-  : (int * Lambda.lambda * Ident.t  list ) list * Lambda.lambda = 
+let rec flat_catches acc (x : Lam.t)
+  : (int * Lam.t * Ident.t  list ) list * Lam.t = 
   match x with 
   | Lstaticcatch( Lstaticcatch(l, (code,bindings), handler), (code1, bindings1),handler1) 
     when 
@@ -68,7 +68,7 @@ let flatten_caches  x = flat_catches [] x
 let translate_dispatch = ref (fun _ -> assert false)
 
 type default_case = 
-  | Default of Lambda.lambda
+  | Default of Lam.t
   | Complete
   | NonComplete
 
@@ -161,7 +161,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
-            (fun (x : Lambda.lambda) (args_code, args)  ->
+            (fun (x : Lam.t) (args_code, args)  ->
                match x with 
                | Lprim (Pgetglobal i, [] ) -> 
                  (* when module is passed as an argument - unpack to an array
@@ -248,7 +248,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              aux (E.ml_var_dot id name) arity args (List.length args ))
       )
 
-and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js_output.t =
+and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
 
 
   match flag, arg  with 
@@ -261,7 +261,7 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js
 and compile_recursive_let 
     (cxt : Lam_compile_defs.cxt)
     (id : Ident.t)
-    (arg : Lambda.lambda)   : Js_output.t * Ident.t list = 
+    (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
   |  Lfunction (kind, params, body)  -> 
     (* Invariant:  jmp_table can not across function boundary,
@@ -312,7 +312,7 @@ and compile_recursive_let
           E.fun_ params (Js_output.to_block output )
       ), [] 
   | Lprim (Pmakeblock (0, _, _) , ls)
-    when List.for_all (function  | Lambda.Lvar _  -> true | _ -> false) ls 
+    when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -321,7 +321,7 @@ and compile_recursive_let
       S.define ~kind:Variable id (E.arr Mutable []) :: 
       (List.mapi (fun i x -> 
           match x with  
-          | Lambda.Lvar lid
+          | Lam.Lvar lid
             -> S.exp 
                  (Js_array.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
           | _ -> assert false
@@ -400,7 +400,7 @@ and compile_general_cases :
    ?declaration:Lambda.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
-  ('a * Lambda.lambda) list -> default_case -> J.block 
+  ('a * Lam.t) list -> default_case -> J.block 
   = fun f eq cxt switch v table default -> 
     let wrap (cxt : Lam_compile_defs.cxt) k =
       let cxt, define =
@@ -483,7 +483,7 @@ and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt
 and
   compile_lambda
     ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_defs.cxt)
-    (lam : Lambda.lambda)  : Js_output.t  =
+    (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
     | Lfunction(kind, params, body) ->
@@ -509,7 +509,7 @@ and
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info App_na)))
+        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
     (* External function calll *)
     | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
              {apply_status = App_na | App_ml_full}) ->
@@ -526,7 +526,7 @@ and
       *)
       begin 
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
-          List.fold_right (fun (x : Lambda.lambda) (args_code, fn_code )-> 
+          List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
               | Lprim (Pgetglobal ident, []) -> 
                 (* when module is passed as an argument - unpack to an array
@@ -680,7 +680,7 @@ and
         | {should_return = True _ } 
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt (Lam_comb.sequand  l r )
+          compile_lambda cxt (Lam.sequand  l r )
         | _ -> 
           let l_block,l_expr = 
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with 
@@ -703,7 +703,7 @@ and
         | {should_return = True _ }
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt @@ Lam_comb.sequor l r
+          compile_lambda cxt @@ Lam.sequor l r
         | _ ->
           let l_block,l_expr =
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with
@@ -856,9 +856,10 @@ and
               {block = block1; value = Some value}, Public (Some setter) 
               ->
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
-                compile_lambda cxt @@ Lapply (fn, [arg] , 
-                                              {apply_loc = Location.none;
-                                               apply_status = App_js_full})
+                compile_lambda cxt @@ 
+                Lam.apply fn [arg]  
+                  {apply_loc = Location.none;
+                   apply_status = App_js_full}
               else 
                 let property =
                   String.sub setter 0 
@@ -877,9 +878,9 @@ and
 
         | fn :: rest -> 
           compile_lambda cxt 
-            (Lapply (fn, rest , 
+            (Lam.apply fn rest 
                      {apply_loc = Location.none;
-                      apply_status = App_js_full}))
+                      apply_status = App_js_full})
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -904,18 +905,19 @@ and
               begin 
                 match fn with 
                 | Lfunction (_, [_], body)
-                  -> compile_lambda cxt (Lfunction (Curried, [], body))
+                  -> compile_lambda cxt (Lam.function_ Curried [] body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lfunction (Lambda.Curried, [],
-                                Lambda.Lapply(fn,
-                                              [Lam_comb.unit],
-                                              Lam_util.default_apply_info
-                                             )))
+                    (Lam.function_ Lambda.Curried [] 
+                     @@ 
+                       Lam.apply fn
+                         [Lam.unit]
+                     Lam_util.default_apply_info
+                    )
               end
             else 
               begin match fn with
-                | Lambda.Lfunction(kind,args, body) 
+                | Lam.Lfunction(kind,args, body) 
                   ->
                   let len =  List.length args in 
                   if len = arity then
@@ -923,8 +925,8 @@ and
                   else if len > arity then 
                     let first, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lambda.Lfunction 
-                         (kind, first, Lambda.Lfunction (kind, rest, body)))
+                      (Lam.function_
+                         kind first (Lam.function_ kind rest body))
                   else 
                     compile_lambda cxt 
                       (Lam_util.eta_conversion arity Lam_util.default_apply_info  
@@ -952,7 +954,7 @@ and
         end
     | Lprim(prim, args_lambda) -> 
       let args_block, args_expr =
-        Ext_list.split_map (fun (x : Lambda.lambda) ->
+        Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
             with 
             | {block = a; value = Some b} -> a,b
@@ -1202,7 +1204,7 @@ and
         | {exit_id; args ; order_id} -> 
           let args_code  =
             (Js_output.concat @@ List.map2 (
-                fun (x : Lambda.lambda) (arg : Ident.t) ->
+                fun (x : Lam.t) (arg : Ident.t) ->
                   match x with
                   | Lvar id -> 
                     Js_output.make [S.assign arg (E.var id)]
@@ -1488,7 +1490,7 @@ and
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 
-      compile_lambda cxt (Ltrywith(body, id, cont))
+      compile_lambda cxt (Lam.try_ body id cont)
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (* 
          tail --> should be renamed to `shouldReturn`  
@@ -1574,7 +1576,7 @@ and
 
       begin match 
         (met :: obj :: args) 
-        |> Ext_list.split_map (fun (x : Lambda.lambda) -> 
+        |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
             | Lprim (Pgetglobal i, []) -> 
               [], Lam_compile_global.get_exp  (i, env, true)

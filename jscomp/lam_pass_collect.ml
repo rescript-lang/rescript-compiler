@@ -57,11 +57,11 @@ let annotate (meta : Lam_stats.meta)
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
-let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  = 
+let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lambda.let_kind) 
       (ident : Ident.t)
-      (lam : Lambda.lambda) = 
+      (lam : Lam.t) = 
     match lam with 
     | Lconst v 
       -> 
@@ -126,7 +126,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
           annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
 
 
-  and collect  (lam : Lambda.lambda)  =
+  and collect  (lam : Lam.t)  =
     match lam with 
     (* | Lprim (Pgetglobal ident,[]) *)
     (*   -> *)
@@ -189,7 +189,7 @@ let count_alias_globals
     env 
     filename
     export_idents
-    (lam : Lambda.lambda) : Lam_stats.meta =
+    (lam : Lam.t) : Lam_stats.meta =
   let meta : Lam_stats.meta = 
     {alias_tbl = Hashtbl.create 31 ; 
      ident_tbl = Hashtbl.create 31;

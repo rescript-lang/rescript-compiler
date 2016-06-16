@@ -69,11 +69,11 @@
    3. arguments are const or not   
 *)
 let rewrite (map :   (Ident.t, _) Hashtbl.t) 
-    (lam : Lambda.lambda) : Lambda.lambda = 
+    (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i (Lambda.Lvar i');
+    Hashtbl.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -81,7 +81,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     match op with 
     | None -> None 
     | Some x -> Some (aux x)
-  and aux (lam : Lambda.lambda) : Lambda.lambda = 
+  and aux (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       begin 
@@ -92,36 +92,36 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let v = rebind v in
       let l1 = aux l1 in      
       let l2 = aux l2 in
-      Llet(str, v,  l1,  l2 )
+      Lam.let_ str v  l1  l2 
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
       let vars = List.map (fun (k, _) -> rebind k) bindings in 
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
-      Lletrec(bindings, body) 
+      Lam.letrec bindings body
     | Lfunction(kind, params, body) -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lfunction (kind, params, body)
+      Lam.function_ kind params body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
       let l2 = aux l2 in
-      Lam_comb.staticcatch l1 (i,xs) l2
+      Lam.staticcatch l1 (i,xs) l2
     | Lfor(ident, l1, l2, dir, l3) ->
       let ident = rebind ident in 
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lam_comb.for_ ident (aux  l1)  l2 dir  l3
+      Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
     | Lprim(prim, ll) ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam_comb.prim prim (List.map aux  ll)
+      Lam.prim prim (List.map aux  ll)
     | Lapply(fn, args, info) ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lapply(fn, args, info)
+      Lam.apply fn  args info
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -129,7 +129,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
                   sw_numconsts;
                  }) ->
       let l = aux l in
-      Lam_comb.switch l
+      Lam.switch l
               {sw_consts = 
                  List.map (fun (v, l) -> v, aux  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
@@ -139,42 +139,42 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
               }
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
-      Lam_comb.stringswitch l 
+      Lam.stringswitch l 
                      (List.map (fun (i, l) -> i,aux  l) sw)
                      (option_map d)
     | Lstaticraise (i,ls) 
-      -> Lam_comb.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (List.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
       let l2 = aux l2 in
-      Lam_comb.try_ l1 v l2
+      Lam.try_ l1 v l2
     | Lifthenelse(l1, l2, l3) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lam_comb.if_ l1  l2   l3
+      Lam.if_ l1  l2   l3
     | Lsequence(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lam_comb.seq l1 l2
+      Lam.seq l1 l2
     | Lwhile(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lam_comb.while_  l1  l2
+      Lam.while_  l1  l2
     | Lassign(v, l) 
-      -> Lam_comb.assign v (aux  l)
+      -> Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
       let ll = List.map aux ll in
-      Lam_comb.send u  m  o  ll v
+      Lam.send u  m  o  ll v
     | Levent(l, event) ->
       let l = aux l in
-      Lam_comb.event  l event
+      Lam.event  l event
     | Lifused(v, l) -> 
       let l = aux l in 
-      Lam_comb.ifused v  l
+      Lam.ifused v  l
   in 
   aux lam
 
@@ -213,17 +213,17 @@ let propogate_beta_reduce
   | None -> 
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
          | _ -> 
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
@@ -253,7 +253,7 @@ let propogate_beta_reduce_with_map
   | None ->
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
@@ -261,7 +261,7 @@ let propogate_beta_reduce_with_map
            (* TODO: we can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
@@ -273,15 +273,15 @@ let propogate_beta_reduce_with_map
                  rest_bindings, arg :: acc                
                | _  ->  
                  let p = Ident.rename old_param in 
-                 (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+                 (p,arg) :: rest_bindings , (Lam.var p) :: acc 
              end
            else
              let p = Ident.rename old_param in 
-             (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+             (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 

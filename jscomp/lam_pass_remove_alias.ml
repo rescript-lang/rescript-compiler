@@ -31,14 +31,14 @@
 
 let simplify_alias 
     (meta : Lam_stats.meta)
-    (lam : Lambda.lambda) 
-  :  Lambda.lambda  = 
+    (lam : Lam.t) 
+  :  Lam.t  = 
 
-  let rec simpl  (lam : Lambda.lambda) : Lambda.lambda = 
+  let rec simpl  (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
-      (try Lvar (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
+      (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
     | Llet(kind, k, (Lprim (Pgetglobal i,[]) as g), l ) -> 
       (* This is detection of MODULE ALIAS 
           we need track all global module aliases, when it's
@@ -50,7 +50,7 @@ let simplify_alias
       let v = simpl l in
       if Ident_set.mem k meta.export_idents 
       then 
-        Llet(kind, k, g, v) 
+        Lam.let_ kind k g v
         (* in this case it is preserved, but will still be simplified 
             for the inner expression
         *)
@@ -70,31 +70,31 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam_comb.not ( Lam_comb.prim Lam_comb.Prim.js_is_nil [l]) 
+            -> Lam.not ( Lam.prim Lam.Prim.js_is_nil [l]) 
           | Undefined 
             -> 
-            Lam_comb.not (Lam_comb.prim Lam_comb.Prim.js_is_undef [l])
+            Lam.not (Lam.prim Lam.Prim.js_is_undef [l])
           | Null_undefined
             -> 
-            Lam_comb.not
-              ( Lam_comb.prim Lam_comb.Prim.js_is_nil_undef  [l]) 
+            Lam.not
+              ( Lam.prim Lam.Prim.js_is_nil_undef  [l]) 
           | Normal ->  l1 
         in 
-        Lam_comb.if_ l1 (simpl l2) (simpl l3)
-      | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+        Lam.if_ l1 (simpl l2) (simpl l3)
+      | _ -> Lam.if_ l1 (simpl l2) (simpl l3)
 
-      | exception Not_found -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+      | exception Not_found -> Lam.if_ l1 (simpl l2) (simpl l3)
       end
     | Lifthenelse (l1, l2, l3) -> 
-        Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
+        Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
 
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
-      Llet(str, v, simpl l1, simpl l2 )
+      Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
-      Lletrec(bindings, simpl body) 
-    | Lprim(prim, ll) -> Lam_comb.prim prim (List.map simpl  ll)
+      Lam.letrec bindings (simpl body) 
+    | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
 
     (* complicated 
         1. inline this function
@@ -115,7 +115,7 @@ let simplify_alias
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
-                    List.for_all (fun (arg : Lambda.lambda) ->
+                    List.for_all (fun (arg : Lam.t) ->
                         match arg with 
                         | Lvar p -> 
                           begin 
@@ -127,7 +127,8 @@ let simplify_alias
                 simpl @@
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
-              | _ -> Lapply (simpl l1, List.map simpl args, info)
+              | _ -> 
+                Lam.apply (simpl l1) (List.map simpl args) info
             )
 
       end
@@ -194,28 +195,28 @@ let simplify_alias
 
                     end
                 | _ -> 
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
               else 
                 begin
                   (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
                 end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lapply ( simpl l1, List.map simpl args, info)
+              Lam.apply ( simpl l1) (List.map simpl args) info
             end
 
         | _ -> 
           begin
             (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lapply ( simpl l1, List.map simpl args, info)
+            Lam.apply ( simpl l1) (List.map simpl args) info
           end
         | exception Not_found -> 
             (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lapply ( simpl l1, List.map simpl args, info)
+          Lam.apply ( simpl l1) (List.map simpl args) info
       end
 
     | Lapply(Lfunction(Curried, params, body), args, _)
@@ -229,16 +230,16 @@ let simplify_alias
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
     | Lapply (l1, ll, info) ->
-      Lapply (simpl  l1, List.map simpl  ll,info)
+      Lam.apply (simpl  l1) (List.map simpl  ll) info
     | Lfunction (kind, params, l) 
-      -> Lfunction (kind, params , simpl  l)
+      -> Lam.function_ kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
                    sw_numblocks;
                    sw_numconsts;
                   }) ->
-      Lam_comb.switch (simpl  l)
+      Lam.switch (simpl  l)
                {sw_consts = 
                   List.map (fun (v, l) -> v, simpl  l) sw_consts;
                 sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
@@ -251,37 +252,37 @@ let simplify_alias
                     | Some x -> Some (simpl x)
                   end}
     | Lstringswitch(l, sw, d) ->
-      Lam_comb.stringswitch (simpl  l )
+      Lam.stringswitch (simpl  l )
                     (List.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                      | Some d -> Some (simpl d )
                      | None -> None)
     | Lstaticraise (i,ls) -> 
-      Lam_comb.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (List.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) -> 
-      Lam_comb.staticcatch (simpl  l1) ids (simpl  l2)
-    | Ltrywith (l1, v, l2) -> Lam_comb.try_ (simpl  l1) v (simpl  l2)
+      Lam.staticcatch (simpl  l1) ids (simpl  l2)
+    | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
     | Lsequence (Lprim (Pgetglobal (id),[]), l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
       -> simpl l2
     | Lsequence(l1, l2)
-      -> Lam_comb.seq (simpl  l1) (simpl  l2)
+      -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)
-      -> Lam_comb.while_ (simpl  l1) (simpl l2)
+      -> Lam.while_ (simpl  l1) (simpl l2)
     | Lfor(flag, l1, l2, dir, l3)
       -> 
-      Lam_comb.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
+      Lam.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
     | Lassign(v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
-      Lam_comb.assign v (simpl  l)
+      Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) 
       -> 
-      Lam_comb.send u (simpl m) (simpl o) (List.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
     | Levent (l, event) 
       ->
-      Lam_comb.event (simpl  l) event
-    | Lifused (v, l) -> Lam_comb.ifused v (simpl  l)
+      Lam.event (simpl  l) event
+    | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam

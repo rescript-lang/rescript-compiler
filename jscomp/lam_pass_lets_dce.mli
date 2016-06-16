@@ -32,4 +32,4 @@
    [bv] is used to help caculate [occ] it is not useful outside
 
  *)
-val simplify_lets :  Lambda.lambda -> Lambda.lambda
+val simplify_lets :  Lam.t -> Lam.t

@@ -48,7 +48,7 @@ type ident_info = {
   name : string;
   signatures : Types.signature;
   arity : Lam_stats.function_arities; 
-  closed_lambda : Lambda.lambda option 
+  closed_lambda : Lam.t option 
 }
 
 type module_info = {

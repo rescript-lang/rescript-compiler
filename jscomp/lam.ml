@@ -22,24 +22,40 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-type t = Lambda.lambda
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t -> t 
-
+type primitive = Lambda.primitive
+type switch = Lambda.lambda_switch = 
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and t = Lambda.lambda = 
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of t * t list * Lambda.apply_info
+  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of primitive * t list
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
 
 
 module Prim = struct 
-  type t = Lambda.primitive
+  type t = primitive
   let js_is_nil : t = 
-    Lambda.Pccall{ prim_name = "js_is_nil";
+    Pccall{ prim_name = "js_is_nil";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_nil";
@@ -49,7 +65,7 @@ module Prim = struct
                  }
 
   let js_is_undef : t = 
-    Lambda.Pccall{ prim_name = "js_is_undef";
+    Pccall{ prim_name = "js_is_undef";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_undef";
@@ -59,7 +75,7 @@ module Prim = struct
                  }
 
   let js_is_nil_undef : t  = 
-    Lambda.Pccall{ prim_name = "js_is_nil_undef";
+    Pccall{ prim_name = "js_is_nil_undef";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_nil_undef";
@@ -69,6 +85,29 @@ module Prim = struct
                  }
 
 end
+
+
+
+
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t -> t 
+
+
+let var id : t = Lvar id
+let const ct : t = Lconst ct 
+let apply fn args info : t = Lapply(fn,args, info)
+let function_ kind ids body : t = 
+  Lfunction(kind, ids, body)
+
+let let_ kind id e body :  t 
+  = Llet (kind,id,e,body)
+let letrec bindings body : t = 
+  Lletrec(bindings,body)
 
 let if_ (a : t) (b : t) c = 
   match a with
@@ -328,3 +367,8 @@ let prim (prim : Prim.t) (ll : t list) : t =
 
 let not x : t = 
   prim Pnot [x]
+
+
+let free_variables  = Lambda.free_variables
+
+let subst_lambda = Lambda.subst_lambda

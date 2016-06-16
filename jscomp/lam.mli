@@ -22,8 +22,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type primitive = Lambda.primitive
 
-type t = Lambda.lambda 
+
+type switch = Lambda.lambda_switch =
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and  t = Lambda.lambda =  private
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of t * t list * Lambda.apply_info
+  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of primitive * t list
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
+
+
+module Prim : sig 
+  type t = primitive
+  val js_is_nil : t
+  val js_is_undef : t 
+  val js_is_nil_undef : t 
+end
+
 
 type binop = t -> t -> t 
 
@@ -31,8 +68,14 @@ type triop = t -> t -> t -> t
 
 type unop = t ->  t
 
+val var : Ident.t -> t
+val const : Lambda.structured_constant -> t
+val apply : t -> t list -> Lambda.apply_info -> t
+val function_ : Lambda.function_kind -> Ident.t list -> t -> t
+val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
+val letrec : (Ident.t * t) list -> t -> t
 val if_ : triop
-val switch : t -> Lambda.lambda_switch  -> t 
+val switch : t -> switch  -> t 
 val stringswitch : t -> (string * t) list -> t option -> t 
 
 val true_ : t 
@@ -65,9 +108,6 @@ val for_ :
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 
-module Prim : sig 
-  type t = Lambda.primitive
-  val js_is_nil : t 
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+val free_variables : t -> Lambda.IdentSet.t
+
+val subst_lambda : t Ident.tbl -> t -> t

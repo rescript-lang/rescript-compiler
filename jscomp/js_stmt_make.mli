@@ -95,7 +95,7 @@ val exp : ?comment:string  -> J.expression -> t
 
 val return : ?comment:string  -> J.expression -> t
 
-val unknown_lambda : ?comment:string  -> Lambda.lambda -> t
+val unknown_lambda : ?comment:string  -> Lam.t -> t
 
 val return_unit : ?comment:string -> unit -> t
 (** for ocaml function which returns unit 

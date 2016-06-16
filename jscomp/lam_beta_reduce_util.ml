@@ -38,7 +38,7 @@
 
 type value = 
   { mutable used : bool ; 
-    lambda  : Lambda.lambda
+    lambda  : Lam.t
   }
 let param_hash : (Ident.t , value) Hashtbl.t = Hashtbl.create 20
 let simple_beta_reduce params body args = 
@@ -50,7 +50,7 @@ let simple_beta_reduce params body args =
       else exp.used <- true; exp.lambda
     | exception Not_found -> opt
   in  
-  let rec aux acc (us : Lambda.lambda list) = 
+  let rec aux acc (us : Lam.t list) = 
     match us with 
     | [] -> List.rev acc
     | (Lvar x as a ) :: rest 
@@ -60,14 +60,14 @@ let simple_beta_reduce params body args =
       -> aux (u :: acc) rest 
     | _ :: _ -> raise E.Not_simple_apply 
   in 
-  match (body : Lambda.lambda) with 
+  match (body : Lam.t) with 
   | Lprim ( primitive , args' )  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
     (* Note in a very special case we can avoid any allocation
        {[
          when Ext_list.for_all2_no_exn
              (fun p a ->
-                match (a : Lambda.lambda) with
+                match (a : Lam.t) with
                 | Lvar a -> Ident.same p a
                 | _ -> false ) params args'
        ]}*)
@@ -79,8 +79,8 @@ let simple_beta_reduce params body args =
       let result = 
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
-              Lam_comb.seq lambda code
-            else code) param_hash (Lam_comb.prim primitive us) in 
+              Lam.seq lambda code
+            else code) param_hash (Lam.prim primitive us) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
@@ -104,9 +104,9 @@ let simple_beta_reduce params body args =
           Hashtbl.fold 
             (fun _param {lambda; used} code -> 
                if not used then 
-                 Lam_comb.seq lambda code
+                 Lam.seq lambda code
                else code )
-            param_hash (Lambda.Lapply ( f, us , info)) in
+            param_hash (Lam.apply  f us  info) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 

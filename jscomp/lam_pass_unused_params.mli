@@ -32,4 +32,4 @@
 
 (** A pass to mark all unused params *)
 
-val translate_unsed_params : Lambda.lambda -> Lambda.lambda
+val translate_unsed_params : Lam.t -> Lam.t

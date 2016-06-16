@@ -22,12 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val lambda : Format.formatter -> Lam.t -> unit
 
+val primitive: Format.formatter -> Lam.Prim.t -> unit
 
+val seriaize : 'a -> string -> Lam.t -> unit
 
-
-
-(** A module prepared for smart constructors of {!Lam.t}*)
-
-val lfunction : 
-  Lambda.function_kind -> Ident.t list -> Lam.t -> Lam.t
+val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit

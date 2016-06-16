@@ -1,4 +1,4 @@
-(** Bundled by ocaml_pack 06/02-11:28 *)
+(** Bundled by ocaml_pack 06/16-10:29 *)
 module Literals : sig 
 #1 "literals.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
@@ -1964,8 +1964,8 @@ let name  x : string  =
 type module_property = bool 
 
 end
-module Hash_set : sig 
-#1 "hash_set.mli"
+module Lam : sig 
+#1 "lam.mli"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -1990,369 +1990,45 @@ module Hash_set : sig
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+type primitive = Lambda.primitive
 
 
+type switch = Lambda.lambda_switch =
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and  t = Lambda.lambda =  private
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of t * t list * Lambda.apply_info
+  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of primitive * t list
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
 
 
-
-
-
-(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
-
-type   'a hashset 
-
-val create : ?random: bool -> int -> 'a hashset
-
-val clear : 'a hashset -> unit
-
-val reset : 'a hashset -> unit
-
-val copy : 'a hashset -> 'a hashset
-
-val add : 'a hashset -> 'a  -> unit
-
-val mem : 'a hashset -> 'a -> bool
-
-val iter : ('a -> unit) -> 'a hashset -> unit
-
-val elements : 'a hashset -> 'a list
-
-end = struct
-#1 "hash_set.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-include Hashtbl 
-
-(* type nonrec t = unit t  *)
-
-type  'a hashset = ('a,unit) Hashtbl.t
-
-let add tbl k  = replace tbl k ()
-(* use [Hashtbl.replace] instead  *)
-
-(* let replace tbl k  = replace tbl k () *)
-let iter f = iter (fun k _ -> f k )
-
-let elements set = 
-  fold  (fun k _ acc ->  k :: acc) set []
-
+module Prim : sig 
+  type t = primitive
+  val js_is_nil : t
+  val js_is_undef : t 
+  val js_is_nil_undef : t 
 end
-module Lam_stats : sig 
-#1 "lam_stats.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-
-
-
-(** Types defined for lambda analysis *)
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  (** when the first argument is true, it is for sure 
-
-      approximation sound but not complete 
-      the last one means it can take any params later, 
-      for an exception: it is (Determin (true,[], true))
-   *)
-  | NA 
-
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
-(** Keep track of which identifiers are aliased
-  *)
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities;
-  lambda  : Lambda.lambda ;
-  (* TODO: This may contain some closure environment,
-     check how it will interact with dead code elimination
-  *)
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lambda.lambda 
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array
-  | Constant of Lambda.structured_constant
-  | Module of Ident.t
-        (** TODO: static module vs first class module *)
-  | Function of function_id 
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-
-  | NA (** Not such information is associated with an identifier, it is immutable, 
-           if you only associate a property to an identifier 
-           we should consider [Lassign]
-        *)
-
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
-
-type meta = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-  alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
-
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
-   *)
-
-  mutable required_modules : Lam_module_ident.t list ;
-}
-
-end = struct
-#1 "lam_stats.ml"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-
-
-
-
-
-
-(* It can be useful for common sub expression elimination ? 
-    if two lambdas are not equal, it should return false, other wise, 
-    it might return true , this is only used as a way of optimizaton
-
-    Use case :
-    1. switch case -- common fall through
- *)
-
-(* lambda pass for alpha conversion 
-    and alias
-    we need think about the order of the pass, might be the alias pass can be done 
-    in the  beginning, when we do alpha conversion, we can instrument the table 
- *)
-
-type function_arities = 
-  | Determin of bool * (int * Ident.t list option) list  * bool
-  | NA 
-
-type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
-
-type function_kind = 
-  | Functor 
-  | Function
-  | NA
-
-type rec_flag = 
-  | Rec 
-  | Non_rec
-
-type function_id = {
-  kind : function_kind ; 
-  mutable arity : function_arities ;
-  lambda  : Lambda.lambda ;
-  rec_flag : rec_flag
-}
-
-type element = 
-  | NA 
-  | SimpleForm of Lambda.lambda
-
-type boxed_nullable
-  = 
-  | Undefined 
-  | Null 
-  | Null_undefined
-  | Normal 
-
-type kind = 
-  | ImmutableBlock of element array * boxed_nullable
-  | MutableBlock of element array 
-  | Constant of Lambda.structured_constant
-  | Module of Ident.t
-        (** Global module, local module is treated as an array
-         *)
-  | Function of function_id (** True then functor *)
-  | Exception 
-  | Parameter
-      (** For this case, it can help us determine whether it should be inlined or not *)
-  | NA 
-  (* | Boxed_nullable of Ident.t  *)
-    (** 
-       {[ let v/2 =  js_from_nullable u]} 
-
-       {[ let v/2 = js_from_nullable exp]}
-       can be translated into 
-       {[
-         let v/1 = exp in 
-         let v/2 =a js_from_nullable exp 
-       ]}
-       so that [Pfield v/2 0] will be replaced by [v/1], 
-       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
-    *)
-type ident_tbl = (Ident.t, kind) Hashtbl.t 
-
-type state = 
-  | Live (** Globals are always live *)
-  | Dead  (** removed after elimination *)
-  | NA
-
-type ident_info = {
-  kind : kind ; 
-  state : state
-}
-
-type meta = {
-  env : Env.t;
-  filename : string ;
-  export_idents : Ident_set.t ;
-  exports : Ident.t list ;
-
-  alias_tbl : alias_tbl; 
-  exit_codes : int Hash_set.hashset;
-
-  ident_tbl : ident_tbl;
-  (** we don't need count arities for all identifiers, for identifiers
-      for sure it's not a function, there is no need to count them
-  *)
-  (** required modules completed by [alias_pass] *)
-  mutable required_modules : Lam_module_ident.t list ;
-}
-
-
-end
-module Lam_comb : sig 
-#1 "lam_comb.mli"
-(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * In addition to the permissions granted to you by the LGPL, you may combine
- * or link a "work that uses the Library" with a publicly distributed version
- * of this file to produce a combined library or application, then distribute
- * that combined work under the terms of your choosing, with no requirement
- * to comply with the obligations normally placed on you by section 4 of the
- * LGPL version 3 (or the corresponding section of a later version of the LGPL
- * should you choose to use a later version).
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
-
-
-type t = Lambda.lambda 
 
 type binop = t -> t -> t 
 
@@ -2360,8 +2036,14 @@ type triop = t -> t -> t -> t
 
 type unop = t ->  t
 
+val var : Ident.t -> t
+val const : Lambda.structured_constant -> t
+val apply : t -> t list -> Lambda.apply_info -> t
+val function_ : Lambda.function_kind -> Ident.t list -> t -> t
+val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
+val letrec : (Ident.t * t) list -> t -> t
 val if_ : triop
-val switch : t -> Lambda.lambda_switch  -> t 
+val switch : t -> switch  -> t 
 val stringswitch : t -> (string * t) list -> t option -> t 
 
 val true_ : t 
@@ -2394,15 +2076,12 @@ val for_ :
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 
-module Prim : sig 
-  type t = Lambda.primitive
-  val js_is_nil : t 
-  val js_is_undef : t 
-  val js_is_nil_undef : t 
-end
+val free_variables : t -> Lambda.IdentSet.t
+
+val subst_lambda : t Ident.tbl -> t -> t
 
 end = struct
-#1 "lam_comb.ml"
+#1 "lam.ml"
 (* Copyright (C) 2015-2016 Bloomberg Finance L.P.
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -2427,24 +2106,40 @@ end = struct
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
-
-
-
-
-type t = Lambda.lambda
-
-type binop = t -> t -> t 
-
-type triop = t -> t -> t -> t 
-
-type unop = t -> t 
-
+type primitive = Lambda.primitive
+type switch = Lambda.lambda_switch = 
+  { sw_numconsts: int;
+    sw_consts: (int * t) list;
+    sw_numblocks: int;
+    sw_blocks: (int * t) list;
+    sw_failaction : t option}
+and t = Lambda.lambda = 
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of t * t list * Lambda.apply_info
+  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of primitive * t list
+  | Lswitch of t * switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t
 
 
 module Prim = struct 
-  type t = Lambda.primitive
+  type t = primitive
   let js_is_nil : t = 
-    Lambda.Pccall{ prim_name = "js_is_nil";
+    Pccall{ prim_name = "js_is_nil";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_nil";
@@ -2454,7 +2149,7 @@ module Prim = struct
                  }
 
   let js_is_undef : t = 
-    Lambda.Pccall{ prim_name = "js_is_undef";
+    Pccall{ prim_name = "js_is_undef";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_undef";
@@ -2464,7 +2159,7 @@ module Prim = struct
                  }
 
   let js_is_nil_undef : t  = 
-    Lambda.Pccall{ prim_name = "js_is_nil_undef";
+    Pccall{ prim_name = "js_is_nil_undef";
                    prim_arity = 1 ;
                    prim_alloc = false;
                    prim_native_name = "js_is_nil_undef";
@@ -2474,6 +2169,29 @@ module Prim = struct
                  }
 
 end
+
+
+
+
+
+
+type binop = t -> t -> t 
+
+type triop = t -> t -> t -> t 
+
+type unop = t -> t 
+
+
+let var id : t = Lvar id
+let const ct : t = Lconst ct 
+let apply fn args info : t = Lapply(fn,args, info)
+let function_ kind ids body : t = 
+  Lfunction(kind, ids, body)
+
+let let_ kind id e body :  t 
+  = Llet (kind,id,e,body)
+let letrec bindings body : t = 
+  Lletrec(bindings,body)
 
 let if_ (a : t) (b : t) c = 
   match a with
@@ -2734,6 +2452,959 @@ let prim (prim : Prim.t) (ll : t list) : t =
 let not x : t = 
   prim Pnot [x]
 
+
+let free_variables  = Lambda.free_variables
+
+let subst_lambda = Lambda.subst_lambda
+
+end
+module Hash_set : sig 
+#1 "hash_set.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** A naive hashset implementation on top of [hashtbl], the value is [unit]*)
+
+type   'a hashset 
+
+val create : ?random: bool -> int -> 'a hashset
+
+val clear : 'a hashset -> unit
+
+val reset : 'a hashset -> unit
+
+val copy : 'a hashset -> 'a hashset
+
+val add : 'a hashset -> 'a  -> unit
+
+val mem : 'a hashset -> 'a -> bool
+
+val iter : ('a -> unit) -> 'a hashset -> unit
+
+val elements : 'a hashset -> 'a list
+
+end = struct
+#1 "hash_set.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+include Hashtbl 
+
+(* type nonrec t = unit t  *)
+
+type  'a hashset = ('a,unit) Hashtbl.t
+
+let add tbl k  = replace tbl k ()
+(* use [Hashtbl.replace] instead  *)
+
+(* let replace tbl k  = replace tbl k () *)
+let iter f = iter (fun k _ -> f k )
+
+let elements set = 
+  fold  (fun k _ acc ->  k :: acc) set []
+
+end
+module Lam_stats : sig 
+#1 "lam_stats.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(** Types defined for lambda analysis *)
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  (** when the first argument is true, it is for sure 
+
+      approximation sound but not complete 
+      the last one means it can take any params later, 
+      for an exception: it is (Determin (true,[], true))
+   *)
+  | NA 
+
+type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+(** Keep track of which identifiers are aliased
+  *)
+
+type state = 
+  | Live (** Globals are always live *)
+  | Dead  (** removed after elimination *)
+  | NA
+
+type function_kind = 
+  | Functor 
+  | Function
+  | NA
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+type function_id = {
+  kind : function_kind ; 
+  mutable arity : function_arities;
+  lambda  : Lam.t ;
+  (* TODO: This may contain some closure environment,
+     check how it will interact with dead code elimination
+  *)
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t 
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type kind = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array
+  | Constant of Lambda.structured_constant
+  | Module of Ident.t
+        (** TODO: static module vs first class module *)
+  | Function of function_id 
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+
+  | NA (** Not such information is associated with an identifier, it is immutable, 
+           if you only associate a property to an identifier 
+           we should consider [Lassign]
+        *)
+
+type ident_tbl = (Ident.t, kind) Hashtbl.t 
+
+type ident_info = {
+  kind : kind ; 
+  state : state
+}
+
+type meta = {
+  env : Env.t;
+  filename : string ;
+  export_idents : Ident_set.t ;
+  exports : Ident.t list ;
+  alias_tbl : alias_tbl; 
+  exit_codes : int Hash_set.hashset;
+
+  ident_tbl : ident_tbl;
+  (** we don't need count arities for all identifiers, for identifiers
+      for sure it's not a function, there is no need to count them
+   *)
+
+  mutable required_modules : Lam_module_ident.t list ;
+}
+
+end = struct
+#1 "lam_stats.ml"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+
+
+
+
+
+
+
+(* It can be useful for common sub expression elimination ? 
+    if two lambdas are not equal, it should return false, other wise, 
+    it might return true , this is only used as a way of optimizaton
+
+    Use case :
+    1. switch case -- common fall through
+ *)
+
+(* lambda pass for alpha conversion 
+    and alias
+    we need think about the order of the pass, might be the alias pass can be done 
+    in the  beginning, when we do alpha conversion, we can instrument the table 
+ *)
+
+type function_arities = 
+  | Determin of bool * (int * Ident.t list option) list  * bool
+  | NA 
+
+type alias_tbl =  (Ident.t, Ident.t) Hashtbl.t
+
+type function_kind = 
+  | Functor 
+  | Function
+  | NA
+
+type rec_flag = 
+  | Rec 
+  | Non_rec
+
+type function_id = {
+  kind : function_kind ; 
+  mutable arity : function_arities ;
+  lambda  : Lam.t ;
+  rec_flag : rec_flag
+}
+
+type element = 
+  | NA 
+  | SimpleForm of Lam.t
+
+type boxed_nullable
+  = 
+  | Undefined 
+  | Null 
+  | Null_undefined
+  | Normal 
+
+type kind = 
+  | ImmutableBlock of element array * boxed_nullable
+  | MutableBlock of element array 
+  | Constant of Lambda.structured_constant
+  | Module of Ident.t
+        (** Global module, local module is treated as an array
+         *)
+  | Function of function_id (** True then functor *)
+  | Exception 
+  | Parameter
+      (** For this case, it can help us determine whether it should be inlined or not *)
+  | NA 
+  (* | Boxed_nullable of Ident.t  *)
+    (** 
+       {[ let v/2 =  js_from_nullable u]} 
+
+       {[ let v/2 = js_from_nullable exp]}
+       can be translated into 
+       {[
+         let v/1 = exp in 
+         let v/2 =a js_from_nullable exp 
+       ]}
+       so that [Pfield v/2 0] will be replaced by [v/1], 
+       [Lif(v/1)] will be translated into [Lif (v/2 === undefined )]
+    *)
+type ident_tbl = (Ident.t, kind) Hashtbl.t 
+
+type state = 
+  | Live (** Globals are always live *)
+  | Dead  (** removed after elimination *)
+  | NA
+
+type ident_info = {
+  kind : kind ; 
+  state : state
+}
+
+type meta = {
+  env : Env.t;
+  filename : string ;
+  export_idents : Ident_set.t ;
+  exports : Ident.t list ;
+
+  alias_tbl : alias_tbl; 
+  exit_codes : int Hash_set.hashset;
+
+  ident_tbl : ident_tbl;
+  (** we don't need count arities for all identifiers, for identifiers
+      for sure it's not a function, there is no need to count them
+  *)
+  (** required modules completed by [alias_pass] *)
+  mutable required_modules : Lam_module_ident.t list ;
+}
+
+
+end
+module Lam_print : sig 
+#1 "lam_print.mli"
+(* Copyright (C) 2015-2016 Bloomberg Finance L.P.
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * In addition to the permissions granted to you by the LGPL, you may combine
+ * or link a "work that uses the Library" with a publicly distributed version
+ * of this file to produce a combined library or application, then distribute
+ * that combined work under the terms of your choosing, with no requirement
+ * to comply with the obligations normally placed on you by section 4 of the
+ * LGPL version 3 (or the corresponding section of a later version of the LGPL
+ * should you choose to use a later version).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
+
+val lambda : Format.formatter -> Lam.t -> unit
+
+val primitive: Format.formatter -> Lam.Prim.t -> unit
+
+val seriaize : 'a -> string -> Lam.t -> unit
+
+val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit
+
+end = struct
+#1 "lam_print.ml"
+(***********************************************************************)
+(*                                                                     *)
+(*                                OCaml                                *)
+(*                                                                     *)
+(*            Xavier Leroy, projet Cristal, INRIA Rocquencourt         *)
+(*                                                                     *)
+(*  Copyright 1996 Institut National de Recherche en Informatique et   *)
+(*  en Automatique.  All rights reserved.  This file is distributed    *)
+(*  under the terms of the Q Public License version 1.0.               *)
+(*                                                                     *)
+(***********************************************************************)
+[@@@ocaml.warning "-40"]
+open Format
+open Asttypes
+open Primitive
+open Types
+
+
+
+let rec struct_const ppf (cst : Lambda.structured_constant) =
+  match cst with 
+  | Const_base(Const_int n) -> fprintf ppf "%i" n
+  | Const_base(Const_char c) -> fprintf ppf "%C" c
+  | Const_base(Const_string (s, _)) -> fprintf ppf "%S" s
+  | Const_immstring s -> fprintf ppf "#%S" s
+  | Const_base(Const_float f) -> fprintf ppf "%s" f
+  | Const_base(Const_int32 n) -> fprintf ppf "%lil" n
+  | Const_base(Const_int64 n) -> fprintf ppf "%LiL" n
+  | Const_base(Const_nativeint n) -> fprintf ppf "%nin" n
+  | Const_pointer (n,_) -> fprintf ppf "%ia" n
+  | Const_block(tag,_, []) ->
+      fprintf ppf "[%i]" tag
+  | Const_block(tag,_, sc1::scl) ->
+      let sconsts ppf scl =
+        List.iter (fun sc -> fprintf ppf "@ %a" struct_const sc) scl in
+      fprintf ppf "@[<1>[%i:@ @[%a%a@]]@]" tag struct_const sc1 sconsts scl
+  | Const_float_array [] ->
+      fprintf ppf "[| |]"
+  | Const_float_array (f1 :: fl) ->
+      let floats ppf fl =
+        List.iter (fun f -> fprintf ppf "@ %s" f) fl in
+      fprintf ppf "@[<1>[|@[%s%a@]|]@]" f1 floats fl
+
+let boxed_integer_name (i : Lambda.boxed_integer) =
+  match i with 
+  | Pnativeint -> "nativeint"
+  | Pint32 -> "int32"
+  | Pint64 -> "int64"
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s_%s" (boxed_integer_name bi) name
+
+let print_boxed_integer_conversion ppf bi1 bi2 =
+  fprintf ppf "%s_of_%s" (boxed_integer_name bi2) (boxed_integer_name bi1)
+
+let boxed_integer_mark name (i : Lambda.boxed_integer) = 
+  match i with 
+  | Pnativeint -> Printf.sprintf "Nativeint.%s" name
+  | Pint32 -> Printf.sprintf "Int32.%s" name
+  | Pint64 -> Printf.sprintf "Int64.%s" name
+
+let print_boxed_integer name ppf bi =
+  fprintf ppf "%s" (boxed_integer_mark name bi);;
+
+let print_bigarray name unsafe (kind : Lambda.bigarray_kind) ppf 
+    (layout : Lambda.bigarray_layout) =
+  fprintf ppf "Bigarray.%s[%s,%s]"
+    (if unsafe then "unsafe_"^ name else name)
+    (match kind with
+     | Lambda.Pbigarray_unknown -> "generic"
+     | Pbigarray_float32 -> "float32"
+     | Pbigarray_float64 -> "float64"
+     | Pbigarray_sint8 -> "sint8"
+     | Pbigarray_uint8 -> "uint8"
+     | Pbigarray_sint16 -> "sint16"
+     | Pbigarray_uint16 -> "uint16"
+     | Pbigarray_int32 -> "int32"
+     | Pbigarray_int64 -> "int64"
+     | Pbigarray_caml_int -> "camlint"
+     | Pbigarray_native_int -> "nativeint"
+     | Pbigarray_complex32 -> "complex32"
+     | Pbigarray_complex64 -> "complex64")
+    (match layout with
+     | Lambda.Pbigarray_unknown_layout -> "unknown"
+     | Pbigarray_c_layout -> "C"
+     | Pbigarray_fortran_layout -> "Fortran")
+
+let record_rep ppf r =
+  match r with
+  | Record_regular -> fprintf ppf "regular"
+  | Record_float -> fprintf ppf "float"
+;;
+
+let string_of_loc_kind (loc : Lambda.loc_kind) =
+  match loc with 
+  | Loc_FILE -> "loc_FILE"
+  | Loc_LINE -> "loc_LINE"
+  | Loc_MODULE -> "loc_MODULE"
+  | Loc_POS -> "loc_POS"
+  | Loc_LOC -> "loc_LOC"
+
+let primitive ppf (prim : Lambda.primitive) = match prim with 
+  | Pidentity -> fprintf ppf "id"
+  | Pmark_ocaml_object -> fprintf ppf "mark_ocaml_object"
+  | Pbytes_to_string -> fprintf ppf "bytes_to_string"
+  | Pbytes_of_string -> fprintf ppf "bytes_of_string"
+  | Pchar_to_int  -> fprintf ppf "char_to_int"
+  | Pchar_of_int -> fprintf ppf "char_of_int"
+  | Pignore -> fprintf ppf "ignore"
+  | Prevapply _ -> fprintf ppf "revapply"
+  | Pdirapply _ -> fprintf ppf "dirapply"
+  | Ploc kind -> fprintf ppf "%s" (string_of_loc_kind kind)
+  | Pgetglobal id -> fprintf ppf "global %a" Ident.print id
+  | Psetglobal id -> fprintf ppf "setglobal %a" Ident.print id
+  | Pmakeblock(tag, _, Immutable) -> fprintf ppf "makeblock %i" tag
+  | Pmakeblock(tag, _, Mutable) -> fprintf ppf "makemutable %i" tag
+  | Pfield (n,_) -> fprintf ppf "field %i" n
+  | Psetfield(n, ptr, _) ->
+      let instr = if ptr then "setfield_ptr " else "setfield_imm " in
+      fprintf ppf "%s%i" instr n
+  | Pfloatfield (n,_) -> fprintf ppf "floatfield %i" n
+  | Psetfloatfield (n,_) -> fprintf ppf "setfloatfield %i" n
+  | Pduprecord (rep, size) -> fprintf ppf "duprecord %a %i" record_rep rep size
+  | Plazyforce -> fprintf ppf "force"
+  | Pccall p -> fprintf ppf "%s" p.prim_name
+  | Praise k -> fprintf ppf "%s" (Lambda.raise_kind k)
+  | Psequand -> fprintf ppf "&&"
+  | Psequor -> fprintf ppf "||"
+  | Pnot -> fprintf ppf "not"
+  | Pnegint -> fprintf ppf "~"
+  | Paddint -> fprintf ppf "+"
+  | Psubint -> fprintf ppf "-"
+  | Pmulint -> fprintf ppf "*"
+  | Pdivint -> fprintf ppf "/"
+  | Pmodint -> fprintf ppf "mod"
+  | Pandint -> fprintf ppf "and"
+  | Porint -> fprintf ppf "or"
+  | Pxorint -> fprintf ppf "xor"
+  | Plslint -> fprintf ppf "lsl"
+  | Plsrint -> fprintf ppf "lsr"
+  | Pasrint -> fprintf ppf "asr"
+  | Pintcomp(Ceq) -> fprintf ppf "=="
+  | Pintcomp(Cneq) -> fprintf ppf "!="
+  | Pintcomp(Clt) -> fprintf ppf "<"
+  | Pintcomp(Cle) -> fprintf ppf "<="
+  | Pintcomp(Cgt) -> fprintf ppf ">"
+  | Pintcomp(Cge) -> fprintf ppf ">="
+  | Poffsetint n -> fprintf ppf "%i+" n
+  | Poffsetref n -> fprintf ppf "+:=%i"n
+  | Pintoffloat -> fprintf ppf "int_of_float"
+  | Pfloatofint -> fprintf ppf "float_of_int"
+  | Pnegfloat -> fprintf ppf "~."
+  | Pabsfloat -> fprintf ppf "abs."
+  | Paddfloat -> fprintf ppf "+."
+  | Psubfloat -> fprintf ppf "-."
+  | Pmulfloat -> fprintf ppf "*."
+  | Pdivfloat -> fprintf ppf "/."
+  | Pfloatcomp(Ceq) -> fprintf ppf "==."
+  | Pfloatcomp(Cneq) -> fprintf ppf "!=."
+  | Pfloatcomp(Clt) -> fprintf ppf "<."
+  | Pfloatcomp(Cle) -> fprintf ppf "<=."
+  | Pfloatcomp(Cgt) -> fprintf ppf ">."
+  | Pfloatcomp(Cge) -> fprintf ppf ">=."
+  | Pstringlength -> fprintf ppf "string.length"
+  | Pstringrefu -> fprintf ppf "string.unsafe_get"
+  | Pstringsetu -> fprintf ppf "string.unsafe_set"
+  | Pstringrefs -> fprintf ppf "string.get"
+  | Pstringsets -> fprintf ppf "string.set"
+  | Pbyteslength -> fprintf ppf "bytes.length"
+  | Pbytesrefu -> fprintf ppf "bytes.unsafe_get"
+  | Pbytessetu -> fprintf ppf "bytes.unsafe_set"
+  | Pbytesrefs -> fprintf ppf "bytes.get"
+  | Pbytessets -> fprintf ppf "bytes.set"
+
+  | Parraylength _ -> fprintf ppf "array.length"
+  | Pmakearray _ -> fprintf ppf "makearray "
+  | Parrayrefu _ -> fprintf ppf "array.unsafe_get"
+  | Parraysetu _ -> fprintf ppf "array.unsafe_set"
+  | Parrayrefs _ -> fprintf ppf "array.get"
+  | Parraysets _ -> fprintf ppf "array.set"
+  | Pctconst c ->
+     let const_name = match c with
+       | Big_endian -> "big_endian"
+       | Word_size -> "word_size"
+       | Ostype_unix -> "ostype_unix"
+       | Ostype_win32 -> "ostype_win32"
+       | Ostype_cygwin -> "ostype_cygwin" in
+     fprintf ppf "sys.constant_%s" const_name
+  | Pisint -> fprintf ppf "isint"
+  | Pisout -> fprintf ppf "isout"
+  | Pbittest -> fprintf ppf "testbit"
+  | Pbintofint bi -> print_boxed_integer "of_int" ppf bi
+  | Pintofbint bi -> print_boxed_integer "to_int" ppf bi
+  | Pcvtbint (bi1, bi2) -> print_boxed_integer_conversion ppf bi1 bi2
+  | Pnegbint bi -> print_boxed_integer "neg" ppf bi
+  | Paddbint bi -> print_boxed_integer "add" ppf bi
+  | Psubbint bi -> print_boxed_integer "sub" ppf bi
+  | Pmulbint bi -> print_boxed_integer "mul" ppf bi
+  | Pdivbint bi -> print_boxed_integer "div" ppf bi
+  | Pmodbint bi -> print_boxed_integer "mod" ppf bi
+  | Pandbint bi -> print_boxed_integer "and" ppf bi
+  | Porbint bi -> print_boxed_integer "or" ppf bi
+  | Pxorbint bi -> print_boxed_integer "xor" ppf bi
+  | Plslbint bi -> print_boxed_integer "lsl" ppf bi
+  | Plsrbint bi -> print_boxed_integer "lsr" ppf bi
+  | Pasrbint bi -> print_boxed_integer "asr" ppf bi
+  | Pbintcomp(bi, Ceq) -> print_boxed_integer "==" ppf bi
+  | Pbintcomp(bi, Cneq) -> print_boxed_integer "!=" ppf bi
+  | Pbintcomp(bi, Clt) -> print_boxed_integer "<" ppf bi
+  | Pbintcomp(bi, Cgt) -> print_boxed_integer ">" ppf bi
+  | Pbintcomp(bi, Cle) -> print_boxed_integer "<=" ppf bi
+  | Pbintcomp(bi, Cge) -> print_boxed_integer ">=" ppf bi
+  | Pbigarrayref(unsafe, n, kind, layout) ->
+      print_bigarray "get" unsafe kind ppf layout
+  | Pbigarrayset(unsafe, n, kind, layout) ->
+      print_bigarray "set" unsafe kind ppf layout
+  | Pbigarraydim(n) -> fprintf ppf "Bigarray.dim_%i" n
+  | Pstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get16"
+     else fprintf ppf "string.get16"
+  | Pstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get32"
+     else fprintf ppf "string.get32"
+  | Pstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_get64"
+     else fprintf ppf "string.get64"
+  | Pstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set16"
+     else fprintf ppf "string.set16"
+  | Pstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set32"
+     else fprintf ppf "string.set32"
+  | Pstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "string.unsafe_set64"
+     else fprintf ppf "string.set64"
+  | Pbigstring_load_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get16"
+     else fprintf ppf "bigarray.array1.get16"
+  | Pbigstring_load_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get32"
+     else fprintf ppf "bigarray.array1.get32"
+  | Pbigstring_load_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_get64"
+     else fprintf ppf "bigarray.array1.get64"
+  | Pbigstring_set_16(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set16"
+     else fprintf ppf "bigarray.array1.set16"
+  | Pbigstring_set_32(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set32"
+     else fprintf ppf "bigarray.array1.set32"
+  | Pbigstring_set_64(unsafe) ->
+     if unsafe then fprintf ppf "bigarray.array1.unsafe_set64"
+     else fprintf ppf "bigarray.array1.set64"
+  | Pbswap16 -> fprintf ppf "bswap16"
+  | Pbbswap(bi) -> print_boxed_integer "bswap" ppf bi
+  | Pint_as_pointer -> fprintf ppf "int_as_pointer"
+
+type print_kind = 
+  | Alias 
+  | Strict 
+  | StrictOpt 
+  | Variable 
+  | Recursive 
+
+let kind = function
+  | Alias -> "a"
+  | Strict -> ""
+  | StrictOpt -> "o"
+  | Variable -> "v" 
+  | Recursive -> "r"
+
+let to_print_kind (k : Lambda.let_kind) : print_kind = 
+  match k with 
+  | Alias -> Alias 
+  | Strict -> Strict
+  | StrictOpt -> StrictOpt
+  | Variable -> Variable
+  
+let rec aux (acc : (print_kind * Ident.t * Lam.t ) list) (lam : Lam.t) = 
+  match lam with 
+  | Llet (str3, id3, arg3, body3) ->
+      aux ((to_print_kind str3,id3, arg3)::acc) body3
+  | Lletrec (bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive,id,l)) bind_args 
+         @ acc) body
+  | e ->  (acc , e) 
+
+type left_var = 
+    {
+     kind : print_kind ;
+     id : Ident.t
+   }
+
+type left = 
+  | Id of left_var
+  | Nop
+
+
+
+
+let  flatten (lam : Lam.t) : (print_kind * Ident.t * Lam.t ) list * Lam.t = 
+  match lam with 
+  | Llet(str,id, arg, body) ->
+      aux [to_print_kind str, id, arg] body
+  | Lletrec(bind_args, body) ->
+      aux 
+        (List.map (fun (id,l) -> (Recursive, id,l)) bind_args) 
+        body
+  | _ -> assert false
+
+        
+let get_string ((id : Ident.t), (pos : int)) (env : Env.t) : string = 
+  match  Env.find_module (Pident id) env with 
+  | {md_type = Mty_signature signature  ; _ } -> 
+      (* Env.prefix_idents, could be cached  *)
+      let serializable_sigs = 
+        List.filter (fun x ->
+            match x with 
+            | Sig_typext _ 
+            | Sig_module _
+            | Sig_class _ -> true
+            | Sig_value(_, {val_kind = Val_prim _}) -> false
+            | Sig_value _ -> true
+            | _ -> false
+                    ) signature  in
+      (begin match List.nth  serializable_sigs  pos  with 
+      | Sig_value (i,_) 
+      | Sig_module (i,_,_) -> i 
+      | Sig_typext (i,_,_) -> i 
+      | Sig_modtype(i,_) -> i 
+      | Sig_class (i,_,_) -> i 
+      | Sig_class_type(i,_,_) -> i 
+      | Sig_type(i,_,_) -> i 
+      end).name
+  | _ -> assert false
+
+
+
+let lambda use_env env ppf v  =
+  let rec lam ppf (l : Lam.t) = match l with 
+  | Lvar id ->
+      Ident.print ppf id
+  | Lconst cst ->
+      struct_const ppf cst
+  | Lapply(lfun, largs, _) ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
+  | Lfunction(kind, params, body) ->
+      let pr_params ppf params =
+        match kind with
+        | Curried ->
+            List.iter (fun param -> fprintf ppf "@ %a" Ident.print param) params
+        | Tupled ->
+            fprintf ppf " (";
+            let first = ref true in
+            List.iter
+              (fun param ->
+                if !first then first := false else fprintf ppf ",@ ";
+                Ident.print ppf param)
+              params;
+            fprintf ppf ")" in
+      fprintf ppf "@[<2>(function%a@ %a)@]" pr_params params lam body
+  | Llet _ | Lletrec _ as x ->
+      let args, body =   flatten x  in
+      let bindings ppf id_arg_list =
+        let spc = ref false in
+        List.iter
+          (fun (k, id, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<2>%a =%s@ %a@]" Ident.print id (kind k) lam l)
+          id_arg_list in
+      fprintf ppf
+        "@[<2>(let@ (@[<hv 1>%a@]" bindings (List.rev args);
+      fprintf ppf ")@ %a)@]"  lam body
+  | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) when use_env ->
+      fprintf ppf "%s.%s/%d" id.name (get_string (id,n) env) n
+
+  | Lprim(Psetfield (n,_,_), [ Lprim(Pgetglobal id,[]) ;  e ]) when use_env  ->
+      fprintf ppf "@[<2>(%s.%s/%d <- %a)@]" id.name (get_string (id,n) env) n
+        lam e
+  | Lprim(prim, largs) ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(%a%a)@]" primitive prim lams largs
+  | Lswitch(larg, sw) ->
+      let switch ppf (sw : Lam.switch) =
+        let spc = ref false in
+        List.iter
+         (fun (n, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case int %i:@ %a@]" n lam l)
+         sw.sw_consts;
+        List.iter
+          (fun (n, l) ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>case tag %i:@ %a@]" n lam l)
+          sw.sw_blocks ;
+        begin match sw.sw_failaction with
+        | None  -> ()
+        | Some l ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam l
+        end in
+      fprintf ppf
+       "@[<1>(%s %a@ @[<v 0>%a@])@]"
+       (match sw.sw_failaction with None -> "switch*" | _ -> "switch")
+       lam larg switch sw
+  | Lstringswitch(arg, cases, default) ->
+      let switch ppf cases =
+        let spc = ref false in
+        List.iter
+         (fun (s, l) ->
+           if !spc then fprintf ppf "@ " else spc := true;
+           fprintf ppf "@[<hv 1>case \"%s\":@ %a@]" (String.escaped s) lam l)
+          cases;
+        begin match default with
+        | Some default ->
+            if !spc then fprintf ppf "@ " else spc := true;
+            fprintf ppf "@[<hv 1>default:@ %a@]" lam default
+        | None -> ()
+        end in
+      fprintf ppf
+       "@[<1>(stringswitch %a@ @[<v 0>%a@])@]" lam arg switch cases
+  | Lstaticraise (i, ls)  ->
+      let lams ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      fprintf ppf "@[<2>(exit@ %d%a)@]" i lams ls;
+  | Lstaticcatch(lbody, (i, vars), lhandler) ->
+      fprintf ppf "@[<2>(catch@ %a@;<1 -1>with (%d%a)@ %a)@]"
+        lam lbody i
+        (fun ppf vars -> match vars with
+          | [] -> ()
+          | _ ->
+              List.iter
+                (fun x -> fprintf ppf " %a" Ident.print x)
+                vars)
+        vars
+        lam lhandler
+  | Ltrywith(lbody, param, lhandler) ->
+      fprintf ppf "@[<2>(try@ %a@;<1 -1>with %a@ %a)@]"
+        lam lbody Ident.print param lam lhandler
+  | Lifthenelse(lcond, lif, lelse) ->
+      fprintf ppf "@[<2>(if@ %a@ %a@ %a)@]" lam lcond lam lif lam lelse
+  | Lsequence(l1, l2) ->
+      fprintf ppf "@[<2>(seq@ %a@ %a)@]" lam l1 sequence l2
+  | Lwhile(lcond, lbody) ->
+      fprintf ppf "@[<2>(while@ %a@ %a)@]" lam lcond lam lbody
+  | Lfor(param, lo, hi, dir, body) ->
+      fprintf ppf "@[<2>(for %a@ %a@ %s@ %a@ %a)@]"
+       Ident.print param lam lo
+       (match dir with Upto -> "to" | Downto -> "downto")
+       lam hi lam body
+  | Lassign(id, expr) ->
+      fprintf ppf "@[<2>(assign@ %a@ %a)@]" Ident.print id lam expr
+  | Lsend (k, met, obj, largs, _) ->
+      let args ppf largs =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
+      let kind =
+        if k = Self then "self" else if k = Cached then "cache" else "" in
+      fprintf ppf "@[<2>(send%s@ %a@ %a%a)@]" kind lam obj lam met args largs
+  | Levent(expr, _ev) ->
+      lam ppf expr
+      (* let kind = *)
+      (*  match ev.lev_kind with *)
+      (*  | Lev_before -> "before" *)
+      (*  | Lev_after _  -> "after" *)
+      (*  | Lev_function -> "funct-body" in *)
+      (* fprintf ppf "@[<2>(%s %s(%i)%s:%i-%i@ %a)@]" kind *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_fname *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_lnum *)
+      (*         (if ev.lev_loc.Location.loc_ghost then "<ghost>" else "") *)
+      (*         ev.lev_loc.Location.loc_start.Lexing.pos_cnum *)
+      (*         ev.lev_loc.Location.loc_end.Lexing.pos_cnum *)
+      (*         lam expr *)
+  | Lifused(id, expr) ->
+      fprintf ppf "@[<2>(ifused@ %a@ %a)@]" Ident.print id lam expr
+
+and sequence ppf = function
+  | Lsequence(l1, l2) ->
+      fprintf ppf "%a@ %a" sequence l1 sequence l2
+  | l ->
+      lam ppf l
+  in 
+  lam ppf v
+
+let structured_constant = struct_const
+
+let env_lambda = lambda true 
+let lambda = lambda false Env.empty
+
+let rec flatten_seq acc (lam : Lam.t) =
+  match lam with 
+  | Lsequence(l1,l2) -> 
+      flatten_seq (flatten_seq acc l1) l2
+  | x -> x :: acc 
+
+exception Not_a_module
+
+let rec flat (acc : (left * Lam.t) list ) (lam : Lam.t) = 
+  match lam with 
+  | Llet (str,id,arg,body) ->
+      flat ( (Id {kind = to_print_kind str;  id}, arg) :: acc) body 
+  | Lletrec (bind_args, body) ->
+      flat ( List.map (fun (id, arg ) -> (Id {kind = Recursive;  id}, arg)) bind_args @ acc) body 
+  | Lsequence (l,r) -> 
+      flat (flat acc l) r
+  | x -> (Nop, x) :: acc 
+
+let lambda_as_module env  ppf (lam : Lam.t) = 
+  try
+  match lam with
+  | Lprim(Psetglobal(id), [biglambda])  (* might be wrong in toplevel *) ->
+      
+      begin match flat [] biglambda  with 
+      | (Nop, Lprim (Pmakeblock (_, _, _), toplevels)) :: rest ->
+          (* let spc = ref false in *)
+          List.iter
+            (fun (left, l) ->
+              match left with 
+              | Id { kind = k; id } ->
+                  fprintf ppf "@[<2>%a =%s@ %a@]@." Ident.print id (kind k) (env_lambda env) l
+              | Nop -> 
+
+                  fprintf ppf "@[<2>%a@]@."   (env_lambda env) l
+            )
+
+            @@ List.rev rest
+          
+          
+      | _ -> raise Not_a_module
+      end
+  | _ -> raise Not_a_module
+  with _ -> 
+    env_lambda env ppf lam;
+    fprintf ppf "; lambda-failure"
+let seriaize env (filename : string) (lam : Lam.t) : unit =
+  let ou = open_out filename  in
+  let old = Format.get_margin () in
+  let () = Format.set_margin 10000 in
+  let fmt = Format.formatter_of_out_channel ou in
+  begin
+    (* lambda_as_module env fmt lambda; *)
+    lambda fmt lam;
+    Format.pp_print_flush fmt ();
+    close_out ou;
+    Format.set_margin old
+  end
+
 end
 module Ident_map : sig 
 #1 "ident_map.mli"
@@ -2873,11 +3544,11 @@ module Lam_analysis : sig
 (** A module which provides some basic analysis over lambda expression *)
 
 (** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
+val no_side_effects : Lam.t -> bool 
 
-val size : Lambda.lambda -> int
+val size : Lam.t -> int
 
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
+val eq_lambda : Lam.t -> Lam.t -> bool 
 (** a conservative version of comparing two lambdas, mostly 
     for looking for similar cases in switch
  *)
@@ -2885,9 +3556,9 @@ val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool
 (** [is_closed_by map lam]
     return [true] if all unbound variables
     belongs to the given [map] *)
-val is_closed_by : (* Lambda. *) Ident_set.t -> Lambda.lambda -> bool
+val is_closed_by : (* Lambda. *) Ident_set.t -> Lam.t -> bool
 
-val is_closed : Lambda.lambda -> bool
+val is_closed : Lam.t -> bool
 
 
 
@@ -2910,17 +3581,17 @@ type stats =
 
 val is_closed_with_map : 
   Ident_set.t ->
-  Ident.t list -> Lambda.lambda -> bool * stats Ident_map.t
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
 
 val param_map_of_list : Ident.t list -> stats Ident_map.t
 
-val free_variables : Ident_set.t -> stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
 
 val small_inline_size : int 
 val exit_inline_size : int 
 
 
-val safe_to_inline : Lambda.lambda -> bool
+val safe_to_inline : Lam.t -> bool
 
 end = struct
 #1 "lam_analysis.ml"
@@ -2953,7 +3624,7 @@ end = struct
 
 
 
-let rec no_side_effects (lam : Lambda.lambda) : bool = 
+let rec no_side_effects (lam : Lam.t) : bool = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -3153,7 +3824,7 @@ let really_big () = raise Too_big_to_inline
 
 let big_lambda = 1000
 
-let rec size (lam : Lambda.lambda) = 
+let rec size (lam : Lam.t) = 
   try 
     match lam with 
     | Lvar _ ->  1
@@ -3203,7 +3874,7 @@ and size_constant x =
     ->  List.fold_left (fun acc x -> acc + size_constant x ) 0 str
   | Const_float_array xs  -> List.length xs
 
-and size_lams acc (lams : Lambda.lambda list) = 
+and size_lams acc (lams : Lam.t list) = 
   List.fold_left (fun acc l -> acc  + size l ) acc lams
 
 let exit_inline_size = 7 
@@ -3212,7 +3883,7 @@ let small_inline_size = 5
     Actually this patten is quite common in GADT, people have to write duplicated code 
     due to the type system restriction
 *)
-let rec eq_lambda (l1 : Lambda.lambda) (l2 : Lambda.lambda) =
+let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   match (l1, l2) with
   | Lvar i1, Lvar i2 -> Ident.same i1 i2
   | Lconst c1, Lconst c2 -> c1 = c2 (* *)
@@ -3319,7 +3990,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
       else { env with top = false}
     else env      
   in    
-  let rec iter (top : env) (lam : Lambda.lambda) =
+  let rec iter (top : env) (lam : Lam.t) =
     match lam with 
     | Lvar v -> map_use top v 
     | Lconst _ -> ()
@@ -3421,7 +4092,7 @@ let is_closed_with_map exports params body =
 (* TODO:  We can relax this a bit later,
     but decide whether to inline it later in the call site
  *)
-let safe_to_inline (lam : Lambda.lambda) = 
+let safe_to_inline (lam : Lam.t) = 
   match lam with 
   | Lfunction _ ->  true
   | Lconst (Const_pointer _  | Const_immstring _ ) -> true
@@ -5720,13 +6391,13 @@ module Lam_util : sig
 
 
 
-val string_of_lambda : Lambda.lambda -> string 
+val string_of_lambda : Lam.t -> string 
 
 val string_of_primitive : Lambda.primitive -> string
 
-val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lambda.lambda list -> Lam_stats.kind
+val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
-val get : Lambda.lambda -> Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
+val get : Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
 val add_required_module : Ident.t -> Lam_stats.meta -> unit
 
@@ -5738,7 +6409,7 @@ val alias : Lam_stats.meta ->
 
 val refine_let : 
     ?kind:Lambda.let_kind ->
-      Ident.t -> Lambda.lambda -> Lambda.lambda -> Lambda.lambda
+      Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
 val generate_label : ?name:string -> unit -> J.label
@@ -5751,7 +6422,7 @@ val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
 
 
 (** [dump] when {!Js_config.is_same_file}*)
-val dump : Env.t   -> string -> Lambda.lambda -> Lambda.lambda
+val dump : Env.t   -> string -> Lam.t -> Lam.t
 
 val ident_set_of_list : Ident.t list -> Ident_set.t
 
@@ -5761,13 +6432,13 @@ val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
 
 
 
-val not_function : Lambda.lambda -> bool 
-val is_function : Lambda.lambda -> bool 
+val not_function : Lam.t -> bool 
+val is_function : Lam.t -> bool 
 
 
 val eta_conversion : 
   int ->
-  Lambda.apply_info -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+  Lambda.apply_info -> Lam.t -> Lam.t list -> Lam.t
 
 val default_apply_info : Lambda.apply_info
 
@@ -5805,9 +6476,9 @@ end = struct
 
 
 
-let string_of_lambda = Format.asprintf "%a" Printlambda.lambda 
+let string_of_lambda = Format.asprintf "%a" Lam_print.lambda 
 
-let string_of_primitive = Format.asprintf "%a" Printlambda.primitive
+let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (* TODO: not very efficient .. *)
@@ -5861,47 +6532,51 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) =
    of the bound variables of the lambda-term (no capture). *)
 
 let subst_lambda s lam =
-  let rec subst (x : Lambda.lambda) =
+  let rec subst (x : Lam.t) =
     match x with 
     | Lvar id as l ->
       begin 
         try Ident_map.find id s with Not_found -> l 
       end
     | Lconst sc as l -> l
-    | Lapply(fn, args, loc) -> Lapply(subst fn, List.map subst args, loc)
-    | Lfunction(kind, params, body) -> Lfunction(kind, params, subst body)
-    | Llet(str, id, arg, body) -> Llet(str, id, subst arg, subst body)
-    | Lletrec(decl, body) -> Lletrec(List.map subst_decl decl, subst body)
-    | Lprim(p, args) -> Lam_comb.prim p (List.map subst args)
+    | Lapply(fn, args, loc) -> 
+      Lam.apply (subst fn) (List.map subst args) loc
+    | Lfunction(kind, params, body) -> 
+      Lam.function_ kind  params (subst body)
+    | Llet(str, id, arg, body) -> 
+      Lam.let_ str id (subst arg) (subst body)
+    | Lletrec(decl, body) -> 
+      Lam.letrec (List.map subst_decl decl) (subst body)
+    | Lprim(p, args) -> Lam.prim p (List.map subst args)
     | Lswitch(arg, sw) ->
-      Lam_comb.switch (subst arg)
+      Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
                  sw_blocks = List.map subst_case sw.sw_blocks;
                  sw_failaction = subst_opt  sw.sw_failaction; }
     | Lstringswitch (arg,cases,default) ->
-      Lam_comb.stringswitch
+      Lam.stringswitch
         (subst arg) (List.map subst_strcase cases) (subst_opt default)
     | Lstaticraise (i,args)
-      ->  Lam_comb.staticraise i (List.map subst args)
+      ->  Lam.staticraise i (List.map subst args)
     | Lstaticcatch(e1, io, e2)
-      -> Lam_comb.staticcatch (subst e1) io (subst e2)
+      -> Lam.staticcatch (subst e1) io (subst e2)
     | Ltrywith(e1, exn, e2)
-      -> Lam_comb.try_ (subst e1) exn (subst e2)
+      -> Lam.try_ (subst e1) exn (subst e2)
     | Lifthenelse(e1, e2, e3)
-      -> Lam_comb.if_ (subst e1) (subst e2) (subst e3)
+      -> Lam.if_ (subst e1) (subst e2) (subst e3)
     | Lsequence(e1, e2)
-      -> Lam_comb.seq (subst e1) (subst e2)
+      -> Lam.seq (subst e1) (subst e2)
     | Lwhile(e1, e2) 
-      -> Lam_comb.while_ (subst e1) (subst e2)
+      -> Lam.while_ (subst e1) (subst e2)
     | Lfor(v, e1, e2, dir, e3) 
-      -> Lam_comb.for_ v (subst e1) (subst e2) dir (subst e3)
+      -> Lam.for_ v (subst e1) (subst e2) dir (subst e3)
     | Lassign(id, e) -> 
-      Lam_comb.assign id (subst e)
+      Lam.assign id (subst e)
     | Lsend (k, met, obj, args, loc) ->
-      Lam_comb.send k (subst met) (subst obj) (List.map subst args) loc
+      Lam.send k (subst met) (subst obj) (List.map subst args) loc
     | Levent (lam, evt)
-      -> Lam_comb.event (subst lam) evt
-    | Lifused (v, e) -> Lam_comb.ifused v (subst e)
+      -> Lam.event (subst lam) evt
+    | Lifused (v, e) -> Lam.ifused v (subst e)
   and subst_decl (id, exp) = (id, subst exp)
   and subst_case (key, case) = (key, subst case)
   and subst_strcase (key, case) = (key, subst case)
@@ -5919,7 +6594,7 @@ let subst_lambda s lam =
 *)
 let refine_let
     ?kind param
-    (arg : Lambda.lambda) (l : Lambda.lambda)  : Lambda.lambda =
+    (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
@@ -5927,7 +6602,7 @@ let refine_let
   | _, _, Lprim (fn, [Lvar w]) when Ident.same w param 
                                  &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) fn
     (* don't inline inside a block *)
-    ->  Lam_comb.prim fn [arg]
+    ->  Lam.prim fn [arg]
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -5942,7 +6617,7 @@ let refine_let
 
         here we remove the definition of [param]
     *)
-    Lapply(fn, [arg], info)
+    Lam.apply fn [arg] info
   | (Some (Strict | StrictOpt ) | None ),
     ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [])])) , _ ->
     (* (match arg with  *)
@@ -5953,7 +6628,7 @@ let refine_let
     (* No side effect and does not depend on store,
         since function evaluation is always delayed
     *)
-    Llet(Alias, param,arg, l)
+    Lam.let_ Alias param arg l
   | (Some (Strict | StrictOpt ) | None ), (Lfunction _ ), _ ->
     (*It can be promoted to [Alias], however, 
         we don't want to do this, since we don't want the 
@@ -5965,20 +6640,20 @@ let refine_let
         TODO: punish inliner to inline functions 
         into a block 
     *)
-    Llet(StrictOpt, param,arg, l)
+    Lam.let_ StrictOpt  param arg l
   (* Not the case, the block itself can have side effects 
       we can apply [no_side_effects] pass 
       | Some Strict, Lprim(Pmakeblock (_,_,Immutable),_) ->  
         Llet(StrictOpt, param, arg, l) 
   *)      
   | Some Strict, _ ,_  when Lam_analysis.no_side_effects arg ->
-    Llet(StrictOpt, param, arg,l)
+    Lam.let_ StrictOpt param arg l
   | Some Variable, _, _ -> 
-    Llet(Variable, param,arg,l) 
+    Lam.let_ Variable  param arg l
   | Some kind, _, _ -> 
-    Llet(kind, param,arg,l) 
+    Lam.let_ kind  param arg l
   | None , _, _ -> 
-    Llet(Strict, param, arg , l)
+    Lam.let_ Strict param arg  l
 
 let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
@@ -6038,7 +6713,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
        mutable fields are explicit
 *)
 
-let element_of_lambda (lam : Lambda.lambda) : Lam_stats.element = 
+let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -6046,23 +6721,23 @@ let element_of_lambda (lam : Lambda.lambda) : Lam_stats.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block kind (xs : Lambda.lambda list) : Lam_stats.kind = 
+let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
   xs 
   |> List.map element_of_lambda 
   |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
-let get lam v i tbl : Lambda.lambda =
+let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
-      [Lam_comb.prim (Pgetglobal g) []]
+    Lam.prim (Pfield (i, Lambda.Fld_na)) 
+      [Lam.prim (Pgetglobal g) []]
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
       | SimpleForm l -> l
     end
   | Constant (Const_block (_,_,ls)) -> 
-    Lconst (List.nth  ls i)
+    Lam.const (List.nth  ls i)
   | _ -> lam
   | exception Not_found -> lam 
 
@@ -6084,7 +6759,7 @@ let dump env ext  lam =
   (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
   && Js_config.is_same_file ()
   then 
-    Printlambda.seriaize env 
+    Lam_print.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
          (Js_config.get_current_file ()) ^ 
@@ -6111,11 +6786,11 @@ let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
 
 
 
-let is_function (lam : Lambda.lambda) = 
+let is_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> true | _ -> false
 
-let not_function (lam : Lambda.lambda) = 
+let not_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> false | _ -> true 
 
@@ -6128,7 +6803,7 @@ let not_function (lam : Lambda.lambda) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lambda.lambda) args info = 
+let (* rec *) lapply (fn : Lam.t) args info =
   (* match fn with *)
   (* | Lambda.Lfunction(kind, params, body) -> *)
   (*   let rec aux acc params args = *)
@@ -6143,7 +6818,7 @@ let (* rec *) lapply (fn : Lambda.lambda) args info =
   (*     (fun acc (v,e) -> *)
   (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
 
-  (* | _ -> *)  Lambda.Lapply (fn, args, info )
+  (* | _ -> *)  Lam.apply fn args info
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
@@ -6153,10 +6828,10 @@ let (* rec *) lapply (fn : Lambda.lambda) args info =
 let eta_conversion n info fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
-  let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in
-  begin match List.fold_right (fun lam (acc, bind) ->
+  let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
+  begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
-      | Lambda.Lvar _
+      | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
       | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
       | Lfunction _ 
@@ -6164,15 +6839,15 @@ let eta_conversion n info fn args =
         (lam :: acc, bind)
       | _ ->
         let v = Ident.create Literals.partial_arg in
-        (Lambda.Lvar v :: acc),  ((v, lam) :: bind)
+        (Lam.var v :: acc),  ((v, lam) :: bind)
     ) (fn::args) ([],[])   with 
   | fn::args , bindings ->
 
-    let rest : Lambda.lambda = 
-      Lfunction(Curried, extra_args,
-                lapply fn (args @ extra_lambdas) info) in
+    let rest : Lam.t = 
+      Lam.function_ Curried extra_args
+                (lapply fn (args @ extra_lambdas) info) in
     List.fold_left (fun lam (id,x) ->
-        Lambda.Llet (Strict, id, x,lam)
+        Lam.let_ Strict id x lam
       ) rest bindings
   | _, _ -> assert false
   end
@@ -6362,16 +7037,16 @@ module Lam_group : sig
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
-  | Recursive of (Ident.t * Lambda.lambda) list
-  | Nop of Lambda.lambda 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
 
 
-val flatten : t list -> Lambda.lambda -> Lambda.lambda * t list
+val flatten : t list -> Lam.t -> Lam.t * t list
 
-val lambda_of_groups : Lambda.lambda -> t list -> Lambda.lambda
+val lambda_of_groups : Lam.t -> t list -> Lam.t
 
-val deep_flatten : Lambda.lambda -> Lambda.lambda
+val deep_flatten : Lam.t -> Lam.t
 (** Tricky to be complete *)
 
 val pp_group : Env.t -> Format.formatter -> t -> unit
@@ -6408,9 +7083,9 @@ end = struct
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
-  | Recursive of (Ident.t * Lambda.lambda) list
-  | Nop of Lambda.lambda 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
 
 
 let pp = Format.fprintf 
@@ -6426,18 +7101,18 @@ let pp_group env fmt ( x : t) =
   match x with
   | Single (kind, id, lam) ->
     Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
-      (Printlambda.env_lambda env) lam
+      (Lam_print.env_lambda env) lam
   | Recursive lst -> 
     List.iter (fun (id,lam) -> 
         Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Printlambda.env_lambda env) lam
+          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
       ) lst
-  | Nop lam -> Printlambda.env_lambda env fmt lam
+  | Nop lam -> Lam_print.env_lambda env fmt lam
 
 
 let rec flatten 
     (acc :  t list ) 
-    (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+    (lam : Lam.t) :  Lam.t *  t list = 
   match lam with 
   | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
   | Llet (str,id,arg,body) -> 
@@ -6480,9 +7155,9 @@ let rec flatten
 let lambda_of_groups result groups = 
   List.fold_left (fun acc x -> 
       match x with 
-      | Nop l -> Lam_comb.seq l acc
+      | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
-      | Recursive bindings -> Lletrec (bindings,acc)) 
+      | Recursive bindings -> Lam.letrec bindings acc) 
     result groups
 
 
@@ -6493,11 +7168,11 @@ let lambda_of_groups result groups =
     return value are in reverse order, but handled by [lambda_of_groups]
 *)
 let deep_flatten
-    (lam : Lambda.lambda) :  Lambda.lambda  = 
+    (lam : Lam.t) :  Lam.t  = 
   let rec
     flatten 
       (acc :  t list ) 
-      (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+      (lam : Lam.t) :  Lam.t *  t list = 
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
@@ -6518,9 +7193,11 @@ let deep_flatten
                             [arg]), body)
       -> 
       let id' = Ident.rename id in 
-      flatten acc (Llet (str, id', arg, 
-                         Llet(Alias, id, Lam_comb.prim (Pccall p)  [Lvar id'], body)
-                        ))
+      flatten acc 
+        (Lam.let_ str id' arg 
+               (Lam.let_ Alias id (Lam.prim (Pccall p)  [Lam.var id'])
+                  body)
+              )
     | Llet (str,id,arg,body) -> 
       let (res,l) = flatten acc arg  in
       flatten (Single(str, id, res ) :: l) body
@@ -6548,7 +7225,7 @@ let deep_flatten
     | x ->  
       aux x, acc      
 
-  and aux  (lam : Lambda.lambda) : Lambda.lambda= 
+  and aux  (lam : Lam.t) : Lam.t= 
     match lam with 
     | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 
@@ -6623,7 +7300,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lambda.free_variables lam in
+              let variables = Lam.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -6646,11 +7323,11 @@ let deep_flatten
             | Nop _ -> assert false 
           ) ([], collections, []) groups in
       lambda_of_groups 
-        (Lletrec (
+        (Lam.letrec 
             result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *), 
-            aux body)) (List.rev wrap)
-    | Lsequence (l,r) -> Lam_comb.seq (aux l) (aux r)
+            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
+            (aux body)) (List.rev wrap)
+    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 
     (* | Lapply(Lfunction(Curried, params, body), args, _) *)
@@ -6662,7 +7339,8 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply(l1, ll, info) -> Lapply(aux l1,List.map aux ll, info)
+    | Lapply(l1, ll, info) -> 
+      Lam.apply (aux l1) (List.map aux ll) info
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
@@ -6671,12 +7349,14 @@ let deep_flatten
     | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
             [ Lconst (Const_base (Const_int64 i))]) 
       ->  
-      Lconst (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
     | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
             [ Lconst (Const_base (Const_int64 i))]) 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
-      Lconst (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lprim(p, ll)
       -> 
       begin
@@ -6685,23 +7365,26 @@ let deep_flatten
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply (f, args, _)]
         | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Prevapply loc, [x; f] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; f] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         (* Simplify %apply, for n-ary functions with n > 1 *)
         | Pdirapply loc, [Lapply(f, args, _); x]
         | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
-        | _ -> Lam_comb.prim p ll
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [f; x] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+        | _ -> Lam.prim p ll
       end
-    | Lfunction(kind, params, l) -> Lfunction (kind, params , aux  l)
+    | Lfunction(kind, params, l) -> 
+      Lam.function_ kind params  (aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
                   sw_numblocks;
                   sw_numconsts;
                  }) ->
-      Lam_comb.switch (aux  l)
+      Lam.switch (aux  l)
               {sw_consts = 
                  List.map (fun (v, l) -> v, aux  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
@@ -6714,37 +7397,37 @@ let deep_flatten
                    | Some x -> Some (aux x)
                  end}
     | Lstringswitch(l, sw, d) ->
-      Lam_comb.stringswitch (aux  l) 
+      Lam.stringswitch (aux  l) 
                     (List.map (fun (i, l) -> i,aux  l) sw)
                     (match d with
                      | Some d -> Some (aux d )
                      | None -> None)
 
     | Lstaticraise (i,ls) 
-      -> Lam_comb.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (List.map aux  ls)
     | Lstaticcatch(l1, ids, l2) 
       -> 
-      Lam_comb.staticcatch (aux  l1) ids (aux  l2)
+      Lam.staticcatch (aux  l1) ids (aux  l2)
     | Ltrywith(l1, v, l2) ->
-      Lam_comb.try_ (aux  l1) v (aux  l2)
+      Lam.try_ (aux  l1) v (aux  l2)
     | Lifthenelse(l1, l2, l3) 
       -> 
-      Lam_comb.if_ (aux  l1) (aux l2) (aux l3)
+      Lam.if_ (aux  l1) (aux l2) (aux l3)
     | Lwhile(l1, l2) 
       -> 
-      Lam_comb.while_ (aux  l1) (aux l2)
+      Lam.while_ (aux  l1) (aux l2)
     | Lfor(flag, l1, l2, dir, l3) 
       -> 
-      Lam_comb.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
+      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
     | Lassign(v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refaux *)
-      Lam_comb.assign v (aux  l)
+      Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) -> 
-      Lam_comb.send u (aux m) (aux o) (List.map aux ll) v
+      Lam.send u (aux m) (aux o) (List.map aux ll) v
 
     (* Levent(aux  l, event) *)
-    | Lifused(v, l) -> Lifused(v,aux  l)
+    | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam
 
 end
@@ -7074,7 +7757,8 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
       match x with
       | Single(kind, id,lam) -> (* assert false *)
           begin
-            Hashtbl.add ident_free_vars id (Lambda.free_variables lam);
+            Hashtbl.add ident_free_vars id 
+              (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> []
             | Strict | Variable -> [id]
@@ -7083,8 +7767,8 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           begin
             bindings |> Ext_list.flat_map (fun (id,lam) ->
               begin
-                Hashtbl.add ident_free_vars id (Lambda.free_variables lam);
-                match (lam : Lambda.lambda) with
+                Hashtbl.add ident_free_vars id (Lam.free_variables lam);
+                match (lam : Lam.t) with
                 | Lfunction _ -> []
                 | _ -> [id]
               end)
@@ -7093,7 +7777,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then []
           else 
             (** its free varaibles here will be defined above *)
-            I.elements ( Lambda.free_variables lam)) rest  @ export_idents
+            I.elements ( Lam.free_variables lam)) rest  @ export_idents
   in
   let current_ident_sets = 
     Idents_analysis.calculate_used_idents ident_free_vars 
@@ -9586,7 +10270,7 @@ val exp : ?comment:string  -> J.expression -> t
 
 val return : ?comment:string  -> J.expression -> t
 
-val unknown_lambda : ?comment:string  -> Lambda.lambda -> t
+val unknown_lambda : ?comment:string  -> Lam.t -> t
 
 val return_unit : ?comment:string -> unit -> t
 (** for ocaml function which returns unit 
@@ -9950,7 +10634,7 @@ let try_ ?comment   ?with_ ?finally body : t =
     comment
   }
 
-let unknown_lambda ?(comment="unknown")  (lam : Lambda.lambda ) : t = 
+let unknown_lambda ?(comment="unknown")  (lam : Lam.t ) : t = 
   exp @@ E.str ~comment ~pure:false (Lam_util.string_of_lambda lam) 
 
 (* TODO: 
@@ -12429,12 +13113,12 @@ val dummy : t
 val handle_name_tail :
     Lam_compile_defs.st ->
     Lam_compile_defs.return_type ->
-    Lambda.lambda ->  J.expression -> t
+    Lam.t ->  J.expression -> t
 
 val handle_block_return : 
     Lam_compile_defs.st ->
     Lam_compile_defs.return_type ->
-    Lambda.lambda ->
+    Lam.t ->
     J.block -> J.expression -> t
 
 val concat : t list -> t
@@ -12525,7 +13209,7 @@ let handle_name_tail
 let handle_block_return 
     (st : st) 
     (should_return : Lam_compile_defs.return_type)
-    (lam : Lambda.lambda) (block : J.block) exp : t = 
+    (lam : Lam.t) (block : J.block) exp : t = 
   match st, should_return with 
   | Declare (kind,n), False -> 
     make (block @ [ S.define ~kind  n exp])
@@ -12682,7 +13366,7 @@ module Js_cmj_format : sig
 
 type cmj_value = {
   arity : Lam_stats.function_arities ;
-  closed_lambda : Lambda.lambda option ; 
+  closed_lambda : Lam.t option ; 
   (* Either constant or closed functor *)
 }
 
@@ -12742,7 +13426,7 @@ end = struct
 (* TODO: add a magic number *)
 type cmj_value = {
   arity : Lam_stats.function_arities ;
-  closed_lambda : Lambda.lambda option ; 
+  closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
 
@@ -13069,7 +13753,7 @@ type ident_info = {
   name : string;
   signatures : Types.signature;
   arity : Lam_stats.function_arities; 
-  closed_lambda : Lambda.lambda option 
+  closed_lambda : Lam.t option 
 }
 
 type module_info = {
@@ -13194,7 +13878,7 @@ type ident_info = {
   name : string;
   signatures : Types.signature;
   arity : Lam_stats.function_arities; 
-  closed_lambda : Lambda.lambda option 
+  closed_lambda : Lam.t option 
 }
 
 (*
@@ -13680,7 +14364,7 @@ module Lam_exit_code : sig
 
 
 
-val has_exit_code : (int -> bool ) -> Lambda.lambda -> bool 
+val has_exit_code : (int -> bool ) -> Lam.t -> bool 
 
 end = struct
 #1 "lam_exit_code.ml"
@@ -13713,68 +14397,68 @@ end = struct
 
 
 
-let rec has_exit_code exits  (lam : Lambda.lambda)  : bool = 
+let rec has_exit_code exits  (lam : Lam.t)  : bool = 
   match lam with
-  | Lambda.Lvar _
-  | Lambda.Lconst _ 
-  | Lambda.Lfunction _ (* static exit can not across function boundary *)
+  | Lvar _
+  | Lconst _ 
+  | Lfunction _ (* static exit can not across function boundary *)
     -> false
-  | Lambda.Lapply (l,args,_apply_info) 
+  | Lapply (l,args,_apply_info) 
     -> has_exit_code exits l || List.exists (fun x -> has_exit_code exits x ) args 
 
-  | Lambda.Llet (_kind,_id,v,body) 
+  | Llet (_kind,_id,v,body) 
     -> has_exit_code exits v || has_exit_code exits body
-  | Lambda.Lletrec (binding,body) ->
+  | Lletrec (binding,body) ->
     List.exists (fun (_, l) -> has_exit_code exits l ) binding ||
     has_exit_code exits body    
-  | Lambda.Lprim (_,ls) 
+  | Lprim (_,ls) 
     -> List.exists (fun x -> has_exit_code exits x) ls
-  | Lambda.Lswitch (l,lam_switch) 
+  | Lswitch (l,lam_switch) 
     -> has_exit_code exits l || has_exit_code_lam_switch exits lam_switch
 
-  | Lambda.Lstringswitch (l,ls,opt) -> 
+  | Lstringswitch (l,ls,opt) -> 
     has_exit_code exits l ||
     List.exists (fun (_,l) -> has_exit_code exits l) ls ||
     (match opt with 
     | None -> false
     | Some x -> has_exit_code exits l )
-  | Lambda.Lstaticraise (v,ls) ->
+  | Lstaticraise (v,ls) ->
       exits v ||    
     List.exists (has_exit_code exits) ls
-  | Lambda.Lstaticcatch (l,_,handler) 
+  | Lstaticcatch (l,_,handler) 
     ->
     has_exit_code exits l || has_exit_code exits handler
-  | Lambda.Ltrywith (l,_, handler) 
+  | Ltrywith (l,_, handler) 
     ->
     has_exit_code exits l || has_exit_code exits handler
-  | Lambda.Lifthenelse (a,b,c) 
+  | Lifthenelse (a,b,c) 
     -> 
     has_exit_code exits a || has_exit_code exits b || has_exit_code exits c
-  | Lambda.Lsequence (a,b) 
+  | Lsequence (a,b) 
     ->
     has_exit_code exits a || has_exit_code exits b
-  | Lambda.Lwhile (a,b) 
+  | Lwhile (a,b) 
     ->
     has_exit_code exits a || has_exit_code exits b
-  | Lambda.Lfor (_,a,b,_dir,body) -> 
+  | Lfor (_,a,b,_dir,body) -> 
     has_exit_code exits a 
     || has_exit_code exits b
     || has_exit_code exits body
     
-  | Lambda.Lassign (_,a) 
+  | Lassign (_,a) 
     -> 
     has_exit_code exits a
-  | Lambda.Lsend (_,obj,l,ls,_loc) 
+  | Lsend (_,obj,l,ls,_loc) 
     -> 
     has_exit_code exits obj ||
     has_exit_code exits l ||
     List.exists (has_exit_code exits) ls
-  | Lambda.Levent (b,_) 
+  | Levent (b,_) 
     -> has_exit_code exits b
-  | Lambda.Lifused (_,b) 
+  | Lifused (_,b) 
     -> has_exit_code exits b
 
-and has_exit_code_lam_switch exits (lam_switch : Lambda.lambda_switch) = 
+and has_exit_code_lam_switch exits (lam_switch : Lam.switch) = 
   match lam_switch with
    | { sw_numconsts = _; sw_consts; sw_numblocks = _ ; sw_blocks; sw_failaction } ->
      List.exists (fun (_,l) -> has_exit_code exits l) sw_consts ||
@@ -14030,7 +14714,7 @@ val get_exp : Lam_compile_env.key  -> J.expression
 
 
 
-val query_lambda : Ident.t -> Env.t -> Lambda.lambda
+val query_lambda : Ident.t -> Env.t -> Lam.t
 
 end = struct
 #1 "lam_compile_global.ml"
@@ -14081,10 +14765,10 @@ let query_lambda id env =
     (Has_env env)
     ~not_found:(fun id -> assert false)
     ~found:(fun {signature = sigs; _} -> 
-        Lam_comb.prim (Pmakeblock(0, Blk_module None, Immutable))  
+        Lam.prim (Pmakeblock(0, Blk_module None, Immutable))  
                       (List.mapi (fun i _ -> 
-                           Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
-                             [Lam_comb.prim (Pgetglobal id) [] ])
+                           Lam.prim (Pfield (i, Lambda.Fld_na)) 
+                             [Lam.prim (Pgetglobal id) [] ])
                         sigs)
       )
 
@@ -17869,7 +18553,7 @@ module Lam_beta_reduce_util : sig
 
 
 val simple_beta_reduce : 
-  Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda option
+  Ident.t list -> Lam.t -> Lam.t list -> Lam.t option
 
 end = struct
 #1 "lam_beta_reduce_util.ml"
@@ -17913,7 +18597,7 @@ end = struct
 
 type value = 
   { mutable used : bool ; 
-    lambda  : Lambda.lambda
+    lambda  : Lam.t
   }
 let param_hash : (Ident.t , value) Hashtbl.t = Hashtbl.create 20
 let simple_beta_reduce params body args = 
@@ -17925,7 +18609,7 @@ let simple_beta_reduce params body args =
       else exp.used <- true; exp.lambda
     | exception Not_found -> opt
   in  
-  let rec aux acc (us : Lambda.lambda list) = 
+  let rec aux acc (us : Lam.t list) = 
     match us with 
     | [] -> List.rev acc
     | (Lvar x as a ) :: rest 
@@ -17935,14 +18619,14 @@ let simple_beta_reduce params body args =
       -> aux (u :: acc) rest 
     | _ :: _ -> raise E.Not_simple_apply 
   in 
-  match (body : Lambda.lambda) with 
+  match (body : Lam.t) with 
   | Lprim ( primitive , args' )  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
     (* Note in a very special case we can avoid any allocation
        {[
          when Ext_list.for_all2_no_exn
              (fun p a ->
-                match (a : Lambda.lambda) with
+                match (a : Lam.t) with
                 | Lvar a -> Ident.same p a
                 | _ -> false ) params args'
        ]}*)
@@ -17954,8 +18638,8 @@ let simple_beta_reduce params body args =
       let result = 
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
-              Lam_comb.seq lambda code
-            else code) param_hash (Lam_comb.prim primitive us) in 
+              Lam.seq lambda code
+            else code) param_hash (Lam.prim primitive us) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
@@ -17979,9 +18663,9 @@ let simple_beta_reduce params body args =
           Hashtbl.fold 
             (fun _param {lambda; used} code -> 
                if not used then 
-                 Lam_comb.seq lambda code
+                 Lam.seq lambda code
                else code )
-            param_hash (Lambda.Lapply ( f, us , info)) in
+            param_hash (Lam.apply  f us  info) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 
@@ -18116,7 +18800,7 @@ module Lam_beta_reduce : sig
 (** Beta reduction of lambda IR *)
 
 
-val beta_reduce : Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->
         let paramN = argN in ... let param1 = arg1 in body
@@ -18134,14 +18818,14 @@ val beta_reduce : Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.
 val propogate_beta_reduce : 
   Lam_stats.meta -> 
   Ident.t list -> 
-  Lambda.lambda -> 
-  Lambda.lambda list -> 
-  Lambda.lambda
+  Lam.t -> 
+  Lam.t list -> 
+  Lam.t
 
 
 val refresh : 
-  Lambda.lambda -> 
-  Lambda.lambda 
+  Lam.t -> 
+  Lam.t 
 
 (** 
    {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
@@ -18167,7 +18851,7 @@ val propogate_beta_reduce_with_map :
   Lam_stats.meta ->
   Lam_analysis.stats Ident_map.t ->
   Ident.t list ->
-  Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+  Lam.t -> Lam.t list -> Lam.t
 
 end = struct
 #1 "lam_beta_reduce.ml"
@@ -18242,11 +18926,11 @@ end = struct
    3. arguments are const or not   
 *)
 let rewrite (map :   (Ident.t, _) Hashtbl.t) 
-    (lam : Lambda.lambda) : Lambda.lambda = 
+    (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i (Lambda.Lvar i');
+    Hashtbl.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -18254,7 +18938,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     match op with 
     | None -> None 
     | Some x -> Some (aux x)
-  and aux (lam : Lambda.lambda) : Lambda.lambda = 
+  and aux (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       begin 
@@ -18265,36 +18949,36 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let v = rebind v in
       let l1 = aux l1 in      
       let l2 = aux l2 in
-      Llet(str, v,  l1,  l2 )
+      Lam.let_ str v  l1  l2 
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
       let vars = List.map (fun (k, _) -> rebind k) bindings in 
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
-      Lletrec(bindings, body) 
+      Lam.letrec bindings body
     | Lfunction(kind, params, body) -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lfunction (kind, params, body)
+      Lam.function_ kind params body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
       let l2 = aux l2 in
-      Lam_comb.staticcatch l1 (i,xs) l2
+      Lam.staticcatch l1 (i,xs) l2
     | Lfor(ident, l1, l2, dir, l3) ->
       let ident = rebind ident in 
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lam_comb.for_ ident (aux  l1)  l2 dir  l3
+      Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
     | Lprim(prim, ll) ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam_comb.prim prim (List.map aux  ll)
+      Lam.prim prim (List.map aux  ll)
     | Lapply(fn, args, info) ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lapply(fn, args, info)
+      Lam.apply fn  args info
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -18302,7 +18986,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
                   sw_numconsts;
                  }) ->
       let l = aux l in
-      Lam_comb.switch l
+      Lam.switch l
               {sw_consts = 
                  List.map (fun (v, l) -> v, aux  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
@@ -18312,42 +18996,42 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
               }
     | Lstringswitch(l, sw, d) ->
       let l = aux  l in
-      Lam_comb.stringswitch l 
+      Lam.stringswitch l 
                      (List.map (fun (i, l) -> i,aux  l) sw)
                      (option_map d)
     | Lstaticraise (i,ls) 
-      -> Lam_comb.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (List.map aux  ls)
     | Ltrywith(l1, v, l2) -> 
       let l1 = aux l1 in
       let v = rebind v in
       let l2 = aux l2 in
-      Lam_comb.try_ l1 v l2
+      Lam.try_ l1 v l2
     | Lifthenelse(l1, l2, l3) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
       let l3 = aux l3 in
-      Lam_comb.if_ l1  l2   l3
+      Lam.if_ l1  l2   l3
     | Lsequence(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lam_comb.seq l1 l2
+      Lam.seq l1 l2
     | Lwhile(l1, l2) -> 
       let l1 = aux l1 in
       let l2 = aux l2 in
-      Lam_comb.while_  l1  l2
+      Lam.while_  l1  l2
     | Lassign(v, l) 
-      -> Lam_comb.assign v (aux  l)
+      -> Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) ->
       let m = aux m in 
       let o = aux o in 
       let ll = List.map aux ll in
-      Lam_comb.send u  m  o  ll v
+      Lam.send u  m  o  ll v
     | Levent(l, event) ->
       let l = aux l in
-      Lam_comb.event  l event
+      Lam.event  l event
     | Lifused(v, l) -> 
       let l = aux l in 
-      Lam_comb.ifused v  l
+      Lam.ifused v  l
   in 
   aux lam
 
@@ -18386,17 +19070,17 @@ let propogate_beta_reduce
   | None -> 
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
          | _ -> 
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
@@ -18426,7 +19110,7 @@ let propogate_beta_reduce_with_map
   | None ->
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
@@ -18434,7 +19118,7 @@ let propogate_beta_reduce_with_map
            (* TODO: we can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
@@ -18446,15 +19130,15 @@ let propogate_beta_reduce_with_map
                  rest_bindings, arg :: acc                
                | _  ->  
                  let p = Ident.rename old_param in 
-                 (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+                 (p,arg) :: rest_bindings , (Lam.var p) :: acc 
              end
            else
              let p = Ident.rename old_param in 
-             (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+             (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
@@ -18614,12 +19298,12 @@ val compile_let :
   Lambda.let_kind ->
   Lam_compile_defs.cxt -> 
   J.ident -> 
-  Lambda.lambda -> 
+  Lam.t -> 
   Js_output.t
 
-val compile_recursive_lets : Lam_compile_defs.cxt -> (Ident.t * Lambda.lambda) list -> Js_output.t
+val compile_recursive_lets : Lam_compile_defs.cxt -> (Ident.t * Lam.t) list -> Js_output.t
 
-val compile_lambda : Lam_compile_defs.cxt -> Lambda.lambda -> Js_output.t
+val compile_lambda : Lam_compile_defs.cxt -> Lam.t -> Js_output.t
 
 end = struct
 #1 "lam_compile.ml"
@@ -18664,8 +19348,8 @@ let method_cache_id = ref 1 (*TODO: move to js runtime for re-entrant *)
 
 
 (* assume outer is [Lstaticcatch] *)
-let rec flat_catches acc (x : Lambda.lambda)
-  : (int * Lambda.lambda * Ident.t  list ) list * Lambda.lambda = 
+let rec flat_catches acc (x : Lam.t)
+  : (int * Lam.t * Ident.t  list ) list * Lam.t = 
   match x with 
   | Lstaticcatch( Lstaticcatch(l, (code,bindings), handler), (code1, bindings1),handler1) 
     when 
@@ -18693,7 +19377,7 @@ let flatten_caches  x = flat_catches [] x
 let translate_dispatch = ref (fun _ -> assert false)
 
 type default_case = 
-  | Default of Lambda.lambda
+  | Default of Lam.t
   | Complete
   | NonComplete
 
@@ -18786,7 +19470,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
     ~found:(fun {id; name;arity; closed_lambda ; _} -> 
         let args_code, args = 
           List.fold_right 
-            (fun (x : Lambda.lambda) (args_code, args)  ->
+            (fun (x : Lam.t) (args_code, args)  ->
                match x with 
                | Lprim (Pgetglobal i, [] ) -> 
                  (* when module is passed as an argument - unpack to an array
@@ -18873,7 +19557,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
              aux (E.ml_var_dot id name) arity args (List.length args ))
       )
 
-and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js_output.t =
+and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lam.t) : Js_output.t =
 
 
   match flag, arg  with 
@@ -18886,7 +19570,7 @@ and  compile_let flag (cxt : Lam_compile_defs.cxt) id (arg : Lambda.lambda) : Js
 and compile_recursive_let 
     (cxt : Lam_compile_defs.cxt)
     (id : Ident.t)
-    (arg : Lambda.lambda)   : Js_output.t * Ident.t list = 
+    (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
   |  Lfunction (kind, params, body)  -> 
     (* Invariant:  jmp_table can not across function boundary,
@@ -18937,7 +19621,7 @@ and compile_recursive_let
           E.fun_ params (Js_output.to_block output )
       ), [] 
   | Lprim (Pmakeblock (0, _, _) , ls)
-    when List.for_all (function  | Lambda.Lvar _  -> true | _ -> false) ls 
+    when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -18946,7 +19630,7 @@ and compile_recursive_let
       S.define ~kind:Variable id (E.arr Mutable []) :: 
       (List.mapi (fun i x -> 
           match x with  
-          | Lambda.Lvar lid
+          | Lam.Lvar lid
             -> S.exp 
                  (Js_array.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
           | _ -> assert false
@@ -19025,7 +19709,7 @@ and compile_general_cases :
    ?declaration:Lambda.let_kind * Ident.t  -> 
    _ -> 'a J.case_clause list ->  J.statement) -> 
   _ -> 
-  ('a * Lambda.lambda) list -> default_case -> J.block 
+  ('a * Lam.t) list -> default_case -> J.block 
   = fun f eq cxt switch v table default -> 
     let wrap (cxt : Lam_compile_defs.cxt) k =
       let cxt, define =
@@ -19108,7 +19792,7 @@ and compile_string_cases cxt = compile_general_cases E.str E.string_equal cxt
 and
   compile_lambda
     ({st ; should_return; jmp_table; meta = {env ; _} } as cxt : Lam_compile_defs.cxt)
-    (lam : Lambda.lambda)  : Js_output.t  =
+    (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
     | Lfunction(kind, params, body) ->
@@ -19134,7 +19818,7 @@ and
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info App_na)))
+        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
     (* External function calll *)
     | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
              {apply_status = App_na | App_ml_full}) ->
@@ -19151,7 +19835,7 @@ and
       *)
       begin 
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
-          List.fold_right (fun (x : Lambda.lambda) (args_code, fn_code )-> 
+          List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
               | Lprim (Pgetglobal ident, []) -> 
                 (* when module is passed as an argument - unpack to an array
@@ -19305,7 +19989,7 @@ and
         | {should_return = True _ } 
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt (Lam_comb.sequand  l r )
+          compile_lambda cxt (Lam.sequand  l r )
         | _ -> 
           let l_block,l_expr = 
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with 
@@ -19328,7 +20012,7 @@ and
         | {should_return = True _ }
           (* Invariant: if [should_return], then [st] will not be [NeedValue] *)
           ->
-          compile_lambda cxt @@ Lam_comb.sequor l r
+          compile_lambda cxt @@ Lam.sequor l r
         | _ ->
           let l_block,l_expr =
             match compile_lambda {cxt with st = NeedValue; should_return = False} l with
@@ -19481,9 +20165,10 @@ and
               {block = block1; value = Some value}, Public (Some setter) 
               ->
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
-                compile_lambda cxt @@ Lapply (fn, [arg] , 
-                                              {apply_loc = Location.none;
-                                               apply_status = App_js_full})
+                compile_lambda cxt @@ 
+                Lam.apply fn [arg]  
+                  {apply_loc = Location.none;
+                   apply_status = App_js_full}
               else 
                 let property =
                   String.sub setter 0 
@@ -19502,9 +20187,9 @@ and
 
         | fn :: rest -> 
           compile_lambda cxt 
-            (Lapply (fn, rest , 
+            (Lam.apply fn rest 
                      {apply_loc = Location.none;
-                      apply_status = App_js_full}))
+                      apply_status = App_js_full})
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -19529,18 +20214,19 @@ and
               begin 
                 match fn with 
                 | Lfunction (_, [_], body)
-                  -> compile_lambda cxt (Lfunction (Curried, [], body))
+                  -> compile_lambda cxt (Lam.function_ Curried [] body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lfunction (Lambda.Curried, [],
-                                Lambda.Lapply(fn,
-                                              [Lam_comb.unit],
-                                              Lam_util.default_apply_info
-                                             )))
+                    (Lam.function_ Lambda.Curried [] 
+                     @@ 
+                       Lam.apply fn
+                         [Lam.unit]
+                     Lam_util.default_apply_info
+                    )
               end
             else 
               begin match fn with
-                | Lambda.Lfunction(kind,args, body) 
+                | Lam.Lfunction(kind,args, body) 
                   ->
                   let len =  List.length args in 
                   if len = arity then
@@ -19548,8 +20234,8 @@ and
                   else if len > arity then 
                     let first, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lambda.Lfunction 
-                         (kind, first, Lambda.Lfunction (kind, rest, body)))
+                      (Lam.function_
+                         kind first (Lam.function_ kind rest body))
                   else 
                     compile_lambda cxt 
                       (Lam_util.eta_conversion arity Lam_util.default_apply_info  
@@ -19577,7 +20263,7 @@ and
         end
     | Lprim(prim, args_lambda) -> 
       let args_block, args_expr =
-        Ext_list.split_map (fun (x : Lambda.lambda) ->
+        Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
             with 
             | {block = a; value = Some b} -> a,b
@@ -19827,7 +20513,7 @@ and
         | {exit_id; args ; order_id} -> 
           let args_code  =
             (Js_output.concat @@ List.map2 (
-                fun (x : Lambda.lambda) (arg : Ident.t) ->
+                fun (x : Lam.t) (arg : Ident.t) ->
                   match x with
                   | Lvar id -> 
                     Js_output.make [S.assign arg (E.var id)]
@@ -20113,7 +20799,7 @@ and
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 
-      compile_lambda cxt (Ltrywith(body, id, cont))
+      compile_lambda cxt (Lam.try_ body id cont)
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (* 
          tail --> should be renamed to `shouldReturn`  
@@ -20199,7 +20885,7 @@ and
 
       begin match 
         (met :: obj :: args) 
-        |> Ext_list.split_map (fun (x : Lambda.lambda) -> 
+        |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
             | Lprim (Pgetglobal i, []) -> 
               [], Lam_compile_global.get_exp  (i, env, true)
@@ -20319,7 +21005,7 @@ val pp_alias_tbl : Format.formatter -> Lam_stats.alias_tbl  -> unit
 
 val pp_arities : Format.formatter -> Lam_stats.function_arities -> unit
 
-val get_arity : Lam_stats.meta -> Lambda.lambda -> Lam_stats.function_arities
+val get_arity : Lam_stats.meta -> Lam.t -> Lam_stats.function_arities
 
 (* val dump_exports_arities : Lam_stats.meta -> unit *)
 
@@ -20402,7 +21088,7 @@ let merge
 *)
 let rec get_arity 
     (meta : Lam_stats.meta) 
-    (lam : Lambda.lambda) : 
+    (lam : Lam.t) : 
   Lam_stats.function_arities = 
   match lam with 
   | Lconst _ -> Determin (true,[], false)
@@ -20518,11 +21204,11 @@ let rec get_arity
   | Lfor _  
   | Lassign _ -> Determin(true,[], false)
 
-and all_lambdas meta (xs : Lambda.lambda list) = 
+and all_lambdas meta (xs : Lam.t list) = 
   match xs with 
   | y :: ys -> 
     let arity =  get_arity meta y in 
-    List.fold_left (fun exist (v : Lambda.lambda) -> 
+    List.fold_left (fun exist (v : Lam.t) -> 
         match (exist : Lam_stats.function_arities) with 
         | NA -> NA 
         | Determin (b, xs, tail) -> 
@@ -20601,7 +21287,7 @@ module Lam_inline_util : sig
 
 val maybe_functor : string -> bool
 
-val should_be_functor : string -> Lambda.lambda -> bool 
+val should_be_functor : string -> Lam.t -> bool 
 
 end = struct
 #1 "lam_inline_util.ml"
@@ -20642,7 +21328,8 @@ let maybe_functor (name : string) =
 
 
 let should_be_functor (name : string) lam = 
-  maybe_functor name  && (function | Lambda.Lfunction _ -> true | _ -> false) lam
+  maybe_functor name  && 
+  (function | Lam.Lfunction _ -> true | _ -> false) lam
 
 (* TODO: add a context, like 
     [args]
@@ -20650,7 +21337,7 @@ let should_be_functor (name : string) lam =
  *)
 
 (* HONGBO .. doe snot look like this function is used (not in .mli) *) 
-(* let app_definitely_inlined (body : Lambda.lambda) =  *)
+(* let app_definitely_inlined (body : Lam.t) =  *)
 (*   match body with  *)
 (*   | Lvar _  *)
 (*   | Lconst _ *)
@@ -20785,7 +21472,7 @@ val export_to_cmj :
   Lam_stats.meta ->
   Js_cmj_format.effect ->
   Lam_module_ident.t list ->
-  Lambda.lambda Ident_map.t -> Js_cmj_format.t
+  Lam.t Ident_map.t -> Js_cmj_format.t
 
 
 end = struct
@@ -20868,7 +21555,7 @@ let export_to_cmj
 
     List.fold_left
       (fun   acc (x : Ident.t)  ->
-         let arity =  Lam_stats_util.get_arity meta (Lvar x) in
+         let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
          match Ident_map.find x export_map with 
          | lambda  -> 
            if Lam_analysis.safe_to_inline lambda
@@ -20925,7 +21612,7 @@ let export_to_cmj
     match ids with 
     | [] -> ()
     | x::xs -> 
-      dump_ident fmt x (Lam_stats_util.get_arity meta (Lvar x)) ; 
+      dump_ident fmt x (Lam_stats_util.get_arity meta (Lam.var x)) ; 
       Format.pp_print_space fmt ();
       dump fmt xs in
 
@@ -21005,8 +21692,8 @@ module Lam_pass_remove_alias : sig
 
 val simplify_alias : 
   Lam_stats.meta -> 
-  Lambda.lambda ->
-  Lambda.lambda
+  Lam.t ->
+  Lam.t
 
 end = struct
 #1 "lam_pass_remove_alias.ml"
@@ -21043,14 +21730,14 @@ end = struct
 
 let simplify_alias 
     (meta : Lam_stats.meta)
-    (lam : Lambda.lambda) 
-  :  Lambda.lambda  = 
+    (lam : Lam.t) 
+  :  Lam.t  = 
 
-  let rec simpl  (lam : Lambda.lambda) : Lambda.lambda = 
+  let rec simpl  (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
-      (try Lvar (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
+      (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
     | Llet(kind, k, (Lprim (Pgetglobal i,[]) as g), l ) -> 
       (* This is detection of MODULE ALIAS 
           we need track all global module aliases, when it's
@@ -21062,7 +21749,7 @@ let simplify_alias
       let v = simpl l in
       if Ident_set.mem k meta.export_idents 
       then 
-        Llet(kind, k, g, v) 
+        Lam.let_ kind k g v
         (* in this case it is preserved, but will still be simplified 
             for the inner expression
         *)
@@ -21082,31 +21769,31 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam_comb.not ( Lam_comb.prim Lam_comb.Prim.js_is_nil [l]) 
+            -> Lam.not ( Lam.prim Lam.Prim.js_is_nil [l]) 
           | Undefined 
             -> 
-            Lam_comb.not (Lam_comb.prim Lam_comb.Prim.js_is_undef [l])
+            Lam.not (Lam.prim Lam.Prim.js_is_undef [l])
           | Null_undefined
             -> 
-            Lam_comb.not
-              ( Lam_comb.prim Lam_comb.Prim.js_is_nil_undef  [l]) 
+            Lam.not
+              ( Lam.prim Lam.Prim.js_is_nil_undef  [l]) 
           | Normal ->  l1 
         in 
-        Lam_comb.if_ l1 (simpl l2) (simpl l3)
-      | _ -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+        Lam.if_ l1 (simpl l2) (simpl l3)
+      | _ -> Lam.if_ l1 (simpl l2) (simpl l3)
 
-      | exception Not_found -> Lam_comb.if_ l1 (simpl l2) (simpl l3)
+      | exception Not_found -> Lam.if_ l1 (simpl l2) (simpl l3)
       end
     | Lifthenelse (l1, l2, l3) -> 
-        Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
+        Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
 
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
-      Llet(str, v, simpl l1, simpl l2 )
+      Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
-      Lletrec(bindings, simpl body) 
-    | Lprim(prim, ll) -> Lam_comb.prim prim (List.map simpl  ll)
+      Lam.letrec bindings (simpl body) 
+    | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
 
     (* complicated 
         1. inline this function
@@ -21127,7 +21814,7 @@ let simplify_alias
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
-                    List.for_all (fun (arg : Lambda.lambda) ->
+                    List.for_all (fun (arg : Lam.t) ->
                         match arg with 
                         | Lvar p -> 
                           begin 
@@ -21139,7 +21826,8 @@ let simplify_alias
                 simpl @@
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
-              | _ -> Lapply (simpl l1, List.map simpl args, info)
+              | _ -> 
+                Lam.apply (simpl l1) (List.map simpl args) info
             )
 
       end
@@ -21206,28 +21894,28 @@ let simplify_alias
 
                     end
                 | _ -> 
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
               else 
                 begin
                   (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
                 end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lapply ( simpl l1, List.map simpl args, info)
+              Lam.apply ( simpl l1) (List.map simpl args) info
             end
 
         | _ -> 
           begin
             (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lapply ( simpl l1, List.map simpl args, info)
+            Lam.apply ( simpl l1) (List.map simpl args) info
           end
         | exception Not_found -> 
             (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lapply ( simpl l1, List.map simpl args, info)
+          Lam.apply ( simpl l1) (List.map simpl args) info
       end
 
     | Lapply(Lfunction(Curried, params, body), args, _)
@@ -21241,16 +21929,16 @@ let simplify_alias
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
     | Lapply (l1, ll, info) ->
-      Lapply (simpl  l1, List.map simpl  ll,info)
+      Lam.apply (simpl  l1) (List.map simpl  ll) info
     | Lfunction (kind, params, l) 
-      -> Lfunction (kind, params , simpl  l)
+      -> Lam.function_ kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
                    sw_numblocks;
                    sw_numconsts;
                   }) ->
-      Lam_comb.switch (simpl  l)
+      Lam.switch (simpl  l)
                {sw_consts = 
                   List.map (fun (v, l) -> v, simpl  l) sw_consts;
                 sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
@@ -21263,38 +21951,38 @@ let simplify_alias
                     | Some x -> Some (simpl x)
                   end}
     | Lstringswitch(l, sw, d) ->
-      Lam_comb.stringswitch (simpl  l )
+      Lam.stringswitch (simpl  l )
                     (List.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                      | Some d -> Some (simpl d )
                      | None -> None)
     | Lstaticraise (i,ls) -> 
-      Lam_comb.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (List.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) -> 
-      Lam_comb.staticcatch (simpl  l1) ids (simpl  l2)
-    | Ltrywith (l1, v, l2) -> Lam_comb.try_ (simpl  l1) v (simpl  l2)
+      Lam.staticcatch (simpl  l1) ids (simpl  l2)
+    | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
     | Lsequence (Lprim (Pgetglobal (id),[]), l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
       -> simpl l2
     | Lsequence(l1, l2)
-      -> Lam_comb.seq (simpl  l1) (simpl  l2)
+      -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile(l1, l2)
-      -> Lam_comb.while_ (simpl  l1) (simpl l2)
+      -> Lam.while_ (simpl  l1) (simpl l2)
     | Lfor(flag, l1, l2, dir, l3)
       -> 
-      Lam_comb.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
+      Lam.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
     | Lassign(v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
-      Lam_comb.assign v (simpl  l)
+      Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) 
       -> 
-      Lam_comb.send u (simpl m) (simpl o) (List.map simpl ll) v
+      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
     | Levent (l, event) 
       ->
-      Lam_comb.event (simpl  l) event
-    | Lifused (v, l) -> Lam_comb.ifused v (simpl  l)
+      Lam.event (simpl  l) event
+    | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
   simpl lam
 
@@ -21335,7 +22023,7 @@ module Lam_pass_lets_dce : sig
    [bv] is used to help caculate [occ] it is not useful outside
 
  *)
-val simplify_lets :  Lambda.lambda -> Lambda.lambda
+val simplify_lets :  Lam.t -> Lam.t
 
 end = struct
 #1 "lam_pass_lets_dce.ml"
@@ -21357,14 +22045,14 @@ open Asttypes
 
 exception Real_reference
 
-let rec eliminate_ref id (lam : Lambda.lambda) = 
+let rec eliminate_ref id (lam : Lam.t) = 
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
   | Lprim(Pfield (0,_), [Lvar v]) when Ident.same v id ->
-    Lvar id
+    Lam.var id
   | Lfunction(kind, params, body) as lam ->
-    if Lambda.IdentSet.mem id (Lambda.free_variables lam)
+    if Lambda.IdentSet.mem id (Lam.free_variables  lam)
     then raise Real_reference
     else lam
   (* In Javascript backend, its okay, we can reify it later
@@ -21391,21 +22079,22 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
   *)
   (* Lfunction(kind, params, eliminate_ref id body) *)
   | Lprim(Psetfield(0, _,_), [Lvar v; e]) when Ident.same v id ->
-    Lam_comb.assign id (eliminate_ref id e)
+    Lam.assign id (eliminate_ref id e)
   | Lprim(Poffsetref delta, [Lvar v]) when Ident.same v id ->
-    Lam_comb.assign id (Lprim(Poffsetint delta, [Lvar id]))
+    Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
   | Lconst _  -> lam
   | Lapply(e1, el, loc) ->
-    Lapply(eliminate_ref id e1, List.map (eliminate_ref id) el, loc)
+    Lam.apply (eliminate_ref id e1) (List.map (eliminate_ref id) el) loc
   | Llet(str, v, e1, e2) ->
-    Llet(str, v, eliminate_ref id e1, eliminate_ref id e2)
+    Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
-    Lletrec(List.map (fun (v, e) -> (v, eliminate_ref id e)) idel,
-            eliminate_ref id e2)
+    Lam.letrec
+      (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
+      (eliminate_ref id e2)
   | Lprim(p, el) ->
-    Lam_comb.prim p (List.map (eliminate_ref id) el)
+    Lam.prim p (List.map (eliminate_ref id) el)
   | Lswitch(e, sw) ->
-    Lswitch(eliminate_ref id e,
+    Lam.switch(eliminate_ref id e)
             {sw_numconsts = sw.sw_numconsts;
              sw_consts =
                List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_consts;
@@ -21413,39 +22102,40 @@ let rec eliminate_ref id (lam : Lambda.lambda) =
              sw_blocks =
                List.map (fun (n, e) -> (n, eliminate_ref id e)) sw.sw_blocks;
              sw_failaction =
-               Misc.may_map (eliminate_ref id) sw.sw_failaction; })
+               Misc.may_map (eliminate_ref id) sw.sw_failaction; }
   | Lstringswitch(e, sw, default) ->
-    Lstringswitch
-      (eliminate_ref id e,
-       List.map (fun (s, e) -> (s, eliminate_ref id e)) sw,
-       Misc.may_map (eliminate_ref id) default)
+    Lam.stringswitch
+      (eliminate_ref id e)
+      (List.map (fun (s, e) -> (s, eliminate_ref id e)) sw)
+      (Misc.may_map (eliminate_ref id) default)
   | Lstaticraise (i,args) ->
-    Lstaticraise (i,List.map (eliminate_ref id) args)
+    Lam.staticraise i (List.map (eliminate_ref id) args)
   | Lstaticcatch(e1, i, e2) ->
-    Lstaticcatch(eliminate_ref id e1, i, eliminate_ref id e2)
+    Lam.staticcatch (eliminate_ref id e1) i (eliminate_ref id e2)
   | Ltrywith(e1, v, e2) ->
-    Ltrywith(eliminate_ref id e1, v, eliminate_ref id e2)
+    Lam.try_ (eliminate_ref id e1) v (eliminate_ref id e2)
   | Lifthenelse(e1, e2, e3) ->
-    Lam_comb.if_ (eliminate_ref id e1) (eliminate_ref id e2) (eliminate_ref id e3)
+    Lam.if_ (eliminate_ref id e1) (eliminate_ref id e2) (eliminate_ref id e3)
   | Lsequence(e1, e2) ->
-    Lam_comb.seq (eliminate_ref id e1) (eliminate_ref id e2)
+    Lam.seq (eliminate_ref id e1) (eliminate_ref id e2)
   | Lwhile(e1, e2) ->
-    Lam_comb.while_ (eliminate_ref id e1) (eliminate_ref id e2)
+    Lam.while_ (eliminate_ref id e1) (eliminate_ref id e2)
   | Lfor(v, e1, e2, dir, e3) ->
-    Lam_comb.for_ v
+    Lam.for_ v
       (eliminate_ref id e1) 
       (eliminate_ref id e2)
       dir
       (eliminate_ref id e3)
   | Lassign(v, e) ->
-    Lassign(v, eliminate_ref id e)
+    Lam.assign v (eliminate_ref id e)
   | Lsend(k, m, o, el, loc) ->
-    Lsend(k, eliminate_ref id m, eliminate_ref id o,
-          List.map (eliminate_ref id) el, loc)
+    Lam.send k 
+      (eliminate_ref id m) (eliminate_ref id o)
+      (List.map (eliminate_ref id) el) loc
   | Levent(l, ev) ->
-    Lam_comb.event (eliminate_ref id l) ev
+    Lam.event (eliminate_ref id l) ev
   | Lifused(v, e) ->
-    Lifused(v, eliminate_ref id e)
+    Lam.ifused v (eliminate_ref id e)
 
 (*A naive dead code elimination *)
 type used_info = { 
@@ -21475,13 +22165,13 @@ let absorb_info (x : used_info) (y : used_info) =
 let lets_helper (count_var : Ident.t -> used_info) lam = 
   let subst = Hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
-  let rec simplif (lam : Lambda.lambda) = 
+  let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lvar v  ->
       begin try Hashtbl.find subst v with Not_found -> lam end
     | Llet( (Strict | Alias | StrictOpt) , v, Lvar w, l2) 
       ->
-      Hashtbl.add subst v (simplif (Lvar w));
+      Hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
            v, (Lprim((Pmakeblock(0, tag_info, Mutable) as prim), [linit])), lbody)
@@ -21494,7 +22184,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
             ~kind:Variable v slinit (eliminate_ref v slbody)
         with Real_reference ->
           Lam_util.refine_let 
-            ~kind v (Lam_comb.prim prim [slinit])
+            ~kind v (Lam.prim prim [slinit])
             slbody
       end
     | Llet(Alias, v, l1, l2) ->
@@ -21520,7 +22210,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
           *)
           ->
           Hashtbl.add subst v (simplif l1); simplif l2
-        | _ -> Llet(Alias, v, simplif l1, simplif l2)
+        | _ -> Lam.let_ Alias v (simplif l1) (simplif l2)
       end
     | Llet(StrictOpt as kind, v, l1, l2) ->
       (** can not be inlined since [l1] depend on the store
@@ -21542,18 +22232,18 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
         let l2 = simplif l2 in
         if Lam_analysis.no_side_effects l1 
         then l2 
-        else Lam_comb.seq l1 l2
+        else Lam.seq l1 l2
       else Lam_util.refine_let ~kind v (simplif l1) (simplif l2)
 
     | Lifused(v, l) ->
       if used  v then
         simplif l
-      else Lambda.lambda_unit
+      else Lam.unit
     | Lsequence(Lifused(v, l1), l2) ->
       if used v 
-      then Lam_comb.seq (simplif l1) (simplif l2)
+      then Lam.seq (simplif l1) (simplif l2)
       else simplif l2
-    | Lsequence(l1, l2) -> Lam_comb.seq (simplif l1) (simplif l2)
+    | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
     | Lapply(Lfunction(Curried, params, body), args, _)
       when  Ext_list.same_length params args ->
@@ -21565,42 +22255,46 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       when  Ext_list.same_length params  args ->
       simplif (Lam_beta_reduce.beta_reduce params body args)
 
-    | Lapply(l1, ll, loc) -> Lapply(simplif l1, List.map simplif ll, loc)
-    | Lfunction(kind, params, l) -> Lfunction(kind, params, simplif l)
+    | Lapply(l1, ll, loc) -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lfunction(kind, params, l) ->
+      Lam.function_ kind params (simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
-      Lletrec(List.map (fun (v, l) -> (v, simplif l)) bindings, simplif body)
-    | Lprim(p, ll) -> Lam_comb.prim p (List.map simplif ll)
+      Lam.letrec 
+        (List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (simplif body)
+    | Lprim(p, ll) -> Lam.prim p (List.map simplif ll)
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = Misc.may_map simplif sw.sw_failaction in
-      Lswitch
-        (new_l,
-         {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
-                  sw_failaction = new_fail})
+      Lam.switch
+        new_l
+        {sw with sw_consts = new_consts ; sw_blocks = new_blocks;
+                 sw_failaction = new_fail}
     | Lstringswitch (l,sw,d) ->
-      Lam_comb.stringswitch
+      Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
          (Misc.may_map simplif d)
     | Lstaticraise (i,ls) ->
-      Lstaticraise (i, List.map simplif ls)
+      Lam.staticraise i (List.map simplif ls)
     | Lstaticcatch(l1, (i,args), l2) ->
-      Lstaticcatch (simplif l1, (i,args), simplif l2)
-    | Ltrywith(l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
+      Lam.staticcatch (simplif l1) (i,args) (simplif l2)
+    | Ltrywith(l1, v, l2) -> Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse(l1, l2, l3) -> 
-      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
+      Lam.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lwhile(l1, l2) 
       -> 
-      Lam_comb.while_ (simplif l1) (simplif l2)
+      Lam.while_ (simplif l1) (simplif l2)
     | Lfor(v, l1, l2, dir, l3) ->
-      Lam_comb.for_ v (simplif l1) (simplif l2) dir (simplif l3)
-    | Lassign(v, l) -> Lassign(v, simplif l)
+      Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
+    | Lassign(v, l) -> Lam.assign v (simplif l)
     | Lsend(k, m, o, ll, loc) ->
-      Lsend(k, simplif m, simplif o, List.map simplif ll, loc)
+      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
     | Levent(l, ev) 
-      -> Lam_comb.event(simplif l) ev
+      -> Lam.event (simplif l) ev
   in simplif lam ;;
 
 
@@ -21668,7 +22362,7 @@ let collect_occurs  lam : occ_tbl =
         (* Not a let-bound variable, ignore *)
         () in
 
-  let rec count (bv : local_tbl) (lam : Lambda.lambda) = 
+  let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
     | Lfunction(kind, params, l) ->
       count Ident_map.empty l
@@ -21768,7 +22462,7 @@ let collect_occurs  lam : occ_tbl =
   count Ident_map.empty  lam;
   occ
 
-let simplify_lets  (lam : Lambda.lambda) = 
+let simplify_lets  (lam : Lam.t) = 
   let occ =  collect_occurs  lam in 
   apply_lets  occ   lam
 
@@ -21793,13 +22487,13 @@ module Lam_pass_exits : sig
     [simplif] module
  *)
 
-val count_helper : Lambda.lambda -> (int, int ref) Hashtbl.t
+val count_helper : Lam.t -> (int, int ref) Hashtbl.t
 
-type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
+type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
 
-val subst_helper : subst_tbl -> (int -> int) -> Lambda.lambda -> Lambda.lambda
+val subst_helper : subst_tbl -> (int -> int) -> Lam.t -> Lam.t
 
-val simplify_exits : Lambda.lambda -> Lambda.lambda
+val simplify_exits : Lam.t -> Lam.t
 
 end = struct
 #1 "lam_pass_exits.ml"
@@ -21848,9 +22542,9 @@ and incr_exit exits i =
   with
   | Not_found -> Hashtbl.add exits i (ref 1) 
 
-let count_helper  (lam : Lambda.lambda) : (int, int ref) Hashtbl.t  = 
+let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  = 
   let exits = Hashtbl.create 17 in
-  let rec count (lam : Lambda.lambda) = 
+  let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
     | Lstaticcatch (l1,(i,[]),Lstaticraise (j,[])) ->
@@ -21938,7 +22632,7 @@ let count_helper  (lam : Lambda.lambda) : (int, int ref) Hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
+type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
 
 (*
    Second pass simplify  ``catch body with (i ...) handler''
@@ -21962,7 +22656,7 @@ type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
 
 
 let subst_helper (subst : subst_tbl) query lam = 
-  let rec simplif (lam : Lambda.lambda) = 
+  let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,[])  ->
       begin 
@@ -21978,12 +22672,13 @@ let subst_helper (subst : subst_tbl) query lam =
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
-              (fun x y t -> Ident.add x (Lambda.Lvar y) t)
+              (fun x y t -> Ident.add x (Lam.var y) t)
               xs ys Ident.empty in
           List.fold_right2
-            (fun y l r -> Lambda.Llet (Alias, y, l, r))
-            ys ls (Lambda.subst_lambda env handler)
-        | exception Not_found -> Lstaticraise(i,ls)
+            (fun y l r -> Lam.let_ Alias y l r)
+            ys ls 
+               (Lam.subst_lambda  env  handler)
+        | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
       Hashtbl.add subst i ([],simplif l2) ;
@@ -22049,15 +22744,20 @@ let subst_helper (subst : subst_tbl) query lam =
               Hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
-          else Lstaticcatch (simplif l1, (i,xs), simplif l2)
+          else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
       end
 
     | Lvar _|Lconst _  -> lam
-    | Lapply (l1, ll, loc) -> Lapply(simplif l1, List.map simplif ll, loc)
-    | Lfunction (kind, params, l) -> Lfunction(kind, params, simplif l)
-    | Llet (kind, v, l1, l2) -> Llet(kind, v, simplif l1, simplif l2)
+    | Lapply (l1, ll, loc) -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lfunction (kind, params, l) -> 
+      Lam.function_ kind params (simplif l)
+    | Llet (kind, v, l1, l2) -> 
+      Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
-      Lletrec( List.map (fun (v, l) -> (v, simplif l)) bindings, simplif body)
+      Lam.letrec
+        ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (simplif body)
     | Lprim (p, ll) -> 
       begin
         let ll = List.map simplif ll in
@@ -22065,43 +22765,53 @@ let subst_helper (subst : subst_tbl) query lam =
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply (f, args, _)]
         | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Prevapply loc, [x; f] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; f] 
+          -> Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         (* Simplify %apply, for n-ary functions with n > 1 *)
         | Pdirapply loc, [Lapply(f, args, _); x]
         | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
-        | _ -> Lam_comb.prim p ll
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [f; x] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+        | _ -> Lam.prim p ll
       end
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = Misc.may_map simplif sw.sw_failaction in
-      Lswitch
-        (new_l,
-         {sw with sw_consts = new_consts ; sw_blocks = new_blocks; sw_failaction = new_fail})
+      Lam.switch
+        new_l
+         { 
+           sw with 
+           sw_consts = new_consts ;
+           sw_blocks = new_blocks; 
+           sw_failaction = new_fail}
     | Lstringswitch(l,sw,d) ->
-      Lam_comb.stringswitch
+      Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
          (Misc.may_map simplif d)
-    | Ltrywith (l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
+    | Ltrywith (l1, v, l2) -> 
+      Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 
-      Lam_comb.if_ (simplif l1) (simplif l2) (simplif l3)
-    | Lsequence (l1, l2) -> Lam_comb.seq (simplif l1) (simplif l2)
-    | Lwhile (l1, l2) -> Lam_comb.while_ (simplif l1) (simplif l2)
+      Lam.if_ (simplif l1) (simplif l2) (simplif l3)
+    | Lsequence (l1, l2) -> Lam.seq (simplif l1) (simplif l2)
+    | Lwhile (l1, l2) -> Lam.while_ (simplif l1) (simplif l2)
     | Lfor (v, l1, l2, dir, l3) ->
-      Lam_comb.for_ v (simplif l1) (simplif l2) dir (simplif l3)
-    | Lassign (v, l) -> Lassign(v, simplif l)
+      Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
+    | Lassign (v, l) -> 
+      Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
-      Lsend (k, simplif m, simplif o, List.map simplif ll, loc)
-    | Levent (l, ev) -> Lam_comb.event (simplif l) ev
-    | Lifused (v, l) -> Lifused (v,simplif l)
+      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
+    | Levent (l, ev) -> 
+      Lam.event (simplif l) ev
+    | Lifused (v, l) -> 
+      Lam.ifused v (simplif l)
   in 
   simplif lam 
  
-let simplify_exits (lam : Lambda.lambda) =
+let simplify_exits (lam : Lam.t) =
   let exits = count_helper lam in
   subst_helper (Hashtbl.create 17 ) (count_exit exits) lam
 
@@ -22195,11 +22905,11 @@ module Lam_pass_collect : sig
  *)
 
 (** Modify existing [meta] *)
-val collect_helper : Lam_stats.meta -> Lambda.lambda -> unit
+val collect_helper : Lam_stats.meta -> Lam.t -> unit
 
 (** return a new [meta] *)
 val count_alias_globals : 
-    Env.t -> string -> Ident.t list -> Lambda.lambda -> Lam_stats.meta
+    Env.t -> string -> Ident.t list -> Lam.t -> Lam_stats.meta
 
 
 
@@ -22264,11 +22974,11 @@ let annotate (meta : Lam_stats.meta)
     function definition,
     alias propgation - and toplevel identifiers, this needs to be exported
  *)
-let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  = 
+let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  = 
   let rec collect_bind rec_flag
       (kind : Lambda.let_kind) 
       (ident : Ident.t)
-      (lam : Lambda.lambda) = 
+      (lam : Lam.t) = 
     match lam with 
     | Lconst v 
       -> 
@@ -22333,7 +23043,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lambda.lambda)  =
           annotate meta rec_flag ident (Lam_stats_util.get_arity meta x ) lam
 
 
-  and collect  (lam : Lambda.lambda)  =
+  and collect  (lam : Lam.t)  =
     match lam with 
     (* | Lprim (Pgetglobal ident,[]) *)
     (*   -> *)
@@ -22396,7 +23106,7 @@ let count_alias_globals
     env 
     filename
     export_idents
-    (lam : Lambda.lambda) : Lam_stats.meta =
+    (lam : Lam.t) : Lam_stats.meta =
   let meta : Lam_stats.meta = 
     {alias_tbl = Hashtbl.create 31 ; 
      ident_tbl = Hashtbl.create 31;
@@ -22446,7 +23156,7 @@ module Lam_pass_alpha_conversion : sig
 
 (** alpha conversion based on arity *)
 
-val alpha_conversion : Lam_stats.meta -> Lambda.lambda  -> Lambda.lambda
+val alpha_conversion : Lam_stats.meta -> Lam.t  -> Lam.t
 
 end = struct
 #1 "lam_pass_alpha_conversion.ml"
@@ -22481,8 +23191,8 @@ end = struct
 
 
 
-let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lambda = 
-  let rec simpl  (lam : Lambda.lambda) = 
+let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t = 
+  let rec simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 
@@ -22490,7 +23200,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
       begin 
         match Lam_stats_util.get_arity meta l1 with 
         | NA -> 
-          Lapply(simpl  l1, List.map simpl  ll,info)
+          Lam.apply (simpl  l1) (List.map simpl  ll) info
         | Determin (b, args, tail) -> 
           let len = List.length ll in 
           let rec take args = 
@@ -22498,9 +23208,9 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
             | (x,_) :: xs -> 
               if x = len 
               then 
-                Lambda.Lapply(simpl l1,
-                              List.map simpl ll,
-                              {info with apply_status = App_ml_full} )
+                Lam.apply (simpl l1)
+                  (List.map simpl ll)
+                  {info with apply_status = App_ml_full} 
               else if x > len  
               then 
                 let fn = simpl l1 in
@@ -22510,33 +23220,33 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                   fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
-                Lapply (
-                  Lapply(simpl l1, 
-                         List.map simpl first, 
+                Lam.apply (
+                  Lam.apply (simpl l1) 
+                         (List.map simpl first) 
                          {
                            info with apply_status = App_ml_full
-                         }),
-                  (List.map simpl rest), info) (* TODO refien *)
-            | _ -> Lapply(simpl l1, List.map simpl ll,  info )
+                         })
+                  (List.map simpl rest) info (* TODO refien *)
+            | _ -> Lam.apply (simpl l1) (List.map simpl ll)  info 
           in take args
       end
 
     | Llet (str, v, l1, l2) ->
-      Llet (str, v, simpl l1, simpl l2 )
+      Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
-      Lletrec (bindings, simpl body) 
-    | Lprim (prim, ll) -> Lam_comb.prim prim (List.map simpl  ll)
+      Lam.letrec bindings (simpl body) 
+    | Lprim (prim, ll) -> Lam.prim prim (List.map simpl  ll)
     | Lfunction (kind, params, l) ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lfunction (kind, params , simpl  l)
+      Lam.function_ kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
                   sw_numblocks;
                   sw_numconsts;
                  }) ->
-      Lam_comb.switch (simpl  l)
+      Lam.switch (simpl  l)
               {sw_consts = 
                  List.map (fun (v, l) -> v, simpl  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, simpl  l) sw_blocks;
@@ -22549,36 +23259,36 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lamb
                    | Some x -> Some (simpl x)
                  end}
     | Lstringswitch (l, sw, d) ->
-      Lam_comb.stringswitch (simpl  l)
+      Lam.stringswitch (simpl  l)
                     (List.map (fun (i, l) -> i,simpl  l) sw)
                     (match d with
                       | Some d -> Some (simpl d )
                       | None -> None)
                     
     | Lstaticraise (i,ls) ->
-      Lam_comb.staticraise i (List.map simpl  ls)
+      Lam.staticraise i (List.map simpl  ls)
     | Lstaticcatch (l1, ids, l2) 
       -> 
-      Lam_comb.staticcatch (simpl  l1) ids (simpl  l2)
+      Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) 
       -> 
-      Lam_comb.try_ (simpl  l1) v (simpl  l2)
+      Lam.try_ (simpl  l1) v (simpl  l2)
     | Lifthenelse (l1, l2, l3) -> 
-      Lam_comb.if_ (simpl  l1) (simpl  l2) (simpl  l3)
+      Lam.if_ (simpl  l1) (simpl  l2) (simpl  l3)
     | Lsequence (l1, l2) 
-      -> Lam_comb.seq (simpl  l1) (simpl  l2)
+      -> Lam.seq (simpl  l1) (simpl  l2)
     | Lwhile (l1, l2)
-      -> Lam_comb.while_ (simpl  l1) (simpl l2)
+      -> Lam.while_ (simpl  l1) (simpl l2)
     | Lfor (flag, l1, l2, dir, l3)
-      -> Lam_comb.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
+      -> Lam.for_ flag (simpl  l1) (simpl  l2) dir (simpl  l3)
     | Lassign (v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refsimpl *)
-      Lam_comb.assign v (simpl  l)
+      Lam.assign v (simpl  l)
     | Lsend (u, m, o, ll, v) -> 
-      Lam_comb.send u (simpl m) (simpl o) (List.map simpl ll) v
-    | Levent (l, event) -> Lam_comb.event (simpl  l) event
-    | Lifused (v, l) -> Lifused (v,simpl  l)
+      Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
+    | Levent (l, event) -> Lam.event (simpl  l) event
+    | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
 
   simpl lam
@@ -24766,13 +25476,13 @@ val compile :
   bool -> 
   Env.t -> 
   Types.signature -> 
-  Lambda.lambda -> 
+  Lam.t -> 
   J.deps_program
 
 val lambda_as_module :  
   Env.t ->
   Types.signature -> string -> 
-  string  -> Lambda.lambda -> unit
+  string  -> Lam.t -> unit
 
 end = struct
 #1 "lam_compile_group.ml"
@@ -25023,7 +25733,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
   (* Dump for debugger *)
 
   begin 
-    match (lam : Lambda.lambda) with
+    match (lam : Lam.t) with
     | Lprim(Psetglobal id, [biglambda])
       -> 
       (* Invariant: The last one is always [exports]
@@ -25044,7 +25754,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
             else
               List.fold_right2 
                 (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-                   match (lam : Lambda.lambda) with 
+                   match (lam : Lam.t) with 
                    | Lvar id 
                      when Ident.name id = Ident.name eid -> 
                      (* {[ Ident.same id eid]} is more  correct, 
@@ -25194,7 +25904,7 @@ let lambda_as_module
     (sigs : Types.signature)
     (filename : string) 
     (output_prefix : string)
-    (lam : Lambda.lambda) = 
+    (lam : Lam.t) = 
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";
@@ -26652,7 +27362,7 @@ let implementation ppf sourcefile outputprefix =
           match           
           Lam_compile_group.lambda_as_module
             finalenv current_signature 
-            sourcefile  outputprefix lambda with
+            sourcefile  outputprefix ((* Obj.magic *) lambda ) with
           | e -> e 
           | exception e -> 
             (* Save to a file instead so that it will not scare user *)            
@@ -27179,10 +27889,10 @@ module Lam_mk : sig
 
 
 
-(** A module prepared for smart constructors of {!Lambda.lambda}*)
+(** A module prepared for smart constructors of {!Lam.t}*)
 
 val lfunction : 
-  Lambda.function_kind -> Ident.t list -> Lambda.lambda -> Lambda.lambda
+  Lambda.function_kind -> Ident.t list -> Lam.t -> Lam.t
 
 end = struct
 #1 "lam_mk.ml"
@@ -27220,13 +27930,13 @@ end = struct
    we need update its meta data as well
 *)
 
-let lfunction kind params (body : Lambda.lambda) =
+let lfunction kind params (body : Lam.t) =
   if params = [] then body else
     match body with
     | Lfunction (kind', params', body') when kind = kind' ->
-      Lfunction (kind', params @ params', body')
+      Lam.function_ kind' (params @ params') body'
     |  _ ->
-      Lfunction (kind, params, body)
+      Lam.function_ kind params body
 
 
 

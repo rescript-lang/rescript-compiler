@@ -32,7 +32,7 @@
 (* TODO: add a magic number *)
 type cmj_value = {
   arity : Lam_stats.function_arities ;
-  closed_lambda : Lambda.lambda option ; 
+  closed_lambda : Lam.t option ; 
   (** Either constant or closed functor *)
 }
 

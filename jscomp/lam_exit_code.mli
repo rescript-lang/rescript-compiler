@@ -28,4 +28,4 @@
 
 
 
-val has_exit_code : (int -> bool ) -> Lambda.lambda -> bool 
+val has_exit_code : (int -> bool ) -> Lam.t -> bool 

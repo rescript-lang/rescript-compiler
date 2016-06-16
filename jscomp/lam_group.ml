@@ -28,9 +28,9 @@
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
-  | Recursive of (Ident.t * Lambda.lambda) list
-  | Nop of Lambda.lambda 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
 
 
 let pp = Format.fprintf 
@@ -46,18 +46,18 @@ let pp_group env fmt ( x : t) =
   match x with
   | Single (kind, id, lam) ->
     Format.fprintf fmt "@[let@ %a@ =%s@ @[<hv>%a@]@ @]" Ident.print id (str_of_kind kind) 
-      (Printlambda.env_lambda env) lam
+      (Lam_print.env_lambda env) lam
   | Recursive lst -> 
     List.iter (fun (id,lam) -> 
         Format.fprintf fmt
-          "@[let %a@ =r@ %a@ @]" Ident.print id (Printlambda.env_lambda env) lam
+          "@[let %a@ =r@ %a@ @]" Ident.print id (Lam_print.env_lambda env) lam
       ) lst
-  | Nop lam -> Printlambda.env_lambda env fmt lam
+  | Nop lam -> Lam_print.env_lambda env fmt lam
 
 
 let rec flatten 
     (acc :  t list ) 
-    (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+    (lam : Lam.t) :  Lam.t *  t list = 
   match lam with 
   | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
   | Llet (str,id,arg,body) -> 
@@ -100,9 +100,9 @@ let rec flatten
 let lambda_of_groups result groups = 
   List.fold_left (fun acc x -> 
       match x with 
-      | Nop l -> Lam_comb.seq l acc
+      | Nop l -> Lam.seq l acc
       | Single(kind,ident,lam) -> Lam_util.refine_let ~kind ident lam acc
-      | Recursive bindings -> Lletrec (bindings,acc)) 
+      | Recursive bindings -> Lam.letrec bindings acc) 
     result groups
 
 
@@ -113,11 +113,11 @@ let lambda_of_groups result groups =
     return value are in reverse order, but handled by [lambda_of_groups]
 *)
 let deep_flatten
-    (lam : Lambda.lambda) :  Lambda.lambda  = 
+    (lam : Lam.t) :  Lam.t  = 
   let rec
     flatten 
       (acc :  t list ) 
-      (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+      (lam : Lam.t) :  Lam.t *  t list = 
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
@@ -138,9 +138,11 @@ let deep_flatten
                             [arg]), body)
       -> 
       let id' = Ident.rename id in 
-      flatten acc (Llet (str, id', arg, 
-                         Llet(Alias, id, Lam_comb.prim (Pccall p)  [Lvar id'], body)
-                        ))
+      flatten acc 
+        (Lam.let_ str id' arg 
+               (Lam.let_ Alias id (Lam.prim (Pccall p)  [Lam.var id'])
+                  body)
+              )
     | Llet (str,id,arg,body) -> 
       let (res,l) = flatten acc arg  in
       flatten (Single(str, id, res ) :: l) body
@@ -168,7 +170,7 @@ let deep_flatten
     | x ->  
       aux x, acc      
 
-  and aux  (lam : Lambda.lambda) : Lambda.lambda= 
+  and aux  (lam : Lam.t) : Lam.t= 
     match lam with 
     | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 
@@ -243,7 +245,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lambda.free_variables lam in
+              let variables = Lam.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -266,11 +268,11 @@ let deep_flatten
             | Nop _ -> assert false 
           ) ([], collections, []) groups in
       lambda_of_groups 
-        (Lletrec (
+        (Lam.letrec 
             result 
-            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *), 
-            aux body)) (List.rev wrap)
-    | Lsequence (l,r) -> Lam_comb.seq (aux l) (aux r)
+            (* List.map (fun (id,lam) -> (id, aux lam )) bind_args *)
+            (aux body)) (List.rev wrap)
+    | Lsequence (l,r) -> Lam.seq (aux l) (aux r)
     | Lconst _ -> lam
     | Lvar _ -> lam 
     (* | Lapply(Lfunction(Curried, params, body), args, _) *)
@@ -282,7 +284,8 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply(l1, ll, info) -> Lapply(aux l1,List.map aux ll, info)
+    | Lapply(l1, ll, info) -> 
+      Lam.apply (aux l1) (List.map aux ll) info
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
@@ -291,12 +294,14 @@ let deep_flatten
     | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
             [ Lconst (Const_base (Const_int64 i))]) 
       ->  
-      Lconst (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
     | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
             [ Lconst (Const_base (Const_int64 i))]) 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
-      Lconst (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
+      Lam.const 
+        (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
     | Lprim(p, ll)
       -> 
       begin
@@ -305,23 +310,26 @@ let deep_flatten
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply (f, args, _)]
         | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Prevapply loc, [x; f] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; f] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         (* Simplify %apply, for n-ary functions with n > 1 *)
         | Pdirapply loc, [Lapply(f, args, _); x]
         | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
-        | _ -> Lam_comb.prim p ll
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [f; x] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+        | _ -> Lam.prim p ll
       end
-    | Lfunction(kind, params, l) -> Lfunction (kind, params , aux  l)
+    | Lfunction(kind, params, l) -> 
+      Lam.function_ kind params  (aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
                   sw_numblocks;
                   sw_numconsts;
                  }) ->
-      Lam_comb.switch (aux  l)
+      Lam.switch (aux  l)
               {sw_consts = 
                  List.map (fun (v, l) -> v, aux  l) sw_consts;
                sw_blocks = List.map (fun (v, l) -> v, aux  l) sw_blocks;
@@ -334,35 +342,35 @@ let deep_flatten
                    | Some x -> Some (aux x)
                  end}
     | Lstringswitch(l, sw, d) ->
-      Lam_comb.stringswitch (aux  l) 
+      Lam.stringswitch (aux  l) 
                     (List.map (fun (i, l) -> i,aux  l) sw)
                     (match d with
                      | Some d -> Some (aux d )
                      | None -> None)
 
     | Lstaticraise (i,ls) 
-      -> Lam_comb.staticraise i (List.map aux  ls)
+      -> Lam.staticraise i (List.map aux  ls)
     | Lstaticcatch(l1, ids, l2) 
       -> 
-      Lam_comb.staticcatch (aux  l1) ids (aux  l2)
+      Lam.staticcatch (aux  l1) ids (aux  l2)
     | Ltrywith(l1, v, l2) ->
-      Lam_comb.try_ (aux  l1) v (aux  l2)
+      Lam.try_ (aux  l1) v (aux  l2)
     | Lifthenelse(l1, l2, l3) 
       -> 
-      Lam_comb.if_ (aux  l1) (aux l2) (aux l3)
+      Lam.if_ (aux  l1) (aux l2) (aux l3)
     | Lwhile(l1, l2) 
       -> 
-      Lam_comb.while_ (aux  l1) (aux l2)
+      Lam.while_ (aux  l1) (aux l2)
     | Lfor(flag, l1, l2, dir, l3) 
       -> 
-      Lam_comb.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
+      Lam.for_ flag (aux  l1) (aux  l2) dir (aux  l3)
     | Lassign(v, l) ->
       (* Lalias-bound variables are never assigned, so don't increase
          v's refaux *)
-      Lam_comb.assign v (aux  l)
+      Lam.assign v (aux  l)
     | Lsend(u, m, o, ll, v) -> 
-      Lam_comb.send u (aux m) (aux o) (List.map aux ll) v
+      Lam.send u (aux m) (aux o) (List.map aux ll) v
 
     (* Levent(aux  l, event) *)
-    | Lifused(v, l) -> Lifused(v,aux  l)
+    | Lifused(v, l) -> Lam.ifused v (aux  l)
   in aux lam
