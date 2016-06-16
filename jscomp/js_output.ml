@@ -80,7 +80,7 @@ let handle_name_tail
 let handle_block_return 
     (st : st) 
     (should_return : Lam_compile_defs.return_type)
-    (lam : Lambda.lambda) (block : J.block) exp : t = 
+    (lam : Lam.t) (block : J.block) exp : t = 
   match st, should_return with 
   | Declare (kind,n), False -> 
     make (block @ [ S.define ~kind  n exp])

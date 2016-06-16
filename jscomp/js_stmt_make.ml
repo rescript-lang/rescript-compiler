@@ -347,7 +347,7 @@ let try_ ?comment   ?with_ ?finally body : t =
     comment
   }
 
-let unknown_lambda ?(comment="unknown")  (lam : Lambda.lambda ) : t = 
+let unknown_lambda ?(comment="unknown")  (lam : Lam.t ) : t = 
   exp @@ E.str ~comment ~pure:false (Lam_util.string_of_lambda lam) 
 
 (* TODO: 

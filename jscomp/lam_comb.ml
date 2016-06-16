@@ -26,7 +26,7 @@
 
 
 
-type t = Lambda.lambda
+type t = Lam.t
 
 type binop = t -> t -> t 
 

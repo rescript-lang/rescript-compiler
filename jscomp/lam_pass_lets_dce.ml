@@ -16,7 +16,7 @@ open Asttypes
 
 exception Real_reference
 
-let rec eliminate_ref id (lam : Lambda.lambda) = 
+let rec eliminate_ref id (lam : Lam.t) = 
   match lam with  (** we can do better escape analysis in Javascript backend *)
   | Lvar v ->
     if Ident.same v id then raise Real_reference else lam
@@ -134,7 +134,7 @@ let absorb_info (x : used_info) (y : used_info) =
 let lets_helper (count_var : Ident.t -> used_info) lam = 
   let subst = Hashtbl.create 31 in
   let used v = (count_var v ).times > 0 in
-  let rec simplif (lam : Lambda.lambda) = 
+  let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lvar v  ->
       begin try Hashtbl.find subst v with Not_found -> lam end
@@ -327,7 +327,7 @@ let collect_occurs  lam : occ_tbl =
         (* Not a let-bound variable, ignore *)
         () in
 
-  let rec count (bv : local_tbl) (lam : Lambda.lambda) = 
+  let rec count (bv : local_tbl) (lam : Lam.t) = 
     match lam with 
     | Lfunction(kind, params, l) ->
       count Ident_map.empty l
@@ -427,6 +427,6 @@ let collect_occurs  lam : occ_tbl =
   count Ident_map.empty  lam;
   occ
 
-let simplify_lets  (lam : Lambda.lambda) = 
+let simplify_lets  (lam : Lam.t) = 
   let occ =  collect_occurs  lam in 
   apply_lets  occ   lam

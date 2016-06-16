@@ -29,8 +29,8 @@
 
 
 
-let alpha_conversion (meta : Lam_stats.meta) (lam : Lambda.lambda) : Lambda.lambda = 
-  let rec simpl  (lam : Lambda.lambda) = 
+let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t = 
+  let rec simpl  (lam : Lam.t) = 
     match lam with 
     | Lconst _ -> lam
     | Lvar _ -> lam 

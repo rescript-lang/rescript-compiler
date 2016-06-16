@@ -32,7 +32,7 @@
 (** Beta reduction of lambda IR *)
 
 
-val beta_reduce : Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+val beta_reduce : Ident.t list -> Lam.t -> Lam.t list -> Lam.t
 (* Compile-time beta-reduction of functions immediately applied:
       Lapply(Lfunction(Curried, params, body), args, loc) ->
         let paramN = argN in ... let param1 = arg1 in body
@@ -50,14 +50,14 @@ val beta_reduce : Ident.t list -> Lambda.lambda -> Lambda.lambda list -> Lambda.
 val propogate_beta_reduce : 
   Lam_stats.meta -> 
   Ident.t list -> 
-  Lambda.lambda -> 
-  Lambda.lambda list -> 
-  Lambda.lambda
+  Lam.t -> 
+  Lam.t list -> 
+  Lam.t
 
 
 val refresh : 
-  Lambda.lambda -> 
-  Lambda.lambda 
+  Lam.t -> 
+  Lam.t 
 
 (** 
    {[ Lam_beta_reduce.propogate_beta_reduce_with_map 
@@ -83,4 +83,4 @@ val propogate_beta_reduce_with_map :
   Lam_stats.meta ->
   Lam_analysis.stats Ident_map.t ->
   Ident.t list ->
-  Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+  Lam.t -> Lam.t list -> Lam.t

@@ -32,7 +32,7 @@
    we need update its meta data as well
 *)
 
-let lfunction kind params (body : Lambda.lambda) =
+let lfunction kind params (body : Lam.t) =
   if params = [] then body else
     match body with
     | Lfunction (kind', params', body') when kind = kind' ->

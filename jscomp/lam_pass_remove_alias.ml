@@ -31,10 +31,10 @@
 
 let simplify_alias 
     (meta : Lam_stats.meta)
-    (lam : Lambda.lambda) 
-  :  Lambda.lambda  = 
+    (lam : Lam.t) 
+  :  Lam.t  = 
 
-  let rec simpl  (lam : Lambda.lambda) : Lambda.lambda = 
+  let rec simpl  (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
@@ -115,7 +115,7 @@ let simplify_alias
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
-                    List.for_all (fun (arg : Lambda.lambda) ->
+                    List.for_all (fun (arg : Lam.t) ->
                         match arg with 
                         | Lvar p -> 
                           begin 

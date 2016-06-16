@@ -16,10 +16,10 @@
     [simplif] module
  *)
 
-val count_helper : Lambda.lambda -> (int, int ref) Hashtbl.t
+val count_helper : Lam.t -> (int, int ref) Hashtbl.t
 
-type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
+type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
 
-val subst_helper : subst_tbl -> (int -> int) -> Lambda.lambda -> Lambda.lambda
+val subst_helper : subst_tbl -> (int -> int) -> Lam.t -> Lam.t
 
-val simplify_exits : Lambda.lambda -> Lambda.lambda
+val simplify_exits : Lam.t -> Lam.t

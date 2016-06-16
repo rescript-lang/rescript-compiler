@@ -31,4 +31,4 @@
 
 (** alpha conversion based on arity *)
 
-val alpha_conversion : Lam_stats.meta -> Lambda.lambda  -> Lambda.lambda
+val alpha_conversion : Lam_stats.meta -> Lam.t  -> Lam.t

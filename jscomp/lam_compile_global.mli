@@ -35,4 +35,4 @@ val get_exp : Lam_compile_env.key  -> J.expression
 
 
 
-val query_lambda : Ident.t -> Env.t -> Lambda.lambda
+val query_lambda : Ident.t -> Env.t -> Lam.t

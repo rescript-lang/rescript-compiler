@@ -29,13 +29,13 @@
 
 
 
-val string_of_lambda : Lambda.lambda -> string 
+val string_of_lambda : Lam.t -> string 
 
 val string_of_primitive : Lambda.primitive -> string
 
-val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lambda.lambda list -> Lam_stats.kind
+val kind_of_lambda_block : Lam_stats.boxed_nullable -> Lam.t list -> Lam_stats.kind
 
-val get : Lambda.lambda -> Ident.t -> int -> Lam_stats.ident_tbl -> Lambda.lambda
+val get : Lam.t -> Ident.t -> int -> Lam_stats.ident_tbl -> Lam.t
 
 val add_required_module : Ident.t -> Lam_stats.meta -> unit
 
@@ -47,7 +47,7 @@ val alias : Lam_stats.meta ->
 
 val refine_let : 
     ?kind:Lambda.let_kind ->
-      Ident.t -> Lambda.lambda -> Lambda.lambda -> Lambda.lambda
+      Ident.t -> Lam.t -> Lam.t -> Lam.t
 
 
 val generate_label : ?name:string -> unit -> J.label
@@ -60,7 +60,7 @@ val sort_dag_args : J.expression Ident_map.t -> Ident.t list option
 
 
 (** [dump] when {!Js_config.is_same_file}*)
-val dump : Env.t   -> string -> Lambda.lambda -> Lambda.lambda
+val dump : Env.t   -> string -> Lam.t -> Lam.t
 
 val ident_set_of_list : Ident.t list -> Ident_set.t
 
@@ -70,13 +70,13 @@ val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
 
 
 
-val not_function : Lambda.lambda -> bool 
-val is_function : Lambda.lambda -> bool 
+val not_function : Lam.t -> bool 
+val is_function : Lam.t -> bool 
 
 
 val eta_conversion : 
   int ->
-  Lambda.apply_info -> Lambda.lambda -> Lambda.lambda list -> Lambda.lambda
+  Lambda.apply_info -> Lam.t -> Lam.t list -> Lam.t
 
 val default_apply_info : Lambda.apply_info
 

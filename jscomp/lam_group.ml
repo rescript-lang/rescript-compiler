@@ -28,9 +28,9 @@
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
-  | Recursive of (Ident.t * Lambda.lambda) list
-  | Nop of Lambda.lambda 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
 
 
 let pp = Format.fprintf 
@@ -57,7 +57,7 @@ let pp_group env fmt ( x : t) =
 
 let rec flatten 
     (acc :  t list ) 
-    (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+    (lam : Lam.t) :  Lam.t *  t list = 
   match lam with 
   | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
   | Llet (str,id,arg,body) -> 
@@ -113,11 +113,11 @@ let lambda_of_groups result groups =
     return value are in reverse order, but handled by [lambda_of_groups]
 *)
 let deep_flatten
-    (lam : Lambda.lambda) :  Lambda.lambda  = 
+    (lam : Lam.t) :  Lam.t  = 
   let rec
     flatten 
       (acc :  t list ) 
-      (lam : Lambda.lambda) :  Lambda.lambda *  t list = 
+      (lam : Lam.t) :  Lam.t *  t list = 
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
@@ -168,7 +168,7 @@ let deep_flatten
     | x ->  
       aux x, acc      
 
-  and aux  (lam : Lambda.lambda) : Lambda.lambda= 
+  and aux  (lam : Lam.t) : Lam.t= 
     match lam with 
     | Levent (e,_) -> aux  e (* TODO: We stripped event in the beginning*)
     | Llet _ -> 

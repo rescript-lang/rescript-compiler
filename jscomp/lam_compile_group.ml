@@ -245,7 +245,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
   (* Dump for debugger *)
 
   begin 
-    match (lam : Lambda.lambda) with
+    match (lam : Lam.t) with
     | Lprim(Psetglobal id, [biglambda])
       -> 
       (* Invariant: The last one is always [exports]
@@ -266,7 +266,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
             else
               List.fold_right2 
                 (fun  eid lam (coercions, new_exports, new_export_set,  export_map) ->
-                   match (lam : Lambda.lambda) with 
+                   match (lam : Lam.t) with 
                    | Lvar id 
                      when Ident.name id = Ident.name eid -> 
                      (* {[ Ident.same id eid]} is more  correct, 
@@ -416,7 +416,7 @@ let lambda_as_module
     (sigs : Types.signature)
     (filename : string) 
     (output_prefix : string)
-    (lam : Lambda.lambda) = 
+    (lam : Lam.t) = 
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";

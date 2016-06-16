@@ -23,11 +23,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-(** A module prepared for smart constructors of {!Lam.t}*)
-
-val lfunction : 
-  Lambda.function_kind -> Ident.t list -> Lam.t -> Lam.t
+type t = Lambda.lambda = 
+  | Lvar of Ident.t
+  | Lconst of Lambda.structured_constant
+  | Lapply of t * t list * Lambda.apply_info
+  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Llet of Lambda.let_kind * Ident.t * t * t
+  | Lletrec of (Ident.t * t) list * t
+  | Lprim of Lambda.primitive * t list
+  | Lswitch of t * Lambda.lambda_switch
+  | Lstringswitch of t * (string * t) list * t option
+  | Lstaticraise of int * t list
+  | Lstaticcatch of t * (int * Ident.t list) * t
+  | Ltrywith of t * Ident.t * t
+  | Lifthenelse of t * t * t
+  | Lsequence of t * t
+  | Lwhile of t * t
+  | Lfor of Ident.t * t * t * Asttypes.direction_flag * t
+  | Lassign of Ident.t * t
+  | Lsend of Lambda.meth_kind * t * t * t list * Location.t
+  | Levent of t * Lambda.lambda_event
+  | Lifused of Ident.t * t

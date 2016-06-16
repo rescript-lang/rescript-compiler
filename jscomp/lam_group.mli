@@ -28,16 +28,16 @@
 
 
 type t = 
-  | Single of Lambda.let_kind  * Ident.t * Lambda.lambda
-  | Recursive of (Ident.t * Lambda.lambda) list
-  | Nop of Lambda.lambda 
+  | Single of Lambda.let_kind  * Ident.t * Lam.t
+  | Recursive of (Ident.t * Lam.t) list
+  | Nop of Lam.t 
 
 
-val flatten : t list -> Lambda.lambda -> Lambda.lambda * t list
+val flatten : t list -> Lam.t -> Lam.t * t list
 
-val lambda_of_groups : Lambda.lambda -> t list -> Lambda.lambda
+val lambda_of_groups : Lam.t -> t list -> Lam.t
 
-val deep_flatten : Lambda.lambda -> Lambda.lambda
+val deep_flatten : Lam.t -> Lam.t
 (** Tricky to be complete *)
 
 val pp_group : Env.t -> Format.formatter -> t -> unit

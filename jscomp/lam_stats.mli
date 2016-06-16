@@ -62,7 +62,7 @@ type rec_flag =
 type function_id = {
   kind : function_kind ; 
   mutable arity : function_arities;
-  lambda  : Lambda.lambda ;
+  lambda  : Lam.t ;
   (* TODO: This may contain some closure environment,
      check how it will interact with dead code elimination
   *)
@@ -71,7 +71,7 @@ type function_id = {
 
 type element = 
   | NA 
-  | SimpleForm of Lambda.lambda 
+  | SimpleForm of Lam.t 
 
 type boxed_nullable
   = 

@@ -27,7 +27,7 @@
 
 
 
-let rec has_exit_code exits  (lam : Lambda.lambda)  : bool = 
+let rec has_exit_code exits  (lam : Lam.t)  : bool = 
   match lam with
   | Lambda.Lvar _
   | Lambda.Lconst _ 

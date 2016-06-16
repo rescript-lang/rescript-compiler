@@ -68,12 +68,12 @@ val dummy : t
 val handle_name_tail :
     Lam_compile_defs.st ->
     Lam_compile_defs.return_type ->
-    Lambda.lambda ->  J.expression -> t
+    Lam.t ->  J.expression -> t
 
 val handle_block_return : 
     Lam_compile_defs.st ->
     Lam_compile_defs.return_type ->
-    Lambda.lambda ->
+    Lam.t ->
     J.block -> J.expression -> t
 
 val concat : t list -> t

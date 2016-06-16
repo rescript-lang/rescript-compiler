@@ -30,11 +30,11 @@
 (** A module which provides some basic analysis over lambda expression *)
 
 (** No side effect, but it might depend on data store *)
-val no_side_effects : Lambda.lambda -> bool 
+val no_side_effects : Lam.t -> bool 
 
-val size : Lambda.lambda -> int
+val size : Lam.t -> int
 
-val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool 
+val eq_lambda : Lam.t -> Lam.t -> bool 
 (** a conservative version of comparing two lambdas, mostly 
     for looking for similar cases in switch
  *)
@@ -42,9 +42,9 @@ val eq_lambda : Lambda.lambda -> Lambda.lambda -> bool
 (** [is_closed_by map lam]
     return [true] if all unbound variables
     belongs to the given [map] *)
-val is_closed_by : (* Lambda. *) Ident_set.t -> Lambda.lambda -> bool
+val is_closed_by : (* Lambda. *) Ident_set.t -> Lam.t -> bool
 
-val is_closed : Lambda.lambda -> bool
+val is_closed : Lam.t -> bool
 
 
 
@@ -67,14 +67,14 @@ type stats =
 
 val is_closed_with_map : 
   Ident_set.t ->
-  Ident.t list -> Lambda.lambda -> bool * stats Ident_map.t
+  Ident.t list -> Lam.t -> bool * stats Ident_map.t
 
 val param_map_of_list : Ident.t list -> stats Ident_map.t
 
-val free_variables : Ident_set.t -> stats Ident_map.t -> Lambda.lambda -> stats Ident_map.t
+val free_variables : Ident_set.t -> stats Ident_map.t -> Lam.t -> stats Ident_map.t
 
 val small_inline_size : int 
 val exit_inline_size : int 
 
 
-val safe_to_inline : Lambda.lambda -> bool
+val safe_to_inline : Lam.t -> bool

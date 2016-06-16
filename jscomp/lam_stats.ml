@@ -61,13 +61,13 @@ type rec_flag =
 type function_id = {
   kind : function_kind ; 
   mutable arity : function_arities ;
-  lambda  : Lambda.lambda ;
+  lambda  : Lam.t ;
   rec_flag : rec_flag
 }
 
 type element = 
   | NA 
-  | SimpleForm of Lambda.lambda
+  | SimpleForm of Lam.t
 
 type boxed_nullable
   = 

@@ -85,7 +85,7 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) =
    of the bound variables of the lambda-term (no capture). *)
 
 let subst_lambda s lam =
-  let rec subst (x : Lambda.lambda) =
+  let rec subst (x : Lam.t) =
     match x with 
     | Lvar id as l ->
       begin 
@@ -143,7 +143,7 @@ let subst_lambda s lam =
 *)
 let refine_let
     ?kind param
-    (arg : Lambda.lambda) (l : Lambda.lambda)  : Lambda.lambda =
+    (arg : Lam.t) (l : Lam.t)  : Lam.t =
 
   match (kind : Lambda.let_kind option), arg, l  with 
   | _, _, Lvar w when Ident.same w param (* let k = xx in k *)
@@ -262,7 +262,7 @@ let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t)
        mutable fields are explicit
 *)
 
-let element_of_lambda (lam : Lambda.lambda) : Lam_stats.element = 
+let element_of_lambda (lam : Lam.t) : Lam_stats.element = 
   match lam with 
   | Lvar _ 
   | Lconst _ 
@@ -270,12 +270,12 @@ let element_of_lambda (lam : Lambda.lambda) : Lam_stats.element =
   (* | Lfunction _  *)
   | _ -> NA 
 
-let kind_of_lambda_block kind (xs : Lambda.lambda list) : Lam_stats.kind = 
+let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind = 
   xs 
   |> List.map element_of_lambda 
   |> (fun ls -> Lam_stats.ImmutableBlock (Array.of_list  ls, kind))
 
-let get lam v i tbl : Lambda.lambda =
+let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
     Lam_comb.prim (Pfield (i, Lambda.Fld_na)) 
@@ -335,11 +335,11 @@ let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
 
 
 
-let is_function (lam : Lambda.lambda) = 
+let is_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> true | _ -> false
 
-let not_function (lam : Lambda.lambda) = 
+let not_function (lam : Lam.t) = 
   match lam with 
   | Lfunction _ -> false | _ -> true 
 
@@ -352,7 +352,7 @@ let not_function (lam : Lambda.lambda) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lambda.lambda) args info = 
+let (* rec *) lapply (fn : Lam.t) args info = 
   (* match fn with *)
   (* | Lambda.Lfunction(kind, params, body) -> *)
   (*   let rec aux acc params args = *)
@@ -392,7 +392,7 @@ let eta_conversion n info fn args =
     ) (fn::args) ([],[])   with 
   | fn::args , bindings ->
 
-    let rest : Lambda.lambda = 
+    let rest : Lam.t = 
       Lfunction(Curried, extra_args,
                 lapply fn (args @ extra_lambdas) info) in
     List.fold_left (fun lam (id,x) ->

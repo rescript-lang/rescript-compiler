@@ -49,7 +49,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
             bindings |> Ext_list.flat_map (fun (id,lam) ->
               begin
                 Hashtbl.add ident_free_vars id (Lambda.free_variables lam);
-                match (lam : Lambda.lambda) with
+                match (lam : Lam.t) with
                 | Lfunction _ -> []
                 | _ -> [id]
               end)

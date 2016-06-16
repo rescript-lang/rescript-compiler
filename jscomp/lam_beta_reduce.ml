@@ -69,7 +69,7 @@
    3. arguments are const or not   
 *)
 let rewrite (map :   (Ident.t, _) Hashtbl.t) 
-    (lam : Lambda.lambda) : Lambda.lambda = 
+    (lam : Lam.t) : Lam.t = 
 
   let rebind i = 
     let i' = Ident.rename i in 
@@ -81,7 +81,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     match op with 
     | None -> None 
     | Some x -> Some (aux x)
-  and aux (lam : Lambda.lambda) : Lambda.lambda = 
+  and aux (lam : Lam.t) : Lam.t = 
     match lam with 
     | Lvar v -> 
       begin 
@@ -213,7 +213,7 @@ let propogate_beta_reduce
   | None -> 
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
@@ -223,7 +223,7 @@ let propogate_beta_reduce
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 
@@ -253,7 +253,7 @@ let propogate_beta_reduce_with_map
   | None ->
   let rest_bindings, rev_new_params  = 
     List.fold_left2 
-      (fun (rest_bindings, acc) old_param (arg : Lambda.lambda) -> 
+      (fun (rest_bindings, acc) old_param (arg : Lam.t) -> 
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
@@ -281,7 +281,7 @@ let propogate_beta_reduce_with_map
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
-    (fun (param, (arg : Lambda.lambda)) l -> 
+    (fun (param, (arg : Lam.t)) l -> 
        let arg = 
          match arg with 
          | Lvar v -> 

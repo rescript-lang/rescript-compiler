@@ -43,9 +43,9 @@ and incr_exit exits i =
   with
   | Not_found -> Hashtbl.add exits i (ref 1) 
 
-let count_helper  (lam : Lambda.lambda) : (int, int ref) Hashtbl.t  = 
+let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  = 
   let exits = Hashtbl.create 17 in
-  let rec count (lam : Lambda.lambda) = 
+  let rec count (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,ls) -> incr_exit exits i ; List.iter count ls
     | Lstaticcatch (l1,(i,[]),Lstaticraise (j,[])) ->
@@ -133,7 +133,7 @@ let count_helper  (lam : Lambda.lambda) : (int, int ref) Hashtbl.t  =
   exits
 ;;
 
-type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
+type subst_tbl = (int, Ident.t list * Lam.t) Hashtbl.t
 
 (*
    Second pass simplify  ``catch body with (i ...) handler''
@@ -157,7 +157,7 @@ type subst_tbl = (int, Ident.t list * Lambda.lambda) Hashtbl.t
 
 
 let subst_helper (subst : subst_tbl) query lam = 
-  let rec simplif (lam : Lambda.lambda) = 
+  let rec simplif (lam : Lam.t) = 
     match lam with 
     | Lstaticraise (i,[])  ->
       begin 
@@ -296,7 +296,7 @@ let subst_helper (subst : subst_tbl) query lam =
   in 
   simplif lam 
  
-let simplify_exits (lam : Lambda.lambda) =
+let simplify_exits (lam : Lam.t) =
   let exits = count_helper lam in
   subst_helper (Hashtbl.create 17 ) (count_exit exits) lam
 

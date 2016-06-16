@@ -43,7 +43,7 @@ let should_be_functor (name : string) lam =
  *)
 
 (* HONGBO .. doe snot look like this function is used (not in .mli) *) 
-(* let app_definitely_inlined (body : Lambda.lambda) =  *)
+(* let app_definitely_inlined (body : Lam.t) =  *)
 (*   match body with  *)
 (*   | Lvar _  *)
 (*   | Lconst _ *)

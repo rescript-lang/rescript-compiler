@@ -44,5 +44,5 @@
 
 val simplify_alias : 
   Lam_stats.meta -> 
-  Lambda.lambda ->
-  Lambda.lambda
+  Lam.t ->
+  Lam.t
