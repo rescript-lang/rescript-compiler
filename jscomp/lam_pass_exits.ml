@@ -173,12 +173,12 @@ let subst_helper (subst : subst_tbl) query lam =
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
-              (fun x y t -> Ident.add x (Lam.var y) t)
-              xs ys Ident.empty in
+              (fun x y t -> Ident_map.add x (Lam.var y) t)
+              xs ys Ident_map.empty in
           List.fold_right2
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
-               (Lam.subst_lambda  env  handler)
+               (Lam_util.subst_lambda  env  handler)
         | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->

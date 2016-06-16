@@ -80,3 +80,4 @@ val eta_conversion :
 
 val default_apply_info : Lambda.apply_info
 
+val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t

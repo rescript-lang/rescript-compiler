@@ -25,13 +25,13 @@
 type primitive = Lambda.primitive
 
 
-type switch = Lambda.lambda_switch =
+type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
-and  t = Lambda.lambda =  private
+and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
   | Lapply of t * t list * Lambda.apply_info
@@ -110,4 +110,6 @@ val for_ :
 
 val free_variables : t -> Lambda.IdentSet.t
 
-val subst_lambda : t Ident.tbl -> t -> t
+
+
+val convert : Lambda.lambda -> t 

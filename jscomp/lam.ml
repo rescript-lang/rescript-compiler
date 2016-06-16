@@ -369,6 +369,66 @@ let not x : t =
   prim Pnot [x]
 
 
+
+(* TODO; check {!Lam_analysis.free_variables} *)
 let free_variables  = Lambda.free_variables
 
-let subst_lambda = Lambda.subst_lambda
+
+
+
+let rec convert (lam : Lambda.lambda) : t = 
+  match lam with 
+  | Lvar x -> Lvar x 
+  | Lconst x -> Lconst x 
+  | Lapply (fn,args,info) 
+    -> Lapply(convert fn,List.map convert args,info)
+  | Lfunction (kind,ids,body)
+    -> Lfunction(kind,ids,convert body)
+  | Llet (kind,id,e,body) 
+    -> Llet(kind,id,convert e, convert body)
+  | Lletrec (bindings,body)
+    -> Lletrec(List.map (fun (id, e) -> id, convert e) bindings,body)
+  | Lprim (prim,args) 
+    -> Lprim (prim,List.map convert args)
+  | Lswitch (e,s) -> 
+    Lswitch (convert e, convert_switch s)
+  | Lstringswitch (e, cases, default) -> 
+    Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
+                   match default with 
+                   | None -> None
+                   | Some x -> Some (convert x)
+                  )    
+
+  | Lstaticraise (id, args) -> 
+    Lstaticraise (id, List.map convert args)
+  | Lstaticcatch (b, (i, ids), handler) -> 
+    Lstaticcatch (convert b, (i,ids), convert handler)
+  | Ltrywith (b, id, handler) -> 
+    Ltrywith (convert b, id, convert handler)
+  | Lifthenelse (b,then_,else_) -> 
+    Lifthenelse (convert b, convert then_, convert else_)
+  | Lsequence (a,b) 
+    -> Lsequence (convert a, convert b)
+  | Lwhile (b,body) -> 
+    Lwhile (convert b, convert body)
+  | Lfor (id, from_, to_, dir, loop) -> 
+    Lfor (id, convert from_, convert to_, dir, convert loop)
+  | Lassign (id, body) -> 
+    Lassign (id, convert body)    
+  | Lsend (kind, a,b,ls, loc) -> 
+    Lsend(kind, convert a, convert b, List.map convert ls, loc )
+
+  | Levent (e, event) -> 
+    Levent (convert e, event)
+  | Lifused (id, e) -> Lifused(id, convert e)
+
+and convert_switch (s : Lambda.lambda_switch) : switch = 
+  { sw_numconsts = s.sw_numconsts ; 
+    sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
+    sw_numblocks = s.sw_numblocks;
+    sw_blocks = List.map (fun (i,lam) -> i, convert lam ) s.sw_blocks;
+    sw_failaction = 
+      match s.sw_failaction with 
+      | None -> None 
+      | Some a -> Some (convert a)
+  }  
