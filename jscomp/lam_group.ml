@@ -284,8 +284,8 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply(l1, ll, info) -> 
-      Lam.apply (aux l1) (List.map aux ll) info
+    | Lapply{fn = l1; args  = ll; loc; status} -> 
+      Lam.apply (aux l1) (List.map aux ll) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
@@ -308,17 +308,17 @@ let deep_flatten
         let ll = List.map aux ll in
         match p, ll with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args; _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         | _ -> Lam.prim p ll
       end
     | Lfunction(arity, kind, params, l) -> 

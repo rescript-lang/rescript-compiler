@@ -92,8 +92,8 @@ let subst_lambda s lam =
         try Ident_map.find id s with Not_found -> l 
       end
     | Lconst sc as l -> l
-    | Lapply(fn, args, loc) -> 
-      Lam.apply (subst fn) (List.map subst args) loc
+    | Lapply{fn; args; loc; status} -> 
+      Lam.apply (subst fn) (List.map subst args) loc status
     | Lfunction(arity, kind, params, body) -> 
       Lam.function_ arity kind  params (subst body)
     | Llet(str, id, arg, body) -> 
@@ -164,14 +164,14 @@ let refine_let
   (*     let v= subst_lambda (Ident_map.singleton param arg ) l in *)
   (*     Ext_log.err "@[substitution << @]@."; *)
   (* v *)
-  | _, _, Lapply (fn, [Lvar w],info) when Ident.same w param -> 
+  | _, _, Lapply {fn; args = [Lvar w]; loc; status} when Ident.same w param -> 
     (** does not work for multiple args since 
         evaluation order unspecified, does not apply 
         for [js] in general, since the scope of js ir is loosen
 
         here we remove the definition of [param]
     *)
-    Lam.apply fn [arg] info
+    Lam.apply fn [arg] loc status
   | (Some (Strict | StrictOpt ) | None ),
     ( Lvar _    | Lconst  _ | 
       Lprim {primitive = Pfield _ ;  
@@ -362,7 +362,7 @@ let not_function (lam : Lam.t) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lam.t) args info =
+let (* rec *) lapply (fn : Lam.t) args loc status =
   (* match fn with *)
   (* | Lambda.Lfunction(kind, params, body) -> *)
   (*   let rec aux acc params args = *)
@@ -377,14 +377,14 @@ let (* rec *) lapply (fn : Lam.t) args info =
   (*     (fun acc (v,e) -> *)
   (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
 
-  (* | _ -> *)  Lam.apply fn args info
+  (* | _ -> *)  Lam.apply fn args loc status
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
   here since f's arity is 2, no side effect 
   f 3 --> function(y) -> f 3 y 
 *)
-let eta_conversion n info fn args = 
+let eta_conversion n loc status fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
   let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
@@ -405,7 +405,10 @@ let eta_conversion n info fn args =
 
     let rest : Lam.t = 
       Lam.function_ n Curried extra_args
-                (lapply fn (args @ extra_lambdas) info) in
+                (lapply fn (args @ extra_lambdas) 
+                   loc 
+                   status
+                ) in
     List.fold_left (fun lam (id,x) ->
         Lam.let_ Strict id x lam
       ) rest bindings
@@ -428,7 +431,7 @@ let iter f l =
   match (l : Lam.t) with 
     Lvar _
   | Lconst _ -> ()
-  | Lapply(fn, args, _) ->
+  | Lapply{fn; args; _} ->
       f fn; List.iter f args
   | Lfunction(_arity, kind, params, body) ->
       f body

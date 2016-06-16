@@ -128,7 +128,7 @@ let rec get_arity
   (* | Lapply(Lprim( p, _), _args, _info) -> *)
   (*     Determin(true, [], false) (\** Invariant : primtive application is always complete.. *\) *)
 
-  | Lapply(app, args, _info) -> (* detect functor application *)
+  | Lapply{fn = app;  args; _ } -> (* detect functor application *)
     let fn = get_arity meta app in 
     begin match fn with 
       | NA -> NA 

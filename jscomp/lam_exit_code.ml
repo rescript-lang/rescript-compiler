@@ -33,7 +33,7 @@ let rec has_exit_code exits  (lam : Lam.t)  : bool =
   | Lconst _ 
   | Lfunction _ (* static exit can not across function boundary *)
     -> false
-  | Lapply (l,args,_apply_info) 
+  | Lapply {fn = l; args; _ } 
     -> has_exit_code exits l || List.exists (fun x -> has_exit_code exits x ) args 
 
   | Llet (_kind,_id,v,body) 

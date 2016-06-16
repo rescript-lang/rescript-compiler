@@ -118,10 +118,10 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     | Lprim {primitive; args } ->
       (* here it makes sure that global vars are not rebound *)      
       Lam.prim primitive (List.map aux  args)
-    | Lapply(fn, args, info) ->
+    | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lam.apply fn  args info
+      Lam.apply fn  args loc status
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

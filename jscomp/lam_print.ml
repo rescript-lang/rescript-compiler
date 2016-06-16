@@ -343,10 +343,10 @@ let lambda use_env env ppf v  =
       Ident.print ppf id
   | Lconst cst ->
       struct_const ppf cst
-  | Lapply(lfun, largs, _) ->
-      let lams ppf largs =
-        List.iter (fun l -> fprintf ppf "@ %a" lam l) largs in
-      fprintf ppf "@[<2>(apply@ %a%a)@]" lam lfun lams largs
+  | Lapply { fn; args; } ->
+      let lams ppf args =
+        List.iter (fun l -> fprintf ppf "@ %a" lam l) args in
+      fprintf ppf "@[<2>(apply@ %a%a)@]" lam fn lams args
   | Lfunction(_, kind, params, body) ->
       let pr_params ppf params =
         match kind with

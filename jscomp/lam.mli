@@ -31,6 +31,13 @@ type switch  =
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
+and apply_info = private
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : Lambda.apply_status
+  }
+
 and prim_info = private
   { primitive : primitive ; 
     args : t list ; 
@@ -38,7 +45,7 @@ and prim_info = private
 and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
-  | Lapply of t * t list * Lambda.apply_info
+  | Lapply of apply_info
   | Lfunction of int (* length *) * Lambda.function_kind * Ident.t list * t
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
@@ -74,7 +81,8 @@ type unop = t ->  t
 
 val var : Ident.t -> t
 val const : Lambda.structured_constant -> t
-val apply : t -> t list -> Lambda.apply_info -> t
+
+val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
 val function_ : int -> Lambda.function_kind -> Ident.t list -> t -> t
 val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
 val letrec : (Ident.t * t) list -> t -> t

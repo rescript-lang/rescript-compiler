@@ -83,7 +83,7 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
           (* end *)
       end
     | Lvar _| Lconst _ -> ()
-    | Lapply(l1, ll, _) -> count l1; List.iter count ll
+    | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
     | Lfunction(_, _, _, l) -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
@@ -249,8 +249,8 @@ let subst_helper (subst : subst_tbl) query lam =
       end
 
     | Lvar _|Lconst _  -> lam
-    | Lapply (l1, ll, loc) -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lapply {fn = l1; args =  ll;  loc; status } -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc status
     | Lfunction (arity, kind, params, l) -> 
       Lam.function_ arity kind params (simplif l)
     | Llet (kind, v, l1, l2) -> 
@@ -264,17 +264,17 @@ let subst_helper (subst : subst_tbl) query lam =
         let ll = List.map simplif ll in
         match p, ll with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] 
-          -> Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          -> Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args;  _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         | _ -> Lam.prim p ll
       end
     | Lswitch(l, sw) ->

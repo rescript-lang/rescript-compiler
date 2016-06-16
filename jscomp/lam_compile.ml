@@ -500,28 +500,29 @@ and
                              jmp_table = Lam_compile_defs.empty_handler_map}  body)))
 
 
-    | Lapply(
-        Lapply(an, args', ({apply_status = App_na} as _info1)),
-        args, 
-        ({apply_status = App_na} as _info2))
+    | Lapply{
+        fn = Lapply{ fn = an; args =  args'; status = App_na ; };
+        args;  
+        status = App_na; loc }
       ->    
       (* After inlining we can generate such code, 
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
+        (Lam.apply an (args' @ args)  loc  App_na )
     (* External function calll *)
-    | Lapply(Lprim{primitive = Pfield (n,_); 
-                   args = [ Lprim {primitive = Pgetglobal id; args = []}];_},
-             args_lambda,
-             {apply_status = App_na | App_ml_full}) ->
+    | Lapply{ fn = 
+                Lprim{primitive = Pfield (n,_); 
+                      args = [ Lprim {primitive = Pgetglobal id; args = []}];_};
+             args = args_lambda;
+             status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
          this information, we should fix [get_exp_with_args]
       *)
       get_exp_with_args cxt lam  args_lambda id n  env
 
 
-    | Lapply(fn,args_lambda,  info) -> 
+    | Lapply{ fn; args = args_lambda;   status} -> 
       (* TODO: --- 
          1. check arity, can be simplified for pure expression
          2. no need create names
@@ -623,12 +624,12 @@ and
           | _ -> 
 
             Js_output.handle_block_return st should_return lam args_code 
-              (E.call ~info:(match fn, info with 
-                   | _, { apply_status = App_ml_full} -> 
+              (E.call ~info:(match fn, status with 
+                   | _,  App_ml_full -> 
                      {arity = Full ; call_info = Call_ml}
-                   | _, { apply_status = App_js_full} -> 
+                   | _,  App_js_full -> 
                      {arity = Full ; call_info = Call_na}
-                   | _,  { apply_status = App_na} -> 
+                   | _,   App_na -> 
                      {arity = NA; call_info = Call_ml }
                  ) fn_code args) 
         end;
@@ -863,8 +864,8 @@ and
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
                 compile_lambda cxt @@ 
                 Lam.apply fn [arg]  
-                  {apply_loc = Location.none;
-                   apply_status = App_js_full}
+                   Location.none (* TODO *)
+                   App_js_full
               else 
                 let property =
                   String.sub setter 0 
@@ -884,8 +885,8 @@ and
         | fn :: rest -> 
           compile_lambda cxt 
             (Lam.apply fn rest 
-                     {apply_loc = Location.none;
-                      apply_status = App_js_full})
+                      Location.none (*TODO*)
+                      App_js_full)
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -917,7 +918,7 @@ and
                      @@ 
                        Lam.apply fn
                          [Lam.unit]
-                     Lam_util.default_apply_info
+                         Location.none App_na
                     )
               end
             else 
@@ -933,7 +934,8 @@ and
                          kind first (Lam.function_ (len - arity) kind rest body))
                   else 
                     compile_lambda cxt 
-                      (Lam_util.eta_conversion arity Lam_util.default_apply_info  
+                      (Lam_util.eta_conversion arity 
+                         Location.none App_na
                          fn  [] )
                 (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
                 (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
@@ -952,7 +954,8 @@ and
                 *)
                 | _ -> 
                   compile_lambda cxt 
-                    (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+                    (Lam_util.eta_conversion arity
+                       Location.none App_na  fn  [] )
               end
           | _ -> assert false 
         end

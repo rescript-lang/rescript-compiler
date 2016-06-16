@@ -106,10 +106,11 @@ let simplify_alias
       {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
     *)      
-    | Lapply(Lprim {primitive = Pfield (index, _) ;
-                    args = [Lprim {primitive = Pgetglobal ident; args =  []}];
-                    _} as l1,
-                          args, info) ->
+    | Lapply{fn = 
+               Lprim {primitive = Pfield (index, _) ;
+                      args = [Lprim {primitive = Pgetglobal ident; args =  []}];
+                      _} as l1;
+             args; loc ; status} ->
       begin
         Lam_compile_env.find_and_add_if_not_exist (ident,index) meta.env
           ~not_found:(fun _ -> assert false)
@@ -132,7 +133,7 @@ let simplify_alias
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> 
-                Lam.apply (simpl l1) (List.map simpl args) info
+                Lam.apply (simpl l1) (List.map simpl args) loc status
             )
 
       end
@@ -142,7 +143,8 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply((Lvar v as l1), args, info) -> (* Check info for always inlining *)
+    | Lapply{fn = (Lvar v as l1);  args; loc ; status} ->
+      (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
 
@@ -199,43 +201,43 @@ let simplify_alias
 
                     end
                 | _ -> 
-                  Lam.apply ( simpl l1) (List.map simpl args) info
+                  Lam.apply ( simpl l1) (List.map simpl args) loc status
               else 
                 begin
                   (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
-                  Lam.apply ( simpl l1) (List.map simpl args) info
+                  Lam.apply ( simpl l1) (List.map simpl args) loc status
                 end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lam.apply ( simpl l1) (List.map simpl args) info
+              Lam.apply ( simpl l1) (List.map simpl args) loc status
             end
 
         | _ -> 
           begin
             (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lam.apply ( simpl l1) (List.map simpl args) info
+            Lam.apply ( simpl l1) (List.map simpl args) loc status
           end
         | exception Not_found -> 
             (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lam.apply ( simpl l1) (List.map simpl args) info
+          Lam.apply ( simpl l1) (List.map simpl args) loc status
       end
 
-    | Lapply(Lfunction(_arity, Curried, params, body), args, _)
+    | Lapply{ fn = Lfunction(_arity, Curried, params, body); args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply(Lfunction(_arity, Tupled, params, body), 
-             [Lprim {primitive = Pmakeblock _; args; _}], _)
+    | Lapply{ fn = Lfunction(_arity, Tupled, params, body); 
+             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
-    | Lapply (l1, ll, info) ->
-      Lam.apply (simpl  l1) (List.map simpl  ll) info
+    | Lapply {fn = l1; args =  ll;  loc ; status} ->
+      Lam.apply (simpl  l1) (List.map simpl  ll) loc status
     | Lfunction (arity, kind, params, l) 
       -> Lam.function_ arity kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 

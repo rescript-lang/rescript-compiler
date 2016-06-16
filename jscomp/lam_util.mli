@@ -76,7 +76,7 @@ val is_function : Lam.t -> bool
 
 val eta_conversion : 
   int ->
-  Lambda.apply_info -> Lam.t -> Lam.t list -> Lam.t
+  Location.t -> Lambda.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
 val default_apply_info : Lambda.apply_info
 

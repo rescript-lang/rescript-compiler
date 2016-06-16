@@ -87,7 +87,7 @@ let simple_beta_reduce params body args =
       Hashtbl.clear param_hash ;
       None
     end
-  | Lapply (Lvar fn_name as f , args', info)
+  | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
@@ -106,7 +106,7 @@ let simple_beta_reduce params body args =
                if not used then 
                  Lam.seq lambda code
                else code )
-            param_hash (Lam.apply  f us  info) in
+            param_hash (Lam.apply  f us  loc status) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 

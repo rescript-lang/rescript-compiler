@@ -56,8 +56,11 @@ let rec eliminate_ref id (lam : Lam.t) =
            args =  [Lvar v]} when Ident.same v id ->
     Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
   | Lconst _  -> lam
-  | Lapply(e1, el, loc) ->
-    Lam.apply (eliminate_ref id e1) (List.map (eliminate_ref id) el) loc
+  | Lapply{fn = e1; args =  el;  loc; status} ->
+    Lam.apply 
+      (eliminate_ref id e1)
+      (List.map (eliminate_ref id) el)
+      loc status
   | Llet(str, v, e1, e2) ->
     Lam.let_ str v (eliminate_ref id e1) (eliminate_ref id e2)
   | Lletrec(idel, e2) ->
@@ -220,19 +223,19 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       else simplif l2
     | Lsequence(l1, l2) -> Lam.seq (simplif l1) (simplif l2)
 
-    | Lapply(Lfunction(_, Curried, params, body), args, _)
+    | Lapply{fn = Lfunction(_, Curried, params, body);  args; _}
       when  Ext_list.same_length params args ->
       simplif (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(_, Tupled, params, body), 
-             [Lprim {primitive = Pmakeblock _;  args; _}], _)
+    | Lapply{ fn = Lfunction(_, Tupled, params, body);
+             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params  args ->
       simplif (Lam_beta_reduce.beta_reduce params body args)
 
-    | Lapply(l1, ll, loc) -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lapply{fn = l1;args =  ll; loc; status} -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc status
     | Lfunction(arity, kind, params, l) ->
       Lam.function_ arity kind params (simplif l)
     | Lconst _ -> lam
@@ -373,14 +376,14 @@ let collect_occurs  lam : occ_tbl =
     | Lletrec(bindings, body) ->
       List.iter (fun (v, l) -> count bv l) bindings;
       count bv body
-    | Lapply(Lfunction(_arity, Curried, params, body), args, _)
+    | Lapply{fn = Lfunction(_arity, Curried, params, body);  args; _}
       when  Ext_list.same_length params args ->
       count bv (Lam_beta_reduce.beta_reduce  params body args)
-    | Lapply(Lfunction(_arity, Tupled, params, body),
-             [Lprim {primitive = Pmakeblock _;  args; _}], _)
+    | Lapply{fn = Lfunction(_arity, Tupled, params, body);
+             args = [Lprim {primitive = Pmakeblock _;  args; _}]; _}
       when  Ext_list.same_length params  args ->
       count bv (Lam_beta_reduce.beta_reduce   params body args)
-    | Lapply(l1, ll, _) ->
+    | Lapply{fn = l1; args= ll; _} ->
       count bv l1; List.iter (count bv) ll
     | Lassign(_, l) ->
       (* Lalias-bound variables are never assigned, so don't increase

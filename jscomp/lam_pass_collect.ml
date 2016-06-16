@@ -143,7 +143,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
          *)
     | Lconst _ -> ()
     | Lvar _ -> ()
-    | Lapply(l1, ll, _) ->
+    | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
     | Lfunction(_arity, _kind, params, l) -> (* functor ? *)
         List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;

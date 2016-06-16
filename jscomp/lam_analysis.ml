@@ -252,8 +252,8 @@ let rec size (lam : Lam.t) =
         {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
      *)      
-    | Lapply(f,
-             args, _) -> size_lams (size f) args
+    | Lapply{ fn;
+             args; _} -> size_lams (size fn) args
     (* | Lfunction(_, params, l) -> really_big () *)
     | Lfunction(_, _ ,_params,body) -> size body 
     | Lswitch(_, _) -> really_big ()
@@ -294,7 +294,7 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   match (l1, l2) with
   | Lvar i1, Lvar i2 -> Ident.same i1 i2
   | Lconst c1, Lconst c2 -> c1 = c2 (* *)
-  | Lapply (l1,args1,_), Lapply(l2,args2,_) ->
+  | Lapply {fn = l1; args = args1; _}, Lapply {fn = l2; args = args2; _} ->
     eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
   | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
   | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
@@ -402,7 +402,7 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     match lam with 
     | Lvar v -> map_use top v 
     | Lconst _ -> ()
-    | Lapply(fn, args, _) ->
+    | Lapply {fn; args; _} ->
       iter top  fn; 
       let top = new_env fn top in
       List.iter (iter top ) args  
