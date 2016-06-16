@@ -38,7 +38,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
       begin 
         match Lam_stats_util.get_arity meta l1 with 
         | NA -> 
-          Lapply(simpl  l1, List.map simpl  ll,info)
+          Lam.apply (simpl  l1) (List.map simpl  ll) info
         | Determin (b, args, tail) -> 
           let len = List.length ll in 
           let rec take args = 
@@ -46,9 +46,9 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
             | (x,_) :: xs -> 
               if x = len 
               then 
-                Lambda.Lapply(simpl l1,
-                              List.map simpl ll,
-                              {info with apply_status = App_ml_full} )
+                Lam.apply (simpl l1)
+                  (List.map simpl ll)
+                  {info with apply_status = App_ml_full} 
               else if x > len  
               then 
                 let fn = simpl l1 in
@@ -58,26 +58,26 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
                   fn args 
               else 
                 let first,rest = Ext_list.take x ll in 
-                Lapply (
-                  Lapply(simpl l1, 
-                         List.map simpl first, 
+                Lam.apply (
+                  Lam.apply (simpl l1) 
+                         (List.map simpl first) 
                          {
                            info with apply_status = App_ml_full
-                         }),
-                  (List.map simpl rest), info) (* TODO refien *)
-            | _ -> Lapply(simpl l1, List.map simpl ll,  info )
+                         })
+                  (List.map simpl rest) info (* TODO refien *)
+            | _ -> Lam.apply (simpl l1) (List.map simpl ll)  info 
           in take args
       end
 
     | Llet (str, v, l1, l2) ->
-      Llet (str, v, simpl l1, simpl l2 )
+      Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec (bindings, body) ->
       let bindings = List.map (fun (k,l) -> (k, simpl l)) bindings in 
-      Lletrec (bindings, simpl body) 
+      Lam.letrec bindings (simpl body) 
     | Lprim (prim, ll) -> Lam.prim prim (List.map simpl  ll)
     | Lfunction (kind, params, l) ->
       (* Lam_mk.lfunction kind params (simpl l) *)
-      Lfunction (kind, params , simpl  l)
+      Lam.function_ kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -126,7 +126,7 @@ let alpha_conversion (meta : Lam_stats.meta) (lam : Lam.t) : Lam.t =
     | Lsend (u, m, o, ll, v) -> 
       Lam.send u (simpl m) (simpl o) (List.map simpl ll) v
     | Levent (l, event) -> Lam.event (simpl  l) event
-    | Lifused (v, l) -> Lifused (v,simpl  l)
+    | Lifused (v, l) -> Lam.ifused v (simpl  l)
   in 
 
   simpl lam

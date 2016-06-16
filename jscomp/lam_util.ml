@@ -29,9 +29,9 @@
 
 
 
-let string_of_lambda = Format.asprintf "%a" Printlambda.lambda 
+let string_of_lambda = Format.asprintf "%a" Lam_print.lambda 
 
-let string_of_primitive = Format.asprintf "%a" Printlambda.primitive
+let string_of_primitive = Format.asprintf "%a" Lam_print.primitive
 
 
 (* TODO: not very efficient .. *)
@@ -92,10 +92,14 @@ let subst_lambda s lam =
         try Ident_map.find id s with Not_found -> l 
       end
     | Lconst sc as l -> l
-    | Lapply(fn, args, loc) -> Lapply(subst fn, List.map subst args, loc)
-    | Lfunction(kind, params, body) -> Lfunction(kind, params, subst body)
-    | Llet(str, id, arg, body) -> Llet(str, id, subst arg, subst body)
-    | Lletrec(decl, body) -> Lletrec(List.map subst_decl decl, subst body)
+    | Lapply(fn, args, loc) -> 
+      Lam.apply (subst fn) (List.map subst args) loc
+    | Lfunction(kind, params, body) -> 
+      Lam.function_ kind  params (subst body)
+    | Llet(str, id, arg, body) -> 
+      Lam.let_ str id (subst arg) (subst body)
+    | Lletrec(decl, body) -> 
+      Lam.letrec (List.map subst_decl decl) (subst body)
     | Lprim(p, args) -> Lam.prim p (List.map subst args)
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
@@ -166,7 +170,7 @@ let refine_let
 
         here we remove the definition of [param]
     *)
-    Lapply(fn, [arg], info)
+    Lam.apply fn [arg] info
   | (Some (Strict | StrictOpt ) | None ),
     ( Lvar _    | Lconst  _ | Lprim (Pfield _ , [Lprim (Pgetglobal _ , [])])) , _ ->
     (* (match arg with  *)
@@ -177,7 +181,7 @@ let refine_let
     (* No side effect and does not depend on store,
         since function evaluation is always delayed
     *)
-    Llet(Alias, param,arg, l)
+    Lam.let_ Alias param arg l
   | (Some (Strict | StrictOpt ) | None ), (Lfunction _ ), _ ->
     (*It can be promoted to [Alias], however, 
         we don't want to do this, since we don't want the 
@@ -189,20 +193,20 @@ let refine_let
         TODO: punish inliner to inline functions 
         into a block 
     *)
-    Llet(StrictOpt, param,arg, l)
+    Lam.let_ StrictOpt  param arg l
   (* Not the case, the block itself can have side effects 
       we can apply [no_side_effects] pass 
       | Some Strict, Lprim(Pmakeblock (_,_,Immutable),_) ->  
         Llet(StrictOpt, param, arg, l) 
   *)      
   | Some Strict, _ ,_  when Lam_analysis.no_side_effects arg ->
-    Llet(StrictOpt, param, arg,l)
+    Lam.let_ StrictOpt param arg l
   | Some Variable, _, _ -> 
-    Llet(Variable, param,arg,l) 
+    Lam.let_ Variable  param arg l
   | Some kind, _, _ -> 
-    Llet(kind, param,arg,l) 
+    Lam.let_ kind  param arg l
   | None , _, _ -> 
-    Llet(Strict, param, arg , l)
+    Lam.let_ Strict param arg  l
 
 let alias (meta : Lam_stats.meta) (k:Ident.t) (v:Ident.t) 
     (v_kind : Lam_stats.kind) (let_kind : Lambda.let_kind) =
@@ -286,7 +290,7 @@ let get lam v i tbl : Lam.t =
       | SimpleForm l -> l
     end
   | Constant (Const_block (_,_,ls)) -> 
-    Lconst (List.nth  ls i)
+    Lam.const (List.nth  ls i)
   | _ -> lam
   | exception Not_found -> lam 
 
@@ -308,7 +312,7 @@ let dump env ext  lam =
   (* TODO: when no [Browser] detection, it will go through.. bug in js_of_ocaml? *)
   && Js_config.is_same_file ()
   then 
-    Printlambda.seriaize env 
+    Lam_print.seriaize env 
       (Ext_filename.chop_extension 
          ~loc:__LOC__ 
          (Js_config.get_current_file ()) ^ 
@@ -352,7 +356,7 @@ let not_function (lam : Lam.t) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lam.t) args info = 
+let (* rec *) lapply (fn : Lam.t) args info =
   (* match fn with *)
   (* | Lambda.Lfunction(kind, params, body) -> *)
   (*   let rec aux acc params args = *)
@@ -367,7 +371,7 @@ let (* rec *) lapply (fn : Lam.t) args info =
   (*     (fun acc (v,e) -> *)
   (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
 
-  (* | _ -> *)  Lambda.Lapply (fn, args, info )
+  (* | _ -> *)  Lam.apply fn args info
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
@@ -377,10 +381,10 @@ let (* rec *) lapply (fn : Lam.t) args info =
 let eta_conversion n info fn args = 
   let extra_args = Ext_list.init n
       (fun _ ->   (Ident.create Literals.param)) in
-  let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in
-  begin match List.fold_right (fun lam (acc, bind) ->
+  let extra_lambdas = List.map (fun x -> Lam.var x) extra_args in
+  begin match List.fold_right (fun (lam : Lam.t) (acc, bind) ->
       match lam with
-      | Lambda.Lvar _
+      | Lvar _
       | Lconst (Const_base _ | Const_pointer _ | Const_immstring _ ) 
       | Lprim (Lambda.Pfield (_), [Lprim (Lambda.Pgetglobal _, _)] )
       | Lfunction _ 
@@ -388,15 +392,15 @@ let eta_conversion n info fn args =
         (lam :: acc, bind)
       | _ ->
         let v = Ident.create Literals.partial_arg in
-        (Lambda.Lvar v :: acc),  ((v, lam) :: bind)
+        (Lam.var v :: acc),  ((v, lam) :: bind)
     ) (fn::args) ([],[])   with 
   | fn::args , bindings ->
 
     let rest : Lam.t = 
-      Lfunction(Curried, extra_args,
-                lapply fn (args @ extra_lambdas) info) in
+      Lam.function_ Curried extra_args
+                (lapply fn (args @ extra_lambdas) info) in
     List.fold_left (fun lam (id,x) ->
-        Lambda.Llet (Strict, id, x,lam)
+        Lam.let_ Strict id x lam
       ) rest bindings
   | _, _ -> assert false
   end

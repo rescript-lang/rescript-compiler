@@ -38,7 +38,7 @@ let simplify_alias
     match lam with 
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
-      (try Lvar (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
+      (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
     | Llet(kind, k, (Lprim (Pgetglobal i,[]) as g), l ) -> 
       (* This is detection of MODULE ALIAS 
           we need track all global module aliases, when it's
@@ -50,7 +50,7 @@ let simplify_alias
       let v = simpl l in
       if Ident_set.mem k meta.export_idents 
       then 
-        Llet(kind, k, g, v) 
+        Lam.let_ kind k g v
         (* in this case it is preserved, but will still be simplified 
             for the inner expression
         *)
@@ -90,10 +90,10 @@ let simplify_alias
 
     | Lconst _ -> lam
     | Llet(str, v, l1, l2) ->
-      Llet(str, v, simpl l1, simpl l2 )
+      Lam.let_ str v (simpl l1) (simpl l2 )
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
-      Lletrec(bindings, simpl body) 
+      Lam.letrec bindings (simpl body) 
     | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
 
     (* complicated 
@@ -127,7 +127,8 @@ let simplify_alias
                 simpl @@
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
-              | _ -> Lapply (simpl l1, List.map simpl args, info)
+              | _ -> 
+                Lam.apply (simpl l1) (List.map simpl args) info
             )
 
       end
@@ -194,28 +195,28 @@ let simplify_alias
 
                     end
                 | _ -> 
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
               else 
                 begin
                   (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
-                  Lapply ( simpl l1, List.map simpl args, info)
+                  Lam.apply ( simpl l1) (List.map simpl args) info
                 end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lapply ( simpl l1, List.map simpl args, info)
+              Lam.apply ( simpl l1) (List.map simpl args) info
             end
 
         | _ -> 
           begin
             (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lapply ( simpl l1, List.map simpl args, info)
+            Lam.apply ( simpl l1) (List.map simpl args) info
           end
         | exception Not_found -> 
             (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lapply ( simpl l1, List.map simpl args, info)
+          Lam.apply ( simpl l1) (List.map simpl args) info
       end
 
     | Lapply(Lfunction(Curried, params, body), args, _)
@@ -229,9 +230,9 @@ let simplify_alias
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
     | Lapply (l1, ll, info) ->
-      Lapply (simpl  l1, List.map simpl  ll,info)
+      Lam.apply (simpl  l1) (List.map simpl  ll) info
     | Lfunction (kind, params, l) 
-      -> Lfunction (kind, params , simpl  l)
+      -> Lam.function_ kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;

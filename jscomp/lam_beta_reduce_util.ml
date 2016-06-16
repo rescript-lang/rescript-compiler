@@ -106,7 +106,7 @@ let simple_beta_reduce params body args =
                if not used then 
                  Lam.seq lambda code
                else code )
-            param_hash (Lambda.Lapply ( f, us , info)) in
+            param_hash (Lam.apply  f us  info) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 

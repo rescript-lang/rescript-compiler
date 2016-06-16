@@ -22,47 +22,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
+val lambda : Format.formatter -> Lam.t -> unit
 
+val primitive: Format.formatter -> Lam.Prim.t -> unit
 
+val seriaize : 'a -> string -> Lam.t -> unit
 
-
-
-
-
-
-let maybe_functor (name : string) = 
-  name.[0] >= 'A' && name.[0] <= 'Z'
-
-
-let should_be_functor (name : string) lam = 
-  maybe_functor name  && 
-  (function | Lam.Lfunction _ -> true | _ -> false) lam
-
-(* TODO: add a context, like 
-    [args]
-    [Lfunction(params,body)]
- *)
-
-(* HONGBO .. doe snot look like this function is used (not in .mli) *) 
-(* let app_definitely_inlined (body : Lam.t) =  *)
-(*   match body with  *)
-(*   | Lvar _  *)
-(*   | Lconst _ *)
-(*   | Lprim _  *)
-(*   | Lapply _ -> true  *)
-(*   | Llet _  *)
-(*   | Lletrec  _ *)
-(*   | Lstringswitch _  *)
-(*   | Lswitch _  *)
-(*   | Lstaticraise _ *)
-(*   | Lfunction _  *)
-(*   | Lstaticcatch _  *)
-(*   | Ltrywith _  *)
-(*   | Lifthenelse _  *)
-(*   | Lsequence _  *)
-(*   | Lwhile _ *)
-(*   | Lfor _  *)
-(*   | Lassign _  *)
-(*   | Lsend _  *)
-(*   | Levent _ *)
-(*   | Lifused _ -> false *)
+val env_lambda : Env.t -> Format.formatter -> Lam.t -> unit

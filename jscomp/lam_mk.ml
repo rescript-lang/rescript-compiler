@@ -36,8 +36,8 @@ let lfunction kind params (body : Lam.t) =
   if params = [] then body else
     match body with
     | Lfunction (kind', params', body') when kind = kind' ->
-      Lfunction (kind', params @ params', body')
+      Lam.function_ kind' (params @ params') body'
     |  _ ->
-      Lfunction (kind, params, body)
+      Lam.function_ kind params body
 
 

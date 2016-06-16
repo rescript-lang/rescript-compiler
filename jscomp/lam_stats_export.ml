@@ -76,7 +76,7 @@ let export_to_cmj
 
     List.fold_left
       (fun   acc (x : Ident.t)  ->
-         let arity =  Lam_stats_util.get_arity meta (Lvar x) in
+         let arity =  Lam_stats_util.get_arity meta (Lam.var x) in
          match Ident_map.find x export_map with 
          | lambda  -> 
            if Lam_analysis.safe_to_inline lambda
@@ -133,7 +133,7 @@ let export_to_cmj
     match ids with 
     | [] -> ()
     | x::xs -> 
-      dump_ident fmt x (Lam_stats_util.get_arity meta (Lvar x)) ; 
+      dump_ident fmt x (Lam_stats_util.get_arity meta (Lam.var x)) ; 
       Format.pp_print_space fmt ();
       dump fmt xs in
 

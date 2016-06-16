@@ -312,7 +312,7 @@ and compile_recursive_let
           E.fun_ params (Js_output.to_block output )
       ), [] 
   | Lprim (Pmakeblock (0, _, _) , ls)
-    when List.for_all (function  | Lambda.Lvar _  -> true | _ -> false) ls 
+    when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
        {[let rec cell = { content = x; next = cell} ]}
@@ -321,7 +321,7 @@ and compile_recursive_let
       S.define ~kind:Variable id (E.arr Mutable []) :: 
       (List.mapi (fun i x -> 
           match x with  
-          | Lambda.Lvar lid
+          | Lam.Lvar lid
             -> S.exp 
                  (Js_array.set_array (E.var id) (E.int (Int32.of_int i)) (E.var lid))
           | _ -> assert false
@@ -509,7 +509,7 @@ and
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lapply (an, (args' @ args), (Lam_util.mk_apply_info App_na)))
+        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
     (* External function calll *)
     | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
              {apply_status = App_na | App_ml_full}) ->
@@ -856,9 +856,10 @@ and
               {block = block1; value = Some value}, Public (Some setter) 
               ->
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
-                compile_lambda cxt @@ Lapply (fn, [arg] , 
-                                              {apply_loc = Location.none;
-                                               apply_status = App_js_full})
+                compile_lambda cxt @@ 
+                Lam.apply fn [arg]  
+                  {apply_loc = Location.none;
+                   apply_status = App_js_full}
               else 
                 let property =
                   String.sub setter 0 
@@ -877,9 +878,9 @@ and
 
         | fn :: rest -> 
           compile_lambda cxt 
-            (Lapply (fn, rest , 
+            (Lam.apply fn rest 
                      {apply_loc = Location.none;
-                      apply_status = App_js_full}))
+                      apply_status = App_js_full})
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -904,18 +905,19 @@ and
               begin 
                 match fn with 
                 | Lfunction (_, [_], body)
-                  -> compile_lambda cxt (Lfunction (Curried, [], body))
+                  -> compile_lambda cxt (Lam.function_ Curried [] body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lfunction (Lambda.Curried, [],
-                                Lambda.Lapply(fn,
-                                              [Lam.unit],
-                                              Lam_util.default_apply_info
-                                             )))
+                    (Lam.function_ Lambda.Curried [] 
+                     @@ 
+                       Lam.apply fn
+                         [Lam.unit]
+                     Lam_util.default_apply_info
+                    )
               end
             else 
               begin match fn with
-                | Lambda.Lfunction(kind,args, body) 
+                | Lam.Lfunction(kind,args, body) 
                   ->
                   let len =  List.length args in 
                   if len = arity then
@@ -923,8 +925,8 @@ and
                   else if len > arity then 
                     let first, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lambda.Lfunction 
-                         (kind, first, Lambda.Lfunction (kind, rest, body)))
+                      (Lam.function_
+                         kind first (Lam.function_ kind rest body))
                   else 
                     compile_lambda cxt 
                       (Lam_util.eta_conversion arity Lam_util.default_apply_info  
@@ -1488,7 +1490,7 @@ and
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 
-      compile_lambda cxt (Ltrywith(body, id, cont))
+      compile_lambda cxt (Lam.try_ body id cont)
     | Ltrywith(lam,id, catch) ->  (* generate documentation *)
       (* 
          tail --> should be renamed to `shouldReturn`  

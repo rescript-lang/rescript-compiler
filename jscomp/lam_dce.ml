@@ -39,7 +39,8 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
       match x with
       | Single(kind, id,lam) -> (* assert false *)
           begin
-            Hashtbl.add ident_free_vars id (Lambda.free_variables lam);
+            Hashtbl.add ident_free_vars id 
+              (Lam.free_variables  lam);
             match kind with
             | Alias | StrictOpt -> []
             | Strict | Variable -> [id]
@@ -48,7 +49,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           begin
             bindings |> Ext_list.flat_map (fun (id,lam) ->
               begin
-                Hashtbl.add ident_free_vars id (Lambda.free_variables lam);
+                Hashtbl.add ident_free_vars id (Lam.free_variables lam);
                 match (lam : Lam.t) with
                 | Lfunction _ -> []
                 | _ -> [id]
@@ -58,7 +59,7 @@ let remove export_idents (rest : Lam_group.t list) : Lam_group.t list  =
           if Lam_analysis.no_side_effects lam then []
           else 
             (** its free varaibles here will be defined above *)
-            I.elements ( Lambda.free_variables lam)) rest  @ export_idents
+            I.elements ( Lam.free_variables lam)) rest  @ export_idents
   in
   let current_ident_sets = 
     Idents_analysis.calculate_used_idents ident_free_vars 

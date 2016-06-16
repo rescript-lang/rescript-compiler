@@ -173,12 +173,13 @@ let subst_helper (subst : subst_tbl) query lam =
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
-              (fun x y t -> Ident.add x (Lambda.Lvar y) t)
+              (fun x y t -> Ident.add x (Lam.var y) t)
               xs ys Ident.empty in
           List.fold_right2
-            (fun y l r -> Lambda.Llet (Alias, y, l, r))
-            ys ls (Lambda.subst_lambda env handler)
-        | exception Not_found -> Lstaticraise(i,ls)
+            (fun y l r -> Lam.let_ Alias y l r)
+            ys ls 
+               (Lam.subst_lambda  env  handler)
+        | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
       Hashtbl.add subst i ([],simplif l2) ;
@@ -244,15 +245,20 @@ let subst_helper (subst : subst_tbl) query lam =
               Hashtbl.add subst i (xs, Lam_beta_reduce.refresh @@ simplif l2) ;
               simplif l1 (** l1 will inline *)
             end
-          else Lstaticcatch (simplif l1, (i,xs), simplif l2)
+          else Lam.staticcatch (simplif l1) (i,xs) (simplif l2)
       end
 
     | Lvar _|Lconst _  -> lam
-    | Lapply (l1, ll, loc) -> Lapply(simplif l1, List.map simplif ll, loc)
-    | Lfunction (kind, params, l) -> Lfunction(kind, params, simplif l)
-    | Llet (kind, v, l1, l2) -> Llet(kind, v, simplif l1, simplif l2)
+    | Lapply (l1, ll, loc) -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc
+    | Lfunction (kind, params, l) -> 
+      Lam.function_ kind params (simplif l)
+    | Llet (kind, v, l1, l2) -> 
+      Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
-      Lletrec( List.map (fun (v, l) -> (v, simplif l)) bindings, simplif body)
+      Lam.letrec
+        ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
+        (simplif body)
     | Lprim (p, ll) -> 
       begin
         let ll = List.map simplif ll in
@@ -260,13 +266,15 @@ let subst_helper (subst : subst_tbl) query lam =
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply (f, args, _)]
         | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Prevapply loc, [x; f] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; f] 
+          -> Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         (* Simplify %apply, for n-ary functions with n > 1 *)
         | Pdirapply loc, [Lapply(f, args, _); x]
         | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lapply (f, args@[x], Lambda.default_apply_info ~loc ())
-        | Pdirapply loc, [f; x] -> Lapply (f, [x], Lambda.default_apply_info ~loc ())
+          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [f; x] -> 
+          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
         | _ -> Lam.prim p ll
       end
     | Lswitch(l, sw) ->
@@ -274,25 +282,33 @@ let subst_helper (subst : subst_tbl) query lam =
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts
       and new_blocks =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_blocks
       and new_fail = Misc.may_map simplif sw.sw_failaction in
-      Lswitch
-        (new_l,
-         {sw with sw_consts = new_consts ; sw_blocks = new_blocks; sw_failaction = new_fail})
+      Lam.switch
+        new_l
+         { 
+           sw with 
+           sw_consts = new_consts ;
+           sw_blocks = new_blocks; 
+           sw_failaction = new_fail}
     | Lstringswitch(l,sw,d) ->
       Lam.stringswitch
         (simplif l) (List.map (fun (s,l) -> s,simplif l) sw)
          (Misc.may_map simplif d)
-    | Ltrywith (l1, v, l2) -> Ltrywith(simplif l1, v, simplif l2)
+    | Ltrywith (l1, v, l2) -> 
+      Lam.try_ (simplif l1) v (simplif l2)
     | Lifthenelse (l1, l2, l3) -> 
       Lam.if_ (simplif l1) (simplif l2) (simplif l3)
     | Lsequence (l1, l2) -> Lam.seq (simplif l1) (simplif l2)
     | Lwhile (l1, l2) -> Lam.while_ (simplif l1) (simplif l2)
     | Lfor (v, l1, l2, dir, l3) ->
       Lam.for_ v (simplif l1) (simplif l2) dir (simplif l3)
-    | Lassign (v, l) -> Lassign(v, simplif l)
+    | Lassign (v, l) -> 
+      Lam.assign v (simplif l)
     | Lsend (k, m, o, ll, loc) ->
-      Lsend (k, simplif m, simplif o, List.map simplif ll, loc)
-    | Levent (l, ev) -> Lam.event (simplif l) ev
-    | Lifused (v, l) -> Lifused (v,simplif l)
+      Lam.send k (simplif m) (simplif o) (List.map simplif ll) loc
+    | Levent (l, ev) -> 
+      Lam.event (simplif l) ev
+    | Lifused (v, l) -> 
+      Lam.ifused v (simplif l)
   in 
   simplif lam 
  

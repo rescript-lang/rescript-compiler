@@ -73,7 +73,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
 
   let rebind i = 
     let i' = Ident.rename i in 
-    Hashtbl.add map i (Lambda.Lvar i');
+    Hashtbl.add map i (Lam.var i');
     i' in
   (* order matters, especially for let bindings *)
   let rec 
@@ -92,17 +92,17 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let v = rebind v in
       let l1 = aux l1 in      
       let l2 = aux l2 in
-      Llet(str, v,  l1,  l2 )
+      Lam.let_ str v  l1  l2 
     | Lletrec(bindings, body) ->
       (*order matters see GPR #405*)
       let vars = List.map (fun (k, _) -> rebind k) bindings in 
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
-      Lletrec(bindings, body) 
+      Lam.letrec bindings body
     | Lfunction(kind, params, body) -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lfunction (kind, params, body)
+      Lam.function_ kind params body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
@@ -121,7 +121,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     | Lapply(fn, args, info) ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lapply(fn, args, info)
+      Lam.apply fn  args info
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -219,7 +219,7 @@ let propogate_beta_reduce
          | Lvar _  -> rest_bindings , arg :: acc 
          | _ -> 
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
@@ -261,7 +261,7 @@ let propogate_beta_reduce_with_map
            (* TODO: we can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
-           (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+           (p,arg) :: rest_bindings , (Lam.var p) :: acc 
 
          | _ -> 
            if  Lam_analysis.no_side_effects arg then
@@ -273,11 +273,11 @@ let propogate_beta_reduce_with_map
                  rest_bindings, arg :: acc                
                | _  ->  
                  let p = Ident.rename old_param in 
-                 (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+                 (p,arg) :: rest_bindings , (Lam.var p) :: acc 
              end
            else
              let p = Ident.rename old_param in 
-             (p,arg) :: rest_bindings , (Lambda.Lvar p) :: acc 
+             (p,arg) :: rest_bindings , (Lam.var p) :: acc 
       )  ([],[]) params args in
   let new_body = rewrite (Ext_hashtbl.of_list2 (List.rev params) (rev_new_params)) body in
   List.fold_right
