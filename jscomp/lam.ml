@@ -119,8 +119,8 @@ let const ct : t = Lconst ct
 let apply fn args loc status : t = 
   Lapply { fn; args;  loc  ;
            status }
-let function_ arity kind ids body : t = 
-  Lfunction { arity; kind; params = ids; body}
+let function_ ~arity ~kind ~params ~body : t = 
+  Lfunction { arity; kind; params ; body}
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -241,7 +241,7 @@ let lift_int32 b : t =
 let lift_int64 b : t =
   Lconst (Const_base (Const_int64 b))
 
-let prim (prim : Prim.t) (ll : t list)  : t = 
+let prim ~primitive:(prim : Prim.t) ~args:(ll : t list)  : t = 
   let default () : t = Lprim { primitive = prim ;args =  ll } in 
   match ll with 
   | [Lconst a] -> 
@@ -395,8 +395,10 @@ let rec convert (lam : Lambda.lambda) : t =
   | Lapply (fn,args,info) 
     ->  apply (convert fn) (List.map convert args) 
           info.apply_loc info.apply_status
-  | Lfunction (kind,  ids,body)
-    ->  function_ (List.length ids) kind ids (convert body)
+  | Lfunction (kind,  params,body)
+    ->  function_ 
+          ~arity:(List.length params) ~kind ~params 
+          ~body:(convert body)
   | Llet (kind,id,e,body) 
     -> Llet(kind,id,convert e, convert body)
   | Lletrec (bindings,body)

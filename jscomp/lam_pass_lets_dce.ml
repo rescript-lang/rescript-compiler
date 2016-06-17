@@ -54,7 +54,7 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.assign id (eliminate_ref id e)
   | Lprim {primitive = Poffsetref delta ; 
            args =  [Lvar v]} when Ident.same v id ->
-    Lam.assign id (Lam.prim (Poffsetint delta) [Lam.var id])
+    Lam.assign id (Lam.prim ~primitive:(Poffsetint delta) ~args:[Lam.var id])
   | Lconst _  -> lam
   | Lapply{fn = e1; args =  el;  loc; status} ->
     Lam.apply 
@@ -67,8 +67,8 @@ let rec eliminate_ref id (lam : Lam.t) =
     Lam.letrec
       (List.map (fun (v, e) -> (v, eliminate_ref id e)) idel)
       (eliminate_ref id e2)
-  | Lprim {primitive = p; args =  el} ->
-    Lam.prim p (List.map (eliminate_ref id) el)
+  | Lprim {primitive ; args } ->
+    Lam.prim  ~primitive ~args:(List.map (eliminate_ref id) args)
   | Lswitch(e, sw) ->
     Lam.switch(eliminate_ref id e)
             {sw_numconsts = sw.sw_numconsts;
@@ -150,7 +150,8 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
       Hashtbl.add subst v (simplif (Lam.var w));
       simplif l2
     | Llet((Strict | StrictOpt as kind) ,
-           v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) as prim); 
+           v, (Lprim {primitive = (Pmakeblock(0, tag_info, Mutable) 
+                                   as primitive); 
                       args = [linit]}), lbody)
       ->
       let slinit = simplif linit in
@@ -161,7 +162,7 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
             ~kind:Variable v slinit (eliminate_ref v slbody)
         with Real_reference ->
           Lam_util.refine_let 
-            ~kind v (Lam.prim prim [slinit])
+            ~kind v (Lam.prim ~primitive ~args:[slinit])
             slbody
       end
     | Llet(Alias, v, l1, l2) ->
@@ -237,13 +238,14 @@ let lets_helper (count_var : Ident.t -> used_info) lam =
     | Lapply{fn = l1;args =  ll; loc; status} -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
     | Lfunction{arity; kind; params; body = l} ->
-      Lam.function_ arity kind params (simplif l)
+      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
     | Lconst _ -> lam
     | Lletrec(bindings, body) ->
       Lam.letrec 
         (List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim {primitive = p; args =  ll} -> Lam.prim p (List.map simplif ll)
+    | Lprim {primitive; args } 
+      -> Lam.prim ~primitive ~args:(List.map simplif args)
     | Lswitch(l, sw) ->
       let new_l = simplif l
       and new_consts =  List.map (fun (n, e) -> (n, simplif e)) sw.sw_consts

@@ -71,14 +71,14 @@ let simplify_alias
         let l1 = 
           match x with 
           | Null 
-            -> Lam.not ( Lam.prim Lam.Prim.js_is_nil [l]) 
+            -> Lam.not ( Lam.prim ~primitive:Lam.Prim.js_is_nil ~args:[l]) 
           | Undefined 
             -> 
-            Lam.not (Lam.prim Lam.Prim.js_is_undef [l])
+            Lam.not (Lam.prim ~primitive:Lam.Prim.js_is_undef ~args:[l])
           | Null_undefined
             -> 
             Lam.not
-              ( Lam.prim Lam.Prim.js_is_nil_undef  [l]) 
+              ( Lam.prim ~primitive:Lam.Prim.js_is_nil_undef  ~args:[l]) 
           | Normal ->  l1 
         in 
         Lam.if_ l1 (simpl l2) (simpl l3)
@@ -95,8 +95,8 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim {primitive = prim; args = ll} 
-      -> Lam.prim prim (List.map simpl  ll)
+    | Lprim {primitive; args } 
+      -> Lam.prim ~primitive ~args:(List.map simpl  args)
 
     (* complicated 
         1. inline this function
@@ -143,11 +143,11 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply{fn = (Lvar v as l1);  args; loc ; status} ->
+    | Lapply{fn = (Lvar v as fn);  args; loc ; status} ->
       (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
-
+      let normal () = Lam.apply ( simpl fn) (List.map simpl args) loc status in
       begin 
         match Hashtbl.find meta.ident_tbl v with
         | Function {lambda = Lfunction {params; body} as _m;
@@ -155,6 +155,7 @@ let simplify_alias
                     _ }
           -> 
           let lam_size = Lam_analysis.size body in            
+        
           if Ext_list.same_length args params (* && false *)
           then               
             if Lam_inline_util.maybe_functor v.name  
@@ -200,29 +201,14 @@ let simplify_alias
                       simpl (Lam_beta_reduce.propogate_beta_reduce_with_map meta param_map params body args)
 
                     end
-                | _ -> 
-                  Lam.apply ( simpl l1) (List.map simpl args) loc status
+                | _ -> normal ()
               else 
-                begin
-                  (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
-                  (*   v.name v.stamp lam_size *)
-                  (* ;     *)
-                  Lam.apply ( simpl l1) (List.map simpl args) loc status
-                end
+                normal ()
           else
-            begin
-              (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lam.apply ( simpl l1) (List.map simpl args) loc status
-            end
+            normal ()
+        | _ -> normal ()
+        | exception Not_found -> normal ()
 
-        | _ -> 
-          begin
-            (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lam.apply ( simpl l1) (List.map simpl args) loc status
-          end
-        | exception Not_found -> 
-            (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lam.apply ( simpl l1) (List.map simpl args) loc status
       end
 
     | Lapply{ fn = Lfunction{ kind = Curried ; params; body}; args; _}
@@ -239,7 +225,7 @@ let simplify_alias
     | Lapply {fn = l1; args =  ll;  loc ; status} ->
       Lam.apply (simpl  l1) (List.map simpl  ll) loc status
     | Lfunction {arity; kind; params; body = l}
-      -> Lam.function_ arity kind params  (simpl  l)
+      -> Lam.function_ ~arity ~kind ~params  ~body:(simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
