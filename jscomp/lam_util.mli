@@ -66,8 +66,6 @@ val ident_set_of_list : Ident.t list -> Ident_set.t
 
 val print_ident_set : Format.formatter -> Ident_set.t -> unit
 
-val mk_apply_info : ?loc:Location.t -> Lambda.apply_status -> Lambda.apply_info
-
 
 
 val not_function : Lam.t -> bool 
@@ -78,7 +76,7 @@ val eta_conversion :
   int ->
   Location.t -> Lambda.apply_status -> Lam.t -> Lam.t list -> Lam.t
 
-val default_apply_info : Lambda.apply_info
+
 
 val subst_lambda : Lam.t Ident_map.t -> Lam.t -> Lam.t
 

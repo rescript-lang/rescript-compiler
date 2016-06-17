@@ -8,6 +8,7 @@ config_util
 
 
 lam
+lam_iter
 lam_print
 lam_compile_env
 lam_dispatch_primitive

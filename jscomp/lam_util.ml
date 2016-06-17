@@ -84,8 +84,8 @@ let add_required_modules ( x : Ident.t list) (meta : Lam_stats.meta) =
    Assumes that the image of the substitution is out of reach
    of the bound variables of the lambda-term (no capture). *)
 
-let subst_lambda s lam =
-  let rec subst (x : Lam.t) =
+let subst_lambda (s : Lam.t Ident_map.t) lam =
+  let rec subst (x : Lam.t) : Lam.t =
     match x with 
     | Lvar id as l ->
       begin 
@@ -95,13 +95,13 @@ let subst_lambda s lam =
     | Lapply{fn; args; loc; status} -> 
       Lam.apply (subst fn) (List.map subst args) loc status
     | Lfunction {arity; kind; params; body} -> 
-      Lam.function_ arity kind  params (subst body)
+      Lam.function_ ~arity ~kind  ~params ~body:(subst body)
     | Llet(str, id, arg, body) -> 
       Lam.let_ str id (subst arg) (subst body)
     | Lletrec(decl, body) -> 
       Lam.letrec (List.map subst_decl decl) (subst body)
     | Lprim { primitive ; args; _} -> 
-      Lam.prim primitive (List.map subst args)
+      Lam.prim ~primitive ~args:(List.map subst args)
     | Lswitch(arg, sw) ->
       Lam.switch (subst arg)
         {sw with sw_consts = List.map subst_case sw.sw_consts;
@@ -156,7 +156,7 @@ let refine_let
   | _, _, Lprim {primitive ; args =  [Lvar w];  _} when Ident.same w param 
                                  &&  (function | Lambda.Pmakeblock _ -> false | _ ->  true) primitive
     (* don't inline inside a block *)
-    ->  Lam.prim primitive [arg] 
+    ->  Lam.prim ~primitive ~args:[arg] 
   (* we can not do this substitution when capttured *)
   (* | _, Lvar _, _ -> (\** let u = h in xxx*\) *)
   (*     (\* assert false *\) *)
@@ -287,9 +287,8 @@ let kind_of_lambda_block kind (xs : Lam.t list) : Lam_stats.kind =
 let get lam v i tbl : Lam.t =
   match (Hashtbl.find tbl v  : Lam_stats.kind) with 
   | Module g -> 
-    Lam.prim 
-      (Pfield (i, Lambda.Fld_na)) 
-      [Lam.prim (Pgetglobal g) [] ]
+    Lam.prim ~primitive:(Pfield (i, Lambda.Fld_na)) 
+      ~args:[Lam.prim ~primitive:(Pgetglobal g) ~args:[] ]
   | ImmutableBlock (arr, _) -> 
     begin match arr.(i) with 
       | NA -> lam 
@@ -336,12 +335,11 @@ let ident_set_of_list ls =
 let print_ident_set fmt s = 
   Format.fprintf fmt   "@[<v>{%a}@]@."
     (fun fmt s   -> 
-       Ident_set.iter (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
+       Ident_set.iter 
+         (fun e -> Format.fprintf fmt "@[<v>%a@],@ " Ident.print e) s
     )
     s     
 
-let mk_apply_info ?(loc = Location.none)  apply_status : Lambda.apply_info =
-  { apply_loc = loc; apply_status }
 
 
 
@@ -362,22 +360,7 @@ let not_function (lam : Lam.t) =
      lapply (let a = 3 in let b = 4 in fun x y -> x + y) 2 3 
    ]}   
 *)
-let (* rec *) lapply (fn : Lam.t) args loc status =
-  (* match fn with *)
-  (* | Lambda.Lfunction(kind, params, body) -> *)
-  (*   let rec aux acc params args = *)
-  (*     match params, args with *)
-  (*     | [], [] -> acc, body *)
-  (*     | [], args' -> acc, lapply body args' info *)
-  (*     | params' , [] -> *)
-  (*       acc, Lambda.Lfunction(kind, params', body) *)
-  (*     | x::xs, y::ys -> aux ((x,y)::acc) xs ys in *)
-  (*   let env, rest = aux [] params args in *)
-  (*   List.fold_left *)
-  (*     (fun acc (v,e) -> *)
-  (*        Lambda.Llet (Strict,v,e ,acc) ) rest env *)
 
-  (* | _ -> *)  Lam.apply fn args loc status
 (*
   let f x y =  x + y 
   Invariant: there is no currying 
@@ -404,8 +387,8 @@ let eta_conversion n loc status fn args =
   | fn::args , bindings ->
 
     let rest : Lam.t = 
-      Lam.function_ n Curried extra_args
-                (lapply fn (args @ extra_lambdas) 
+      Lam.function_ ~arity:n ~kind:Curried ~params:extra_args
+                ~body:(Lam.apply fn (args @ extra_lambdas) 
                    loc 
                    status
                 ) in
@@ -416,89 +399,30 @@ let eta_conversion n loc status fn args =
   end
 
 
-(* FIXME: application location is important for error message *)
-let default_apply_info : Lambda.apply_info = 
-  { apply_status = App_na ; apply_loc = Location.none }
 
 
-
-
-let iter_opt f = function
-  | None -> ()
-  | Some e -> f e
-
-let iter f l = 
-  match (l : Lam.t) with 
-    Lvar _
-  | Lconst _ -> ()
-  | Lapply{fn; args; _} ->
-      f fn; List.iter f args
-  | Lfunction{body;_} ->
-      f body
-  | Llet(str, id, arg, body) ->
-      f arg; f body
-  | Lletrec(decl, body) ->
-      f body;
-      List.iter (fun (id, exp) -> f exp) decl
-  | Lprim {args; _} ->
-      List.iter f args
-  | Lswitch(arg, sw) ->
-      f arg;
-      List.iter (fun (key, case) -> f case) sw.sw_consts;
-      List.iter (fun (key, case) -> f case) sw.sw_blocks;
-      iter_opt f sw.sw_failaction
-  | Lstringswitch (arg,cases,default) ->
-      f arg ;
-      List.iter (fun (_,act) -> f act) cases ;
-      iter_opt f default
-  | Lstaticraise (_,args) ->
-      List.iter f args
-  | Lstaticcatch(e1, (_,vars), e2) ->
-      f e1; f e2
-  | Ltrywith(e1, exn, e2) ->
-      f e1; f e2
-  | Lifthenelse(e1, e2, e3) ->
-      f e1; f e2; f e3
-  | Lsequence(e1, e2) ->
-      f e1; f e2
-  | Lwhile(e1, e2) ->
-      f e1; f e2
-  | Lfor(v, e1, e2, dir, e3) ->
-      f e1; f e2; f e3
-  | Lassign(id, e) ->
-      f e
-  | Lsend (k, met, obj, args, _) ->
-      List.iter f (met::obj::args)
-  | Levent (lam, evt) ->
-      f lam
-  | Lifused (v, e) ->
-      f e
-
-let free_ids get (l : Lam.t) =
+let free_variables l =
   let fv = ref Ident_set.empty in
-  let rec free l =
-    iter free l;
-    fv := List.fold_right Ident_set.add (get l) !fv;
+  let rec free (l : Lam.t) =
+    Lam_iter.inner_iter free l;
     match l with
-    | Lfunction{ params;} -> (* TODO: learn *)
-        List.iter (fun param -> fv := Ident_set.remove param !fv) params
+    | Lvar id -> fv := Ident_set.add id !fv
+    | Lfunction{ params;} -> 
+      List.iter (fun param -> fv := Ident_set.remove param !fv) params
     | Llet(str, id, arg, body) ->
-        fv := Ident_set.remove id !fv
+      fv := Ident_set.remove id !fv
     | Lletrec(decl, body) ->
-        List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
+      List.iter (fun (id, exp) -> fv := Ident_set.remove id !fv) decl
     | Lstaticcatch(e1, (_,vars), e2) ->
-        List.iter (fun id -> fv := Ident_set.remove id !fv) vars
+      List.iter (fun id -> fv := Ident_set.remove id !fv) vars
     | Ltrywith(e1, exn, e2) ->
-        fv := Ident_set.remove exn !fv
+      fv := Ident_set.remove exn !fv
     | Lfor(v, e1, e2, dir, e3) ->
-        fv := Ident_set.remove v !fv
+      fv := Ident_set.remove v !fv
     | Lassign(id, e) ->
-        fv := Ident_set.add id !fv
-    | Lvar _ | Lconst _ | Lapply _
+      fv := Ident_set.add id !fv
+    | Lconst _ | Lapply _
     | Lprim _ | Lswitch _ | Lstringswitch _ | Lstaticraise _
     | Lifthenelse _ | Lsequence _ | Lwhile _
     | Lsend _ | Levent _ | Lifused _ -> ()
   in free l; !fv
-
-let free_variables l =
-  free_ids (function Lvar id -> [id] | _ -> []) l

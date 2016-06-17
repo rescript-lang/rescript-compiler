@@ -75,12 +75,12 @@ let simple_beta_reduce params body args =
       List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
     in 
     begin match aux [] args' with 
-    | us -> 
+    | args -> 
       let result = 
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
-            else code) param_hash (Lam.prim primitive us ) in 
+            else code) param_hash (Lam.prim ~primitive ~args) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 

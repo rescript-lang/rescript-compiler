@@ -102,7 +102,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     | Lfunction{arity; kind; params; body} -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lam.function_ arity kind params body
+      Lam.function_ ~arity ~kind ~params ~body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
@@ -117,7 +117,7 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
     | Lconst _ -> lam
     | Lprim {primitive; args } ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim primitive (List.map aux  args)
+      Lam.prim ~primitive ~args:(List.map aux  args)
     | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 

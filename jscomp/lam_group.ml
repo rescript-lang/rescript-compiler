@@ -140,7 +140,10 @@ let deep_flatten
       let id' = Ident.rename id in 
       flatten acc 
         (Lam.let_ str id' arg 
-               (Lam.let_ Alias id (Lam.prim (Pccall p)  [Lam.var id'])
+               (Lam.let_ Alias id 
+                  (Lam.prim 
+                     ~primitive:(Pccall p)
+                     ~args: [Lam.var id'])
                   body)
               )
     | Llet (str,id,arg,body) -> 
@@ -302,11 +305,11 @@ let deep_flatten
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim {primitive = p; args =  ll}
+    | Lprim {primitive ; args }
       -> 
       begin
-        let ll = List.map aux ll in
-        match p, ll with
+        let args = List.map aux args in
+        match primitive, args with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply {fn = f;  args; _}]
         | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
@@ -319,10 +322,10 @@ let deep_flatten
           Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
           Lam.apply f [x] loc App_na
-        | _ -> Lam.prim p ll
+        | _ -> Lam.prim ~primitive ~args
       end
     | Lfunction{arity; kind; params;  body = l} -> 
-      Lam.function_ arity kind params  (aux  l)
+      Lam.function_ ~arity ~kind ~params  ~body:(aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;

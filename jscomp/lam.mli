@@ -89,7 +89,10 @@ val var : Ident.t -> t
 val const : Lambda.structured_constant -> t
 
 val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
-val function_ : int -> Lambda.function_kind -> Ident.t list -> t -> t
+val function_ : 
+  arity:int ->
+  kind:Lambda.function_kind -> params:Ident.t list -> body:t -> t
+
 val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
 val letrec : (Ident.t * t) list -> t -> t
 val if_ : triop
@@ -115,7 +118,7 @@ val send :
   t -> t -> t list -> 
   Location.t -> t 
 
-val prim : Lambda.primitive -> t list ->  t
+val prim : primitive:Lambda.primitive -> args:t list ->  t
 
 val staticcatch : 
   t -> int * Ident.t list -> t -> t

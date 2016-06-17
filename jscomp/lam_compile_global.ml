@@ -44,13 +44,19 @@ let query_lambda id env =
   Lam_compile_env.query_and_add_if_not_exist (Lam_module_ident.of_ml id) 
     (Has_env env)
     ~not_found:(fun id -> assert false)
-    ~found:(fun {signature = sigs; _} -> 
-        Lam.prim (Pmakeblock(0, Blk_module None, Immutable))  
-                      (List.mapi (fun i _ -> 
-                           Lam.prim (Pfield (i, Lambda.Fld_na)) 
-                             [Lam.prim (Pgetglobal id) [] ]  )
-                        sigs) 
-      )
+    ~found:(fun {signature = sigs; _} 
+             -> 
+               Lam.prim
+                 ~primitive:(Pmakeblock(0, Blk_module None, Immutable))  
+                 ~args:(
+                   List.mapi (fun i _ -> 
+                       Lam.prim
+                         ~primitive:(Pfield (i, Lambda.Fld_na)) 
+                         ~args:[
+                           Lam.prim 
+                             ~primitive:(Pgetglobal id)
+                             ~args:[]])
+                     sigs))
 
 
 (* Given an module name and position, find its corresponding name  *)  

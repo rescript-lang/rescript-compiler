@@ -252,17 +252,17 @@ let subst_helper (subst : subst_tbl) query lam =
     | Lapply {fn = l1; args =  ll;  loc; status } -> 
       Lam.apply (simplif l1) (List.map simplif ll) loc status
     | Lfunction {arity; kind; params; body =  l} -> 
-      Lam.function_ arity kind params (simplif l)
+      Lam.function_ ~arity ~kind ~params ~body:(simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim {primitive = p; args=  ll; _} -> 
+    | Lprim {primitive; args; _} -> 
       begin
-        let ll = List.map simplif ll in
-        match p, ll with
+        let args = List.map simplif args in
+        match primitive, args with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
         | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
         | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
@@ -275,7 +275,7 @@ let subst_helper (subst : subst_tbl) query lam =
           Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
           Lam.apply f [x] loc App_na
-        | _ -> Lam.prim p ll
+        | _ -> Lam.prim primitive args
       end
     | Lswitch(l, sw) ->
       let new_l = simplif l

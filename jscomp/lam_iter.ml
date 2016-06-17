@@ -23,23 +23,56 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 
-
-
-
-
-
-(* TODO: add a context, like 
-    [args]
-    [Lfunction(params,body)]
- *)
-
-
-let maybe_functor (name : string) = 
-  name.[0] >= 'A' && name.[0] <= 'Z'
-
-
-let should_be_functor (name : string) (lam : Lam.t) = 
-  maybe_functor name  &&
-  (match lam with Lfunction _ -> true | _ -> false)
-
+let inner_iter f l = 
+  match (l : Lam.t) with 
+    Lvar _
+  | Lconst _ -> ()
+  | Lapply{fn; args; _} ->
+      f fn; List.iter f args
+  | Lfunction{body;_} ->
+      f body
+  | Llet(str, id, arg, body) ->
+      f arg; f body
+  | Lletrec(decl, body) ->
+      f body;
+      List.iter (fun (id, exp) -> f exp) decl
+  | Lprim {args; _} ->
+      List.iter f args
+  | Lswitch(arg, sw) ->
+      f arg;
+      List.iter (fun (key, case) -> f case) sw.sw_consts;
+      List.iter (fun (key, case) -> f case) sw.sw_blocks;
+      begin match sw.sw_failaction with 
+      | None -> ()
+      | Some a -> f a 
+      end
+  | Lstringswitch (arg,cases,default) ->
+      f arg ;
+      List.iter (fun (_,act) -> f act) cases ;
+      begin match default with 
+      | None -> ()
+      | Some a -> f a 
+      end
+  | Lstaticraise (_,args) ->
+      List.iter f args
+  | Lstaticcatch(e1, (_,vars), e2) ->
+      f e1; f e2
+  | Ltrywith(e1, exn, e2) ->
+      f e1; f e2
+  | Lifthenelse(e1, e2, e3) ->
+      f e1; f e2; f e3
+  | Lsequence(e1, e2) ->
+      f e1; f e2
+  | Lwhile(e1, e2) ->
+      f e1; f e2
+  | Lfor(v, e1, e2, dir, e3) ->
+      f e1; f e2; f e3
+  | Lassign(id, e) ->
+      f e
+  | Lsend (k, met, obj, args, _) ->
+      List.iter f (met::obj::args)
+  | Levent (lam, evt) ->
+      f lam
+  | Lifused (v, e) ->
+      f e
 

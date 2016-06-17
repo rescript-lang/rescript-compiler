@@ -911,15 +911,22 @@ and
               begin 
                 match fn with 
                 | Lfunction {params =  [_]; body}
-                  -> compile_lambda cxt (Lam.function_ 0 Curried [] body)
+                  ->
+                  compile_lambda cxt 
+                    (Lam.function_ 
+                       ~arity:0 
+                       ~kind:Curried
+                       ~params:[]
+                       ~body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lam.function_ 0 Curried [] 
-                     @@ 
-                       Lam.apply fn
-                         [Lam.unit]
-                         Location.none App_na
-                    )
+                    (Lam.function_ ~arity:0 
+                       ~kind:Curried ~params:[] 
+                       ~body:(
+                         Lam.apply fn
+                           [Lam.unit]
+                           Location.none App_na
+                       ))
               end
             else 
               begin match fn with
@@ -928,10 +935,14 @@ and
                   if len = arity then
                     compile_lambda cxt fn 
                   else if len > arity then 
-                    let first, rest  = Ext_list.take arity args  in 
+                    let params, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lam.function_ arity
-                         kind first (Lam.function_ (len - arity) kind rest body))
+                      (Lam.function_ 
+                         ~arity
+                         ~kind ~params
+                         ~body:(Lam.function_ ~arity:(len - arity)
+                                  ~kind ~params:rest ~body)
+                      )
                   else 
                     compile_lambda cxt 
                       (Lam_util.eta_conversion arity 
