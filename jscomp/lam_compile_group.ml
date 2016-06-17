@@ -191,7 +191,7 @@ let compile  ~filename output_prefix non_export env _sigs
   (* To make toplevel happy - reentrant for js-demo *)
   let ()   = 
     Translmod.reset () ; 
-    Lam_compile_env.reset () 
+    Lam_compile_env.reset () ;
   in 
   let lam = Lam.convert lam in 
   let _d  = Lam_util.dump env  in

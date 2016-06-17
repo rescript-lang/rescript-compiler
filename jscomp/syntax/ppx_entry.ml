@@ -79,6 +79,15 @@ let obj_type_as_js_obj_type = ref false
 let uncurry_type = ref false 
 let obj_type_auto_uncurry =  ref false
 let non_export = ref false 
+
+let reset () = 
+  record_as_js_object := None ;
+  obj_type_as_js_obj_type := false ;
+  uncurry_type := false ;
+  obj_type_auto_uncurry := false ;
+  non_export  :=  false
+
+
 let lift_js_type ~loc  x  = Typ.constr ~loc {txt = js_obj_type_id (); loc} [x]
 let lift_curry_type ~loc x  = Typ.constr ~loc {txt = curry_type_id (); loc} [x]
 
@@ -666,37 +675,40 @@ let make_call_back table ((x : Longident.t Asttypes.loc) , y) =
 
 let rewrite_signature : (Parsetree.signature -> Parsetree.signature) ref = 
   ref (fun  x -> 
-      match (x : Parsetree.signature) with 
-      | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
-        -> 
-        begin 
-          Ast_payload.as_record_and_process loc payload 
-            (make_call_back signature_config_table) ; 
-          unsafe_mapper.signature unsafe_mapper rest
-        end
-      | _ -> 
-        unsafe_mapper.signature  unsafe_mapper x
-       )
+      let result = 
+        match (x : Parsetree.signature) with 
+        | {psig_desc = Psig_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+          -> 
+          begin 
+            Ast_payload.as_record_and_process loc payload 
+              (make_call_back signature_config_table) ; 
+            unsafe_mapper.signature unsafe_mapper rest
+          end
+        | _ -> 
+          unsafe_mapper.signature  unsafe_mapper x in 
+      reset (); result 
+    )
 
 let rewrite_implementation : (Parsetree.structure -> Parsetree.structure) ref = 
   ref (fun (x : Parsetree.structure) -> 
-      match x with 
-      | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
-        -> 
-        begin 
-          Ast_payload.as_record_and_process loc payload 
-            (make_call_back structural_config_table) ; 
-          let rest = unsafe_mapper.structure unsafe_mapper rest in
-          if !non_export then
-            [Str.include_ ~loc  
-               (Incl.mk ~loc 
-                  (Mod.constraint_ ~loc
-                     (Mod.structure ~loc rest  )
-                     (Mty.signature ~loc [])
-                  ))]
-          else rest 
-
-        end
-      | _ -> 
-        unsafe_mapper.structure  unsafe_mapper x )
+      let result = 
+        match x with 
+        | {pstr_desc = Pstr_attribute ({txt = "bs.config"; loc}, payload); _} :: rest 
+          -> 
+          begin 
+            Ast_payload.as_record_and_process loc payload 
+              (make_call_back structural_config_table) ; 
+            let rest = unsafe_mapper.structure unsafe_mapper rest in
+            if !non_export then
+              [Str.include_ ~loc  
+                 (Incl.mk ~loc 
+                    (Mod.constraint_ ~loc
+                       (Mod.structure ~loc rest  )
+                       (Mty.signature ~loc [])
+                    ))]
+            else rest 
+          end
+        | _ -> 
+          unsafe_mapper.structure  unsafe_mapper x  in 
+      reset (); result )
 
