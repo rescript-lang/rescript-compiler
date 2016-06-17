@@ -99,10 +99,10 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let bindings = List.map2 (fun var (_,l) -> var, aux l) vars bindings in 
       let body = aux body in       
       Lam.letrec bindings body
-    | Lfunction(kind, params, body) -> 
+    | Lfunction{arity; kind; params; body} -> 
       let params =  List.map rebind params in
       let body = aux body in      
-      Lam.function_ kind params body
+      Lam.function_ arity kind params body
     | Lstaticcatch(l1, (i,xs), l2) -> 
       let l1 = aux l1 in
       let xs = List.map rebind xs in
@@ -115,13 +115,13 @@ let rewrite (map :   (Ident.t, _) Hashtbl.t)
       let l3 = aux l3 in
       Lam.for_ ident (aux  l1)  l2 dir  l3
     | Lconst _ -> lam
-    | Lprim(prim, ll) ->
+    | Lprim {primitive; args } ->
       (* here it makes sure that global vars are not rebound *)      
-      Lam.prim prim (List.map aux  ll)
-    | Lapply(fn, args, info) ->
+      Lam.prim primitive (List.map aux  args)
+    | Lapply {fn;  args; loc;  status } ->
       let fn = aux fn in       
       let args = List.map aux  args in 
-      Lam.apply fn  args info
+      Lam.apply fn  args loc status
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
@@ -234,13 +234,13 @@ let propogate_beta_reduce
                Hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim (Pgetglobal ident, []) -> 
+         | Lprim {primitive = Pgetglobal ident;  args = [];  _} -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable) ;args ; _} -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 
@@ -257,7 +257,7 @@ let propogate_beta_reduce_with_map
          match arg with          
          | Lconst _
          | Lvar _  -> rest_bindings , arg :: acc 
-         | Lprim (Pgetglobal ident, [])
+         | Lprim {primitive = Pgetglobal ident; args = []}
            (* TODO: we can pass Global, but you also need keep track of it*)
            ->
            let p = Ident.rename old_param in 
@@ -292,13 +292,13 @@ let propogate_beta_reduce_with_map
                Hashtbl.add meta.ident_tbl param ident_info 
            end;
            arg 
-         | Lprim (Pgetglobal ident, []) -> 
+         | Lprim {primitive = Pgetglobal ident; args =  []} -> 
            (* It's not completeness, its to make it sound.. *)
            Lam_compile_global.query_lambda ident meta.env 
          (* alias meta param ident (Module (Global ident)) Strict *)
-         | Lprim (Pmakeblock (_, _, Immutable ) , ls) -> 
+         | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args} -> 
            Hashtbl.replace meta.ident_tbl param 
-             (Lam_util.kind_of_lambda_block Normal ls ); (** *)
+             (Lam_util.kind_of_lambda_block Normal args ); (** *)
            arg
          | _ -> arg in
        Lam_util.refine_let param arg l) 

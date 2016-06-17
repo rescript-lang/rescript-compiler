@@ -177,7 +177,8 @@ let compile_group ({filename = file_name; env;} as meta : Lam_stats.meta)
     it's used or not 
     [non_export] is only used in playground
 *)
-let compile  ~filename output_prefix non_export env _sigs lam   = 
+let compile  ~filename output_prefix non_export env _sigs 
+    (lam : Lambda.lambda)   = 
   let export_idents = 
     if non_export then
       []    
@@ -187,8 +188,12 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
     export_idents |> List.iter 
       (fun (id : Ident.t) -> Ext_log.dwarn __LOC__ "export: %s/%d"  id.name id.stamp) 
   in
-  let ()   = Translmod.reset () in (* To make toplevel happy - reentrant for js-demo *)
-  let ()   = Lam_compile_env.reset ()  in
+  (* To make toplevel happy - reentrant for js-demo *)
+  let ()   = 
+    Translmod.reset () ; 
+    Lam_compile_env.reset () 
+  in 
+  let lam = Lam.convert lam in 
   let _d  = Lam_util.dump env  in
   let _j = Js_pass_debug.dump in
   let lam = _d "initial"  lam in
@@ -246,7 +251,7 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
   begin 
     match (lam : Lam.t) with
-    | Lprim(Psetglobal id, [biglambda])
+    | Lprim{primitive = Psetglobal id; args =  [biglambda]; _}
       -> 
       (* Invariant: The last one is always [exports]
          Compile definitions
@@ -259,7 +264,8 @@ let compile  ~filename output_prefix non_export env _sigs lam   =
 
       begin 
         match Lam_group.flatten [] biglambda with 
-        | Lprim( (Pmakeblock (_,_,_), lambda_exports)),  rest ->
+        | Lprim {primitive = Pmakeblock (_,_,_); args =  lambda_exports},
+          rest ->
           let coercion_groups, new_exports, new_export_set,  export_map = 
             if non_export then 
               [], [], Ident_set.empty, Ident_map.empty
@@ -416,7 +422,7 @@ let lambda_as_module
     (sigs : Types.signature)
     (filename : string) 
     (output_prefix : string)
-    (lam : Lam.t) = 
+    (lam : Lambda.lambda) = 
   begin 
     Js_config.set_current_file filename ;  
     Js_config.iset_debug_file "tuple_alloc.ml";

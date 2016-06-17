@@ -83,14 +83,14 @@ let count_helper  (lam : Lam.t) : (int, int ref) Hashtbl.t  =
           (* end *)
       end
     | Lvar _| Lconst _ -> ()
-    | Lapply(l1, ll, _) -> count l1; List.iter count ll
-    | Lfunction(_, _, l) -> count l
+    | Lapply{fn = l1; args =  ll; _} -> count l1; List.iter count ll
+    | Lfunction {body = l} -> count l
     | Llet(_, _, l1, l2) ->
       count l2; count l1
     | Lletrec(bindings, body) ->
       List.iter (fun (_, l) -> count l) bindings;
       count body
-    | Lprim(_, ll) -> List.iter count ll
+    | Lprim {args;  _} -> List.iter count args
     | Lswitch(l, sw) ->
       count_default sw ;
       count l;
@@ -173,12 +173,12 @@ let subst_helper (subst : subst_tbl) query lam =
           let ys = List.map Ident.rename xs in
           let env =
             List.fold_right2
-              (fun x y t -> Ident.add x (Lam.var y) t)
-              xs ys Ident.empty in
+              (fun x y t -> Ident_map.add x (Lam.var y) t)
+              xs ys Ident_map.empty in
           List.fold_right2
             (fun y l r -> Lam.let_ Alias y l r)
             ys ls 
-               (Lam.subst_lambda  env  handler)
+               (Lam_util.subst_lambda  env  handler)
         | exception Not_found -> Lam.staticraise i ls
       end
     | Lstaticcatch (l1,(i,[]),(Lstaticraise (j,[]) as l2)) ->
@@ -249,32 +249,32 @@ let subst_helper (subst : subst_tbl) query lam =
       end
 
     | Lvar _|Lconst _  -> lam
-    | Lapply (l1, ll, loc) -> 
-      Lam.apply (simplif l1) (List.map simplif ll) loc
-    | Lfunction (kind, params, l) -> 
-      Lam.function_ kind params (simplif l)
+    | Lapply {fn = l1; args =  ll;  loc; status } -> 
+      Lam.apply (simplif l1) (List.map simplif ll) loc status
+    | Lfunction {arity; kind; params; body =  l} -> 
+      Lam.function_ arity kind params (simplif l)
     | Llet (kind, v, l1, l2) -> 
       Lam.let_ kind v (simplif l1) (simplif l2)
     | Lletrec (bindings, body) ->
       Lam.letrec
         ( List.map (fun (v, l) -> (v, simplif l)) bindings) 
         (simplif body)
-    | Lprim (p, ll) -> 
+    | Lprim {primitive = p; args=  ll; _} -> 
       begin
         let ll = List.map simplif ll in
         match p, ll with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args;  _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f; args;  _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] 
-          -> Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          -> Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args;  _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         | _ -> Lam.prim p ll
       end
     | Lswitch(l, sw) ->

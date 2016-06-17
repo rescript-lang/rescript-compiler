@@ -32,7 +32,7 @@ let rec no_side_effects (lam : Lam.t) : bool =
   | Lvar _ 
   | Lconst _ 
   | Lfunction _ -> true
-  | Lprim (primitive, args) -> 
+  | Lprim {primitive;  args; _} -> 
     List.for_all no_side_effects args && 
     (
       match primitive with 
@@ -186,10 +186,12 @@ let rec no_side_effects (lam : Lam.t) : bool =
       if it [Not_found], there are no other exceptions 
       can be thrown
   *)
-  | Ltrywith (Lprim(Pccall{prim_name = "caml_sys_getenv"}, 
-                    [Lconst _]),exn,
-              Lifthenelse(Lprim(_, [Lvar exn1; 
-                                    Lprim(Pgetglobal ({name="Not_found"}),[])]),
+  | Ltrywith (Lprim { primitive = Pccall{prim_name = "caml_sys_getenv"};
+                    args = [Lconst _]; _},exn,
+              Lifthenelse(Lprim{args =  
+                                  [Lvar exn1; 
+                                   Lprim {primitive = Pgetglobal ({name="Not_found"}); args = []; _}]
+                               ; _},
                           then_, _)) when Ident.same exn1 exn
     (** we might put this in an optimization pass 
         also make sure when we wrap this in [js] we 
@@ -234,11 +236,13 @@ let rec size (lam : Lam.t) =
     | Lconst c -> size_constant c
     | Llet(_, _, l1, l2) -> 1 + size l1 + size l2 
     | Lletrec _ -> really_big ()
-    | Lprim(Pfield _, [Lprim(Pgetglobal _, [  ])])
+    | Lprim{primitive = Pfield _; 
+            args =  [Lprim { primitive = Pgetglobal _; args =  [  ];  _}]
+           ;  _}
       -> 1
-    | Lprim (Praise _, [l ]) 
+    | Lprim {primitive = Praise _; args =  [l ];  _} 
       -> size l
-    | Lprim(_, ll) -> size_lams 1 ll
+    | Lprim {args = ll; _} -> size_lams 1 ll
 
     (** complicated 
         1. inline this function
@@ -248,10 +252,10 @@ let rec size (lam : Lam.t) =
         {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
      *)      
-    | Lapply(f,
-             args, _) -> size_lams (size f) args
+    | Lapply{ fn;
+             args; _} -> size_lams (size fn) args
     (* | Lfunction(_, params, l) -> really_big () *)
-    | Lfunction(_,_params,body) -> size body 
+    | Lfunction {body} -> size body 
     | Lswitch(_, _) -> really_big ()
     | Lstringswitch(_,_,_) -> really_big ()
     | Lstaticraise (i,ls) -> 
@@ -290,7 +294,7 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
   match (l1, l2) with
   | Lvar i1, Lvar i2 -> Ident.same i1 i2
   | Lconst c1, Lconst c2 -> c1 = c2 (* *)
-  | Lapply (l1,args1,_), Lapply(l2,args2,_) ->
+  | Lapply {fn = l1; args = args1; _}, Lapply {fn = l2; args = args2; _} ->
     eq_lambda l1 l2  && List.for_all2 eq_lambda args1 args2
   | Lfunction _ , Lfunction _ -> false (* TODO -- simple functions ?*)
   | Lassign(v0,l0), Lassign(v1,l1) -> Ident.same v0 v1 && eq_lambda l0 l1
@@ -298,7 +302,8 @@ let rec eq_lambda (l1 : Lam.t) (l2 : Lam.t) =
     id = id1 && List.for_all2 eq_lambda ls ls1 
   | Llet (_,_,_,_), Llet (_,_,_,_) -> false 
   | Lletrec _, Lletrec _ -> false 
-  | Lprim (p,ls), Lprim (p1,ls1) -> 
+  | Lprim {primitive = p; args = ls; } ,
+    Lprim {primitive = p1; args = ls1} -> 
     eq_primitive p p1 && List.for_all2 eq_lambda ls ls1
   | Lswitch _, Lswitch _ -> false  
   | Lstringswitch _ , Lstringswitch _ -> false 
@@ -397,14 +402,14 @@ let free_variables (export_idents : Ident_set.t ) (params : stats Ident_map.t ) 
     match lam with 
     | Lvar v -> map_use top v 
     | Lconst _ -> ()
-    | Lapply(fn, args, _) ->
+    | Lapply {fn; args; _} ->
       iter top  fn; 
       let top = new_env fn top in
       List.iter (iter top ) args  
-    | Lprim(_p, args) -> 
+    | Lprim {args ; _} -> 
       (* Check: can top be propoaged for all primitives *)
       List.iter (iter top) args
-    | Lfunction(_kind, params, body) ->
+    | Lfunction{ params; body} ->
       local_add_list params;
       iter no_substitute body 
     | Llet(_let_kind, id, arg, body) ->

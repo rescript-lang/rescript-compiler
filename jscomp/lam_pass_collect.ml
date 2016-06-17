@@ -66,26 +66,29 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lconst v 
       -> 
       Hashtbl.replace meta.ident_tbl ident (Constant v); (** *)
-    | Lprim (Pmakeblock (_, _, Immutable ) , ls)
+    | Lprim {primitive = Pmakeblock (_, _, Immutable ) ; args=  ls}
       -> 
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Normal ls);
       List.iter collect ls 
 
-    | Lprim (Pccall {prim_name = "js_from_nullable"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable"; _}; 
+             args = ([ Lvar _] as ls) ; _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null ls )
-    | Lprim (Pccall {prim_name = "js_from_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_def"; _}; 
+             args = ([ Lvar _] as ls); _}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Undefined ls )
-    | Lprim (Pccall {prim_name = "js_from_nullable_def"; _}, ([ Lvar _] as ls))
+    | Lprim {primitive = Pccall {prim_name = "js_from_nullable_def"; _};
+             args = ([ Lvar _] as ls);}
       ->
       Hashtbl.replace meta.ident_tbl ident 
         (Lam_util.kind_of_lambda_block Null_undefined ls )
       
-    | Lprim (Pgetglobal v,[]) 
+    | Lprim {primitive = Pgetglobal v; args = []; _} 
       -> 
       begin 
         Lam_util.alias meta  ident v (Module  v) kind; 
@@ -103,7 +106,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
            (* enven for not subsitution, it still propogate some properties *)
            (* else () *)
         )
-    | Lfunction(_, params,l)
+    | Lfunction{ params; body = l}
         (** TODO record parameters ident ?, but it will be broken after inlining *)  
       -> 
         (** TODO could be optimized in one pass? 
@@ -140,9 +143,9 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
          *)
     | Lconst _ -> ()
     | Lvar _ -> ()
-    | Lapply(l1, ll, _) ->
+    | Lapply{fn = l1; args =  ll; _} ->
         collect  l1; List.iter collect  ll
-    | Lfunction(_kind, params, l) -> (* functor ? *)
+    | Lfunction { params; body =  l} -> (* functor ? *)
         List.iter (fun p -> Hashtbl.add meta.ident_tbl p Parameter ) params;
         collect  l
     | Llet (kind,ident,arg,body) -> 
@@ -150,7 +153,7 @@ let collect_helper  (meta : Lam_stats.meta) (lam : Lam.t)  =
     | Lletrec (bindings, body) -> 
         List.iter (fun (ident,arg) -> collect_bind Rec  Strict ident arg ) bindings;
         collect body
-    | Lprim(_p, ll) -> List.iter collect  ll
+    | Lprim {args; _} -> List.iter collect  args
     | Lswitch(l, {sw_failaction; sw_consts; sw_blocks}) ->
         collect  l;
         List.iter (fun (_, l) -> collect  l) sw_consts;

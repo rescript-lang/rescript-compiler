@@ -29,7 +29,7 @@
 
 
 
-module Ident_set = Lambda.IdentSet 
+
 
 (* 
     We have a current ident set 

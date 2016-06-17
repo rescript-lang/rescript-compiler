@@ -43,10 +43,10 @@ val compile :
   bool -> 
   Env.t -> 
   Types.signature -> 
-  Lam.t -> 
+  Lambda.lambda -> 
   J.deps_program
 
 val lambda_as_module :  
   Env.t ->
   Types.signature -> string -> 
-  string  -> Lam.t -> unit
+  string  -> Lambda.lambda -> unit

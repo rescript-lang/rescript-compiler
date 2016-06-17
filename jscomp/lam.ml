@@ -23,20 +23,36 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *)
 
 type primitive = Lambda.primitive
-type switch = Lambda.lambda_switch = 
+type switch = 
   { sw_numconsts: int;
     sw_consts: (int * t) list;
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
-and t = Lambda.lambda = 
+and prim_info = 
+  { primitive : primitive ; 
+    args : t list ; 
+  }
+and apply_info = 
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : Lambda.apply_status
+  }
+and function_info = 
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
+and t = 
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
-  | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Lapply of apply_info
+  | Lfunction of function_info
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
+  | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -100,9 +116,11 @@ type unop = t -> t
 
 let var id : t = Lvar id
 let const ct : t = Lconst ct 
-let apply fn args info : t = Lapply(fn,args, info)
-let function_ kind ids body : t = 
-  Lfunction(kind, ids, body)
+let apply fn args loc status : t = 
+  Lapply { fn; args;  loc  ;
+           status }
+let function_ arity kind ids body : t = 
+  Lfunction { arity; kind; params = ids; body}
 
 let let_ kind id e body :  t 
   = Llet (kind,id,e,body)
@@ -223,8 +241,8 @@ let lift_int32 b : t =
 let lift_int64 b : t =
   Lconst (Const_base (Const_int64 b))
 
-let prim (prim : Prim.t) (ll : t list) : t = 
-  let default () : t = Lprim(prim,ll) in 
+let prim (prim : Prim.t) (ll : t list)  : t = 
+  let default () : t = Lprim { primitive = prim ;args =  ll } in 
   match ll with 
   | [Lconst a] -> 
     begin match prim, a  with 
@@ -366,9 +384,66 @@ let prim (prim : Prim.t) (ll : t list) : t =
 
 
 let not x : t = 
-  prim Pnot [x]
+  prim Pnot [x] 
 
 
-let free_variables  = Lambda.free_variables
+let rec convert (lam : Lambda.lambda) : t = 
+  match lam with 
+  | Lvar x -> Lvar x 
+  | Lconst x -> 
+    Lconst x 
+  | Lapply (fn,args,info) 
+    ->  apply (convert fn) (List.map convert args) 
+          info.apply_loc info.apply_status
+  | Lfunction (kind,  ids,body)
+    ->  function_ (List.length ids) kind ids (convert body)
+  | Llet (kind,id,e,body) 
+    -> Llet(kind,id,convert e, convert body)
+  | Lletrec (bindings,body)
+    -> 
+    Lletrec (List.map (fun (id, e) -> id, convert e) bindings, convert body)
+  | Lprim (primitive,args) 
+    -> 
+    Lprim {primitive ; args = List.map convert args }
+  | Lswitch (e,s) -> 
+    Lswitch (convert e, convert_switch s)
+  | Lstringswitch (e, cases, default) -> 
+    Lstringswitch (convert e, List.map (fun (x, b) -> x, convert b ) cases, 
+                   match default with 
+                   | None -> None
+                   | Some x -> Some (convert x)
+                  )    
 
-let subst_lambda = Lambda.subst_lambda
+  | Lstaticraise (id, args) -> 
+    Lstaticraise (id, List.map convert args)
+  | Lstaticcatch (b, (i, ids), handler) -> 
+    Lstaticcatch (convert b, (i,ids), convert handler)
+  | Ltrywith (b, id, handler) -> 
+    Ltrywith (convert b, id, convert handler)
+  | Lifthenelse (b,then_,else_) -> 
+    Lifthenelse (convert b, convert then_, convert else_)
+  | Lsequence (a,b) 
+    -> Lsequence (convert a, convert b)
+  | Lwhile (b,body) -> 
+    Lwhile (convert b, convert body)
+  | Lfor (id, from_, to_, dir, loop) -> 
+    Lfor (id, convert from_, convert to_, dir, convert loop)
+  | Lassign (id, body) -> 
+    Lassign (id, convert body)    
+  | Lsend (kind, a,b,ls, loc) -> 
+    Lsend(kind, convert a, convert b, List.map convert ls, loc )
+
+  | Levent (e, event) -> 
+    Levent (convert e, event)
+  | Lifused (id, e) -> Lifused(id, convert e)
+
+and convert_switch (s : Lambda.lambda_switch) : switch = 
+  { sw_numconsts = s.sw_numconsts ; 
+    sw_consts = List.map (fun (i, lam) -> i, convert lam) s.sw_consts;
+    sw_numblocks = s.sw_numblocks;
+    sw_blocks = List.map (fun (i,lam) -> i, convert lam ) s.sw_blocks;
+    sw_failaction = 
+      match s.sw_failaction with 
+      | None -> None 
+      | Some a -> Some (convert a)
+  }  

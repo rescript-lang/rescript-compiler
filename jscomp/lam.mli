@@ -25,20 +25,37 @@
 type primitive = Lambda.primitive
 
 
-type switch = Lambda.lambda_switch =
+type switch  =
   { sw_numconsts: int;
     sw_consts: (int * t) list;
     sw_numblocks: int;
     sw_blocks: (int * t) list;
     sw_failaction : t option}
-and  t = Lambda.lambda =  private
+and apply_info = private
+  { fn : t ; 
+    args : t list ; 
+    loc : Location.t;
+    status : Lambda.apply_status
+  }
+
+and prim_info = private
+  { primitive : primitive ; 
+    args : t list ; 
+  }
+and function_info = private
+  { arity : int ; 
+   kind : Lambda.function_kind ; 
+   params : Ident.t list ;
+   body : t 
+  }
+and  t =  private
   | Lvar of Ident.t
   | Lconst of Lambda.structured_constant
-  | Lapply of t * t list * Lambda.apply_info
-  | Lfunction of Lambda.function_kind * Ident.t list * t
+  | Lapply of apply_info
+  | Lfunction of function_info
   | Llet of Lambda.let_kind * Ident.t * t * t
   | Lletrec of (Ident.t * t) list * t
-  | Lprim of primitive * t list
+  | Lprim of prim_info
   | Lswitch of t * switch
   | Lstringswitch of t * (string * t) list * t option
   | Lstaticraise of int * t list
@@ -70,8 +87,9 @@ type unop = t ->  t
 
 val var : Ident.t -> t
 val const : Lambda.structured_constant -> t
-val apply : t -> t list -> Lambda.apply_info -> t
-val function_ : Lambda.function_kind -> Ident.t list -> t -> t
+
+val apply : t -> t list -> Location.t -> Lambda.apply_status -> t
+val function_ : int -> Lambda.function_kind -> Ident.t list -> t -> t
 val let_ : Lambda.let_kind -> Ident.t -> t -> t -> t
 val letrec : (Ident.t * t) list -> t -> t
 val if_ : triop
@@ -96,7 +114,9 @@ val send :
   Lambda.meth_kind ->
   t -> t -> t list -> 
   Location.t -> t 
-val prim : Lambda.primitive -> t list -> t
+
+val prim : Lambda.primitive -> t list ->  t
+
 val staticcatch : 
   t -> int * Ident.t list -> t -> t
 
@@ -108,6 +128,8 @@ val for_ :
   t  ->
   t -> Asttypes.direction_flag -> t -> t 
 
-val free_variables : t -> Lambda.IdentSet.t
 
-val subst_lambda : t Ident.tbl -> t -> t
+
+
+
+val convert : Lambda.lambda -> t 

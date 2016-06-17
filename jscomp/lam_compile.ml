@@ -163,7 +163,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
           List.fold_right 
             (fun (x : Lam.t) (args_code, args)  ->
                match x with 
-               | Lprim (Pgetglobal i, [] ) -> 
+               | Lprim {primitive = Pgetglobal i; args =  [];_ } -> 
                  (* when module is passed as an argument - unpack to an array
                      for the function, generative module or functor can be a function,
                      however it can not be global -- global can only module
@@ -179,7 +179,7 @@ and get_exp_with_args (cxt : Lam_compile_defs.cxt)  lam args_lambda
             ) args_lambda ([], []) in
 
         match closed_lambda with 
-        | Some (Lfunction (_, params, body)) 
+        | Some (Lfunction{ params; body; _}) 
           when Ext_list.same_length params args_lambda -> 
           (* TODO: serialize it when exporting to save compile time *)
           let (_, param_map)  = 
@@ -263,7 +263,7 @@ and compile_recursive_let
     (id : Ident.t)
     (arg : Lam.t)   : Js_output.t * Ident.t list = 
   match arg with 
-  |  Lfunction (kind, params, body)  -> 
+  |  Lfunction { kind; params; body; _}  -> 
     (* Invariant:  jmp_table can not across function boundary,
        here we share env *)
 
@@ -311,7 +311,7 @@ and compile_recursive_let
         else            (* TODO:  save computation of length several times *)
           E.fun_ params (Js_output.to_block output )
       ), [] 
-  | Lprim (Pmakeblock (0, _, _) , ls)
+  | Lprim {primitive = Pmakeblock (0, _, _) ; args =  ls}
     when List.for_all (function  | Lam.Lvar _  -> true | _ -> false) ls 
     ->
     (* capture cases like for {!Queue}
@@ -328,7 +328,7 @@ and compile_recursive_let
          ) ls)
     ), []
 
-  | Lprim(Pmakeblock _ , _)   -> 
+  | Lprim{primitive = Pmakeblock _ ; _}   ->
     (* FIXME: also should fill tag *)
     (* Lconst should not appear here if we do [scc]
        optimization, since it's faked recursive value,
@@ -486,7 +486,7 @@ and
     (lam : Lam.t)  : Js_output.t  =
   begin
     match lam with 
-    | Lfunction(kind, params, body) ->
+    | Lfunction{ kind; params; body} ->
       Js_output.handle_name_tail st should_return lam 
         (E.fun_
            params
@@ -500,26 +500,29 @@ and
                              jmp_table = Lam_compile_defs.empty_handler_map}  body)))
 
 
-    | Lapply(
-        Lapply(an, args', ({apply_status = App_na} as _info1)),
-        args, 
-        ({apply_status = App_na} as _info2))
+    | Lapply{
+        fn = Lapply{ fn = an; args =  args'; status = App_na ; };
+        args;  
+        status = App_na; loc }
       ->    
       (* After inlining we can generate such code, 
          see {!Ari_regress_test}         
       *)      
       compile_lambda  cxt  
-        (Lam.apply an (args' @ args) (Lam_util.mk_apply_info App_na))
+        (Lam.apply an (args' @ args)  loc  App_na )
     (* External function calll *)
-    | Lapply(Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]), args_lambda,
-             {apply_status = App_na | App_ml_full}) ->
+    | Lapply{ fn = 
+                Lprim{primitive = Pfield (n,_); 
+                      args = [ Lprim {primitive = Pgetglobal id; args = []}];_};
+             args = args_lambda;
+             status = App_na | App_ml_full} ->
       (* Note we skip [App_js_full] since [get_exp_with_args] dont carry 
          this information, we should fix [get_exp_with_args]
       *)
       get_exp_with_args cxt lam  args_lambda id n  env
 
 
-    | Lapply(fn,args_lambda,  info) -> 
+    | Lapply{ fn; args = args_lambda;   status} -> 
       (* TODO: --- 
          1. check arity, can be simplified for pure expression
          2. no need create names
@@ -528,7 +531,7 @@ and
         let [@warning "-8" (* non-exhaustive pattern*)] (args_code, fn_code:: args) = 
           List.fold_right (fun (x : Lam.t) (args_code, fn_code )-> 
               match x with             
-              | Lprim (Pgetglobal ident, []) -> 
+              | Lprim {primitive = Pgetglobal ident; args =  []} -> 
                 (* when module is passed as an argument - unpack to an array
                     for the function, generative module or functor can be a function, 
                     however it can not be global -- global can only module 
@@ -621,12 +624,12 @@ and
           | _ -> 
 
             Js_output.handle_block_return st should_return lam args_code 
-              (E.call ~info:(match fn, info with 
-                   | _, { apply_status = App_ml_full} -> 
+              (E.call ~info:(match fn, status with 
+                   | _,  App_ml_full -> 
                      {arity = Full ; call_info = Call_ml}
-                   | _, { apply_status = App_js_full} -> 
+                   | _,  App_js_full -> 
                      {arity = Full ; call_info = Call_na}
-                   | _,  { apply_status = App_na} -> 
+                   | _,   App_na -> 
                      {arity = NA; call_info = Call_ml }
                  ) fn_code args) 
         end;
@@ -658,10 +661,12 @@ and
     | Lconst c -> 
       Js_output.handle_name_tail st should_return lam (Lam_compile_const.translate c)
 
-    | Lprim(Pfield (n,_), [ Lprim(Pgetglobal id,[])]) -> (* should be before Pgetglobal *)
+    | Lprim {primitive = Pfield (n,_); 
+             args = [ Lprim {primitive = Pgetglobal id; args = [] ; _}]; _} 
+      -> (* should be before Pgetglobal *)
         get_exp_with_index cxt lam  (id,n, env)
 
-    | Lprim(Praise _raise_kind, [ e ]) -> 
+    | Lprim {primitive = Praise _raise_kind; args =  [ e ]; _} -> 
       begin
         match compile_lambda {
             cxt with should_return = False; st = NeedValue} e with 
@@ -674,7 +679,7 @@ and
         *)
         | {value =  None; _} -> assert false 
       end
-    | Lprim(Psequand , [l;r] )
+    | Lprim{primitive = Psequand ; args =  [l;r] ; _}
       ->
       begin match cxt with 
         | {should_return = True _ } 
@@ -697,7 +702,7 @@ and
           Js_output.handle_block_return st should_return lam args_code exp           
       end
 
-    | Lprim(Psequor, [l;r])
+    | Lprim {primitive = Psequor; args =  [l;r]}
       ->
       begin match cxt with
         | {should_return = True _ }
@@ -719,7 +724,7 @@ and
           let exp =  E.or_ l_expr r_expr  in
           Js_output.handle_block_return st should_return lam args_code exp
       end
-    | Lprim (Pccall {prim_name = "js_debugger"; _}, _) 
+    | Lprim {primitive = Pccall {prim_name = "js_debugger"; _} ; _}
       -> 
       (* [%bs.debugger] guarantees that the expression does not matter 
          TODO: make it even safer      *)
@@ -733,8 +738,8 @@ and
     *)
 
     | Lsend(Public (Some name), _label, 
-            Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                         [obj]), [] , loc) 
+            Lprim {primitive = Pccall {prim_name = "js_unsafe_downgrade"; _}; 
+                   args = [obj]}, [] , loc) 
       when not (Ext_string.ends_with name Literals.setter_suffix) 
       (* TODO: more not a setter/case/case_setter *)
       -> 
@@ -759,7 +764,7 @@ and
           end
         | _ -> assert false 
       end
-    | Lprim (Pccall {prim_name; _}, args_lambda) 
+    | Lprim {primitive = Pccall {prim_name; _};  args = args_lambda}
       when Ext_string.starts_with prim_name "js_fn_" ->
       let arity, kind  = 
         let mk =  Ext_string.starts_with_and_number prim_name ~offset:6 "mk_" in 
@@ -778,8 +783,8 @@ and
       if kind = `Run then 
         match args_lambda with  
         | [Lsend(Public (Some "case_set"), _label,
-                 Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _},
-                       [obj]), [] , loc) ; key ;  value] ->
+                 Lprim{primitive = Pccall {prim_name = "js_unsafe_downgrade"; _};
+                       args = [obj]}, [] , loc) ; key ;  value] ->
           let obj_block =
             compile_lambda {cxt with st = NeedValue; should_return = False} obj
           in
@@ -816,8 +821,9 @@ and
           end
 
         | [(Lsend(meth_kind, _label, 
-                  Lprim(Pccall {prim_name = "js_unsafe_downgrade"; _}, 
-                        [obj]), [] , loc) as fn);
+                  Lprim{primitive = 
+                          Pccall {prim_name = "js_unsafe_downgrade"; _};
+                        args = [obj]}, [] , loc) as fn);
            arg]
           -> 
           begin 
@@ -858,8 +864,8 @@ and
               if not @@ Ext_string.ends_with setter Literals.setter_suffix then 
                 compile_lambda cxt @@ 
                 Lam.apply fn [arg]  
-                  {apply_loc = Location.none;
-                   apply_status = App_js_full}
+                   Location.none (* TODO *)
+                   App_js_full
               else 
                 let property =
                   String.sub setter 0 
@@ -879,8 +885,8 @@ and
         | fn :: rest -> 
           compile_lambda cxt 
             (Lam.apply fn rest 
-                     {apply_loc = Location.none;
-                      apply_status = App_js_full})
+                      Location.none (*TODO*)
+                      App_js_full)
         | _ -> assert false 
       else 
         begin match args_lambda with 
@@ -904,32 +910,32 @@ and
               *)
               begin 
                 match fn with 
-                | Lfunction (_, [_], body)
-                  -> compile_lambda cxt (Lam.function_ Curried [] body)
+                | Lfunction {params =  [_]; body}
+                  -> compile_lambda cxt (Lam.function_ 0 Curried [] body)
                 | _ -> 
                   compile_lambda cxt  
-                    (Lam.function_ Lambda.Curried [] 
+                    (Lam.function_ 0 Curried [] 
                      @@ 
                        Lam.apply fn
                          [Lam.unit]
-                     Lam_util.default_apply_info
+                         Location.none App_na
                     )
               end
             else 
               begin match fn with
-                | Lam.Lfunction(kind,args, body) 
+                | Lam.Lfunction{arity = len; kind; params = args; body}
                   ->
-                  let len =  List.length args in 
                   if len = arity then
                     compile_lambda cxt fn 
                   else if len > arity then 
                     let first, rest  = Ext_list.take arity args  in 
                     compile_lambda cxt 
-                      (Lam.function_
-                         kind first (Lam.function_ kind rest body))
+                      (Lam.function_ arity
+                         kind first (Lam.function_ (len - arity) kind rest body))
                   else 
                     compile_lambda cxt 
-                      (Lam_util.eta_conversion arity Lam_util.default_apply_info  
+                      (Lam_util.eta_conversion arity 
+                         Location.none App_na
                          fn  [] )
                 (* let extra_args = Ext_list.init (arity - len) (fun _ ->   (Ident.create Literals.param)) in *)
                 (* let extra_lambdas = List.map (fun x -> Lambda.Lvar x) extra_args in *)
@@ -948,11 +954,12 @@ and
                 *)
                 | _ -> 
                   compile_lambda cxt 
-                    (Lam_util.eta_conversion arity Lam_util.default_apply_info  fn  [] )
+                    (Lam_util.eta_conversion arity
+                       Location.none App_na  fn  [] )
               end
           | _ -> assert false 
         end
-    | Lprim(prim, args_lambda) -> 
+    | Lprim{primitive = prim; args =  args_lambda} -> 
       let args_block, args_expr =
         Ext_list.split_map (fun (x : Lam.t) ->
             match compile_lambda {cxt with st = NeedValue; should_return = False} x 
@@ -1448,7 +1455,8 @@ and
     | Lassign(id,lambda) -> 
       let block = 
         match lambda with
-        | Lprim(Poffsetint  v, [Lvar id']) when Ident.same id id' ->
+        | Lprim {primitive = Poffsetint  v; args =  [Lvar id']}
+          when Ident.same id id' ->
           [ S.exp (E.assign (E.var id) 
                      (E.int32_add (E.var id) (E.small_int  v)))
           ]
@@ -1476,17 +1484,22 @@ and
           Js_output.make block ~value:E.unit
       end
     | (Ltrywith(
-        (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+        (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
+                args = [Lconst _]} as body),
         id, 
-        Lifthenelse(Lprim(Pintcomp(Ceq), 
-                          [Lvar id2 ; Lprim(Pgetglobal {name = "Not_found"}, _)]),
-                    cont, _reraise )
+        Lifthenelse
+          (Lprim{primitive = Pintcomp(Ceq);
+                 args = [Lvar id2 ; 
+                         Lprim{primitive = Pgetglobal {name = "Not_found"}; _}]},
+           cont, _reraise )
       )
       | Ltrywith(
-          (Lprim (Pccall {prim_name = "caml_sys_getenv"; _}, [Lconst _]) as body),
+          (Lprim {primitive = Pccall {prim_name = "caml_sys_getenv"; _};
+                  args = [Lconst _]} as body),
           id, 
-          Lifthenelse(Lprim(Pintcomp(Ceq), 
-                            [ Lprim(Pgetglobal {name = "Not_found"; _}, _); Lvar id2 ]),
+          Lifthenelse(Lprim{primitive = Pintcomp(Ceq);
+                            args = [ 
+                              Lprim { primitive = Pgetglobal {name = "Not_found"; _}; _}; Lvar id2 ]},
                       cont, _reraise )
         )) when Ident.same id id2 
       -> 
@@ -1578,9 +1591,10 @@ and
         (met :: obj :: args) 
         |> Ext_list.split_map (fun (x : Lam.t) -> 
             match x with 
-            | Lprim (Pgetglobal i, []) -> 
+            | Lprim {primitive = Pgetglobal i; args =  []} -> 
               [], Lam_compile_global.get_exp  (i, env, true)
-            | Lprim (Pccall {prim_name ; _}, []) (* nullary external call*)
+            | Lprim {primitive = Pccall {prim_name ; _}; args =  []}
+              (* nullary external call*)
               -> 
               [], E.var (Ext_ident.create_js prim_name)
             | _ -> 

@@ -39,7 +39,8 @@ let simplify_alias
     | Lvar v -> 
       (* GLOBAL module needs to be propogated *)
       (try Lam.var (Hashtbl.find meta.alias_tbl v) with Not_found -> lam )
-    | Llet(kind, k, (Lprim (Pgetglobal i,[]) as g), l ) -> 
+    | Llet(kind, k, (Lprim {primitive = Pgetglobal i; args = [] ; _} as g),
+           l ) -> 
       (* This is detection of MODULE ALIAS 
           we need track all global module aliases, when it's
           passed as a parameter(escaped), we need do the expansion
@@ -55,7 +56,7 @@ let simplify_alias
             for the inner expression
         *)
       else v
-    | Lprim (Pfield (i,_), [Lvar v]) -> 
+    | Lprim {primitive = Pfield (i,_); args =  [Lvar v]; _} -> 
       (* ATTENTION: 
          Main use case, we should detect inline all immutable block .. *)
       Lam_util.get lam v  i meta.ident_tbl 
@@ -94,7 +95,8 @@ let simplify_alias
     | Lletrec(bindings, body) ->
       let bindings = List.map (fun (k,l) ->  (k, simpl l) ) bindings in 
       Lam.letrec bindings (simpl body) 
-    | Lprim(prim, ll) -> Lam.prim prim (List.map simpl  ll)
+    | Lprim {primitive = prim; args = ll} 
+      -> Lam.prim prim (List.map simpl  ll)
 
     (* complicated 
         1. inline this function
@@ -104,14 +106,17 @@ let simplify_alias
       {var $$let=Make(funarg);
         return [0, $$let[5],... $$let[16]]}
     *)      
-    | Lapply(Lprim(Pfield (index, _) , [Lprim (Pgetglobal ident, [])]) as l1,
-                                                                     args, info) ->
+    | Lapply{fn = 
+               Lprim {primitive = Pfield (index, _) ;
+                      args = [Lprim {primitive = Pgetglobal ident; args =  []}];
+                      _} as l1;
+             args; loc ; status} ->
       begin
         Lam_compile_env.find_and_add_if_not_exist (ident,index) meta.env
           ~not_found:(fun _ -> assert false)
           ~found:(fun i ->
               match i with
-              | {closed_lambda=Some Lfunction(Curried, params, body) } 
+              | {closed_lambda=Some Lfunction{params; body; _} } 
                 (** be more cautious when do cross module inlining *)
                 when
                   ( Ext_list.same_length params args &&
@@ -128,7 +133,7 @@ let simplify_alias
                 Lam_beta_reduce.propogate_beta_reduce
                   meta params body args
               | _ -> 
-                Lam.apply (simpl l1) (List.map simpl args) info
+                Lam.apply (simpl l1) (List.map simpl args) loc status
             )
 
       end
@@ -138,13 +143,14 @@ let simplify_alias
         - scope issues 
         - code bloat 
     *)      
-    | Lapply((Lvar v as l1), args, info) -> (* Check info for always inlining *)
+    | Lapply{fn = (Lvar v as l1);  args; loc ; status} ->
+      (* Check info for always inlining *)
 
       (* Ext_log.dwarn __LOC__ "%s/%d" v.name v.stamp;     *)
 
       begin 
         match Hashtbl.find meta.ident_tbl v with
-        | Function {lambda = (Lfunction(_, params, body) as _m);
+        | Function {lambda = Lfunction {params; body} as _m;
                     rec_flag;                     
                     _ }
           -> 
@@ -195,44 +201,45 @@ let simplify_alias
 
                     end
                 | _ -> 
-                  Lam.apply ( simpl l1) (List.map simpl args) info
+                  Lam.apply ( simpl l1) (List.map simpl args) loc status
               else 
                 begin
                   (* Ext_log.dwarn __LOC__ "%s/%d: %d "  *)
                   (*   v.name v.stamp lam_size *)
                   (* ;     *)
-                  Lam.apply ( simpl l1) (List.map simpl args) info
+                  Lam.apply ( simpl l1) (List.map simpl args) loc status
                 end
           else
             begin
               (* Ext_log.dwarn __LOC__ "%d vs %d " (List.length args) (List.length params); *)
-              Lam.apply ( simpl l1) (List.map simpl args) info
+              Lam.apply ( simpl l1) (List.map simpl args) loc status
             end
 
         | _ -> 
           begin
             (* Ext_log.dwarn __LOC__ "%s/%d -- no source " v.name v.stamp;     *)
-            Lam.apply ( simpl l1) (List.map simpl args) info
+            Lam.apply ( simpl l1) (List.map simpl args) loc status
           end
         | exception Not_found -> 
             (* Ext_log.dwarn __LOC__ "%s/%d -- not found " v.name v.stamp;     *)
-          Lam.apply ( simpl l1) (List.map simpl args) info
+          Lam.apply ( simpl l1) (List.map simpl args) loc status
       end
 
-    | Lapply(Lfunction(Curried, params, body), args, _)
+    | Lapply{ fn = Lfunction{ kind = Curried ; params; body}; args; _}
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
-    | Lapply(Lfunction(Tupled, params, body), [Lprim(Pmakeblock _, args)], _)
+    | Lapply{ fn = Lfunction{kind =  Tupled;  params; body}; 
+             args = [Lprim {primitive = Pmakeblock _; args; _}]; _}
       (** TODO: keep track of this parameter in ocaml trunk,
           can we switch to the tupled backend?
       *)
       when  Ext_list.same_length params args ->
       simpl (Lam_beta_reduce.propogate_beta_reduce meta params body args)
 
-    | Lapply (l1, ll, info) ->
-      Lam.apply (simpl  l1) (List.map simpl  ll) info
-    | Lfunction (kind, params, l) 
-      -> Lam.function_ kind params  (simpl  l)
+    | Lapply {fn = l1; args =  ll;  loc ; status} ->
+      Lam.apply (simpl  l1) (List.map simpl  ll) loc status
+    | Lfunction {arity; kind; params; body = l}
+      -> Lam.function_ arity kind params  (simpl  l)
     | Lswitch (l, {sw_failaction; 
                    sw_consts; 
                    sw_blocks;
@@ -263,7 +270,7 @@ let simplify_alias
       Lam.staticcatch (simpl  l1) ids (simpl  l2)
     | Ltrywith (l1, v, l2) -> Lam.try_ (simpl  l1) v (simpl  l2)
 
-    | Lsequence (Lprim (Pgetglobal (id),[]), l2)
+    | Lsequence (Lprim {primitive = Pgetglobal (id); args = []}, l2)
       when Lam_compile_env.is_pure (Lam_module_ident.of_ml id) 
       -> simpl l2
     | Lsequence(l1, l2)

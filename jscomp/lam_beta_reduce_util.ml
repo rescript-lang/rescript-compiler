@@ -61,7 +61,7 @@ let simple_beta_reduce params body args =
     | _ :: _ -> raise E.Not_simple_apply 
   in 
   match (body : Lam.t) with 
-  | Lprim ( primitive , args' )  (* There is no lambda in primitive *)
+  | Lprim { primitive ; args =  args' ; _}  (* There is no lambda in primitive *)
     -> (* catch a special case of primitives *)
     (* Note in a very special case we can avoid any allocation
        {[
@@ -80,14 +80,14 @@ let simple_beta_reduce params body args =
         Hashtbl.fold (fun _param {lambda; used} code -> 
             if not used then
               Lam.seq lambda code
-            else code) param_hash (Lam.prim primitive us) in 
+            else code) param_hash (Lam.prim primitive us ) in 
       Hashtbl.clear param_hash;
       Some result 
     | exception _ -> 
       Hashtbl.clear param_hash ;
       None
     end
-  | Lapply (Lvar fn_name as f , args', info)
+  | Lapply { fn = Lvar fn_name as f ; args =  args';  loc; status}
     ->  
     let () = 
       List.iter2 (fun p a -> Hashtbl.add param_hash p {lambda = a; used = false }) params args  
@@ -106,7 +106,7 @@ let simple_beta_reduce params body args =
                if not used then 
                  Lam.seq lambda code
                else code )
-            param_hash (Lam.apply  f us  info) in
+            param_hash (Lam.apply  f us  loc status) in
         Hashtbl.clear param_hash;
         Some result 
       | exception _ -> 

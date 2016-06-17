@@ -121,21 +121,21 @@ let deep_flatten
     match lam with 
     | Levent (e,_) -> flatten acc e (* TODO: We stripped event in the beginning*)
     | Llet (str, id, 
-            (Lprim (Pccall 
+            (Lprim {primitive = Pccall 
                       {prim_name = 
                          ("js_from_nullable" 
                          | "js_from_def"
                          |"js_from_nullable_def"); _ }
-                   , [Lvar _]) as arg), body)
+                   ; args  =  [Lvar _]} as arg), body)
       -> 
       flatten (Single(str, id, (aux arg) ) :: acc) body
     | Llet (str, id, 
-            Lprim (Pccall 
+            Lprim {primitive = Pccall 
                      ({prim_name = 
                          ("js_from_nullable"
                          | "js_from_def"
-                         | "js_from_nullable_def"); _ } as p ),
-                            [arg]), body)
+                         | "js_from_nullable_def"); _ } as p );
+                   args = [arg]}, body)
       -> 
       let id' = Ident.rename id in 
       flatten acc 
@@ -194,7 +194,7 @@ let deep_flatten
               fun n -> if n ==0  then true else odd (n - 1)
           ]}
       *)
-      let module Ident_set = Lambda.IdentSet in
+      (* let module Ident_set = Lambda.IdentSet in *)
       let rec iter bind_args acc =
         match bind_args with
         | [] ->   acc
@@ -245,7 +245,7 @@ let deep_flatten
             | Single (_, id, ( Lvar bid)) -> 
               (acc, (if Ident_set.mem bid set then Ident_set.add id set else set ), g:: wrap)
             | Single (_, id, lam) ->
-              let variables = Lam.free_variables  lam in
+              let variables = Lam_util.free_variables  lam in
               if Ident_set.(is_empty (inter variables collections)) 
               then 
                 (acc, set, g :: wrap )
@@ -284,45 +284,45 @@ let deep_flatten
     (*   when  List.length params = List.length args -> *)
     (*       aux (beta_reduce params body args) *)
 
-    | Lapply(l1, ll, info) -> 
-      Lam.apply (aux l1) (List.map aux ll) info
+    | Lapply{fn = l1; args  = ll; loc; status} -> 
+      Lam.apply (aux l1) (List.map aux ll) loc status
 
     (* This kind of simple optimizations should be done each time
        and as early as possible *) 
 
-    | Lprim(Pidentity, [l]) -> l 
-    | Lprim(Pccall{prim_name = "caml_int64_float_of_bits"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pidentity; args =  [l]; _ } -> l 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_float_of_bits"; _};
+            args = [ Lconst (Const_base (Const_int64 i))]; _} 
       ->  
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.float_of_bits i) )))
-    | Lprim(Pccall{prim_name = "caml_int64_to_float"; _},
-            [ Lconst (Const_base (Const_int64 i))]) 
+    | Lprim {primitive = Pccall{prim_name = "caml_int64_to_float"; _}; 
+             args = [ Lconst (Const_base (Const_int64 i))]; _} 
       -> 
       (* TODO: note when int is too big, [caml_int64_to_float] is unsafe *)
       Lam.const 
         (Const_base (Const_float (Js_number.to_string (Int64.to_float i) )))
-    | Lprim(p, ll)
+    | Lprim {primitive = p; args =  ll}
       -> 
       begin
         let ll = List.map aux ll in
         match p, ll with
         (* Simplify %revapply, for n-ary functions with n > 1 *)
-        | Prevapply loc, [x; Lapply (f, args, _)]
-        | Prevapply loc, [x; Levent (Lapply (f, args, _),_)] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Prevapply loc, [x; Lapply {fn = f;  args; _}]
+        | Prevapply loc, [x; Levent (Lapply {fn = f;  args; _},_)] ->
+          Lam.apply f (args@[x]) loc App_na
         | Prevapply loc, [x; f] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         (* Simplify %apply, for n-ary functions with n > 1 *)
-        | Pdirapply loc, [Lapply(f, args, _); x]
-        | Pdirapply loc, [Levent (Lapply (f, args, _),_); x] ->
-          Lam.apply f (args@[x]) (Lambda.default_apply_info ~loc ())
+        | Pdirapply loc, [Lapply{fn = f;  args; _}; x]
+        | Pdirapply loc, [Levent (Lapply {fn = f;  args;  _},_); x] ->
+          Lam.apply f (args@[x]) loc App_na
         | Pdirapply loc, [f; x] -> 
-          Lam.apply f [x] (Lambda.default_apply_info ~loc ())
+          Lam.apply f [x] loc App_na
         | _ -> Lam.prim p ll
       end
-    | Lfunction(kind, params, l) -> 
-      Lam.function_ kind params  (aux  l)
+    | Lfunction{arity; kind; params;  body = l} -> 
+      Lam.function_ arity kind params  (aux  l)
     | Lswitch(l, {sw_failaction; 
                   sw_consts; 
                   sw_blocks;
