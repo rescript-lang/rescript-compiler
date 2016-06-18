@@ -168,6 +168,12 @@ external to_bool : boolean -> bool = "js_boolean_to_bool"
 external to_number : 'a -> int = "js_anything_to_number" (* + conversion*)
 external string_of_nativeint : nativeint -> string = "js_anything_to_string"
 
+external unsafe_lt : 'a -> 'a -> boolean = "js_unsafe_lt"
+external unsafe_le : 'a -> 'a -> boolean = "js_unsafe_le"
+external unsafe_gt : 'a -> 'a -> boolean = "js_unsafe_gt"
+external unsafe_ge : 'a -> 'a -> boolean = "js_unsafe_ge"
+
+
 external string_of_char : char -> string = "js_string_of_char"
 (** TODO: check with {!String.of_char} 
     it's quite common that we have

@@ -642,6 +642,8 @@ test_type_based_arity.cmj : abstract_type.cmi
 test_type_based_arity.cmx : abstract_type.cmx
 test_u.cmj :
 test_u.cmx :
+test_unsafe_cmp.cmj : ../runtime/js.cmj
+test_unsafe_cmp.cmx : ../runtime/js.cmx
 test_unsafe_obj_ffi.cmj : ../runtime/js.cmj test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmx : ../runtime/js.cmx test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi_ppx.cmj : test_unsafe_obj_ffi_ppx.cmi
@@ -1304,6 +1306,8 @@ test_type_based_arity.cmo : abstract_type.cmi
 test_type_based_arity.cmj : abstract_type.cmj
 test_u.cmo :
 test_u.cmj :
+test_unsafe_cmp.cmo : ../runtime/js.cmo
+test_unsafe_cmp.cmj : ../runtime/js.cmj
 test_unsafe_obj_ffi.cmo : ../runtime/js.cmo test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi.cmj : ../runtime/js.cmj test_unsafe_obj_ffi.cmi
 test_unsafe_obj_ffi_ppx.cmo : test_unsafe_obj_ffi_ppx.cmi
