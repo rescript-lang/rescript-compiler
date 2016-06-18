@@ -328,3 +328,5 @@ config2_test
 largest_int_flow
 
 noassert
+
+test_unsafe_cmp

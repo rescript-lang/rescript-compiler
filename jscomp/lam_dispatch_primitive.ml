@@ -853,6 +853,24 @@ let query (prim : Lam_compile_env.primitive_description)
         -> E.str (String.make 1 (Char.chr (Int32.to_int i)))
       | _ -> call Js_config.string
       end
+  | "js_unsafe_lt" 
+    -> 
+    begin match args with 
+      | [l; r] -> E.bin Lt l r 
+      | _ -> assert false 
+    end
+  | "js_unsafe_le" 
+    -> begin match args with 
+    | [l; r] -> E.bin Le l r 
+    | _ -> assert false end 
+  | "js_unsafe_gt" 
+    -> begin match args with 
+    | [l;r] -> E.bin Gt l r 
+    | _ ->  assert false end 
+  | "js_unsafe_ge" -> 
+    begin match args with 
+    | [l ; r] -> E.bin Ge l r 
+    | _ -> assert false end
   | "js_boolean_to_bool"
     -> 
     begin match args with 

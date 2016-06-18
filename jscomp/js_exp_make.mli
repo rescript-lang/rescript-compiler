@@ -49,17 +49,18 @@
                          if(e){print_int(3)}
     ]}
 *)
-
-val extract_non_pure : J.expression -> J.expression option
-
-type binary_op =   ?comment:string -> J.expression -> J.expression -> J.expression 
-
-type unary_op =  ?comment:string -> J.expression -> J.expression
-
-
-
 type t = J.expression 
+val extract_non_pure : t -> t option
 
+type binary_op =   ?comment:string -> t -> t -> t 
+
+type unary_op =  ?comment:string -> t -> t
+
+
+
+
+
+val bin : ?comment:string -> J.binop -> t -> t -> t
 val mk :
   ?comment:string -> J.expression_desc -> t
 
